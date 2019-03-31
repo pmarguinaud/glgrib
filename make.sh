@@ -1,4 +1,5 @@
 #!/bin/bash
 
-g++ -g -o tutorial04bis.x *.cpp -lGLEW -lGL -lglfw
+gcc -g -c glgrib.c 
+g++ -g -o tutorial04bis.x *.cpp glgrib.o -lGLEW -lGL -lglfw -leccodes
 

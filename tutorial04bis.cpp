@@ -118,9 +118,6 @@ int main( void )
 	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 
- 
- 
-
         static const int indices_size = 36;
         static const unsigned int indices[indices_size] = {
           0, 1, 2, 3, 0, 4, 5, 0, 6, 3, 6, 0, 0, 2, 4, 5, 1, 0, 2, 1, 5, 7, 6,
@@ -133,54 +130,28 @@ int main( void )
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size * sizeof(unsigned int), &indices[0] , GL_STATIC_DRAW);
 
 	do{
-
-		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Use our shader
 		glUseProgram(programID);
 
-		// Send our transformation to the currently bound shader, 
-		// in the "MVP" uniform
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv (MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
-		// 1rst attribute buffer : vertices
-		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray (0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-		glVertexAttribPointer(
-			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
-			3,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
+		glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-		// 2nd attribute buffer : colors
-		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray (1);
 		glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-		glVertexAttribPointer(
-			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-			3,                                // size
-			GL_FLOAT,                         // type
-			GL_FALSE,                         // normalized?
-			0,                                // stride
-			(void*)0                          // array buffer offset
-		);
+		glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-		glDrawElements(
-			GL_TRIANGLES,      // mode
-			indices_size,       // count
-			GL_UNSIGNED_INT,   // type
-			(void*)0           // element array buffer offset
-		);
+		glDrawElements (GL_TRIANGLES, indices_size, GL_UNSIGNED_INT, NULL);
 
-                glDisableVertexAttribArray(0);
-                glDisableVertexAttribArray(1);
+                glDisableVertexAttribArray (0);
+                glDisableVertexAttribArray (1);
 
 		// Swap buffers
-		glfwSwapBuffers(window);
+		glfwSwapBuffers (window);
 		glfwPollEvents();
 
 	} // Check if the ESC key was pressed or the window was closed

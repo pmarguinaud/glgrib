@@ -29,7 +29,7 @@ int main( void )
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); 
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
@@ -118,8 +118,11 @@ int main( void )
 	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 
+ 
+ 
+
         static const int indices_size = 36;
-        static const unsigned short int indices[indices_size] = {
+        static const unsigned int indices[indices_size] = {
           0, 1, 2, 3, 0, 4, 5, 0, 6, 3, 6, 0, 0, 2, 4, 5, 1, 0, 2, 1, 5, 7, 6,
           3, 6, 7, 5, 7, 3, 4, 7, 4, 2, 7, 2, 5
         };
@@ -127,7 +130,7 @@ int main( void )
         GLuint elementbuffer;
         glGenBuffers(1, &elementbuffer);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size * sizeof(unsigned short int), &indices[0] , GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_size * sizeof(unsigned int), &indices[0] , GL_STATIC_DRAW);
 
 	do{
 
@@ -165,14 +168,11 @@ int main( void )
 			(void*)0                          // array buffer offset
 		);
 
-		// Draw the triangle !
-//              glDrawArrays(GL_TRIANGLES, 0, 12*3); // 12*3 indices starting at 0 -> 12 triangles
-
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 		glDrawElements(
 			GL_TRIANGLES,      // mode
 			indices_size,       // count
-			GL_UNSIGNED_SHORT,   // type
+			GL_UNSIGNED_INT,   // type
 			(void*)0           // element array buffer offset
 		);
 

@@ -65,6 +65,9 @@ int main (int argc, char * argv[])
   glCullFace (GL_BACK);
   glFrontFace (GL_CCW);
   glEnable (GL_CULL_FACE);
+
+  glEnable (GL_BLEND);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   
   
   // Accept fragment if it closer to the camera than the former one
@@ -77,7 +80,7 @@ int main (int argc, char * argv[])
   // Create and compile our GLSL program from the shaders
   GLuint programID = LoadShaders( "TransformVertexShader.vertexshader", "ColorFragmentShader.fragmentshader" );
   
-  GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+  GLuint MatrixID = glGetUniformLocation (programID, "MVP");
   
   glm::mat4 Projection = glm::perspective(glm::radians(50.0f), 1.0f / 1.0f, 0.1f, 100.0f);
   glm::mat4 View       = glm::lookAt(glm::vec3 (2.5,0,0), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
@@ -110,20 +113,18 @@ int main (int argc, char * argv[])
   free (col);
   
   do{
-  	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
-  	glUseProgram(programID);
+  	glUseProgram (programID);
   
   	glUniformMatrix4fv (MatrixID, 1, GL_FALSE, &MVP[0][0]);
   
   	glEnableVertexAttribArray (0);
-  	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+  	glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
   	glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-  
   	glEnableVertexAttribArray (1);
   	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
   	glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-  
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
   	glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
   

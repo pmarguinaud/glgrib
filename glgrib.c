@@ -157,6 +157,7 @@ void load (const char * file, int * np, float ** xyz,
               (*col)[3*jglo+0] = 1. - (v[jglo] - vmin)/(vmax - vmin);
               (*col)[3*jglo+1] = 0.;
               (*col)[3*jglo+2] = 0. + (v[jglo] - vmin)/(vmax - vmin);
+//            (*col)[4*jglo+3] = 0.4;
             }
         }
     }

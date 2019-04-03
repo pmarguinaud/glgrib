@@ -124,7 +124,7 @@ int main (int argc, char * argv[])
   
   	glEnableVertexAttribArray (1);
   	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-  	glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+  	glVertexAttribPointer (1, 3, GL_FLOAT, GL_TRUE, 0, NULL);
   
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
   	glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);

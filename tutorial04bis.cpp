@@ -16,7 +16,7 @@ using namespace glm;
 
 #include "shader.hpp"
 
-extern "C" void load (const char *, int *, float **, float **, int *, unsigned int **);
+extern "C" void load (const char *, int *, float **, float **, int *, unsigned int **, int);
 
 int main (int argc, char * argv[])
 {
@@ -89,7 +89,8 @@ int main (int argc, char * argv[])
   int np, nt;
   unsigned int * ind;
   float * xyz, * col;
-  load (file, &np, &xyz, &col, &nt, &ind);
+  int use_alpha = 1, ncol = use_alpha ? 4 : 3;
+  load (file, &np, &xyz, &col, &nt, &ind, use_alpha);
   
   
   GLuint vertexbuffer;
@@ -97,10 +98,11 @@ int main (int argc, char * argv[])
   glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
   glBufferData(GL_ARRAY_BUFFER, 3 * np * sizeof(float), xyz, GL_STATIC_DRAW);
   
+
   GLuint colorbuffer;
   glGenBuffers(1, &colorbuffer);
   glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-  glBufferData(GL_ARRAY_BUFFER, 3 * np * sizeof(float), col, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, ncol * np * sizeof(float), col, GL_STATIC_DRAW);
   
   GLuint elementbuffer;
   glGenBuffers(1, &elementbuffer);
@@ -124,7 +126,7 @@ int main (int argc, char * argv[])
   
   	glEnableVertexAttribArray (1);
   	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-  	glVertexAttribPointer (1, 3, GL_FLOAT, GL_TRUE, 0, NULL);
+  	glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL);
   
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
   	glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);

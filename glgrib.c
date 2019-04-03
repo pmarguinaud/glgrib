@@ -105,7 +105,7 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
 
 
 void load (const char * file, int * np, float ** xyz, 
-           float ** col, int * nt, unsigned int ** ind)
+           float ** col, int * nt, unsigned int ** ind, int use_alpha)
 {
   codes_handle * h = NULL;
   FILE * in = NULL;
@@ -133,7 +133,9 @@ void load (const char * file, int * np, float ** xyz,
   
   *np  = v_len;
   *xyz = (float *)malloc (3 * sizeof (float) * v_len);
-  *col = (float *)malloc (3 * sizeof (float) * v_len);
+
+  int ncol = use_alpha ? 4 : 3;
+  *col = (float *)malloc (4 * sizeof (float) * v_len);
 
   for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
     {
@@ -148,16 +150,32 @@ void load (const char * file, int * np, float ** xyz,
           (*xyz)[3*jglo+2] =          sinlat;
           if (v[jglo] == vmis)
             {
-              (*col)[3*jglo+0] = 0;
-              (*col)[3*jglo+1] = 1;
-              (*col)[3*jglo+2] = 0;
+              if (use_alpha)
+                {
+                  (*col)[4*jglo+0] = 0;
+                  (*col)[4*jglo+1] = 1;
+                  (*col)[4*jglo+2] = 0;
+                  (*col)[4*jglo+3] = 0;
+                }
+              else
+                {
+                  (*col)[3*jglo+0] = 0;
+                  (*col)[3*jglo+1] = 1;
+                  (*col)[3*jglo+2] = 0;
+                }
             }
-          else
+          else if (use_alpha)
+            {
+              (*col)[4*jglo+0] = 1. - (v[jglo] - vmin)/(vmax - vmin);
+              (*col)[4*jglo+1] = 0.;
+              (*col)[4*jglo+2] = 0.; // 0. + (v[jglo] - vmin)/(vmax - vmin);
+              (*col)[4*jglo+3] = 1.;
+            }
+          else 
             {
               (*col)[3*jglo+0] = 1. - (v[jglo] - vmin)/(vmax - vmin);
               (*col)[3*jglo+1] = 0.;
               (*col)[3*jglo+2] = 0. + (v[jglo] - vmin)/(vmax - vmin);
-//            (*col)[4*jglo+3] = 0.4;
             }
         }
     }

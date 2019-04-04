@@ -2,3 +2,6 @@
 *.o
 *.swp
 *.rpm
+src
+usr
+*.grb

@@ -24,6 +24,9 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
 {
   int jglooff = 0;
 
+  if (pass == 1)
+    *ind = 0;
+
   for (int jlat = 1; jlat <= Nj-1; jlat++)
     {
       int iloen1 = pl[jlat - 1];
@@ -105,7 +108,7 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
 
 
 void load (const char * file, int * np, float ** xyz, 
-           float ** col, int * nt, unsigned int ** ind, int use_alpha)
+           float ** col, unsigned int * nt, unsigned int ** ind, int use_alpha)
 {
   codes_handle * h = NULL;
   FILE * in = NULL;
@@ -184,7 +187,7 @@ void load (const char * file, int * np, float ** xyz,
 
   glgauss (Nj, pl, 1, nt);
 
-  *ind = (unsigned int *)malloc (3 * (*nt) * sizeof (int));
+  *ind = (unsigned int *)malloc (3 * (*nt) * sizeof (unsigned int));
 
   glgauss (Nj, pl, 2, *ind);
   

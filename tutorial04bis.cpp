@@ -16,7 +16,7 @@ using namespace glm;
 
 #include "shader.hpp"
 
-extern "C" void load (const char *, int *, float **, float **, int *, unsigned int **, int);
+extern "C" void load (const char *, int *, float **, float **, unsigned int *, unsigned int **, int);
 
 int main (int argc, char * argv[])
 {
@@ -76,8 +76,8 @@ int main (int argc, char * argv[])
   glGenVertexArrays(1, &VertexArrayID);
   glBindVertexArray(VertexArrayID);
   
-  // Create and compile our GLSL program from the shaders
-  GLuint programID = LoadShaders( "TransformVertexShader.vertexshader", "ColorFragmentShader.fragmentshader" );
+  GLuint programID = LoadShaders ("TransformVertexShader.vertexshader", 
+		                  "ColorFragmentShader.fragmentshader");
   
   GLuint MatrixID = glGetUniformLocation(programID, "MVP");
   
@@ -86,7 +86,8 @@ int main (int argc, char * argv[])
   glm::mat4 Model      = glm::mat4(1.0f);
   glm::mat4 MVP        = Projection * View * Model; 
   
-  int np, nt;
+  int np;
+  unsigned int nt;
   unsigned int * ind;
   float * xyz, * col;
   int use_alpha = 1, ncol = use_alpha ? 4 : 3;

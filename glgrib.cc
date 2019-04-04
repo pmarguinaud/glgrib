@@ -8,7 +8,7 @@
 
 using namespace glm;
 
-#include "shader.hpp"
+#include "shader.h"
 
 extern "C" void load (const char *, int *, float **, float **, unsigned int *, unsigned int **, int);
 
@@ -17,7 +17,7 @@ static bool do_rotate = false;
 
 static void key_callback (GLFWwindow * window, int key, int scancode, int action, int mods)
 {
-  if (action == GLFW_PRESS)
+  if (action == GLFW_PRESS || action == GLFW_REPEAT)
     {
       switch (key)
         {
@@ -40,6 +40,7 @@ static void key_callback (GLFWwindow * window, int key, int scancode, int action
             latc = 0.;
             lonc = 0.;
 	    rc = 2.5;
+	    fov = 50.;
 	    break;
           case GLFW_KEY_UP:
             latc = latc + 5.;
@@ -64,46 +65,44 @@ int main (int argc, char * argv[])
 {
   const char * file = argv[1];
   
-  // Initialise GLFW
-  if( !glfwInit() )
-  {
-  	fprintf( stderr, "Failed to initialize GLFW\n" );
-  	getchar();
-  	return -1;
-  }
+  if (! glfwInit ())
+    {
+      fprintf (stderr, "Failed to initialize GLFW\n");
+      getchar ();
+      return -1;
+    }
   
-  glfwWindowHint(GLFW_SAMPLES, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); 
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint (GLFW_SAMPLES, 4);
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); 
+  glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   
   GLFWwindow* window = glfwCreateWindow (1024, 1024, file, NULL, NULL);
 
-  if( window == NULL ){
-  	fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
-  	getchar();
-  	glfwTerminate();
-  	return -1;
-  }
-  glfwMakeContextCurrent(window);
+  if (window == NULL)
+    {
+      fprintf (stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
+      getchar ();
+      glfwTerminate ();
+      return -1;
+    }
+
+  glfwMakeContextCurrent (window);
   
-  // Initialize GLEW
   glewExperimental = true; // Needed for core profile
-  if (glewInit() != GLEW_OK) {
-  	fprintf(stderr, "Failed to initialize GLEW\n");
-  	getchar();
-  	glfwTerminate();
-  	return -1;
-  }
+  if (glewInit() != GLEW_OK) 
+    {
+      fprintf (stderr, "Failed to initialize GLEW\n");
+      getchar ();
+      glfwTerminate ();
+      return -1;
+    }
   
-  // Ensure we can capture the escape key being pressed below
-  glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+  glfwSetInputMode (window, GLFW_STICKY_KEYS, GL_TRUE);
   
-  // Dark blue background
-  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+  glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
   
-  // Enable depth test
   glEnable (GL_DEPTH_TEST);
   glEnable (GL_BLEND);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -112,12 +111,12 @@ int main (int argc, char * argv[])
   glEnable (GL_CULL_FACE);
   
   
-  // Accept fragment if it closer to the camera than the former one
-  glDepthFunc(GL_LESS); 
+  glDepthFunc (GL_LESS); 
   
   GLuint VertexArrayID;
-  glGenVertexArrays(1, &VertexArrayID);
-  glBindVertexArray(VertexArrayID);
+
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
   
   GLuint programID = LoadShaders ("TransformVertexShader.vertexshader", 
 		                  "ColorFragmentShader.fragmentshader");
@@ -129,24 +128,25 @@ int main (int argc, char * argv[])
   unsigned int * ind;
   float * xyz, * col;
   int use_alpha = 1, ncol = use_alpha ? 4 : 3;
+
   load (file, &np, &xyz, &col, &nt, &ind, use_alpha);
   
-  
   GLuint vertexbuffer;
-  glGenBuffers(1, &vertexbuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-  glBufferData(GL_ARRAY_BUFFER, 3 * np * sizeof(float), xyz, GL_STATIC_DRAW);
+  glGenBuffers (1, &vertexbuffer);
+  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
+  glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
   
 
   GLuint colorbuffer;
-  glGenBuffers(1, &colorbuffer);
-  glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-  glBufferData(GL_ARRAY_BUFFER, ncol * np * sizeof(float), col, GL_STATIC_DRAW);
+  glGenBuffers (1, &colorbuffer);
+  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
+  glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (float), col, GL_STATIC_DRAW);
   
   GLuint elementbuffer;
-  glGenBuffers(1, &elementbuffer);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof(unsigned int), ind , GL_STATIC_DRAW);
+  glGenBuffers (1, &elementbuffer);
+  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), 
+		ind , GL_STATIC_DRAW);
 
   free (ind);
   free (xyz);
@@ -197,12 +197,12 @@ int main (int argc, char * argv[])
         break;
     } 
   
-  glDeleteBuffers(1, &vertexbuffer);
-  glDeleteBuffers(1, &colorbuffer);
-  glDeleteProgram(programID);
-  glDeleteVertexArrays(1, &VertexArrayID);
+  glDeleteBuffers (1, &vertexbuffer);
+  glDeleteBuffers (1, &colorbuffer);
+  glDeleteProgram (programID);
+  glDeleteVertexArrays (1, &VertexArrayID);
   
-  glfwTerminate();
+  glfwTerminate ();
   
   return 0;
 }

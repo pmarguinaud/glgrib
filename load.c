@@ -108,87 +108,81 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
 
 
 void load (const char * file, int * np, float ** xyz, 
-           float ** col, unsigned int * nt, unsigned int ** ind, int use_alpha)
+           float ** col, unsigned int * nt, 
+           unsigned int ** ind, int use_alpha)
 {
-  codes_handle * h = NULL;
   FILE * in = NULL;
-  int err = 0;
-  size_t v_len = 0, pl_len = 0;
+  long int * pl = NULL;
+  long int Nj;
+  int ncol = use_alpha ? 4 : 3;
   
   in = fopen (file, "r");
-  h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
-  codes_get_size (h, "values", &v_len);
-  
-  double vmin, vmax, vmis;
-  double * v = (double *)malloc (v_len * sizeof (double));
-  codes_get_double_array (h, "values", v, &v_len);
-  codes_get_double (h, "maximum",      &vmax);
-  codes_get_double (h, "minimum",      &vmin);
-  codes_get_double (h, "missingValue", &vmis);
-  
-  codes_get_size (h, "pl", &pl_len);
-  long int * pl = (long int *)malloc (sizeof (long int) * pl_len);
-  codes_get_long_array (h, "pl", pl, &pl_len);
-  long int Nj;
-  codes_get_long (h, "Nj", &Nj);
-  codes_handle_delete (h);
-  fclose (in);
-  
-  *np  = v_len;
-  *xyz = (float *)malloc (3 * sizeof (float) * v_len);
 
-  int ncol = use_alpha ? 4 : 3;
-  *col = (float *)malloc (4 * sizeof (float) * v_len);
+  *xyz = NULL;
+  *col = NULL;
 
-  for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
+  for (int icol = 0; icol < 3; icol++)
     {
-      float lat = M_PI * (0.5 - (float)jlat / (float)(Nj + 1));
-      float coslat = cos (lat); float sinlat = sin (lat);
-      for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
+      int err = 0;
+      size_t v_len = 0;
+      codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
+      codes_get_size (h, "values", &v_len);
+      
+      double vmin, vmax, vmis;
+      double * v = (double *)malloc (v_len * sizeof (double));
+
+      codes_get_double_array (h, "values", v, &v_len);
+      codes_get_double (h, "maximum",      &vmax);
+      codes_get_double (h, "minimum",      &vmin);
+      codes_get_double (h, "missingValue", &vmis);
+      
+      if (pl == NULL)
         {
-          float lon = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
-          float coslon = cos (lon); float sinlon = sin (lon);
-          (*xyz)[3*jglo+0] = coslon * coslat;
-          (*xyz)[3*jglo+1] = sinlon * coslat;
-          (*xyz)[3*jglo+2] =          sinlat;
-          if (v[jglo] == vmis)
+          size_t pl_len;
+          codes_get_long (h, "Nj", &Nj);
+          codes_get_size (h, "pl", &pl_len);
+          pl = (long int *)malloc (sizeof (long int) * pl_len);
+          codes_get_long_array (h, "pl", pl, &pl_len);
+          glgauss (Nj, pl, 1, nt);
+          *ind = (unsigned int *)malloc (3 * (*nt) * sizeof (unsigned int));
+          glgauss (Nj, pl, 2, *ind);
+        }
+      codes_handle_delete (h);
+      
+      if (*xyz == NULL)
+        {
+          *col = (float *)malloc (4 * sizeof (float) * v_len);
+          *xyz = (float *)malloc (3 * sizeof (float) * v_len);
+          *np  = v_len;
+          for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
             {
-              if (use_alpha)
+              float lat = M_PI * (0.5 - (float)jlat / (float)(Nj + 1));
+              float coslat = cos (lat); float sinlat = sin (lat);
+              for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
                 {
-                  (*col)[4*jglo+0] = 0;
-                  (*col)[4*jglo+1] = 1;
-                  (*col)[4*jglo+2] = 0;
-                  (*col)[4*jglo+3] = 0;
+                  float lon = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
+                  float coslon = cos (lon); float sinlon = sin (lon);
+                  (*xyz)[3*jglo+0] = coslon * coslat;
+                  (*xyz)[3*jglo+1] = sinlon * coslat;
+                  (*xyz)[3*jglo+2] =          sinlat;
                 }
-              else
-                {
-                  (*col)[3*jglo+0] = 0;
-                  (*col)[3*jglo+1] = 1;
-                  (*col)[3*jglo+2] = 0;
-                }
-            }
-          else if (use_alpha)
-            {
-              (*col)[4*jglo+0] = 1. - (v[jglo] - vmin)/(vmax - vmin);
-              (*col)[4*jglo+1] = 0.;
-              (*col)[4*jglo+2] = 0.; // 0. + (v[jglo] - vmin)/(vmax - vmin);
-              (*col)[4*jglo+3] = 1.;
-            }
-          else 
-            {
-              (*col)[3*jglo+0] = 1. - (v[jglo] - vmin)/(vmax - vmin);
-              (*col)[3*jglo+1] = 0.;
-              (*col)[3*jglo+2] = 0. + (v[jglo] - vmin)/(vmax - vmin);
             }
         }
+      
+      for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
+        for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
+          (*col)[ncol*jglo+icol] = v[jglo];
+      
+      free (v);
     }
 
-  free (v);
-
-  glgauss (Nj, pl, 1, nt);
-
-  *ind = (unsigned int *)malloc (3 * (*nt) * sizeof (unsigned int));
-
-  glgauss (Nj, pl, 2, *ind);
+  if (use_alpha)
+    for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
+      for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
+        (*col)[ncol*jglo+3] = 1.;
+      
+    
+  fclose (in);
+  free (pl);
   
 }

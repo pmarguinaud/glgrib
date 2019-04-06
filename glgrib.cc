@@ -192,7 +192,7 @@ void gl_init ()
   glDepthFunc (GL_LESS); 
 }
   
-GLFWwindow * new_glfw_window (const char * file)
+GLFWwindow * new_glfw_window (const char * file, int width, int height)
 {
   GLFWwindow * window;
 
@@ -209,7 +209,7 @@ GLFWwindow * new_glfw_window (const char * file)
   glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); 
   glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   
-  window = glfwCreateWindow (1024, 1024, file, NULL, NULL);
+  window = glfwCreateWindow (width, height, file, NULL, NULL);
 
   if (window == NULL)
     {
@@ -242,12 +242,52 @@ void free_glfw_window (GLFWwindow * window)
   glfwTerminate ();
 }
 
-int main (int argc, char * argv[])
+typedef struct fb_t
 {
-  const char * file = argv[1];
+  GLuint fbo;
+  GLuint rbo_color;
+  GLuint rbo_depth;
+} fb_t;
+
+static
+void fb_init (fb_t * fb, int width, int height)
+{
+  glGenFramebuffers (1, &fb->fbo);
+  glBindFramebuffer (GL_FRAMEBUFFER, fb->fbo);
+
+  /* Color renderbuffer. */
+  glGenRenderbuffers (1, &fb->rbo_color);
+  glBindRenderbuffer (GL_RENDERBUFFER, fb->rbo_color);
+  /* Storage must be one of: */
+  /* GL_RGBA4, GL_RGB565, GL_RGB5_A1, GL_DEPTH_COMPONENT16, GL_STENCIL_INDEX8. */
+  glRenderbufferStorage (GL_RENDERBUFFER, GL_RGB565, width, height);
+  glFramebufferRenderbuffer (GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
+                             GL_RENDERBUFFER, fb->rbo_color);
+
+  /* Depth renderbuffer. */
+  glGenRenderbuffers (1, &fb->rbo_depth);
+  glBindRenderbuffer (GL_RENDERBUFFER, fb->rbo_depth);
+  glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width, height);
+  glFramebufferRenderbuffer (GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 
+                             GL_RENDERBUFFER, fb->rbo_depth);
+
+  glReadBuffer (GL_COLOR_ATTACHMENT0);
+}
+
+static
+void fb_free (fb_t * fb)
+{
+  glDeleteFramebuffers (1, &fb->fbo);
+  glDeleteRenderbuffers (1, &fb->rbo_color);
+  glDeleteRenderbuffers (1, &fb->rbo_depth);
+}
+
+static 
+void x11_display (const char * file, int width, int height)
+{
   obj_t Obj;
   prog_t Prog;
-  GLFWwindow * Window = new_glfw_window (file);
+  GLFWwindow * Window = new_glfw_window (file, width, height);
   
   gl_init ();
   prog_init (&Prog);
@@ -275,7 +315,13 @@ int main (int argc, char * argv[])
   prog_free (&Prog);
   
   free_glfw_window (Window);
-  
+}
+
+int main (int argc, char * argv[])
+{
+  const int width = 1024, height = 1024;
+  const char * file = argv[1];
+  x11_display (file, width, height);
   return 0;
 }
 

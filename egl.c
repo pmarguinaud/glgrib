@@ -105,6 +105,11 @@ int main(int argc, char *argv[])
   eglMakeCurrent(eglDpy, eglSurf, eglSurf, eglCtx);
 
   // from now on use your OpenGL context
+
+  GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+  GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+
   glGenFramebuffers(1, &fbo);
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 

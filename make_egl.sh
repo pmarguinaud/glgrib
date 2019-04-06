@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cc -o egl.x  egl.c -lGL -lEGL
+cc -g -o egl.x  egl.c -lGL -lEGL -lpng

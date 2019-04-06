@@ -4,6 +4,7 @@
 #define GL_GLEXT_PROTOTYPES 1
 #include <GL/glut.h>
 #include <GL/glext.h>
+#include <png.h>
 
 static const EGLint configAttribs[] = {
         EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
@@ -36,6 +37,39 @@ static void screenshot_ppm(const char *filename, unsigned int width,
     }
     fclose(f);
 }
+
+static void screenshot_png(const char *filename, unsigned int width, unsigned int height,
+        GLubyte *pixels, png_byte *png_bytes, png_byte **png_rows) {
+    size_t i, nvals;
+    const size_t format_nchannels = 4;
+    FILE *f = fopen(filename, "wb");
+    nvals = format_nchannels * width * height;
+    for (i = 0; i < nvals; i++)
+        png_bytes[i] = pixels[i];
+    png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (!png) abort();
+    png_infop info = png_create_info_struct(png);
+    if (!info) abort();
+    if (setjmp(png_jmpbuf(png))) abort();
+    png_init_io(png, f);
+    png_set_IHDR(
+        png,
+        info,
+        width,
+        height,
+        8,
+        PNG_COLOR_TYPE_RGBA,
+        PNG_INTERLACE_NONE,
+        PNG_COMPRESSION_TYPE_DEFAULT,
+        PNG_FILTER_TYPE_DEFAULT
+    );
+    png_write_info(png, info);
+    png_write_image(png, png_rows);
+    png_write_end(png, NULL);
+    png_destroy_write_struct(&png, &info);
+    fclose(f);
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -113,22 +147,26 @@ int main(int argc, char *argv[])
   glEnd();
 
   glFlush();
+
+{
   GLubyte * pixels = (GLubyte *)malloc(3 * sizeof (GLubyte) * width * height);
   memset (pixels, 0, 3 * sizeof (GLubyte) * width * height);
   glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
-  free (pixels);
-
-  int c[3] = {0, 0, 0};
-  for (int i = 0; i < width * height; i++)
-    for (int j = 0; j < 3; j++)
-      if (pixels[3*i+j] != 0)
-        c[j]++;
-
-  for (int j = 0; j < 3; j++)
-    printf (" c[%d] = %d\n", j, c[j]);
-    
   screenshot_ppm ("toto.ppm", width, height, pixels);
-
+  free (pixels);
+}
+{
+  GLubyte * pixels = (GLubyte *)malloc(4 * sizeof (GLubyte) * width * height);
+  png_byte *png_bytes = (png_byte *)malloc (4 * width *height * sizeof(png_byte));
+  png_byte **png_rows = (png_byte **)malloc(height * sizeof(png_byte*));
+  glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+  for (int i = 0; i < height; i++)
+      png_rows[height - i - 1] = &png_bytes[i * width * 4];
+  screenshot_png("toto.png", width, height, pixels, png_bytes, png_rows);
+  free (png_bytes);
+  free (png_rows);
+  free (pixels);
+}
 
   glDeleteFramebuffers(1, &fbo);
   glDeleteRenderbuffers(1, &rbo_color);

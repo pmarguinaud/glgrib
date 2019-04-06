@@ -317,6 +317,32 @@ void x11_display (const char * file, int width, int height)
   free_glfw_window (Window);
 }
 
+static 
+void fb_display (const char * file, int width, int height)
+{
+  obj_t Obj;
+  prog_t Prog;
+  fb_t Fb;
+
+  fb_init (&Fb, width, height);
+  
+  gl_init ();
+  prog_init (&Prog);
+  obj_init (&Obj, file);
+  view_init (&Prog, &View);
+  
+  display (&Prog, &Obj, &View);
+
+  glFlush ();
+  
+  view_free (&View);
+  obj_free (&Obj);
+  prog_free (&Prog);
+
+  fb_free (&Fb);
+  
+}
+
 int main (int argc, char * argv[])
 {
   const int width = 1024, height = 1024;

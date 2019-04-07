@@ -1,42 +1,62 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-
-#ifdef USE_GLE
-
+#include <stdio.h>
+#include <EGL/egl.h>
 #define GL_GLEXT_PROTOTYPES 1
 #include <GL/glut.h>
 #include <GL/glext.h>
 
-#else
 
-#include <GL/glew.h>
+static const EGLint configAttribs[] = {
+        EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+        EGL_BLUE_SIZE, 8,
+        EGL_GREEN_SIZE, 8,
+        EGL_RED_SIZE, 8,
+        EGL_DEPTH_SIZE, 8,
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+        EGL_NONE
+};    
 
-#endif
+static const EGLint pbufferAttribs[] = {
+      EGL_WIDTH, 100,
+      EGL_HEIGHT, 100,
+      EGL_NONE,
+};
 
-#include "shader.h"
 
-GLuint LoadShaders ()
+int main(int argc, char *argv[])
 {
+
+  // 1. Initialize EGL
+  EGLDisplay eglDpy = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+
+  EGLint major, minor;
+
+  eglInitialize(eglDpy, &major, &minor);
+
+  // 2. Select an appropriate configuration
+  EGLint numConfigs;
+  EGLConfig eglCfg;
+
+  eglChooseConfig(eglDpy, configAttribs, &eglCfg, 1, &numConfigs);
+
+  // 3. Create a surface
+  EGLSurface eglSurf = eglCreatePbufferSurface(eglDpy, eglCfg, 
+                                               pbufferAttribs);
+
+  // 4. Bind the API
+  eglBindAPI(EGL_OPENGL_API);
+
+  // 5. Create a context and make it current
+  EGLContext eglCtx = eglCreateContext(eglDpy, eglCfg, EGL_NO_CONTEXT, 
+                                       NULL);
+
+  eglMakeCurrent(eglDpy, eglSurf, eglSurf, eglCtx);
+
+  // from now on use your OpenGL context
+
   int len;
   GLint res = GL_FALSE;
   GLuint VertexShaderID = glCreateShader (GL_VERTEX_SHADER);
-  GLuint FragmentShaderID = glCreateShader (GL_FRAGMENT_SHADER);
-
-  const char * FragmentShaderCode =
-"#version 330 core\n"
-"\n"
-"in vec4 fragmentColor;\n"
-"\n"
-"out vec4 color;\n"
-"\n"
-"void main(){\n"
-"\n"
-"        color.r = fragmentColor.r;\n"
-"        color.g = fragmentColor.g;\n"
-"        color.b = fragmentColor.b;\n"
-"        color.a = fragmentColor.a;\n"
-"}\n";
 
   const char * VertexShaderCode = 
 "#version 330 core\n"
@@ -71,24 +91,9 @@ GLuint LoadShaders ()
       printf("%s\n", mess);
     }
 
-
-  // Compile Fragment Shader
-  glShaderSource (FragmentShaderID, 1, &FragmentShaderCode , NULL);
-  glCompileShader (FragmentShaderID);
-
-  glGetShaderiv (FragmentShaderID, GL_COMPILE_STATUS, &res);
-  glGetShaderiv (FragmentShaderID, GL_INFO_LOG_LENGTH, &len);
-  if (len > 0)
-    {
-      char mess[len+1];
-      glGetShaderInfoLog (FragmentShaderID, len, NULL, &mess[0]);
-      printf("%s\n", mess);
-    }
-
   // Link the program
   GLuint ProgramID = glCreateProgram ();
   glAttachShader (ProgramID, VertexShaderID);
-  glAttachShader (ProgramID, FragmentShaderID);
   glLinkProgram (ProgramID);
   
   // Check the program
@@ -103,12 +108,11 @@ GLuint LoadShaders ()
   
   
   glDetachShader (ProgramID, VertexShaderID);
-  glDetachShader (ProgramID, FragmentShaderID);
   
   glDeleteShader (VertexShaderID);
-  glDeleteShader (FragmentShaderID);
   
-  return ProgramID;
+
+  // 6. Terminate EGL when finished
+  eglTerminate(eglDpy);
+  return 0;
 }
-
-

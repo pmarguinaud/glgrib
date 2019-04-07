@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cc -g -o egl.x  egl.c -lGL -lEGL -lpng
+c++ -DUSE_GLE -g -o egl.x  egl.cc -lGL -lEGL -lpng

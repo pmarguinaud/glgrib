@@ -3,8 +3,19 @@
 #include <stdlib.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#ifdef USE_GLE
+
+#define GL_GLEXT_PROTOTYPES 1
+#include <GL/glut.h>
+#include <GL/glext.h>
+
+#else
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#endif
 
 #include "glgrib_render.h"
 

@@ -10,7 +10,6 @@
 #include "glgrib_render.h"
 #include "glgrib_fb.h"
 
-
 using namespace glm;
 
 typedef struct fb_t

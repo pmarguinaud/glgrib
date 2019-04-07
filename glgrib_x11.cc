@@ -38,8 +38,8 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
           case GLFW_KEY_SPACE:
             View.latc = 0.;
             View.lonc = 0.;
-	    View.rc = 2.5;
-	    View.fov = 50.;
+	    View.rc = 6.0;
+	    View.fov = 20.;
 	    break;
           case GLFW_KEY_UP:
             View.latc = View.latc + 5.;
@@ -57,6 +57,15 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
 	    break;
 	}
     }
+}
+
+static
+void scroll_callback (GLFWwindow * window, double xoffset, double yoffset)
+{
+  if (yoffset > 0)
+    View.fov += 1;
+  else
+    View.fov -= 1;
 }
 
 static
@@ -100,6 +109,7 @@ GLFWwindow * new_glfw_window (const char * file, int width, int height)
   
   glfwSetInputMode (window, GLFW_STICKY_KEYS, GL_TRUE);
   glfwSetKeyCallback (window, key_callback);
+  glfwSetScrollCallback (window, scroll_callback);
 
   return window;
 }
@@ -112,13 +122,14 @@ void free_glfw_window (GLFWwindow * window)
 
 void x11_display (const char * file, int width, int height)
 {
-  obj_t Obj;
+  obj_t World, Cube;
   prog_t Prog;
   GLFWwindow * Window = new_glfw_window (file, width, height);
   
   gl_init ();
   prog_init (&Prog);
-  obj_init (&Obj, file);
+  world_init (&World, file);
+  cube_init (&Cube);
   view_init (&Prog, &View);
   
   while (1)
@@ -126,7 +137,7 @@ void x11_display (const char * file, int width, int height)
       if (do_rotate)
         View.lonc += 1.;
 
-      display (&Prog, &Obj, &View);
+      display (&Prog, &World, &Cube, &View);
 
       glfwSwapBuffers (Window);
       glfwPollEvents ();
@@ -138,7 +149,8 @@ void x11_display (const char * file, int width, int height)
     } 
   
   view_free (&View);
-  obj_free (&Obj);
+  obj_free (&World);
+  obj_free (&Cube);
   prog_free (&Prog);
   
   free_glfw_window (Window);

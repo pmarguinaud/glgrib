@@ -3,7 +3,7 @@
 
 typedef struct view_t
 {
-  float rc = 2.5, latc = 0., lonc = 0., fov = 50.;
+  float rc = 6.0, latc = 0., lonc = 0., fov = 20.;
   GLuint MatrixID;
 } view_t;
 
@@ -23,9 +23,11 @@ typedef struct obj_t
 
 extern view_t View;
 
-void display (const prog_t * prog, const obj_t * obj, const view_t * view);
+void display (const prog_t * prog, const obj_t * world, const obj_t * cube, const view_t * view);
 
-void obj_init (obj_t * obj, const char * file);
+void world_init (obj_t * obj, const char * file);
+
+void cube_init (obj_t * obj);
 
 void view_init (prog_t * prog, view_t * view);
 

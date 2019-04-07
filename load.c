@@ -121,7 +121,7 @@ void load (const char * file, int * np, float ** xyz,
   *xyz = NULL;
   *col = NULL;
 
-  for (int icol = 0; icol < 3; icol++)
+  for (int icol = 0; icol < 4; icol++)
     {
       int err = 0;
       size_t v_len = 0;
@@ -149,9 +149,9 @@ void load (const char * file, int * np, float ** xyz,
         }
       codes_handle_delete (h);
       
-      if (*xyz == NULL)
+      
+      if (icol == 3) // Orography
         {
-          *col = (float *)malloc (4 * sizeof (float) * v_len);
           *xyz = (float *)malloc (3 * sizeof (float) * v_len);
           *np  = v_len;
           for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
@@ -162,16 +162,21 @@ void load (const char * file, int * np, float ** xyz,
                 {
                   float lon = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
                   float coslon = cos (lon); float sinlon = sin (lon);
-                  (*xyz)[3*jglo+0] = coslon * coslat;
-                  (*xyz)[3*jglo+1] = sinlon * coslat;
-                  (*xyz)[3*jglo+2] =          sinlat;
+                  float radius = (1.0 + ((v[jglo] == vmis) ? 0. : 0.05 * v[jglo]/vmax));
+                  (*xyz)[3*jglo+0] = coslon * coslat * radius;
+                  (*xyz)[3*jglo+1] = sinlon * coslat * radius;
+                  (*xyz)[3*jglo+2] =          sinlat * radius;
                 }
             }
         }
-      
-      for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
-        for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
-          (*col)[ncol*jglo+icol] = v[jglo];
+      else
+        {
+          if (*col == NULL)
+            *col = (float *)malloc (4 * sizeof (float) * v_len);
+          for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
+            for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
+              (*col)[ncol*jglo+icol] = v[jglo];
+        }
       
       free (v);
     }

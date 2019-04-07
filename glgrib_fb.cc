@@ -99,7 +99,7 @@ void fb_free (fb_t * fb)
 
 void fb_display (const char * file, int width, int height)
 {
-  obj_t Obj;
+  obj_t World, Cube;
   prog_t Prog;
   fb_t Fb;
 
@@ -107,15 +107,17 @@ void fb_display (const char * file, int width, int height)
   
   gl_init ();
   prog_init (&Prog);
-  obj_init (&Obj, file);
+  world_init (&World, file);
+  cube_init (&Cube);
   view_init (&Prog, &View);
   
-  display (&Prog, &Obj, &View);
+  display (&Prog, &World, &Cube, &View);
 
   glFlush ();
   
   view_free (&View);
-  obj_free (&Obj);
+  obj_free (&World);
+  obj_free (&Cube);
   prog_free (&Prog);
 
   fb_free (&Fb);

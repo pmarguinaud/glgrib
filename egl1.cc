@@ -46,9 +46,18 @@ int main(int argc, char *argv[])
   // 4. Bind the API
   eglBindAPI(EGL_OPENGL_API);
 
+
+  EGLint attrib_list[] = 
+  {
+        EGL_CONTEXT_MAJOR_VERSION, 3,
+        EGL_CONTEXT_MINOR_VERSION, 3,
+        EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE, EGL_TRUE,
+        EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
+        EGL_NONE
+  };
+
   // 5. Create a context and make it current
-  EGLContext eglCtx = eglCreateContext(eglDpy, eglCfg, EGL_NO_CONTEXT, 
-                                       NULL);
+  EGLContext eglCtx = eglCreateContext(eglDpy, eglCfg, EGL_NO_CONTEXT, attrib_list);
 
   eglMakeCurrent(eglDpy, eglSurf, eglSurf, eglCtx);
 

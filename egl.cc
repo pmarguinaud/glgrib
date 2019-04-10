@@ -4,24 +4,10 @@
 #define GL_GLEXT_PROTOTYPES 1
 #include <GL/glut.h>
 #include <GL/glext.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <png.h>
 
-
-static const EGLint configAttribs[] = {
-        EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
-        EGL_BLUE_SIZE, 8,
-        EGL_GREEN_SIZE, 8,
-        EGL_RED_SIZE, 8,
-        EGL_DEPTH_SIZE, 8,
-        EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
-        EGL_NONE
-};    
-
-static const EGLint pbufferAttribs[] = {
-      EGL_WIDTH, 100,
-      EGL_HEIGHT, 100,
-      EGL_NONE,
-};
 
 static void screenshot_ppm(const char *filename, unsigned int width,
         unsigned int height, GLubyte *pixels) {
@@ -90,23 +76,49 @@ int main(int argc, char *argv[])
   EGLint numConfigs;
   EGLConfig eglCfg;
 
-  eglChooseConfig(eglDpy, configAttribs, &eglCfg, 1, &numConfigs);
+  const EGLint config_attr[] = {
+        EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
+        EGL_BLUE_SIZE, 8,
+        EGL_GREEN_SIZE, 8,
+        EGL_RED_SIZE, 8,
+        EGL_DEPTH_SIZE, 8,
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+        EGL_NONE
+  };    
+
+  eglChooseConfig(eglDpy, config_attr, &eglCfg, 1, &numConfigs);
 
   // 3. Create a surface
-  EGLSurface eglSurf = eglCreatePbufferSurface(eglDpy, eglCfg, 
-                                               pbufferAttribs);
+  const EGLint surf_attr[] = {
+      EGL_WIDTH, 100,
+      EGL_HEIGHT, 100,
+      EGL_NONE,
+  };
+
+  EGLSurface eglSurf = eglCreatePbufferSurface(eglDpy, eglCfg, surf_attr);
 
   // 4. Bind the API
   eglBindAPI(EGL_OPENGL_API);
 
   // 5. Create a context and make it current
-  EGLContext eglCtx = eglCreateContext(eglDpy, eglCfg, EGL_NO_CONTEXT, 
-                                       NULL);
+
+  const EGLint ctx_attr[] = 
+  {
+        EGL_CONTEXT_MAJOR_VERSION, 3,
+        EGL_CONTEXT_MINOR_VERSION, 3,
+        EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE, EGL_TRUE,
+        EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
+        EGL_NONE
+  };
+
+  EGLContext eglCtx = eglCreateContext(eglDpy, eglCfg, EGL_NO_CONTEXT, ctx_attr);
+//EGLContext eglCtx = eglCreateContext(eglDpy, eglCfg, EGL_NO_CONTEXT, NULL);
 
   eglMakeCurrent(eglDpy, eglSurf, eglSurf, eglCtx);
 
   // from now on use your OpenGL context
 
+  GLuint ProgramID;
 {
   int len;
   GLint res = GL_FALSE;
@@ -159,6 +171,7 @@ int main(int argc, char *argv[])
       char mess[len+1];
       glGetShaderInfoLog (VertexShaderID, len, NULL, &mess[0]);
       printf("%s\n", mess);
+      abort ();
     }
 
 
@@ -173,10 +186,11 @@ int main(int argc, char *argv[])
       char mess[len+1];
       glGetShaderInfoLog (FragmentShaderID, len, NULL, &mess[0]);
       printf("%s\n", mess);
+      abort ();
     }
 
   // Link the program
-  GLuint ProgramID = glCreateProgram ();
+  ProgramID = glCreateProgram ();
   glAttachShader (ProgramID, VertexShaderID);
   glAttachShader (ProgramID, FragmentShaderID);
   glLinkProgram (ProgramID);
@@ -189,6 +203,7 @@ int main(int argc, char *argv[])
       char mess[len+1];
       glGetProgramInfoLog (ProgramID, len, NULL, &mess[0]);
       printf("%s\n", mess);
+      abort ();
     }
   
   
@@ -198,7 +213,6 @@ int main(int argc, char *argv[])
   glDeleteShader (VertexShaderID);
   glDeleteShader (FragmentShaderID);
   
-  return ProgramID;
 }
 
   glGenFramebuffers(1, &fbo);
@@ -222,27 +236,72 @@ int main(int argc, char *argv[])
                             GL_RENDERBUFFER, rbo_depth);
 
 
+GLuint VertexArrayID;
+GLuint vertexbuffer, colorbuffer, elementbuffer;
+{
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
+  
+  float * xyz = (float *)malloc (3 * 3 * sizeof (float));
+  float * col = (float *)malloc (3 * 4 * sizeof (float));
+  unsigned int * ind = (unsigned int *)malloc (1 * 3);
+
+  xyz[0*3+0] = +0.0; xyz[0*3+1] = +2.0; xyz[0*3+2] = +0.0;
+  xyz[1*3+0] = +0.0; xyz[1*3+1] = +0.0; xyz[1*3+2] = +2.0;
+  xyz[2*3+0] = +0.0; xyz[2*3+1] = -2.0; xyz[2*3+2] = +0.0;
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 4; j++)
+    col[4*i+j] = 1.0;
+
+  ind[0] = 0;
+  ind[1] = 1;
+  ind[2] = 2;
+
+  
+  glGenBuffers (1, &vertexbuffer);
+  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
+  glBufferData (GL_ARRAY_BUFFER, 3 * 3 * sizeof (float), xyz, GL_STATIC_DRAW);
+  
+
+  glGenBuffers (1, &colorbuffer);
+  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
+  glBufferData (GL_ARRAY_BUFFER, 4 * 3 * sizeof (float), col, GL_STATIC_DRAW);
+  
+  glGenBuffers (1, &elementbuffer);
+  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * 1 * sizeof (unsigned int), 
+		ind , GL_STATIC_DRAW);
+
+  free (ind);
+  free (xyz);
+  free (col);
+}
+
   glReadBuffer(GL_COLOR_ATTACHMENT0);
 
-  glClearColor(0.0, 0.0, 0.0, 0.0);
-  glEnable(GL_DEPTH_TEST);
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  glViewport(0, 0, width, height);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glMatrixMode(GL_MODELVIEW);
+  glm::mat4 Projection = glm::perspective (glm::radians (50.0f), 1.0f / 1.0f, 0.1f, 100.0f);
+  glm::mat4 View       = glm::lookAt (glm::vec3 (3,0,0), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
+  glm::mat4 Model      = glm::mat4 (1.0f);
+  glm::mat4 MVP        = Projection * View * Model; 
+  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glUseProgram (ProgramID);
+  
+  glEnableVertexAttribArray (0);
+  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+  
+  glEnableVertexAttribArray (1);
+  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
+  glVertexAttribPointer (1, 4, GL_FLOAT, GL_TRUE, 4 * sizeof (float), NULL);
+  
+  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glDrawElements (GL_TRIANGLES, 3 * 1, GL_UNSIGNED_INT, NULL);
+  
+  glDisableVertexAttribArray (0);
+  glDisableVertexAttribArray (1);
 
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glLoadIdentity();
-  glRotatef(0.0f, 0.0f, 0.0f, -1.0f);
-  glBegin(GL_TRIANGLES);
-  glColor3f(1.0f, 0.0f, 0.0f);
-  glVertex3f( 0.0f,  0.5f, 0.0f);
-  glColor3f(0.0f, 1.0f, 0.0f);
-  glVertex3f(-0.5f, -0.5f, 0.0f);
-  glColor3f(0.0f, 0.0f, 1.0f);
-  glVertex3f( 0.5f, -0.5f, 0.0f);
-  glEnd();
+
 
   glFlush();
 

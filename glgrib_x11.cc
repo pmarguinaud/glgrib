@@ -11,47 +11,54 @@ using namespace glm;
 
 #include "shader.h"
 
-static bool do_rotate = false;
+
+typedef struct glfw_ctx_t
+{
+  bool do_rotate = false;
+  view_t * view;
+  double width, height;
+} glfw_ctx_t;
 
 static 
 void key_callback (GLFWwindow * window, int key, int scancode, int action, int mods)
 {
+  glfw_ctx_t * ctx = (glfw_ctx_t *)glfwGetWindowUserPointer (window);
   if (action == GLFW_PRESS || action == GLFW_REPEAT)
     {
       switch (key)
         {
           case GLFW_KEY_TAB:
-            do_rotate = ! do_rotate;
+            ctx->do_rotate = ! ctx->do_rotate;
             break;
           case GLFW_KEY_W:
-            View.fov += 1.;
+            ctx->view->fov += 1.;
             break;
           case GLFW_KEY_Q:
-            View.fov -= 1.;
+            ctx->view->fov -= 1.;
             break;
           case GLFW_KEY_6:
-            View.rc += 0.1;
+            ctx->view->rc += 0.1;
             break;
           case GLFW_KEY_EQUAL:
-            View.rc -= 0.1;
+            ctx->view->rc -= 0.1;
             break;
           case GLFW_KEY_SPACE:
-            View.latc = 0.;
-            View.lonc = 0.;
-	    View.rc = 6.0;
-	    View.fov = 20.;
+            ctx->view->latc = 0.;
+            ctx->view->lonc = 0.;
+	    ctx->view->rc = 6.0;
+	    ctx->view->fov = 20.;
 	    break;
           case GLFW_KEY_UP:
-            View.latc = View.latc + 5.;
+            ctx->view->latc = ctx->view->latc + 5.;
             break;
           case GLFW_KEY_DOWN:
-            View.latc = View.latc - 5.;
+            ctx->view->latc = ctx->view->latc - 5.;
             break;
           case GLFW_KEY_LEFT:
-            View.lonc = View.lonc - 5.;
+            ctx->view->lonc = ctx->view->lonc - 5.;
             break;
           case GLFW_KEY_RIGHT:
-            View.lonc = View.lonc + 5.;
+            ctx->view->lonc = ctx->view->lonc + 5.;
             break;
 	  default:
 	    break;
@@ -60,12 +67,42 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
 }
 
 static
+void mouse_button_callback (GLFWwindow * window, int button, int action, int mods)
+{
+  return;
+  if (button == GLFW_MOUSE_BUTTON_LEFT)
+    {
+      if (action == GLFW_PRESS) 
+        {
+          double xpos, ypos;
+          glfw_ctx_t * ctx = (glfw_ctx_t *)glfwGetWindowUserPointer (window);
+          glfwGetCursorPos (window, &xpos, &ypos);
+	  double dox = (xpos - ctx->width  / 2) / (ctx->width  / 2),
+		 doy = (ypos - ctx->height / 2) / (ctx->height / 2);
+	  double ax = atan (dox * tan (ctx->view->fov / 2)),
+	         ay = atan (doy * tan (ctx->view->fov / 2));
+	  double gx = asin (ctx->view->rc * sin (ax)),
+	         gy = asin (ctx->view->rc * sin (ax));
+
+	  ctx->view->lonc = 180. * (M_PI / 2 + gx - ax) / M_PI;
+	  ctx->view->latc = 180. * (M_PI / 2 + gy - ay) / M_PI;
+printf (" dox = %f dox = %f\n", dox, doy);
+printf (" ax  = %f ay  = %f\n", 180. / M_PI * ax, 180. / M_PI * ay);
+printf (" %f %f\n", sin (ax), sin (ay));
+printf (" %f %f\n", ctx->view->lonc, ctx->view->latc);
+
+        }
+    }
+}
+
+static
 void scroll_callback (GLFWwindow * window, double xoffset, double yoffset)
 {
+  glfw_ctx_t * ctx = (glfw_ctx_t *)glfwGetWindowUserPointer (window);
   if (yoffset > 0)
-    View.fov += 1;
+    ctx->view->fov += 1;
   else
-    View.fov -= 1;
+    ctx->view->fov -= 1;
 }
 
 static
@@ -110,6 +147,7 @@ GLFWwindow * new_glfw_window (const char * file, int width, int height)
   glfwSetInputMode (window, GLFW_STICKY_KEYS, GL_TRUE);
   glfwSetKeyCallback (window, key_callback);
   glfwSetScrollCallback (window, scroll_callback);
+  glfwSetMouseButtonCallback (window, mouse_button_callback);
 
   return window;
 }
@@ -124,7 +162,15 @@ void x11_display (const char * file, int width, int height)
 {
   obj_t World, Cube;
   prog_t Prog;
+  view_t View;
+  glfw_ctx_t ctx;
+
+  ctx.view = &View;
+  ctx.width = width;
+  ctx.height = height;
+
   GLFWwindow * Window = new_glfw_window (file, width, height);
+  glfwSetWindowUserPointer (Window, &ctx);
   
   gl_init ();
   prog_init (&Prog);
@@ -134,7 +180,7 @@ void x11_display (const char * file, int width, int height)
   
   while (1)
     {
-      if (do_rotate)
+      if (ctx.do_rotate)
         View.lonc += 1.;
 
       display (&Prog, &World, &Cube, &View);

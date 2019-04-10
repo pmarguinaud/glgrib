@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include <stdlib.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -25,7 +26,8 @@ typedef struct fb_t
 static
 void fb_init (fb_t * fb, int width, int height)
 {
-  EGLint configAttribs[] = {
+  const EGLint config_attr[] = 
+  {
           EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
           EGL_BLUE_SIZE, 8,
           EGL_GREEN_SIZE, 8,
@@ -35,10 +37,20 @@ void fb_init (fb_t * fb, int width, int height)
           EGL_NONE
   };    
   
-  EGLint pbufferAttribs[] = {
+  const EGLint pbuffer_attr[] = 
+  {
         EGL_WIDTH, width,
         EGL_HEIGHT, height,
         EGL_NONE,
+  };
+
+  const EGLint ctx_attr[] = 
+  {
+        EGL_CONTEXT_MAJOR_VERSION, 3,
+        EGL_CONTEXT_MINOR_VERSION, 3,
+        EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE, EGL_TRUE,
+        EGL_CONTEXT_OPENGL_PROFILE_MASK, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT,
+        EGL_NONE
   };
 
 
@@ -51,16 +63,16 @@ void fb_init (fb_t * fb, int width, int height)
   EGLint numConfigs;
   EGLConfig eglCfg;
 
-  eglChooseConfig (fb->eglDpy, configAttribs, &eglCfg, 1, &numConfigs);
+  eglChooseConfig (fb->eglDpy, config_attr, &eglCfg, 1, &numConfigs);
 
   // 3. Create a surface
-  EGLSurface eglSurf = eglCreatePbufferSurface (fb->eglDpy, eglCfg, pbufferAttribs);
+  EGLSurface eglSurf = eglCreatePbufferSurface (fb->eglDpy, eglCfg, pbuffer_attr);
 
   // 4. Bind the API
   eglBindAPI (EGL_OPENGL_API);
 
   // 5. Create a context and make it current
-  EGLContext eglCtx = eglCreateContext (fb->eglDpy, eglCfg, EGL_NO_CONTEXT, NULL);
+  EGLContext eglCtx = eglCreateContext (fb->eglDpy, eglCfg, EGL_NO_CONTEXT, ctx_attr);
 
   eglMakeCurrent (fb->eglDpy, eglSurf, eglSurf, eglCtx);
 
@@ -114,6 +126,18 @@ void fb_display (const char * file, int width, int height)
   display (&Prog, &World, &Cube, &View);
 
   glFlush ();
+
+{
+  GLubyte * pixels = (GLubyte *)malloc (4 * sizeof (GLubyte) * width * height);
+  memset (pixels, 0, 4 * sizeof (GLubyte) * width * height);
+  glReadPixels (0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+  int count = 0;
+  for (int i = 0; i < 4 * width * height; i++)
+    if (pixels[i] > 0)
+      count++;
+  printf ("count = %d\n", count);
+}
+  
   
   view_free (&View);
   obj_free (&World);

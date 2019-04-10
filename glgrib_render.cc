@@ -53,24 +53,50 @@ void cube_t::init ()
   glBindVertexArray (VertexArrayID);
   
   ncol = use_alpha ? 4 : 3;
-  nt = 1;
-  np = 3;
+  nt = 12;
+  np = 8;
 
   float * xyz = (float *)malloc (3 * np * sizeof (float));
   float * col = (float *)malloc (np * ncol * sizeof (float));
-  unsigned int * ind = (unsigned int *)malloc (nt * 3);
+  unsigned int * ind = (unsigned int *)malloc (nt * 3 * sizeof (unsigned int));
 
-  xyz[0*3+0] = +0.0; xyz[0*3+1] = +2.0; xyz[0*3+2] = +0.0;
-  xyz[1*3+0] = +0.0; xyz[1*3+1] = +0.0; xyz[1*3+2] = +2.0;
-  xyz[2*3+0] = +0.0; xyz[2*3+1] = -2.0; xyz[2*3+2] = +0.0;
+  float s = 1.2;
+
+  xyz[0*3+0] = -s; xyz[0*3+1] = -s; xyz[0*3+2] = -s;
+  xyz[1*3+0] = -s; xyz[1*3+1] = +s; xyz[1*3+2] = -s;
+  xyz[2*3+0] = -s; xyz[2*3+1] = +s; xyz[2*3+2] = +s;
+  xyz[3*3+0] = -s; xyz[3*3+1] = -s; xyz[3*3+2] = +s;
+  xyz[4*3+0] = +s; xyz[4*3+1] = -s; xyz[4*3+2] = -s;
+  xyz[5*3+0] = +s; xyz[5*3+1] = +s; xyz[5*3+2] = -s;
+  xyz[6*3+0] = +s; xyz[6*3+1] = +s; xyz[6*3+2] = +s;
+  xyz[7*3+0] = +s; xyz[7*3+1] = -s; xyz[7*3+2] = +s;
+
 
   for (int i = 0; i < np; i++)
   for (int j = 0; j < ncol; j++)
     col[ncol*i+j] = 1.0;
 
-  ind[0] = 0;
-  ind[1] = 1;
-  ind[2] = 2;
+  for (int i = 0; i < np; i++)
+  for (int j = 0; j < 3; j++)
+    col[ncol*i+j] = (s + xyz[i*3+j]) / (2 * s);
+
+  ind[ 0] = 1; ind[ 1] = 0; ind[ 2] = 2;
+  ind[ 3] = 2; ind[ 4] = 0; ind[ 5] = 3;
+
+  ind[ 6] = 1; ind[ 7] = 2; ind[ 8] = 6;
+  ind[ 9] = 1; ind[10] = 6; ind[11] = 5;
+
+  ind[12] = 2; ind[13] = 3; ind[14] = 6;
+  ind[15] = 3; ind[16] = 7; ind[17] = 6;
+
+  ind[18] = 3; ind[19] = 0; ind[20] = 4;
+  ind[21] = 3; ind[22] = 4; ind[23] = 7;
+
+  ind[24] = 5; ind[25] = 4; ind[26] = 1;
+  ind[27] = 1; ind[28] = 4; ind[29] = 0;
+
+  ind[30] = 4; ind[31] = 5; ind[32] = 6;
+  ind[33] = 4; ind[34] = 6; ind[35] = 7;
 
   
   glGenBuffers (1, &vertexbuffer);
@@ -85,7 +111,7 @@ void cube_t::init ()
   glGenBuffers (1, &elementbuffer);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
   glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), 
-		ind , GL_STATIC_DRAW);
+		ind, GL_STATIC_DRAW);
 
   free (ind);
   free (xyz);

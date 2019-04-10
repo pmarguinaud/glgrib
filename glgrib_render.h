@@ -21,8 +21,8 @@ public:
 
 class obj_t
 {
-  public:
-    virtual void render () const = 0;
+public:
+  virtual void render () const = 0;
 };
 
 class polyhedron_t : public obj_t

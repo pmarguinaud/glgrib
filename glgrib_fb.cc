@@ -111,19 +111,27 @@ void fb_free (fb_t * fb)
 
 void fb_display (const char * file, int width, int height)
 {
-  obj_t World, Cube;
+  scene_t Scene;
+  world_t World;
+  cube_t Cube;
   prog_t Prog;
+  view_t View;
   fb_t Fb;
 
   fb_init (&Fb, width, height);
   
   gl_init ();
-  prog_init (&Prog);
-  world_init (&World, file);
-  cube_init (&Cube);
-  view_init (&Prog, &View);
+  Prog.init ();
+  World.init (file);
+  Cube.init ();
+  View.init (&Prog);
+
+  Scene.objlist.push_back (&World);
+  Scene.objlist.push_back (&Cube);
+  Scene.view = &View;
+  Scene.prog = &Prog;
   
-  display (&Prog, &World, &Cube, &View);
+  Scene.display ();
 
   glFlush ();
 
@@ -139,11 +147,6 @@ void fb_display (const char * file, int width, int height)
 }
   
   
-  view_free (&View);
-  obj_free (&World);
-  obj_free (&Cube);
-  prog_free (&Prog);
-
   fb_free (&Fb);
   
 }

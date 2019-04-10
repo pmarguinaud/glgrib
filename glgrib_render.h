@@ -1,43 +1,62 @@
 #ifndef _GLGRIB_RENDER_H
 #define _GLGRIB_RENDER_H
 
-typedef struct view_t
+#include <list>
+
+class prog_t
 {
+public:
+  GLuint programID;
+  void init ();
+  ~prog_t ();
+};
+
+class view_t
+{
+public:
   float rc = 6.0, latc = 0., lonc = 0., fov = 20.;
   GLuint MatrixID;
-} view_t;
+  void init (prog_t *);
+};
 
-typedef struct prog_t
+class obj_t
 {
-  GLuint programID;
-} prog_t;
+  public:
+    virtual void render () const = 0;
+};
 
-typedef struct obj_t
+class polyhedron_t : public obj_t
 {
+public:
+  virtual void render () const;
+  ~polyhedron_t ();
   GLuint VertexArrayID;
   GLuint vertexbuffer, colorbuffer, elementbuffer;
   int use_alpha = 1;
   unsigned int ncol, nt;
   int np;
-} obj_t;
+};
 
-extern view_t View;
+class world_t : public polyhedron_t
+{
+public:
+  void init (const char *);
+};
 
-void display (const prog_t * prog, const obj_t * world, const obj_t * cube, const view_t * view);
+class cube_t : public polyhedron_t
+{
+public:
+  void init ();
+};
 
-void world_init (obj_t * obj, const char * file);
-
-void cube_init (obj_t * obj);
-
-void view_init (prog_t * prog, view_t * view);
-
-void view_free (view_t * view);
-      
-void obj_free (obj_t * obj);
-
-void prog_free (prog_t * prog);
-
-void prog_init (prog_t * prog);
+class scene_t
+{
+public:
+  void display () const;
+  std::list<obj_t*> objlist;
+  view_t * view;
+  prog_t * prog;
+};
 
 void gl_init ();
   

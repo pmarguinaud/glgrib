@@ -25,9 +25,7 @@ using namespace glm;
 
 extern "C" void load (const char *, int *, float **, float **, unsigned int *, unsigned int **, int);
 
-view_t View;
-
-void display (const prog_t * prog, const obj_t * world, const obj_t * cube, const view_t * view)
+void scene_t::display () const
 {
   float xc = view->rc * glm::cos (glm::radians (view->lonc)) * glm::cos (glm::radians (view->latc)), 
         yc = view->rc * glm::sin (glm::radians (view->lonc)) * glm::cos (glm::radians (view->latc)),
@@ -43,49 +41,100 @@ void display (const prog_t * prog, const obj_t * world, const obj_t * cube, cons
   glUseProgram (prog->programID);
   glUniformMatrix4fv (view->MatrixID, 1, GL_FALSE, &MVP[0][0]);
   
-  // World
-  glEnableVertexAttribArray (0);
-  glBindBuffer (GL_ARRAY_BUFFER, world->vertexbuffer);
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-  
-  glEnableVertexAttribArray (1);
-  glBindBuffer (GL_ARRAY_BUFFER, world->colorbuffer);
-  glVertexAttribPointer (1, world->ncol, GL_FLOAT, GL_TRUE, world->ncol * sizeof (float), NULL);
-  
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, world->elementbuffer);
-  glDrawElements (GL_TRIANGLES, 3 * world->nt, GL_UNSIGNED_INT, NULL);
-  
-  glDisableVertexAttribArray (0);
-  glDisableVertexAttribArray (1);
-
-
-#ifdef UNDEF
-  // Cube
-  glEnableVertexAttribArray (0);
-  glBindBuffer (GL_ARRAY_BUFFER, cube->vertexbuffer);
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-  
-  glEnableVertexAttribArray (1);
-  glBindBuffer (GL_ARRAY_BUFFER, cube->colorbuffer);
-  glVertexAttribPointer (1, cube->ncol, GL_FLOAT, GL_TRUE, cube->ncol * sizeof (float), NULL);
-  
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, cube->elementbuffer);
-  glDrawElements (GL_TRIANGLES, 3 * cube->nt, GL_UNSIGNED_INT, NULL);
-  
-  glDisableVertexAttribArray (0);
-  glDisableVertexAttribArray (1);
-#endif
-
+  for (std::list<obj_t*>::const_iterator it = objlist.begin (); 
+       it != objlist.end (); it++)
+    (*it)->render ();
 
 }
 
-void cube_init (obj_t * obj)
+void cube_t::init ()
 {
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
+  
+  ncol = use_alpha ? 4 : 3;
+  nt = 1;
+  np = 3;
+
+  float * xyz = (float *)malloc (3 * np * sizeof (float));
+  float * col = (float *)malloc (np * ncol * sizeof (float));
+  unsigned int * ind = (unsigned int *)malloc (nt * 3);
+
+  xyz[0*3+0] = +0.0; xyz[0*3+1] = +2.0; xyz[0*3+2] = +0.0;
+  xyz[1*3+0] = +0.0; xyz[1*3+1] = +0.0; xyz[1*3+2] = +2.0;
+  xyz[2*3+0] = +0.0; xyz[2*3+1] = -2.0; xyz[2*3+2] = +0.0;
+
+  for (int i = 0; i < np; i++)
+  for (int j = 0; j < ncol; j++)
+    col[ncol*i+j] = 1.0;
+
+  ind[0] = 0;
+  ind[1] = 1;
+  ind[2] = 2;
+
+  
+  glGenBuffers (1, &vertexbuffer);
+  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
+  glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
+  
+
+  glGenBuffers (1, &colorbuffer);
+  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
+  glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (float), col, GL_STATIC_DRAW);
+  
+  glGenBuffers (1, &elementbuffer);
+  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), 
+		ind , GL_STATIC_DRAW);
+
+  free (ind);
+  free (xyz);
+  free (col);
+}
+
+typedef struct head_t
+{
+  int id;                       /* Unique polygon id number, starting at 0 */
+  int n;                        /* Number of points in this polygon */
+  int level;                    /* 1 land, 2 lake, 3 island_in_lake, 4 pond_in_island_in_lake */
+  int west, east, south, north; /* min/max extent in micro-degrees */
+  int area;                     /* Area of polygon in 1/10 km^2 */
+  short int greenwich;          /* Greenwich is 1 if Greenwich is crossed */
+  short int source;             /* 0 = CIA WDBII, 1 = WVS */
+} head_t;
+
+typedef struct point_t
+{
+  int x; /* longitude of a point in micro-degrees */
+  int y; /* latitude of a point in micro-degrees */
+} point_t;
+
+
+#ifdef UNDEF
+void coastlines_init (obj_t * obj)
+{
+  head_t h;
+  point_t * pl = NULL;
+  FILE * fp = fopen ("gshhs(1).rim", "r");
+
+
+  while (1)
+    {
+      fread (&h, sizeof (h), 1, fp);
+      pl = (point_t *)realloc (pl, h.n * sizeof (point_t));
+      fread (pl, sizeof (point_t), h.n, fp);
+      if (feof (fp))
+        break;
+    }
+
+
+
+  fclose (fp);
+
   glGenVertexArrays (1, &obj->VertexArrayID);
   glBindVertexArray (obj->VertexArrayID);
   
   obj->ncol = obj->use_alpha ? 4 : 3;
-  obj->nt = 1;
   obj->np = 3;
 
   float * xyz = (float *)malloc (3 * obj->np * sizeof (float));
@@ -123,30 +172,32 @@ void cube_init (obj_t * obj)
   free (xyz);
   free (col);
 }
+#endif
 
-void world_init (obj_t * obj, const char * file)
+
+void world_t::init (const char * file)
 {
-  glGenVertexArrays (1, &obj->VertexArrayID);
-  glBindVertexArray (obj->VertexArrayID);
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
   
   unsigned int * ind;
   float * xyz, * col;
-  obj->ncol = obj->use_alpha ? 4 : 3;
+  ncol = use_alpha ? 4 : 3;
 
-  load (file, &obj->np, &xyz, &col, &obj->nt, &ind, obj->use_alpha);
+  load (file, &np, &xyz, &col, &nt, &ind, use_alpha);
   
-  glGenBuffers (1, &obj->vertexbuffer);
-  glBindBuffer (GL_ARRAY_BUFFER, obj->vertexbuffer);
-  glBufferData (GL_ARRAY_BUFFER, 3 * obj->np * sizeof (float), xyz, GL_STATIC_DRAW);
+  glGenBuffers (1, &vertexbuffer);
+  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
+  glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
   
 
-  glGenBuffers (1, &obj->colorbuffer);
-  glBindBuffer (GL_ARRAY_BUFFER, obj->colorbuffer);
-  glBufferData (GL_ARRAY_BUFFER, obj->ncol * obj->np * sizeof (float), col, GL_STATIC_DRAW);
+  glGenBuffers (1, &colorbuffer);
+  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
+  glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (float), col, GL_STATIC_DRAW);
   
-  glGenBuffers (1, &obj->elementbuffer);
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, obj->elementbuffer);
-  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * obj->nt * sizeof (unsigned int), 
+  glGenBuffers (1, &elementbuffer);
+  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), 
 		ind , GL_STATIC_DRAW);
 
   free (ind);
@@ -154,31 +205,43 @@ void world_init (obj_t * obj, const char * file)
   free (col);
 }
 
-void view_init (prog_t * prog, view_t * view)
+void polyhedron_t::render () const
 {
-  view->MatrixID = glGetUniformLocation (prog->programID, "MVP");
+  glEnableVertexAttribArray (0);
+  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+  
+  glEnableVertexAttribArray (1);
+  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
+  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL);
+  
+  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
+  
+  glDisableVertexAttribArray (0);
+  glDisableVertexAttribArray (1);
 }
 
-void view_free (view_t * view)
+void view_t::init (prog_t * prog)
 {
-
-}
-      
-void obj_free (obj_t * obj)
-{
-  glDeleteBuffers (1, &obj->vertexbuffer);
-  glDeleteBuffers (1, &obj->colorbuffer);
-  glDeleteVertexArrays (1, &obj->VertexArrayID);
+  MatrixID = glGetUniformLocation (prog->programID, "MVP");
 }
 
-void prog_free (prog_t * prog)
+polyhedron_t::~polyhedron_t ()
 {
-  glDeleteProgram (prog->programID);
+  glDeleteBuffers (1, &vertexbuffer);
+  glDeleteBuffers (1, &colorbuffer);
+  glDeleteVertexArrays (1, &VertexArrayID);
 }
 
-void prog_init (prog_t * prog)
+prog_t::~prog_t ()
 {
-  prog->programID = LoadShaders ();
+  glDeleteProgram (programID);
+}
+
+void prog_t::init ()
+{
+  programID = LoadShaders ();
 }
 
 void gl_init ()

@@ -160,7 +160,9 @@ void free_glfw_window (GLFWwindow * window)
 
 void x11_display (const char * file, int width, int height)
 {
-  obj_t World, Cube;
+  scene_t Scene;
+  world_t World;
+  cube_t Cube;
   prog_t Prog;
   view_t View;
   glfw_ctx_t ctx;
@@ -173,17 +175,22 @@ void x11_display (const char * file, int width, int height)
   glfwSetWindowUserPointer (Window, &ctx);
   
   gl_init ();
-  prog_init (&Prog);
-  world_init (&World, file);
-  cube_init (&Cube);
-  view_init (&Prog, &View);
+  Prog.init ();
+  World.init (file);
+  Cube.init ();
+  View.init (&Prog);
+
+  Scene.objlist.push_back (&World);
+  Scene.objlist.push_back (&Cube);
+  Scene.view = &View;
+  Scene.prog = &Prog;
   
   while (1)
     {
       if (ctx.do_rotate)
         View.lonc += 1.;
 
-      display (&Prog, &World, &Cube, &View);
+      Scene.display ();
 
       glfwSwapBuffers (Window);
       glfwPollEvents ();
@@ -193,11 +200,6 @@ void x11_display (const char * file, int width, int height)
       if (glfwWindowShouldClose (Window) != 0) 
         break;
     } 
-  
-  view_free (&View);
-  obj_free (&World);
-  obj_free (&Cube);
-  prog_free (&Prog);
   
   free_glfw_window (Window);
 }

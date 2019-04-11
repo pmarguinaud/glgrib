@@ -180,7 +180,7 @@ void x11_display (const char * file, int width, int height)
   Cube.init ();
   View.init (&Prog);
 
-  Scene.objlist.push_back (&World);
+//Scene.objlist.push_back (&World);
   Scene.objlist.push_back (&Cube);
   Scene.view = &View;
   Scene.prog = &Prog;

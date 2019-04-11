@@ -47,6 +47,29 @@ void scene_t::display () const
 
 }
 
+void cube_t::render () const
+{
+  glBindVertexArray (VertexArrayID);
+#ifdef UNDEF
+  glEnableVertexAttribArray (0);
+  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+  
+  glEnableVertexAttribArray (1);
+  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
+  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL);
+  
+  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
+  
+  glDisableVertexAttribArray (0);
+  glDisableVertexAttribArray (1);
+#endif
+
+  glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
+}
+
+
 void cube_t::init ()
 {
   glGenVertexArrays (1, &VertexArrayID);
@@ -60,7 +83,7 @@ void cube_t::init ()
   float * col = (float *)malloc (np * ncol * sizeof (float));
   unsigned int * ind = (unsigned int *)malloc (nt * 3 * sizeof (unsigned int));
 
-  float s = 1.2;
+  float s = 0.8;
 
   xyz[0*3+0] = -s; xyz[0*3+1] = -s; xyz[0*3+2] = -s;
   xyz[1*3+0] = -s; xyz[1*3+1] = +s; xyz[1*3+2] = -s;
@@ -102,11 +125,17 @@ void cube_t::init ()
   glGenBuffers (1, &vertexbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
   glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
+
+  glEnableVertexAttribArray (0); //+
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); //+
   
 
   glGenBuffers (1, &colorbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
   glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (float), col, GL_STATIC_DRAW);
+
+  glEnableVertexAttribArray (1); //+
+  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL); //+
   
   glGenBuffers (1, &elementbuffer);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);

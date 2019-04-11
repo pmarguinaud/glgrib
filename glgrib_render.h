@@ -47,6 +47,7 @@ class cube_t : public polyhedron_t
 {
 public:
   void init ();
+  virtual void render () const;
 };
 
 class scene_t

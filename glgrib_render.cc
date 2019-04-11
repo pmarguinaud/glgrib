@@ -244,11 +244,15 @@ void world_t::init (const char * file)
   glGenBuffers (1, &vertexbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
   glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
+  glEnableVertexAttribArray (0); 
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
   
 
   glGenBuffers (1, &colorbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
   glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (float), col, GL_STATIC_DRAW);
+  glEnableVertexAttribArray (1); 
+  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL); //+
   
   glGenBuffers (1, &elementbuffer);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
@@ -262,19 +266,8 @@ void world_t::init (const char * file)
 
 void polyhedron_t::render () const
 {
-  glEnableVertexAttribArray (0);
-  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-  
-  glEnableVertexAttribArray (1);
-  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
-  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL);
-  
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
-  
-  glDisableVertexAttribArray (0);
-  glDisableVertexAttribArray (1);
 }
 
 void view_t::init (prog_t * prog)

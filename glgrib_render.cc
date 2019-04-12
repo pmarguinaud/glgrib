@@ -83,30 +83,78 @@ void coastlines_t::init (const char * file)
   glBindVertexArray (VertexArrayID);
   
   ncol = use_alpha ? 4 : 3;
-  nl = 4;
-  np = 4;
 
-  float * xyz = (float *)malloc (3 * np * sizeof (float));
-  float * col = (float *)malloc (np * ncol * sizeof (float));
-  unsigned int * ind = (unsigned int *)malloc (nl * 2 * sizeof (unsigned int));
+  float * xyz = NULL;
+  float * col = NULL;
+  unsigned int * ind = NULL;
 
-  float s = 0.8;
+  head_t h;
+  point_t * pl = NULL;
+  FILE * fp = NULL;
+  int ip = 0, il = 0;
+  np = 0;
+  nl = 0;
 
-  xyz[0*3+0] = 0.; xyz[0*3+1] = -s; xyz[0*3+2] = -s;
-  xyz[1*3+0] = 0.; xyz[1*3+1] = -s; xyz[1*3+2] = +s;
-  xyz[2*3+0] = 0.; xyz[2*3+1] = +s; xyz[2*3+2] = +s;
-  xyz[3*3+0] = 0.; xyz[3*3+1] = +s; xyz[3*3+2] = -s;
+  float r = 1.01;
+
+  for (int pass = 0; pass < 2; pass++)
+    {
+      fp = fopen (file, "r");
+     
+      while (1) 
+        {   
+          fread (&h, sizeof (h), 1, fp);
+          pl = (point_t *)realloc (pl, h.n * sizeof (point_t));
+          fread (pl, sizeof (point_t), h.n, fp);
+          if (h.level == 1)
+	    {
+	      if (pass == 0)
+                {
+                  np += h.n;
+	          nl += h.n;
+	        }
+	      else
+                {
+                  int ip0 = ip;
+                  for (int i = 0; i < h.n; i++)
+	            {
+                      float coslon = cos (M_PI * pl[i].x / (1000000. * 180.));
+                      float sinlon = sin (M_PI * pl[i].x / (1000000. * 180.));
+                      float coslat = cos (M_PI * pl[i].y / (1000000. * 180.));
+                      float sinlat = sin (M_PI * pl[i].y / (1000000. * 180.));
+                      xyz[ip*3+0] = r * coslon * coslat;
+                      xyz[ip*3+1] = r * sinlon * coslat;
+                      xyz[ip*3+2] = r *          sinlat;
+	              ind[il*2+0] = ip;
+	              if (i == h.n - 1)
+                        ind[il*2+1] = ip0;
+	              else
+                        ind[il*2+1] = ip + 1;
+	              ip++;
+	              il++;
+	            }
+	        }
+            }
+          if (feof (fp))
+            break;
+        }   
+
+      if (pass == 0)
+        {
+          xyz = (float *)malloc (3 * np * sizeof (float));
+          col = (float *)malloc (np * ncol * sizeof (float));
+          ind = (unsigned int *)malloc (nl * 2 * sizeof (unsigned int));
+	}
+
+      fclose (fp);
+    }
+
+  free (pl);
 
   for (int i = 0; i < np; i++)
   for (int j = 0; j < ncol; j++)
     col[ncol*i+j] = 1.0;
 
-  ind[ 0] = 0; ind[ 1] = 1; 
-  ind[ 2] = 1; ind[ 3] = 2; 
-  ind[ 4] = 2; ind[ 5] = 3; 
-  ind[ 6] = 3; ind[ 7] = 0; 
-
-  
   glGenBuffers (1, &vertexbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
   glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);

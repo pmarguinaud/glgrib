@@ -161,6 +161,7 @@ void free_glfw_window (GLFWwindow * window)
 void x11_display (const char * file, int width, int height)
 {
   scene_t Scene;
+  coastlines_t Coast;
   world_t World;
   cube_t Cube;
   prog_t Prog;
@@ -179,9 +180,11 @@ void x11_display (const char * file, int width, int height)
   World.init (file);
   Cube.init ();
   View.init (&Prog);
+  Coast.init ("gshhs(2).rim");
 
-  Scene.objlist.push_back (&World);
+//Scene.objlist.push_back (&World);
 //Scene.objlist.push_back (&Cube);
+  Scene.objlist.push_back (&Coast);
   Scene.view = &View;
   Scene.prog = &Prog;
   

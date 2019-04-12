@@ -25,6 +25,24 @@ public:
   virtual void render () const = 0;
 };
 
+class polygon_t : public obj_t
+{
+public:
+  virtual void render () const;
+  ~polygon_t ();
+  GLuint VertexArrayID;
+  GLuint vertexbuffer, colorbuffer, elementbuffer;
+  int use_alpha = 1;
+  unsigned int ncol, nl;
+  int np;
+};
+
+class coastlines_t : public polygon_t
+{
+public:
+  void init (const char *);
+};
+
 class polyhedron_t : public obj_t
 {
 public:

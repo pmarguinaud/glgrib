@@ -95,7 +95,7 @@ void coastlines_t::init (const char * file)
   np = 0;
   nl = 0;
 
-  float r = 1.01;
+  float r = 1.005;
 
   for (int pass = 0; pass < 2; pass++)
     {

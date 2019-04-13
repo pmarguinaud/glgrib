@@ -7,6 +7,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "glgrib_render.h"
 #include "glgrib_png.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+
 
 using namespace glm;
 
@@ -18,15 +23,30 @@ typedef struct glfw_ctx_t
   bool do_rotate = false;
   view_t * view;
   int width, height;
+  int snapshot_cnt = 0;
 } glfw_ctx_t;
 
 static
-void snapshot (const glfw_ctx_t * ctx)
+void snapshot (glfw_ctx_t * ctx)
 {
-  printf ("snapshot !\n");
   unsigned char * rgb = new unsigned char[ctx->width * ctx->height * 3];
+  char filename[32];
+
   glReadPixels (0, 0, ctx->width, ctx->height, GL_RGB, GL_UNSIGNED_BYTE, rgb);
-  glgrib_png ("snapshot.png", ctx->width, ctx->height, rgb);
+
+  while (1)
+    {
+      struct stat st;
+      sprintf (filename, "snapshot_%4.4d.png", ctx->snapshot_cnt);
+      if (stat (filename, &st) < 0)
+        break;
+      else
+        ctx->snapshot_cnt++;
+    }
+
+  glgrib_png (filename, ctx->width, ctx->height, rgb);
+  ctx->snapshot_cnt++;
+
   delete [] rgb;
 }
 

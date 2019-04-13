@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 
+#include "glgrib_x11.h"
 
 using namespace glm;
 
@@ -198,7 +199,7 @@ void x11_display (const char * file, int width, int height)
   coastlines_t Coast;
   grid_t Grid;
   world_t World;
-  cube_t Cube;
+  cube1_t Cube;
   prog_t Prog;
   view_t View;
   glfw_ctx_t ctx;
@@ -219,7 +220,7 @@ void x11_display (const char * file, int width, int height)
   Coast.init ("gshhs(3).rim");
 
   Scene.objlist.push_back (&World);
-//Scene.objlist.push_back (&Cube);
+  Scene.objlist.push_back (&Cube);
 //Scene.objlist.push_back (&Coast);
 //Scene.objlist.push_back (&Grid);
   Scene.view = &View;

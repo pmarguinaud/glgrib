@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "glgrib_png.h"
+
 void glgrib_png (const char * filename, int width, int height, unsigned char * pixels) 
 {
   png_byte * png_bytes = NULL;

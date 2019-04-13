@@ -28,7 +28,7 @@ public:
 class polygon_t : public obj_t
 {
 public:
-  void def_from_xyz_col_ind (const float *, const float *, const unsigned int *);
+  void def_from_xyz_col_ind (const float *, const unsigned char *, const unsigned int *);
   virtual void render () const;
   ~polygon_t ();
   GLuint VertexArrayID;
@@ -55,7 +55,7 @@ class polyhedron_t : public obj_t
 public:
   virtual void render () const;
   ~polyhedron_t ();
-  void def_from_xyz_col_ind (const float *, const float *, unsigned int *);
+  void def_from_xyz_col_ind (const float *, unsigned char *, unsigned int *);
   GLuint VertexArrayID;
   GLuint vertexbuffer, colorbuffer, elementbuffer;
   int use_alpha = 1;
@@ -74,6 +74,12 @@ class cube_t : public polyhedron_t
 public:
   void init ();
   virtual void render () const;
+};
+
+class cube1_t : public polyhedron_t
+{
+public:
+  void init ();
 };
 
 class scene_t

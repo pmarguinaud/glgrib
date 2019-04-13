@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <eccodes.h>
 
+#include "glgrib_load.h"
+
 #define MODULO(x, y) ((x)%(y))
 #define JDLON(JLON1, JLON2) (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1))
 #define JNEXT(JLON, ILOEN) (1 + MODULO ((JLON), (ILOEN)))
@@ -108,7 +110,7 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
 
 
 void glgrib_load (const char * file, int * np, float ** xyz, 
-                  float ** col, unsigned int * nt, 
+                  unsigned char ** col, unsigned int * nt, 
                   unsigned int ** ind, int use_alpha)
 {
   FILE * in = NULL;
@@ -172,10 +174,10 @@ void glgrib_load (const char * file, int * np, float ** xyz,
       else
         {
           if (*col == NULL)
-            *col = (float *)malloc (4 * sizeof (float) * v_len);
+            *col = (unsigned char *)malloc (4 * sizeof (unsigned char) * v_len);
           for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
             for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
-              (*col)[ncol*jglo+icol] = v[jglo];
+              (*col)[ncol*jglo+icol] = 255 * v[jglo];
         }
       
       free (v);
@@ -184,7 +186,7 @@ void glgrib_load (const char * file, int * np, float ** xyz,
   if (use_alpha)
     for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
       for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
-        (*col)[ncol*jglo+3] = 1.;
+        (*col)[ncol*jglo+3] = 255;
       
     
   fclose (in);

@@ -46,7 +46,7 @@ void scene_t::display () const
 
 }
 
-void polygon_t::def_from_xyz_col_ind (const float * xyz, const float * col, const unsigned int * ind)
+void polygon_t::def_from_xyz_col_ind (const float * xyz, const unsigned char * col, const unsigned int * ind)
 {
   glGenBuffers (1, &vertexbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
@@ -56,9 +56,9 @@ void polygon_t::def_from_xyz_col_ind (const float * xyz, const float * col, cons
 
   glGenBuffers (1, &colorbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
-  glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (float), col, GL_STATIC_DRAW);
+  glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (unsigned char), col, GL_STATIC_DRAW);
   glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL);
+  glVertexAttribPointer (1, ncol, GL_UNSIGNED_BYTE, GL_TRUE, ncol * sizeof (unsigned char), NULL);
 
   glGenBuffers (1, &elementbuffer);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
@@ -103,7 +103,7 @@ void grid_t::init ()
   ncol = use_alpha ? 4 : 3;
 
   float * xyz = NULL;
-  float * col = NULL;
+  unsigned char * col = NULL;
   unsigned int * ind = NULL;
 
   head_t h;
@@ -188,7 +188,7 @@ void grid_t::init ()
       if (pass == 0)
         {
           xyz = (float *)malloc (3 * np * sizeof (float));
-          col = (float *)malloc (np * ncol * sizeof (float));
+          col = (unsigned char *)malloc (np * ncol * sizeof (unsigned char));
           ind = (unsigned int *)malloc (nl * 2 * sizeof (unsigned int));
 	}
 
@@ -198,7 +198,7 @@ void grid_t::init ()
 
   for (int i = 0; i < np; i++)
   for (int j = 0; j < ncol; j++)
-    col[ncol*i+j] = 1.0;
+    col[ncol*i+j] = 255;
 
   def_from_xyz_col_ind (xyz, col, ind);
 
@@ -215,7 +215,7 @@ void coastlines_t::init (const char * file)
   ncol = use_alpha ? 4 : 3;
 
   float * xyz = NULL;
-  float * col = NULL;
+  unsigned char * col = NULL;
   unsigned int * ind = NULL;
 
   head_t h;
@@ -273,7 +273,7 @@ void coastlines_t::init (const char * file)
       if (pass == 0)
         {
           xyz = (float *)malloc (3 * np * sizeof (float));
-          col = (float *)malloc (np * ncol * sizeof (float));
+          col = (unsigned char *)malloc (np * ncol * sizeof (unsigned char));
           ind = (unsigned int *)malloc (nl * 2 * sizeof (unsigned int));
 	}
 
@@ -284,7 +284,7 @@ void coastlines_t::init (const char * file)
 
   for (int i = 0; i < np; i++)
   for (int j = 0; j < ncol; j++)
-    col[ncol*i+j] = 1.0;
+    col[ncol*i+j] = 255;
 
   def_from_xyz_col_ind (xyz, col, ind);
 
@@ -301,7 +301,7 @@ void cube_t::render () const
   
   glEnableVertexAttribArray (1);
   glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
-  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL);
+  glVertexAttribPointer (1, ncol, GL_UNSIGNED_BYTE, GL_TRUE, ncol * sizeof (unsigned char), NULL);
   
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
   // GL_LINES : avec 3 points, on fait juste un segment (le dernier point n'est pas pris)
@@ -319,7 +319,7 @@ void cube_t::render () const
 }
 
 
-void cube_t::init ()
+void cube1_t::init ()
 {
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
@@ -329,10 +329,10 @@ void cube_t::init ()
   np = 8;
 
   float * xyz = (float *)malloc (3 * np * sizeof (float));
-  float * col = (float *)malloc (np * ncol * sizeof (float));
+  unsigned char * col = (unsigned char *)malloc (np * ncol * sizeof (unsigned char));
   unsigned int * ind = (unsigned int *)malloc (nt * 3 * sizeof (unsigned int));
 
-  float s = 0.8;
+  float s = 1.0;
 
   xyz[0*3+0] = -s; xyz[0*3+1] = -s; xyz[0*3+2] = -s;
   xyz[1*3+0] = -s; xyz[1*3+1] = +s; xyz[1*3+2] = -s;
@@ -346,11 +346,70 @@ void cube_t::init ()
 
   for (int i = 0; i < np; i++)
   for (int j = 0; j < ncol; j++)
-    col[ncol*i+j] = 1.0;
+    col[ncol*i+j] = 120;
 
   for (int i = 0; i < np; i++)
   for (int j = 0; j < 3; j++)
-    col[ncol*i+j] = (s + xyz[i*3+j]) / (2 * s);
+    col[ncol*i+j] = 255 * ((s + xyz[i*3+j]) / (2 * s));
+
+  ind[ 0] = 4; ind[ 1] = 5; ind[ 2] = 6;
+  ind[ 3] = 4; ind[ 4] = 6; ind[ 5] = 7;
+
+  ind[ 6] = 1; ind[ 7] = 0; ind[ 8] = 2;
+  ind[ 9] = 2; ind[10] = 0; ind[11] = 3;
+
+  ind[12] = 1; ind[13] = 2; ind[14] = 6;
+  ind[15] = 1; ind[16] = 6; ind[17] = 5;
+
+  ind[18] = 2; ind[19] = 3; ind[20] = 6;
+  ind[21] = 3; ind[22] = 7; ind[23] = 6;
+
+  ind[24] = 3; ind[25] = 0; ind[26] = 4;
+  ind[27] = 3; ind[28] = 4; ind[29] = 7;
+
+  ind[30] = 5; ind[31] = 4; ind[32] = 1;
+  ind[33] = 1; ind[34] = 4; ind[36] = 0;
+
+  
+  def_from_xyz_col_ind (xyz, col, ind);
+
+  free (ind);
+  free (xyz);
+  free (col);
+}
+
+void cube_t::init ()
+{
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
+  
+  ncol = use_alpha ? 4 : 3;
+  nt = 12;
+  np = 8;
+
+  float * xyz = (float *)malloc (3 * np * sizeof (float));
+  unsigned char * col = (unsigned char *)malloc (np * ncol * sizeof (unsigned char));
+  unsigned int * ind = (unsigned int *)malloc (nt * 3 * sizeof (unsigned int));
+
+  float s = 1.0;
+
+  xyz[0*3+0] = -s; xyz[0*3+1] = -s; xyz[0*3+2] = -s;
+  xyz[1*3+0] = -s; xyz[1*3+1] = +s; xyz[1*3+2] = -s;
+  xyz[2*3+0] = -s; xyz[2*3+1] = +s; xyz[2*3+2] = +s;
+  xyz[3*3+0] = -s; xyz[3*3+1] = -s; xyz[3*3+2] = +s;
+  xyz[4*3+0] = +s; xyz[4*3+1] = -s; xyz[4*3+2] = -s;
+  xyz[5*3+0] = +s; xyz[5*3+1] = +s; xyz[5*3+2] = -s;
+  xyz[6*3+0] = +s; xyz[6*3+1] = +s; xyz[6*3+2] = +s;
+  xyz[7*3+0] = +s; xyz[7*3+1] = -s; xyz[7*3+2] = +s;
+
+
+  for (int i = 0; i < np; i++)
+  for (int j = 0; j < ncol; j++)
+    col[ncol*i+j] = 120;
+
+  for (int i = 0; i < np; i++)
+  for (int j = 0; j < 3; j++)
+    col[ncol*i+j] = 255 * ((s + xyz[i*3+j]) / (2 * s));
 
   ind[ 0] = 4; ind[ 1] = 5; ind[ 2] = 6;
   ind[ 3] = 4; ind[ 4] = 6; ind[ 5] = 7;
@@ -377,7 +436,7 @@ void cube_t::init ()
 
   glGenBuffers (1, &colorbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
-  glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (float), col, GL_STATIC_DRAW);
+  glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (unsigned char), col, GL_STATIC_DRAW);
 
   glGenBuffers (1, &elementbuffer);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
@@ -395,7 +454,8 @@ void world_t::init (const char * file)
   glBindVertexArray (VertexArrayID);
   
   unsigned int * ind;
-  float * xyz, * col;
+  float * xyz;
+  unsigned char * col;
   ncol = use_alpha ? 4 : 3;
 
   glgrib_load (file, &np, &xyz, &col, &nt, &ind, use_alpha);
@@ -407,7 +467,7 @@ void world_t::init (const char * file)
   free (col);
 }
 
-void polyhedron_t::def_from_xyz_col_ind (const float * xyz, const float * col, unsigned int * ind)
+void polyhedron_t::def_from_xyz_col_ind (const float * xyz, unsigned char * col, unsigned int * ind)
 {
   glGenBuffers (1, &vertexbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
@@ -417,9 +477,9 @@ void polyhedron_t::def_from_xyz_col_ind (const float * xyz, const float * col, u
   
   glGenBuffers (1, &colorbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
-  glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (float), col, GL_STATIC_DRAW);
+  glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (unsigned char), col, GL_STATIC_DRAW);
   glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL); 
+  glVertexAttribPointer (1, ncol, GL_UNSIGNED_BYTE, GL_TRUE, ncol * sizeof (unsigned char), NULL); 
   
   glGenBuffers (1, &elementbuffer);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);

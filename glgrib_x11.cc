@@ -218,10 +218,10 @@ void x11_display (const char * file, int width, int height)
   Grid.init ();
   Coast.init ("gshhs(3).rim");
 
-//Scene.objlist.push_back (&World);
-  Scene.objlist.push_back (&Cube);
-//Scene.objlist.push_back (&Coast);
-//Scene.objlist.push_back (&Grid);
+  Scene.objlist.push_back (&World);
+//Scene.objlist.push_back (&Cube);
+  Scene.objlist.push_back (&Coast);
+  Scene.objlist.push_back (&Grid);
   Scene.view = &View;
   Scene.prog = &Prog;
   

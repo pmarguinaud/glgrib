@@ -47,6 +47,25 @@ void scene_t::display () const
 
 }
 
+void polygon_t::def_from_xyz_col_ind (const float * xyz, const float * col, const unsigned int * ind)
+{
+  glGenBuffers (1, &vertexbuffer);
+  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
+  glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
+  glEnableVertexAttribArray (0); 
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+
+  glGenBuffers (1, &colorbuffer);
+  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
+  glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (float), col, GL_STATIC_DRAW);
+  glEnableVertexAttribArray (1); 
+  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL);
+
+  glGenBuffers (1, &elementbuffer);
+  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 2 * nl * sizeof (unsigned int), ind, GL_STATIC_DRAW);
+}
+
 void polygon_t::render () const
 {
   glBindVertexArray (VertexArrayID);
@@ -182,22 +201,7 @@ void grid_t::init ()
   for (int j = 0; j < ncol; j++)
     col[ncol*i+j] = 1.0;
 
-  glGenBuffers (1, &vertexbuffer);
-  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
-  glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
-  glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
-
-  glGenBuffers (1, &colorbuffer);
-  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
-  glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (float), col, GL_STATIC_DRAW);
-  glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL);
-
-  glGenBuffers (1, &elementbuffer);
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 2 * nl * sizeof (unsigned int), 
-		ind, GL_STATIC_DRAW);
+  def_from_xyz_col_ind (xyz, col, ind);
 
   free (ind);
   free (xyz);
@@ -283,22 +287,7 @@ void coastlines_t::init (const char * file)
   for (int j = 0; j < ncol; j++)
     col[ncol*i+j] = 1.0;
 
-  glGenBuffers (1, &vertexbuffer);
-  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
-  glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
-  glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
-
-  glGenBuffers (1, &colorbuffer);
-  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
-  glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (float), col, GL_STATIC_DRAW);
-  glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL);
-
-  glGenBuffers (1, &elementbuffer);
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 2 * nl * sizeof (unsigned int), 
-		ind, GL_STATIC_DRAW);
+  def_from_xyz_col_ind (xyz, col, ind);
 
   free (ind);
   free (xyz);
@@ -307,42 +296,6 @@ void coastlines_t::init (const char * file)
 
 void cube_t::render () const
 {
-#ifdef UNDEF
-  glEnableVertexAttribArray (0);
-  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-  
-  glEnableVertexAttribArray (1);
-  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
-  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL);
-  
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-  glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
-  
-  glDisableVertexAttribArray (0);
-  glDisableVertexAttribArray (1);
-#endif
-
-  glEnableVertexAttribArray (0);
-  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-  
-  glEnableVertexAttribArray (1);
-  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
-  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL);
-  
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-  // GL_LINES : avec 3 points, on fait juste un segment (le dernier point n'est pas pris)
-  // GL_LINE_LOOP : avec 3 points, on fait un triangle ferme
-  // GL_LINE_STRIP : avec 3 points, on fait un triangle ouvert
-  glDrawElements (GL_LINES, 3 * 1, GL_UNSIGNED_INT, (void *)(0 * sizeof (GLuint))); 
-//glDrawElements (GL_LINES, 36 * 1, GL_UNSIGNED_INT, (void *)(0 * sizeof (GLuint)));
-//glDrawElements (GL_TRIANGLES, 3 * 2, GL_UNSIGNED_INT, (void *)(3 * sizeof (GLuint)));
-//glDrawElements (GL_TRIANGLES, 3 * 2, GL_UNSIGNED_INT, (void *)(0));
-  
-  glDisableVertexAttribArray (0);
-  glDisableVertexAttribArray (1);
-
 }
 
 
@@ -428,27 +381,30 @@ void world_t::init (const char * file)
 
   load (file, &np, &xyz, &col, &nt, &ind, use_alpha);
   
+  def_from_xyz_col_ind (xyz, col, ind);
+
+  free (ind);
+  free (xyz);
+  free (col);
+}
+
+void polyhedron_t::def_from_xyz_col_ind (const float * xyz, const float * col, unsigned int * ind)
+{
   glGenBuffers (1, &vertexbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
   glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
   
-
   glGenBuffers (1, &colorbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
   glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (float), col, GL_STATIC_DRAW);
   glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL); //+
+  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL); 
   
   glGenBuffers (1, &elementbuffer);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), 
-		ind , GL_STATIC_DRAW);
-
-  free (ind);
-  free (xyz);
-  free (col);
+  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), ind , GL_STATIC_DRAW);
 }
 
 void polyhedron_t::render () const

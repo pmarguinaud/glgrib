@@ -28,6 +28,7 @@ public:
 class polygon_t : public obj_t
 {
 public:
+  void def_from_xyz_col_ind (const float *, const float *, const unsigned int *);
   virtual void render () const;
   ~polygon_t ();
   GLuint VertexArrayID;
@@ -54,6 +55,7 @@ class polyhedron_t : public obj_t
 public:
   virtual void render () const;
   ~polyhedron_t ();
+  void def_from_xyz_col_ind (const float *, const float *, unsigned int *);
   GLuint VertexArrayID;
   GLuint vertexbuffer, colorbuffer, elementbuffer;
   int use_alpha = 1;

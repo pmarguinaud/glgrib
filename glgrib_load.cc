@@ -107,9 +107,9 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
 }
 
 
-void load (const char * file, int * np, float ** xyz, 
-           float ** col, unsigned int * nt, 
-           unsigned int ** ind, int use_alpha)
+void glgrib_load (const char * file, int * np, float ** xyz, 
+                  float ** col, unsigned int * nt, 
+                  unsigned int ** ind, int use_alpha)
 {
   FILE * in = NULL;
   long int * pl = NULL;

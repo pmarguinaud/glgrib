@@ -1,10 +1,10 @@
 
 
-glgrib.x: load.o glgrib.o glgrib_png.o glgrib_fb.o glgrib_render.o glgrib_x11.o shader.o
-	g++  -std=c++11  -g -o glgrib.x load.o glgrib.o  glgrib_png.o glgrib_fb.o  glgrib_render.o  glgrib_x11.o  shader.o -leccodes -lGLEW -lGL -lEGL -lglfw -lpng
+glgrib.x: glgrib_load.o glgrib.o glgrib_png.o glgrib_fb.o glgrib_render.o glgrib_x11.o shader.o
+	g++  -std=c++11  -g -o glgrib.x glgrib_load.o glgrib.o  glgrib_png.o glgrib_fb.o  glgrib_render.o  glgrib_x11.o  shader.o -leccodes -lGLEW -lGL -lEGL -lglfw -lpng
 
-load.o: load.c
-	cc -c -g load.c
+glgrib_load.o: glgrib_load.cc
+	c++ -std=c++11 -g -c glgrib_load.cc
 
 glgrib.o: glgrib.cc
 	c++ -std=c++11 -g -c glgrib.cc

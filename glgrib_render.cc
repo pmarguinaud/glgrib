@@ -18,12 +18,11 @@
 #endif
 
 #include "glgrib_render.h"
+#include "glgrib_load.h"
 
 using namespace glm;
 
 #include "shader.h"
-
-extern "C" void load (const char *, int *, float **, float **, unsigned int *, unsigned int **, int);
 
 void scene_t::display () const
 {
@@ -399,7 +398,7 @@ void world_t::init (const char * file)
   float * xyz, * col;
   ncol = use_alpha ? 4 : 3;
 
-  load (file, &np, &xyz, &col, &nt, &ind, use_alpha);
+  glgrib_load (file, &np, &xyz, &col, &nt, &ind, use_alpha);
   
   def_from_xyz_col_ind (xyz, col, ind);
 

@@ -77,6 +77,133 @@ typedef struct point_t
   int y; /* latitude of a point in micro-degrees */
 } point_t;
 
+void grid_t::init ()
+{
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
+  
+  ncol = use_alpha ? 4 : 3;
+
+  float * xyz = NULL;
+  float * col = NULL;
+  unsigned int * ind = NULL;
+
+  head_t h;
+  point_t * pl = NULL;
+  int ip = 0, il = 0;
+  np = 0;
+  nl = 0;
+
+  float r = 1.005;
+  const int nlatv = 200, nlonv = 20;
+  const int nlath = 10, nlonh = 400;
+
+  for (int pass = 0; pass < 2; pass++)
+    {
+
+      for (int jlon = 0; jlon < nlonv; jlon++)
+        {
+          float zlon = 2. * M_PI * (float)jlon / (float)nlonv;
+          float coslon = cos (zlon);
+          float sinlon = sin (zlon);
+          for (int jlat = 0; jlat < nlatv+1; jlat++)
+            {   
+              float zlat = M_PI / 2. - M_PI * (float)jlat / (float)nlatv;
+              float coslat = cos (zlat);
+              float sinlat = sin (zlat);
+              if (pass == 1)
+                {
+                  xyz[ip*3+0] = r * coslon * coslat;
+                  xyz[ip*3+1] = r * sinlon * coslat;
+                  xyz[ip*3+2] = r *          sinlat;
+                  if (jlat < nlatv)
+                    {
+                      ind[il*2+0] = ip;
+                      ind[il*2+1] = ip + 1;
+                      il++;
+                    }
+                  ip++;
+                }
+              else
+                {
+                  np++;
+                  if (jlat < nlatv)
+                    nl++;
+                }
+            }
+        }
+      for (int jlat = 1; jlat < nlath; jlat++)   
+        {
+          float zlat = M_PI / 2. - M_PI * (float)jlat / (float)nlath;
+          float coslat = cos (zlat);
+          float sinlat = sin (zlat);
+          int nloen = (int)(nlonh * coslat);
+          int ip0 = ip;
+          for (int jlon = 0; jlon < nloen; jlon++)
+            {
+              float zlon = 2. * M_PI * (float)jlon / (float)nloen;
+              float coslon = cos (zlon);
+              float sinlon = sin (zlon);
+
+              if (pass == 1) 
+                {
+                  xyz[ip*3+0] = r * coslon * coslat;
+                  xyz[ip*3+1] = r * sinlon * coslat;
+                  xyz[ip*3+2] = r *          sinlat;
+                  ind[il*2+0] = ip;
+                  if (jlon < nloen-1)
+                    ind[il*2+1] = ip + 1;
+                  else
+                    ind[il*2+1] = ip0;
+                  ip++;
+                  il++;
+                }
+              else
+                {
+                  np++;
+                  nl++;
+                }
+
+            }
+        }
+
+      if (pass == 0)
+        {
+          xyz = (float *)malloc (3 * np * sizeof (float));
+          col = (float *)malloc (np * ncol * sizeof (float));
+          ind = (unsigned int *)malloc (nl * 2 * sizeof (unsigned int));
+	}
+
+    }
+
+  free (pl);
+
+  for (int i = 0; i < np; i++)
+  for (int j = 0; j < ncol; j++)
+    col[ncol*i+j] = 1.0;
+
+  glGenBuffers (1, &vertexbuffer);
+  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
+  glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
+  glEnableVertexAttribArray (0); 
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+
+  glGenBuffers (1, &colorbuffer);
+  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
+  glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (float), col, GL_STATIC_DRAW);
+  glEnableVertexAttribArray (1); 
+  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL);
+
+  glGenBuffers (1, &elementbuffer);
+  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 2 * nl * sizeof (unsigned int), 
+		ind, GL_STATIC_DRAW);
+
+  free (ind);
+  free (xyz);
+  free (col);
+}
+
 void coastlines_t::init (const char * file)
 {
   glGenVertexArrays (1, &VertexArrayID);

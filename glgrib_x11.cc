@@ -196,6 +196,7 @@ void x11_display (const char * file, int width, int height)
 {
   scene_t Scene;
   coastlines_t Coast;
+  grid_t Grid;
   world_t World;
   cube_t Cube;
   prog_t Prog;
@@ -214,11 +215,13 @@ void x11_display (const char * file, int width, int height)
   World.init (file);
   Cube.init ();
   View.init (&Prog);
+  Grid.init ();
   Coast.init ("gshhs(3).rim");
 
-  Scene.objlist.push_back (&World);
-//Scene.objlist.push_back (&Cube);
-  Scene.objlist.push_back (&Coast);
+//Scene.objlist.push_back (&World);
+  Scene.objlist.push_back (&Cube);
+//Scene.objlist.push_back (&Coast);
+//Scene.objlist.push_back (&Grid);
   Scene.view = &View;
   Scene.prog = &Prog;
   

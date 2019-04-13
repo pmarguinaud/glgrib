@@ -43,6 +43,12 @@ public:
   void init (const char *);
 };
 
+class grid_t : public polygon_t
+{
+public:
+  void init ();
+};
+
 class polyhedron_t : public obj_t
 {
 public:

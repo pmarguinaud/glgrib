@@ -96,6 +96,7 @@ void coastlines_t::init (const char * file)
   nl = 0;
 
   float r = 1.005;
+  const float millideg2rad = M_PI / (1000000. * 180.);
 
   for (int pass = 0; pass < 2; pass++)
     {
@@ -118,10 +119,10 @@ void coastlines_t::init (const char * file)
                   int ip0 = ip;
                   for (int i = 0; i < h.n; i++)
 	            {
-                      float coslon = cos (M_PI * pl[i].x / (1000000. * 180.));
-                      float sinlon = sin (M_PI * pl[i].x / (1000000. * 180.));
-                      float coslat = cos (M_PI * pl[i].y / (1000000. * 180.));
-                      float sinlat = sin (M_PI * pl[i].y / (1000000. * 180.));
+                      float coslon = cos (millideg2rad * pl[i].x);
+                      float sinlon = sin (millideg2rad * pl[i].x);
+                      float coslat = cos (millideg2rad * pl[i].y);
+                      float sinlat = sin (millideg2rad * pl[i].y);
                       xyz[ip*3+0] = r * coslon * coslat;
                       xyz[ip*3+1] = r * sinlon * coslat;
                       xyz[ip*3+2] = r *          sinlat;

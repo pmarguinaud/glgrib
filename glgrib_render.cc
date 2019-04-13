@@ -48,6 +48,9 @@ void scene_t::display () const
 
 void polygon_t::def_from_xyz_col_ind (const float * xyz, const unsigned char * col, const unsigned int * ind)
 {
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
+  
   glGenBuffers (1, &vertexbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
   glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
@@ -97,9 +100,6 @@ typedef struct point_t
 
 void grid_t::init ()
 {
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
-  
   ncol = use_alpha ? 4 : 3;
 
   float * xyz = NULL;
@@ -209,9 +209,6 @@ void grid_t::init ()
 
 void coastlines_t::init (const char * file)
 {
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
-  
   ncol = use_alpha ? 4 : 3;
 
   float * xyz = NULL;
@@ -321,9 +318,6 @@ void cube_t::render () const
 
 void cube1_t::init ()
 {
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
-  
   ncol = use_alpha ? 4 : 3;
   nt = 12;
   np = 8;
@@ -346,7 +340,7 @@ void cube1_t::init ()
 
   for (int i = 0; i < np; i++)
   for (int j = 0; j < ncol; j++)
-    col[ncol*i+j] = 120;
+    col[ncol*i+j] = 20;
 
   for (int i = 0; i < np; i++)
   for (int j = 0; j < 3; j++)
@@ -450,9 +444,6 @@ void cube_t::init ()
 
 void world_t::init (const char * file)
 {
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
-  
   unsigned int * ind;
   float * xyz;
   unsigned char * col;
@@ -469,6 +460,9 @@ void world_t::init (const char * file)
 
 void polyhedron_t::def_from_xyz_col_ind (const float * xyz, unsigned char * col, unsigned int * ind)
 {
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
+  
   glGenBuffers (1, &vertexbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
   glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);

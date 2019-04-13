@@ -296,6 +296,27 @@ void coastlines_t::init (const char * file)
 
 void cube_t::render () const
 {
+  glEnableVertexAttribArray (0);
+  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+  
+  glEnableVertexAttribArray (1);
+  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
+  glVertexAttribPointer (1, ncol, GL_FLOAT, GL_TRUE, ncol * sizeof (float), NULL);
+  
+  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+  // GL_LINES : avec 3 points, on fait juste un segment (le dernier point n'est pas pris)
+  // GL_LINE_LOOP : avec 3 points, on fait un triangle ferme
+  // GL_LINE_STRIP : avec 3 points, on fait un triangle ouvert
+//glDrawElements (GL_LINES, 3 * 1, GL_UNSIGNED_INT, (void *)(0 * sizeof (GLuint))); 
+//glDrawElements (GL_LINES, 36 * 1, GL_UNSIGNED_INT, (void *)(0 * sizeof (GLuint)));
+//glDrawElements (GL_TRIANGLES, 3 * 2, GL_UNSIGNED_INT, (void *)(3 * sizeof (GLuint)));
+//glDrawElements (GL_TRIANGLES, 3 * 2, GL_UNSIGNED_INT, (void *)(0));
+  glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, (void *)(0));
+  
+  glDisableVertexAttribArray (0);
+  glDisableVertexAttribArray (1);
+
 }
 
 
@@ -361,8 +382,7 @@ void cube_t::init ()
 
   glGenBuffers (1, &elementbuffer);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), 
-		ind, GL_STATIC_DRAW);
+  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), ind, GL_STATIC_DRAW);
 
   free (ind);
   free (xyz);

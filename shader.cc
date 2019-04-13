@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#ifdef USE_GLE
+
+#define GL_GLEXT_PROTOTYPES 1
+#include <GL/glut.h>
+#include <GL/glext.h>
+
+#else
+
+#include <GL/glew.h>
+
+#endif
+
+#include "shader.h"
+
+GLuint LoadShaders ()
+{
+  int len;
+  GLint res = GL_FALSE;
+  GLuint VertexShaderID = glCreateShader (GL_VERTEX_SHADER);
+  GLuint FragmentShaderID = glCreateShader (GL_FRAGMENT_SHADER);
+
+  const char * FragmentShaderCode =
+"#version 330 core\n"
+"\n"
+"in vec4 fragmentColor;\n"
+"\n"
+"out vec4 color;\n"
+"\n"
+"void main(){\n"
+"\n"
+"        color.r = fragmentColor.r;\n"
+"        color.g = fragmentColor.g;\n"
+"        color.b = fragmentColor.b;\n"
+"        color.a = fragmentColor.a;\n"
+"}\n";
+
+  const char * VertexShaderCode = 
+"#version 330 core\n"
+"\n"
+"layout(location = 0) in vec3 vertexPosition_modelspace;\n"
+"layout(location = 1) in vec4 vertexColor;\n"
+"\n"
+"out vec4 fragmentColor;\n"
+"uniform mat4 MVP;\n"
+"\n"
+"void main(){\n"
+"\n"
+"        gl_Position =  MVP * vec4(vertexPosition_modelspace,1);\n"
+"\n"
+"        fragmentColor.r = vertexColor.r;\n"
+"        fragmentColor.g = vertexColor.g;\n"
+"        fragmentColor.b = vertexColor.b;\n"
+"        fragmentColor.a = vertexColor.a;\n"
+"}\n";
+
+
+  // Compile Vertex Shader
+  glShaderSource (VertexShaderID, 1, &VertexShaderCode , NULL);
+  glCompileShader (VertexShaderID);
+
+  glGetShaderiv (VertexShaderID, GL_COMPILE_STATUS, &res);
+  glGetShaderiv (VertexShaderID, GL_INFO_LOG_LENGTH, &len);
+  if (len > 0)
+    {
+      char mess[len+1];
+      glGetShaderInfoLog (VertexShaderID, len, NULL, &mess[0]);
+      printf("%s\n", mess);
+    }
+
+
+  // Compile Fragment Shader
+  glShaderSource (FragmentShaderID, 1, &FragmentShaderCode , NULL);
+  glCompileShader (FragmentShaderID);
+
+  glGetShaderiv (FragmentShaderID, GL_COMPILE_STATUS, &res);
+  glGetShaderiv (FragmentShaderID, GL_INFO_LOG_LENGTH, &len);
+  if (len > 0)
+    {
+      char mess[len+1];
+      glGetShaderInfoLog (FragmentShaderID, len, NULL, &mess[0]);
+      printf("%s\n", mess);
+    }
+
+  // Link the program
+  GLuint ProgramID = glCreateProgram ();
+  glAttachShader (ProgramID, VertexShaderID);
+  glAttachShader (ProgramID, FragmentShaderID);
+  glLinkProgram (ProgramID);
+  
+  // Check the program
+  glGetProgramiv (ProgramID, GL_LINK_STATUS, &res);
+  glGetProgramiv (ProgramID, GL_INFO_LOG_LENGTH, &len);
+  if (len > 0)
+    {
+      char mess[len+1];
+      glGetProgramInfoLog (ProgramID, len, NULL, &mess[0]);
+      printf("%s\n", mess);
+    }
+  
+  
+  glDetachShader (ProgramID, VertexShaderID);
+  glDetachShader (ProgramID, FragmentShaderID);
+  
+  glDeleteShader (VertexShaderID);
+  glDeleteShader (FragmentShaderID);
+  
+  return ProgramID;
+}
+
+

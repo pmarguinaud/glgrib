@@ -264,7 +264,7 @@ void x11_display (const char * file, int width, int height)
   Scene.view = &View;
 
   ctx.scene = &Scene;
-  
+
   while (1)
     {
       if (ctx.do_rotate)

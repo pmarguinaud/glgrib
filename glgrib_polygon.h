@@ -10,10 +10,11 @@ class glgrib_polygon : public glgrib_object
 public:
   void def_from_xyz_col_ind (const float *, const unsigned char *, const unsigned int *);
   virtual void render (const glgrib_view *) const;
+  virtual int get_program_kind () { return 0; }
+  virtual bool use_alpha () { return true; }
   ~glgrib_polygon ();
   GLuint VertexArrayID;
   GLuint vertexbuffer, colorbuffer, elementbuffer;
-  int use_alpha = 1;
   unsigned int ncol, nl;
   int np;
 };

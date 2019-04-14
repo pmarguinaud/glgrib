@@ -10,11 +10,9 @@ void glgrib_world::init (const char * file)
   float * xyz;
   unsigned char * col;
 
-  program = glgrib_program_load (0);
+  ncol = use_alpha () ? 4 : 3;
 
-  ncol = use_alpha ? 4 : 3;
-
-  glgrib_load (file, &np, &xyz, &col, &nt, &ind, use_alpha);
+  glgrib_load (file, &np, &xyz, &col, &nt, &ind, use_alpha ());
   
   def_from_xyz_col_ind (xyz, col, ind);
 

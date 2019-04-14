@@ -7,9 +7,8 @@
 
 void glgrib_grid::init ()
 {
-  program = glgrib_program_load (0);
 
-  ncol = use_alpha ? 4 : 3;
+  ncol = use_alpha () ? 4 : 3;
 
   float * xyz = NULL;
   unsigned char * col = NULL;

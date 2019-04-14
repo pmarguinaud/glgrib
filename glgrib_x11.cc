@@ -229,7 +229,7 @@ void free_glfw_window (GLFWwindow * window)
 
 void x11_display (const char * file, int width, int height)
 {
-  coastlines_t Coast;
+  glgrib_coastlines Coast;
   glgrib_grid Grid;
   glgrib_scene Scene;
   glgrib_world World;

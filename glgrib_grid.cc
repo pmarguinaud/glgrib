@@ -104,3 +104,13 @@ void glgrib_grid::init ()
   free (ind);
   free (xyz);
 }
+
+void glgrib_grid::render (const glgrib_view * view) const
+{
+  const glgrib_program * program = get_program ();
+  GLint color0 = glGetUniformLocation (program->programID, "color0");
+  float color[3] = {255., 255., 255.};
+  glUniform3fv (color0, 1, color);
+  glgrib_polygon::render (view);
+}
+

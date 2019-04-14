@@ -83,11 +83,13 @@ R"CODE(
 
 out vec4 color;
 
+uniform vec3 color0; 
+
 void main()
 {
-  color.r = 255;
-  color.g = 255;
-  color.b = 255;
+  color.r = color0.r;
+  color.g = color0.g;
+  color.b = color0.b;
   color.a = 255;
 }
 )CODE",

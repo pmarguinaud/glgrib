@@ -22,7 +22,7 @@ typedef struct point_t
   int y; /* latitude of a point in micro-degrees */
 } point_t;
 
-void coastlines_t::init (const char * file)
+void glgrib_coastlines::init (const char * file)
 {
 
   ncol = use_alpha () ? 4 : 3;
@@ -98,4 +98,14 @@ void coastlines_t::init (const char * file)
   free (ind);
   free (xyz);
 }
+
+void glgrib_coastlines::render (const glgrib_view * view) const
+{
+  const glgrib_program * program = get_program ();
+  GLint color0 = glGetUniformLocation (program->programID, "color0");
+  float color[3] = {255., 0., 0.};
+  glUniform3fv (color0, 1, color);
+  glgrib_polygon::render (view);
+}
+
 

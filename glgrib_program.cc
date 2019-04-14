@@ -111,6 +111,7 @@ printf (" load = %d\n", kind);
   if (! PRG[kind].loaded)
     {
       PRG[kind].programID = glgrib_load_shader (PRG[kind].FragmentShaderCode, PRG[kind].VertexShaderCode);
+      PRG[kind].matrixID = glGetUniformLocation (PRG[kind].programID, "MVP");
       PRG[kind].loaded = true;
     }
   return &PRG[kind];

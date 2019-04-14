@@ -5,7 +5,7 @@
 
 #include "glgrib_opengl.h"
 
-void cube_t::render () const
+void glgrib_cube::render () const
 {
   glEnableVertexAttribArray (0);
   glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
@@ -31,7 +31,7 @@ void cube_t::render () const
 }
 
 
-void cube_t::init ()
+void glgrib_cube::init ()
 {
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);

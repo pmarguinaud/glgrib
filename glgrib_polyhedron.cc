@@ -4,7 +4,7 @@
 
 #include "glgrib_opengl.h"
 
-void polyhedron_t::def_from_xyz_col_ind (const float * xyz, unsigned char * col, unsigned int * ind)
+void glgrib_polyhedron::def_from_xyz_col_ind (const float * xyz, unsigned char * col, unsigned int * ind)
 {
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
@@ -26,13 +26,13 @@ void polyhedron_t::def_from_xyz_col_ind (const float * xyz, unsigned char * col,
   glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), ind , GL_STATIC_DRAW);
 }
 
-void polyhedron_t::render () const
+void glgrib_polyhedron::render () const
 {
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
 }
 
-polyhedron_t::~polyhedron_t ()
+glgrib_polyhedron::~glgrib_polyhedron ()
 {
   glDeleteBuffers (1, &vertexbuffer);
   glDeleteBuffers (1, &colorbuffer);

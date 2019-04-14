@@ -133,11 +133,11 @@ void fb_free (fb_t * fb)
 
 void fb_display (const char * file, int width, int height)
 {
-  scene_t Scene;
-  world_t World;
-  cube1_t Cube;
-  program_t Prog;
-  view_t View;
+  glgrib_scene Scene;
+  glgrib_world World;
+  glgrib_cube1 Cube;
+  glgrib_program Prog;
+  glgrib_view View;
   fb_t Fb;
 
   fb_init (&Fb, width, height);

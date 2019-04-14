@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-void world_t::init (const char * file)
+void glgrib_world::init (const char * file)
 {
   unsigned int * ind;
   float * xyz;

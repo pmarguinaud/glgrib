@@ -3,7 +3,7 @@
 
 #include "glgrib_polygon.h"
 
-class grid_t : public polygon_t
+class grid_t : public glgrib_polygon
 {
 public:
   void init ();

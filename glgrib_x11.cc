@@ -23,10 +23,10 @@
 typedef struct glfw_ctx_t
 {
   bool do_rotate = false;
-  view_t * view;
+  glgrib_view * view;
   int width, height;
   int snapshot_cnt = 0;
-  scene_t * scene;
+  glgrib_scene * scene;
 } glfw_ctx_t;
 
 static
@@ -230,13 +230,13 @@ void free_glfw_window (GLFWwindow * window)
 
 void x11_display (const char * file, int width, int height)
 {
-  scene_t Scene;
+  glgrib_scene Scene;
   coastlines_t Coast;
   grid_t Grid;
-  world_t World;
-  cube1_t Cube;
-  program_t Prog;
-  view_t View;
+  glgrib_world World;
+  glgrib_cube1 Cube;
+  glgrib_program Prog;
+  glgrib_view View;
   glfw_ctx_t ctx;
 
   ctx.view = &View;

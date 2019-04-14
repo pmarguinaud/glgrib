@@ -3,12 +3,12 @@
 
 #include "glgrib_opengl.h"
 
-class program_t
+class glgrib_program
 {
 public:
   GLuint programID;
   void init ();
-  ~program_t ();
+  ~glgrib_program ();
 };
 
 #endif

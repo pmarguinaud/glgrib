@@ -4,12 +4,12 @@
 #include "glgrib_opengl.h"
 #include "glgrib_program.h"
 
-class view_t
+class glgrib_view
 {
 public:
   float rc = 6.0, latc = 0., lonc = 0., fov = 20.;
   GLuint MatrixID;
-  void init (program_t *);
+  void init (glgrib_program *);
 };
 
 #endif

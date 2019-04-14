@@ -4,11 +4,11 @@
 #include "glgrib_object.h"
 #include "glgrib_opengl.h"
 
-class polyhedron_t : public object_t
+class glgrib_polyhedron : public glgrib_object
 {
 public:
   virtual void render () const;
-  ~polyhedron_t ();
+  ~glgrib_polyhedron ();
   void def_from_xyz_col_ind (const float *, unsigned char *, unsigned int *);
   GLuint VertexArrayID;
   GLuint vertexbuffer, colorbuffer, elementbuffer;

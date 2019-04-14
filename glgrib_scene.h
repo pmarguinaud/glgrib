@@ -6,13 +6,13 @@
 #include "glgrib_view.h"
 #include "glgrib_object.h"
 
-class scene_t
+class glgrib_scene
 {
 public:
   void display () const;
-  std::list<object_t*> objlist;
-  view_t * view;
-  program_t * prog;
+  std::list<glgrib_object*> objlist;
+  glgrib_view * view;
+  glgrib_program * prog;
 };
 
 #endif

@@ -7,7 +7,7 @@
 
 using namespace glm;
 
-void scene_t::display () const
+void glgrib_scene::display () const
 {
   float xc = view->rc * glm::cos (glm::radians (view->lonc)) * glm::cos (glm::radians (view->latc)), 
         yc = view->rc * glm::sin (glm::radians (view->lonc)) * glm::cos (glm::radians (view->latc)),
@@ -23,7 +23,7 @@ void scene_t::display () const
   glUseProgram (prog->programID);
   glUniformMatrix4fv (view->MatrixID, 1, GL_FALSE, &MVP[0][0]);
   
-  for (std::list<object_t*>::const_iterator it = objlist.begin (); 
+  for (std::list<glgrib_object*>::const_iterator it = objlist.begin (); 
        it != objlist.end (); it++)
     (*it)->render ();
 

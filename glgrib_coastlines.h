@@ -3,7 +3,7 @@
 
 #include "glgrib_polygon.h"
 
-class coastlines_t : public polygon_t
+class coastlines_t : public glgrib_polygon
 {
 public:
   void init (const char *);

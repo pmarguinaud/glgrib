@@ -3,7 +3,7 @@
 
 #include "glgrib_polyhedron.h"
 
-class cube1_t : public polyhedron_t
+class glgrib_cube1 : public glgrib_polyhedron
 {
 public:
   void init ();

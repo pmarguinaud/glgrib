@@ -6,7 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-void cube1_t::init ()
+void glgrib_cube1::init ()
 {
   ncol = use_alpha ? 4 : 3;
   nt = 12;

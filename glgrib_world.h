@@ -3,7 +3,7 @@
 
 #include "glgrib_polyhedron.h"
 
-class world_t : public polyhedron_t
+class glgrib_world : public glgrib_polyhedron
 {
 public:
   void init (const char *);

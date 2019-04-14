@@ -4,12 +4,12 @@
 #include "glgrib_object.h"
 #include "glgrib_opengl.h"
 
-class polygon_t : public object_t
+class glgrib_polygon : public glgrib_object
 {
 public:
   void def_from_xyz_col_ind (const float *, const unsigned char *, const unsigned int *);
   virtual void render () const;
-  ~polygon_t ();
+  ~glgrib_polygon ();
   GLuint VertexArrayID;
   GLuint vertexbuffer, colorbuffer, elementbuffer;
   int use_alpha = 1;

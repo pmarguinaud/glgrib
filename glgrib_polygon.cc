@@ -1,7 +1,7 @@
 #include "glgrib_polygon.h"
 #include "glgrib_opengl.h"
 
-void polygon_t::def_from_xyz_col_ind (const float * xyz, const unsigned char * col, const unsigned int * ind)
+void glgrib_polygon::def_from_xyz_col_ind (const float * xyz, const unsigned char * col, const unsigned int * ind)
 {
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
@@ -23,13 +23,13 @@ void polygon_t::def_from_xyz_col_ind (const float * xyz, const unsigned char * c
   glBufferData (GL_ELEMENT_ARRAY_BUFFER, 2 * nl * sizeof (unsigned int), ind, GL_STATIC_DRAW);
 }
 
-void polygon_t::render () const
+void glgrib_polygon::render () const
 {
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_LINES, 2 * nl, GL_UNSIGNED_INT, NULL);
 }
 
-polygon_t::~polygon_t ()
+glgrib_polygon::~glgrib_polygon ()
 {
   glDeleteBuffers (1, &vertexbuffer);
   glDeleteBuffers (1, &colorbuffer);

@@ -188,21 +188,6 @@ void glgrib_load (const char * file, int * np, float ** xyz,
       for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
         (*col)[ncol*jglo+3] = 255;
 
-{
-  FILE * fp; 
-  char tmp[32];
-  sprintf (tmp, "RGB%d.txt", ncol);
-  fp = fopen (tmp, "w");
-  for (int jglo = 0; jglo < 4000; jglo++)
-    fprintf (fp, " %3.3d %3.3d %3.3d %12.4f %12.4f %12.4f \n", 
-    (*col)[ncol*jglo+0], (*col)[ncol*jglo+1], (*col)[ncol*jglo+2],
-    (*xyz)[3*jglo+0],    (*xyz)[3*jglo+1],    (*xyz)[3*jglo+2]
-    );
-  fclose (fp);
-}
-
-      
-    
   fclose (in);
   free (pl);
   

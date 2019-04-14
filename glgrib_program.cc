@@ -49,13 +49,14 @@ R"CODE(
 
 in vec3 fragmentColor;
 
-out vec3 color;
+out vec4 color;
 
 void main()
 {
   color.r = fragmentColor.r;
   color.g = fragmentColor.g;
   color.b = fragmentColor.b;
+  color.a = 255;
 }
 )CODE",
 R"CODE(
@@ -80,13 +81,14 @@ void main()
 R"CODE(
 #version 330 core
 
-out vec3 color;
+out vec4 color;
 
 void main()
 {
   color.r = 255;
   color.g = 255;
   color.b = 255;
+  color.a = 255;
 }
 )CODE",
 R"CODE(
@@ -107,7 +109,6 @@ void main()
 
 glgrib_program * glgrib_program_load (int kind)
 {
-printf (" load = %d\n", kind);
   if (! PRG[kind].loaded)
     {
       PRG[kind].programID = glgrib_load_shader (PRG[kind].FragmentShaderCode, PRG[kind].VertexShaderCode);

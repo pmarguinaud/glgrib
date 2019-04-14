@@ -11,7 +11,6 @@
 #include "glgrib_cube1.h"
 #include "glgrib_grid.h"
 #include "glgrib_view.h"
-#include "glgrib_program.h"
 #include "glgrib_coastlines.h"
 
 typedef struct fb_t
@@ -138,20 +137,16 @@ void fb_display (const char * file, int width, int height)
   glgrib_cube1 Cube;
   glgrib_view View;
   fb_t Fb;
-  glgrib_program * program;
 
   fb_init (&Fb, width, height);
   
   gl_init ();
-  program = glgrib_program_load (0);
 //World.init (file);
   Cube.init ();
-  View.init (program);
 
 //Scene.objlist.push_back (&World);
   Scene.objlist.push_back (&Cube);
   Scene.view = &View;
-  Scene.program = program;
   
   Scene.display ();
 

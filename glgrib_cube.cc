@@ -8,9 +8,6 @@
 
 void glgrib_cube::render (const glgrib_view * view) const
 {
-  program->use ();
-  view->setMVP (program->matrixID);
-
   glEnableVertexAttribArray (0);
   glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);

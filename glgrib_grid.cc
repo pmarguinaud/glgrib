@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void grid_t::init ()
+void glgrib_grid::init ()
 {
   program = glgrib_program_load (0);
 

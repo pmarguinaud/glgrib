@@ -4,8 +4,9 @@
 
 #include <string>
 
+static const int nprg = 2;
 
-static glgrib_program PRG[] = 
+static glgrib_program PRG[nprg] = 
 {
   glgrib_program (
 R"CODE(
@@ -88,8 +89,15 @@ glgrib_program::~glgrib_program ()
 }
 
 
-void glgrib_program::use ()
+void glgrib_program::use () const
 {
-  glUseProgram (programID);
+  if (! active)
+    {
+      glUseProgram (programID);
+      active = true;
+      for (int i = 0; i < nprg; i++) 
+        if (PRG[i].programID != programID)
+          PRG[i].active = false;
+    }
 }
 

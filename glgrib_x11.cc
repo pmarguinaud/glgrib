@@ -14,7 +14,6 @@
 #include "glgrib_cube1.h"
 #include "glgrib_grid.h"
 #include "glgrib_view.h"
-#include "glgrib_program.h"
 #include "glgrib_coastlines.h"
 
 
@@ -230,14 +229,13 @@ void free_glfw_window (GLFWwindow * window)
 
 void x11_display (const char * file, int width, int height)
 {
-  glgrib_scene Scene;
   coastlines_t Coast;
-  grid_t Grid;
+  glgrib_grid Grid;
+  glgrib_scene Scene;
   glgrib_world World;
   glgrib_cube1 Cube;
   glgrib_view View;
   glfw_ctx_t ctx;
-  glgrib_program * program;
 
   ctx.view = &View;
   ctx.width = width;
@@ -254,10 +252,8 @@ void x11_display (const char * file, int width, int height)
   glfwSetWindowUserPointer (Window, &ctx);
   
   gl_init ();
-  program = glgrib_program_load (0);
   World.init (file);
   Cube.init ();
-  View.init (program);
   Grid.init ();
   Coast.init ("gshhs(3).rim");
 
@@ -266,7 +262,6 @@ void x11_display (const char * file, int width, int height)
   Scene.objlist.push_back (&Coast);
   Scene.objlist.push_back (&Grid);
   Scene.view = &View;
-  Scene.program = program;
 
   ctx.scene = &Scene;
   

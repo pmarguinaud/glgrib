@@ -10,14 +10,15 @@
 #include <GL/glext.h>
 #include "glgrib_render.h"
 #include "glgrib_fb.h"
+#include "glgrib_png.h"
 
 using namespace glm;
 
 typedef struct fb_t
 {
-  GLuint fbo;
-  GLuint rbo_color;
-  GLuint rbo_depth;
+  GLuint framebuffer;
+  GLuint textureColorbuffer;
+  GLuint rbo;
   EGLDisplay eglDpy;
 } fb_t;
 
@@ -76,36 +77,57 @@ void fb_init (fb_t * fb, int width, int height)
 
   eglMakeCurrent (fb->eglDpy, eglSurf, eglSurf, eglCtx);
 
-  // Use OpenGL: create framebuffer
+  //
 
-  glGenFramebuffers (1, &fb->fbo);
-  glBindFramebuffer (GL_FRAMEBUFFER, fb->fbo);
+  glGenFramebuffers (1, &fb->framebuffer);
+  glBindFramebuffer (GL_FRAMEBUFFER, fb->framebuffer);
+ 
 
-  /* Color renderbuffer. */
-  glGenRenderbuffers (1, &fb->rbo_color);
-  glBindRenderbuffer (GL_RENDERBUFFER, fb->rbo_color);
-  /* Storage must be one of: */
-  /* GL_RGBA4, GL_RGB565, GL_RGB5_A1, GL_DEPTH_COMPONENT16, GL_STENCIL_INDEX8. */
-  glRenderbufferStorage (GL_RENDERBUFFER, GL_RGB565, width, height);
-  glFramebufferRenderbuffer (GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
-                             GL_RENDERBUFFER, fb->rbo_color);
+  glGenTextures (1, &fb->textureColorbuffer);
+  glBindTexture (GL_TEXTURE_2D, fb->textureColorbuffer);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb->textureColorbuffer, 0);
 
-  /* Depth renderbuffer. */
-  glGenRenderbuffers (1, &fb->rbo_depth);
-  glBindRenderbuffer (GL_RENDERBUFFER, fb->rbo_depth);
-  glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width, height);
-  glFramebufferRenderbuffer (GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 
-                             GL_RENDERBUFFER, fb->rbo_depth);
+  glGenRenderbuffers (1, &fb->rbo);
+  glBindRenderbuffer (GL_RENDERBUFFER, fb->rbo);
 
-  glReadBuffer (GL_COLOR_ATTACHMENT0);
+  // use a single renderbuffer object for both a depth AND stencil buffer.
+  glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, width, height); 
+  // now actually attach it
+  glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, fb->rbo); 
+
+#define CASE(st) case st: printf (#st "\n"); break
+  GLenum ret = glCheckFramebufferStatus (GL_FRAMEBUFFER);
+  switch (ret)
+    {
+       CASE (GL_FRAMEBUFFER_COMPLETE);
+       CASE (GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT);
+       CASE (GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER);
+       CASE (GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS);
+       CASE (GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT);
+       CASE (GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE);
+       CASE (GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER );
+       CASE (GL_FRAMEBUFFER_UNDEFINED);
+       CASE (GL_FRAMEBUFFER_UNSUPPORTED);
+       CASE (GL_INVALID_ENUM); 
+       CASE (GL_INVALID_OPERATION);
+       default:
+         printf ("glCheckFramebufferStatus returned unknown status %d\n", ret);
+         break;
+    }
+#undef CASE
+
+
 }
 
 static
 void fb_free (fb_t * fb)
 {
-  glDeleteFramebuffers (1, &fb->fbo);
-  glDeleteRenderbuffers (1, &fb->rbo_color);
-  glDeleteRenderbuffers (1, &fb->rbo_depth);
+  glDeleteFramebuffers (1, &fb->framebuffer);
+  glDeleteTextures (1, &fb->textureColorbuffer);
+  glDeleteRenderbuffers (1, &fb->rbo);
   eglTerminate (fb->eglDpy);
 }
 
@@ -113,7 +135,7 @@ void fb_display (const char * file, int width, int height)
 {
   scene_t Scene;
   world_t World;
-  cube_t Cube;
+  cube1_t Cube;
   prog_t Prog;
   view_t View;
   fb_t Fb;
@@ -122,11 +144,11 @@ void fb_display (const char * file, int width, int height)
   
   gl_init ();
   Prog.init ();
-  World.init (file);
+//World.init (file);
   Cube.init ();
   View.init (&Prog);
 
-  Scene.objlist.push_back (&World);
+//Scene.objlist.push_back (&World);
   Scene.objlist.push_back (&Cube);
   Scene.view = &View;
   Scene.prog = &Prog;

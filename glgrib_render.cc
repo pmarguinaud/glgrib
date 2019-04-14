@@ -326,7 +326,7 @@ void cube1_t::init ()
   unsigned char * col = (unsigned char *)malloc (np * ncol * sizeof (unsigned char));
   unsigned int * ind = (unsigned int *)malloc (nt * 3 * sizeof (unsigned int));
 
-  float s = 1.0;
+  float s = 0.8;
 
   xyz[0*3+0] = -s; xyz[0*3+1] = -s; xyz[0*3+2] = -s;
   xyz[1*3+0] = -s; xyz[1*3+1] = +s; xyz[1*3+2] = -s;
@@ -340,7 +340,7 @@ void cube1_t::init ()
 
   for (int i = 0; i < np; i++)
   for (int j = 0; j < ncol; j++)
-    col[ncol*i+j] = 20;
+    col[ncol*i+j] = 255;
 
   for (int i = 0; i < np; i++)
   for (int j = 0; j < 3; j++)

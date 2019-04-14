@@ -7,6 +7,8 @@ class coastlines_t : public glgrib_polygon
 {
 public:
   void init (const char *);
+  virtual int get_program_kind () { return 2; }
+  virtual bool use_alpha () { return false; }
 };
 
 #endif

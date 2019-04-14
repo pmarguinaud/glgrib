@@ -237,7 +237,7 @@ void x11_display (const char * file, int width, int height)
   glgrib_cube1 Cube;
   glgrib_view View;
   glfw_ctx_t ctx;
-  GLuint programID;
+  glgrib_program * program;
 
   ctx.view = &View;
   ctx.width = width;
@@ -254,10 +254,10 @@ void x11_display (const char * file, int width, int height)
   glfwSetWindowUserPointer (Window, &ctx);
   
   gl_init ();
-  programID = glgrib_program (0);
+  program = glgrib_program_load (0);
   World.init (file);
   Cube.init ();
-  View.init (programID);
+  View.init (program);
   Grid.init ();
   Coast.init ("gshhs(3).rim");
 
@@ -266,7 +266,7 @@ void x11_display (const char * file, int width, int height)
   Scene.objlist.push_back (&Coast);
   Scene.objlist.push_back (&Grid);
   Scene.view = &View;
-  Scene.programID = programID;
+  Scene.program = program;
 
   ctx.scene = &Scene;
   

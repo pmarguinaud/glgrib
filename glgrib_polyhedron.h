@@ -3,11 +3,12 @@
 
 #include "glgrib_object.h"
 #include "glgrib_opengl.h"
+#include "glgrib_view.h"
 
 class glgrib_polyhedron : public glgrib_object
 {
 public:
-  virtual void render () const;
+  virtual void render (const glgrib_view *) const;
   ~glgrib_polyhedron ();
   void def_from_xyz_col_ind (const float *, unsigned char *, unsigned int *);
   GLuint VertexArrayID;

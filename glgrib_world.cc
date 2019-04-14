@@ -1,5 +1,6 @@
 #include "glgrib_world.h"
 #include "glgrib_load.h"
+#include "glgrib_program.h"
 
 #include <stdlib.h>
 
@@ -8,6 +9,9 @@ void glgrib_world::init (const char * file)
   unsigned int * ind;
   float * xyz;
   unsigned char * col;
+
+  program = glgrib_program_load (0);
+
   ncol = use_alpha ? 4 : 3;
 
   glgrib_load (file, &np, &xyz, &col, &nt, &ind, use_alpha);

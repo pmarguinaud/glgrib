@@ -1,4 +1,5 @@
 #include "glgrib_cube1.h"
+#include "glgrib_program.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -8,6 +9,8 @@
 
 void glgrib_cube1::init ()
 {
+  program = glgrib_program_load (0);
+
   ncol = use_alpha ? 4 : 3;
   nt = 12;
   np = 8;

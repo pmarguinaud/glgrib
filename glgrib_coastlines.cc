@@ -1,4 +1,6 @@
 #include "glgrib_coastlines.h"
+#include "glgrib_program.h"
+
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -22,6 +24,8 @@ typedef struct point_t
 
 void coastlines_t::init (const char * file)
 {
+  program = glgrib_program_load (0);
+
   ncol = use_alpha ? 4 : 3;
 
   float * xyz = NULL;

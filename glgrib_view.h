@@ -9,7 +9,8 @@ class glgrib_view
 public:
   float rc = 6.0, latc = 0., lonc = 0., fov = 20.;
   GLuint MatrixID;
-  void init (GLuint);
+  void init (glgrib_program *);
+  void setMVP (GLuint) const;
 };
 
 #endif

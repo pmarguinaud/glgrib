@@ -2,11 +2,14 @@
 #define _GLGRIB_OBJECT_H
 
 #include "glgrib_opengl.h"
+#include "glgrib_view.h"
+#include "glgrib_program.h"
 
 class glgrib_object
 {
 public:
-  virtual void render () const = 0;
+  virtual void render (const glgrib_view *) const = 0;
+  glgrib_program * program;
 };
 
 #endif

@@ -5,6 +5,7 @@
 
 #include "glgrib_view.h"
 #include "glgrib_object.h"
+#include "glgrib_program.h"
 
 class glgrib_scene
 {
@@ -12,7 +13,7 @@ public:
   void display () const;
   std::list<glgrib_object*> objlist;
   glgrib_view * view;
-  GLuint programID;
+  glgrib_program * program;
 };
 
 #endif

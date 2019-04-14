@@ -1,12 +1,16 @@
 #include "glgrib_cube.h"
+#include "glgrib_program.h"
 
 #include <math.h>
 #include <stdlib.h>
 
 #include "glgrib_opengl.h"
 
-void glgrib_cube::render () const
+void glgrib_cube::render (const glgrib_view * view) const
 {
+  program->use ();
+  view->setMVP (program->matrixID);
+
   glEnableVertexAttribArray (0);
   glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
@@ -33,6 +37,8 @@ void glgrib_cube::render () const
 
 void glgrib_cube::init ()
 {
+  program = glgrib_program_load (0);
+
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
   

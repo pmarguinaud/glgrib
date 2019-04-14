@@ -23,8 +23,11 @@ void glgrib_polygon::def_from_xyz_col_ind (const float * xyz, const unsigned cha
   glBufferData (GL_ELEMENT_ARRAY_BUFFER, 2 * nl * sizeof (unsigned int), ind, GL_STATIC_DRAW);
 }
 
-void glgrib_polygon::render () const
+void glgrib_polygon::render (const glgrib_view * view) const
 {
+  program->use ();
+  view->setMVP (program->matrixID);
+
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_LINES, 2 * nl, GL_UNSIGNED_INT, NULL);
 }

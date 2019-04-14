@@ -1,10 +1,14 @@
 #include "glgrib_grid.h"
+#include "glgrib_program.h"
 
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 void grid_t::init ()
 {
+  program = glgrib_program_load (0);
+
   ncol = use_alpha ? 4 : 3;
 
   float * xyz = NULL;

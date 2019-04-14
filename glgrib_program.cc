@@ -5,20 +5,9 @@
 #include <string>
 
 
-class prg_t
+static glgrib_program PRG[] = 
 {
-public:
-  prg_t (const char * fsc, const char * vsc) : FragmentShaderCode (fsc), VertexShaderCode (vsc) { }
-  ~prg_t ();
-  const char * FragmentShaderCode = NULL;
-  const char * VertexShaderCode = NULL;
-  GLuint programID;
-  bool loaded = false;
-};
-
-static prg_t PRG[] = 
-{
-  prg_t (
+  glgrib_program (
 R"CODE(
 #version 330 core
 
@@ -53,7 +42,7 @@ void main()
 }
 )CODE"),
 
-  prg_t (
+  glgrib_program (
 R"CODE(
 #version 330 core
 
@@ -82,16 +71,25 @@ void main()
 
 };
 
-GLuint glgrib_program (int kind)
+glgrib_program * glgrib_program_load (int kind)
 {
   if (! PRG[kind].loaded)
-    PRG[kind].programID = glgrib_load_shader (PRG[kind].FragmentShaderCode, PRG[kind].VertexShaderCode);
-  return PRG[kind].programID;
+    {
+      PRG[kind].programID = glgrib_load_shader (PRG[kind].FragmentShaderCode, PRG[kind].VertexShaderCode);
+      PRG[kind].loaded = true;
+    }
+  return &PRG[kind];
 }
 
-prg_t::~prg_t ()
+glgrib_program::~glgrib_program ()
 {
   if (loaded)
     glDeleteProgram (programID);
+}
+
+
+void glgrib_program::use ()
+{
+  glUseProgram (programID);
 }
 

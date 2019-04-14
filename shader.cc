@@ -2,17 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef USE_GLE
-
-#define GL_GLEXT_PROTOTYPES 1
-#include <GL/glut.h>
-#include <GL/glext.h>
-
-#else
-
-#include <GL/glew.h>
-
-#endif
+#include "glgrib_opengl.h"
 
 #include "shader.h"
 

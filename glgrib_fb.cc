@@ -2,17 +2,17 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <EGL/egl.h>
-#define GL_GLEXT_PROTOTYPES 1
-#include <GL/glut.h>
-#include <GL/glext.h>
-#include "glgrib_render.h"
 #include "glgrib_fb.h"
 #include "glgrib_png.h"
-
-using namespace glm;
+#include "glgrib_world.h"
+#include "glgrib_scene.h"
+#include "glgrib_cube.h"
+#include "glgrib_cube1.h"
+#include "glgrib_grid.h"
+#include "glgrib_view.h"
+#include "glgrib_prog.h"
+#include "glgrib_coastlines.h"
 
 typedef struct fb_t
 {

@@ -1,0 +1,12 @@
+#ifndef _GLGRIB_COASTLINES_H
+#define _GLGRIB_COASTLINES_H
+
+#include "glgrib_polygon.h"
+
+class coastlines_t : public polygon_t
+{
+public:
+  void init (const char *);
+};
+
+#endif

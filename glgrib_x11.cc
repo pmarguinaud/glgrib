@@ -3,21 +3,22 @@
 #include <stdlib.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include "glgrib_render.h"
 #include "glgrib_png.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "glgrib_world.h"
+#include "glgrib_scene.h"
+#include "glgrib_cube.h"
+#include "glgrib_cube1.h"
+#include "glgrib_grid.h"
+#include "glgrib_view.h"
+#include "glgrib_prog.h"
+#include "glgrib_coastlines.h"
+
 
 #include "glgrib_x11.h"
-
-using namespace glm;
-
-#include "shader.h"
-
 
 typedef struct glfw_ctx_t
 {
@@ -260,10 +261,10 @@ void x11_display (const char * file, int width, int height)
   Grid.init ();
   Coast.init ("gshhs(3).rim");
 
-//Scene.objlist.push_back (&World);
-  Scene.objlist.push_back (&Cube);
-//Scene.objlist.push_back (&Coast);
-//Scene.objlist.push_back (&Grid);
+  Scene.objlist.push_back (&World);
+//Scene.objlist.push_back (&Cube);
+  Scene.objlist.push_back (&Coast);
+  Scene.objlist.push_back (&Grid);
   Scene.view = &View;
   Scene.prog = &Prog;
 

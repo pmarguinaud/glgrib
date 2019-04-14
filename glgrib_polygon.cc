@@ -1,6 +1,8 @@
 #include "glgrib_polygon.h"
 #include "glgrib_opengl.h"
 
+#include <stdio.h>
+
 void glgrib_polygon::def_from_xyz_col_ind (const float * xyz, const unsigned char * col, const unsigned int * ind)
 {
   glGenVertexArrays (1, &VertexArrayID);

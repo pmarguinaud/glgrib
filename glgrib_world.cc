@@ -3,6 +3,7 @@
 #include "glgrib_program.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 void glgrib_world::init (const char * file)
 {
@@ -12,7 +13,10 @@ void glgrib_world::init (const char * file)
 
   ncol = use_alpha () ? 4 : 3;
 
+  printf (" use_alpha = %d, ncol = %d\n", use_alpha (), ncol);
+
   glgrib_load (file, &np, &xyz, &col, &nt, &ind, use_alpha ());
+
   
   def_from_xyz_col_ind (xyz, col, ind);
 

@@ -1,14 +1,15 @@
 #include "glgrib_polyhedron.h"
+#include "glgrib_opengl.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
-#include "glgrib_opengl.h"
 
 void glgrib_polyhedron::def_from_xyz_col_ind (const float * xyz, unsigned char * col, unsigned int * ind)
 {
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
-  
+
   glGenBuffers (1, &vertexbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
   glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);

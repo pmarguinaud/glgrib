@@ -4,11 +4,11 @@
 
 #include <string>
 
-static const int nprg = 2;
+static const int nprg = 3;
 
 static glgrib_program PRG[nprg] = 
 {
-  glgrib_program (
+  glgrib_program (  // 3 colors + alpha channel
 R"CODE(
 #version 330 core
 
@@ -43,7 +43,40 @@ void main()
 }
 )CODE"),
 
-  glgrib_program (
+  glgrib_program (  // 3 colors 
+R"CODE(
+#version 330 core
+
+in vec3 fragmentColor;
+
+out vec3 color;
+
+void main()
+{
+  color.r = fragmentColor.r;
+  color.g = fragmentColor.g;
+  color.b = fragmentColor.b;
+}
+)CODE",
+R"CODE(
+#version 330 core
+
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 vertexColor;
+
+out vec3 fragmentColor;
+uniform mat4 MVP;
+
+void main()
+{
+  gl_Position =  MVP * vec4 (vertexPosition_modelspace, 1);
+  fragmentColor.r = vertexColor.r;
+  fragmentColor.g = vertexColor.g;
+  fragmentColor.b = vertexColor.b;
+}
+)CODE"),
+
+  glgrib_program ( // Fixed color
 R"CODE(
 #version 330 core
 
@@ -74,6 +107,7 @@ void main()
 
 glgrib_program * glgrib_program_load (int kind)
 {
+printf (" load = %d\n", kind);
   if (! PRG[kind].loaded)
     {
       PRG[kind].programID = glgrib_load_shader (PRG[kind].FragmentShaderCode, PRG[kind].VertexShaderCode);
@@ -91,6 +125,7 @@ glgrib_program::~glgrib_program ()
 
 void glgrib_program::use () const
 {
+  glUseProgram (programID);
   if (! active)
     {
       glUseProgram (programID);

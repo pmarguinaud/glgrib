@@ -252,15 +252,15 @@ void x11_display (const char * file, int width, int height)
   glfwSetWindowUserPointer (Window, &ctx);
   
   gl_init ();
-  World.init (file);
+//World.init (file);
   Cube.init ();
-  Grid.init ();
-  Coast.init ("gshhs(3).rim");
+//Grid.init ();
+//Coast.init ("gshhs(3).rim");
 
-  Scene.objlist.push_back (&World);
-//Scene.objlist.push_back (&Cube);
-  Scene.objlist.push_back (&Coast);
-  Scene.objlist.push_back (&Grid);
+//Scene.objlist.push_back (&World);
+  Scene.objlist.push_back (&Cube);
+//Scene.objlist.push_back (&Coast);
+//Scene.objlist.push_back (&Grid);
   Scene.view = &View;
 
   ctx.scene = &Scene;

@@ -123,7 +123,7 @@ void glgrib_load (const char * file, int * np, float ** xyz,
   *xyz = NULL;
   *col = NULL;
 
-  for (int icol = 0; icol < 4; icol++)
+  for (int ifld = 0; ifld < 4; ifld++)
     {
       int err = 0;
       size_t v_len = 0;
@@ -152,7 +152,7 @@ void glgrib_load (const char * file, int * np, float ** xyz,
       codes_handle_delete (h);
       
       
-      if (icol == 3) // Orography
+      if (ifld == 3) // Orography
         {
           *xyz = (float *)malloc (3 * sizeof (float) * v_len);
           *np  = v_len;
@@ -174,10 +174,10 @@ void glgrib_load (const char * file, int * np, float ** xyz,
       else
         {
           if (*col == NULL)
-            *col = (unsigned char *)malloc (4 * sizeof (unsigned char) * v_len);
+            *col = (unsigned char *)malloc (ncol * sizeof (unsigned char) * v_len);
           for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
             for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
-              (*col)[ncol*jglo+icol] = 255 * v[jglo];
+              (*col)[ncol*jglo+ifld] = 255 * v[jglo];
         }
       
       free (v);
@@ -187,6 +187,20 @@ void glgrib_load (const char * file, int * np, float ** xyz,
     for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
       for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
         (*col)[ncol*jglo+3] = 255;
+
+{
+  FILE * fp; 
+  char tmp[32];
+  sprintf (tmp, "RGB%d.txt", ncol);
+  fp = fopen (tmp, "w");
+  for (int jglo = 0; jglo < 4000; jglo++)
+    fprintf (fp, " %3.3d %3.3d %3.3d %12.4f %12.4f %12.4f \n", 
+    (*col)[ncol*jglo+0], (*col)[ncol*jglo+1], (*col)[ncol*jglo+2],
+    (*xyz)[3*jglo+0],    (*xyz)[3*jglo+1],    (*xyz)[3*jglo+2]
+    );
+  fclose (fp);
+}
+
       
     
   fclose (in);

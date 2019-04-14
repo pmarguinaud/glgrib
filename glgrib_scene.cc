@@ -20,7 +20,7 @@ void glgrib_scene::display () const
   
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
-  glUseProgram (prog->programID);
+  glUseProgram (programID);
   glUniformMatrix4fv (view->MatrixID, 1, GL_FALSE, &MVP[0][0]);
   
   for (std::list<glgrib_object*>::const_iterator it = objlist.begin (); 

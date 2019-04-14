@@ -9,8 +9,11 @@ class prg_t
 {
 public:
   prg_t (const char * fsc, const char * vsc) : FragmentShaderCode (fsc), VertexShaderCode (vsc) { }
+  ~prg_t ();
   const char * FragmentShaderCode = NULL;
   const char * VertexShaderCode = NULL;
+  GLuint programID;
+  bool loaded = false;
 };
 
 static prg_t PRG[] = 
@@ -79,13 +82,16 @@ void main()
 
 };
 
-void glgrib_program::init (int kind)
+GLuint glgrib_program (int kind)
 {
-  programID = glgrib_load_shader (PRG[kind].FragmentShaderCode, PRG[kind].VertexShaderCode);
+  if (! PRG[kind].loaded)
+    PRG[kind].programID = glgrib_load_shader (PRG[kind].FragmentShaderCode, PRG[kind].VertexShaderCode);
+  return PRG[kind].programID;
 }
 
-glgrib_program::~glgrib_program ()
+prg_t::~prg_t ()
 {
-  glDeleteProgram (programID);
+  if (loaded)
+    glDeleteProgram (programID);
 }
 

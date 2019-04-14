@@ -136,22 +136,22 @@ void fb_display (const char * file, int width, int height)
   glgrib_scene Scene;
   glgrib_world World;
   glgrib_cube1 Cube;
-  glgrib_program Prog;
   glgrib_view View;
   fb_t Fb;
+  GLuint programID;
 
   fb_init (&Fb, width, height);
   
   gl_init ();
-  Prog.init (0);
+  programID = glgrib_program (0);
 //World.init (file);
   Cube.init ();
-  View.init (&Prog);
+  View.init (programID);
 
 //Scene.objlist.push_back (&World);
   Scene.objlist.push_back (&Cube);
   Scene.view = &View;
-  Scene.prog = &Prog;
+  Scene.programID = programID;
   
   Scene.display ();
 

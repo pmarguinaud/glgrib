@@ -12,7 +12,7 @@ public:
   void display () const;
   std::list<glgrib_object*> objlist;
   glgrib_view * view;
-  glgrib_program * prog;
+  GLuint programID;
 };
 
 #endif

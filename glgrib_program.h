@@ -7,7 +7,7 @@ class glgrib_program
 {
 public:
   GLuint programID;
-  void init ();
+  void init (int);
   ~glgrib_program ();
 };
 

@@ -3,6 +3,6 @@
 
 #include "glgrib_opengl.h"
 
-GLuint glgrib_load_shader ();
+GLuint glgrib_load_shader (const char *, const char *);
 
 #endif

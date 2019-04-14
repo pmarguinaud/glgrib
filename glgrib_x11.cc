@@ -254,7 +254,7 @@ void x11_display (const char * file, int width, int height)
   glfwSetWindowUserPointer (Window, &ctx);
   
   gl_init ();
-  Prog.init ();
+  Prog.init (0);
   World.init (file);
   Cube.init ();
   View.init (&Prog);

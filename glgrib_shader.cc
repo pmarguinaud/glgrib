@@ -5,46 +5,12 @@
 
 #include "glgrib_opengl.h"
 
-GLuint glgrib_load_shader ()
+GLuint glgrib_load_shader (const char * FragmentShaderCode, const char * VertexShaderCode)
 {
   int len;
   GLint res = GL_FALSE;
   GLuint VertexShaderID = glCreateShader (GL_VERTEX_SHADER);
   GLuint FragmentShaderID = glCreateShader (GL_FRAGMENT_SHADER);
-
-  const char * FragmentShaderCode =
-"#version 330 core\n"
-"\n"
-"in vec4 fragmentColor;\n"
-"\n"
-"out vec4 color;\n"
-"\n"
-"void main(){\n"
-"\n"
-"        color.r = fragmentColor.r;\n"
-"        color.g = fragmentColor.g;\n"
-"        color.b = fragmentColor.b;\n"
-"        color.a = fragmentColor.a;\n"
-"}\n";
-
-  const char * VertexShaderCode = 
-"#version 330 core\n"
-"\n"
-"layout(location = 0) in vec3 vertexPosition_modelspace;\n"
-"layout(location = 1) in vec4 vertexColor;\n"
-"\n"
-"out vec4 fragmentColor;\n"
-"uniform mat4 MVP;\n"
-"\n"
-"void main(){\n"
-"\n"
-"        gl_Position =  MVP * vec4(vertexPosition_modelspace,1);\n"
-"\n"
-"        fragmentColor.r = vertexColor.r;\n"
-"        fragmentColor.g = vertexColor.g;\n"
-"        fragmentColor.b = vertexColor.b;\n"
-"        fragmentColor.a = vertexColor.a;\n"
-"}\n";
 
 
   // Compile Vertex Shader

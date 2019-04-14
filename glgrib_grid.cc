@@ -11,7 +11,6 @@ void glgrib_grid::init ()
   ncol = use_alpha () ? 4 : 3;
 
   float * xyz = NULL;
-  unsigned char * col = NULL;
   unsigned int * ind = NULL;
 
   int ip = 0, il = 0;
@@ -94,20 +93,14 @@ void glgrib_grid::init ()
       if (pass == 0)
         {
           xyz = (float *)malloc (3 * np * sizeof (float));
-          col = (unsigned char *)malloc (np * ncol * sizeof (unsigned char));
           ind = (unsigned int *)malloc (nl * 2 * sizeof (unsigned int));
 	}
 
     }
 
 
-  for (int i = 0; i < np; i++)
-  for (int j = 0; j < ncol; j++)
-    col[ncol*i+j] = 255;
-
-  def_from_xyz_col_ind (xyz, col, ind);
+  def_from_xyz_col_ind (xyz, NULL, ind);
 
   free (ind);
   free (xyz);
-  free (col);
 }

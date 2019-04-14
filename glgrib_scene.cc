@@ -23,7 +23,7 @@ void scene_t::display () const
   glUseProgram (prog->programID);
   glUniformMatrix4fv (view->MatrixID, 1, GL_FALSE, &MVP[0][0]);
   
-  for (std::list<obj_t*>::const_iterator it = objlist.begin (); 
+  for (std::list<object_t*>::const_iterator it = objlist.begin (); 
        it != objlist.end (); it++)
     (*it)->render ();
 

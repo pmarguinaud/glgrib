@@ -1,10 +1,10 @@
 #ifndef _GLGRIB_POLYHEDRON_H
 #define _GLGRIB_POLYHEDRON_H
 
-#include "glgrib_obj.h"
+#include "glgrib_object.h"
 #include "glgrib_opengl.h"
 
-class polyhedron_t : public obj_t
+class polyhedron_t : public object_t
 {
 public:
   virtual void render () const;

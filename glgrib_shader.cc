@@ -1,12 +1,11 @@
+#include "glgrib_shader.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "glgrib_opengl.h"
 
-#include "shader.h"
-
-GLuint LoadShaders ()
+GLuint glgrib_load_shader ()
 {
   int len;
   GLint res = GL_FALSE;

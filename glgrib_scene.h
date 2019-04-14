@@ -4,15 +4,15 @@
 #include <list>
 
 #include "glgrib_view.h"
-#include "glgrib_obj.h"
+#include "glgrib_object.h"
 
 class scene_t
 {
 public:
   void display () const;
-  std::list<obj_t*> objlist;
+  std::list<object_t*> objlist;
   view_t * view;
-  prog_t * prog;
+  program_t * prog;
 };
 
 #endif

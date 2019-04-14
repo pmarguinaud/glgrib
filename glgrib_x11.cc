@@ -14,7 +14,7 @@
 #include "glgrib_cube1.h"
 #include "glgrib_grid.h"
 #include "glgrib_view.h"
-#include "glgrib_prog.h"
+#include "glgrib_program.h"
 #include "glgrib_coastlines.h"
 
 
@@ -235,7 +235,7 @@ void x11_display (const char * file, int width, int height)
   grid_t Grid;
   world_t World;
   cube1_t Cube;
-  prog_t Prog;
+  program_t Prog;
   view_t View;
   glfw_ctx_t ctx;
 

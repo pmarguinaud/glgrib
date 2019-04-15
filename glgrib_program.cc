@@ -104,7 +104,47 @@ void main()
 }
 )CODE"),
 
+  glgrib_program (  // 3 colors, flat
+R"CODE(
+#version 330 core
 
+in vec3 fragmentColor;
+
+out vec4 color;
+
+void main()
+{
+  color.r = fragmentColor.r;
+  color.g = fragmentColor.g;
+  color.b = fragmentColor.b;
+  color.a = 255;
+}
+)CODE",
+R"CODE(
+#version 330 core
+
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 vertexColor;
+
+out vec3 fragmentColor;
+uniform mat4 MVP;
+
+void main()
+{
+  float x = vertexPosition_modelspace.x;
+  float y = vertexPosition_modelspace.y;
+  float z = vertexPosition_modelspace.z;
+  float r = 1. / sqrt (x * x + y * y + z * z); 
+  vec3 pos;
+  pos.x = x * r;
+  pos.y = y * r;
+  pos.z = z * r;
+  gl_Position =  MVP * vec4 (pos, 1);
+  fragmentColor.r = vertexColor.r;
+  fragmentColor.g = vertexColor.g;
+  fragmentColor.b = vertexColor.b;
+}
+)CODE"),
 };
 
 glgrib_program * glgrib_program_load (glgrib_program_kind kind)

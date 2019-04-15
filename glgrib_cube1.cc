@@ -3,8 +3,6 @@
 
 #include <math.h>
 #include <stdlib.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 
 
 void glgrib_cube1::init ()

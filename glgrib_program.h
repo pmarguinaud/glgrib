@@ -10,7 +10,8 @@ typedef enum
   GLGRIB_PROGRAM_RGBA=0,
   GLGRIB_PROGRAM_RGB=1,
   GLGRIB_PROGRAM_MONO=2,
-  GLGRIB_PROGRAM_SIZE=3,
+  GLGRIB_PROGRAM_RGB_FLAT=3,
+  GLGRIB_PROGRAM_SIZE=4,
 } glgrib_program_kind;
 
 class glgrib_program

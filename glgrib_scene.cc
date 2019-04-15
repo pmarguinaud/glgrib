@@ -1,8 +1,6 @@
 #include "glgrib_scene.h"
 #include "glgrib_opengl.h"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <stdio.h>
 
 

@@ -109,12 +109,15 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
 }
 
 
-void glgrib_load_z (const char * file, int * np, float ** xyz, 
+void glgrib_load_z (const char * geom, int * np, float ** xyz, 
                     unsigned int * nt, unsigned int ** ind)
 {
   FILE * in = NULL;
   long int * pl = NULL;
   long int Nj;
+  char file[64];
+
+  sprintf (file, "Z_%s.grb", geom);
   
   in = fopen (file, "r");
 
@@ -168,10 +171,13 @@ void glgrib_load_z (const char * file, int * np, float ** xyz,
   
 }
 
-void glgrib_load_rgb (const char * file, unsigned char ** col, int use_alpha)
+void glgrib_load_rgb (const char * geom, unsigned char ** col, int use_alpha)
 {
   FILE * in = NULL;
   int ncol = use_alpha ? 4 : 3;
+  char file[64];
+
+  sprintf (file, "RGB_%s.grb", geom);
   
   in = fopen (file, "r");
 
@@ -214,12 +220,7 @@ void glgrib_load (const char * geom, int * np, float ** xyz,
                   unsigned char ** col, unsigned int * nt, 
                   unsigned int ** ind, int use_alpha)
 {
-  char file[64];
-
-  sprintf (file, "Z_%s.grb", geom);
-  glgrib_load_z (file, np, xyz, nt, ind);
-
-  sprintf (file, "RGB_%s.grb", geom);
-  glgrib_load_rgb (file, col, use_alpha);
+  glgrib_load_z (geom, np, xyz, nt, ind);
+  glgrib_load_rgb (geom, col, use_alpha);
 }
 

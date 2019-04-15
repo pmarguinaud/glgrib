@@ -8,7 +8,8 @@ class glgrib_coords
 public:
   ~glgrib_coords ();
   GLuint vertexbuffer, elementbuffer;
-  int np, nt;
+  int np;
+  unsigned int nt;
 };
 
 #endif

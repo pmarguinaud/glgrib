@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #include "glgrib_world.h"
+#include "glgrib_coords_world.h"
 #include "glgrib_scene.h"
 #include "glgrib_cube2.h"
 #include "glgrib_grid.h"
@@ -185,7 +186,7 @@ void scroll_callback (GLFWwindow * window, double xoffset, double yoffset)
 }
 
 static
-GLFWwindow * new_glfw_window (const char * file, int width, int height)
+GLFWwindow * new_glfw_window (const char * geom, int width, int height)
 {
   GLFWwindow * window;
 
@@ -195,7 +196,7 @@ GLFWwindow * new_glfw_window (const char * file, int width, int height)
   glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); 
   glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   
-  window = glfwCreateWindow (width, height, file, NULL, NULL);
+  window = glfwCreateWindow (width, height, geom, NULL, NULL);
 
   if (window == NULL)
     {
@@ -230,11 +231,12 @@ void free_glfw_window (GLFWwindow * window)
   glfwTerminate ();
 }
 
-void x11_display (const char * file, int width, int height)
+void x11_display (const char * geom, int width, int height)
 {
   glgrib_coastlines Coast;
   glgrib_grid Grid;
   glgrib_scene Scene;
+  glgrib_coords_world WorldCoords;
   glgrib_world World;
   glgrib_cube2 CubeA, CubeB;
   glgrib_view View;
@@ -251,7 +253,7 @@ void x11_display (const char * file, int width, int height)
       return;
     }
 
-  GLFWwindow * Window = new_glfw_window (file, width, height);
+  GLFWwindow * Window = new_glfw_window (geom, width, height);
   glfwSetWindowUserPointer (Window, &ctx);
   
   gl_init ();
@@ -260,7 +262,8 @@ void x11_display (const char * file, int width, int height)
   Coords.init ();
 
   if(1){
-  World.init (file);
+  WorldCoords.init (geom);
+  World.init (geom);
   Scene.objlist.push_back (&World);
   Scene.world = &World;
   }

@@ -7,7 +7,7 @@
 class glgrib_coords_world : public glgrib_coords
 {
 public:
-  void init ();
+  void init (const char *);
 };
 
 #endif

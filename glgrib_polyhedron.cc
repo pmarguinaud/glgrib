@@ -25,12 +25,15 @@ void glgrib_polyhedron::def_from_xyz_col_ind (const float * xyz, unsigned char *
   glGenBuffers (1, &elementbuffer);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
   glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), ind , GL_STATIC_DRAW);
+
+  glBindVertexArray (0);
 }
 
 void glgrib_polyhedron::render (const glgrib_view * view) const
 {
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
+  glBindVertexArray (0);
 }
 
 glgrib_polyhedron::~glgrib_polyhedron ()

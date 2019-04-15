@@ -4,6 +4,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+static bool init_done = false;
+GLuint vertexbuffer, elementbuffer;
 
 
 void glgrib_cube2::init (float x, float y, float z)
@@ -60,7 +62,18 @@ void glgrib_cube2::init (float x, float y, float z)
   ind[33] = 1; ind[34] = 4; ind[36] = 0;
 
 
-  def_from_vertexbuffer_col_elementbuffer (xyz, col, ind);
+  if (! init_done)
+    {
+      glGenBuffers (1, &vertexbuffer);
+      glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
+      glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
+      glGenBuffers (1, &elementbuffer);
+      glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+      glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), ind , GL_STATIC_DRAW);
+      init_done = true;
+    }
+
+  def_from_vertexbuffer_col_elementbuffer (col);
 
   free (col);
   free (ind);
@@ -68,14 +81,12 @@ void glgrib_cube2::init (float x, float y, float z)
 
 }
 
-void glgrib_cube2::def_from_vertexbuffer_col_elementbuffer (float * xyz, unsigned char * col, unsigned int * ind)
+void glgrib_cube2::def_from_vertexbuffer_col_elementbuffer (unsigned char * col)
 {
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
 
-  glGenBuffers (1, &vertexbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
-  glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
   
@@ -85,9 +96,9 @@ void glgrib_cube2::def_from_vertexbuffer_col_elementbuffer (float * xyz, unsigne
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, ncol, GL_UNSIGNED_BYTE, GL_TRUE, ncol * sizeof (unsigned char), NULL); 
   
-  glGenBuffers (1, &elementbuffer);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), ind , GL_STATIC_DRAW);
+
+  glBindVertexArray (0); 
 }
 
 void glgrib_cube2::render (const glgrib_view * view) const
@@ -97,6 +108,7 @@ void glgrib_cube2::render (const glgrib_view * view) const
   glUniform3fv (position0, 1, position);
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
+  glBindVertexArray (0); 
 }
 
 glgrib_cube2::~glgrib_cube2 ()

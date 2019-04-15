@@ -26,12 +26,15 @@ void glgrib_polygon::def_from_xyz_col_ind (const float * xyz, const unsigned cha
   glGenBuffers (1, &elementbuffer);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
   glBufferData (GL_ELEMENT_ARRAY_BUFFER, 2 * nl * sizeof (unsigned int), ind, GL_STATIC_DRAW);
+
+  glBindVertexArray (0);
 }
 
 void glgrib_polygon::render (const glgrib_view * view) const
 {
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_LINES, 2 * nl, GL_UNSIGNED_INT, NULL);
+  glBindVertexArray (0);
 }
 
 glgrib_polygon::~glgrib_polygon ()

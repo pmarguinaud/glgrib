@@ -109,21 +109,75 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
 }
 
 
-void glgrib_load (const char * file, int * np, float ** xyz, 
-                  unsigned char ** col, unsigned int * nt, 
-                  unsigned int ** ind, int use_alpha)
+void glgrib_load_z (const char * file, int * np, float ** xyz, 
+                    unsigned int * nt, unsigned int ** ind)
 {
   FILE * in = NULL;
   long int * pl = NULL;
   long int Nj;
-  int ncol = use_alpha ? 4 : 3;
   
   in = fopen (file, "r");
 
   *xyz = NULL;
+  *ind = NULL;
+
+  int err = 0;
+  size_t v_len = 0;
+  codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
+  codes_get_size (h, "values", &v_len);
+      
+  double vmin, vmax, vmis;
+  double * v = (double *)malloc (v_len * sizeof (double));
+
+  codes_get_double_array (h, "values", v, &v_len);
+  codes_get_double (h, "maximum",      &vmax);
+  codes_get_double (h, "minimum",      &vmin);
+  codes_get_double (h, "missingValue", &vmis);
+      
+  size_t pl_len;
+  codes_get_long (h, "Nj", &Nj);
+  codes_get_size (h, "pl", &pl_len);
+  pl = (long int *)malloc (sizeof (long int) * pl_len);
+  codes_get_long_array (h, "pl", pl, &pl_len);
+  glgauss (Nj, pl, 1, nt);
+  *ind = (unsigned int *)malloc (3 * (*nt) * sizeof (unsigned int));
+  glgauss (Nj, pl, 2, *ind);
+  codes_handle_delete (h);
+      
+      
+  *xyz = (float *)malloc (3 * sizeof (float) * v_len);
+  *np  = v_len;
+  for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
+    {
+      float lat = M_PI * (0.5 - (float)jlat / (float)(Nj + 1));
+      float coslat = cos (lat); float sinlat = sin (lat);
+      for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
+        {
+          float lon = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
+          float coslon = cos (lon); float sinlon = sin (lon);
+          float radius = (1.0 + ((v[jglo] == vmis) ? 0. : 0.05 * v[jglo]/vmax));
+          (*xyz)[3*jglo+0] = coslon * coslat * radius;
+          (*xyz)[3*jglo+1] = sinlon * coslat * radius;
+          (*xyz)[3*jglo+2] =          sinlat * radius;
+        }
+    }
+  free (v);
+
+  fclose (in);
+  free (pl);
+  
+}
+
+void glgrib_load_rgb (const char * file, unsigned char ** col, int use_alpha)
+{
+  FILE * in = NULL;
+  int ncol = use_alpha ? 4 : 3;
+  
+  in = fopen (file, "r");
+
   *col = NULL;
 
-  for (int ifld = 0; ifld < 4; ifld++)
+  for (int ifld = 0; ifld < 3; ifld++)
     {
       int err = 0;
       size_t v_len = 0;
@@ -137,58 +191,35 @@ void glgrib_load (const char * file, int * np, float ** xyz,
       codes_get_double (h, "maximum",      &vmax);
       codes_get_double (h, "minimum",      &vmin);
       codes_get_double (h, "missingValue", &vmis);
-      
-      if (pl == NULL)
-        {
-          size_t pl_len;
-          codes_get_long (h, "Nj", &Nj);
-          codes_get_size (h, "pl", &pl_len);
-          pl = (long int *)malloc (sizeof (long int) * pl_len);
-          codes_get_long_array (h, "pl", pl, &pl_len);
-          glgauss (Nj, pl, 1, nt);
-          *ind = (unsigned int *)malloc (3 * (*nt) * sizeof (unsigned int));
-          glgauss (Nj, pl, 2, *ind);
-        }
       codes_handle_delete (h);
       
-      
-      if (ifld == 3) // Orography
+      if (*col == NULL)
         {
-          *xyz = (float *)malloc (3 * sizeof (float) * v_len);
-          *np  = v_len;
-          for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
-            {
-              float lat = M_PI * (0.5 - (float)jlat / (float)(Nj + 1));
-              float coslat = cos (lat); float sinlat = sin (lat);
-              for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
-                {
-                  float lon = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
-                  float coslon = cos (lon); float sinlon = sin (lon);
-                  float radius = (1.0 + ((v[jglo] == vmis) ? 0. : 0.05 * v[jglo]/vmax));
-                  (*xyz)[3*jglo+0] = coslon * coslat * radius;
-                  (*xyz)[3*jglo+1] = sinlon * coslat * radius;
-                  (*xyz)[3*jglo+2] =          sinlat * radius;
-                }
-            }
-        }
-      else
-        {
-          if (*col == NULL)
-            *col = (unsigned char *)malloc (ncol * sizeof (unsigned char) * v_len);
-          for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
-            for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
-              (*col)[ncol*jglo+ifld] = 255 * v[jglo];
-        }
+          *col = (unsigned char *)malloc (ncol * sizeof (unsigned char) * v_len);
+          if (use_alpha)
+            for (int jglo = 0; jglo < v_len; jglo++)
+              (*col)[ncol*jglo+3] = 255;
+	}
+
+      for (int jglo = 0; jglo < v_len; jglo++)
+        (*col)[ncol*jglo+ifld] = 255 * v[jglo];
       
       free (v);
     }
 
-  if (use_alpha)
-    for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
-      for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
-        (*col)[ncol*jglo+3] = 255;
-
   fclose (in);
-  free (pl);
-  
 }
+
+void glgrib_load (const char * geom, int * np, float ** xyz, 
+                  unsigned char ** col, unsigned int * nt, 
+                  unsigned int ** ind, int use_alpha)
+{
+  char file[64];
+
+  sprintf (file, "Z_%s.grb", geom);
+  glgrib_load_z (file, np, xyz, nt, ind);
+
+  sprintf (file, "RGB_%s.grb", geom);
+  glgrib_load_rgb (file, col, use_alpha);
+}
+

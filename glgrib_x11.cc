@@ -256,17 +256,20 @@ void x11_display (const char * file, int width, int height)
   
   gl_init ();
 
+  glgrib_coords_cube Coords;
+  Coords.init ();
+
   if(1){
   World.init (file);
   Scene.objlist.push_back (&World);
   Scene.world = &World;
   }
   if(1){
-  CubeA.init (-0.5, -0.5, -0.5);
+  CubeA.init (&Coords, -0.5, -0.5, -0.5);
   Scene.objlist.push_back (&CubeA);
   }
   if(1){
-  CubeB.init (+0.5, +0.5, +0.5);
+  CubeB.init (&Coords, +0.5, +0.5, +0.5);
   Scene.objlist.push_back (&CubeB);
   }
 

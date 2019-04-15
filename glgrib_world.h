@@ -14,6 +14,7 @@ public:
   virtual bool use_alpha () { return false; }
   bool flat = false;
   void set_flat (bool f) { flat = f; }
+  void toggle_flat () { flat = ! flat; program = NULL; }
 };
 
 #endif

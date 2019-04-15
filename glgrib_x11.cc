@@ -10,8 +10,7 @@
 
 #include "glgrib_world.h"
 #include "glgrib_scene.h"
-#include "glgrib_cube.h"
-#include "glgrib_cube1.h"
+#include "glgrib_cube2.h"
 #include "glgrib_grid.h"
 #include "glgrib_view.h"
 #include "glgrib_coastlines.h"
@@ -111,6 +110,10 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
             break;
           case GLFW_KEY_Q:
             ctx->view->fov -= 1.;
+            break;
+          case GLFW_KEY_P:
+	    if (ctx->scene->world != NULL)
+              ctx->scene->world->toggle_flat ();
             break;
           case GLFW_KEY_6:
             ctx->view->rc += 0.1;
@@ -233,7 +236,7 @@ void x11_display (const char * file, int width, int height)
   glgrib_grid Grid;
   glgrib_scene Scene;
   glgrib_world World;
-  glgrib_cube1 Cube;
+  glgrib_cube2 CubeA, CubeB;
   glgrib_view View;
   glfw_ctx_t ctx;
 
@@ -252,15 +255,19 @@ void x11_display (const char * file, int width, int height)
   glfwSetWindowUserPointer (Window, &ctx);
   
   gl_init ();
-  World.init (file);
-//Cube.init ();
-  Grid.init ();
-  Coast.init ("gshhs(3).rim");
+//World.init (file);
+  CubeA.init ();
+  CubeB.init (0.5, 0.5, 0.5);
+//Grid.init ();
+//Coast.init ("gshhs(3).rim");
 
-  Scene.objlist.push_back (&World);
-//Scene.objlist.push_back (&Cube);
-  Scene.objlist.push_back (&Coast);
-  Scene.objlist.push_back (&Grid);
+//Scene.objlist.push_back (&World);
+//Scene.world = &World;
+
+  Scene.objlist.push_back (&CubeA);
+  Scene.objlist.push_back (&CubeB);
+//Scene.objlist.push_back (&Coast);
+//Scene.objlist.push_back (&Grid);
   Scene.view = &View;
 
   ctx.scene = &Scene;

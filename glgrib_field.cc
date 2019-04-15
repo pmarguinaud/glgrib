@@ -26,14 +26,13 @@ void glgrib_field::init (const char * field, const glgrib_coords_world * coords)
         col[ncol*i+3] = 255;
     }
 #else
-  ncol = 2;
+  ncol = 1;
 
   col = (unsigned char *)malloc (ncol * coords->np * sizeof (unsigned char));
 
   for (int i = 0; i < coords->np; i++)
     {
       col[ncol*i+0] = (int)((float)(255 * i) / (float)coords->np);
-      col[ncol*i+1] = 255 - col[ncol*i+0];
     }
 
 #endif

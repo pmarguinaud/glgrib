@@ -209,7 +209,7 @@ R"CODE(
 #version 330 core
 
 layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in vec2 vertexColor;
+layout(location = 1) in float vertexColor;
 
 out vec3 fragmentColor;
 uniform mat4 MVP;
@@ -227,8 +227,8 @@ void main()
   pos.y = scale0.y * y * r;
   pos.z = scale0.z * z * r;
   gl_Position =  MVP * vec4 (pos, 1);
-  fragmentColor.r = vertexColor.r;
-  fragmentColor.g = vertexColor.g;
+  fragmentColor.r = vertexColor;
+  fragmentColor.g = 0;
   fragmentColor.b = 0;
 }
 )CODE"),

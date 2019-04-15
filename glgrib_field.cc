@@ -12,6 +12,7 @@ void glgrib_field::init (const char * field, const glgrib_coords_world * coords)
   float * xyz;
   unsigned char * col;
 
+#ifdef UNDEF
   ncol = use_alpha () ? 4 : 3;
 
   col = (unsigned char *)malloc (ncol * coords->np * sizeof (unsigned char));
@@ -24,6 +25,18 @@ void glgrib_field::init (const char * field, const glgrib_coords_world * coords)
       if (ncol == 4)
         col[ncol*i+3] = 255;
     }
+#else
+  ncol = 2;
+
+  col = (unsigned char *)malloc (ncol * coords->np * sizeof (unsigned char));
+
+  for (int i = 0; i < coords->np; i++)
+    {
+      col[ncol*i+0] = (int)((float)(255 * i) / (float)coords->np);
+      col[ncol*i+1] = 255 - col[ncol*i+0];
+    }
+
+#endif
 
   def_from_vertexbuffer_col_elementbuffer (coords, col);
 

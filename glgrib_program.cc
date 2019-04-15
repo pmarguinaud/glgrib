@@ -189,6 +189,50 @@ void main()
 }
 )CODE"),
 
+  glgrib_program (  // gradient color, flat
+R"CODE(
+#version 330 core
+
+in vec3 fragmentColor;
+
+out vec4 color;
+
+void main()
+{
+  color.r = fragmentColor.r;
+  color.g = fragmentColor.g;
+  color.b = fragmentColor.b;
+  color.a = 255;
+}
+)CODE",
+R"CODE(
+#version 330 core
+
+layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 1) in vec3 vertexColor;
+
+out vec3 fragmentColor;
+uniform mat4 MVP;
+
+uniform vec3 scale0 = vec3 (1.0, 1.0, 1.0);
+
+void main()
+{
+  float x = vertexPosition_modelspace.x;
+  float y = vertexPosition_modelspace.y;
+  float z = vertexPosition_modelspace.z;
+  float r = 1. / sqrt (x * x + y * y + z * z); 
+  vec3 pos;
+  pos.x = scale0.x * x * r;
+  pos.y = scale0.y * y * r;
+  pos.z = scale0.z * z * r;
+  gl_Position =  MVP * vec4 (pos, 1);
+  fragmentColor.r = vertexColor.r;
+  fragmentColor.g = vertexColor.g;
+  fragmentColor.b = vertexColor.b;
+}
+)CODE"),
+
 
 };
 

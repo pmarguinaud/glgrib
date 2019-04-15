@@ -7,6 +7,7 @@
 #include "glgrib_object.h"
 #include "glgrib_program.h"
 #include "glgrib_landscape.h"
+#include "glgrib_field.h"
 
 class glgrib_scene
 {
@@ -15,6 +16,7 @@ public:
   std::list<glgrib_object*> objlist;
   glgrib_view * view = NULL;
   glgrib_landscape * landscape = NULL;
+  glgrib_field * field = NULL;
 };
 
 #endif

@@ -9,6 +9,7 @@
 #include <unistd.h>
 
 #include "glgrib_landscape.h"
+#include "glgrib_field.h"
 #include "glgrib_coords_world.h"
 #include "glgrib_scene.h"
 #include "glgrib_cube2.h"
@@ -112,6 +113,10 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
           case GLFW_KEY_Q:
             ctx->view->fov -= 1.;
             break;
+          case GLFW_KEY_O:
+	    if (ctx->scene->field != NULL)
+              ctx->scene->field->toggle_hide ();
+	    break;
           case GLFW_KEY_P:
 	    if (ctx->scene->landscape != NULL)
               ctx->scene->landscape->toggle_flat ();
@@ -235,6 +240,7 @@ void x11_display (const char * geom, int width, int height)
 {
   glgrib_coastlines Coast;
   glgrib_grid Grid;
+  glgrib_field Field;
   glgrib_scene Scene;
   glgrib_coords_world WorldCoords;
   glgrib_landscape Landscape;
@@ -260,12 +266,18 @@ void x11_display (const char * geom, int width, int height)
 
   glgrib_coords_cube Coords;
   Coords.init ();
-
-  if(1){
   WorldCoords.init (geom);
+
+  if(0){
   Landscape.init (geom, &WorldCoords);
   Scene.objlist.push_back (&Landscape);
   Scene.landscape = &Landscape;
+  }
+  if(1){
+  WorldCoords.init (geom);
+  Field.init (NULL, &WorldCoords);
+  Scene.objlist.push_back (&Field);
+  Scene.field = &Field;
   }
   if(1){
   CubeA.init (&Coords, -0.5, -0.5, -0.5);

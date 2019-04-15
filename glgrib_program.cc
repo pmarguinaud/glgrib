@@ -4,9 +4,7 @@
 
 #include <string>
 
-static const int nprg = 3;
-
-static glgrib_program PRG[nprg] = 
+static glgrib_program PRG[GLGRIB_PROGRAM_SIZE] = 
 {
   glgrib_program (  // 3 colors + alpha channel
 R"CODE(
@@ -109,7 +107,7 @@ void main()
 
 };
 
-glgrib_program * glgrib_program_load (int kind)
+glgrib_program * glgrib_program_load (glgrib_program_kind kind)
 {
   if (! PRG[kind].loaded)
     {
@@ -134,7 +132,7 @@ void glgrib_program::use () const
     {
       glUseProgram (programID);
       active = true;
-      for (int i = 0; i < nprg; i++) 
+      for (int i = 0; i < GLGRIB_PROGRAM_SIZE; i++) 
         if (PRG[i].programID != programID)
           PRG[i].active = false;
     }

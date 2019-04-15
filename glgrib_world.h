@@ -7,7 +7,7 @@ class glgrib_world : public glgrib_polyhedron
 {
 public:
   void init (const char *);
-  virtual int get_program_kind () const { return 1; }
+  virtual glgrib_program_kind get_program_kind () const { return GLGRIB_PROGRAM_RGB; }
   virtual bool use_alpha () { return false; }
 };
 

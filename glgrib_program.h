@@ -3,6 +3,16 @@
 
 #include "glgrib_opengl.h"
 
+
+typedef enum 
+{
+  GLGRIB_PROGRAM_NONE=-1,
+  GLGRIB_PROGRAM_RGBA=0,
+  GLGRIB_PROGRAM_RGB=1,
+  GLGRIB_PROGRAM_MONO=2,
+  GLGRIB_PROGRAM_SIZE=3,
+} glgrib_program_kind;
+
 class glgrib_program
 {
 public:
@@ -18,6 +28,6 @@ public:
   mutable bool active = false;
 };
 
-glgrib_program * glgrib_program_load (int);
+glgrib_program * glgrib_program_load (glgrib_program_kind);
 
 #endif

@@ -9,7 +9,7 @@ class glgrib_polyhedron : public glgrib_object
 {
 public:
   virtual void render (const glgrib_view *) const;
-  virtual int get_program_kind () const { return 0; }
+  virtual glgrib_program_kind get_program_kind () const { return GLGRIB_PROGRAM_RGBA; }
   virtual bool use_alpha () { return true; }
   ~glgrib_polyhedron ();
   void def_from_xyz_col_ind (const float *, unsigned char *, unsigned int *);

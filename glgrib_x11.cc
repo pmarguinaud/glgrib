@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "glgrib_world.h"
+#include "glgrib_landscape.h"
 #include "glgrib_coords_world.h"
 #include "glgrib_scene.h"
 #include "glgrib_cube2.h"
@@ -113,8 +113,8 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
             ctx->view->fov -= 1.;
             break;
           case GLFW_KEY_P:
-	    if (ctx->scene->world != NULL)
-              ctx->scene->world->toggle_flat ();
+	    if (ctx->scene->landscape != NULL)
+              ctx->scene->landscape->toggle_flat ();
             break;
           case GLFW_KEY_6:
             ctx->view->rc += 0.1;
@@ -237,7 +237,7 @@ void x11_display (const char * geom, int width, int height)
   glgrib_grid Grid;
   glgrib_scene Scene;
   glgrib_coords_world WorldCoords;
-  glgrib_world World;
+  glgrib_landscape Landscape;
   glgrib_cube2 CubeA, CubeB;
   glgrib_view View;
   glfw_ctx_t ctx;
@@ -263,9 +263,9 @@ void x11_display (const char * geom, int width, int height)
 
   if(1){
   WorldCoords.init (geom);
-  World.init (geom, &WorldCoords);
-  Scene.objlist.push_back (&World);
-  Scene.world = &World;
+  Landscape.init (geom, &WorldCoords);
+  Scene.objlist.push_back (&Landscape);
+  Scene.landscape = &Landscape;
   }
   if(1){
   CubeA.init (&Coords, -0.5, -0.5, -0.5);

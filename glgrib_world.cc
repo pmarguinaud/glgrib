@@ -6,26 +6,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void glgrib_world::init (const char * geom, const glgrib_coords_world * coords)
-{
-  unsigned int * ind;
-  float * xyz;
-  unsigned char * col;
-
-  ncol = use_alpha () ? 4 : 3;
-
-  glgrib_load_rgb (geom, &col, use_alpha ());
-  np = coords->np;
-  nt = coords->nt;
-  def_from_vertexbuffer_col_elementbuffer (coords, col);
-
-  free (col);
-}
-
-
 void glgrib_world::def_from_vertexbuffer_col_elementbuffer 
   (const glgrib_coords_world * coords, unsigned char * col)
 {
+  np = coords->np;
+  nt = coords->nt;
+
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
 

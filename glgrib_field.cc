@@ -31,9 +31,7 @@ void glgrib_field::init (const char * field, const glgrib_coords_world * coords)
   col = (unsigned char *)malloc (ncol * coords->np * sizeof (unsigned char));
 
   for (int i = 0; i < coords->np; i++)
-    {
-      col[ncol*i+0] = (int)((float)(255 * i) / (float)coords->np);
-    }
+    col[i] = (int)((float)(255 * i) / (float)coords->np);
 
 #endif
 

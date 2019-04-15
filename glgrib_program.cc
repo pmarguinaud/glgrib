@@ -229,7 +229,7 @@ void main()
   gl_Position =  MVP * vec4 (pos, 1);
   fragmentColor.r = vertexColor;
   fragmentColor.g = 0;
-  fragmentColor.b = 0;
+  fragmentColor.b = 1 - vertexColor;
 }
 )CODE"),
 

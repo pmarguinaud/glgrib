@@ -263,7 +263,7 @@ void x11_display (const char * geom, int width, int height)
 
   if(1){
   WorldCoords.init (geom);
-  World.init (geom);
+  World.init (geom, &WorldCoords);
   Scene.objlist.push_back (&World);
   Scene.world = &World;
   }

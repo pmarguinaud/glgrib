@@ -216,11 +216,3 @@ void glgrib_load_rgb (const char * geom, unsigned char ** col, int use_alpha)
   fclose (in);
 }
 
-void glgrib_load (const char * geom, int * np, float ** xyz, 
-                  unsigned char ** col, unsigned int * nt, 
-                  unsigned int ** ind, int use_alpha)
-{
-  glgrib_load_z (geom, np, xyz, nt, ind);
-  glgrib_load_rgb (geom, col, use_alpha);
-}
-

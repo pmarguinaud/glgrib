@@ -19,6 +19,7 @@ void glgrib_coords_world::init (const char * geom)
   glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), ind , GL_STATIC_DRAW);
 
   free (ind);
+  free (xyz);
 }
 
 

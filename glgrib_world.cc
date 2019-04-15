@@ -1,11 +1,12 @@
 #include "glgrib_world.h"
 #include "glgrib_load.h"
 #include "glgrib_program.h"
+#include "glgrib_coords_world.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 
-void glgrib_world::init (const char * geom)
+void glgrib_world::init (const char * geom, const glgrib_coords_world * coords)
 {
   unsigned int * ind;
   float * xyz;
@@ -13,12 +14,34 @@ void glgrib_world::init (const char * geom)
 
   ncol = use_alpha () ? 4 : 3;
 
-  glgrib_load (geom, &np, &xyz, &col, &nt, &ind, use_alpha ());
-  def_from_xyz_col_ind (xyz, col, ind);
+  glgrib_load_rgb (geom, &col, use_alpha ());
+  np = coords->np;
+  nt = coords->nt;
+  def_from_vertexbuffer_col_elementbuffer (coords, col);
 
-  free (ind);
-  free (xyz);
   free (col);
+}
+
+
+void glgrib_world::def_from_vertexbuffer_col_elementbuffer 
+  (const glgrib_coords_world * coords, unsigned char * col)
+{
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
+
+  glBindBuffer (GL_ARRAY_BUFFER, coords->vertexbuffer);
+  glEnableVertexAttribArray (0); 
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  
+  glGenBuffers (1, &colorbuffer);
+  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer);
+  glBufferData (GL_ARRAY_BUFFER, ncol * np * sizeof (unsigned char), col, GL_STATIC_DRAW);
+  glEnableVertexAttribArray (1); 
+  glVertexAttribPointer (1, ncol, GL_UNSIGNED_BYTE, GL_TRUE, ncol * sizeof (unsigned char), NULL); 
+  
+  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, coords->elementbuffer);
+
+  glBindVertexArray (0); 
 }
 
 

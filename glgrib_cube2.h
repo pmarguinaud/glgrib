@@ -13,9 +13,10 @@ public:
   virtual bool use_alpha () { return false; }
   virtual void render (const glgrib_view *) const;
   ~glgrib_cube2 ();
-  void def_from_vertexbuffer_col_elementbuffer (unsigned char * col);
+  void def_from_vertexbuffer_col_elementbuffer (float * xyz, unsigned char * col, unsigned int * ind);
   GLuint VertexArrayID;
   GLuint colorbuffer;
+  GLuint vertexbuffer, elementbuffer;
   unsigned int ncol, nt;
   int np;
   float x0, y0, z0;

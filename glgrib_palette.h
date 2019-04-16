@@ -35,14 +35,7 @@ public:
     for (std::vector<glgrib_rgba>::iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
       rgba.push_back (*it);
   }
-  friend std::ostream & operator << (std::ostream &out, const glgrib_palette & p)
-  {
-    out << "[";
-    for (std::vector<glgrib_rgba>::const_iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
-      out << *it << ",";
-    out << "]" << std::endl;
-  }
-
+  friend std::ostream & operator << (std::ostream &, const glgrib_palette &);
   void setRGBA255 (GLuint);
 };
 

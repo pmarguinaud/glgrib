@@ -2,6 +2,7 @@
 #include "glgrib_load.h"
 #include "glgrib_program.h"
 #include "glgrib_coords_world.h"
+#include "glgrib_palette.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -30,19 +31,13 @@ void glgrib_field::render (const glgrib_view * view) const
     {
       const glgrib_program * program = get_program (); 
       float scale0[3] = {1.1, 1.1, 1.1};
-      float R0[256], G0[256], B0[256], A0[256];
-      float RGBA0[256][4];
 
-      for (int i = 0; i < 256; i++)
-        {
-	  RGBA0[i][0] = (float)i/255.;
-	  RGBA0[i][1] = 0.0;
-	  RGBA0[i][2] = 1.0 - RGBA0[i][0];
-	  RGBA0[i][3] = (i % 255)/(float)255;
-	}
+      glgrib_palette p (  0,   0, 255,   0,
+		        255,   0,   0, 255);
+
+      p.setRGBA255 (program->programID);
 
       glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
-      glUniform4fv (glGetUniformLocation (program->programID, "RGBA0"), 256*4, &RGBA0[0][0]);
       glgrib_world::render (view);
     }
 }

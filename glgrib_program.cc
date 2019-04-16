@@ -189,11 +189,11 @@ void main()
 }
 )CODE"),
 
-  glgrib_program (  // gradient color, flat
+  glgrib_program (  // gradient color + alpha, flat
 R"CODE(
 #version 330 core
 
-in vec3 fragmentColor;
+in vec4 fragmentColor;
 
 out vec4 color;
 
@@ -202,7 +202,7 @@ void main()
   color.r = fragmentColor.r;
   color.g = fragmentColor.g;
   color.b = fragmentColor.b;
-  color.a = 255;
+  color.a = fragmentColor.a;
 }
 )CODE",
 R"CODE(
@@ -211,10 +211,15 @@ R"CODE(
 layout(location = 0) in vec3 vertexPosition_modelspace;
 layout(location = 1) in float vertexColor;
 
-out vec3 fragmentColor;
+out vec4 fragmentColor;
 uniform mat4 MVP;
 
 uniform vec3 scale0 = vec3 (1.0, 1.0, 1.0);
+
+uniform float R0[256];
+uniform float G0[256];
+uniform float B0[256];
+uniform float A0[256];
 
 void main()
 {
@@ -227,9 +232,10 @@ void main()
   pos.y = scale0.y * y * r;
   pos.z = scale0.z * z * r;
   gl_Position =  MVP * vec4 (pos, 1);
-  fragmentColor.r = vertexColor;
-  fragmentColor.g = 0;
-  fragmentColor.b = 1 - vertexColor;
+  fragmentColor.r = R0[int (255 * vertexColor)];
+  fragmentColor.g = G0[int (255 * vertexColor)];
+  fragmentColor.b = B0[int (255 * vertexColor)];
+  fragmentColor.a = A0[int (255 * vertexColor)];
 }
 )CODE"),
 

@@ -12,28 +12,12 @@ void glgrib_field::init (const char * field, const glgrib_coords_world * coords)
   float * xyz;
   unsigned char * col;
 
-#ifdef UNDEF
-  ncol = use_alpha () ? 4 : 3;
-
-  col = (unsigned char *)malloc (ncol * coords->np * sizeof (unsigned char));
-
-  for (int i = 0; i < coords->np; i++)
-    {
-      col[ncol*i+0] = (int)((float)(255 * i) / (float)coords->np);
-      col[ncol*i+1] = 0;
-      col[ncol*i+2] = 255 - col[ncol*i+0];
-      if (ncol == 4)
-        col[ncol*i+3] = 255;
-    }
-#else
   ncol = 1;
 
   col = (unsigned char *)malloc (ncol * coords->np * sizeof (unsigned char));
 
   for (int i = 0; i < coords->np; i++)
     col[i] = (int)((float)(255 * i) / (float)coords->np);
-
-#endif
 
   def_from_vertexbuffer_col_elementbuffer (coords, col);
 
@@ -45,9 +29,23 @@ void glgrib_field::render (const glgrib_view * view) const
   if (! hidden)
     {
       const glgrib_program * program = get_program (); 
-      GLint scale0 = glGetUniformLocation (program->programID, "scale0");
-      float scale[3] = {1.1, 1.1, 1.1};
-      glUniform3fv (scale0, 1, scale);
+      float scale0[3] = {1.1, 1.1, 1.1};
+      float R0[256], G0[256], B0[256], A0[256];
+
+      for (int i = 0; i < 256; i++)
+        {
+          R0[i] = (float)i/255.;
+          G0[i] = 0;
+          B0[i] = 1. - R0[i];
+	  A0[i] = (i % 255)/(float)255;
+	}
+
+      glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
+      glUniform1fv (glGetUniformLocation (program->programID, "R0"), 256, R0);
+      glUniform1fv (glGetUniformLocation (program->programID, "G0"), 256, G0);
+      glUniform1fv (glGetUniformLocation (program->programID, "B0"), 256, B0);
+      glUniform1fv (glGetUniformLocation (program->programID, "A0"), 256, A0);
+
       glgrib_world::render (view);
     }
 }

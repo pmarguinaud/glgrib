@@ -268,7 +268,7 @@ void x11_display (const char * geom, int width, int height)
   Coords.init ();
   WorldCoords.init (geom);
 
-  if(0){
+  if(1){
   Landscape.init (geom, &WorldCoords);
   Scene.objlist.push_back (&Landscape);
   Scene.landscape = &Landscape;
@@ -279,11 +279,11 @@ void x11_display (const char * geom, int width, int height)
   Scene.objlist.push_back (&Field);
   Scene.field = &Field;
   }
-  if(1){
+  if(0){
   CubeA.init (&Coords, -0.5, -0.5, -0.5);
   Scene.objlist.push_back (&CubeA);
   }
-  if(1){
+  if(0){
   CubeB.init (&Coords, +0.5, +0.5, +0.5);
   Scene.objlist.push_back (&CubeB);
   }

@@ -31,21 +31,18 @@ void glgrib_field::render (const glgrib_view * view) const
       const glgrib_program * program = get_program (); 
       float scale0[3] = {1.1, 1.1, 1.1};
       float R0[256], G0[256], B0[256], A0[256];
+      float RGBA0[256][4];
 
       for (int i = 0; i < 256; i++)
         {
-          R0[i] = (float)i/255.;
-          G0[i] = 0;
-          B0[i] = 1. - R0[i];
-	  A0[i] = (i % 255)/(float)255;
+	  RGBA0[i][0] = (float)i/255.;
+	  RGBA0[i][1] = 0.0;
+	  RGBA0[i][2] = 1.0 - RGBA0[i][0];
+	  RGBA0[i][3] = (i % 255)/(float)255;
 	}
 
       glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
-      glUniform1fv (glGetUniformLocation (program->programID, "R0"), 256, R0);
-      glUniform1fv (glGetUniformLocation (program->programID, "G0"), 256, G0);
-      glUniform1fv (glGetUniformLocation (program->programID, "B0"), 256, B0);
-      glUniform1fv (glGetUniformLocation (program->programID, "A0"), 256, A0);
-
+      glUniform4fv (glGetUniformLocation (program->programID, "RGBA0"), 256*4, &RGBA0[0][0]);
       glgrib_world::render (view);
     }
 }

@@ -3,8 +3,10 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <iostream>
 
-void glgrib_coords_cube::init ()
+void glgrib_coords_cube::init (const glgrib_view * view)
 {
   nt = 12;
   np = 8;
@@ -22,6 +24,20 @@ void glgrib_coords_cube::init ()
   xyz[5*3+0] = +s; xyz[5*3+1] = +s; xyz[5*3+2] = -s;
   xyz[6*3+0] = +s; xyz[6*3+1] = +s; xyz[6*3+2] = +s;
   xyz[7*3+0] = +s; xyz[7*3+1] = -s; xyz[7*3+2] = +s;
+
+  if (view && 0)
+    {
+      view->calcMVP ();
+      for (int i = 0; i < np; i++)
+        {
+          glm::vec3 pos0 (xyz[i*3+0], xyz[i*3+1], xyz[i*3+2]);
+	  glm::vec3 pos1 = view->project (pos0);
+	  glm::vec3 pos2 = view->unproject (pos1);
+	  std::cout << glm::to_string (pos0) << 
+            " --> " << glm::to_string (pos1) << 
+            " --> " << glm::to_string (pos2) << std::endl;
+        }
+    }
 
 
   ind[ 0] = 4; ind[ 1] = 5; ind[ 2] = 6;
@@ -66,7 +82,7 @@ void glgrib_cube2::init (const glgrib_coords_cube * coords, float x, float y, fl
   float * xyz = (float *)malloc (3 * np * sizeof (float));
   unsigned char * col = (unsigned char *)malloc (np * ncol * sizeof (unsigned char));
 
-  float s = 0.5;
+  float s = 2.0;
 
   xyz[0*3+0] = -s; xyz[0*3+1] = -s; xyz[0*3+2] = -s;
   xyz[1*3+0] = -s; xyz[1*3+1] = +s; xyz[1*3+2] = -s;

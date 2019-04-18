@@ -9,7 +9,7 @@
 class glgrib_coords_cube : public glgrib_coords
 {
 public:
-  void init ();
+  void init (const glgrib_view * view = NULL);
 };
 
 class glgrib_cube2 : public glgrib_object

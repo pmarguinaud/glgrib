@@ -12,6 +12,9 @@ glgrib.x: glgrib_palette.o glgrib_field.o glgrib_landscape.o glgrib_coords_world
 clean: 
 	\rm -f *.o *.x
 
+view1.x: view1.cc
+	g++ $(FLAGS) -g -o view1.x view1.cc
+
 view.x: view.cc
 	g++ $(FLAGS) -g -o view.x view.cc
 

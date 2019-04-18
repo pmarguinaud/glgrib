@@ -154,7 +154,6 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
 static
 void mouse_button_callback (GLFWwindow * window, int button, int action, int mods)
 {
-  return;
   if (button == GLFW_MOUSE_BUTTON_LEFT)
     {
       if (action == GLFW_PRESS) 
@@ -162,19 +161,19 @@ void mouse_button_callback (GLFWwindow * window, int button, int action, int mod
           double xpos, ypos;
           glfw_ctx_t * ctx = (glfw_ctx_t *)glfwGetWindowUserPointer (window);
           glfwGetCursorPos (window, &xpos, &ypos);
-	  double dox = (xpos - ctx->width  / 2) / (ctx->width  / 2),
-		 doy = (ypos - ctx->height / 2) / (ctx->height / 2);
-	  double ax = atan (dox * tan (ctx->view->fov / 2)),
-	         ay = atan (doy * tan (ctx->view->fov / 2));
-	  double gx = asin (ctx->view->rc * sin (ax)),
-	         gy = asin (ctx->view->rc * sin (ax));
+	  ypos = ctx->width - ypos;
 
-	  ctx->view->lonc = 180. * (M_PI / 2 + gx - ax) / M_PI;
-	  ctx->view->latc = 180. * (M_PI / 2 + gy - ay) / M_PI;
-printf (" dox = %f dox = %f\n", dox, doy);
-printf (" ax  = %f ay  = %f\n", 180. / M_PI * ax, 180. / M_PI * ay);
-printf (" %f %f\n", sin (ax), sin (ay));
-printf (" %f %f\n", ctx->view->lonc, ctx->view->latc);
+	  glm::vec3 xc = ctx->view->insersect_sphere (xpos, ypos, 
+			                              glm::vec3 (0.0f, 0.0f, 0.0f), 
+			                              1.0f);
+
+	  float lat = glm::degrees (asinf (xc.z));
+	  float lon = glm::degrees (atan2f (xc.y, xc.x));
+
+	  ctx->view->latc = lat;
+	  ctx->view->lonc = lon;
+
+	  glfwSetCursorPos (window, ctx->width / 2., ctx->height / 2.);
 
         }
     }
@@ -248,6 +247,7 @@ void x11_display (const char * geom, int width, int height)
   glgrib_view View;
   glfw_ctx_t ctx;
 
+  View.setViewport (width, height);
   ctx.view = &View;
   ctx.width = width;
   ctx.height = height;
@@ -265,7 +265,7 @@ void x11_display (const char * geom, int width, int height)
   gl_init ();
 
   glgrib_coords_cube Coords;
-  Coords.init ();
+  Coords.init (&View);
   WorldCoords.init (geom);
 
   if(1){
@@ -273,14 +273,14 @@ void x11_display (const char * geom, int width, int height)
   Scene.objlist.push_back (&Landscape);
   Scene.landscape = &Landscape;
   }
-  if(1){
+  if(0){
   WorldCoords.init (geom);
   Field.init (NULL, &WorldCoords);
   Scene.objlist.push_back (&Field);
   Scene.field = &Field;
   }
   if(0){
-  CubeA.init (&Coords, -0.5, -0.5, -0.5);
+  CubeA.init (&Coords, 0., 0., 0.);
   Scene.objlist.push_back (&CubeA);
   }
   if(0){

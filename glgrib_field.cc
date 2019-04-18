@@ -32,8 +32,12 @@ void glgrib_field::render (const glgrib_view * view) const
       const glgrib_program * program = get_program (); 
       float scale0[3] = {1.1, 1.1, 1.1};
 
-      glgrib_palette p (  0,   0, 255,   0,
-		        255,   0,   0, 255);
+      glgrib_palette p 
+        (
+             0,   0, 255,   0,
+           255, 255, 255, 127,
+           255,   0,   0, 255 
+        );
 
       p.setRGBA255 (program->programID);
 

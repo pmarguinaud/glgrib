@@ -74,9 +74,7 @@ printf ("Framebuffer !\n");
   glGenRenderbuffers (1, &rbo);
   glBindRenderbuffer (GL_RENDERBUFFER, rbo);
 
-  // use a single renderbuffer object for both a depth AND stencil buffer.
-  glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, ctx->width, ctx->height); 
-  // now actually attach it
+  glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH32F_STENCIL8, ctx->width, ctx->height); 
   glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); 
 
   if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -302,6 +300,8 @@ void x11_display (const char * geom, int width, int height)
 
   ctx.scene = &Scene;
 
+
+  if (0)
   while (1)
     {
       if (ctx.do_rotate)
@@ -317,6 +317,8 @@ void x11_display (const char * geom, int width, int height)
       if (glfwWindowShouldClose (Window) != 0) 
         break;
     } 
+  else
+    framebuffer (&ctx);
 
   
   free_glfw_window (Window);

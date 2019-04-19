@@ -103,7 +103,7 @@ void glgrib_coastlines::render (const glgrib_view * view) const
 {
   const glgrib_program * program = get_program ();
   GLint color0 = glGetUniformLocation (program->programID, "color0");
-  float color[3] = {255., 0., 0.};
+  float color[3] = {255., 255., 255.};
   glUniform3fv (color0, 1, color);
   glgrib_polygon::render (view);
 }

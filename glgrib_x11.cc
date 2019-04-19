@@ -114,9 +114,18 @@ printf ("Framebuffer !\n");
 static 
 void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
 {
-  char title[128];
-  sprintf (title, "(%f, %f)", xpos, ypos);
-  glfwSetWindowTitle (window, title);
+  float lat, lon;
+  if (get_latlon_from_cursor (window, &lat, &lon))
+    {
+      char title[128];
+      sprintf (title, "(%f, %f)", lat, lon);
+      glfwSetWindowTitle (window, title);
+    }
+  else
+    {
+      glfw_ctx_t * ctx = (glfw_ctx_t *)glfwGetWindowUserPointer (window);
+      glfwSetWindowTitle (window, ctx->title);
+    }
 }
 
 static 
@@ -198,7 +207,6 @@ void mouse_button_callback (GLFWwindow * window, int button, int action, int mod
           glfw_ctx_t * ctx = (glfw_ctx_t *)glfwGetWindowUserPointer (window);
 	  if (get_latlon_from_cursor (window, &ctx->view->latc, &ctx->view->lonc))
 	    glfwSetCursorPos (window, ctx->width / 2., ctx->height / 2.);
-
         }
     }
 }

@@ -18,8 +18,8 @@ void glgrib_grid::init ()
   nl = 0;
 
   float r = 1.005;
-  const int nlatv = 200, nlonv = 20;
-  const int nlath = 10, nlonh = 400;
+  const int nlatv = 200, nlonv = 18;
+  const int nlath = 9, nlonh = 400;
 
   for (int pass = 0; pass < 2; pass++)
     {

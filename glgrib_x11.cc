@@ -27,7 +27,30 @@ typedef struct glfw_ctx_t
   int width, height;
   int snapshot_cnt = 0;
   glgrib_scene * scene;
+  bool cursorpos = false;
+  const char * title = "";
 } glfw_ctx_t;
+
+static
+int get_latlon_from_cursor (GLFWwindow * window, float * lat, float * lon)
+{
+  double xpos, ypos;
+  glfw_ctx_t * ctx = (glfw_ctx_t *)glfwGetWindowUserPointer (window);
+  glfwGetCursorPos (window, &xpos, &ypos);
+  ypos = ctx->width - ypos;
+  
+  glm::vec3 centre (0.0f, 0.0f, 0.0f);
+  glm::vec3 xc = ctx->view->insersect_sphere (xpos, ypos, centre, 1.0f);
+
+  if (centre != xc)
+    {
+      *lat = glm::degrees (asinf (xc.z));
+      *lon = glm::degrees (atan2f (xc.y, xc.x));
+      return 1;
+    }
+
+  return 0;
+}
 
 static
 void snapshot (glfw_ctx_t * ctx)
@@ -89,6 +112,14 @@ printf ("Framebuffer !\n");
 }
 
 static 
+void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
+{
+  char title[128];
+  sprintf (title, "(%f, %f)", xpos, ypos);
+  glfwSetWindowTitle (window, title);
+}
+
+static 
 void key_callback (GLFWwindow * window, int key, int scancode, int action, int mods)
 {
   glfw_ctx_t * ctx = (glfw_ctx_t *)glfwGetWindowUserPointer (window);
@@ -96,6 +127,14 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
     {
       switch (key)
         {
+          case GLFW_KEY_T:
+            if (ctx->cursorpos)
+              glfwSetCursorPosCallback (window, NULL);
+	    else
+              glfwSetCursorPosCallback (window, cursor_position_callback);
+	    ctx->cursorpos = ! ctx->cursorpos;
+            glfwSetWindowTitle (window, ctx->title);
+            break;
           case GLFW_KEY_TAB:
             ctx->do_rotate = ! ctx->do_rotate;
             break;
@@ -156,22 +195,9 @@ void mouse_button_callback (GLFWwindow * window, int button, int action, int mod
     {
       if (action == GLFW_PRESS) 
         {
-          double xpos, ypos;
           glfw_ctx_t * ctx = (glfw_ctx_t *)glfwGetWindowUserPointer (window);
-          glfwGetCursorPos (window, &xpos, &ypos);
-	  ypos = ctx->width - ypos;
-
-	  glm::vec3 xc = ctx->view->insersect_sphere (xpos, ypos, 
-			                              glm::vec3 (0.0f, 0.0f, 0.0f), 
-			                              1.0f);
-
-	  float lat = glm::degrees (asinf (xc.z));
-	  float lon = glm::degrees (atan2f (xc.y, xc.x));
-
-	  ctx->view->latc = lat;
-	  ctx->view->lonc = lon;
-
-	  glfwSetCursorPos (window, ctx->width / 2., ctx->height / 2.);
+	  if (get_latlon_from_cursor (window, &ctx->view->latc, &ctx->view->lonc))
+	    glfwSetCursorPos (window, ctx->width / 2., ctx->height / 2.);
 
         }
     }
@@ -249,6 +275,7 @@ void x11_display (const char * geom, int width, int height)
   ctx.view = &View;
   ctx.width = width;
   ctx.height = height;
+  ctx.title = geom;
 
   if (! glfwInit ())
     {

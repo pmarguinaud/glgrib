@@ -271,12 +271,6 @@ void x11_display (const char * geom, int width, int height)
   Scene.objlist.push_back (&Landscape);
   Scene.landscape = &Landscape;
   }
-  if(1){
-  WorldCoords.init (geom);
-  Field.init (NULL, &WorldCoords);
-  Scene.objlist.push_back (&Field);
-  Scene.field = &Field;
-  }
   if(0){
   CubeA.init (&Coords, 0., 0., 0.);
   Scene.objlist.push_back (&CubeA);
@@ -294,6 +288,12 @@ void x11_display (const char * geom, int width, int height)
   if(1){
   Coast.init ("gshhs(3).rim");
   Scene.objlist.push_back (&Coast);
+  }
+  if(1){
+  WorldCoords.init (geom);
+  Field.init (NULL, &WorldCoords);
+  Scene.objlist.push_back (&Field);
+  Scene.field = &Field;
   }
 
   Scene.view = &View;

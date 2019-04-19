@@ -118,7 +118,7 @@ void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
   if (get_latlon_from_cursor (window, &lat, &lon))
     {
       char title[128];
-      sprintf (title, "(%f, %f)", lat, lon);
+      sprintf (title, "(%7.2f, %7.2f)", lat, lon);
       glfwSetWindowTitle (window, title);
     }
   else

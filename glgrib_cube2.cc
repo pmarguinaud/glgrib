@@ -33,9 +33,9 @@ void glgrib_coords_cube::init (const glgrib_view * view)
           glm::vec3 pos0 (xyz[i*3+0], xyz[i*3+1], xyz[i*3+2]);
 	  glm::vec3 pos1 = view->project (pos0);
 	  glm::vec3 pos2 = view->unproject (pos1);
-	  std::cout << glm::to_string (pos0) << 
-            " --> " << glm::to_string (pos1) << 
-            " --> " << glm::to_string (pos2) << std::endl;
+//        std::cout << glm::to_string (pos0) << 
+//          " --> " << glm::to_string (pos1) << 
+//          " --> " << glm::to_string (pos2) << std::endl;
         }
     }
 

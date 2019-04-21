@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 #include "glgrib_landscape_tex.h"
-#include "glgrib_landscape.h"
+#include "glgrib_landscape_rgb.h"
 #include "glgrib_field.h"
 #include "glgrib_coords_world.h"
 #include "glgrib_scene.h"
@@ -165,8 +165,8 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
               ctx->scene->field->toggle_hide ();
 	    break;
           case GLFW_KEY_P:
-//   if (ctx->scene->landscape != NULL)
-//            ctx->scene->landscape->toggle_flat ();
+            if (ctx->scene->landscape != NULL)
+              ctx->scene->landscape->toggle_flat ();
             break;
           case GLFW_KEY_6:
             ctx->view->rc += 0.1;
@@ -275,8 +275,8 @@ void x11_display (const char * geom, int width, int height)
   glgrib_field Field;
   glgrib_scene Scene;
   glgrib_coords_world WorldCoords;
-//glgrib_landscape Landscape;
-  glgrib_landscape_tex Landscape;
+  glgrib_landscape_rgb Landscape_rgb;
+  glgrib_landscape_tex Landscape_tex;
   glgrib_cube2 CubeA, CubeB;
   glgrib_view View;
   glfw_ctx_t ctx;
@@ -304,9 +304,14 @@ void x11_display (const char * geom, int width, int height)
   WorldCoords.init (geom);
 
   if(1){
-  Landscape.init (geom, &WorldCoords);
-  Scene.objlist.push_back (&Landscape);
-//Scene.landscape = &Landscape;
+  Landscape_rgb.init (geom, &WorldCoords);
+  Scene.objlist.push_back (&Landscape_rgb);
+  Scene.landscape = &Landscape_rgb;
+  }
+  if(0){
+  Landscape_tex.init (geom, &WorldCoords);
+  Scene.objlist.push_back (&Landscape_tex);
+  Scene.landscape = &Landscape_tex;
   }
   if(0){
   CubeA.init (&Coords, 0., 0., 0.);

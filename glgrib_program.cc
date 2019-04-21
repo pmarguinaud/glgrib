@@ -232,6 +232,65 @@ void main()
 }
 )CODE"),
 
+  glgrib_program (
+R"CODE(
+#version 330 core
+
+in vec4 fragmentColor;
+
+out vec4 color;
+
+void main()
+{
+  color.r = fragmentColor.r;
+  color.g = fragmentColor.g;
+  color.b = fragmentColor.b;
+  color.a = fragmentColor.a;
+}
+)CODE",
+R"CODE(
+#version 330 core
+
+layout(location = 0) in vec3 vertexPos;
+
+out vec4 fragmentColor;
+
+uniform mat4 MVP;
+uniform bool isflat = true;
+uniform sampler2D texture;
+
+void main()
+{
+  float lon = (atan (vertexPos.y, vertexPos.x) / 3.1415926 + 1.0) * 0.5;
+  float lat = asin (vertexPos.z) / 3.1415926 + 0.5;
+
+  vec3 pos;
+
+  if (isflat)
+    {
+      float x = vertexPos.x;
+      float y = vertexPos.y;
+      float z = vertexPos.z;
+      float r = 1. / sqrt (x * x + y * y + z * z); 
+      pos.x = x * r;
+      pos.y = y * r;
+      pos.z = z * r;
+    }
+  else
+    {
+      pos = vertexPos;
+    }
+
+  gl_Position =  MVP * vec4 (pos, 1);
+
+  vec4 col = texture2D (texture, vec2 (lon, lat));
+
+  fragmentColor.r = col.r;
+  fragmentColor.g = col.g;
+  fragmentColor.b = col.b;
+  fragmentColor.a = 1.;
+}
+)CODE"),
 
 };
 

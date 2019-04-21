@@ -8,8 +8,6 @@
 
 void glgrib_landscape::init (const char * geom, const glgrib_coords_world * coords)
 {
-  unsigned int * ind;
-  float * xyz;
   unsigned char * col;
 
   ncol = use_alpha () ? 4 : 3;

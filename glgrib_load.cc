@@ -197,21 +197,37 @@ void glgrib_load_z (const char * geom, int * np, float ** xyz,
     codes_get_double (h, "longitudeOfStretchingPoleInDegrees", 
                       &longitudeOfStretchingPoleInDegrees);
   
-  const float omc2 = 1.0f - 1.0f / (stretchingFactor * stretchingFactor);
-  const float opc2 = 1.0f + 1.0f / (stretchingFactor * stretchingFactor);
+
+  bool do_rot_str = true;
+
+  float omc2;
+  float opc2;
+  if (! do_rot_str)
+    {
+      omc2 = 0.0f;
+      opc2 = 2.0f;
+    }
+  else
+    {
+      omc2 = 1.0f - 1.0f / (stretchingFactor * stretchingFactor);
+      opc2 = 1.0f + 1.0f / (stretchingFactor * stretchingFactor);
+    }
   
   glm::mat4 rot = glm::mat4 (1.0f);
 
-#ifdef UNDEF
-  if (latitudeOfStretchingPoleInDegrees != 90.0f)
+  if (do_rot_str) 
+  if (latitudeOfStretchingPoleInDegrees != 90.0f 
+   && (latitudeOfStretchingPoleInDegrees != 0.0f 
+    && longitudeOfStretchingPoleInDegrees != 0.0f))
     {
-      rot = glm::rotate (rot,
-                         glm::radians (90.0f - (float)latitudeOfStretchingPoleInDegrees), 
-                         glm::vec3 (+sinf (glm::radians (longitudeOfStretchingPoleInDegrees)), 
-                                    -cosf (glm::radians (longitudeOfStretchingPoleInDegrees)),
+      rot = 
+              glm::rotate (glm::mat4 (1.0f), glm::radians (180.0f), glm::vec3 (0.0f, 0.0f, 1.0f)) *
+	      glm::rotate (glm::mat4 (1.0f),
+                         glm::radians (-(float)latitudeOfStretchingPoleInDegrees), 
+                         glm::vec3 (-sinf (glm::radians (longitudeOfStretchingPoleInDegrees)), 
+                                    +cosf (glm::radians (longitudeOfStretchingPoleInDegrees)),
                                     0.0f)); 
     }
-#endif
 
       
   size_t pl_len;
@@ -249,8 +265,10 @@ void glgrib_load_z (const char * geom, int * np, float ** xyz,
           (*xyz)[3*jglo+0] = XYZ.x;
           (*xyz)[3*jglo+1] = XYZ.y;
           (*xyz)[3*jglo+2] = XYZ.z;
+
         }
     }
+
   free (v);
 
   fclose (in);
@@ -299,6 +317,59 @@ void glgrib_load_rgb (const char * geom, unsigned char ** col, int use_alpha)
       
       free (v);
     }
+
+  fclose (in);
+}
+
+void glgrib_load (const char * geom, float ** val, int what)
+{
+  FILE * in = NULL;
+  char file[64];
+
+  sprintf (file, "Z_%s.grb", geom);
+  
+  in = fopen (file, "r");
+
+  *val = NULL;
+
+  int err = 0;
+  codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
+  size_t pl_len;
+  size_t v_len = 0;
+  codes_get_size (h, "pl", &pl_len);
+  codes_get_size (h, "values", &v_len);
+  long int * pl = (long int *)malloc (sizeof (long int) * pl_len);
+  codes_get_long_array (h, "pl", pl, &pl_len);
+  
+
+  double vmin, vmax;
+  double * v = NULL;
+  codes_get_double (h, "maximum", &vmax);
+  codes_get_double (h, "minimum", &vmin);
+  if (what == 2)
+    {
+      v = (double *)malloc (sizeof (double) * v_len);
+      codes_get_double_array (h, "values", v, &v_len);
+    }
+
+  codes_handle_delete (h);
+
+  *val = (float *)malloc (sizeof (float) * v_len);
+
+  for (int jlat = 1, jglo = 0; jlat <= pl_len; jlat++)
+    for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
+      switch (what)
+        {
+          case 0: (*val)[jglo] = ((int)(10 * (float)(jlat-1)/(float)pl_len)) / 10.0f; break;
+          case 1: (*val)[jglo] = ((int)(10 * (float)(jlon-1)/(float)pl[jlat-1])) / 10.0f; break;
+          case 2: (*val)[jglo] = ((int)(10 * (v[jglo] - vmin) / (vmax - vmin))) / 10.0f; break;
+        }
+
+  
+  free (pl);
+
+  if (v != NULL)
+    free (v);
 
   fclose (in);
 }

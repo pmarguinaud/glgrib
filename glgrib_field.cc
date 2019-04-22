@@ -7,22 +7,26 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void glgrib_field::init (const char * field, const glgrib_coords_world * coords)
+void glgrib_field::init (const char * geom, const glgrib_coords_world * coords)
 {
-  unsigned int * ind;
-  float * xyz;
   unsigned char * col;
 
   ncol = 1;
+
+//float * val;
+//glgrib_load (geom, &val, 2);
 
   col = (unsigned char *)malloc (ncol * coords->np * sizeof (unsigned char));
 
   for (int i = 0; i < coords->np; i++)
     col[i] = (int)((float)(255 * i) / (float)coords->np);
+//for (int i = 0; i < coords->np; i++)
+//  col[i] = (int)(255 * val[i]);
 
   def_from_vertexbuffer_col_elementbuffer (coords, col);
 
   free (col);
+//free (val);
 }
 
 void glgrib_field::render (const glgrib_view * view) const
@@ -31,15 +35,26 @@ void glgrib_field::render (const glgrib_view * view) const
     {
       const glgrib_program * program = get_program (); 
       float scale0[3] = {1.1, 1.1, 1.1};
+//    float scale0[3] = {1.0, 1.0, 1.0};
 
-      glgrib_palette p 
+      glgrib_palette p_cold_hot
         (
              0,   0, 255,   0,
            255, 255, 255, 127,
            255,   0,   0, 255 
         );
 
-      p.setRGBA255 (program->programID);
+      glgrib_palette p
+        (
+             0,   0, 255, 255,
+             0, 255,   0, 255,
+           255,   0,   0, 255,
+             0, 255, 255, 255,
+           255, 255,   0, 255,
+           255,   0, 255, 255 
+        );
+
+      p_cold_hot.setRGBA255 (program->programID);
 
       glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
       glgrib_world::render (view);

@@ -322,18 +322,18 @@ void x11_display (const char * geom, int width, int height)
   Scene.objlist.push_back (&CubeB);
   }
 
-  if(0){
+  if(1){
   Grid.init ();
   Scene.objlist.push_back (&Grid);
   }
 
-  if(0){
+  if(1){
   Coast.init ("gshhs(3).rim");
   Scene.objlist.push_back (&Coast);
   }
   if(1){
   WorldCoords.init (geom);
-  Field.init (NULL, &WorldCoords);
+  Field.init (geom, &WorldCoords);
   Scene.objlist.push_back (&Field);
   Scene.field = &Field;
   }

@@ -3,6 +3,9 @@
 #include <eccodes.h>
 
 #include "glgrib_load.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 
 #define MODULO(x, y) ((x)%(y))
 #define JDLON(JLON1, JLON2) (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1))
@@ -181,6 +184,35 @@ void glgrib_load_z (const char * geom, int * np, float ** xyz,
   codes_get_double (h, "maximum",      &vmax);
   codes_get_double (h, "minimum",      &vmin);
   codes_get_double (h, "missingValue", &vmis);
+
+  double stretchingFactor = 1.0f;
+  if (codes_is_defined (h, "stretchingFactor"))
+    codes_get_double (h, "stretchingFactor", &stretchingFactor);
+  double latitudeOfStretchingPoleInDegrees = 90.0f;
+  if (codes_is_defined (h, "latitudeOfStretchingPoleInDegrees"))
+    codes_get_double (h, "latitudeOfStretchingPoleInDegrees",
+                      &latitudeOfStretchingPoleInDegrees);
+  double longitudeOfStretchingPoleInDegrees = 0.0f;
+  if (codes_is_defined (h, "longitudeOfStretchingPoleInDegrees"))
+    codes_get_double (h, "longitudeOfStretchingPoleInDegrees", 
+                      &longitudeOfStretchingPoleInDegrees);
+  
+  const float omc2 = 1.0f - 1.0f / (stretchingFactor * stretchingFactor);
+  const float opc2 = 1.0f + 1.0f / (stretchingFactor * stretchingFactor);
+  
+  glm::mat4 rot = glm::mat4 (1.0f);
+
+#ifdef UNDEF
+  if (latitudeOfStretchingPoleInDegrees != 90.0f)
+    {
+      rot = glm::rotate (rot,
+                         glm::radians (90.0f - (float)latitudeOfStretchingPoleInDegrees), 
+                         glm::vec3 (+sinf (glm::radians (longitudeOfStretchingPoleInDegrees)), 
+                                    -cosf (glm::radians (longitudeOfStretchingPoleInDegrees)),
+                                    0.0f)); 
+    }
+#endif
+
       
   size_t pl_len;
   codes_get_long (h, "Nj", &Nj);
@@ -192,21 +224,31 @@ void glgrib_load_z (const char * geom, int * np, float ** xyz,
   glgauss (Nj, pl, 2, *ind, nstripe, indoff);
   codes_handle_delete (h);
       
-      
   *xyz = (float *)malloc (3 * sizeof (float) * v_len);
   *np  = v_len;
   for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
     {
-      float lat = M_PI * (0.5 - (float)jlat / (float)(Nj + 1));
+      float coordy = M_PI * (0.5 - (float)jlat / (float)(Nj + 1));
+      float sincoordy = sin (coordy);
+      float lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
       float coslat = cos (lat); float sinlat = sin (lat);
       for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
         {
-          float lon = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
+          float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
+          float lon = coordx;
           float coslon = cos (lon); float sinlon = sin (lon);
           float radius = (1.0 + ((v[jglo] == vmis) ? 0. : 0.05 * v[jglo]/vmax));
-          (*xyz)[3*jglo+0] = coslon * coslat * radius;
-          (*xyz)[3*jglo+1] = sinlon * coslat * radius;
-          (*xyz)[3*jglo+2] =          sinlat * radius;
+
+          float X = coslon * coslat * radius;
+          float Y = sinlon * coslat * radius;
+          float Z =          sinlat * radius;
+
+          glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
+          XYZ = rot * XYZ;
+
+          (*xyz)[3*jglo+0] = XYZ.x;
+          (*xyz)[3*jglo+1] = XYZ.y;
+          (*xyz)[3*jglo+2] = XYZ.z;
         }
     }
   free (v);

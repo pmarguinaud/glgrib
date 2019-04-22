@@ -303,12 +303,12 @@ void x11_display (const char * geom, int width, int height)
   Coords.init (&View);
   WorldCoords.init (geom);
 
-  if(1){
+  if(0){
   Landscape_rgb.init (geom, &WorldCoords);
   Scene.objlist.push_back (&Landscape_rgb);
   Scene.landscape = &Landscape_rgb;
   }
-  if(0){
+  if(1){
   Landscape_tex.init (geom, &WorldCoords);
   Scene.objlist.push_back (&Landscape_tex);
   Scene.landscape = &Landscape_tex;
@@ -322,12 +322,12 @@ void x11_display (const char * geom, int width, int height)
   Scene.objlist.push_back (&CubeB);
   }
 
-  if(1){
+  if(0){
   Grid.init ();
   Scene.objlist.push_back (&Grid);
   }
 
-  if(1){
+  if(0){
   Coast.init ("gshhs(3).rim");
   Scene.objlist.push_back (&Coast);
   }

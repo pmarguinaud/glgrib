@@ -334,7 +334,7 @@ void x11_display (const char * geom, int width, int height)
   Coast.init ("gshhs(3).rim");
   Scene.objlist.push_back (&Coast);
   }
-  if(0){
+  if(1){
   WorldCoords.init (geom);
   Field.init (geom, &WorldCoords);
   Scene.objlist.push_back (&Field);

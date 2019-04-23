@@ -6,6 +6,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <iostream>
+
 
 #define MODULO(x, y) ((x)%(y))
 #define JDLON(JLON1, JLON2) (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1))
@@ -221,15 +223,13 @@ void glgrib_load_z (const char * geom, int * np, float ** xyz,
     && longitudeOfStretchingPoleInDegrees != 0.0f))
     {
       rot = 
-              glm::rotate (glm::mat4 (1.0f), glm::radians (180.0f), glm::vec3 (0.0f, 0.0f, 1.0f)) *
 	      glm::rotate (glm::mat4 (1.0f),
-                         glm::radians (-(float)latitudeOfStretchingPoleInDegrees), 
+                         glm::radians (90.0f-(float)latitudeOfStretchingPoleInDegrees), 
                          glm::vec3 (-sinf (glm::radians (longitudeOfStretchingPoleInDegrees)), 
                                     +cosf (glm::radians (longitudeOfStretchingPoleInDegrees)),
                                     0.0f)); 
     }
 
-      
   size_t pl_len;
   codes_get_long (h, "Nj", &Nj);
   codes_get_size (h, "pl", &pl_len);
@@ -326,7 +326,7 @@ void glgrib_load (const char * geom, float ** val, int what)
   FILE * in = NULL;
   char file[64];
 
-  sprintf (file, "Z_%s.grb", geom);
+  sprintf (file, "N_%s.grb", geom);
   
   in = fopen (file, "r");
 

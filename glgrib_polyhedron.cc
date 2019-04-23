@@ -32,8 +32,12 @@ void glgrib_polyhedron::def_from_xyz_col_ind (const float * xyz, unsigned char *
 void glgrib_polyhedron::render (const glgrib_view * view) const
 {
   glBindVertexArray (VertexArrayID);
+  if (wireframe)
+    glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
   glBindVertexArray (0);
+  if (wireframe)
+    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 }
 
 glgrib_polyhedron::~glgrib_polyhedron ()

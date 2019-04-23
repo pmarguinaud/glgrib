@@ -17,6 +17,8 @@ public:
   GLuint vertexbuffer, colorbuffer, elementbuffer;
   unsigned int ncol, nt;
   int np;
+  bool wireframe = false;
+  void toggle_wireframe () { wireframe = ! wireframe; }
 };
 
 #endif

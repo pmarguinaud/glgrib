@@ -14,12 +14,13 @@ void glgrib_scene::display () const
   
   for (std::list<glgrib_object*>::const_iterator it = objlist.begin (); 
        it != objlist.end (); it++)
-    {
-      const glgrib_program * program = (*it)->get_program ();
-      program->use ();
-      view->setMVP (program->matrixID);
-      (*it)->render (view);
-    }
+    if ((*it)->visible ())
+      {
+        const glgrib_program * program = (*it)->get_program ();
+        program->use ();
+        view->setMVP (program->matrixID);
+        (*it)->render (view);
+      }
 
 }
 

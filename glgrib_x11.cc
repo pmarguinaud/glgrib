@@ -148,6 +148,9 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
           case GLFW_KEY_TAB:
             ctx->do_rotate = ! ctx->do_rotate;
             break;
+          case GLFW_KEY_Y:
+            ctx->scene->landscape->toggle_wireframe ();
+            break;
           case GLFW_KEY_F:
             framebuffer (ctx);
             break;
@@ -322,16 +325,16 @@ void x11_display (const char * geom, int width, int height)
   Scene.objlist.push_back (&CubeB);
   }
 
-  if(1){
+  if(0){
   Grid.init ();
   Scene.objlist.push_back (&Grid);
   }
 
-  if(1){
+  if(0){
   Coast.init ("gshhs(3).rim");
   Scene.objlist.push_back (&Coast);
   }
-  if(1){
+  if(0){
   WorldCoords.init (geom);
   Field.init (geom, &WorldCoords);
   Scene.objlist.push_back (&Field);

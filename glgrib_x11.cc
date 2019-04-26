@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <omp.h>
 #include <stdlib.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -7,6 +8,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <readline/readline.h>
+#include <readline/history.h>
 
 #include "glgrib_landscape_tex.h"
 #include "glgrib_landscape_rgb.h"
@@ -17,26 +21,15 @@
 #include "glgrib_grid.h"
 #include "glgrib_view.h"
 #include "glgrib_coastlines.h"
-
-
 #include "glgrib_x11.h"
-
-typedef struct glfw_ctx_t
-{
-  bool do_rotate = false;
-  glgrib_view * view;
-  int width, height;
-  int snapshot_cnt = 0;
-  glgrib_scene * scene;
-  bool cursorpos = false;
-  const char * title = "";
-} glfw_ctx_t;
+#include "glgrib_shell.h"
+#include "glgrib_context.h"
 
 static
 int get_latlon_from_cursor (GLFWwindow * window, float * lat, float * lon)
 {
   double xpos, ypos;
-  glfw_ctx_t * ctx = (glfw_ctx_t *)glfwGetWindowUserPointer (window);
+  glgrib_context * ctx = (glgrib_context *)glfwGetWindowUserPointer (window);
   glfwGetCursorPos (window, &xpos, &ypos);
   ypos = ctx->width - ypos;
   
@@ -54,7 +47,7 @@ int get_latlon_from_cursor (GLFWwindow * window, float * lat, float * lon)
 }
 
 static
-void snapshot (glfw_ctx_t * ctx)
+void snapshot (glgrib_context * ctx)
 {
   unsigned char * rgb = new unsigned char[ctx->width * ctx->height * 3];
   char filename[32];
@@ -78,7 +71,7 @@ void snapshot (glfw_ctx_t * ctx)
 }
 
 static
-void framebuffer (glfw_ctx_t * ctx)
+void framebuffer (glgrib_context * ctx)
 {
 printf ("Framebuffer !\n");
   unsigned int framebuffer;
@@ -124,7 +117,7 @@ void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
     }
   else
     {
-      glfw_ctx_t * ctx = (glfw_ctx_t *)glfwGetWindowUserPointer (window);
+      glgrib_context * ctx = (glgrib_context *)glfwGetWindowUserPointer (window);
       glfwSetWindowTitle (window, ctx->title);
     }
 }
@@ -132,7 +125,7 @@ void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
 static 
 void key_callback (GLFWwindow * window, int key, int scancode, int action, int mods)
 {
-  glfw_ctx_t * ctx = (glfw_ctx_t *)glfwGetWindowUserPointer (window);
+  glgrib_context * ctx = (glgrib_context *)glfwGetWindowUserPointer (window);
   if (action == GLFW_PRESS || action == GLFW_REPEAT)
     {
       switch (key)
@@ -208,7 +201,7 @@ void mouse_button_callback (GLFWwindow * window, int button, int action, int mod
     {
       if (action == GLFW_PRESS) 
         {
-          glfw_ctx_t * ctx = (glfw_ctx_t *)glfwGetWindowUserPointer (window);
+          glgrib_context * ctx = (glgrib_context *)glfwGetWindowUserPointer (window);
 	  if (get_latlon_from_cursor (window, &ctx->view->latc, &ctx->view->lonc))
 	    glfwSetCursorPos (window, ctx->width / 2., ctx->height / 2.);
         }
@@ -218,7 +211,7 @@ void mouse_button_callback (GLFWwindow * window, int button, int action, int mod
 static
 void scroll_callback (GLFWwindow * window, double xoffset, double yoffset)
 {
-  glfw_ctx_t * ctx = (glfw_ctx_t *)glfwGetWindowUserPointer (window);
+  glgrib_context * ctx = (glgrib_context *)glfwGetWindowUserPointer (window);
   if (yoffset > 0)
     ctx->view->fov += 1;
   else
@@ -282,13 +275,13 @@ void x11_display (const char * geom, int width, int height)
   glgrib_landscape_tex Landscape_tex;
   glgrib_cube2 CubeA, CubeB;
   glgrib_view View;
-  glfw_ctx_t ctx;
+  glgrib_context Ctx;
 
   View.setViewport (width, height);
-  ctx.view = &View;
-  ctx.width = width;
-  ctx.height = height;
-  ctx.title = geom;
+  Ctx.view = &View;
+  Ctx.width = width;
+  Ctx.height = height;
+  Ctx.title = geom;
 
   if (! glfwInit ())
     {
@@ -298,7 +291,7 @@ void x11_display (const char * geom, int width, int height)
     }
 
   GLFWwindow * Window = new_glfw_window (geom, width, height);
-  glfwSetWindowUserPointer (Window, &ctx);
+  glfwSetWindowUserPointer (Window, &Ctx);
   
   gl_init ();
 
@@ -343,30 +336,57 @@ void x11_display (const char * geom, int width, int height)
 
   Scene.view = &View;
 
-  ctx.scene = &Scene;
+  Ctx.scene = &Scene;
 
+#pragma omp parallel
+  {
+    int tid = omp_get_thread_num ();
 
-  if (1)
-  while (1)
-    {
-      if (ctx.do_rotate)
-        View.lonc += 1.;
+    if (tid == 1)
+      while (1)
+        {
+          char * line = readline("> ");
+          if (line == NULL)
+            break;
+          if (strlen (line) > 0) 
+            add_history (line);
+ 
+#pragma omp critical (RUN)
+          {
+            Shell.execute (line, &Ctx);
+          }
 
-      Scene.display ();
+          free (line);
 
-      glfwSwapBuffers (Window);
-      glfwPollEvents ();
+          if (Shell.closed ()) 
+            break;
+        }
+    else if (tid == 0)
+      while (1)
+        {
+          bool stop = false;
+
+          if (Ctx.do_rotate)
+            View.lonc += 1.;
+     
+#pragma omp critical (RUN)
+          {
+            Scene.display (); 
+          }
+     
+          glfwSwapBuffers (Window);
+          glfwPollEvents ();
+      
+          if ((glfwGetKey (Window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+           || (glfwWindowShouldClose (Window) != 0) || Shell.closed ())
+            {
+              free_glfw_window (Window);
+              break;
+            }
+        } 
+  }
+
   
-      if (glfwGetKey (Window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        break;
-      if (glfwWindowShouldClose (Window) != 0) 
-        break;
-    } 
-  else
-    framebuffer (&ctx);
-
-  
-  free_glfw_window (Window);
 }
 
 

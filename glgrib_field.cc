@@ -14,7 +14,7 @@ void glgrib_field::init (const char * geom, const glgrib_coords_world * coords)
   ncol = 1;
 
   float * val;
-  glgrib_load (geom, &val, 2);
+  glgrib_load (geom, &val, 0);
 
   col = (unsigned char *)malloc (ncol * coords->np * sizeof (unsigned char));
 

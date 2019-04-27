@@ -231,8 +231,9 @@ GLFWwindow * new_glfw_window (const char * geom, int width, int height)
 
   if (window == NULL)
     {
-      fprintf (stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
-      getchar ();
+      fprintf (stderr, "Failed to open GLFW window. "
+                       "If you have an Intel GPU, they are not 3.3 compatible. "
+                       "Try the 2.1 version of the tutorials.\n");
       glfwTerminate ();
       return NULL;
     }
@@ -243,7 +244,6 @@ GLFWwindow * new_glfw_window (const char * geom, int width, int height)
   if (glewInit() != GLEW_OK) 
     {
       fprintf (stderr, "Failed to initialize GLEW\n");
-      getchar ();
       glfwTerminate ();
       return NULL;
     }
@@ -333,17 +333,16 @@ void x11_display (const glgrib_options & opts)
   Scene.landscape = &Landscape_tex;
   }
 
-  if(0){
+  if(1){
   Grid.init ();
   Scene.objlist.push_back (&Grid);
   }
 
-  if(0){
+  if(1){
   Coast.init ("gshhs(3).rim");
   Scene.objlist.push_back (&Coast);
   }
-  if(1){
-  WorldCoords.init (geom);
+  if(0){
   Field.init (geom, &WorldCoords);
   Scene.objlist.push_back (&Field);
   Scene.field = &Field;
@@ -352,7 +351,6 @@ void x11_display (const glgrib_options & opts)
   Scene.view = &View;
 
   Ctx.scene = &Scene;
-
 
   if (opts.shell)
     {

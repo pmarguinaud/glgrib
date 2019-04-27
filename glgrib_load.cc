@@ -199,7 +199,6 @@ void glgrib_load_z (const char * geom, int * np, float ** xyz,
     codes_get_double (h, "longitudeOfStretchingPoleInDegrees", 
                       &longitudeOfStretchingPoleInDegrees);
   
-
   bool do_rot_str = true;
 
   float omc2;
@@ -224,10 +223,13 @@ void glgrib_load_z (const char * geom, int * np, float ** xyz,
     {
       rot = 
 	      glm::rotate (glm::mat4 (1.0f),
-                         glm::radians (90.0f-(float)latitudeOfStretchingPoleInDegrees), 
-                         glm::vec3 (-sinf (glm::radians (longitudeOfStretchingPoleInDegrees)), 
-                                    +cosf (glm::radians (longitudeOfStretchingPoleInDegrees)),
-                                    0.0f)); 
+                           glm::radians (90.0f-(float)latitudeOfStretchingPoleInDegrees), 
+                           glm::vec3 (-sinf (glm::radians (longitudeOfStretchingPoleInDegrees)), 
+                                      +cosf (glm::radians (longitudeOfStretchingPoleInDegrees)),
+                                      0.0f))
+          *   glm::rotate (glm::mat4 (1.0f),
+                           glm::radians (180.0f),
+                           glm::vec3 (0.0f, 0.0f, 1.0f));
     }
 
   size_t pl_len;
@@ -326,7 +328,7 @@ void glgrib_load (const char * geom, float ** val, int what)
   FILE * in = NULL;
   char file[64];
 
-  sprintf (file, "N_%s.grb", geom);
+  sprintf (file, "I_%s.grb", geom);
   
   in = fopen (file, "r");
 

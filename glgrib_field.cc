@@ -14,7 +14,7 @@ void glgrib_field::init (const char * geom, const glgrib_coords_world * coords)
   ncol = 1;
 
   float * val;
-  glgrib_load (geom, &val, 0);
+  glgrib_load (geom, &val, 2);
 
   col = (unsigned char *)malloc (ncol * coords->np * sizeof (unsigned char));
 
@@ -32,8 +32,8 @@ void glgrib_field::render (const glgrib_view * view) const
   if (! hidden)
     {
       const glgrib_program * program = get_program (); 
-      float scale0[3] = {1.03, 1.03, 1.03};
-//    float scale0[3] = {1.0, 1.0, 1.0};
+//    float scale0[3] = {1.03, 1.03, 1.03};
+      float scale0[3] = {1.0, 1.0, 1.0};
 
       glgrib_palette p_cold_hot
         (
@@ -48,7 +48,7 @@ void glgrib_field::render (const glgrib_view * view) const
            255, 255, 255, 255
         );
 
-      p.setRGBA255 (program->programID);
+      p_cold_hot.setRGBA255 (program->programID);
 
       glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
       glgrib_world::render (view);

@@ -10,7 +10,7 @@
 #define C(name,...) glgrib_command (command_##name, #name, __VA_ARGS__)
 #define A(...) glgrib_command_arg (__VA_ARGS__)
 #define def(name) \
-static void command_##name (glgrib_window * ctx, class glgrib_shell * shell, \
+static void command_##name (glgrib_window * gwindow, class glgrib_shell * shell, \
                             glgrib_command_arghash & args)
 
 #define F(x) std::stof (args.at (#x).value)
@@ -18,24 +18,24 @@ static void command_##name (glgrib_window * ctx, class glgrib_shell * shell, \
 
 def (fov)
 {
-  ctx->view->fov += F (dfov);
+  gwindow->scene.view.fov += F (dfov);
 }
 
 def (rotate)
 {
-  ctx->do_rotate = ! ctx->do_rotate;
+  gwindow->do_rotate = ! gwindow->do_rotate;
 }
 
 def (wireframe)
 {
-  if (ctx->scene->landscape)
-    ctx->scene->landscape->toggle_wireframe ();
+  if (gwindow->scene.landscape)
+    gwindow->scene.landscape->toggle_wireframe ();
 }
 
 def (flat)
 {
-  if (ctx->scene->landscape != NULL)
-    ctx->scene->landscape->toggle_flat (); 
+  if (gwindow->scene.landscape != NULL)
+    gwindow->scene.landscape->toggle_flat (); 
 }
 
 def (close)
@@ -73,7 +73,7 @@ static void help ()
   std::cout << "Unknown command" << std::endl;
 }
 
-void glgrib_shell::execute (const std::string & _line, glgrib_window * ctx)
+void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
 {
   std::string line = _line;
 
@@ -101,7 +101,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * ctx)
 
   try
     {
-      Cmd.func (ctx, this, h);
+      Cmd.func (gwindow, this, h);
     }
   catch (std::exception & e)
     {
@@ -111,7 +111,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * ctx)
     }
 }
 
-void glgrib_shell::run (glgrib_window * ctx)
+void glgrib_shell::run (glgrib_window * gwindow)
 {
   while (1)
     {
@@ -123,7 +123,7 @@ void glgrib_shell::run (glgrib_window * ctx)
  
 #pragma omp critical (RUN)
       {
-        execute (line, ctx);
+        execute (line, gwindow);
       }
       
       free (line);

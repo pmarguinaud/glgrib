@@ -1,3 +1,4 @@
+#ifdef UNDEF
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
@@ -163,3 +164,4 @@ void fb_display (const char * file, int width, int height)
   
 }
 
+#endif

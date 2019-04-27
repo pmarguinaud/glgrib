@@ -21,11 +21,9 @@ void x11_display (const glgrib_options & opts)
   glgrib_coastlines Coast;
   glgrib_grid Grid;
   glgrib_field Field;
-  glgrib_scene Scene;
   glgrib_coords_world WorldCoords;
   glgrib_landscape_rgb Landscape_rgb;
   glgrib_landscape_tex Landscape_tex;
-  glgrib_view View;
   char geom[opts.geometry.length () + 1];
   strcpy (geom, opts.geometry.c_str ());
 
@@ -36,8 +34,7 @@ void x11_display (const glgrib_options & opts)
     }
 
   glgrib_window Gwindow (geom, opts.width, opts.height);
-  View.setViewport (opts.width, opts.height);
-  Gwindow.view = &View;
+  Gwindow.scene.view.setViewport (opts.width, opts.height);
   
   gl_init ();
 
@@ -45,33 +42,30 @@ void x11_display (const glgrib_options & opts)
 
   if(0){
   Landscape_rgb.init (geom, &WorldCoords);
-  Scene.objlist.push_back (&Landscape_rgb);
-  Scene.landscape = &Landscape_rgb;
+  Gwindow.scene.objlist.push_back (&Landscape_rgb);
+  Gwindow.scene.landscape = &Landscape_rgb;
   }
   if(1){
   Landscape_tex.init (geom, &WorldCoords);
-  Scene.objlist.push_back (&Landscape_tex);
-  Scene.landscape = &Landscape_tex;
+  Gwindow.scene.objlist.push_back (&Landscape_tex);
+  Gwindow.scene.landscape = &Landscape_tex;
   }
 
   if(1){
   Grid.init ();
-  Scene.objlist.push_back (&Grid);
+  Gwindow.scene.objlist.push_back (&Grid);
   }
 
   if(1){
   Coast.init (opts.coasts);
-  Scene.objlist.push_back (&Coast);
+  Gwindow.scene.objlist.push_back (&Coast);
   }
   if(0){
   Field.init (geom, &WorldCoords);
-  Scene.objlist.push_back (&Field);
-  Scene.field = &Field;
+  Gwindow.scene.objlist.push_back (&Field);
+  Gwindow.scene.field = &Field;
   }
 
-  Scene.view = &View;
-
-  Gwindow.scene = &Scene;
 
   if (opts.shell)
     {

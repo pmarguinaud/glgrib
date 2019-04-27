@@ -19,7 +19,7 @@ int get_latlon_from_cursor (GLFWwindow * window, float * lat, float * lon)
   ypos = gwindow->width - ypos;
   
   glm::vec3 centre (0.0f, 0.0f, 0.0f);
-  glm::vec3 xc = gwindow->view->insersect_sphere (xpos, ypos, centre, 1.0f);
+  glm::vec3 xc = gwindow->scene.view.insersect_sphere (xpos, ypos, centre, 1.0f);
 
   if (centre != xc)
     {
@@ -82,7 +82,7 @@ printf ("Framebuffer !\n");
   if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     printf ("!= GL_FRAMEBUFFER_COMPLETE\n");
 
-  gwindow->scene->display ();
+  gwindow->scene.display (gwindow);
 
   snapshot (gwindow);
 
@@ -127,51 +127,51 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
             gwindow->do_rotate = ! gwindow->do_rotate;
             break;
           case GLFW_KEY_Y:
-            gwindow->scene->landscape->toggle_wireframe ();
+            gwindow->scene.landscape->toggle_wireframe ();
             break;
           case GLFW_KEY_F:
             framebuffer (gwindow);
             break;
           case GLFW_KEY_W:
-            gwindow->view->fov += 1.;
+            gwindow->scene.view.fov += 1.;
             break;
           case GLFW_KEY_S:
             snapshot (gwindow);
             break;
           case GLFW_KEY_Q:
-            gwindow->view->fov -= 1.;
+            gwindow->scene.view.fov -= 1.;
             break;
           case GLFW_KEY_O:
-	    if (gwindow->scene->field != NULL)
-              gwindow->scene->field->toggle_hide ();
+	    if (gwindow->scene.field != NULL)
+              gwindow->scene.field->toggle_hide ();
 	    break;
           case GLFW_KEY_P:
-            if (gwindow->scene->landscape != NULL)
-              gwindow->scene->landscape->toggle_flat ();
+            if (gwindow->scene.landscape != NULL)
+              gwindow->scene.landscape->toggle_flat ();
             break;
           case GLFW_KEY_6:
-            gwindow->view->rc += 0.1;
+            gwindow->scene.view.rc += 0.1;
             break;
           case GLFW_KEY_EQUAL:
-            gwindow->view->rc -= 0.1;
+            gwindow->scene.view.rc -= 0.1;
             break;
           case GLFW_KEY_SPACE:
-            gwindow->view->latc = 0.;
-            gwindow->view->lonc = 0.;
-	    gwindow->view->rc = 6.0;
-	    gwindow->view->fov = 20.;
+            gwindow->scene.view.latc = 0.;
+            gwindow->scene.view.lonc = 0.;
+	    gwindow->scene.view.rc = 6.0;
+	    gwindow->scene.view.fov = 20.;
 	    break;
           case GLFW_KEY_UP:
-            gwindow->view->latc = gwindow->view->latc + 5.;
+            gwindow->scene.view.latc = gwindow->scene.view.latc + 5.;
             break;
           case GLFW_KEY_DOWN:
-            gwindow->view->latc = gwindow->view->latc - 5.;
+            gwindow->scene.view.latc = gwindow->scene.view.latc - 5.;
             break;
           case GLFW_KEY_LEFT:
-            gwindow->view->lonc = gwindow->view->lonc - 5.;
+            gwindow->scene.view.lonc = gwindow->scene.view.lonc - 5.;
             break;
           case GLFW_KEY_RIGHT:
-            gwindow->view->lonc = gwindow->view->lonc + 5.;
+            gwindow->scene.view.lonc = gwindow->scene.view.lonc + 5.;
             break;
 	  default:
 	    break;
@@ -187,7 +187,7 @@ void mouse_button_callback (GLFWwindow * window, int button, int action, int mod
       if (action == GLFW_PRESS) 
         {
           glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
-	  if (get_latlon_from_cursor (window, &gwindow->view->latc, &gwindow->view->lonc))
+	  if (get_latlon_from_cursor (window, &gwindow->scene.view.latc, &gwindow->scene.view.lonc))
 	    glfwSetCursorPos (window, gwindow->width / 2., gwindow->height / 2.);
         }
     }
@@ -198,9 +198,9 @@ void scroll_callback (GLFWwindow * window, double xoffset, double yoffset)
 {
   glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
   if (yoffset > 0)
-    gwindow->view->fov += 1;
+    gwindow->scene.view.fov += 1;
   else
-    gwindow->view->fov -= 1;
+    gwindow->scene.view.fov -= 1;
 }
 
 void glgrib_window::run (glgrib_shell * shell)
@@ -208,11 +208,11 @@ void glgrib_window::run (glgrib_shell * shell)
   while (1)
     {
       if (do_rotate)
-        view->lonc += 1.;
+        scene.view.lonc += 1.;
      
 #pragma omp critical (RUN)
       {
-        scene->display (); 
+        scene.display (this); 
       }
   
       glfwSwapBuffers (window);

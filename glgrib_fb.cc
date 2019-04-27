@@ -7,8 +7,6 @@
 #include "glgrib_png.h"
 #include "glgrib_world.h"
 #include "glgrib_scene.h"
-#include "glgrib_cube.h"
-#include "glgrib_cube1.h"
 #include "glgrib_grid.h"
 #include "glgrib_view.h"
 #include "glgrib_coastlines.h"
@@ -134,7 +132,6 @@ void fb_display (const char * file, int width, int height)
 {
   glgrib_scene Scene;
   glgrib_world World;
-  glgrib_cube1 Cube;
   glgrib_view View;
   fb_t Fb;
 
@@ -142,10 +139,8 @@ void fb_display (const char * file, int width, int height)
   
   gl_init ();
 //World.init (file);
-  Cube.init ();
 
 //Scene.objlist.push_back (&World);
-  Scene.objlist.push_back (&Cube);
   Scene.view = &View;
   
   Scene.display ();

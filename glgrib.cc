@@ -1,18 +1,18 @@
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
 #include "glgrib_x11.h"
 #include "glgrib_fb.h"
 
+#include "glgrib_options.h"
+
 int main (int argc, char * argv[])
 {
-//const int width = 1024, height = 1024;
-  const int width = 800, height = 800;
-  const char * geom = argv[1];
+  glgrib_options opts;
+
+  opts.parse (argc, argv);  
+
 #ifdef USE_GLE
-  fb_display (geom, width, height);
+  fb_display (opts);
 #else
-  x11_display (geom, width, height);
+  x11_display (opts);
 #endif
   return 0;
 }

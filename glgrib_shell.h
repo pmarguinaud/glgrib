@@ -24,17 +24,17 @@ typedef void (*glgrib_command_func) (glgrib_context * ctx, class glgrib_shell *,
 class glgrib_command
 {
 public:
-  glgrib_command (glgrib_command_func f, std::string c, std::string n)
+  glgrib_command (glgrib_command_func f, std::string n, std::string c)
   {
     func = f;
     name = n;
     comment = c;
   }
   template <typename T, typename... Types> 
-  glgrib_command (glgrib_command_func f, std::string c, std::string n, 
+  glgrib_command (glgrib_command_func f, std::string n, std::string c, 
                   T arg, Types... vars)
   {
-    glgrib_command cmd = glgrib_command (f, c, n, vars...);
+    glgrib_command cmd = glgrib_command (f, n, c, vars...);
     func = cmd.func;
     name = cmd.name;
     args = cmd.args;
@@ -62,6 +62,7 @@ public:
   int close = 0;
   std::map <std::string,glgrib_command> cmds;
   bool closed () { return close; }
+  void run (glgrib_context *);
 };
 
 extern glgrib_shell Shell;

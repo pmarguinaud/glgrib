@@ -3,7 +3,11 @@
 #include <iostream>
 #include <exception>
 
-#define C(name,comm,...) glgrib_command (command_##name, comm, #name, __VA_ARGS__)
+#include <readline/readline.h>
+#include <readline/history.h>
+
+
+#define C(name,...) glgrib_command (command_##name, #name, __VA_ARGS__)
 #define A(...) glgrib_command_arg (__VA_ARGS__)
 #define def(name) \
 static void command_##name (glgrib_context * ctx, class glgrib_shell * shell, \
@@ -14,20 +18,24 @@ static void command_##name (glgrib_context * ctx, class glgrib_shell * shell, \
 
 def (fov)
 {
-  float dfov = F (dfov);
-  ctx->view->fov += dfov;
+  ctx->view->fov += F (dfov);
 }
 
 def (rotate)
 {
+  ctx->do_rotate = ! ctx->do_rotate;
 }
 
 def (wireframe)
 {
+  if (ctx->scene->landscape)
+    ctx->scene->landscape->toggle_wireframe ();
 }
 
 def (flat)
 {
+  if (ctx->scene->landscape != NULL)
+    ctx->scene->landscape->toggle_flat (); 
 }
 
 def (close)
@@ -37,11 +45,11 @@ def (close)
 
 glgrib_shell Shell 
 (
-  C (close,     "", A ("", "")),
+  C (close,     ""),
   C (fov,       "", A ("dfov", "+1.")),
-  C (rotate,    "", A ("on",    "1.")),
-  C (wireframe, "", A ("on",    "1.")),
-  C (flat,      "", A ("on",    "1."))
+  C (rotate,    ""),
+  C (wireframe, ""),
+  C (flat,      "") 
 );
 
 #undef C
@@ -100,6 +108,29 @@ void glgrib_shell::execute (const std::string & _line, glgrib_context * ctx)
       std::cout << "An error occurred " << std::endl;
       std::cout << e.what() << std::endl;
       std::cout << Cmd.help () << std::endl;
+    }
+}
+
+void glgrib_shell::run (glgrib_context * ctx)
+{
+  while (1)
+    {
+      char * line = readline("> ");
+      if (line == NULL)
+        break;
+      if (strlen (line) > 0) 
+        add_history (line);
+ 
+#pragma omp critical (RUN)
+      {
+        execute (line, ctx);
+      }
+      
+      free (line);
+      
+      if (closed ()) 
+        break;
+
     }
 }
 

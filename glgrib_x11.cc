@@ -4,26 +4,24 @@
 #include <stdlib.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "glgrib_png.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <string.h>
 
-#include <readline/readline.h>
-#include <readline/history.h>
-
+#include "glgrib_png.h"
 #include "glgrib_landscape_tex.h"
 #include "glgrib_landscape_rgb.h"
 #include "glgrib_field.h"
 #include "glgrib_coords_world.h"
 #include "glgrib_scene.h"
-#include "glgrib_cube2.h"
 #include "glgrib_grid.h"
 #include "glgrib_view.h"
 #include "glgrib_coastlines.h"
 #include "glgrib_x11.h"
 #include "glgrib_shell.h"
 #include "glgrib_context.h"
+#include "glgrib_options.h"
 
 static
 int get_latlon_from_cursor (GLFWwindow * window, float * lat, float * lon)
@@ -264,7 +262,32 @@ void free_glfw_window (GLFWwindow * window)
   glfwTerminate ();
 }
 
-void x11_display (const char * geom, int width, int height)
+static void run_x11 (GLFWwindow * window, glgrib_shell * shell = NULL)
+{
+  glgrib_context * ctx = (glgrib_context *)glfwGetWindowUserPointer (window);
+  while (1)
+    {
+      if (ctx->do_rotate)
+        ctx->view->lonc += 1.;
+     
+#pragma omp critical (RUN)
+      {
+        ctx->scene->display (); 
+      }
+  
+      glfwSwapBuffers (window);
+      glfwPollEvents ();
+  
+      if ((glfwGetKey (window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+       || (glfwWindowShouldClose (window) != 0) || (shell && shell->closed ()))
+        {
+          free_glfw_window (window);
+          break;
+        }
+    } 
+}
+
+void x11_display (const glgrib_options & opts)
 {
   glgrib_coastlines Coast;
   glgrib_grid Grid;
@@ -273,14 +296,16 @@ void x11_display (const char * geom, int width, int height)
   glgrib_coords_world WorldCoords;
   glgrib_landscape_rgb Landscape_rgb;
   glgrib_landscape_tex Landscape_tex;
-  glgrib_cube2 CubeA, CubeB;
   glgrib_view View;
   glgrib_context Ctx;
+  char geom[opts.geometry.length () + 1];
 
-  View.setViewport (width, height);
+  strcpy (geom, opts.geometry.c_str ());
+
+  View.setViewport (opts.width, opts.height);
   Ctx.view = &View;
-  Ctx.width = width;
-  Ctx.height = height;
+  Ctx.width = opts.width;
+  Ctx.height = opts.height;
   Ctx.title = geom;
 
   if (! glfwInit ())
@@ -290,13 +315,11 @@ void x11_display (const char * geom, int width, int height)
       return;
     }
 
-  GLFWwindow * Window = new_glfw_window (geom, width, height);
+  GLFWwindow * Window = new_glfw_window (geom, opts.width, opts.height);
   glfwSetWindowUserPointer (Window, &Ctx);
   
   gl_init ();
 
-  glgrib_coords_cube Coords;
-  Coords.init (&View);
   WorldCoords.init (geom);
 
   if(0){
@@ -308,14 +331,6 @@ void x11_display (const char * geom, int width, int height)
   Landscape_tex.init (geom, &WorldCoords);
   Scene.objlist.push_back (&Landscape_tex);
   Scene.landscape = &Landscape_tex;
-  }
-  if(0){
-  CubeA.init (&Coords, 0., 0., 0.);
-  Scene.objlist.push_back (&CubeA);
-  }
-  if(0){
-  CubeB.init (&Coords, +0.5, +0.5, +0.5);
-  Scene.objlist.push_back (&CubeB);
   }
 
   if(0){
@@ -338,53 +353,20 @@ void x11_display (const char * geom, int width, int height)
 
   Ctx.scene = &Scene;
 
+
+  if (opts.shell)
+    {
 #pragma omp parallel
-  {
-    int tid = omp_get_thread_num ();
-
-    if (tid == 1)
-      while (1)
-        {
-          char * line = readline("> ");
-          if (line == NULL)
-            break;
-          if (strlen (line) > 0) 
-            add_history (line);
- 
-#pragma omp critical (RUN)
-          {
-            Shell.execute (line, &Ctx);
-          }
-
-          free (line);
-
-          if (Shell.closed ()) 
-            break;
-        }
-    else if (tid == 0)
-      while (1)
-        {
-          bool stop = false;
-
-          if (Ctx.do_rotate)
-            View.lonc += 1.;
-     
-#pragma omp critical (RUN)
-          {
-            Scene.display (); 
-          }
-     
-          glfwSwapBuffers (Window);
-          glfwPollEvents ();
-      
-          if ((glfwGetKey (Window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-           || (glfwWindowShouldClose (Window) != 0) || Shell.closed ())
-            {
-              free_glfw_window (Window);
-              break;
-            }
-        } 
-  }
+      {
+        int tid = omp_get_thread_num ();
+        if (tid == 1)
+          Shell.run (&Ctx);
+        else if (tid == 0)
+          run_x11 (Window, &Shell);
+      }
+    }
+  else
+    run_x11 (Window);
 
   
 }

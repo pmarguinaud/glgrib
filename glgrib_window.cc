@@ -82,7 +82,7 @@ printf ("Framebuffer !\n");
   if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     printf ("!= GL_FRAMEBUFFER_COMPLETE\n");
 
-  gwindow->scene.display (gwindow);
+  gwindow->scene.display ();
 
   snapshot (gwindow);
 
@@ -212,7 +212,8 @@ void glgrib_window::run (glgrib_shell * shell)
      
 #pragma omp critical (RUN)
       {
-        scene.display (this); 
+        makeCurrent ();
+        scene.display (); 
       }
   
       glfwSwapBuffers (window);

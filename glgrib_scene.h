@@ -12,7 +12,7 @@
 class glgrib_scene
 {
 public:
-  void display (class glgrib_window *) const;
+  void display () const;
   std::list<glgrib_object*> objlist;
   glgrib_view view;
   glgrib_landscape * landscape = NULL;

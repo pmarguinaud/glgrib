@@ -1,15 +1,13 @@
 #include "glgrib_scene.h"
 #include "glgrib_opengl.h"
-#include "glgrib_window.h"
 
 #include <stdio.h>
 
 
 using namespace glm;
 
-void glgrib_scene::display (glgrib_window * window) const
+void glgrib_scene::display () const
 {
-  window->makeCurrent ();
   view.calcMVP ();  
 
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

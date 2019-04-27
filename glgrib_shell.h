@@ -1,7 +1,7 @@
 #ifndef _GLGRIB_SHELL
 #define _GLGRIB_SHELL
 
-#include "glgrib_context.h"
+#include "glgrib_window.h"
 
 #include <string>
 #include <map>
@@ -19,7 +19,7 @@ public:
 
 typedef std::list <glgrib_command_arg> glgrib_command_arglist;
 typedef std::map <std::string,glgrib_command_arg> glgrib_command_arghash;
-typedef void (*glgrib_command_func) (glgrib_context * ctx, class glgrib_shell *, glgrib_command_arghash &);
+typedef void (*glgrib_command_func) (class glgrib_window * ctx, class glgrib_shell *, glgrib_command_arghash &);
 
 class glgrib_command
 {
@@ -58,11 +58,11 @@ public:
     cmds = shell.cmds;
     cmds.insert (std::pair<std::string,glgrib_command>(cmd.name, cmd));
   }
-  void execute (const std::string &, glgrib_context *);
+  void execute (const std::string &, class glgrib_window *);
   int close = 0;
   std::map <std::string,glgrib_command> cmds;
   bool closed () { return close; }
-  void run (glgrib_context *);
+  void run (class glgrib_window *);
 };
 
 extern glgrib_shell Shell;

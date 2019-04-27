@@ -10,7 +10,7 @@
 #define C(name,...) glgrib_command (command_##name, #name, __VA_ARGS__)
 #define A(...) glgrib_command_arg (__VA_ARGS__)
 #define def(name) \
-static void command_##name (glgrib_context * ctx, class glgrib_shell * shell, \
+static void command_##name (glgrib_window * ctx, class glgrib_shell * shell, \
                             glgrib_command_arghash & args)
 
 #define F(x) std::stof (args.at (#x).value)
@@ -73,7 +73,7 @@ static void help ()
   std::cout << "Unknown command" << std::endl;
 }
 
-void glgrib_shell::execute (const std::string & _line, glgrib_context * ctx)
+void glgrib_shell::execute (const std::string & _line, glgrib_window * ctx)
 {
   std::string line = _line;
 
@@ -111,7 +111,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_context * ctx)
     }
 }
 
-void glgrib_shell::run (glgrib_context * ctx)
+void glgrib_shell::run (glgrib_window * ctx)
 {
   while (1)
     {

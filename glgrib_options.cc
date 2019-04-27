@@ -10,13 +10,14 @@ void glgrib_options::parse (int argc, char * argv[])
 {
   int opt = 0;
 
-  const char * const short_opts = "s:Sg:";
+  const char * const short_opts = "s:Sg:c:";
   struct option long_options[] = 
   {
       {"width",     required_argument, 0,  'w' },
       {"height",    required_argument, 0,  'h' },
       {"shell",     no_argument,       0,  'S' },
       {"geometry",  required_argument, 0,  'g' },
+      {"coasts",    required_argument, 0,  'c' },
       {0,           0,                 0,  0   }
   };
   
@@ -26,10 +27,11 @@ void glgrib_options::parse (int argc, char * argv[])
     {
       switch (opt) 
         {
-           case 'w' : width  = std::stoi (optarg);     break;
-           case 'h' : height = std::stoi (optarg);     break;
-           case 'S' : shell  = true;                   break;
+           case 'w' : width    = std::stoi (optarg);   break;
+           case 'h' : height   = std::stoi (optarg);   break;
+           case 'S' : shell    = true;                 break;
            case 'g' : geometry = std::string (optarg); break;
+           case 'c' : coasts   = std::string (optarg); break;
            default: 
                exit (EXIT_FAILURE);
        }

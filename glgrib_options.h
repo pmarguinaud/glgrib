@@ -9,6 +9,7 @@ public:
   int width= 800, height = 800;
   bool shell = false;
   std::string geometry = "";
+  std::string coasts = "gshhs(3).rim";
   void parse (int argc, char * argv[]);
 };
 

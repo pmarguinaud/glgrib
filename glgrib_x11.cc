@@ -22,8 +22,6 @@ void x11_display (const glgrib_options & opts)
   glgrib_field Field;
   glgrib_coords_world WorldCoords;
   glgrib_landscape_tex Landscape_tex;
-  char geom[opts.geometry.length () + 1];
-  strcpy (geom, opts.geometry.c_str ());
 
   if (! glfwInit ())
     {
@@ -36,13 +34,12 @@ void x11_display (const glgrib_options & opts)
   
   gl_init ();
 
-  WorldCoords.init (geom);
+  WorldCoords.init (opts.geometry, opts.orography);
 
-  Field.init (geom, &WorldCoords);
 
   if (opts.landscape)
     {
-      Landscape_tex.init (geom, &WorldCoords);
+      Landscape_tex.init (&WorldCoords);
       Gwindow.scene.setLandscape (&Landscape_tex);
     }
 
@@ -58,7 +55,11 @@ void x11_display (const glgrib_options & opts)
       Gwindow.scene.setCoastlines (&Coast);
     }
 
-//Gwindow.scene.setField (&Field);
+  if (opts.field != "")
+    {
+      Field.init (opts.field, &WorldCoords);
+      Gwindow.scene.setField (&Field);
+    }
 
 
   if (opts.shell)

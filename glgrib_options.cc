@@ -10,15 +10,17 @@ void glgrib_options::parse (int argc, char * argv[])
 {
   int opt = 0;
 
-  const char * const short_opts = "s:Sg:c:lG:";
+  const char * const short_opts = "s:Sg:c:lG:f:o:";
   struct option long_options[] = 
   {
+      {"field",     required_argument, 0,  'f' },
       {"width",     required_argument, 0,  'w' },
       {"height",    required_argument, 0,  'h' },
       {"shell",     no_argument,       0,  'S' },
       {"geometry",  required_argument, 0,  'g' },
       {"grid",      required_argument, 0,  'G' },
       {"coasts",    required_argument, 0,  'c' },
+      {"orography", required_argument, 0,  'o' },
       {"landscape", no_argument,       0,  'l' },
       {0,           0,                 0,  0   }
   };
@@ -29,13 +31,15 @@ void glgrib_options::parse (int argc, char * argv[])
     {
       switch (opt) 
         {
-           case 'w' : width      =  std::stoi (optarg);   break;
-           case 'h' : height     =  std::stoi (optarg);   break;
+           case 'w' : width      =  std::stoi   (optarg); break;
+           case 'h' : height     =  std::stoi   (optarg); break;
            case 'S' : shell      =  true;                 break;
            case 'l' : landscape  =  true;                 break;
            case 'g' : geometry   =  std::string (optarg); break;
-           case 'G' : grid       =  std::stoi (optarg);   break;
+           case 'f' : field      =  std::string (optarg); break;
+           case 'G' : grid       =  std::stoi   (optarg); break;
            case 'c' : coasts     =  std::string (optarg); break;
+           case 'o' : orography  =  std::stof   (optarg); break;
            default: 
                exit (EXIT_FAILURE);
        }

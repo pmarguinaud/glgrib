@@ -4,10 +4,12 @@
 #include "glgrib_opengl.h"
 #include "glgrib_coords.h"
 
+#include <string>
+
 class glgrib_coords_world : public glgrib_coords
 {
 public:
-  void init (const char *);
+  void init (const std::string &, float);
 };
 
 #endif

@@ -7,14 +7,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void glgrib_field::init (const char * geom, const glgrib_coords_world * coords)
+void glgrib_field::init (const std::string & field, const glgrib_coords_world * coords)
 {
   unsigned char * col;
 
   ncol = 1;
 
   float * val;
-  glgrib_load (geom, &val, 2);
+  glgrib_load (field.c_str (), &val, 2);
 
   col = (unsigned char *)malloc (ncol * coords->np * sizeof (unsigned char));
 
@@ -37,8 +37,8 @@ void glgrib_field::render (const glgrib_view * view) const
 
       glgrib_palette p_cold_hot
         (
-             0,   0, 255,   0,
-           255, 255, 255, 127,
+             0,   0, 255, 255,
+           255, 255, 255, 255,
            255,   0,   0, 255 
         );
 

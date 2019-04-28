@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void glgrib_landscape_tex::init (const char * geom, const glgrib_coords_world * coords)
+void glgrib_landscape_tex::init (const glgrib_coords_world * coords)
 {
 
   unsigned char * rgb;

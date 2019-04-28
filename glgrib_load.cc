@@ -157,17 +157,15 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
 
 
 
-void glgrib_load_z (const char * geom, int * np, float ** xyz, 
-                    unsigned int * nt, unsigned int ** ind)
+void glgrib_load_z (const char * file, int * np, float ** xyz, 
+                    unsigned int * nt, unsigned int ** ind, float orog)
 {
   FILE * in = NULL;
   long int * pl = NULL;
   long int Nj;
-  char file[64];
   const int nstripe = 8;
   int indoff[nstripe];
 
-  sprintf (file, "Z_%s.grb", geom);
   
   in = fopen (file, "r");
 
@@ -180,12 +178,16 @@ void glgrib_load_z (const char * geom, int * np, float ** xyz,
   codes_get_size (h, "values", &v_len);
       
   double vmin, vmax, vmis;
-  double * v = (double *)malloc (v_len * sizeof (double));
 
-  codes_get_double_array (h, "values", v, &v_len);
-  codes_get_double (h, "maximum",      &vmax);
-  codes_get_double (h, "minimum",      &vmin);
-  codes_get_double (h, "missingValue", &vmis);
+  double * v = NULL;
+  if (orog > 0.0f)
+    {
+      v = (double *)malloc (v_len * sizeof (double));
+      codes_get_double_array (h, "values", v, &v_len);
+      codes_get_double (h, "maximum",      &vmax);
+      codes_get_double (h, "minimum",      &vmin);
+      codes_get_double (h, "missingValue", &vmis);
+    }
 
   double stretchingFactor = 1.0f;
   if (codes_is_defined (h, "stretchingFactor"))
@@ -221,15 +223,15 @@ void glgrib_load_z (const char * geom, int * np, float ** xyz,
    && (latitudeOfStretchingPoleInDegrees != 0.0f 
     && longitudeOfStretchingPoleInDegrees != 0.0f))
     {
-      rot = 
-	      glm::rotate (glm::mat4 (1.0f),
-                           glm::radians (90.0f-(float)latitudeOfStretchingPoleInDegrees), 
-                           glm::vec3 (-sinf (glm::radians (longitudeOfStretchingPoleInDegrees)), 
-                                      +cosf (glm::radians (longitudeOfStretchingPoleInDegrees)),
-                                      0.0f))
-          *   glm::rotate (glm::mat4 (1.0f),
-                           glm::radians (180.0f),
-                           glm::vec3 (0.0f, 0.0f, 1.0f));
+      rot = glm::rotate (glm::mat4 (1.0f),
+                         glm::radians (90.0f-(float)latitudeOfStretchingPoleInDegrees), 
+                         glm::vec3 (-sinf (glm::radians (longitudeOfStretchingPoleInDegrees)),
+                                    +cosf (glm::radians (longitudeOfStretchingPoleInDegrees)),
+                                    0.0f)) 
+          *
+            glm::rotate (glm::mat4 (1.0f),
+                         glm::radians (180.0f+(float)longitudeOfStretchingPoleInDegrees),
+                         glm::vec3 (0.0f, 0.0f, 1.0f));
     }
 
   size_t pl_len;
@@ -255,7 +257,20 @@ void glgrib_load_z (const char * geom, int * np, float ** xyz,
           float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
           float lon = coordx;
           float coslon = cos (lon); float sinlon = sin (lon);
-          float radius = (1.0 + ((v[jglo] == vmis) ? 0. : 0.05 * v[jglo]/vmax));
+
+//        float radius = (1.0 + orog > 0.0f ? 
+//                ((v[jglo] == vmis) ? 0. : orog * v[jglo]/vmax) : 0.0f);
+
+          float radius;
+ 
+          if (orog > 0.0f)
+            {
+              radius = (1.0 + ((v[jglo] == vmis) ? 0. : 0.05 * v[jglo]/vmax));
+            }
+          else
+            {
+              radius = 1.0f;
+            }
 
           float X = coslon * coslat * radius;
           float Y = sinlon * coslat * radius;
@@ -271,20 +286,18 @@ void glgrib_load_z (const char * geom, int * np, float ** xyz,
         }
     }
 
-  free (v);
+  if (orog > 0.0f)
+    free (v);
 
   fclose (in);
   free (pl);
   
 }
 
-void glgrib_load_rgb (const char * geom, unsigned char ** col, int use_alpha)
+void glgrib_load_rgb (const char * file, unsigned char ** col, int use_alpha)
 {
   FILE * in = NULL;
   int ncol = use_alpha ? 4 : 3;
-  char file[64];
-
-  sprintf (file, "RGB_%s.grb", geom);
   
   in = fopen (file, "r");
 
@@ -323,14 +336,9 @@ void glgrib_load_rgb (const char * geom, unsigned char ** col, int use_alpha)
   fclose (in);
 }
 
-void glgrib_load (const char * geom, float ** val, int what)
+void glgrib_load (const char * file, float ** val, int what)
 {
-  FILE * in = NULL;
-  char file[64];
-
-  sprintf (file, "I_%s.grb", geom);
-  
-  in = fopen (file, "r");
+  FILE * in = fopen (file, "r");
 
   *val = NULL;
 

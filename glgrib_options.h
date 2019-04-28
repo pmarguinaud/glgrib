@@ -11,8 +11,10 @@ public:
   bool landscape = false;
   int grid = 9;
   std::string geometry = "";
+  std::string field = "";
   std::string coasts = "gshhs(3).rim";
   void parse (int argc, char * argv[]);
+  float orography = 0.05;
 };
 
 #endif

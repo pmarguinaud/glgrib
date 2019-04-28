@@ -8,10 +8,12 @@
 #include "glgrib_view.h"
 #include "glgrib_shell.h"
 
+#include <string>
+
 class glgrib_window
 {
 public:
-  glgrib_window (const char *, int, int);
+  glgrib_window (const std::string &, int, int);
   ~glgrib_window ();
   void run (class glgrib_shell * shell = NULL);
   void makeCurrent () { glfwMakeContextCurrent (window); }
@@ -20,7 +22,7 @@ public:
   int snapshot_cnt = 0;
   glgrib_scene scene;
   bool cursorpos = false;
-  const char * title = "";
+  std::string title = "";
   GLFWwindow * window;
 };
 

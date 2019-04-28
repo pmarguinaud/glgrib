@@ -103,7 +103,7 @@ void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
   else
     {
       glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
-      glfwSetWindowTitle (window, gwindow->title);
+      glfwSetWindowTitle (window, gwindow->title.c_str ());
     }
 }
 
@@ -121,7 +121,7 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
 	    else
               glfwSetCursorPosCallback (window, cursor_position_callback);
 	    gwindow->cursorpos = ! gwindow->cursorpos;
-            glfwSetWindowTitle (window, gwindow->title);
+            glfwSetWindowTitle (window, gwindow->title.c_str ());
             break;
           case GLFW_KEY_TAB:
             gwindow->do_rotate = ! gwindow->do_rotate;
@@ -226,7 +226,7 @@ void glgrib_window::run (glgrib_shell * shell)
 }
 
 
-glgrib_window::glgrib_window (const char * t, int w, int h)
+glgrib_window::glgrib_window (const std::string & t, int w, int h)
 {
   title = t;
   width = w;
@@ -237,7 +237,7 @@ glgrib_window::glgrib_window (const char * t, int w, int h)
   glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); 
   glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   
-  window = glfwCreateWindow (width, height, title, NULL, NULL);
+  window = glfwCreateWindow (width, height, title.c_str (), NULL, NULL);
   glfwSetWindowUserPointer (window, this);
 
   if (window == NULL)

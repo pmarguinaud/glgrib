@@ -8,6 +8,8 @@ class glgrib_options
 public:
   int width= 800, height = 800;
   bool shell = false;
+  bool landscape = false;
+  int grid = 9;
   std::string geometry = "";
   std::string coasts = "gshhs(3).rim";
   void parse (int argc, char * argv[]);

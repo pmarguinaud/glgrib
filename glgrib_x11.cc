@@ -37,9 +37,9 @@ void x11_display (const glgrib_options & opts)
   WorldCoords.init (opts.geometry, opts.orography);
 
 
-  if (opts.landscape)
+  if (opts.landscape != "")
     {
-      Landscape_tex.init (&WorldCoords);
+      Landscape_tex.init (opts.landscape, &WorldCoords);
       Gwindow.scene.setLandscape (&Landscape_tex);
     }
 

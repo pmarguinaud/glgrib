@@ -9,6 +9,7 @@
 class glgrib_landscape : public glgrib_world
 {
 public:
+  virtual void init (const std::string &, const glgrib_coords_world *) = 0;
   virtual glgrib_program_kind get_program_kind () const 
     { 
       return flat ? GLGRIB_PROGRAM_RGB_FLAT : GLGRIB_PROGRAM_RGB; 

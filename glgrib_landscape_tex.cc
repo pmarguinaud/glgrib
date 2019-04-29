@@ -7,13 +7,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void glgrib_landscape_tex::init (const std::string & file, const glgrib_coords_world * coords)
+void glgrib_landscape_tex::init (const glgrib_options & opts, const glgrib_coords_world * coords)
 {
 
   unsigned char * rgb;
   int w, h;
 
-  glgrib_bmp (file.c_str (), &rgb, &w, &h);
+  glgrib_bmp (opts.landscape.c_str (), &rgb, &w, &h);
 
   glGenTextures (1, &textureID);
   glBindTexture (GL_TEXTURE_2D, textureID);

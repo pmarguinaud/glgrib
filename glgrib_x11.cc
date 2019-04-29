@@ -29,35 +29,35 @@ void x11_display (const glgrib_options & opts)
       return;
     }
 
-  glgrib_window Gwindow (opts.geometry, opts.width, opts.height);
-  Gwindow.scene.view.setViewport (opts.width, opts.height);
+  glgrib_window Gwindow (opts);
+  Gwindow.scene.view.setViewport (opts);
   
   gl_init ();
 
-  WorldCoords.init (opts.geometry, opts.orography);
+  WorldCoords.init (opts);
 
 
   if (opts.landscape != "")
     {
-      Landscape_tex.init (opts.landscape, &WorldCoords);
+      Landscape_tex.init (opts, &WorldCoords);
       Gwindow.scene.setLandscape (&Landscape_tex);
     }
 
-  if (opts.grid)
+  if (opts.grid_resolution)
     {
-      Grid.init (opts.grid);
+      Grid.init (opts);
       Gwindow.scene.setGrid (&Grid);
     }
 
   if (opts.coasts != "")
     {
-      Coast.init (opts.coasts);
+      Coast.init (opts);
       Gwindow.scene.setCoastlines (&Coast);
     }
 
   if (opts.field != "")
     {
-      Field.init (opts.field, &WorldCoords);
+      Field.init (opts, &WorldCoords);
       Gwindow.scene.setField (&Field);
     }
 

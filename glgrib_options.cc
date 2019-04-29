@@ -90,7 +90,7 @@ void glgrib_options::parse (int argc, char * argv[])
   ADD_OPT (height);
   ADD_OPT (shell);
   ADD_OPT (geometry);
-  ADD_OPT (grid);
+  ADD_OPT (grid_resolution);
   ADD_OPT (coasts);
   ADD_OPT (orography);
   ADD_OPT (landscape);

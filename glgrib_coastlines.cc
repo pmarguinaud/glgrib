@@ -22,7 +22,7 @@ typedef struct point_t
   int y; /* latitude of a point in micro-degrees */
 } point_t;
 
-void glgrib_coastlines::init (const std::string & file)
+void glgrib_coastlines::init (const glgrib_options & opts)
 {
 
   ncol = use_alpha () ? 4 : 3;
@@ -42,7 +42,7 @@ void glgrib_coastlines::init (const std::string & file)
 
   for (int pass = 0; pass < 2; pass++)
     {
-      fp = fopen (file.c_str (), "r");
+      fp = fopen (opts.coasts.c_str (), "r");
      
       while (1) 
         {   

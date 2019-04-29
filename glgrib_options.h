@@ -10,7 +10,7 @@ public:
   float field_scale = 1.0f;
   bool shell = false;
   std::string landscape = "landscape/Whole_world_-_land_and_oceans_8000.bmp";
-  int grid = 9;
+  int grid_resolution = 9;
   std::string geometry = "";
   std::string field = "";
   std::string coasts = "coastlines/gshhs(3).rim";

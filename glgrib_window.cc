@@ -230,11 +230,20 @@ void glgrib_window::run (glgrib_shell * shell)
 }
 
 
-glgrib_window::glgrib_window (const std::string & t, int w, int h)
+static void resize_callback (GLFWwindow * window, int width, int height)
 {
-  title = t;
-  width = w;
-  height = h;
+  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
+  gwindow->width = width;
+  gwindow->height = height;
+  glViewport (0, 0, width, height);
+  gwindow->scene.view.setViewport (width, height);
+}
+
+glgrib_window::glgrib_window (const glgrib_options & opts)
+{
+  title = opts.geometry;
+  width = opts.width;
+  height = opts.height;
   glfwWindowHint (GLFW_SAMPLES, 4);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -267,6 +276,7 @@ glgrib_window::glgrib_window (const std::string & t, int w, int h)
   glfwSetKeyCallback (window, key_callback);
   glfwSetScrollCallback (window, scroll_callback);
   glfwSetMouseButtonCallback (window, mouse_button_callback);
+  glfwSetFramebufferSizeCallback (window, resize_callback);  
 
 }
   

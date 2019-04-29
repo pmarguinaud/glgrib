@@ -4,11 +4,11 @@
 #include <math.h>
 #include <stdlib.h>
 
-void glgrib_coords_world::init (const std::string & file, float orography)
+void glgrib_coords_world::init (const glgrib_options & opts)
 {
   unsigned int * ind = NULL;
   float * xyz = NULL;
-  glgrib_load_z (file.c_str (), &np, &xyz, &nt, &ind, orography);
+  glgrib_load_z (opts.geometry.c_str (), &np, &xyz, &nt, &ind, opts.orography);
 
   glBindVertexArray (0);
   glGenBuffers (1, &vertexbuffer);

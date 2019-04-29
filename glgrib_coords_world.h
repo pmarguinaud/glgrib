@@ -3,13 +3,14 @@
 
 #include "glgrib_opengl.h"
 #include "glgrib_coords.h"
+#include "glgrib_options.h"
 
 #include <string>
 
 class glgrib_coords_world : public glgrib_coords
 {
 public:
-  void init (const std::string &, float);
+  void init (const glgrib_options &);
 };
 
 #endif

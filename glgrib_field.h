@@ -3,13 +3,15 @@
 
 #include "glgrib_world.h"
 #include "glgrib_coords_world.h"
+#include "glgrib_options.h"
 
 #include <string>
 
 class glgrib_field : public glgrib_world
 {
 public:
-  void init (const std::string &, const glgrib_coords_world *);
+  void init (const glgrib_options &, const glgrib_coords_world *);
+  glgrib_options opts;
   virtual glgrib_program_kind get_program_kind () const 
     { 
       return GLGRIB_PROGRAM_GRADIENT_FLAT_SCALE;

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void glgrib_grid::init (int grid_resol)
+void glgrib_grid::init (const glgrib_options & opts)
 {
 
   ncol = use_alpha () ? 4 : 3;
@@ -19,8 +19,8 @@ void glgrib_grid::init (int grid_resol)
 
   float r = 1.005;
 
-  const int nlatv = 200, nlonv = 2 * grid_resol;
-  const int nlath = grid_resol, nlonh = 400;
+  const int nlatv = 200, nlonv = 2 * opts.grid_resolution;
+  const int nlath = opts.grid_resolution, nlonh = 400;
 
   for (int pass = 0; pass < 2; pass++)
     {

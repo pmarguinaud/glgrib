@@ -7,13 +7,14 @@
 #include "glgrib_scene.h"
 #include "glgrib_view.h"
 #include "glgrib_shell.h"
+#include "glgrib_options.h"
 
 #include <string>
 
 class glgrib_window
 {
 public:
-  glgrib_window (const std::string &, int, int);
+  glgrib_window (const glgrib_options & opts);
   ~glgrib_window ();
   void run (class glgrib_shell * shell = NULL);
   void makeCurrent () { glfwMakeContextCurrent (window); }

@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <iostream>
 
+
 void glgrib_view::setMVP (GLuint matrixID) const
 {
   glUniformMatrix4fv (matrixID, 1, GL_FALSE, &MVP[0][0]);
@@ -17,18 +18,25 @@ void glgrib_view::calcMVP () const
         yc = rc * glm::sin (glm::radians (lonc)) * glm::cos (glm::radians (latc)),
         zc = rc *                                  glm::sin (glm::radians (latc));
 
+  Viewport = glm::vec4 (0.0f, 0.0f, (float)width, (float)height);
   Projection = glm::perspective (glm::radians (fov), (float)width/(float)height, 0.1f, 100.0f);
   View       = glm::lookAt (glm::vec3 (xc,yc,zc), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
   Model      = glm::mat4 (1.0f);
 
   MVP = Projection * View * Model; 
+
+}
+
+void glgrib_view::setViewport (const glgrib_options & opts)
+{
+  width = opts.width;
+  height = opts.height;
 }
 
 void glgrib_view::setViewport (int w, int h)
 {
   width = w;
   height = h;
-  Viewport = glm::vec4 (0.0f, 0.0f, (float)width, (float)height);
 }
 
 glm::vec3 glgrib_view::insersect_plane (const double & xpos, const double & ypos, 

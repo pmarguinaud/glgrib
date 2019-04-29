@@ -14,6 +14,7 @@ public:
   void setMVP (GLuint) const;
   void calcMVP () const;
   void setViewport (int, int);
+  int width, height;
   mutable glm::mat4 Model, View, Projection, MVP;
   glm::vec4 Viewport;
   glm::vec3 project (const glm::vec3 & xyz) const

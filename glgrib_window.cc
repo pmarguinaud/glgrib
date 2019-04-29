@@ -10,13 +10,17 @@
 #include "glgrib_window.h"
 #include "glgrib_png.h"
 
+#include <iostream>
+
 static
 int get_latlon_from_cursor (GLFWwindow * window, float * lat, float * lon)
 {
   double xpos, ypos;
+
+
   glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
   glfwGetCursorPos (window, &xpos, &ypos);
-  ypos = gwindow->width - ypos;
+  ypos = gwindow->height - ypos;
   
   glm::vec3 centre (0.0f, 0.0f, 0.0f);
   glm::vec3 xc = gwindow->scene.view.insersect_sphere (xpos, ypos, centre, 1.0f);

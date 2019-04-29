@@ -17,15 +17,17 @@ void glgrib_view::calcMVP () const
         yc = rc * glm::sin (glm::radians (lonc)) * glm::cos (glm::radians (latc)),
         zc = rc *                                  glm::sin (glm::radians (latc));
 
-  Projection = glm::perspective (glm::radians (fov), 1.0f / 1.0f, 0.1f, 100.0f);
+  Projection = glm::perspective (glm::radians (fov), (float)width/(float)height, 0.1f, 100.0f);
   View       = glm::lookAt (glm::vec3 (xc,yc,zc), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
   Model      = glm::mat4 (1.0f);
 
   MVP = Projection * View * Model; 
 }
 
-void glgrib_view::setViewport (int width, int height)
+void glgrib_view::setViewport (int w, int h)
 {
+  width = w;
+  height = h;
   Viewport = glm::vec4 (0.0f, 0.0f, (float)width, (float)height);
 }
 

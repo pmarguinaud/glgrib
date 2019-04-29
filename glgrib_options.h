@@ -6,7 +6,8 @@
 class glgrib_options
 {
 public:
-  int width= 800, height = 800;
+  int width = 800, height = 800;
+  float field_scale = 1.0f;
   bool shell = false;
   std::string landscape = "landscape/Whole_world_-_land_and_oceans_8000.bmp";
   int grid = 9;

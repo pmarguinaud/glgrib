@@ -14,13 +14,13 @@
 #include "glgrib_shell.h"
 #include "glgrib_window.h"
 #include "glgrib_options.h"
+#include "glgrib_geometry.h"
 
 void x11_display (const glgrib_options & opts)
 {
   glgrib_coastlines Coast;
   glgrib_grid Grid;
   glgrib_field Field;
-  glgrib_coords_world WorldCoords;
   glgrib_landscape_tex Landscape_tex;
 
   if (! glfwInit ())
@@ -28,6 +28,9 @@ void x11_display (const glgrib_options & opts)
       fprintf (stderr, "Failed to initialize GLFW\n");
       return;
     }
+
+  glgrib_geometry * geom = glgrib_geometry_load (opts);
+  glgrib_coords_world WorldCoords;
 
   glgrib_window Gwindow (opts);
   Gwindow.scene.view.setViewport (opts);
@@ -78,6 +81,9 @@ void x11_display (const glgrib_options & opts)
 
   glfwTerminate ();
   
+
+  delete geom;
+
 }
 
 

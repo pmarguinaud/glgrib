@@ -1,9 +1,9 @@
+#include "glgrib_geometry_gaussian.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <eccodes.h>
 
 #include "glgrib_load.h"
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
@@ -157,30 +157,18 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
 
 
 
-void glgrib_load_z (const char * file, int * np, float ** xyz, 
-                    unsigned int * nt, unsigned int ** ind, float orog)
+glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts, codes_handle * h)
 {
-  FILE * in = NULL;
-  long int * pl = NULL;
-  long int Nj;
   const int nstripe = 8;
   int indoff[nstripe];
 
-  
-  in = fopen (file, "r");
-
-  *xyz = NULL;
-  *ind = NULL;
-
-  int err = 0;
   size_t v_len = 0;
-  codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
   codes_get_size (h, "values", &v_len);
       
   double vmin, vmax, vmis;
 
   double * v = NULL;
-  if (orog > 0.0f)
+  if (opts.orography > 0.0f)
     {
       v = (double *)malloc (v_len * sizeof (double));
       codes_get_double_array (h, "values", v, &v_len);
@@ -189,22 +177,17 @@ void glgrib_load_z (const char * file, int * np, float ** xyz,
       codes_get_double (h, "missingValue", &vmis);
     }
 
-  double stretchingFactor = 1.0f;
   if (codes_is_defined (h, "stretchingFactor"))
     codes_get_double (h, "stretchingFactor", &stretchingFactor);
-  double latitudeOfStretchingPoleInDegrees = 90.0f;
   if (codes_is_defined (h, "latitudeOfStretchingPoleInDegrees"))
     codes_get_double (h, "latitudeOfStretchingPoleInDegrees",
                       &latitudeOfStretchingPoleInDegrees);
-  double longitudeOfStretchingPoleInDegrees = 0.0f;
   if (codes_is_defined (h, "longitudeOfStretchingPoleInDegrees"))
     codes_get_double (h, "longitudeOfStretchingPoleInDegrees", 
                       &longitudeOfStretchingPoleInDegrees);
   
   bool do_rot_str = true;
 
-  float omc2;
-  float opc2;
   if (! do_rot_str)
     {
       omc2 = 0.0f;
@@ -216,8 +199,6 @@ void glgrib_load_z (const char * file, int * np, float ** xyz,
       opc2 = 1.0f + 1.0f / (stretchingFactor * stretchingFactor);
     }
   
-  glm::mat4 rot = glm::mat4 (1.0f);
-
   if (do_rot_str) 
   if (latitudeOfStretchingPoleInDegrees != 90.0f 
    && (latitudeOfStretchingPoleInDegrees != 0.0f 
@@ -239,13 +220,12 @@ void glgrib_load_z (const char * file, int * np, float ** xyz,
   codes_get_size (h, "pl", &pl_len);
   pl = (long int *)malloc (sizeof (long int) * pl_len);
   codes_get_long_array (h, "pl", pl, &pl_len);
-  glgauss (Nj, pl, 1, nt, nstripe, indoff);
-  *ind = (unsigned int *)malloc (3 * (*nt) * sizeof (unsigned int));
-  glgauss (Nj, pl, 2, *ind, nstripe, indoff);
-  codes_handle_delete (h);
+  glgauss (Nj, pl, 1, &nt, nstripe, indoff);
+  ind = (unsigned int *)malloc (3 * nt * sizeof (unsigned int));
+  glgauss (Nj, pl, 2, ind, nstripe, indoff);
       
-  *xyz = (float *)malloc (3 * sizeof (float) * v_len);
-  *np  = v_len;
+  xyz = (float *)malloc (3 * sizeof (float) * v_len);
+  np  = v_len;
   for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
     {
       float coordy = M_PI * (0.5 - (float)jlat / (float)(Nj + 1));
@@ -260,7 +240,7 @@ void glgrib_load_z (const char * file, int * np, float ** xyz,
 
           float radius;
  
-          if (orog > 0.0f)
+          if (opts.orography > 0.0f)
             radius = (1.0 + ((v[jglo] == vmis) ? 0. : 0.05 * v[jglo]/vmax));
           else
             radius = 1.0f;
@@ -272,108 +252,23 @@ void glgrib_load_z (const char * file, int * np, float ** xyz,
           glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
           XYZ = rot * XYZ;
 
-          (*xyz)[3*jglo+0] = XYZ.x;
-          (*xyz)[3*jglo+1] = XYZ.y;
-          (*xyz)[3*jglo+2] = XYZ.z;
+          xyz[3*jglo+0] = XYZ.x;
+          xyz[3*jglo+1] = XYZ.y;
+          xyz[3*jglo+2] = XYZ.z;
 
         }
     }
 
-  if (orog > 0.0f)
+  if (opts.orography > 0.0f)
     free (v);
 
-  fclose (in);
-  free (pl);
   
 }
 
-void glgrib_load_rgb (const char * file, unsigned char ** col, int use_alpha)
+glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()
 {
-  FILE * in = NULL;
-  int ncol = use_alpha ? 4 : 3;
-  
-  in = fopen (file, "r");
-
-  *col = NULL;
-
-  for (int ifld = 0; ifld < 3; ifld++)
-    {
-      int err = 0;
-      size_t v_len = 0;
-      codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
-      codes_get_size (h, "values", &v_len);
-      
-      double vmin, vmax, vmis;
-      double * v = (double *)malloc (v_len * sizeof (double));
-
-      codes_get_double_array (h, "values", v, &v_len);
-      codes_get_double (h, "maximum",      &vmax);
-      codes_get_double (h, "minimum",      &vmin);
-      codes_get_double (h, "missingValue", &vmis);
-      codes_handle_delete (h);
-      
-      if (*col == NULL)
-        {
-          *col = (unsigned char *)malloc (ncol * sizeof (unsigned char) * v_len);
-          if (use_alpha)
-            for (int jglo = 0; jglo < v_len; jglo++)
-              (*col)[ncol*jglo+3] = 255;
-	}
-
-      for (int jglo = 0; jglo < v_len; jglo++)
-        (*col)[ncol*jglo+ifld] = 255 * v[jglo];
-      
-      free (v);
-    }
-
-  fclose (in);
-}
-
-void glgrib_load (const char * file, float ** val, int what)
-{
-  FILE * in = fopen (file, "r");
-
-  *val = NULL;
-
-  int err = 0;
-  codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
-  size_t pl_len;
-  size_t v_len = 0;
-  codes_get_size (h, "pl", &pl_len);
-  codes_get_size (h, "values", &v_len);
-  long int * pl = (long int *)malloc (sizeof (long int) * pl_len);
-  codes_get_long_array (h, "pl", pl, &pl_len);
-  
-
-  double vmin, vmax;
-  double * v = NULL;
-  codes_get_double (h, "maximum", &vmax);
-  codes_get_double (h, "minimum", &vmin);
-  if (what == 2)
-    {
-      v = (double *)malloc (sizeof (double) * v_len);
-      codes_get_double_array (h, "values", v, &v_len);
-    }
-
-  codes_handle_delete (h);
-
-  *val = (float *)malloc (sizeof (float) * v_len);
-
-  for (int jlat = 1, jglo = 0; jlat <= pl_len; jlat++)
-    for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
-      switch (what)
-        {
-          case 0: (*val)[jglo] = ((int)(10 * (float)(jlat-1)/(float)pl_len)) / 10.0f; break;
-          case 1: (*val)[jglo] = ((int)(10 * (float)(jlon-1)/(float)pl[jlat-1])) / 10.0f; break;
-          case 2: (*val)[jglo] = ((int)(10 * (v[jglo] - vmin) / (vmax - vmin))) / 10.0f; break;
-        }
-
-  
-  free (pl);
-
-  if (v != NULL)
-    free (v);
-
-  fclose (in);
+  if (pl)
+    free (pl);
+  pl = NULL;
 }
 

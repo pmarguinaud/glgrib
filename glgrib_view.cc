@@ -18,7 +18,7 @@ void glgrib_view::calcMVP () const
         yc = rc * glm::sin (glm::radians (lonc)) * glm::cos (glm::radians (latc)),
         zc = rc *                                  glm::sin (glm::radians (latc));
 
-  Viewport = glm::vec4 (0.0f, 0.0f, (float)width, (float)height);
+  Viewport   = glm::vec4 (0.0f, 0.0f, (float)width, (float)height);
   Projection = glm::perspective (glm::radians (fov), (float)width/(float)height, 0.1f, 100.0f);
   View       = glm::lookAt (glm::vec3 (xc,yc,zc), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
   Model      = glm::mat4 (1.0f);

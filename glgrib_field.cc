@@ -18,31 +18,17 @@ void glgrib_field::init (const glgrib_options & o, const glgrib_geometry * geom)
 
   glgrib_load (opts.field, &values, &valmin, &valmax, &valmis);
 
-  int size = geometry->size ();
-  float * lat = new float[size];
-  float * lon = new float[size];
-  geometry->genlatlon (lat, lon);
-
   col = (unsigned char *)malloc (ncol * geom->np * sizeof (unsigned char));
 
-#ifdef UNDEF
   for (int i = 0; i < geom->np; i++)
     if (values[i] == valmis)
       col[i] = 0;
     else
       col[i] = 1 + (int)(254 * (values[i] - valmin)/(valmax - valmin));
-#else
-
-
-#endif
-
 
   def_from_vertexbuffer_col_elementbuffer (col, geom);
 
   free (col);
-
-  delete [] lon;
-  delete [] lat;
 }
 
 void glgrib_field::render (const glgrib_view * view) const
@@ -66,6 +52,7 @@ void glgrib_field::render (const glgrib_view * view) const
         );
 
       p_cloud.setRGBA255 (program->programID);
+//    p_cold_hot.setRGBA255 (program->programID);
 
       glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
       glgrib_world::render (view);

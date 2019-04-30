@@ -8,6 +8,7 @@ class glgrib_geometry
 {
 public:
   virtual void genlatlon (float *, float *) const = 0;
+  virtual void gencoords (float *, float *) const = 0;
   virtual int size () const = 0;
   virtual int latlon2index (float, float) const = 0;
   virtual ~glgrib_geometry ();

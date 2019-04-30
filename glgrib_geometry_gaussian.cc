@@ -2,12 +2,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "glgrib_load.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
 
+static const double rad2deg = 180.0 / M_PI;
+static const double deg2rad = M_PI / 180.0;
 
 #define MODULO(x, y) ((x)%(y))
 #define JDLON(JLON1, JLON2) (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1))
@@ -157,6 +160,20 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
 
 
 
+void glgrib_geometry_gaussian::gencoords (float * px, float * py) const
+{
+  for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
+    {
+      float coordy = M_PI * (0.5 - (float)jlat / (float)(Nj + 1));
+      for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
+        {
+          float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
+          px[jglo] = rad2deg * coordx;
+          py[jglo] = rad2deg * coordy;
+        }
+    }
+}
+
 void glgrib_geometry_gaussian::genlatlon (float * plat, float * plon) const
 {
   for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
@@ -178,8 +195,8 @@ void glgrib_geometry_gaussian::genlatlon (float * plat, float * plon) const
           glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
           XYZ = rot * XYZ;
 
-          plon[jglo] = atan2 (XYZ.y, XYZ.x);
-          plat[jglo] = asin (XYZ.z);
+          plon[jglo] = rad2deg * atan2 (XYZ.y, XYZ.x);
+          plat[jglo] = rad2deg * asin (XYZ.z);
 
         }
     }
@@ -328,27 +345,36 @@ glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()
 
 int glgrib_geometry_gaussian::latlon2index (float lat, float lon) const
 {
+  lat = lat * deg2rad;
+  lon = lon * deg2rad;
+
   float coslat = cos (lat), sinlat = sin (lat);
   float coslon = cos (lon), sinlon = sin (lon);
   float x = coslon * coslat;
   float y = sinlon * coslat;
   float z =          sinlat;
+
   glm::vec4 xyz = glm::vec4 (x, y, z, 0.0f);
   glm::vec4 XYZ = glm::inverse (rot) * xyz;
+
   float X = XYZ.x;
   float Y = XYZ.y;
   float Z = XYZ.z;
 
-  lat = atan2 (Y, X);
-  lon = asin (Z);
+  lon = atan2 (Y, X); 
+  lat = asin (Z);
 
   float coordx = lon;
   sinlat = sin (lat);
   float coordy = asin ((-omc2 + sinlat * opc2) / (opc2 - sinlat * omc2));
 
+  int jlat = round ((0.5 - coordy / M_PI) * (Nj + 1));
+  if (jlat > Nj)
+    jlat = Nj;
+  int jlon = round (pl[jlat-1] * (coordx / (2. * M_PI)));
+  if (jlon < 0)
+    jlon += pl[jlat-1];
 
-  int jlat = (0.5 - coordy / M_PI) * (Nj + 1);
-  int jlon = pl[jlat-1] * (coordx / (2. * M_PI));
 
   return jglooff[jlat-1] + jlon;
 }

@@ -21,6 +21,7 @@ public:
   void toggle_hide () { hidden = ! hidden; }
   virtual void render (const glgrib_view *) const;
   float * values = NULL;
+  virtual float getValue (int index) const { return values[index]; }
   float valmis, valmin, valmax;
   virtual ~glgrib_field ();
   const glgrib_geometry * geometry;

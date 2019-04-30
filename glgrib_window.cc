@@ -102,8 +102,11 @@ void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
   if (get_latlon_from_cursor (window, &lat, &lon))
     {
       char title[128];
-      int jglo = gwindow->scene.field->geometry->latlon2index (lat, lon);
-      sprintf (title, "(%7.2f, %7.2f %7d)", lat, lon, jglo);
+      const glgrib_field * field = gwindow->scene.field;
+      int jglo = field->geometry->latlon2index (lat, lon);
+      float value = field->getValue (jglo);
+
+      sprintf (title, "(%7.2f, %7.2f, %f)", lat, lon, value);
       glfwSetWindowTitle (window, title);
     }
   else

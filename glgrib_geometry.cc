@@ -1,6 +1,7 @@
 #include "glgrib_geometry.h"
 #include "glgrib_geometry_gaussian.h"
 #include <stdio.h>
+#include <iostream>
 
 glgrib_geometry * glgrib_geometry_load (const glgrib_options & opts)
 {
@@ -17,23 +18,10 @@ glgrib_geometry * glgrib_geometry_load (const glgrib_options & opts)
   return geom;
 }
 
-void glgrib_geometry::take_xyz_ind (int * _np, unsigned int * _nt, float ** _xyz, unsigned int ** _ind)
-{
-  *_np = np;
-  *_nt = nt;
-  *_xyz = xyz;
-  *_ind = ind;
-  xyz = NULL;
-  ind = NULL;
-}
-
 glgrib_geometry::~glgrib_geometry ()
 {
-  if (xyz)
-    free (xyz);
-  xyz = NULL;
-  if (ind)
-    free (ind);
+  glDeleteBuffers (1, &vertexbuffer);
+  glDeleteBuffers (1, &elementbuffer);
 }
 
 

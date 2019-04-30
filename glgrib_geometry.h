@@ -9,11 +9,8 @@ class glgrib_geometry
 public:
   virtual 
   ~glgrib_geometry ();
-  void take_xyz_ind (int *, unsigned int *, float **, unsigned int **);
   int np; 
   unsigned int nt;
-  float * xyz = NULL;
-  unsigned int * ind = NULL;
   GLuint vertexbuffer, elementbuffer;
 };
 

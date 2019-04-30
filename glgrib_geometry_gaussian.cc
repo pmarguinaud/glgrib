@@ -159,6 +159,8 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
 
 glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts, codes_handle * h)
 {
+  float * xyz = NULL;
+  unsigned int * ind = NULL;
   const int nstripe = 8;
   int indoff[nstripe];
 
@@ -269,6 +271,9 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
   glGenBuffers (1, &elementbuffer);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
   glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), ind , GL_STATIC_DRAW);
+
+  free (xyz); xyz = NULL;
+  free (ind); ind = NULL;
   
 }
 

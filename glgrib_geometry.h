@@ -7,8 +7,7 @@
 class glgrib_geometry
 {
 public:
-  virtual 
-  ~glgrib_geometry ();
+  virtual ~glgrib_geometry ();
   int np; 
   unsigned int nt;
   GLuint vertexbuffer, elementbuffer;

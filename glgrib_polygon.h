@@ -12,7 +12,7 @@ public:
   virtual void render (const glgrib_view *) const;
   virtual glgrib_program_kind get_program_kind () const { return GLGRIB_PROGRAM_RGB; }
   virtual bool use_alpha () { return false; }
-  ~glgrib_polygon ();
+  virtual ~glgrib_polygon ();
   GLuint VertexArrayID;
   GLuint vertexbuffer, colorbuffer, elementbuffer;
   unsigned int ncol, nl;

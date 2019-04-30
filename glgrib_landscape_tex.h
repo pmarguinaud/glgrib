@@ -17,7 +17,7 @@ public:
     }
   GLuint textureID;
   void render (const glgrib_view *) const;
-  ~glgrib_landscape_tex ();
+  virtual ~glgrib_landscape_tex ();
 };
 
 #endif

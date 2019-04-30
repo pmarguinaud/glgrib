@@ -15,7 +15,7 @@ class glgrib_window
 {
 public:
   glgrib_window (const glgrib_options & opts);
-  ~glgrib_window ();
+  virtual ~glgrib_window ();
   void run (class glgrib_shell * shell = NULL);
   void makeCurrent () { glfwMakeContextCurrent (window); }
   bool do_rotate = false;

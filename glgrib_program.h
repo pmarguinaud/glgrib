@@ -22,7 +22,7 @@ class glgrib_program
 public:
   glgrib_program (const char * fsc, const char * vsc) 
      : FragmentShaderCode (fsc), VertexShaderCode (vsc) { }
-  ~glgrib_program ();
+  virtual ~glgrib_program ();
   void use () const;
   const char * FragmentShaderCode = NULL;
   const char * VertexShaderCode = NULL;

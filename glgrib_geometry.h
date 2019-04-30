@@ -2,6 +2,7 @@
 #define _GLGRIB_GEOMETRY_H
 
 #include "glgrib_options.h"
+#include "glgrib_opengl.h"
 
 class glgrib_geometry
 {
@@ -13,6 +14,7 @@ public:
   unsigned int nt;
   float * xyz = NULL;
   unsigned int * ind = NULL;
+  GLuint vertexbuffer, elementbuffer;
 };
 
 extern glgrib_geometry * glgrib_geometry_load (const glgrib_options &);

@@ -4,13 +4,14 @@
 #include "glgrib_world.h"
 #include "glgrib_coords_world.h"
 #include "glgrib_options.h"
+#include "glgrib_geometry.h"
 
 #include <string>
 
 class glgrib_field : public glgrib_world
 {
 public:
-  void init (const glgrib_options &, const glgrib_coords_world *);
+  void init (const glgrib_options &, const glgrib_coords_world *, const glgrib_geometry &);
   glgrib_options opts;
   virtual glgrib_program_kind get_program_kind () const 
     { 

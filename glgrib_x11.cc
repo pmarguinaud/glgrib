@@ -29,7 +29,6 @@ void x11_display (const glgrib_options & opts)
       return;
     }
 
-  glgrib_geometry * geom = glgrib_geometry_load (opts);
   glgrib_coords_world WorldCoords;
 
   glgrib_window Gwindow (opts);
@@ -37,12 +36,14 @@ void x11_display (const glgrib_options & opts)
   
   gl_init ();
 
-  WorldCoords.init (opts);
+  glgrib_geometry * geom = glgrib_geometry_load (opts);
+
+  WorldCoords.init (opts, geom);
 
 
   if (opts.landscape != "")
     {
-      Landscape_tex.init (opts, &WorldCoords);
+      Landscape_tex.init (opts, &WorldCoords, *geom);
       Gwindow.scene.setLandscape (&Landscape_tex);
     }
 
@@ -60,7 +61,7 @@ void x11_display (const glgrib_options & opts)
 
   if (opts.field != "")
     {
-      Field.init (opts, &WorldCoords);
+      Field.init (opts, &WorldCoords, *geom);
       Gwindow.scene.setField (&Field);
     }
 

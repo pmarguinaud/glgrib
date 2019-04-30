@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void glgrib_field::init (const glgrib_options & o, const glgrib_coords_world * coords)
+void glgrib_field::init (const glgrib_options & o, const glgrib_coords_world * coords, const glgrib_geometry & geom)
 {
   unsigned char * col;
   opts = o;
@@ -22,7 +22,7 @@ void glgrib_field::init (const glgrib_options & o, const glgrib_coords_world * c
   for (int i = 0; i < coords->np; i++)
     col[i] = (int)(255 * val[i]);
 
-  def_from_vertexbuffer_col_elementbuffer (coords, col);
+  def_from_vertexbuffer_col_elementbuffer (coords, col, geom);
 
   free (col);
   free (val);

@@ -13,13 +13,13 @@ void glgrib_field::init (const glgrib_options & o, const glgrib_geometry & geom)
 
   ncol = 1;
 
-  float * val;
-  glgrib_load (opts.field.c_str (), &val, 2);
+  float * val, valmis, valmin, valmax;
+  glgrib_load (opts.field, &val, &valmin, &valmax, &valmis);
 
   col = (unsigned char *)malloc (ncol * geom.np * sizeof (unsigned char));
 
   for (int i = 0; i < geom.np; i++)
-    col[i] = (int)(255 * val[i]);
+    col[i] = (int)(255 * (val[i] - valmin)/(valmax - valmin));
 
   def_from_vertexbuffer_col_elementbuffer (col, geom);
 

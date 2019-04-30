@@ -1,6 +1,8 @@
 #ifndef _GLGRIB_LOAD_H
 #define _GLGRIB_LOAD_H
 
-void glgrib_load (const char *, float **, int );
+#include <string>
+
+void glgrib_load (const std::string &, float **, float *, float *, float *);
 
 #endif

@@ -1,11 +1,11 @@
-#include "glgrib_landscape_tex.h"
+#include "glgrib_landscape.h"
 #include "glgrib_program.h"
 #include "glgrib_bmp.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 
-void glgrib_landscape_tex::init (const glgrib_options & opts, const glgrib_geometry & geom)
+void glgrib_landscape::init (const glgrib_options & opts, const glgrib_geometry & geom)
 {
 
   unsigned char * rgb;
@@ -28,7 +28,7 @@ void glgrib_landscape_tex::init (const glgrib_options & opts, const glgrib_geome
   
 }
 
-void glgrib_landscape_tex::render (const glgrib_view * view) const
+void glgrib_landscape::render (const glgrib_view * view) const
 {
   const glgrib_program * program = get_program (); 
   glUniform1i (glGetUniformLocation (program->programID, "isflat"), flat);
@@ -41,7 +41,7 @@ void glgrib_landscape_tex::render (const glgrib_view * view) const
   glgrib_world::render (view);
 }
 
-glgrib_landscape_tex::~glgrib_landscape_tex ()
+glgrib_landscape::~glgrib_landscape ()
 {
   glDeleteTextures (1, &textureID);
 }

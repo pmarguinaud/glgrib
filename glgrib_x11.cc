@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "glgrib_landscape_tex.h"
+#include "glgrib_landscape.h"
 #include "glgrib_field.h"
 #include "glgrib_scene.h"
 #include "glgrib_grid.h"
@@ -20,7 +20,7 @@ void x11_display (const glgrib_options & opts)
   glgrib_coastlines Coast;
   glgrib_grid Grid;
   glgrib_field Field;
-  glgrib_landscape_tex Landscape_tex;
+  glgrib_landscape Landscape;
 
   if (! glfwInit ())
     {
@@ -37,8 +37,8 @@ void x11_display (const glgrib_options & opts)
 
   if (opts.landscape != "")
     {
-      Landscape_tex.init (opts, *geom);
-      Gwindow.scene.setLandscape (&Landscape_tex);
+      Landscape.init (opts, *geom);
+      Gwindow.scene.setLandscape (&Landscape);
     }
 
   if (opts.grid_resolution)

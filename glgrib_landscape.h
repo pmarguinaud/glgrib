@@ -1,5 +1,5 @@
-#ifndef _GLGRIB_LANDSCAPE_TEX_H
-#define _GLGRIB_LANDSCAPE_TEX_H
+#ifndef _GLGRIB_LANDSCAPE_H
+#define _GLGRIB_LANDSCAPE_H
 
 #include "glgrib_world.h"
 #include "glgrib_options.h"
@@ -7,7 +7,7 @@
 
 #include <string>
 
-class glgrib_landscape_tex : public glgrib_world
+class glgrib_landscape : public glgrib_world
 {
 public:
   virtual void init (const glgrib_options &, const glgrib_geometry &);
@@ -17,7 +17,7 @@ public:
     }
   GLuint textureID;
   void render (const glgrib_view *) const;
-  virtual ~glgrib_landscape_tex ();
+  virtual ~glgrib_landscape ();
   virtual bool use_alpha () { return false; }
   bool flat = false;
   void set_flat (bool f) { flat = f; }

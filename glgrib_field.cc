@@ -6,25 +6,43 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void glgrib_field::init (const glgrib_options & o, const glgrib_geometry & geom)
+void glgrib_field::init (const glgrib_options & o, const glgrib_geometry * geom)
 {
   unsigned char * col;
+
+  geometry = geom;
+
   opts = o;
 
   ncol = 1;
 
-  float * val, valmis, valmin, valmax;
-  glgrib_load (opts.field, &val, &valmin, &valmax, &valmis);
+  glgrib_load (opts.field, &values, &valmin, &valmax, &valmis);
 
-  col = (unsigned char *)malloc (ncol * geom.np * sizeof (unsigned char));
+  int size = geometry->size ();
+  float * lat = new float[size];
+  float * lon = new float[size];
+  geometry->genlatlon (lat, lon);
 
-  for (int i = 0; i < geom.np; i++)
-    col[i] = (int)(255 * (val[i] - valmin)/(valmax - valmin));
+  col = (unsigned char *)malloc (ncol * geom->np * sizeof (unsigned char));
+
+#ifdef UNDEF
+  for (int i = 0; i < geom->np; i++)
+    if (values[i] == valmis)
+      col[i] = 0;
+    else
+      col[i] = 1 + (int)(254 * (values[i] - valmin)/(valmax - valmin));
+#else
+
+
+#endif
+
 
   def_from_vertexbuffer_col_elementbuffer (col, geom);
 
   free (col);
-  free (val);
+
+  delete [] lon;
+  delete [] lat;
 }
 
 void glgrib_field::render (const glgrib_view * view) const
@@ -54,5 +72,10 @@ void glgrib_field::render (const glgrib_view * view) const
     }
 }
 
+glgrib_field::~glgrib_field ()
+{
+  if (values)
+    free (values);
+}
 
 

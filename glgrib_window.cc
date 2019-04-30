@@ -98,15 +98,16 @@ static
 void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
 {
   float lat, lon;
+  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
   if (get_latlon_from_cursor (window, &lat, &lon))
     {
       char title[128];
-      sprintf (title, "(%7.2f, %7.2f)", lat, lon);
+      int jglo = gwindow->scene.field->geometry->latlon2index (lat, lon);
+      sprintf (title, "(%7.2f, %7.2f %7d)", lat, lon, jglo);
       glfwSetWindowTitle (window, title);
     }
   else
     {
-      glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
       glfwSetWindowTitle (window, gwindow->title.c_str ());
     }
 }

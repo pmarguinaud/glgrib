@@ -157,12 +157,46 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
 
 
 
+void glgrib_geometry_gaussian::genlatlon (float * plat, float * plon) const
+{
+  for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
+    {
+      float coordy = M_PI * (0.5 - (float)jlat / (float)(Nj + 1));
+      float sincoordy = sin (coordy);
+      float lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
+      float coslat = cos (lat); float sinlat = sin (lat);
+      for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
+        {
+          float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
+          float lon = coordx;
+          float coslon = cos (lon); float sinlon = sin (lon);
+
+          float X = coslon * coslat;
+          float Y = sinlon * coslat;
+          float Z =          sinlat;
+
+          glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
+          XYZ = rot * XYZ;
+
+          plon[jglo] = atan2 (XYZ.y, XYZ.x);
+          plat[jglo] = asin (XYZ.z);
+
+        }
+    }
+}
+
+int glgrib_geometry_gaussian::size () const
+{
+  return jglooff[Nj-1] + pl[Nj-1];
+}
+
 glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts, codes_handle * h)
 {
   float * xyz = NULL;
   unsigned int * ind = NULL;
   const int nstripe = 8;
   int indoff[nstripe];
+
 
   size_t v_len = 0;
   codes_get_size (h, "values", &v_len);
@@ -275,6 +309,11 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
   free (xyz); xyz = NULL;
   free (ind); ind = NULL;
   
+  jglooff = (int *)malloc (Nj * sizeof (int));
+
+  jglooff[0] = 0;
+  for (int jlat = 2; jlat <= Nj; jlat++)
+    jglooff[jlat-1] = jglooff[jlat-2] + pl[jlat-2];
 }
 
 glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()
@@ -282,5 +321,36 @@ glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()
   if (pl)
     free (pl);
   pl = NULL;
+  if (jglooff)
+    free (jglooff);
+  jglooff = NULL;
 }
+
+int glgrib_geometry_gaussian::latlon2index (float lat, float lon) const
+{
+  float coslat = cos (lat), sinlat = sin (lat);
+  float coslon = cos (lon), sinlon = sin (lon);
+  float x = coslon * coslat;
+  float y = sinlon * coslat;
+  float z =          sinlat;
+  glm::vec4 xyz = glm::vec4 (x, y, z, 0.0f);
+  glm::vec4 XYZ = glm::inverse (rot) * xyz;
+  float X = XYZ.x;
+  float Y = XYZ.y;
+  float Z = XYZ.z;
+
+  lat = atan2 (Y, X);
+  lon = asin (Z);
+
+  float coordx = lon;
+  sinlat = sin (lat);
+  float coordy = asin ((-omc2 + sinlat * opc2) / (opc2 - sinlat * omc2));
+
+
+  int jlat = (0.5 - coordy / M_PI) * (Nj + 1);
+  int jlon = pl[jlat-1] * (coordx / (2. * M_PI));
+
+  return jglooff[jlat-1] + jlon;
+}
+
 

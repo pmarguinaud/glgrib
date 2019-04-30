@@ -10,7 +10,7 @@
 class glgrib_field : public glgrib_world
 {
 public:
-  void init (const glgrib_options &, const glgrib_geometry &);
+  void init (const glgrib_options &, const glgrib_geometry *);
   glgrib_options opts;
   virtual glgrib_program_kind get_program_kind () const 
     { 
@@ -20,6 +20,10 @@ public:
   bool hidden = false;
   void toggle_hide () { hidden = ! hidden; }
   virtual void render (const glgrib_view *) const;
+  float * values = NULL;
+  float valmis, valmin, valmax;
+  virtual ~glgrib_field ();
+  const glgrib_geometry * geometry;
 };
 
 #endif

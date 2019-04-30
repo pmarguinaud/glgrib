@@ -11,10 +11,14 @@
 class glgrib_geometry_gaussian : public glgrib_geometry
 {
 public:
+  virtual int latlon2index (float, float) const;
   glgrib_geometry_gaussian (const glgrib_options &, codes_handle *);
+  virtual void genlatlon (float *, float *) const;
+  virtual int size () const;
   virtual ~glgrib_geometry_gaussian ();
   long int * pl = NULL;
   long int Nj;
+  int * jglooff = NULL;
   double stretchingFactor = 1.0f;
   double latitudeOfStretchingPoleInDegrees = 90.0f;
   double longitudeOfStretchingPoleInDegrees = 0.0f;

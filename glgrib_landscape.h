@@ -10,7 +10,7 @@
 class glgrib_landscape : public glgrib_world
 {
 public:
-  virtual void init (const glgrib_options &, const glgrib_geometry &);
+  virtual void init (const glgrib_options &, const glgrib_geometry *);
   virtual glgrib_program_kind get_program_kind () const 
     { 
       return GLGRIB_PROGRAM_FLAT_TEX;

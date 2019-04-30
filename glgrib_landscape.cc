@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void glgrib_landscape::init (const glgrib_options & opts, const glgrib_geometry & geom)
+void glgrib_landscape::init (const glgrib_options & opts, const glgrib_geometry * geom)
 {
 
   unsigned char * rgb;

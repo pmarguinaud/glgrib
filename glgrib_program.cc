@@ -228,7 +228,7 @@ void main()
   pos.y = scale0.y * y * r;
   pos.z = scale0.z * z * r;
   gl_Position =  MVP * vec4 (pos, 1);
-  fragmentColor = RGBA0[int (255 * vertexColor)];
+  fragmentColor = RGBA0[max (0, min (255, int (255 * vertexColor)))];
 }
 )CODE"),
 

@@ -37,7 +37,7 @@ void x11_display (const glgrib_options & opts)
 
   if (opts.landscape != "")
     {
-      Landscape.init (opts, *geom);
+      Landscape.init (opts, geom);
       Gwindow.scene.setLandscape (&Landscape);
     }
 
@@ -55,7 +55,7 @@ void x11_display (const glgrib_options & opts)
 
   if (opts.field != "")
     {
-      Field.init (opts, *geom);
+      Field.init (opts, geom);
       Gwindow.scene.setField (&Field);
     }
 

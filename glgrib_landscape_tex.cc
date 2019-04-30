@@ -1,13 +1,11 @@
 #include "glgrib_landscape_tex.h"
-#include "glgrib_load.h"
 #include "glgrib_program.h"
-#include "glgrib_coords_world.h"
 #include "glgrib_bmp.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 
-void glgrib_landscape_tex::init (const glgrib_options & opts, const glgrib_coords_world * coords, const glgrib_geometry & geom)
+void glgrib_landscape_tex::init (const glgrib_options & opts, const glgrib_geometry & geom)
 {
 
   unsigned char * rgb;
@@ -26,7 +24,7 @@ void glgrib_landscape_tex::init (const glgrib_options & opts, const glgrib_coord
 
   free (rgb);
 
-  def_from_vertexbuffer_col_elementbuffer (coords, NULL, geom);
+  def_from_vertexbuffer_col_elementbuffer (NULL, geom);
   
 }
 

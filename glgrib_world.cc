@@ -4,25 +4,15 @@
 #include <stdio.h>
 
 void glgrib_world::def_from_vertexbuffer_col_elementbuffer 
-  (const glgrib_coords_world * coords, unsigned char * col, const glgrib_geometry & geom)
+  (unsigned char * col, const glgrib_geometry & geom)
 {
-#ifdef UNDEF
-  np = coords->np;
-  nt = coords->nt;
-#else
   np = geom.np;
   nt = geom.nt;
-
-#endif
 
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
 
-#ifdef UNDEF
-  glBindBuffer (GL_ARRAY_BUFFER, coords->vertexbuffer);
-#else
   glBindBuffer (GL_ARRAY_BUFFER, geom.vertexbuffer);
-#endif
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
   
@@ -35,12 +25,7 @@ void glgrib_world::def_from_vertexbuffer_col_elementbuffer
       glVertexAttribPointer (1, ncol, GL_UNSIGNED_BYTE, GL_TRUE, ncol * sizeof (unsigned char), NULL); 
     }
 
-#ifdef UNDEF
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, coords->elementbuffer);
-#else
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, geom.elementbuffer);
-#endif
-
   glBindVertexArray (0); 
 }
 

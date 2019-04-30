@@ -1,13 +1,12 @@
 #include "glgrib_field.h"
 #include "glgrib_load.h"
 #include "glgrib_program.h"
-#include "glgrib_coords_world.h"
 #include "glgrib_palette.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 
-void glgrib_field::init (const glgrib_options & o, const glgrib_coords_world * coords, const glgrib_geometry & geom)
+void glgrib_field::init (const glgrib_options & o, const glgrib_geometry & geom)
 {
   unsigned char * col;
   opts = o;
@@ -17,12 +16,12 @@ void glgrib_field::init (const glgrib_options & o, const glgrib_coords_world * c
   float * val;
   glgrib_load (opts.field.c_str (), &val, 2);
 
-  col = (unsigned char *)malloc (ncol * coords->np * sizeof (unsigned char));
+  col = (unsigned char *)malloc (ncol * geom.np * sizeof (unsigned char));
 
-  for (int i = 0; i < coords->np; i++)
+  for (int i = 0; i < geom.np; i++)
     col[i] = (int)(255 * val[i]);
 
-  def_from_vertexbuffer_col_elementbuffer (coords, col, geom);
+  def_from_vertexbuffer_col_elementbuffer (col, geom);
 
   free (col);
   free (val);

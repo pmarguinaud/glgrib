@@ -5,7 +5,6 @@
 
 #include "glgrib_landscape_tex.h"
 #include "glgrib_field.h"
-#include "glgrib_coords_world.h"
 #include "glgrib_scene.h"
 #include "glgrib_grid.h"
 #include "glgrib_view.h"
@@ -29,8 +28,6 @@ void x11_display (const glgrib_options & opts)
       return;
     }
 
-  glgrib_coords_world WorldCoords;
-
   glgrib_window Gwindow (opts);
   Gwindow.scene.view.setViewport (opts);
   
@@ -38,12 +35,9 @@ void x11_display (const glgrib_options & opts)
 
   glgrib_geometry * geom = glgrib_geometry_load (opts);
 
-  WorldCoords.init (opts, geom);
-
-
   if (opts.landscape != "")
     {
-      Landscape_tex.init (opts, &WorldCoords, *geom);
+      Landscape_tex.init (opts, *geom);
       Gwindow.scene.setLandscape (&Landscape_tex);
     }
 
@@ -61,7 +55,7 @@ void x11_display (const glgrib_options & opts)
 
   if (opts.field != "")
     {
-      Field.init (opts, &WorldCoords, *geom);
+      Field.init (opts, *geom);
       Gwindow.scene.setField (&Field);
     }
 

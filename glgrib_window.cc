@@ -38,10 +38,17 @@ int get_latlon_from_cursor (GLFWwindow * window, float * lat, float * lon)
 static
 void snapshot (glgrib_window * gwindow)
 {
-  unsigned char * rgb = new unsigned char[gwindow->width * gwindow->height * 3];
+  unsigned char * rgb = new unsigned char[gwindow->width * gwindow->height * 4];
   char filename[32];
 
-  glReadPixels (0, 0, gwindow->width, gwindow->height, GL_RGB, GL_UNSIGNED_BYTE, rgb);
+  // glReadPixels does not seem to work well with all combinations of width/height
+  // when GL_RGB is used; GL_RGBA on the other hand seems to work well
+  // So we get it in RGBA mode and throw away the alpha channel
+  glReadPixels (0, 0, gwindow->width, gwindow->height, GL_RGBA, GL_UNSIGNED_BYTE, rgb);
+
+  for (int i = 0; i < gwindow->width * gwindow->height; i++)
+    for (int j = 0; j < 3; j++)
+      rgb[3*i+j] = rgb[4*i+j];
 
   while (1)
     {

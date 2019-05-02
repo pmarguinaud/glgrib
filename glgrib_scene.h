@@ -17,7 +17,11 @@ class glgrib_scene
 public:
   void display () const;
   void display_obj (const glgrib_object *) const;
-  std::vector<glgrib_field*> fieldlist{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+  std::vector<glgrib_field*> fieldlist{NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+  std::vector<glgrib_field_display_options> fieldoptslist = 
+     {glgrib_field_display_options (), glgrib_field_display_options (), glgrib_field_display_options (), glgrib_field_display_options (), 
+      glgrib_field_display_options (), glgrib_field_display_options (), glgrib_field_display_options (), glgrib_field_display_options (), 
+      glgrib_field_display_options (), glgrib_field_display_options ()};
   glgrib_view view;
   glgrib_landscape * landscape = NULL;
   glgrib_field * field = NULL;

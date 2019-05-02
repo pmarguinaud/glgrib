@@ -55,20 +55,13 @@ void x11_display (const glgrib_options & opts)
       Gwindow.scene.setCoastlines (&Coast);
     }
 
-#ifdef UNDEF
-  if (opts.field != "")
-    {
-      Field.init (opts.field, opts, geom);
-      Gwindow.scene.setField (&Field);
-      Gwindow.scene.fieldlist[0] = &Field;
-    }
-#endif
-
   for (int i = 0; i < opts.fields.size (); i++)
     {
       Field[i].init (opts.fields[i], opts, geom);
+      
       Gwindow.scene.setField (&Field[i]);
       Gwindow.scene.fieldlist[i] = &Field[i];
+      Gwindow.scene.fieldoptslist[i].scale = opts.fields_scale[i];
     }
 
 

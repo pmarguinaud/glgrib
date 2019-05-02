@@ -38,6 +38,24 @@ public:
   float * value;
 };
 
+class option_float_list : public option_base
+{
+public:
+  option_float_list (const std::string & n, std::vector<float> * v) : option_base (n), value (v)  {}
+  virtual void set (const char * v) 
+    {
+      try
+        {
+          value->push_back (std::stof (v));
+	}
+      catch (...)
+        {
+          throw std::runtime_error (std::string ("Option ") + name + std::string (" expects real values"));
+	}
+    }
+  std::vector<float> * value;
+};
+
 class option_string : public option_base
 {
 public:
@@ -100,6 +118,11 @@ static option_base * new_option (const std::string & n, std::string * v)
   return new option_string (n, v);
 }
 
+static option_base * new_option (const std::string & n, std::vector<float> * v)
+{
+  return new option_float_list (n, v);
+}
+
 static option_base * new_option (const std::string & n, float * v)
 {
   return new option_float (n, v);
@@ -126,7 +149,7 @@ void glgrib_options::parse (int argc, char * argv[])
 
   ADD_OPT (fields);
   ADD_OPT (field);
-  ADD_OPT (field_scale);
+  ADD_OPT (fields_scale);
   ADD_OPT (width);
   ADD_OPT (height);
   ADD_OPT (shell);
@@ -158,6 +181,10 @@ void glgrib_options::parse (int argc, char * argv[])
               if (! opt->has_arg ())
                 opt->set (NULL);
             }
+          else if (arg.substr (0, 2) == std::string ("--"))
+            {
+              throw std::runtime_error (std::string ("Unknown option ") + arg);
+            }
           else
             {
               opt->set (argv[iarg]);
@@ -175,7 +202,9 @@ void glgrib_options::parse (int argc, char * argv[])
   for (int iopt = 0; iopt < nopt; iopt++)
     delete options[iopt];
 
-
-
+  if (fields_scale.size () == 0)
+    fields_scale.push_back (1.01);
+  for (int i = fields_scale.size (); i < fields.size (); i++)
+    fields_scale.push_back (fields_scale[i-1]);
 
 }

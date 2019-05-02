@@ -30,10 +30,17 @@ void glgrib_scene::display () const
   if (grid && (hidden.find (grid) == hidden.end ()))
     display_obj (grid);
 
-  for (std::vector<glgrib_field*>::const_iterator it = fieldlist.begin (); 
-       it != fieldlist.end (); it++)
-    if (*it && (hidden.find (*it) == hidden.end ()))
-      display_obj (*it);
+  for (int i = 0; i < fieldlist.size (); i++)
+    {
+      glgrib_field * fld = fieldlist[i];
+      if (fld && (hidden.find (fld) == hidden.end ()))
+        {
+          const glgrib_program * program = fld->get_program ();
+          program->use ();
+          view.setMVP (program->matrixID);
+          fld->render (&view, fieldoptslist[i]);
+        }
+    }
 
 }
 

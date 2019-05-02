@@ -8,7 +8,7 @@ class glgrib_options
 {
 public:
   int width = 800, height = 800;
-  float field_scale = 1.0f;
+  std::vector<float> fields_scale;
   bool shell = false;
   std::string landscape = "landscape/Whole_world_-_land_and_oceans_8000.bmp";
   int grid_resolution = 9;

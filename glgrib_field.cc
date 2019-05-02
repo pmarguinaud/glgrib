@@ -12,8 +12,6 @@ void glgrib_field::init (const std::string & field, const glgrib_options & o, co
 
   geometry = geom;
 
-  opts = o;
-
   ncol = 1;
 
   glgrib_load (field, &values, &valmin, &valmax, &valmis);
@@ -31,10 +29,10 @@ void glgrib_field::init (const std::string & field, const glgrib_options & o, co
   free (col);
 }
 
-void glgrib_field::render (const glgrib_view * view) const
+void glgrib_field::render (const glgrib_view * view, const glgrib_field_display_options & dopts) const
 {
   const glgrib_program * program = get_program (); 
-  float scale0[3] = {opts.field_scale, opts.field_scale, opts.field_scale};
+  float scale0[3] = {dopts.scale, dopts.scale, dopts.scale};
 
   glgrib_palette p_cold_hot
     (

@@ -3,19 +3,19 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <getopt.h>
 
 #include <map>
 #include <vector>
 #include <string>
 #include <iostream>
+#include <stdexcept>
 
 
 class option_base
 {
 public:
   option_base (const std::string & n) : name (n) {}
-  virtual int has_arg () = 0;
+  virtual int has_arg () { return 1; }
   virtual void set (const char *) = 0;
   std::string name;
 };
@@ -24,8 +24,17 @@ class option_float : public option_base
 {
 public:
   option_float (const std::string & n, float * v) : option_base (n), value (v)  {}
-  virtual int has_arg () { return required_argument; }
-  virtual void set (const char * v) { *value = std::stof (v); }
+  virtual void set (const char * v) 
+    {
+      try
+        {
+          *value = std::stof (v); 
+	}
+      catch (...)
+        {
+          throw std::runtime_error (std::string ("Option ") + name + std::string (" expects real values"));
+	}
+    }
   float * value;
 };
 
@@ -33,17 +42,31 @@ class option_string : public option_base
 {
 public:
   option_string (const std::string & n, std::string * v) : option_base (n), value (v)  {}
-  virtual int has_arg () { return required_argument; }
   virtual void set (const char * v) { *value = std::string (v); }
   std::string * value;
+};
+
+class option_string_list : public option_base
+{
+public:
+  option_string_list (const std::string & n, std::vector<std::string> * v) : option_base (n), value (v)  {}
+  virtual void set (const char * v) { value->push_back (std::string (v)); }
+  std::vector<std::string> * value;
 };
 
 class option_bool : public option_base
 {
 public:
   option_bool (const std::string & n, bool * v) : option_base (n), value (v)  {}
-  virtual int has_arg () { return no_argument; }
-  virtual void set (const char * v) { *value = true; }
+  virtual int has_arg () { return 0; }
+  virtual void set (const char * v) 
+    { 
+      if (v != NULL) 
+        { 
+          throw std::runtime_error (std::string ("Option ") + name + std::string (" does not take any value")); 
+	} 
+      *value = true; 
+    }
   bool * value;
 };
 
@@ -51,10 +74,26 @@ class option_int : public option_base
 {
 public:
   option_int (const std::string & n, int * v) : option_base (n), value (v)  {}
-  virtual int has_arg () { return required_argument; }
-  virtual void set (const char * v) { *value = std::stoi (v); }
+  virtual void set (const char * v) 
+    { 
+      try
+        {
+          *value = std::stoi (v); 
+        }
+      catch (...)
+        {
+          throw std::runtime_error (std::string ("Option ") + name + std::string (" expects real values"));
+	}
+     }
   int * value;
 };
+
+
+
+static option_base * new_option (const std::string & n, std::vector<std::string> * v)
+{
+  return new option_string_list (n, v);
+}
 
 static option_base * new_option (const std::string & n, std::string * v)
 {
@@ -78,12 +117,14 @@ static option_base * new_option (const std::string & n, bool * v)
 
 void glgrib_options::parse (int argc, char * argv[])
 {
-  std::map <int,option_base*> val2option;
+  std::map <std::string,option_base*> name2option;
   typedef std::vector <option_base*> optionlist;
   optionlist options;
 
+
 #define ADD_OPT(x) do { options.push_back (new_option (std::string (#x), &x)); } while (0)
 
+  ADD_OPT (fields);
   ADD_OPT (field);
   ADD_OPT (field_scale);
   ADD_OPT (width);
@@ -98,28 +139,37 @@ void glgrib_options::parse (int argc, char * argv[])
 #undef ADD_OPT
 
   int nopt = options.size ();
-  struct option long_options[nopt+1];
 
   for (int iopt = 0; iopt < nopt; iopt++)
     {
       option_base * opt = options[iopt];
-      long_options[iopt] = {opt->name.c_str (), opt->has_arg (), 0, iopt};
-      val2option.insert (std::pair<int,option_base *>(iopt, opt));
+      name2option.insert (std::pair<std::string,option_base *>(std::string ("--") + opt->name, opt));
     }
-  long_options[nopt] = {0, 0, 0, 0};
-  
-  int long_index = 0;
-  while (1)
+
+  try
     {
-      int iopt = getopt_long (argc, argv, "", long_options, &long_index);
-
-      if (iopt == -1) 
-        break;
-
-      option_base * opt = val2option[iopt];
-
-      opt->set (optarg);
+      option_base * opt = NULL;
+      for (int iarg = 1; iarg < argc; iarg++)
+        {
+          std::string arg (argv[iarg]);
+          if (name2option.find (arg) != name2option.end ())
+            {
+              opt = name2option[arg];
+              if (! opt->has_arg ())
+                opt->set (NULL);
+            }
+          else
+            {
+              opt->set (argv[iarg]);
+            }
+        }
     }
+  catch (const std::exception & e)
+    {
+      std::cout << "Failed to parse options : " << e.what () << std::endl;
+      exit (EXIT_FAILURE);
+    }
+
 
 
   for (int iopt = 0; iopt < nopt; iopt++)

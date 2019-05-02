@@ -2,6 +2,7 @@
 #define _GLGRIB_OPTIONS_H
 
 #include <string>
+#include <vector>
 
 class glgrib_options
 {
@@ -12,7 +13,8 @@ public:
   std::string landscape = "landscape/Whole_world_-_land_and_oceans_8000.bmp";
   int grid_resolution = 9;
   std::string geometry = "";
-  std::string field = "";
+  std::string field;
+  std::vector<std::string> fields;
   std::string coasts = "coastlines/gshhs(3).rim";
   void parse (int argc, char * argv[]);
   float orography = 0.05;

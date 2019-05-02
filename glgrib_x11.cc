@@ -15,11 +15,13 @@
 #include "glgrib_options.h"
 #include "glgrib_geometry.h"
 
+#include <iostream>
+
 void x11_display (const glgrib_options & opts)
 {
   glgrib_coastlines Coast;
   glgrib_grid Grid;
-  glgrib_field Field;
+  glgrib_field Field[10];
   glgrib_landscape Landscape;
 
   if (! glfwInit ())
@@ -53,10 +55,20 @@ void x11_display (const glgrib_options & opts)
       Gwindow.scene.setCoastlines (&Coast);
     }
 
+#ifdef UNDEF
   if (opts.field != "")
     {
-      Field.init (opts, geom);
+      Field.init (opts.field, opts, geom);
       Gwindow.scene.setField (&Field);
+      Gwindow.scene.fieldlist[0] = &Field;
+    }
+#endif
+
+  for (int i = 0; i < opts.fields.size (); i++)
+    {
+      Field[i].init (opts.fields[i], opts, geom);
+      Gwindow.scene.setField (&Field[i]);
+      Gwindow.scene.fieldlist[i] = &Field[i];
     }
 
 

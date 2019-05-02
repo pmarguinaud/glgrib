@@ -156,10 +156,6 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
           case GLFW_KEY_Q:
             gwindow->scene.view.fov -= 1.;
             break;
-          case GLFW_KEY_O:
-	    if (gwindow->scene.field != NULL)
-              gwindow->scene.field->toggle_hide ();
-	    break;
           case GLFW_KEY_P:
             if (gwindow->scene.landscape != NULL)
               gwindow->scene.landscape->toggle_flat ();

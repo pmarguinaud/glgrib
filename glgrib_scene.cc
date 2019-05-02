@@ -20,23 +20,20 @@ void glgrib_scene::display () const
 
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
-  if (landscape)
+  hidden.end ();
+  if (landscape && (hidden.find (landscape) == hidden.end ()))
     display_obj (landscape);
 
-  if (coastlines)
+  if (coastlines && (hidden.find (coastlines) == hidden.end ()))
     display_obj (coastlines);
 
-  if (grid)
+  if (grid && (hidden.find (grid) == hidden.end ()))
     display_obj (grid);
 
-  for (std::list<glgrib_object*>::const_iterator it = objlist.begin (); 
-       it != objlist.end (); it++)
-    if (*it)
+  for (std::vector<glgrib_field*>::const_iterator it = fieldlist.begin (); 
+       it != fieldlist.end (); it++)
+    if (*it && (hidden.find (*it) == hidden.end ()))
       display_obj (*it);
-
-  if (field)
-    display_obj (field);
-
 
 }
 

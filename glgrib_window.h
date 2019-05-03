@@ -62,6 +62,7 @@ public:
   void toggle_hide_field ();
   void scale_palette_up ();
   void scale_palette_down ();
+  void next_palette ();
 };
 
 #endif

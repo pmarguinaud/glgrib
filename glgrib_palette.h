@@ -79,6 +79,7 @@ extern glgrib_palette palette_cloud;
 extern glgrib_palette palette_cloud_auto;
 
 glgrib_palette & get_palette_by_name (const std::string &);
+glgrib_palette & get_next_palette (const glgrib_palette &);
 
 
 

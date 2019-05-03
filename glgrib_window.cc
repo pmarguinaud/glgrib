@@ -98,6 +98,7 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (CONTROL, G     , w->scale_field_down         ());
       if_key (NONE,    F     , w->scale_palette_up         ());
       if_key (CONTROL, F     , w->scale_palette_down       ());
+      if_key (NONE,    J     , w->next_palette             ());
 
 
     }
@@ -105,9 +106,15 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
 #undef if_key
 }
 
+void glgrib_window::next_palette ()
+{
+  glgrib_field_display_options * fopt = scene.currentFieldOpts;
+  fopt->palette = get_next_palette (fopt->palette);
+}
+
 void glgrib_window::scale_palette_up ()
 {
-  glgrib_field                 * fld  = scene.currentField;
+  glgrib_field * fld  = scene.currentField;
   if (fld == NULL)
     return;
   glgrib_field_display_options * fopt = scene.currentFieldOpts;
@@ -120,7 +127,7 @@ void glgrib_window::scale_palette_up ()
 
 void glgrib_window::scale_palette_down ()
 {
-  glgrib_field                 * fld  = scene.currentField;
+  glgrib_field * fld  = scene.currentField;
   if (fld == NULL)
     return;
   glgrib_field_display_options * fopt = scene.currentFieldOpts;
@@ -150,13 +157,9 @@ void glgrib_window::scale_field_up ()
 void glgrib_window::toggle_hide_field ()
 {
   if (scene.hidden.find (scene.currentField) != scene.hidden.end ())
-    {
-      scene.hidden.erase (scene.currentField);
-    }
+    scene.hidden.erase (scene.currentField);
   else
-    {
-      scene.hidden.insert (scene.currentField);
-    }
+    scene.hidden.insert (scene.currentField);
 }
 
 int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)

@@ -22,12 +22,23 @@ glgrib_palette palette_white_black
 
 glgrib_palette & get_palette_by_name (const std::string & name)
 {
-  static glgrib_palette dummy;
   name2palette_t::iterator it = name2palette.find (name);
   if (it != name2palette.end ())
     return it->second;
   else
     return palette_white_black;
+}
+
+glgrib_palette & get_next_palette (const glgrib_palette & p)
+{
+  name2palette_t::iterator it = name2palette.find (p.name);
+  if (it != name2palette.end ())
+    it++;
+
+  if (it == name2palette.end ())
+    it = name2palette.begin ();
+  
+  return it->second;
 }
 
 glgrib_palette palette_cold_hot

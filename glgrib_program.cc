@@ -243,7 +243,6 @@ void main()
       pal = max (1, min (int (1 + 254 * (val - palmin) / (palmax - palmin)), 255));
     }
 
-//fragmentColor = RGBA0[max (0, min (255, int (255 * vertexVal)))];
   fragmentColor = RGBA0[pal];
 }
 )CODE"),

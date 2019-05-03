@@ -11,6 +11,15 @@ void glgrib_palette::register_ (const glgrib_palette & p)
   name2palette.insert (std::pair<std::string, glgrib_palette>(name, p));
 }
 
+static
+glgrib_palette palette_white_black
+  (
+    "white_black",
+      0,   0,   0,   0,
+      0,   0,   0, 255,
+    255, 255, 255, 255
+  );
+
 glgrib_palette & get_palette_by_name (const std::string & name)
 {
   static glgrib_palette dummy;
@@ -18,12 +27,14 @@ glgrib_palette & get_palette_by_name (const std::string & name)
   if (it != name2palette.end ())
     return it->second;
   else
-    return palette_cloud;
+    return palette_white_black;
 }
 
 glgrib_palette palette_cold_hot
   (
+//   253.15, 293.15,
      "cold_hot",
+       0,   0,   0,   0,
        0,   0, 255, 255,
      255, 255, 255, 255,
      255,   0,   0, 255 
@@ -31,7 +42,17 @@ glgrib_palette palette_cold_hot
 
 glgrib_palette palette_cloud
   (
+     0., 100.,
      "cloud",
+       0,   0,   0,   0,
+     255, 255, 255,   0,
+     255, 255, 255, 255
+  );
+
+glgrib_palette palette_cloud_auto
+  (
+     "cloud_auto",
+       0,   0,   0,   0,
      255, 255, 255,   0,
      255, 255, 255, 255
   );

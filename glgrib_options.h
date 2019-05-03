@@ -15,6 +15,7 @@ public:
   std::string geometry = "";
   std::string field;
   std::vector<std::string> fields;
+  std::vector<std::string> fields_palette;
   std::string coasts = "coastlines/gshhs(3).rim";
   void parse (int argc, char * argv[]);
   float orography = 0.05;

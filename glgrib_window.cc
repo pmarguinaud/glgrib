@@ -53,79 +53,132 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
 
 #define if_key(mm, k, action) \
 do { \
-if ((key == GLFW_KEY_##k) && ((! mm) || (mm & mods))) \
-  {                                                   \
-    action;                                           \
-    return;                                           \
-  }                                                   \
+if ((key == GLFW_KEY_##k) && (mm == mods)) \
+  {                                        \
+    action;                                \
+    return;                                \
+  }                                        \
 } while (0)
 
   glgrib_window * w = (glgrib_window *)glfwGetWindowUserPointer (window);
 
   if (action == GLFW_PRESS || action == GLFW_REPEAT)
     {
-      if_key (NONE, T     , w->toggle_cursorpos_display ());
-      if_key (NONE, TAB   , w->toggle_rotate            ());
-      if_key (NONE, Y     , w->toggle_wireframe         ());
-      if_key (NONE, F     , w->framebuffer              ());
-      if_key (NONE, W     , w->widen_fov                ());
-      if_key (NONE, S     , w->snapshot                 ());
-      if_key (NONE, Q     , w->shrink_fov               ());
-      if_key (NONE, P     , w->toggle_flat              ());
-      if_key (NONE, 6     , w->increase_radius          ());
-      if_key (NONE, EQUAL , w->decrease_radius          ());
-      if_key (NONE, SPACE , w->reset_view               ());
-      if_key (NONE, UP    , w->rotate_north             ());
-      if_key (NONE, DOWN  , w->rotate_south             ());
-      if_key (NONE, LEFT  , w->rotate_west              ());
-      if_key (NONE, RIGHT , w->rotate_east              ());
+      if_key (NONE,    T     , w->toggle_cursorpos_display ());
+      if_key (NONE,    TAB   , w->toggle_rotate            ());
+      if_key (NONE,    Y     , w->toggle_wireframe         ());
+      if_key (NONE,    D     , w->framebuffer              ());
+      if_key (NONE,    W     , w->widen_fov                ());
+      if_key (NONE,    S     , w->snapshot                 ());
+      if_key (NONE,    Q     , w->shrink_fov               ());
+      if_key (NONE,    P     , w->toggle_flat              ());
+      if_key (NONE,    6     , w->increase_radius          ());
+      if_key (NONE,    EQUAL , w->decrease_radius          ());
+      if_key (NONE,    SPACE , w->reset_view               ());
+      if_key (NONE,    UP    , w->rotate_north             ());
+      if_key (NONE,    DOWN  , w->rotate_south             ());
+      if_key (NONE,    LEFT  , w->rotate_west              ());
+      if_key (NONE,    RIGHT , w->rotate_east              ());
 
-      bool shift   = mods & SHIFT;
-      bool control = mods & CONTROL;
-      bool alt     = mods & ALT;
+      if_key (NONE,    F1    , w->select_field           ( 0));
+      if_key (NONE,    F2    , w->select_field           ( 1));
+      if_key (NONE,    F3    , w->select_field           ( 2));
+      if_key (NONE,    F4    , w->select_field           ( 3));
+      if_key (NONE,    F5    , w->select_field           ( 4));
+      if_key (NONE,    F6    , w->select_field           ( 5));
+      if_key (NONE,    F7    , w->select_field           ( 6));
+      if_key (NONE,    F8    , w->select_field           ( 7));
+      if_key (NONE,    F9    , w->select_field           ( 8));
+      if_key (NONE,    F10   , w->select_field           ( 9));
+      if_key (NONE,    F11   , w->select_field           (10));
+      if_key (NONE,    F12   , w->select_field           (11));
 
-      if_key (NONE, F1    , w->alter_field      ( 0, shift, alt, control));
-      if_key (NONE, F2    , w->alter_field      ( 1, shift, alt, control));
-      if_key (NONE, F3    , w->alter_field      ( 2, shift, alt, control));
-      if_key (NONE, F4    , w->alter_field      ( 3, shift, alt, control));
-      if_key (NONE, F5    , w->alter_field      ( 4, shift, alt, control));
-      if_key (NONE, F6    , w->alter_field      ( 5, shift, alt, control));
-      if_key (NONE, F7    , w->alter_field      ( 6, shift, alt, control));
-      if_key (NONE, F8    , w->alter_field      ( 7, shift, alt, control));
-      if_key (NONE, F9    , w->alter_field      ( 8, shift, alt, control));
-      if_key (NONE, F10   , w->alter_field      ( 9, shift, alt, control));
-      if_key (NONE, F11   , w->alter_field      (10, shift, alt, control));
-      if_key (NONE, F12   , w->alter_field      (11, shift, alt, control));
+      if_key (NONE,    H     , w->toggle_hide_field        ());
+      if_key (NONE,    G     , w->scale_field_up           ());
+      if_key (CONTROL, G     , w->scale_field_down         ());
+      if_key (NONE,    F     , w->scale_palette_up         ());
+      if_key (CONTROL, F     , w->scale_palette_down       ());
+
+
     }
 
 #undef if_key
 }
 
-void glgrib_window::alter_field (int ifield, bool shift, bool alt, bool control)
+void glgrib_window::scale_palette_up ()
 {
+  glgrib_field                 * fld  = scene.currentField;
+  if (fld == NULL)
+    return;
+  glgrib_field_display_options * fopt = scene.currentFieldOpts;
+  if (! fopt->palette.hasMin ()) fopt->palette.min = fld->valmin;
+  if (! fopt->palette.hasMax ()) fopt->palette.max = fld->valmax;
+  float d = fopt->palette.max - fopt->palette.min;
+  fopt->palette.min -= d * 0.025;
+  fopt->palette.max += d * 0.025;
+}
+
+void glgrib_window::scale_palette_down ()
+{
+  glgrib_field                 * fld  = scene.currentField;
+  if (fld == NULL)
+    return;
+  glgrib_field_display_options * fopt = scene.currentFieldOpts;
+  if (! fopt->palette.hasMin ()) fopt->palette.min = fld->valmin;
+  if (! fopt->palette.hasMax ()) fopt->palette.max = fld->valmax;
+  float d = fopt->palette.max - fopt->palette.min;
+  fopt->palette.min += d * 0.025;
+  fopt->palette.max -= d * 0.025;
+}
+
+void glgrib_window::select_field (int ifield)
+{
+  scene.currentField      = scene.fieldlist[ifield];
+  scene.currentFieldOpts = &scene.fieldoptslist[ifield];
+}
+
+void glgrib_window::scale_field_down ()
+{
+  scene.currentFieldOpts->scale -= 0.01;
+}
+
+void glgrib_window::scale_field_up ()
+{
+  scene.currentFieldOpts->scale += 0.01;
+}
+
+void glgrib_window::toggle_hide_field ()
+{
+  if (scene.hidden.find (scene.currentField) != scene.hidden.end ())
+    {
+      scene.hidden.erase (scene.currentField);
+    }
+  else
+    {
+      scene.hidden.insert (scene.currentField);
+    }
+}
+
+#ifdef UNDEF
   glgrib_object * field = scene.fieldlist[ifield];
+  glgrib_field_display_options & fopt = scene.fieldoptslist[ifield];
   if (shift)
     {
       if (control)
-        scene.fieldoptslist[ifield].scale += 0.01;
+        fopt.scale += 0.01;
       else
-        scene.fieldoptslist[ifield].scale -= 0.01;
     }
   else if (alt)
     {
-
     }
   else if (control)
     {
     }
   else
     {
-      if (scene.hidden.find (field) != scene.hidden.end ())
-        scene.hidden.erase (field);
-      else
-        scene.hidden.insert (field);
     }
 }
+#endif
 
 int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)
 {
@@ -216,7 +269,7 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
   if (get_latlon_from_cursor (&lat, &lon))
     {
       char title[128];
-      const glgrib_field * field = scene.field;
+      const glgrib_field * field = scene.currentField;
       int jglo = field->geometry->latlon2index (lat, lon);
       float value = field->getValue (jglo);
 

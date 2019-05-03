@@ -26,11 +26,12 @@ public:
       glgrib_field_display_options (), glgrib_field_display_options ()};
   glgrib_view view;
   glgrib_landscape * landscape = NULL;
-  glgrib_field * field = NULL;
+  glgrib_field * currentField = NULL;
+  glgrib_field_display_options * currentFieldOpts = NULL;
   glgrib_coastlines * coastlines = NULL;
   glgrib_grid * grid = NULL;
   void setGrid (glgrib_grid * g) { grid = g; }
-  void setField (glgrib_field * f) { field = f; }
+  void setField (glgrib_field * f) { currentField = f; }
   void setCoastlines (glgrib_coastlines * c) { coastlines = c; }
   void setLandscape (glgrib_landscape * l) { landscape = l; }
   std::set <glgrib_object*> hidden;

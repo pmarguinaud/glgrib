@@ -158,6 +158,7 @@ void glgrib_options::parse (int argc, char * argv[])
   ADD_OPT (coasts);
   ADD_OPT (orography);
   ADD_OPT (landscape);
+  ADD_OPT (fields_palette);
 
 #undef ADD_OPT
 
@@ -202,9 +203,14 @@ void glgrib_options::parse (int argc, char * argv[])
   for (int iopt = 0; iopt < nopt; iopt++)
     delete options[iopt];
 
+
   if (fields_scale.size () == 0)
     fields_scale.push_back (1.00);
+
   for (int i = fields_scale.size (); i < fields.size (); i++)
     fields_scale.push_back (fields_scale[i-1] - 0.05);
+
+  for (int i = fields_palette.size (); i < fields.size (); i++)
+    fields_palette.push_back ("default");
 
 }

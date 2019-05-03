@@ -29,19 +29,29 @@ void glgrib_field::init (const std::string & field, const glgrib_options & o, co
   free (col);
 }
 
+glgrib_field_display_options::glgrib_field_display_options ()
+{
+    palette = palette_cloud_auto;
+    palette = palette_cold_hot;
+}
+
 void glgrib_field::render (const glgrib_view * view, const glgrib_field_display_options & dopts) const
 {
   const glgrib_program * program = get_program (); 
   float scale0[3] = {dopts.scale, dopts.scale, dopts.scale};
+  const glgrib_palette & p = dopts.palette;
 
-  dopts.palette.setRGBA255 (program->programID);
+  p.setRGBA255 (program->programID);
 
   glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
   glUniform1f (glGetUniformLocation (program->programID, "valmin"), valmin);
   glUniform1f (glGetUniformLocation (program->programID, "valmax"), valmax);
 
-  glUniform1f (glGetUniformLocation (program->programID, "palmin"),  00.0f);
-  glUniform1f (glGetUniformLocation (program->programID, "palmax"),  50.0f);
+  float palmax = p.hasMax () ? p.getMax () : valmax;
+  float palmin = p.hasMin () ? p.getMin () : valmin;
+
+  glUniform1f (glGetUniformLocation (program->programID, "palmin"), palmin);
+  glUniform1f (glGetUniformLocation (program->programID, "palmax"), palmax);
 
   glgrib_world::render (view);
 }

@@ -56,7 +56,12 @@ public:
   void display_cursor_position (double, double);
   int get_latlon_from_cursor (float *, float *);
 
-  void alter_field (int, bool, bool, bool);
+  void select_field (int);
+  void scale_field_up ();
+  void scale_field_down ();
+  void toggle_hide_field ();
+  void scale_palette_up ();
+  void scale_palette_down ();
 };
 
 #endif

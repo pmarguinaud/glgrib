@@ -13,10 +13,7 @@ class glgrib_field_display_options
 public:
   float scale = 1.0;
   glgrib_palette palette;
-  glgrib_field_display_options ()
-  {
-    palette = palette_cloud;
-  }
+  glgrib_field_display_options ();
 };
 
 class glgrib_field : public glgrib_world

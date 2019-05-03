@@ -33,7 +33,8 @@ void scroll_callback (GLFWwindow * window, double xoffset, double yoffset)
   gwindow->scroll (xoffset, yoffset);
 }
 
-static void resize_callback (GLFWwindow * window, int width, int height)
+static 
+void resize_callback (GLFWwindow * window, int width, int height)
 {
   glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
   gwindow->resize (width, height);

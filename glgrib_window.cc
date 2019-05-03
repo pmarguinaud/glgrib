@@ -159,27 +159,6 @@ void glgrib_window::toggle_hide_field ()
     }
 }
 
-#ifdef UNDEF
-  glgrib_object * field = scene.fieldlist[ifield];
-  glgrib_field_display_options & fopt = scene.fieldoptslist[ifield];
-  if (shift)
-    {
-      if (control)
-        fopt.scale += 0.01;
-      else
-    }
-  else if (alt)
-    {
-    }
-  else if (control)
-    {
-    }
-  else
-    {
-    }
-}
-#endif
-
 int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)
 {
   double xpos, ypos;

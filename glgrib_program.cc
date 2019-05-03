@@ -209,14 +209,15 @@ R"CODE(
 #version 330 core
 
 layout(location = 0) in vec3 vertexPos;
-layout(location = 1) in float vertexCol;
+layout(location = 1) in float vertexVal;
 
 out vec4 fragmentColor;
 uniform mat4 MVP;
 
 uniform vec3 scale0 = vec3 (1.0, 1.0, 1.0);
 uniform vec4 RGBA0[256];
-uniform float vmis, vmin, vmax;
+uniform float valmin, valmax;
+uniform float palmin, palmax;
 
 void main()
 {
@@ -229,7 +230,21 @@ void main()
   pos.y = scale0.y * y * r;
   pos.z = scale0.z * z * r;
   gl_Position =  MVP * vec4 (pos, 1);
-  fragmentColor = RGBA0[max (0, min (255, int (255 * vertexCol)))];
+
+  float val = valmin + (valmax - valmin) * (255.0 * vertexVal - 1.0) / 254.0;
+
+  int pal;
+  if (val < valmin)
+    {
+      pal = 0;
+    }
+  else
+    {
+      pal = max (1, min (int (1 + 254 * (val - palmin) / (palmax - palmin)), 255));
+    }
+
+//fragmentColor = RGBA0[max (0, min (255, int (255 * vertexVal)))];
+  fragmentColor = RGBA0[pal];
 }
 )CODE"),
 

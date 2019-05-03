@@ -37,6 +37,12 @@ void glgrib_field::render (const glgrib_view * view, const glgrib_field_display_
   dopts.palette.setRGBA255 (program->programID);
 
   glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
+  glUniform1f (glGetUniformLocation (program->programID, "valmin"), valmin);
+  glUniform1f (glGetUniformLocation (program->programID, "valmax"), valmax);
+
+  glUniform1f (glGetUniformLocation (program->programID, "palmin"),  00.0f);
+  glUniform1f (glGetUniformLocation (program->programID, "palmax"),  50.0f);
+
   glgrib_world::render (view);
 }
 

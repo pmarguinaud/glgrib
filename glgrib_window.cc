@@ -35,39 +35,37 @@ int get_latlon_from_cursor (GLFWwindow * window, float * lat, float * lon)
   return 0;
 }
 
-static
-void snapshot (glgrib_window * gwindow)
+void glgrib_window::snapshot ()
 {
-  unsigned char * rgb = new unsigned char[gwindow->width * gwindow->height * 4];
+  unsigned char * rgb = new unsigned char[width * height * 4];
   char filename[32];
 
   // glReadPixels does not seem to work well with all combinations of width/height
   // when GL_RGB is used; GL_RGBA on the other hand seems to work well
   // So we get it in RGBA mode and throw away the alpha channel
-  glReadPixels (0, 0, gwindow->width, gwindow->height, GL_RGBA, GL_UNSIGNED_BYTE, rgb);
+  glReadPixels (0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, rgb);
 
-  for (int i = 0; i < gwindow->width * gwindow->height; i++)
+  for (int i = 0; i < width * height; i++)
     for (int j = 0; j < 3; j++)
       rgb[3*i+j] = rgb[4*i+j];
 
   while (1)
     {
       struct stat st;
-      sprintf (filename, "snapshot_%4.4d.png", gwindow->snapshot_cnt);
+      sprintf (filename, "snapshot_%4.4d.png", snapshot_cnt);
       if (stat (filename, &st) < 0)
         break;
       else
-        gwindow->snapshot_cnt++;
+        snapshot_cnt++;
     }
 
-  glgrib_png (filename, gwindow->width, gwindow->height, rgb);
-  gwindow->snapshot_cnt++;
+  glgrib_png (filename, width, height, rgb);
+  snapshot_cnt++;
 
   delete [] rgb;
 }
 
-static
-void framebuffer (glgrib_window * gwindow)
+void glgrib_window::framebuffer ()
 {
   unsigned int framebuffer;
   glGenFramebuffers (1, &framebuffer);
@@ -77,7 +75,7 @@ void framebuffer (glgrib_window * gwindow)
   unsigned int textureColorbuffer;
   glGenTextures (1, &textureColorbuffer);
   glBindTexture (GL_TEXTURE_2D, textureColorbuffer);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, gwindow->width, gwindow->height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
@@ -86,15 +84,15 @@ void framebuffer (glgrib_window * gwindow)
   glGenRenderbuffers (1, &rbo);
   glBindRenderbuffer (GL_RENDERBUFFER, rbo);
 
-  glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH32F_STENCIL8, gwindow->width, gwindow->height); 
+  glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH32F_STENCIL8, width, height); 
   glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); 
 
   if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     printf ("!= GL_FRAMEBUFFER_COMPLETE\n");
 
-  gwindow->scene.display ();
+  scene.display ();
 
-  snapshot (gwindow);
+  snapshot ();
 
   glDeleteFramebuffers (1, &framebuffer);
   glBindFramebuffer (GL_FRAMEBUFFER, 0);
@@ -121,127 +119,106 @@ void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
     }
 }
 
-static
-void toggle_cursorpos_display (glgrib_window * gwindow)
+void glgrib_window::toggle_cursorpos_display ()
 {
-  GLFWwindow * window = gwindow->window;
-  if (gwindow->cursorpos)
+  if (cursorpos)
     glfwSetCursorPosCallback (window, NULL);
   else
     glfwSetCursorPosCallback (window, cursor_position_callback);
-  gwindow->cursorpos = ! gwindow->cursorpos;
-  glfwSetWindowTitle (window, gwindow->title.c_str ());
+  cursorpos = ! cursorpos;
+  glfwSetWindowTitle (window, title.c_str ());
 }
 
-static 
-void toggle_rotate (glgrib_window * gwindow)
+void glgrib_window::toggle_rotate ()
 {
-  gwindow->do_rotate = ! gwindow->do_rotate;
+  do_rotate = ! do_rotate;
 }
 
-static
-void toggle_wireframe (glgrib_window * gwindow)
+void glgrib_window::toggle_wireframe ()
 {
-  gwindow->scene.landscape->toggle_wireframe ();
+  scene.landscape->toggle_wireframe ();
 }
 
-static
-void widen_fov (glgrib_window * gwindow)
+void glgrib_window::widen_fov ()
 {
-  gwindow->scene.view.fov += 1.;
+  scene.view.fov += 1.;
 }
 
-static
-void shrink_fov (glgrib_window * gwindow)
+void glgrib_window::shrink_fov ()
 {
-  gwindow->scene.view.fov -= 1.;
+  scene.view.fov -= 1.;
 }
 
-static
-void toggle_flat (glgrib_window * gwindow)
+void glgrib_window::toggle_flat ()
 {
-  if (gwindow->scene.landscape != NULL)
-    gwindow->scene.landscape->toggle_flat ();
+  if (scene.landscape != NULL)
+    scene.landscape->toggle_flat ();
 }
 
-static 
-void increase_radius (glgrib_window * gwindow)
+void glgrib_window::increase_radius ()
 {
-  gwindow->scene.view.rc += 0.1;
+  scene.view.rc += 0.1;
 }
 
-static
-void decrease_radius (glgrib_window * gwindow)
+void glgrib_window::decrease_radius ()
 {
-  gwindow->scene.view.rc -= 0.1;
+  scene.view.rc -= 0.1;
 }
 
-static
-void reset_view (glgrib_window * gwindow)
+void glgrib_window::reset_view ()
 {
   glgrib_view view;
-  gwindow->scene.view = view;
+  scene.view = view;
 }
 
-static
-void rotate_north (glgrib_window * gwindow)
+void glgrib_window::rotate_north ()
 {
-  gwindow->scene.view.latc = gwindow->scene.view.latc + 5.;
+  scene.view.latc = scene.view.latc + 5.;
 }
 
-static
-void rotate_south (glgrib_window * gwindow)
+void glgrib_window::rotate_south ()
 {
-  gwindow->scene.view.latc = gwindow->scene.view.latc - 5.;
+  scene.view.latc = scene.view.latc - 5.;
 }
 
-static
-void rotate_west (glgrib_window * gwindow)
+void glgrib_window::rotate_west ()
 {
-  gwindow->scene.view.lonc = gwindow->scene.view.lonc - 5.;
+  scene.view.lonc = scene.view.lonc - 5.;
 }
 
-static
-void rotate_east (glgrib_window * gwindow)
+void glgrib_window::rotate_east ()
 {
-  gwindow->scene.view.lonc = gwindow->scene.view.lonc + 5.;
+  scene.view.lonc = scene.view.lonc + 5.;
 }
 
-
-static
-void set_left_shift    (glgrib_window * gwindow)
+void glgrib_window::set_left_shift    ()
 {
-  gwindow->left_shift = true;
+  left_shift = true;
 }
 
-static
-void set_right_shift   (glgrib_window * gwindow)
+void glgrib_window::set_right_shift   ()
 {
-  gwindow->right_shift = true;
+  right_shift = true;
 }
 
-static
-void set_left_control  (glgrib_window * gwindow)
+void glgrib_window::set_left_control  ()
 {
-  gwindow->left_control = true;
+  left_control = true;
 }
 
-static
-void set_right_control (glgrib_window * gwindow)
+void glgrib_window::set_right_control ()
 {
-  gwindow->right_control = true;
+  right_control = true;
 }
 
-static
-void set_left_alt      (glgrib_window * gwindow)
+void glgrib_window::set_left_alt      ()
 {
-  gwindow->left_alt = true;
+  left_alt = true;
 }
 
-static
-void set_right_alt     (glgrib_window * gwindow)
+void glgrib_window::set_right_alt     ()
 {
-  gwindow->right_alt = true;
+  right_alt = true;
 }
 
 
@@ -253,7 +230,7 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
     {
       switch (key)
         {
-#define case_key(k, action) case GLFW_KEY_##k: action (gwindow); break
+#define case_key(k, action) case GLFW_KEY_##k: gwindow->action (); break
           case_key (T     , toggle_cursorpos_display);
           case_key (TAB   , toggle_rotate           );
           case_key (Y     , toggle_wireframe        );

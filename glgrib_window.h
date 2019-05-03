@@ -32,6 +32,27 @@ public:
   bool left_alt = false;
   bool right_alt = false;
 
+  void toggle_cursorpos_display ();
+  void toggle_rotate            ();
+  void toggle_wireframe         ();
+  void framebuffer              ();
+  void widen_fov                ();
+  void snapshot                 ();
+  void shrink_fov               ();
+  void toggle_flat              ();
+  void increase_radius          ();
+  void decrease_radius          ();
+  void reset_view               ();
+  void rotate_north             ();
+  void rotate_south             ();
+  void rotate_west              ();
+  void rotate_east              ();
+  void set_left_shift           ();
+  void set_right_shift          ();
+  void set_left_control         ();
+  void set_right_control        ();
+  void set_left_alt             ();
+  void set_right_alt            ();
 };
 
 #endif

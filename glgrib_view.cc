@@ -14,12 +14,12 @@ void glgrib_view::setMVP (GLuint matrixID) const
 
 void glgrib_view::calcMVP () const
 {
-  float xc = rc * glm::cos (glm::radians (lonc)) * glm::cos (glm::radians (latc)), 
-        yc = rc * glm::sin (glm::radians (lonc)) * glm::cos (glm::radians (latc)),
-        zc = rc *                                  glm::sin (glm::radians (latc));
+  float xc = params.rc * glm::cos (glm::radians (params.lonc)) * glm::cos (glm::radians (params.latc)), 
+        yc = params.rc * glm::sin (glm::radians (params.lonc)) * glm::cos (glm::radians (params.latc)),
+        zc = params.rc *                                         glm::sin (glm::radians (params.latc));
 
   Viewport   = glm::vec4 (0.0f, 0.0f, (float)width, (float)height);
-  Projection = glm::perspective (glm::radians (fov), (float)width/(float)height, 0.1f, 100.0f);
+  Projection = glm::perspective (glm::radians (params.fov), (float)width/(float)height, 0.1f, 100.0f);
   View       = glm::lookAt (glm::vec3 (xc,yc,zc), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
   Model      = glm::mat4 (1.0f);
 

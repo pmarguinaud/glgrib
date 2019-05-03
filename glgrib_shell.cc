@@ -18,7 +18,7 @@ static void command_##name (glgrib_window * gwindow, class glgrib_shell * shell,
 
 def (fov)
 {
-  gwindow->scene.view.fov += F (dfov);
+  gwindow->scene.view.params.fov += F (dfov);
 }
 
 def (rotate)

@@ -8,10 +8,16 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-class glgrib_view
+class glgrib_view_params
 {
 public:
   float rc = 6.0, latc = 0., lonc = 0., fov = 20.;
+};
+
+class glgrib_view
+{
+public:
+  glgrib_view_params params;
   void setMVP (GLuint) const;
   void calcMVP () const;
   void setViewport (const glgrib_options & opts);

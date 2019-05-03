@@ -9,13 +9,126 @@
 #include <GLFW/glfw3.h>
 #include "glgrib_window.h"
 #include "glgrib_png.h"
-
 #include <iostream>
+
+
+static 
+void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
+{
+  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
+  gwindow->display_cursor_position (xpos, ypos);
+}
+
+static
+void mouse_button_callback (GLFWwindow * window, int button, int action, int mods)
+{
+  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
+  gwindow->onclick (button, action, mods);
+}
+
+static
+void scroll_callback (GLFWwindow * window, double xoffset, double yoffset)
+{
+  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
+  gwindow->scroll (xoffset, yoffset);
+}
+
+static void resize_callback (GLFWwindow * window, int width, int height)
+{
+  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
+  gwindow->resize (width, height);
+}
+
+static 
+void key_callback (GLFWwindow * window, int key, int scancode, int action, int mods)
+{
+  enum
+  {
+    NONE    = 0,
+    SHIFT   = GLFW_MOD_SHIFT,
+    CONTROL = GLFW_MOD_CONTROL,
+    ALT     = GLFW_MOD_ALT
+  };
+
+#define if_key(mm, k, action) \
+do { \
+if ((key == GLFW_KEY_##k) && ((! mm) || (mm & mods))) \
+  {                                                   \
+    action;                                           \
+    return;                                           \
+  }                                                   \
+} while (0)
+
+  glgrib_window * w = (glgrib_window *)glfwGetWindowUserPointer (window);
+
+  if (action == GLFW_PRESS || action == GLFW_REPEAT)
+    {
+      if_key (NONE, T     , w->toggle_cursorpos_display ());
+      if_key (NONE, TAB   , w->toggle_rotate            ());
+      if_key (NONE, Y     , w->toggle_wireframe         ());
+      if_key (NONE, F     , w->framebuffer              ());
+      if_key (NONE, W     , w->widen_fov                ());
+      if_key (NONE, S     , w->snapshot                 ());
+      if_key (NONE, Q     , w->shrink_fov               ());
+      if_key (NONE, P     , w->toggle_flat              ());
+      if_key (NONE, 6     , w->increase_radius          ());
+      if_key (NONE, EQUAL , w->decrease_radius          ());
+      if_key (NONE, SPACE , w->reset_view               ());
+      if_key (NONE, UP    , w->rotate_north             ());
+      if_key (NONE, DOWN  , w->rotate_south             ());
+      if_key (NONE, LEFT  , w->rotate_west              ());
+      if_key (NONE, RIGHT , w->rotate_east              ());
+
+      bool shift   = mods & SHIFT;
+      bool control = mods & CONTROL;
+      bool alt     = mods & ALT;
+
+      if_key (NONE, F1    , w->alter_field      ( 0, shift, alt, control));
+      if_key (NONE, F2    , w->alter_field      ( 1, shift, alt, control));
+      if_key (NONE, F3    , w->alter_field      ( 2, shift, alt, control));
+      if_key (NONE, F4    , w->alter_field      ( 3, shift, alt, control));
+      if_key (NONE, F5    , w->alter_field      ( 4, shift, alt, control));
+      if_key (NONE, F6    , w->alter_field      ( 5, shift, alt, control));
+      if_key (NONE, F7    , w->alter_field      ( 6, shift, alt, control));
+      if_key (NONE, F8    , w->alter_field      ( 7, shift, alt, control));
+      if_key (NONE, F9    , w->alter_field      ( 8, shift, alt, control));
+      if_key (NONE, F10   , w->alter_field      ( 9, shift, alt, control));
+      if_key (NONE, F11   , w->alter_field      (10, shift, alt, control));
+      if_key (NONE, F12   , w->alter_field      (11, shift, alt, control));
+    }
+
+#undef if_key
+}
+
+void glgrib_window::alter_field (int ifield, bool shift, bool alt, bool control)
+{
+  glgrib_object * field = scene.fieldlist[ifield];
+  if (shift)
+    {
+      if (control)
+        scene.fieldoptslist[ifield].scale += 0.01;
+      else
+        scene.fieldoptslist[ifield].scale -= 0.01;
+    }
+  else if (alt)
+    {
+
+    }
+  else if (control)
+    {
+    }
+  else
+    {
+      if (scene.hidden.find (field) != scene.hidden.end ())
+        scene.hidden.erase (field);
+      else
+        scene.hidden.insert (field);
+    }
+}
 
 int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)
 {
   double xpos, ypos;
-
 
   glfwGetCursorPos (window, &xpos, &ypos);
   ypos = height - ypos;
@@ -115,13 +228,6 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
     }
 }
 
-static 
-void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
-{
-  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
-  gwindow->display_cursor_position (xpos, ypos);
-}
-
 void glgrib_window::toggle_cursorpos_display ()
 {
   if (cursorpos)
@@ -132,74 +238,24 @@ void glgrib_window::toggle_cursorpos_display ()
   glfwSetWindowTitle (window, title.c_str ());
 }
 
-static 
-void key_callback (GLFWwindow * window, int key, int scancode, int action, int mods)
-{
-#define if_key(mm, k, action) \
-do { \
-if ((key == GLFW_KEY_##k) && ((! mm) || (mm & mods))) \
-  {                                                   \
-    gwindow->action ();                               \
-    return;                                           \
-  }                                                   \
-} while (0)
-
-  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
-
-  if (action == GLFW_PRESS || action == GLFW_REPEAT)
-    {
-      if_key (0, T     , toggle_cursorpos_display);
-      if_key (0, TAB   , toggle_rotate           );
-      if_key (0, Y     , toggle_wireframe        );
-      if_key (0, F     , framebuffer             );
-      if_key (0, W     , widen_fov               );
-      if_key (0, S     , snapshot                );
-      if_key (0, Q     , shrink_fov              );
-      if_key (0, P     , toggle_flat             );
-      if_key (0, 6     , increase_radius         );
-      if_key (0, EQUAL , decrease_radius         );
-      if_key (0, SPACE , reset_view              );
-      if_key (0, UP    , rotate_north            );
-      if_key (0, DOWN  , rotate_south            );
-      if_key (0, LEFT  , rotate_west             );
-      if_key (0, RIGHT , rotate_east             );
-    }
-
-#undef if_key
-}
-
 void glgrib_window::onclick (int button, int action, int mods)
 {
   if (button == GLFW_MOUSE_BUTTON_LEFT)
     {
       if (action == GLFW_PRESS) 
         {
-	  if (get_latlon_from_cursor (&scene.view.latc, &scene.view.lonc))
+	  if (get_latlon_from_cursor (&scene.view.params.latc, &scene.view.params.lonc))
 	    glfwSetCursorPos (window, width / 2., height / 2.);
         }
     }
 }
 
-static
-void mouse_button_callback (GLFWwindow * window, int button, int action, int mods)
-{
-  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
-  gwindow->onclick (button, action, mods);
-}
-
 void glgrib_window::scroll (double xoffset, double yoffset)
 {
   if (yoffset > 0)
-    scene.view.fov += 1;
+    scene.view.params.fov += 1;
   else
-    scene.view.fov -= 1;
-}
-
-static
-void scroll_callback (GLFWwindow * window, double xoffset, double yoffset)
-{
-  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
-  gwindow->scroll (xoffset, yoffset);
+    scene.view.params.fov -= 1;
 }
 
 void glgrib_window::run (glgrib_shell * shell)
@@ -207,7 +263,7 @@ void glgrib_window::run (glgrib_shell * shell)
   while (1)
     {
       if (do_rotate)
-        scene.view.lonc += 1.;
+        scene.view.params.lonc += 1.;
      
 #pragma omp critical (RUN)
       {
@@ -232,12 +288,6 @@ void glgrib_window::resize (int width, int height)
   makeCurrent ();
   glViewport (0, 0, width, height);
   scene.view.setViewport (width, height);
-}
-
-static void resize_callback (GLFWwindow * window, int width, int height)
-{
-  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
-  gwindow->resize (width, height);
 }
 
 glgrib_window::glgrib_window (const glgrib_options & opts)

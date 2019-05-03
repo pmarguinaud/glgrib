@@ -4,6 +4,7 @@
 #include "glgrib_world.h"
 #include "glgrib_options.h"
 #include "glgrib_geometry.h"
+#include "glgrib_palette.h"
 
 #include <string>
 
@@ -11,6 +12,11 @@ class glgrib_field_display_options
 {
 public:
   float scale = 1.0;
+  glgrib_palette palette;
+  glgrib_field_display_options ()
+  {
+    palette = palette_cloud;
+  }
 };
 
 class glgrib_field : public glgrib_world

@@ -3,6 +3,40 @@
 
 #include <iostream>
 
+typedef std::map<std::string,glgrib_palette> name2palette_t;
+static name2palette_t name2palette;
+
+void glgrib_palette::register_ (const glgrib_palette & p)
+{
+  name2palette.insert (std::pair<std::string, glgrib_palette>(name, p));
+}
+
+glgrib_palette & get_palette_by_name (const std::string & name)
+{
+  static glgrib_palette dummy;
+  name2palette_t::iterator it = name2palette.find (name);
+  if (it != name2palette.end ())
+    return it->second;
+  else
+    return palette_cloud;
+}
+
+glgrib_palette palette_cold_hot
+  (
+     "cold_hot",
+       0,   0, 255, 255,
+     255, 255, 255, 255,
+     255,   0,   0, 255 
+  );
+
+glgrib_palette palette_cloud
+  (
+     "cloud",
+     255, 255, 255,   0,
+     255, 255, 255, 255
+  );
+
+
 std::ostream & operator << (std::ostream &out, const glgrib_palette & p)
 {
   out << "[";
@@ -11,7 +45,7 @@ std::ostream & operator << (std::ostream &out, const glgrib_palette & p)
   out << "]" << std::endl;
 }
 
-void glgrib_palette::setRGBA255 (GLuint programID)
+void glgrib_palette::setRGBA255 (GLuint programID) const
 {
   float RGBA0[256][4];
   int n = rgba.size ();
@@ -35,3 +69,4 @@ void glgrib_palette::setRGBA255 (GLuint programID)
 
   glUniform4fv (glGetUniformLocation (programID, "RGBA0"), 256*4, &RGBA0[0][0]);
 }
+

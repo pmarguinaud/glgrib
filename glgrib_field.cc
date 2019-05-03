@@ -34,21 +34,7 @@ void glgrib_field::render (const glgrib_view * view, const glgrib_field_display_
   const glgrib_program * program = get_program (); 
   float scale0[3] = {dopts.scale, dopts.scale, dopts.scale};
 
-  glgrib_palette p_cold_hot
-    (
-         0,   0, 255, 255,
-       255, 255, 255, 255,
-       255,   0,   0, 255 
-    );
-
-  glgrib_palette p_cloud
-    (
-       255, 255, 255,   0,
-       255, 255, 255, 255
-    );
-
-  p_cloud.setRGBA255 (program->programID);
-//p_cold_hot.setRGBA255 (program->programID);
+  dopts.palette.setRGBA255 (program->programID);
 
   glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
   glgrib_world::render (view);

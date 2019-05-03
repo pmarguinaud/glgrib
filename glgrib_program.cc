@@ -216,6 +216,7 @@ uniform mat4 MVP;
 
 uniform vec3 scale0 = vec3 (1.0, 1.0, 1.0);
 uniform vec4 RGBA0[256];
+uniform float vmis, vmin, vmax;
 
 void main()
 {

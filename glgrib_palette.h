@@ -5,6 +5,8 @@
 
 #include <vector>
 #include <iostream>
+#include <string>
+#include <map>
 
 typedef unsigned char byte;
 
@@ -24,22 +26,38 @@ class glgrib_palette
 {
 public:
   std::vector<glgrib_rgba> rgba;
-  glgrib_palette ()
+  std::string name;
+  glgrib_palette () {}
+  glgrib_palette (const std::string & n, bool) : name (n)
   {
   }
-  template <typename T, typename... Types> 
-  glgrib_palette (T r, T g, T b, T a, Types... vars)
+  template <typename... Types> 
+  glgrib_palette (const std::string & n, Types... vars)
   {
-    rgba.push_back (glgrib_rgba (r, g, b, a));
-    glgrib_palette p = glgrib_palette (vars...);
-    for (std::vector<glgrib_rgba>::iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
-      rgba.push_back (*it);
+    glgrib_palette p = glgrib_palette (n, true, vars...);
+    *this = p;
+    register_ (p);
   }
   friend std::ostream & operator << (std::ostream &, const glgrib_palette &);
-  void setRGBA255 (GLuint);
+  void setRGBA255 (GLuint) const;
+private:
+  template <typename T, typename... Types> 
+  glgrib_palette (const std::string & n, bool record, T r, T g, T b, T a, Types... vars)
+  {
+    rgba.push_back (glgrib_rgba (r, g, b, a));
+    glgrib_palette p = glgrib_palette (n, false, vars...);
+    for (std::vector<glgrib_rgba>::iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
+      rgba.push_back (*it);
+    name = n;
+  }
+  void register_ (const glgrib_palette &);
 };
 
 
+extern glgrib_palette palette_cold_hot;
+extern glgrib_palette palette_cloud;
+
+glgrib_palette & get_palette_by_name (const std::string &);
 
 
 

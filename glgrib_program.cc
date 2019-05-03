@@ -25,19 +25,19 @@ void main()
 R"CODE(
 #version 330 core
 
-layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in vec4 vertexColor;
+layout(location = 0) in vec3 vertexPos;
+layout(location = 1) in vec4 vertexCol;
 
 out vec4 fragmentColor;
 uniform mat4 MVP;
 
 void main()
 {
-  gl_Position =  MVP * vec4 (vertexPosition_modelspace, 1);
-  fragmentColor.r = vertexColor.r;
-  fragmentColor.g = vertexColor.g;
-  fragmentColor.b = vertexColor.b;
-  fragmentColor.a = vertexColor.a;
+  gl_Position =  MVP * vec4 (vertexPos, 1);
+  fragmentColor.r = vertexCol.r;
+  fragmentColor.g = vertexCol.g;
+  fragmentColor.b = vertexCol.b;
+  fragmentColor.a = vertexCol.a;
 }
 )CODE"),
 
@@ -60,18 +60,18 @@ void main()
 R"CODE(
 #version 330 core
 
-layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in vec3 vertexColor;
+layout(location = 0) in vec3 vertexPos;
+layout(location = 1) in vec3 vertexCol;
 
 out vec3 fragmentColor;
 uniform mat4 MVP;
 
 void main()
 {
-  gl_Position =  MVP * vec4 (vertexPosition_modelspace, 1);
-  fragmentColor.r = vertexColor.r;
-  fragmentColor.g = vertexColor.g;
-  fragmentColor.b = vertexColor.b;
+  gl_Position =  MVP * vec4 (vertexPos, 1);
+  fragmentColor.r = vertexCol.r;
+  fragmentColor.g = vertexCol.g;
+  fragmentColor.b = vertexCol.b;
 }
 )CODE"),
 
@@ -94,13 +94,13 @@ void main()
 R"CODE(
 #version 330 core
 
-layout(location = 0) in vec3 vertexPosition_modelspace;
+layout(location = 0) in vec3 vertexPos;
 
 uniform mat4 MVP;
 
 void main()
 {
-  gl_Position =  MVP * vec4 (vertexPosition_modelspace, 1);
+  gl_Position =  MVP * vec4 (vertexPos, 1);
 }
 )CODE"),
 
@@ -123,26 +123,26 @@ void main()
 R"CODE(
 #version 330 core
 
-layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in vec3 vertexColor;
+layout(location = 0) in vec3 vertexPos;
+layout(location = 1) in vec3 vertexCol;
 
 out vec3 fragmentColor;
 uniform mat4 MVP;
 
 void main()
 {
-  float x = vertexPosition_modelspace.x;
-  float y = vertexPosition_modelspace.y;
-  float z = vertexPosition_modelspace.z;
+  float x = vertexPos.x;
+  float y = vertexPos.y;
+  float z = vertexPos.z;
   float r = 1. / sqrt (x * x + y * y + z * z); 
   vec3 pos;
   pos.x = x * r;
   pos.y = y * r;
   pos.z = z * r;
   gl_Position =  MVP * vec4 (pos, 1);
-  fragmentColor.r = vertexColor.r;
-  fragmentColor.g = vertexColor.g;
-  fragmentColor.b = vertexColor.b;
+  fragmentColor.r = vertexCol.r;
+  fragmentColor.g = vertexCol.g;
+  fragmentColor.b = vertexCol.b;
 }
 )CODE"),
 
@@ -165,8 +165,8 @@ void main()
 R"CODE(
 #version 330 core
 
-layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in vec3 vertexColor;
+layout(location = 0) in vec3 vertexPos;
+layout(location = 1) in vec3 vertexCol;
 
 out vec3 fragmentColor;
 uniform mat4 MVP;
@@ -175,17 +175,17 @@ uniform vec3 scale0 = vec3 (1.0, 1.0, 1.0);
 
 void main()
 {
-  float x = vertexPosition_modelspace.x;
-  float y = vertexPosition_modelspace.y;
-  float z = vertexPosition_modelspace.z;
+  float x = vertexPos.x;
+  float y = vertexPos.y;
+  float z = vertexPos.z;
   vec3 pos;
   pos.x = scale0.x * x + position0.x;
   pos.y = scale0.y * y + position0.y;
   pos.z = scale0.z * z + position0.z;
   gl_Position =  MVP * vec4 (pos, 1);
-  fragmentColor.r = vertexColor.r;
-  fragmentColor.g = vertexColor.g;
-  fragmentColor.b = vertexColor.b;
+  fragmentColor.r = vertexCol.r;
+  fragmentColor.g = vertexCol.g;
+  fragmentColor.b = vertexCol.b;
 }
 )CODE"),
 
@@ -208,8 +208,8 @@ void main()
 R"CODE(
 #version 330 core
 
-layout(location = 0) in vec3 vertexPosition_modelspace;
-layout(location = 1) in float vertexColor;
+layout(location = 0) in vec3 vertexPos;
+layout(location = 1) in float vertexCol;
 
 out vec4 fragmentColor;
 uniform mat4 MVP;
@@ -220,16 +220,16 @@ uniform float vmis, vmin, vmax;
 
 void main()
 {
-  float x = vertexPosition_modelspace.x;
-  float y = vertexPosition_modelspace.y;
-  float z = vertexPosition_modelspace.z;
+  float x = vertexPos.x;
+  float y = vertexPos.y;
+  float z = vertexPos.z;
   float r = 1. / sqrt (x * x + y * y + z * z); 
   vec3 pos;
   pos.x = scale0.x * x * r;
   pos.y = scale0.y * y * r;
   pos.z = scale0.z * z * r;
   gl_Position =  MVP * vec4 (pos, 1);
-  fragmentColor = RGBA0[max (0, min (255, int (255 * vertexColor)))];
+  fragmentColor = RGBA0[max (0, min (255, int (255 * vertexCol)))];
 }
 )CODE"),
 

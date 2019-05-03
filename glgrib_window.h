@@ -50,6 +50,11 @@ public:
   void rotate_west       () { scene.view.lonc = scene.view.lonc - 5.; }
   void rotate_east       () { scene.view.lonc = scene.view.lonc + 5.; }
 
+  void resize (int, int);
+  void scroll (double, double);
+  void onclick (int, int, int);
+  void display_cursor_position (double, double);
+  int get_latlon_from_cursor (float *, float *);
 };
 
 #endif

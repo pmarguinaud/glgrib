@@ -12,18 +12,16 @@
 
 #include <iostream>
 
-static
-int get_latlon_from_cursor (GLFWwindow * window, float * lat, float * lon)
+int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)
 {
   double xpos, ypos;
 
 
-  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
   glfwGetCursorPos (window, &xpos, &ypos);
-  ypos = gwindow->height - ypos;
+  ypos = height - ypos;
   
   glm::vec3 centre (0.0f, 0.0f, 0.0f);
-  glm::vec3 xc = gwindow->scene.view.insersect_sphere (xpos, ypos, centre, 1.0f);
+  glm::vec3 xc = scene.view.insersect_sphere (xpos, ypos, centre, 1.0f);
 
   if (centre != xc)
     {
@@ -98,15 +96,13 @@ void glgrib_window::framebuffer ()
   glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
-static 
-void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
+void glgrib_window::display_cursor_position (double xpos, double ypos)
 {
   float lat, lon;
-  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
-  if (get_latlon_from_cursor (window, &lat, &lon))
+  if (get_latlon_from_cursor (&lat, &lon))
     {
       char title[128];
-      const glgrib_field * field = gwindow->scene.field;
+      const glgrib_field * field = scene.field;
       int jglo = field->geometry->latlon2index (lat, lon);
       float value = field->getValue (jglo);
 
@@ -115,8 +111,15 @@ void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
     }
   else
     {
-      glfwSetWindowTitle (window, gwindow->title.c_str ());
+      glfwSetWindowTitle (window, title.c_str ());
     }
+}
+
+static 
+void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
+{
+  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
+  gwindow->display_cursor_position (xpos, ypos);
 }
 
 void glgrib_window::toggle_cursorpos_display ()
@@ -165,28 +168,38 @@ if ((key == GLFW_KEY_##k) && ((! mm) || (mm & mods))) \
 #undef if_key
 }
 
-static
-void mouse_button_callback (GLFWwindow * window, int button, int action, int mods)
+void glgrib_window::onclick (int button, int action, int mods)
 {
   if (button == GLFW_MOUSE_BUTTON_LEFT)
     {
       if (action == GLFW_PRESS) 
         {
-          glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
-	  if (get_latlon_from_cursor (window, &gwindow->scene.view.latc, &gwindow->scene.view.lonc))
-	    glfwSetCursorPos (window, gwindow->width / 2., gwindow->height / 2.);
+	  if (get_latlon_from_cursor (&scene.view.latc, &scene.view.lonc))
+	    glfwSetCursorPos (window, width / 2., height / 2.);
         }
     }
+}
+
+static
+void mouse_button_callback (GLFWwindow * window, int button, int action, int mods)
+{
+  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
+  gwindow->onclick (button, action, mods);
+}
+
+void glgrib_window::scroll (double xoffset, double yoffset)
+{
+  if (yoffset > 0)
+    scene.view.fov += 1;
+  else
+    scene.view.fov -= 1;
 }
 
 static
 void scroll_callback (GLFWwindow * window, double xoffset, double yoffset)
 {
   glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
-  if (yoffset > 0)
-    gwindow->scene.view.fov += 1;
-  else
-    gwindow->scene.view.fov -= 1;
+  gwindow->scroll (xoffset, yoffset);
 }
 
 void glgrib_window::run (glgrib_shell * shell)
@@ -212,13 +225,19 @@ void glgrib_window::run (glgrib_shell * shell)
 }
 
 
+void glgrib_window::resize (int width, int height)
+{
+  width = width;
+  height = height;
+  makeCurrent ();
+  glViewport (0, 0, width, height);
+  scene.view.setViewport (width, height);
+}
+
 static void resize_callback (GLFWwindow * window, int width, int height)
 {
   glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
-  gwindow->width = width;
-  gwindow->height = height;
-  glViewport (0, 0, width, height);
-  gwindow->scene.view.setViewport (width, height);
+  gwindow->resize (width, height);
 }
 
 glgrib_window::glgrib_window (const glgrib_options & opts)
@@ -244,7 +263,7 @@ glgrib_window::glgrib_window (const glgrib_options & opts)
       return;
     }
 
-  glfwMakeContextCurrent (window);
+  makeCurrent ();
   
   glewExperimental = true; // Needed for core profile
   if (glewInit () != GLEW_OK) 

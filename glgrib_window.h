@@ -25,34 +25,31 @@ public:
   bool cursorpos = false;
   std::string title = "";
   GLFWwindow * window;
-  bool left_shift = false;
-  bool right_shift = false;
-  bool left_control = false;
-  bool right_control = false;
-  bool left_alt = false;
-  bool right_alt = false;
 
   void toggle_cursorpos_display ();
-  void toggle_rotate            ();
-  void toggle_wireframe         ();
   void framebuffer              ();
-  void widen_fov                ();
   void snapshot                 ();
-  void shrink_fov               ();
-  void toggle_flat              ();
-  void increase_radius          ();
-  void decrease_radius          ();
-  void reset_view               ();
-  void rotate_north             ();
-  void rotate_south             ();
-  void rotate_west              ();
-  void rotate_east              ();
-  void set_left_shift           ();
-  void set_right_shift          ();
-  void set_left_control         ();
-  void set_right_control        ();
-  void set_left_alt             ();
-  void set_right_alt            ();
+  void toggle_flat ()
+  {
+    if (scene.landscape != NULL)
+      scene.landscape->toggle_flat ();
+  }
+  void reset_view ()
+  {
+    glgrib_view view;
+    scene.view = view;
+  }
+  void toggle_rotate     () { do_rotate = ! do_rotate; }
+  void toggle_wireframe  () { scene.landscape->toggle_wireframe (); }
+  void widen_fov         () { scene.view.fov += 1.; }
+  void shrink_fov        () { scene.view.fov -= 1.; }
+  void increase_radius   () { scene.view.rc += 0.1; }
+  void decrease_radius   () { scene.view.rc -= 0.1; }
+  void rotate_north      () { scene.view.latc = scene.view.latc + 5.; }
+  void rotate_south      () { scene.view.latc = scene.view.latc - 5.; }
+  void rotate_west       () { scene.view.lonc = scene.view.lonc - 5.; }
+  void rotate_east       () { scene.view.lonc = scene.view.lonc + 5.; }
+
 };
 
 #endif

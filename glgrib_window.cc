@@ -129,139 +129,40 @@ void glgrib_window::toggle_cursorpos_display ()
   glfwSetWindowTitle (window, title.c_str ());
 }
 
-void glgrib_window::toggle_rotate ()
-{
-  do_rotate = ! do_rotate;
-}
-
-void glgrib_window::toggle_wireframe ()
-{
-  scene.landscape->toggle_wireframe ();
-}
-
-void glgrib_window::widen_fov ()
-{
-  scene.view.fov += 1.;
-}
-
-void glgrib_window::shrink_fov ()
-{
-  scene.view.fov -= 1.;
-}
-
-void glgrib_window::toggle_flat ()
-{
-  if (scene.landscape != NULL)
-    scene.landscape->toggle_flat ();
-}
-
-void glgrib_window::increase_radius ()
-{
-  scene.view.rc += 0.1;
-}
-
-void glgrib_window::decrease_radius ()
-{
-  scene.view.rc -= 0.1;
-}
-
-void glgrib_window::reset_view ()
-{
-  glgrib_view view;
-  scene.view = view;
-}
-
-void glgrib_window::rotate_north ()
-{
-  scene.view.latc = scene.view.latc + 5.;
-}
-
-void glgrib_window::rotate_south ()
-{
-  scene.view.latc = scene.view.latc - 5.;
-}
-
-void glgrib_window::rotate_west ()
-{
-  scene.view.lonc = scene.view.lonc - 5.;
-}
-
-void glgrib_window::rotate_east ()
-{
-  scene.view.lonc = scene.view.lonc + 5.;
-}
-
-void glgrib_window::set_left_shift    ()
-{
-  left_shift = true;
-}
-
-void glgrib_window::set_right_shift   ()
-{
-  right_shift = true;
-}
-
-void glgrib_window::set_left_control  ()
-{
-  left_control = true;
-}
-
-void glgrib_window::set_right_control ()
-{
-  right_control = true;
-}
-
-void glgrib_window::set_left_alt      ()
-{
-  left_alt = true;
-}
-
-void glgrib_window::set_right_alt     ()
-{
-  right_alt = true;
-}
-
-
 static 
 void key_callback (GLFWwindow * window, int key, int scancode, int action, int mods)
 {
+#define if_key(mm, k, action) \
+do { \
+if ((key == GLFW_KEY_##k) && ((! mm) || (mm & mods))) \
+  {                                                   \
+    gwindow->action ();                               \
+    return;                                           \
+  }                                                   \
+} while (0)
+
   glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
+
   if (action == GLFW_PRESS || action == GLFW_REPEAT)
     {
-      switch (key)
-        {
-#define case_key(k, action) case GLFW_KEY_##k: gwindow->action (); break
-          case_key (T     , toggle_cursorpos_display);
-          case_key (TAB   , toggle_rotate           );
-          case_key (Y     , toggle_wireframe        );
-          case_key (F     , framebuffer             );
-          case_key (W     , widen_fov               );
-          case_key (S     , snapshot                );
-          case_key (Q     , shrink_fov              );
-          case_key (P     , toggle_flat             );
-          case_key (6     , increase_radius         );
-          case_key (EQUAL , decrease_radius         );
-          case_key (SPACE , reset_view              );
-          case_key (UP    , rotate_north            );
-          case_key (DOWN  , rotate_south            );
-          case_key (LEFT  , rotate_west             );
-          case_key (RIGHT , rotate_east             );
-          case_key (LEFT_SHIFT     , set_left_shift    );
-          case_key (RIGHT_SHIFT    , set_right_shift   );
-          case_key (LEFT_CONTROL   , set_left_control  );
-          case_key (RIGHT_CONTROL  , set_right_control );
-          case_key (LEFT_ALT       , set_left_alt      );
-          case_key (RIGHT_ALT      , set_right_alt     );
-#undef case_key
-	  default:
-	    printf ("%d\n", key);
-	    break;
-	}
+      if_key (0, T     , toggle_cursorpos_display);
+      if_key (0, TAB   , toggle_rotate           );
+      if_key (0, Y     , toggle_wireframe        );
+      if_key (0, F     , framebuffer             );
+      if_key (0, W     , widen_fov               );
+      if_key (0, S     , snapshot                );
+      if_key (0, Q     , shrink_fov              );
+      if_key (0, P     , toggle_flat             );
+      if_key (0, 6     , increase_radius         );
+      if_key (0, EQUAL , decrease_radius         );
+      if_key (0, SPACE , reset_view              );
+      if_key (0, UP    , rotate_north            );
+      if_key (0, DOWN  , rotate_south            );
+      if_key (0, LEFT  , rotate_west             );
+      if_key (0, RIGHT , rotate_east             );
     }
-  else if (action == GLFW_RELEASE)
-    {
-      printf ("%d\n", key);
-    }
+
+#undef if_key
 }
 
 static

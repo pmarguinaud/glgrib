@@ -4,15 +4,30 @@
 #include <stdlib.h>
 #include <eccodes.h>
 #include <iostream>
+#include <stdexcept>
+#include <string>
+#include <errno.h>
+
 
 void glgrib_load (const std::string & file, float ** val, float * valmin, float * valmax, float * valmis)
 {
   FILE * in = fopen (file.c_str (), "r");
 
+  if (in == NULL)
+    {
+      throw std::runtime_error (std::string ("Cannot open ") + file + ": " + strerror (errno));
+    }
+
   *val = NULL;
 
   int err = 0;
   codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
+  if (h == NULL)
+    {
+      fclose (in);
+      throw std::runtime_error (std::string ("`") + file + "' does not contain GRIB data");
+    }
+
   size_t v_len = 0;
   codes_get_size (h, "values", &v_len);
 

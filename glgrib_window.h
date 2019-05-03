@@ -25,6 +25,13 @@ public:
   bool cursorpos = false;
   std::string title = "";
   GLFWwindow * window;
+  bool left_shift = false;
+  bool right_shift = false;
+  bool left_control = false;
+  bool right_control = false;
+  bool left_alt = false;
+  bool right_alt = false;
+
 };
 
 #endif

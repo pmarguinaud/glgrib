@@ -69,7 +69,6 @@ void snapshot (glgrib_window * gwindow)
 static
 void framebuffer (glgrib_window * gwindow)
 {
-printf ("Framebuffer !\n");
   unsigned int framebuffer;
   glGenFramebuffers (1, &framebuffer);
   glBindFramebuffer (GL_FRAMEBUFFER, framebuffer);
@@ -122,6 +121,130 @@ void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
     }
 }
 
+static
+void toggle_cursorpos_display (glgrib_window * gwindow)
+{
+  GLFWwindow * window = gwindow->window;
+  if (gwindow->cursorpos)
+    glfwSetCursorPosCallback (window, NULL);
+  else
+    glfwSetCursorPosCallback (window, cursor_position_callback);
+  gwindow->cursorpos = ! gwindow->cursorpos;
+  glfwSetWindowTitle (window, gwindow->title.c_str ());
+}
+
+static 
+void toggle_rotate (glgrib_window * gwindow)
+{
+  gwindow->do_rotate = ! gwindow->do_rotate;
+}
+
+static
+void toggle_wireframe (glgrib_window * gwindow)
+{
+  gwindow->scene.landscape->toggle_wireframe ();
+}
+
+static
+void widen_fov (glgrib_window * gwindow)
+{
+  gwindow->scene.view.fov += 1.;
+}
+
+static
+void shrink_fov (glgrib_window * gwindow)
+{
+  gwindow->scene.view.fov -= 1.;
+}
+
+static
+void toggle_flat (glgrib_window * gwindow)
+{
+  if (gwindow->scene.landscape != NULL)
+    gwindow->scene.landscape->toggle_flat ();
+}
+
+static 
+void increase_radius (glgrib_window * gwindow)
+{
+  gwindow->scene.view.rc += 0.1;
+}
+
+static
+void decrease_radius (glgrib_window * gwindow)
+{
+  gwindow->scene.view.rc -= 0.1;
+}
+
+static
+void reset_view (glgrib_window * gwindow)
+{
+  glgrib_view view;
+  gwindow->scene.view = view;
+}
+
+static
+void rotate_north (glgrib_window * gwindow)
+{
+  gwindow->scene.view.latc = gwindow->scene.view.latc + 5.;
+}
+
+static
+void rotate_south (glgrib_window * gwindow)
+{
+  gwindow->scene.view.latc = gwindow->scene.view.latc - 5.;
+}
+
+static
+void rotate_west (glgrib_window * gwindow)
+{
+  gwindow->scene.view.lonc = gwindow->scene.view.lonc - 5.;
+}
+
+static
+void rotate_east (glgrib_window * gwindow)
+{
+  gwindow->scene.view.lonc = gwindow->scene.view.lonc + 5.;
+}
+
+
+static
+void set_left_shift    (glgrib_window * gwindow)
+{
+  gwindow->left_shift = true;
+}
+
+static
+void set_right_shift   (glgrib_window * gwindow)
+{
+  gwindow->right_shift = true;
+}
+
+static
+void set_left_control  (glgrib_window * gwindow)
+{
+  gwindow->left_control = true;
+}
+
+static
+void set_right_control (glgrib_window * gwindow)
+{
+  gwindow->right_control = true;
+}
+
+static
+void set_left_alt      (glgrib_window * gwindow)
+{
+  gwindow->left_alt = true;
+}
+
+static
+void set_right_alt     (glgrib_window * gwindow)
+{
+  gwindow->right_alt = true;
+}
+
+
 static 
 void key_callback (GLFWwindow * window, int key, int scancode, int action, int mods)
 {
@@ -130,63 +253,37 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
     {
       switch (key)
         {
-          case GLFW_KEY_T:
-            if (gwindow->cursorpos)
-              glfwSetCursorPosCallback (window, NULL);
-	    else
-              glfwSetCursorPosCallback (window, cursor_position_callback);
-	    gwindow->cursorpos = ! gwindow->cursorpos;
-            glfwSetWindowTitle (window, gwindow->title.c_str ());
-            break;
-          case GLFW_KEY_TAB:
-            gwindow->do_rotate = ! gwindow->do_rotate;
-            break;
-          case GLFW_KEY_Y:
-            gwindow->scene.landscape->toggle_wireframe ();
-            break;
-          case GLFW_KEY_F:
-            framebuffer (gwindow);
-            break;
-          case GLFW_KEY_W:
-            gwindow->scene.view.fov += 1.;
-            break;
-          case GLFW_KEY_S:
-            snapshot (gwindow);
-            break;
-          case GLFW_KEY_Q:
-            gwindow->scene.view.fov -= 1.;
-            break;
-          case GLFW_KEY_P:
-            if (gwindow->scene.landscape != NULL)
-              gwindow->scene.landscape->toggle_flat ();
-            break;
-          case GLFW_KEY_6:
-            gwindow->scene.view.rc += 0.1;
-            break;
-          case GLFW_KEY_EQUAL:
-            gwindow->scene.view.rc -= 0.1;
-            break;
-          case GLFW_KEY_SPACE:
-            gwindow->scene.view.latc = 0.;
-            gwindow->scene.view.lonc = 0.;
-	    gwindow->scene.view.rc = 6.0;
-	    gwindow->scene.view.fov = 20.;
-	    break;
-          case GLFW_KEY_UP:
-            gwindow->scene.view.latc = gwindow->scene.view.latc + 5.;
-            break;
-          case GLFW_KEY_DOWN:
-            gwindow->scene.view.latc = gwindow->scene.view.latc - 5.;
-            break;
-          case GLFW_KEY_LEFT:
-            gwindow->scene.view.lonc = gwindow->scene.view.lonc - 5.;
-            break;
-          case GLFW_KEY_RIGHT:
-            gwindow->scene.view.lonc = gwindow->scene.view.lonc + 5.;
-            break;
+#define case_key(k, action) case GLFW_KEY_##k: action (gwindow); break
+          case_key (T     , toggle_cursorpos_display);
+          case_key (TAB   , toggle_rotate           );
+          case_key (Y     , toggle_wireframe        );
+          case_key (F     , framebuffer             );
+          case_key (W     , widen_fov               );
+          case_key (S     , snapshot                );
+          case_key (Q     , shrink_fov              );
+          case_key (P     , toggle_flat             );
+          case_key (6     , increase_radius         );
+          case_key (EQUAL , decrease_radius         );
+          case_key (SPACE , reset_view              );
+          case_key (UP    , rotate_north            );
+          case_key (DOWN  , rotate_south            );
+          case_key (LEFT  , rotate_west             );
+          case_key (RIGHT , rotate_east             );
+          case_key (LEFT_SHIFT     , set_left_shift    );
+          case_key (RIGHT_SHIFT    , set_right_shift   );
+          case_key (LEFT_CONTROL   , set_left_control  );
+          case_key (RIGHT_CONTROL  , set_right_control );
+          case_key (LEFT_ALT       , set_left_alt      );
+          case_key (RIGHT_ALT      , set_right_alt     );
+#undef case_key
 	  default:
+	    printf ("%d\n", key);
 	    break;
 	}
+    }
+  else if (action == GLFW_RELEASE)
+    {
+      printf ("%d\n", key);
     }
 }
 
@@ -289,7 +386,7 @@ glgrib_window::glgrib_window (const glgrib_options & opts)
   
 glgrib_window::~glgrib_window ()
 {
-
+  glfwDestroyWindow (window);
 }
 
 

@@ -281,6 +281,7 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
   for (int jlat = 2; jlat <= Nj; jlat++)
     iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
 
+  // OpenMP generation of coordinates
 #pragma omp parallel for 
   for (int jlat = 1; jlat <= Nj; jlat++)
     {

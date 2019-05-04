@@ -24,12 +24,6 @@ void glgrib_field::init (const std::string & field, const glgrib_options & o, co
     else
       col[i] = 1 + (int)(254 * (values[i] - valmin)/(valmax - valmin));
 
-  int cnt = 0;
-  for (int i = 0; i < geom->np; i++)
-    if (col[i] == 0)
-      cnt++;
-  std::cout << " cnt = " << cnt << std::endl;
-
   def_from_vertexbuffer_col_elementbuffer (col, geom);
 
   free (col);

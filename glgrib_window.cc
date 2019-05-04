@@ -93,6 +93,20 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (NONE,    F11   , w->select_field           (10));
       if_key (NONE,    F12   , w->select_field           (11));
 
+      if_key (CONTROL, F1    , { w->hide_all_fields (); w->select_field ( 0); w->toggle_hide_field (); });
+      if_key (CONTROL, F2    , { w->hide_all_fields (); w->select_field ( 1); w->toggle_hide_field (); });
+      if_key (CONTROL, F3    , { w->hide_all_fields (); w->select_field ( 2); w->toggle_hide_field (); });
+      if_key (CONTROL, F4    , { w->hide_all_fields (); w->select_field ( 3); w->toggle_hide_field (); });
+      if_key (CONTROL, F5    , { w->hide_all_fields (); w->select_field ( 4); w->toggle_hide_field (); });
+      if_key (CONTROL, F6    , { w->hide_all_fields (); w->select_field ( 5); w->toggle_hide_field (); });
+      if_key (CONTROL, F7    , { w->hide_all_fields (); w->select_field ( 6); w->toggle_hide_field (); });
+      if_key (CONTROL, F8    , { w->hide_all_fields (); w->select_field ( 7); w->toggle_hide_field (); });
+      if_key (CONTROL, F9    , { w->hide_all_fields (); w->select_field ( 8); w->toggle_hide_field (); });
+      if_key (CONTROL, F10   , { w->hide_all_fields (); w->select_field ( 9); w->toggle_hide_field (); });
+      if_key (CONTROL, F11   , { w->hide_all_fields (); w->select_field (10); w->toggle_hide_field (); });
+      if_key (CONTROL, F12   , { w->hide_all_fields (); w->select_field (11); w->toggle_hide_field (); });
+      if_key (CONTROL, H     , w->show_all_fields          ());
+
       if_key (NONE,    H     , w->toggle_hide_field        ());
       if_key (NONE,    G     , w->scale_field_up           ());
       if_key (CONTROL, G     , w->scale_field_down         ());
@@ -160,6 +174,18 @@ void glgrib_window::toggle_hide_field ()
     scene.hidden.erase (scene.currentField);
   else
     scene.hidden.insert (scene.currentField);
+}
+
+void glgrib_window::hide_all_fields ()
+{
+  for (int i = 0; i < scene.fieldlist.size (); i++)
+    scene.hidden.insert (scene.fieldlist[i]);
+}
+
+void glgrib_window::show_all_fields ()
+{
+  for (int i = 0; i < scene.fieldlist.size (); i++)
+    scene.hidden.erase (scene.fieldlist[i]);
 }
 
 int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)

@@ -63,6 +63,8 @@ public:
   void scale_palette_up ();
   void scale_palette_down ();
   void next_palette ();
+  void hide_all_fields ();
+  void show_all_fields ();
 };
 
 #endif

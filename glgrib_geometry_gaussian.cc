@@ -18,36 +18,23 @@ static const double deg2rad = M_PI / 180.0;
 
 
 #define PRINT(a,b,c) \
-  do {                                                                                          \
-    if (pass == 1)                                                                              \
-      {                                                                                         \
-        indcnt[istripe]++;                                                                      \
-      }                                                                                         \
-    else if (pass == 2)                                                                         \
-      {                                                                                         \
-        *(inds++) = (a)-1; *(inds++) = (b)-1; *(inds++) = (c)-1;                                \
-      }                                                                                         \
+  do {                                                            \
+      *(inds++) = (a)-1; *(inds++) = (b)-1; *(inds++) = (c)-1;    \
   } while (0)
 
 static 
-void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * ind, const int nstripe, int indcnt[])
+void glgauss (const long int Nj, const long int pl[], unsigned int * ind, const int nstripe, int indcnt[])
 {
   int iglooff[Nj];
   int indcntoff[nstripe];
   
   iglooff[0] = 0;
   for (int jlat = 2; jlat <= Nj-1; jlat++)
-     iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
+    iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
 
-  if (pass == 1)
-    *ind = 0;
-
-  if (pass == 2)
-    {
-      indcntoff[0] = 0;
-      for (int istripe = 1; istripe < nstripe; istripe++)
-        indcntoff[istripe] = indcntoff[istripe-1] + indcnt[istripe-1];
-    }
+  indcntoff[0] = 0;
+  for (int istripe = 1; istripe < nstripe; istripe++)
+    indcntoff[istripe] = indcntoff[istripe-1] + indcnt[istripe-1];
 
 #pragma omp parallel for 
   for (int istripe = 0; istripe < nstripe; istripe++)
@@ -55,9 +42,6 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
       int jlat1 = 1 + ((istripe + 0) * (Nj-1)) / nstripe;
       int jlat2 = 0 + ((istripe + 1) * (Nj-1)) / nstripe;
       unsigned int * inds = ind + 3 * indcntoff[istripe];
-
-      if (pass == 1)
-        indcnt[istripe] = 0;
 
       for (int jlat = jlat1; jlat <= jlat2; jlat++)
         {
@@ -150,10 +134,6 @@ void glgauss (const long int Nj, const long int pl[], int pass, unsigned int * i
         }
 
     }
-
-  if (pass == 1)
-    for (int istripe = 0; istripe < nstripe; istripe++)
-      *ind += indcnt[istripe];
 
 }
 
@@ -273,9 +253,22 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
   codes_get_size (h, "pl", &pl_len);
   pl = (long int *)malloc (sizeof (long int) * pl_len);
   codes_get_long_array (h, "pl", pl, &pl_len);
-  glgauss (Nj, pl, 1, &nt, nstripe, indoff);
+
+  nt = 0;
+  for (int jlat = 1; jlat < Nj; jlat++)
+    nt += pl[jlat-1] + pl[jlat];
+  
+  for (int istripe = 0; istripe < nstripe; istripe++)
+    {
+      int jlat1 = 1 + ((istripe + 0) * (Nj-1)) / nstripe;
+      int jlat2 = 0 + ((istripe + 1) * (Nj-1)) / nstripe;
+      indoff[istripe] = 0;
+      for (int jlat = jlat1; jlat <= jlat2; jlat++)
+        indoff[istripe] += pl[jlat-1] + pl[jlat];
+    }
+
   ind = (unsigned int *)malloc (3 * nt * sizeof (unsigned int));
-  glgauss (Nj, pl, 2, ind, nstripe, indoff);
+  glgauss (Nj, pl, ind, nstripe, indoff);
       
   xyz = (float *)malloc (3 * sizeof (float) * v_len);
   np  = v_len;

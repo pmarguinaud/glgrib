@@ -282,26 +282,26 @@ uniform bool isflat = true;
 
 void main()
 {
-  vec3 pos;
+  vec3 normedPos;
+
+  float x = vertexPos.x;
+  float y = vertexPos.y;
+  float z = vertexPos.z;
+  float r = 1. / sqrt (x * x + y * y + z * z); 
+  normedPos.x = x * r;
+  normedPos.y = y * r;
+  normedPos.z = z * r;
 
   if (isflat)
     {
-      float x = vertexPos.x;
-      float y = vertexPos.y;
-      float z = vertexPos.z;
-      float r = 1. / sqrt (x * x + y * y + z * z); 
-      pos.x = x * r;
-      pos.y = y * r;
-      pos.z = z * r;
+      gl_Position =  MVP * vec4 (normedPos, 1);
     }
   else
     {
-      pos = vertexPos;
+      gl_Position =  MVP * vec4 (vertexPos, 1);
     }
 
-  gl_Position =  MVP * vec4 (pos, 1);
-
-  fragmentPos = vertexPos;
+  fragmentPos = normedPos;
 
 }
 )CODE"),

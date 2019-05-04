@@ -254,10 +254,12 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
   pl = (long int *)malloc (sizeof (long int) * pl_len);
   codes_get_long_array (h, "pl", pl, &pl_len);
 
+  // Compute number of triangles
   nt = 0;
   for (int jlat = 1; jlat < Nj; jlat++)
     nt += pl[jlat-1] + pl[jlat];
   
+  // Compute number of triangles per stripe
   for (int istripe = 0; istripe < nstripe; istripe++)
     {
       int jlat1 = 1 + ((istripe + 0) * (Nj-1)) / nstripe;
@@ -268,16 +270,25 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
     }
 
   ind = (unsigned int *)malloc (3 * nt * sizeof (unsigned int));
+  // OpenMP generation of triangles
   glgauss (Nj, pl, ind, nstripe, indoff);
       
   xyz = (float *)malloc (3 * sizeof (float) * v_len);
   np  = v_len;
-  for (int jglo = 0, jlat = 1; jlat <= Nj; jlat++)
+
+  int iglooff[Nj];
+  iglooff[0] = 0;
+  for (int jlat = 2; jlat <= Nj; jlat++)
+    iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
+
+#pragma omp parallel for 
+  for (int jlat = 1; jlat <= Nj; jlat++)
     {
       float coordy = M_PI * (0.5 - (float)jlat / (float)(Nj + 1));
       float sincoordy = sin (coordy);
       float lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
       float coslat = cos (lat); float sinlat = sin (lat);
+      int jglo = iglooff[jlat-1];
       for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
         {
           float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];

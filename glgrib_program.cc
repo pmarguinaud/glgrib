@@ -193,16 +193,31 @@ void main()
 R"CODE(
 #version 330 core
 
-in vec4 fragmentCol;
+in float fragmentVal;
 
 out vec4 color;
 
-void main()
+uniform vec4 RGBA0[256];
+
+uniform float valmin, valmax;
+uniform float palmin, palmax;
+
+void main ()
 {
-  color.r = fragmentCol.r;
-  color.g = fragmentCol.g;
-  color.b = fragmentCol.b;
-  color.a = fragmentCol.a;
+  float val = valmin + (valmax - valmin) * (255.0 * fragmentVal - 1.0) / 254.0;
+
+  int pal;
+  if (val < valmin)
+    {
+      pal = 0;
+      color = RGBA0[pal];
+    }
+  else
+    {
+      pal = max (1, min (int (1 + 254 * (val - palmin) / (palmax - palmin)), 255));
+      color = RGBA0[pal];
+    }
+
 }
 )CODE",
 R"CODE(
@@ -211,15 +226,12 @@ R"CODE(
 layout(location = 0) in vec3 vertexPos;
 layout(location = 1) in float vertexVal;
 
-out vec4 fragmentCol;
+out float fragmentVal;
+
 uniform mat4 MVP;
-
 uniform vec3 scale0 = vec3 (1.0, 1.0, 1.0);
-uniform vec4 RGBA0[256];
-uniform float valmin, valmax;
-uniform float palmin, palmax;
 
-void main()
+void main ()
 {
   float x = vertexPos.x;
   float y = vertexPos.y;
@@ -231,19 +243,7 @@ void main()
   pos.z = scale0.z * z * r;
   gl_Position =  MVP * vec4 (pos, 1);
 
-  float val = valmin + (valmax - valmin) * (255.0 * vertexVal - 1.0) / 254.0;
-
-  int pal;
-  if (val < valmin)
-    {
-      pal = 0;
-      fragmentCol = RGBA0[pal];
-    }
-  else
-    {
-      pal = max (1, min (int (1 + 254 * (val - palmin) / (palmax - palmin)), 255));
-      fragmentCol = RGBA0[pal];
-    }
+  fragmentVal = vertexVal;
 
 }
 )CODE"),
@@ -273,7 +273,7 @@ void main()
 R"CODE(
 #version 330 core
 
-layout(location = 0) in vec3 vertexPos;
+layout (location = 0) in vec3 vertexPos;
 
 out vec3 fragmentPos;
 

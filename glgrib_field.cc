@@ -24,6 +24,12 @@ void glgrib_field::init (const std::string & field, const glgrib_options & o, co
     else
       col[i] = 1 + (int)(254 * (values[i] - valmin)/(valmax - valmin));
 
+  int cnt = 0;
+  for (int i = 0; i < geom->np; i++)
+    if (col[i] == 0)
+      cnt++;
+  std::cout << " cnt = " << cnt << std::endl;
+
   def_from_vertexbuffer_col_elementbuffer (col, geom);
 
   free (col);
@@ -42,6 +48,7 @@ void glgrib_field::render (const glgrib_view * view, const glgrib_field_display_
   const glgrib_palette & p = dopts.palette;
 
   p.setRGBA255 (program->programID);
+
 
   glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
   glUniform1f (glGetUniformLocation (program->programID, "valmin"), valmin);

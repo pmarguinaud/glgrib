@@ -52,5 +52,14 @@ void glgrib_load (const std::string & file, float ** val, float * valmin, float 
   *valmin = vmin;
   *valmax = vmax;
 
+  std::cout << " vmis = " << vmis << std::endl;
+
+  int count = 0;
+  for (int i = 0; i < v_len; i++)
+    if ((*val)[i] == vmis)
+      count++;
+
+  std::cout << " count = " << count << std::endl;
+
 }
 

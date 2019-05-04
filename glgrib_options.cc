@@ -167,7 +167,16 @@ void glgrib_options::parse (int argc, char * argv[])
   for (int iopt = 0; iopt < nopt; iopt++)
     {
       option_base * opt = options[iopt];
-      name2option.insert (std::pair<std::string,option_base *>(std::string ("--") + opt->name, opt));
+      std::string opt_name = std::string ("--") + opt->name;
+      name2option.insert (std::pair<std::string,option_base *>(opt_name, opt));
+      while (1)
+        {
+          size_t pos = opt_name.find ("_");
+          if (pos == std::string::npos)
+            break;
+          opt_name.replace (pos, 1, "-");
+        }
+      name2option.insert (std::pair<std::string,option_base *>(opt_name, opt));
     }
 
   try

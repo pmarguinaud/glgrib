@@ -237,13 +237,14 @@ void main()
   if (val < valmin)
     {
       pal = 0;
+      fragmentColor = RGBA0[pal];
     }
   else
     {
       pal = max (1, min (int (1 + 254 * (val - palmin) / (palmax - palmin)), 255));
+      fragmentColor = RGBA0[pal];
     }
 
-  fragmentColor = RGBA0[pal];
 }
 )CODE"),
 

@@ -43,8 +43,8 @@ public:
   glgrib_palette (const std::string & n, int r, int g, int b, int a,Types... vars)
   {
     glgrib_palette p = glgrib_palette (n, true, vars...);
+    p.rgba_mis = glgrib_rgba (r, g, b, a);
     *this = p;
-    rgba_mis = glgrib_rgba (r, g, b, a);
     register_ (p);
   }
   template <typename... Types> 
@@ -52,11 +52,11 @@ public:
 		  int r, int g, int b, int a, Types... vars)
   {
     glgrib_palette p = glgrib_palette (n, true, vars...);
+    p.rgba_mis = glgrib_rgba (r, g, b, a);
+    p.min = min_;
+    p.max = max_;
     *this = p;
-    rgba_mis = glgrib_rgba (r, g, b, a);
     register_ (p);
-    min = min_;
-    max = max_;
   }
   friend std::ostream & operator << (std::ostream &, const glgrib_palette &);
   void setRGBA255 (GLuint) const;

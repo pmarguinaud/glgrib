@@ -64,8 +64,6 @@ void x11_display (const glgrib_options & opts)
 
       Gwindow.scene.fieldoptslist[i].scale = opts.fields_scale[i];
       Gwindow.scene.fieldoptslist[i].palette = get_palette_by_name (opts.fields_palette[i]);
-
-
       Gwindow.scene.currentFieldOpts = &Gwindow.scene.fieldoptslist[i];
     }
 

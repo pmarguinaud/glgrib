@@ -71,6 +71,7 @@ glgrib_palette palette_cloud_auto
 
 std::ostream & operator << (std::ostream &out, const glgrib_palette & p)
 {
+  out << p.rgba_mis << std::endl;
   out << "[";
   for (std::vector<glgrib_rgba>::const_iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
     out << *it << ",";
@@ -82,12 +83,15 @@ void glgrib_palette::setRGBA255 (GLuint programID) const
   float RGBA0[256][4];
   int n = rgba.size ();
 
+  RGBA0[0][0] = rgba_mis.r; RGBA0[0][1] = rgba_mis.b;
+  RGBA0[0][2] = rgba_mis.g; RGBA0[0][3] = rgba_mis.a;
+
   for (int j = 0; j < n-1; j++)
     {
       int j0 = j + 0;
       int j1 = j + 1;
-      int i0 = (256 * j0) / (n - 1);
-      int i1 = (256 * j1) / (n - 1);
+      int i0 = 1 + (255 * j0) / (n - 1);
+      int i1 = 1 + (255 * j1) / (n - 1);
       for (int i = i0; i < i1; i++)
         {
           float w0 = (float)(i1-i) / (float)(i1-i0);

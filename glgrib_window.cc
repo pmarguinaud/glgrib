@@ -128,41 +128,41 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
 void glgrib_window::rotate_light_north ()
 {
   float x, y;
-  scene.landscape->getLightPos (&x, &y);
+  scene.getLightPos (&x, &y);
   y += 5.0f;
-  scene.landscape->setLightPos (x, y);
+  scene.setLightPos (x, y);
 }
 
 void glgrib_window::rotate_light_south ()
 {
   float x, y;
-  scene.landscape->getLightPos (&x, &y);
+  scene.getLightPos (&x, &y);
   y -= 5.0f;
-  scene.landscape->setLightPos (x, y);
+  scene.setLightPos (x, y);
 }
 
 void glgrib_window::rotate_light_west  ()
 {
   float x, y;
-  scene.landscape->getLightPos (&x, &y);
+  scene.getLightPos (&x, &y);
   x += 5.0f;
-  scene.landscape->setLightPos (x, y);
+  scene.setLightPos (x, y);
 }
 
 void glgrib_window::rotate_light_east  ()
 {
   float x, y;
-  scene.landscape->getLightPos (&x, &y);
+  scene.getLightPos (&x, &y);
   x -= 5.0f;
-  scene.landscape->setLightPos (x, y);
+  scene.setLightPos (x, y);
 }
 
 void glgrib_window::toggle_light ()
 {
-  if (scene.landscape->hasLight ())
-    scene.landscape->unsetLight ();
+  if (scene.hasLight ())
+    scene.unsetLight ();
   else
-    scene.landscape->setLight ();
+    scene.setLight ();
 }
 
 void glgrib_window::next_palette ()

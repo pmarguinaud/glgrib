@@ -103,6 +103,6 @@ void glgrib_palette::setRGBA255 (GLuint programID) const
         }
     }
 
-  glUniform4fv (glGetUniformLocation (programID, "RGBA0"), 256*4, &RGBA0[0][0]);
+  glUniform4fv (glGetUniformLocation (programID, "RGBA0"), 256, &RGBA0[0][0]);
 }
 

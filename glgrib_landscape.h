@@ -22,6 +22,26 @@ public:
   bool flat = false;
   void set_flat (bool f) { flat = f; }
   void toggle_flat () { flat = ! flat; program = NULL; }
+  void getLightPos (float * x, float * y)
+    {
+      *x = lightx;
+      *y = lighty;
+    }
+  void setLightPos (float x, float y)
+    { 
+      lightx = x;
+      lighty = y;
+    }
+  void setLight ()
+    {
+      light = true;
+    }
+  void unsetLight () { light = false; }
+  bool hasLight () { return light; }
+
+private:
+  float lightx = 0., lighty = 0.;
+  bool light = false;
 };
 
 #endif

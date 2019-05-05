@@ -4,6 +4,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
+#include <math.h>
 
 void glgrib_landscape::init (const glgrib_options & opts, const glgrib_geometry * geom)
 {
@@ -32,11 +34,24 @@ void glgrib_landscape::render (const glgrib_view * view) const
 {
   const glgrib_program * program = get_program (); 
   glUniform1i (glGetUniformLocation (program->programID, "isflat"), flat);
+  glUniform1i (glGetUniformLocation (program->programID, "light"), light);
 
   // the texture selection process is a bit obscure
   glActiveTexture (GL_TEXTURE0); 
   glBindTexture (GL_TEXTURE_2D, textureID);
   glUniform1i (glGetUniformLocation (program->programID, "texture"), 0);
+
+  if (light)
+    {
+      const double deg2rad = M_PI / 180.0;
+      float coslon = cos (deg2rad * lightx);
+      float sinlon = sin (deg2rad * lightx);
+      float coslat = cos (deg2rad * lighty);
+      float sinlat = sin (deg2rad * lighty);
+      float lightDir[3] = {coslon * coslat, sinlon * coslat, sinlat};
+      glUniform3fv (glGetUniformLocation (program->programID, "lightDir"), 
+                    1, &lightDir[0]);
+    }
 
   glgrib_world::render (view);
 }

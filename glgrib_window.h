@@ -65,6 +65,11 @@ public:
   void next_palette ();
   void hide_all_fields ();
   void show_all_fields ();
+  void toggle_light ();
+  void rotate_light_north ();
+  void rotate_light_south ();
+  void rotate_light_west  ();
+  void rotate_light_east  ();
 };
 
 #endif

@@ -113,11 +113,56 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (NONE,    F     , w->scale_palette_up         ());
       if_key (CONTROL, F     , w->scale_palette_down       ());
       if_key (NONE,    J     , w->next_palette             ());
+      if_key (NONE,    L     , w->toggle_light             ());
+      if_key (CONTROL, UP    , w->rotate_light_north       ());
+      if_key (CONTROL, DOWN  , w->rotate_light_south       ());
+      if_key (CONTROL, LEFT  , w->rotate_light_west        ());
+      if_key (CONTROL, RIGHT , w->rotate_light_east        ());
 
 
     }
 
 #undef if_key
+}
+
+void glgrib_window::rotate_light_north ()
+{
+  float x, y;
+  scene.landscape->getLightPos (&x, &y);
+  y += 5.0f;
+  scene.landscape->setLightPos (x, y);
+}
+
+void glgrib_window::rotate_light_south ()
+{
+  float x, y;
+  scene.landscape->getLightPos (&x, &y);
+  y -= 5.0f;
+  scene.landscape->setLightPos (x, y);
+}
+
+void glgrib_window::rotate_light_west  ()
+{
+  float x, y;
+  scene.landscape->getLightPos (&x, &y);
+  x += 5.0f;
+  scene.landscape->setLightPos (x, y);
+}
+
+void glgrib_window::rotate_light_east  ()
+{
+  float x, y;
+  scene.landscape->getLightPos (&x, &y);
+  x -= 5.0f;
+  scene.landscape->setLightPos (x, y);
+}
+
+void glgrib_window::toggle_light ()
+{
+  if (scene.landscape->hasLight ())
+    scene.landscape->unsetLight ();
+  else
+    scene.landscape->setLight ();
 }
 
 void glgrib_window::next_palette ()

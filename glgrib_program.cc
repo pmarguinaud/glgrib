@@ -256,17 +256,27 @@ in vec3 fragmentPos;
 out vec4 color;
 
 uniform sampler2D texture;
+uniform vec3 lightDir = vec3 (0., 1., 0.);
+uniform vec3 lightCol = vec3 (1., 1., 1.);
+uniform bool light = false;
 
-void main()
+void main ()
 {
   float lon = (atan (fragmentPos.y, fragmentPos.x) / 3.1415926 + 1.0) * 0.5;
   float lat = asin (fragmentPos.z) / 3.1415926 + 0.5;
 
   vec4 col = texture2D (texture, vec2 (lon, lat));
 
-  color.r = col.r;
-  color.g = col.g;
-  color.b = col.b;
+  float total = 1.;
+
+  if (light)
+    {
+      total = 0.1 + 0.9 * max (dot (fragmentPos, lightDir), 0.0);
+    }
+
+  color.r = total * col.r;
+  color.g = total * col.g;
+  color.b = total * col.b;
   color.a = 1.;
 }
 )CODE",

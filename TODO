@@ -4,3 +4,4 @@ Use options such as --grid.resolution
 Add the sun
 Multiple windows
 Generate hash for each geometry
+Type offscreen GLFW : https://www.glfw.org/docs/latest/context_guide.html#context_sharing

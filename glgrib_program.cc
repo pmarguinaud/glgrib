@@ -194,6 +194,7 @@ R"CODE(
 #version 330 core
 
 in float fragmentVal;
+in vec3 fragmentPos;
 
 out vec4 color;
 
@@ -202,20 +203,31 @@ uniform vec4 RGBA0[256];
 uniform float valmin, valmax;
 uniform float palmin, palmax;
 
+uniform vec3 lightDir = vec3 (0., 1., 0.);
+uniform vec3 lightCol = vec3 (1., 1., 1.);
+uniform bool light = false;
+
 void main ()
 {
+  float total = 1.;
+
+  if (light)
+    {
+      total = 0.1 + 0.9 * max (dot (fragmentPos, lightDir), 0.0);
+    }
+
   float val = valmin + (valmax - valmin) * (255.0 * fragmentVal - 1.0) / 254.0;
 
   int pal;
   if (val < valmin)
     {
       pal = 0;
-      color = RGBA0[pal];
+      color = total * RGBA0[pal];
     }
   else
     {
       pal = max (1, min (int (1 + 254 * (val - palmin) / (palmax - palmin)), 255));
-      color = RGBA0[pal];
+      color = total * RGBA0[pal];
     }
 
 }
@@ -227,6 +239,7 @@ layout(location = 0) in vec3 vertexPos;
 layout(location = 1) in float vertexVal;
 
 out float fragmentVal;
+out vec3 fragmentPos;
 
 uniform mat4 MVP;
 uniform vec3 scale0 = vec3 (1.0, 1.0, 1.0);
@@ -237,14 +250,15 @@ void main ()
   float y = vertexPos.y;
   float z = vertexPos.z;
   float r = 1. / sqrt (x * x + y * y + z * z); 
+  vec3 normedPos = vec3 (x * r, y * r, z * r);
   vec3 pos;
-  pos.x = scale0.x * x * r;
-  pos.y = scale0.y * y * r;
-  pos.z = scale0.z * z * r;
+  pos.x = scale0.x * normedPos.x;
+  pos.y = scale0.y * normedPos.y;
+  pos.z = scale0.z * normedPos.z;
   gl_Position =  MVP * vec4 (pos, 1);
 
   fragmentVal = vertexVal;
-
+  fragmentPos = normedPos;
 }
 )CODE"),
 

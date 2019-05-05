@@ -13,7 +13,7 @@ void glgrib_landscape::init (const glgrib_options & opts, const glgrib_geometry 
   unsigned char * rgb;
   int w, h;
 
-  glgrib_bmp (opts.landscape.c_str (), &rgb, &w, &h);
+  glgrib_bmp (opts.landscape.path.c_str (), &rgb, &w, &h);
 
   glGenTextures (1, &textureID);
   glBindTexture (GL_TEXTURE_2D, textureID);

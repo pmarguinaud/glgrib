@@ -7,7 +7,7 @@ glgrib_geometry * glgrib_geometry_load (const glgrib_options & opts)
 {
   FILE * in = NULL;
   int err = 0;
-  in = fopen (opts.geometry.c_str (), "r");
+  in = fopen (opts.landscape.geometry.c_str (), "r");
   codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
 
   glgrib_geometry_gaussian * geom = new glgrib_geometry_gaussian (opts, h);

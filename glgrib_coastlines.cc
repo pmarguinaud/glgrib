@@ -42,7 +42,7 @@ void glgrib_coastlines::init (const glgrib_options & opts)
 
   for (int pass = 0; pass < 2; pass++)
     {
-      fp = fopen (opts.coasts.c_str (), "r");
+      fp = fopen (opts.coastlines.path.c_str (), "r");
      
       while (1) 
         {   

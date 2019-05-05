@@ -19,8 +19,8 @@ void glgrib_grid::init (const glgrib_options & opts)
 
   float r = 1.005;
 
-  const int nlatv = 200, nlonv = 2 * opts.grid_resolution;
-  const int nlath = opts.grid_resolution, nlonh = 400;
+  const int nlatv = 200, nlonv = 2 * opts.grid.resolution;
+  const int nlath = opts.grid.resolution, nlonh = 400;
 
   for (int pass = 0; pass < 2; pass++)
     {

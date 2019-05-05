@@ -399,9 +399,9 @@ void glgrib_window::resize (int width, int height)
 
 glgrib_window::glgrib_window (const glgrib_options & opts)
 {
-  title = opts.geometry;
-  width = opts.width;
-  height = opts.height;
+  title = opts.landscape.geometry;
+  width = opts.window.width;
+  height = opts.window.height;
   glfwWindowHint (GLFW_SAMPLES, 4);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 3);

@@ -147,18 +147,24 @@ void glgrib_options::parse (int argc, char * argv[])
 
 #define ADD_OPT(x) do { options.push_back (new_option (std::string (#x), &x)); } while (0)
 
-  ADD_OPT (fields);
-  ADD_OPT (field);
-  ADD_OPT (fields_scale);
-  ADD_OPT (width);
-  ADD_OPT (height);
+  ADD_OPT (field.list);
+  ADD_OPT (field.scale);
+  ADD_OPT (field.palette);
+
+  ADD_OPT (window.width);
+  ADD_OPT (window.height);
+
   ADD_OPT (shell);
-  ADD_OPT (geometry);
-  ADD_OPT (grid_resolution);
-  ADD_OPT (coasts);
-  ADD_OPT (orography);
-  ADD_OPT (landscape);
-  ADD_OPT (fields_palette);
+
+
+  ADD_OPT (grid.resolution);
+
+  ADD_OPT (coastlines.path);
+
+  ADD_OPT (landscape.orography);
+  ADD_OPT (landscape.path);
+  ADD_OPT (landscape.geometry);
+
 
 #undef ADD_OPT
 
@@ -213,13 +219,13 @@ void glgrib_options::parse (int argc, char * argv[])
     delete options[iopt];
 
 
-  if (fields_scale.size () == 0)
-    fields_scale.push_back (1.00);
+  if (field.scale.size () == 0)
+    field.scale.push_back (1.00);
 
-  for (int i = fields_scale.size (); i < fields.size (); i++)
-    fields_scale.push_back (fields_scale[i-1] - 0.05);
+  for (int i = field.scale.size (); i < field.list.size (); i++)
+    field.scale.push_back (field.scale[i-1] - 0.05);
 
-  for (int i = fields_palette.size (); i < fields.size (); i++)
-    fields_palette.push_back ("default");
+  for (int i = field.palette.size (); i < field.list.size (); i++)
+    field.palette.push_back ("default");
 
 }

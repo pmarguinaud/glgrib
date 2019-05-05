@@ -24,4 +24,4 @@ glwhat.x: glwhat.cc
 	g++ $(CXXFLAGS) -g -o glwhat.x glwhat.cc $(LDFLAGS)
 
 test: glgrib.x
-	./glgrib.x --geometry t1198c2.2/Z.grb --fields t1198c2.2/N.grb  --fields_scale 1.03  --grid_resolution 0 --coasts ""
+	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field.list t1198c2.2/N.grb  --field.scale 1.03  --grid.resolution 0 --coastlines.path ""

@@ -201,7 +201,7 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
   double vmin, vmax, vmis;
 
   double * v = NULL;
-  if (opts.orography > 0.0f)
+  if (opts.landscape.orography > 0.0f)
     {
       v = (double *)malloc (v_len * sizeof (double));
       codes_get_double_array (h, "values", v, &v_len);
@@ -298,7 +298,7 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
 
           float radius;
  
-          if (opts.orography > 0.0f)
+          if (opts.landscape.orography > 0.0f)
             radius = (1.0 + ((v[jglo] == vmis) ? 0. : 0.05 * v[jglo]/vmax));
           else
             radius = 1.0f;
@@ -317,7 +317,7 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
         }
     }
 
-  if (opts.orography > 0.0f)
+  if (opts.landscape.orography > 0.0f)
     free (v);
 
   glBindVertexArray (0);

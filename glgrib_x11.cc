@@ -37,33 +37,33 @@ void x11_display (const glgrib_options & opts)
 
   glgrib_geometry * geom = glgrib_geometry_load (opts);
 
-  if (opts.landscape != "")
+  if (opts.landscape.path != "")
     {
       Landscape.init (opts, geom);
       Gwindow.scene.setLandscape (&Landscape);
     }
 
-  if (opts.grid_resolution)
+  if (opts.grid.resolution)
     {
       Grid.init (opts);
       Gwindow.scene.setGrid (&Grid);
     }
 
-  if (opts.coasts != "")
+  if (opts.coastlines.path != "")
     {
       Coast.init (opts);
       Gwindow.scene.setCoastlines (&Coast);
     }
 
-  for (int i = 0; i < opts.fields.size (); i++)
+  for (int i = 0; i < opts.field.list.size (); i++)
     {
-      Field[i].init (opts.fields[i], opts, geom);
+      Field[i].init (opts.field.list[i], opts, geom);
       
       Gwindow.scene.setField (&Field[i]);
       Gwindow.scene.fieldlist[i] = &Field[i];
 
-      Gwindow.scene.fieldoptslist[i].scale = opts.fields_scale[i];
-      Gwindow.scene.fieldoptslist[i].palette = get_palette_by_name (opts.fields_palette[i]);
+      Gwindow.scene.fieldoptslist[i].scale = opts.field.scale[i];
+      Gwindow.scene.fieldoptslist[i].palette = get_palette_by_name (opts.field.palette[i]);
       Gwindow.scene.currentFieldOpts = &Gwindow.scene.fieldoptslist[i];
     }
 

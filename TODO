@@ -1,2 +1,6 @@
 Save landscape RGB interpolated values
-Optimize xyz calculation with OpenMP
+
+Use options such as --grid.resolution
+Add the sun
+Multiple windows
+Generate hash for each geometry

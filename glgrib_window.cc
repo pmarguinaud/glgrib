@@ -365,20 +365,25 @@ void glgrib_window::scroll (double xoffset, double yoffset)
     scene.view.params.fov -= 1;
 }
 
+void glgrib_window::renderFrame ()
+{
+  if (do_rotate)
+    scene.view.params.lonc += 1.;
+  
+#pragma omp critical (RUN)
+  {
+    makeCurrent ();
+    scene.display (); 
+  }
+  
+  glfwSwapBuffers (window);
+}
+
 void glgrib_window::run (glgrib_shell * shell)
 {
   while (1)
     {
-      if (do_rotate)
-        scene.view.params.lonc += 1.;
-     
-#pragma omp critical (RUN)
-      {
-        makeCurrent ();
-        scene.display (); 
-      }
-  
-      glfwSwapBuffers (window);
+      renderFrame ();
       glfwPollEvents ();
   
       if ((glfwGetKey (window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -397,16 +402,28 @@ void glgrib_window::resize (int width, int height)
   scene.view.setViewport (width, height);
 }
 
-glgrib_window::glgrib_window (const glgrib_options & opts)
+void glgrib_window::setHints ()
 {
-  title = opts.landscape.geometry;
-  width = opts.window.width;
-  height = opts.window.height;
   glfwWindowHint (GLFW_SAMPLES, 4);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); 
   glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+}
+
+glgrib_window::glgrib_window (const glgrib_options & opts)
+{
+  create (opts);
+}
+
+void glgrib_window::create (const glgrib_options & opts)
+{
+  setHints ();
+
+  title = opts.landscape.geometry;
+  width = opts.window.width;
+  height = opts.window.height;
+
   
   window = glfwCreateWindow (width, height, title.c_str (), NULL, NULL);
   glfwSetWindowUserPointer (window, this);
@@ -440,7 +457,8 @@ glgrib_window::glgrib_window (const glgrib_options & opts)
   
 glgrib_window::~glgrib_window ()
 {
-  glfwDestroyWindow (window);
+  if (window)
+    glfwDestroyWindow (window);
 }
 
 

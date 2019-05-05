@@ -36,6 +36,7 @@ class glgrib_options_window
 {
 public:
   int width = 800, height = 800;
+  bool offscreen = false;
 };
 
 

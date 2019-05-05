@@ -14,9 +14,12 @@
 class glgrib_window
 {
 public:
-  glgrib_window (const glgrib_options & opts);
+  glgrib_window () {}
+  glgrib_window (const glgrib_options &);
+  virtual void setHints ();
   virtual ~glgrib_window ();
-  void run (class glgrib_shell * shell = NULL);
+  virtual void renderFrame ();
+  virtual void run (class glgrib_shell * = NULL);
   void makeCurrent () { glfwMakeContextCurrent (window); }
   bool do_rotate = false;
   int width, height;
@@ -70,6 +73,7 @@ public:
   void rotate_light_south ();
   void rotate_light_west  ();
   void rotate_light_east  ();
+  void create (const glgrib_options &);
 };
 
 #endif

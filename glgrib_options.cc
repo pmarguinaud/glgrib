@@ -153,6 +153,7 @@ void glgrib_options::parse (int argc, char * argv[])
 
   ADD_OPT (window.width);
   ADD_OPT (window.height);
+  ADD_OPT (window.offscreen);
 
   ADD_OPT (shell);
 

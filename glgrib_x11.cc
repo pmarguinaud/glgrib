@@ -12,6 +12,7 @@
 #include "glgrib_x11.h"
 #include "glgrib_shell.h"
 #include "glgrib_window.h"
+#include "glgrib_window_offscreen.h"
 #include "glgrib_options.h"
 #include "glgrib_geometry.h"
 
@@ -30,8 +31,14 @@ void x11_display (const glgrib_options & opts)
       return;
     }
 
-  glgrib_window Gwindow (opts);
-  Gwindow.scene.view.setViewport (opts);
+  glgrib_window * gwindow;
+
+  if (opts.window.offscreen)
+    gwindow = new glgrib_window_offscreen (opts);
+  else
+    gwindow = new glgrib_window (opts);
+  
+  gwindow->scene.view.setViewport (opts);
   
   gl_init ();
 
@@ -40,31 +47,31 @@ void x11_display (const glgrib_options & opts)
   if (opts.landscape.path != "")
     {
       Landscape.init (opts, geom);
-      Gwindow.scene.setLandscape (&Landscape);
+      gwindow->scene.setLandscape (&Landscape);
     }
 
   if (opts.grid.resolution)
     {
       Grid.init (opts);
-      Gwindow.scene.setGrid (&Grid);
+      gwindow->scene.setGrid (&Grid);
     }
 
   if (opts.coastlines.path != "")
     {
       Coast.init (opts);
-      Gwindow.scene.setCoastlines (&Coast);
+      gwindow->scene.setCoastlines (&Coast);
     }
 
   for (int i = 0; i < opts.field.list.size (); i++)
     {
       Field[i].init (opts.field.list[i], opts, geom);
       
-      Gwindow.scene.setField (&Field[i]);
-      Gwindow.scene.fieldlist[i] = &Field[i];
+      gwindow->scene.setField (&Field[i]);
+      gwindow->scene.fieldlist[i] = &Field[i];
 
-      Gwindow.scene.fieldoptslist[i].scale = opts.field.scale[i];
-      Gwindow.scene.fieldoptslist[i].palette = get_palette_by_name (opts.field.palette[i]);
-      Gwindow.scene.currentFieldOpts = &Gwindow.scene.fieldoptslist[i];
+      gwindow->scene.fieldoptslist[i].scale = opts.field.scale[i];
+      gwindow->scene.fieldoptslist[i].palette = get_palette_by_name (opts.field.palette[i]);
+      gwindow->scene.currentFieldOpts = &gwindow->scene.fieldoptslist[i];
     }
 
 
@@ -74,19 +81,20 @@ void x11_display (const glgrib_options & opts)
       {
         int tid = omp_get_thread_num ();
         if (tid == 1)
-          Shell.run (&Gwindow);
+          Shell.run (gwindow);
         else if (tid == 0)
-          Gwindow.run (&Shell);
+          gwindow->run (&Shell);
       }
     }
   else
-    Gwindow.run ();
+    gwindow->run ();
 
   glfwTerminate ();
   
 
   delete geom;
-
+  delete gwindow;
+ 
 }
 
 

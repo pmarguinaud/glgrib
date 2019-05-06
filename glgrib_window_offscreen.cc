@@ -10,6 +10,9 @@ void glgrib_window_offscreen::setHints ()
 
 void glgrib_window_offscreen::run (class glgrib_shell * shell)
 {
-  renderFrame ();
-  framebuffer ();
+  for (int i = 0; i < frames; i++)
+    {
+      scene.update ();
+      framebuffer ();
+    }
 }

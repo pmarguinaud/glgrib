@@ -37,6 +37,15 @@ class glgrib_options_window
 public:
   int width = 800, height = 800;
   bool offscreen = false;
+  int offscreen_frames = 1;
+};
+
+class glgrib_options_scene
+{
+public:
+  bool rotate_earth = false;
+  bool rotate_light = false;
+  bool light = false;
 };
 
 
@@ -49,8 +58,11 @@ public:
   glgrib_options_window window;
   glgrib_options_landscape landscape;
   glgrib_options_grid grid;
+  glgrib_options_scene scene;
   bool shell = false;
+  bool help = false;
   void parse (int argc, char * argv[]);
+  void show_help ();
 };
 
 #endif

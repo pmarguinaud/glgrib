@@ -23,7 +23,7 @@ def (fov)
 
 def (rotate)
 {
-  gwindow->do_rotate = ! gwindow->do_rotate;
+  gwindow->scene.rotate_earth = ! gwindow->scene.rotate_earth;
 }
 
 def (wireframe)

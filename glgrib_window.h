@@ -21,7 +21,6 @@ public:
   virtual void renderFrame ();
   virtual void run (class glgrib_shell * = NULL);
   void makeCurrent () { glfwMakeContextCurrent (window); }
-  bool do_rotate = false;
   int width, height;
   int snapshot_cnt = 0;
   glgrib_scene scene;
@@ -42,22 +41,26 @@ public:
     glgrib_view_params params;
     scene.view.params = params;
   }
-  void toggle_rotate     () { do_rotate = ! do_rotate; }
-  void toggle_wireframe  () { scene.landscape->toggle_wireframe (); }
-  void widen_fov         () { scene.view.params.fov += 1.; }
-  void shrink_fov        () { scene.view.params.fov -= 1.; }
-  void increase_radius   () { scene.view.params.rc += 0.1; }
-  void decrease_radius   () { scene.view.params.rc -= 0.1; }
-  void rotate_north      () { scene.view.params.latc = scene.view.params.latc + 5.; }
-  void rotate_south      () { scene.view.params.latc = scene.view.params.latc - 5.; }
-  void rotate_west       () { scene.view.params.lonc = scene.view.params.lonc - 5.; }
-  void rotate_east       () { scene.view.params.lonc = scene.view.params.lonc + 5.; }
+  void toggle_rotate       () { scene.rotate_earth       = ! scene.rotate_earth;       }
+  void toggle_rotate_light () { scene.rotate_light = ! scene.rotate_light; }
+  void toggle_wireframe    () { scene.landscape->toggle_wireframe (); }
+  void widen_fov           () { scene.view.params.fov += 1.; }
+  void shrink_fov          () { scene.view.params.fov -= 1.; }
+  void increase_radius     () { scene.view.params.rc += 0.1; }
+  void decrease_radius     () { scene.view.params.rc -= 0.1; }
+  void rotate_north        () { scene.view.params.latc = scene.view.params.latc + 5.; }
+  void rotate_south        () { scene.view.params.latc = scene.view.params.latc - 5.; }
+  void rotate_west         () { scene.view.params.lonc = scene.view.params.lonc - 5.; }
+  void rotate_east         () { scene.view.params.lonc = scene.view.params.lonc + 5.; }
 
   void resize (int, int);
   void scroll (double, double);
   void onclick (int, int, int);
+  void onkey (int, int, int, int);
   void display_cursor_position (double, double);
   int get_latlon_from_cursor (float *, float *);
+  void centerViewAtCursorPos ();
+  void centerLightAtCursorPos ();
 
   void select_field (int);
   void scale_field_up ();

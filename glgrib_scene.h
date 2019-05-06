@@ -52,6 +52,9 @@ public:
     }
   void unsetLight () { light = false; }
   bool hasLight () { return light; }
+  void update ();
+  bool rotate_earth = false;
+  bool rotate_light = false;
 
 private:
   float lightx = 0., lighty = 0.;

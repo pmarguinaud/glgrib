@@ -43,6 +43,12 @@ void resize_callback (GLFWwindow * window, int width, int height)
 static 
 void key_callback (GLFWwindow * window, int key, int scancode, int action, int mods)
 {
+  glgrib_window * gwindow = (glgrib_window *)glfwGetWindowUserPointer (window);
+  gwindow->onkey (key, scancode, action, mods);
+}
+
+void glgrib_window::onkey (int key, int scancode, int action, int mods)
+{
   enum
   {
     NONE    = 0,
@@ -60,64 +66,64 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
   }                                        \
 } while (0)
 
-  glgrib_window * w = (glgrib_window *)glfwGetWindowUserPointer (window);
 
   if (action == GLFW_PRESS || action == GLFW_REPEAT)
     {
-      if_key (NONE,    T     , w->toggle_cursorpos_display ());
-      if_key (NONE,    TAB   , w->toggle_rotate            ());
-      if_key (NONE,    Y     , w->toggle_wireframe         ());
-      if_key (NONE,    D     , w->framebuffer              ());
-      if_key (NONE,    W     , w->widen_fov                ());
-      if_key (NONE,    S     , w->snapshot                 ());
-      if_key (NONE,    Q     , w->shrink_fov               ());
-      if_key (NONE,    P     , w->toggle_flat              ());
-      if_key (NONE,    6     , w->increase_radius          ());
-      if_key (NONE,    EQUAL , w->decrease_radius          ());
-      if_key (NONE,    SPACE , w->reset_view               ());
-      if_key (NONE,    UP    , w->rotate_north             ());
-      if_key (NONE,    DOWN  , w->rotate_south             ());
-      if_key (NONE,    LEFT  , w->rotate_west              ());
-      if_key (NONE,    RIGHT , w->rotate_east              ());
+      if_key (NONE,    T     , toggle_cursorpos_display ());
+      if_key (NONE,    TAB   , toggle_rotate            ());
+      if_key (CONTROL, TAB   , toggle_rotate_light      ());
+      if_key (NONE,    Y     , toggle_wireframe         ());
+      if_key (NONE,    D     , framebuffer              ());
+      if_key (NONE,    W     , widen_fov                ());
+      if_key (NONE,    S     , snapshot                 ());
+      if_key (NONE,    Q     , shrink_fov               ());
+      if_key (NONE,    P     , toggle_flat              ());
+      if_key (NONE,    6     , increase_radius          ());
+      if_key (NONE,    EQUAL , decrease_radius          ());
+      if_key (NONE,    SPACE , reset_view               ());
+      if_key (NONE,    UP    , rotate_north             ());
+      if_key (NONE,    DOWN  , rotate_south             ());
+      if_key (NONE,    LEFT  , rotate_west              ());
+      if_key (NONE,    RIGHT , rotate_east              ());
 
-      if_key (NONE,    F1    , w->select_field           ( 0));
-      if_key (NONE,    F2    , w->select_field           ( 1));
-      if_key (NONE,    F3    , w->select_field           ( 2));
-      if_key (NONE,    F4    , w->select_field           ( 3));
-      if_key (NONE,    F5    , w->select_field           ( 4));
-      if_key (NONE,    F6    , w->select_field           ( 5));
-      if_key (NONE,    F7    , w->select_field           ( 6));
-      if_key (NONE,    F8    , w->select_field           ( 7));
-      if_key (NONE,    F9    , w->select_field           ( 8));
-      if_key (NONE,    F10   , w->select_field           ( 9));
-      if_key (NONE,    F11   , w->select_field           (10));
-      if_key (NONE,    F12   , w->select_field           (11));
+      if_key (NONE,    F1    , select_field           ( 0));
+      if_key (NONE,    F2    , select_field           ( 1));
+      if_key (NONE,    F3    , select_field           ( 2));
+      if_key (NONE,    F4    , select_field           ( 3));
+      if_key (NONE,    F5    , select_field           ( 4));
+      if_key (NONE,    F6    , select_field           ( 5));
+      if_key (NONE,    F7    , select_field           ( 6));
+      if_key (NONE,    F8    , select_field           ( 7));
+      if_key (NONE,    F9    , select_field           ( 8));
+      if_key (NONE,    F10   , select_field           ( 9));
+      if_key (NONE,    F11   , select_field           (10));
+      if_key (NONE,    F12   , select_field           (11));
 
-      if_key (CONTROL, F1    , { w->hide_all_fields (); w->select_field ( 0); w->toggle_hide_field (); });
-      if_key (CONTROL, F2    , { w->hide_all_fields (); w->select_field ( 1); w->toggle_hide_field (); });
-      if_key (CONTROL, F3    , { w->hide_all_fields (); w->select_field ( 2); w->toggle_hide_field (); });
-      if_key (CONTROL, F4    , { w->hide_all_fields (); w->select_field ( 3); w->toggle_hide_field (); });
-      if_key (CONTROL, F5    , { w->hide_all_fields (); w->select_field ( 4); w->toggle_hide_field (); });
-      if_key (CONTROL, F6    , { w->hide_all_fields (); w->select_field ( 5); w->toggle_hide_field (); });
-      if_key (CONTROL, F7    , { w->hide_all_fields (); w->select_field ( 6); w->toggle_hide_field (); });
-      if_key (CONTROL, F8    , { w->hide_all_fields (); w->select_field ( 7); w->toggle_hide_field (); });
-      if_key (CONTROL, F9    , { w->hide_all_fields (); w->select_field ( 8); w->toggle_hide_field (); });
-      if_key (CONTROL, F10   , { w->hide_all_fields (); w->select_field ( 9); w->toggle_hide_field (); });
-      if_key (CONTROL, F11   , { w->hide_all_fields (); w->select_field (10); w->toggle_hide_field (); });
-      if_key (CONTROL, F12   , { w->hide_all_fields (); w->select_field (11); w->toggle_hide_field (); });
-      if_key (CONTROL, H     , w->show_all_fields          ());
+      if_key (CONTROL, F1    , { hide_all_fields (); select_field ( 0); toggle_hide_field (); });
+      if_key (CONTROL, F2    , { hide_all_fields (); select_field ( 1); toggle_hide_field (); });
+      if_key (CONTROL, F3    , { hide_all_fields (); select_field ( 2); toggle_hide_field (); });
+      if_key (CONTROL, F4    , { hide_all_fields (); select_field ( 3); toggle_hide_field (); });
+      if_key (CONTROL, F5    , { hide_all_fields (); select_field ( 4); toggle_hide_field (); });
+      if_key (CONTROL, F6    , { hide_all_fields (); select_field ( 5); toggle_hide_field (); });
+      if_key (CONTROL, F7    , { hide_all_fields (); select_field ( 6); toggle_hide_field (); });
+      if_key (CONTROL, F8    , { hide_all_fields (); select_field ( 7); toggle_hide_field (); });
+      if_key (CONTROL, F9    , { hide_all_fields (); select_field ( 8); toggle_hide_field (); });
+      if_key (CONTROL, F10   , { hide_all_fields (); select_field ( 9); toggle_hide_field (); });
+      if_key (CONTROL, F11   , { hide_all_fields (); select_field (10); toggle_hide_field (); });
+      if_key (CONTROL, F12   , { hide_all_fields (); select_field (11); toggle_hide_field (); });
+      if_key (CONTROL, H     , show_all_fields          ());
 
-      if_key (NONE,    H     , w->toggle_hide_field        ());
-      if_key (NONE,    G     , w->scale_field_up           ());
-      if_key (CONTROL, G     , w->scale_field_down         ());
-      if_key (NONE,    F     , w->scale_palette_up         ());
-      if_key (CONTROL, F     , w->scale_palette_down       ());
-      if_key (NONE,    J     , w->next_palette             ());
-      if_key (NONE,    L     , w->toggle_light             ());
-      if_key (CONTROL, UP    , w->rotate_light_north       ());
-      if_key (CONTROL, DOWN  , w->rotate_light_south       ());
-      if_key (CONTROL, LEFT  , w->rotate_light_west        ());
-      if_key (CONTROL, RIGHT , w->rotate_light_east        ());
+      if_key (NONE,    H     , toggle_hide_field        ());
+      if_key (NONE,    G     , scale_field_up           ());
+      if_key (CONTROL, G     , scale_field_down         ());
+      if_key (NONE,    F     , scale_palette_up         ());
+      if_key (CONTROL, F     , scale_palette_down       ());
+      if_key (NONE,    J     , next_palette             ());
+      if_key (NONE,    L     , toggle_light             ());
+      if_key (CONTROL, UP    , rotate_light_north       ());
+      if_key (CONTROL, DOWN  , rotate_light_south       ());
+      if_key (CONTROL, LEFT  , rotate_light_west        ());
+      if_key (CONTROL, RIGHT , rotate_light_east        ());
 
 
     }
@@ -145,7 +151,7 @@ void glgrib_window::rotate_light_west  ()
 {
   float x, y;
   scene.getLightPos (&x, &y);
-  x += 5.0f;
+  x -= 5.0f;
   scene.setLightPos (x, y);
 }
 
@@ -153,7 +159,7 @@ void glgrib_window::rotate_light_east  ()
 {
   float x, y;
   scene.getLightPos (&x, &y);
-  x -= 5.0f;
+  x += 5.0f;
   scene.setLightPos (x, y);
 }
 
@@ -347,14 +353,42 @@ void glgrib_window::toggle_cursorpos_display ()
 
 void glgrib_window::onclick (int button, int action, int mods)
 {
-  if (button == GLFW_MOUSE_BUTTON_LEFT)
+  enum
+  {
+    NONE    = 0,
+    SHIFT   = GLFW_MOD_SHIFT,
+    CONTROL = GLFW_MOD_CONTROL,
+    ALT     = GLFW_MOD_ALT
+  };
+
+#define if_click(mm, k, action) \
+do { \
+if ((button == GLFW_MOUSE_BUTTON_##k) && (mm == mods)) \
+  {                                                    \
+    action;                                            \
+    return;                                            \
+  }                                                    \
+} while (0)
+
+  if (action == GLFW_PRESS) 
     {
-      if (action == GLFW_PRESS) 
-        {
-	  if (get_latlon_from_cursor (&scene.view.params.latc, &scene.view.params.lonc))
-	    glfwSetCursorPos (window, width / 2., height / 2.);
-        }
+      if_click (NONE,    LEFT, centerViewAtCursorPos ());
+      if_click (CONTROL, LEFT, centerLightAtCursorPos ());
+
     }
+}
+
+void glgrib_window::centerLightAtCursorPos ()
+{
+  float lat, lon;
+  if (get_latlon_from_cursor (&lat, &lon))
+    scene.setLightPos (lon, lat);
+}
+
+void glgrib_window::centerViewAtCursorPos ()
+{
+  if (get_latlon_from_cursor (&scene.view.params.latc, &scene.view.params.lonc))
+    glfwSetCursorPos (window, width / 2., height / 2.);
 }
 
 void glgrib_window::scroll (double xoffset, double yoffset)
@@ -367,9 +401,8 @@ void glgrib_window::scroll (double xoffset, double yoffset)
 
 void glgrib_window::renderFrame ()
 {
-  if (do_rotate)
-    scene.view.params.lonc += 1.;
-  
+  scene.update ();
+
 #pragma omp critical (RUN)
   {
     makeCurrent ();
@@ -418,6 +451,11 @@ glgrib_window::glgrib_window (const glgrib_options & opts)
 
 void glgrib_window::create (const glgrib_options & opts)
 {
+  scene.rotate_light = opts.scene.rotate_light;
+  scene.rotate_earth = opts.scene.rotate_earth;
+  if (opts.scene.light)
+    scene.setLight ();
+
   setHints ();
 
   title = opts.landscape.geometry;

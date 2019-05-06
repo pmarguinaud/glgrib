@@ -8,22 +8,27 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
+#include <algorithm>
 
 
 class option_base
 {
 public:
-  option_base (const std::string & n) : name (n) {}
+  option_base (const std::string & n, const std::string & d) : name (n), desc (d) {}
   virtual int has_arg () { return 1; }
   virtual void set (const char *) = 0;
   std::string name;
+  std::string desc;
+  virtual std::string type () { return std::string ("UNKNOWN"); }
+  virtual std::string asString () { return std::string (""); }
 };
 
 class option_float : public option_base
 {
 public:
-  option_float (const std::string & n, float * v) : option_base (n), value (v)  {}
+  option_float (const std::string & n, const std::string & d, float * v) : option_base (n, d), value (v)  {}
   virtual void set (const char * v) 
     {
       try
@@ -36,12 +41,14 @@ public:
 	}
     }
   float * value;
+  virtual std::string type () { return std::string ("FLOAT"); }
+  virtual std::string asString () { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
 };
 
 class option_float_list : public option_base
 {
 public:
-  option_float_list (const std::string & n, std::vector<float> * v) : option_base (n), value (v)  {}
+  option_float_list (const std::string & n, const std::string & d, std::vector<float> * v) : option_base (n, d), value (v)  {}
   virtual void set (const char * v) 
     {
       try
@@ -54,28 +61,46 @@ public:
 	}
     }
   std::vector<float> * value;
+  virtual std::string type () { return std::string ("LIST OF FLOATS"); }
+  virtual std::string asString () 
+    { 
+      std::ostringstream ss; 
+      for (std::vector<float>::iterator it = value->begin(); it != value->end (); it++)
+        ss << (*it) << " ";
+      return std::string (ss.str ()); 
+    }
 };
 
 class option_string : public option_base
 {
 public:
-  option_string (const std::string & n, std::string * v) : option_base (n), value (v)  {}
+  option_string (const std::string & n, const std::string & d, std::string * v) : option_base (n, d), value (v)  {}
   virtual void set (const char * v) { *value = std::string (v); }
   std::string * value;
+  virtual std::string type () { return std::string ("STRING"); }
+  virtual std::string asString () { return std::string ('"' + *value + '"') ; }
 };
 
 class option_string_list : public option_base
 {
 public:
-  option_string_list (const std::string & n, std::vector<std::string> * v) : option_base (n), value (v)  {}
+  option_string_list (const std::string & n, const std::string & d, std::vector<std::string> * v) : option_base (n, d), value (v)  {}
   virtual void set (const char * v) { value->push_back (std::string (v)); }
   std::vector<std::string> * value;
+  virtual std::string type () { return std::string ("LIST OF STRINGS"); }
+  virtual std::string asString () 
+    { 
+      std::ostringstream ss; 
+      for (std::vector<std::string>::iterator it = value->begin(); it != value->end (); it++)
+        ss << '"' + (*it) + '"' << " ";
+      return std::string (ss.str ()); 
+    }
 };
 
 class option_bool : public option_base
 {
 public:
-  option_bool (const std::string & n, bool * v) : option_base (n), value (v)  {}
+  option_bool (const std::string & n, const std::string & d, bool * v) : option_base (n, d), value (v)  {}
   virtual int has_arg () { return 0; }
   virtual void set (const char * v) 
     { 
@@ -86,12 +111,14 @@ public:
       *value = true; 
     }
   bool * value;
+  virtual std::string type () { return std::string ("BOOLEAN"); }
+  virtual std::string asString () { return std::string (""); }
 };
 
 class option_int : public option_base
 {
 public:
-  option_int (const std::string & n, int * v) : option_base (n), value (v)  {}
+  option_int (const std::string & n, const std::string & d, int * v) : option_base (n, d), value (v)  {}
   virtual void set (const char * v) 
     { 
       try
@@ -104,71 +131,107 @@ public:
 	}
      }
   int * value;
+  virtual std::string type () { return std::string ("INTEGER"); }
+  virtual std::string asString () { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
 };
 
 
 
-static option_base * new_option (const std::string & n, std::vector<std::string> * v)
+static option_base * new_option (const std::string & n, const std::string & d, std::vector<std::string> * v)
 {
-  return new option_string_list (n, v);
+  return new option_string_list (n, d, v);
 }
 
-static option_base * new_option (const std::string & n, std::string * v)
+static option_base * new_option (const std::string & n, const std::string & d, std::string * v)
 {
-  return new option_string (n, v);
+  return new option_string (n, d, v);
 }
 
-static option_base * new_option (const std::string & n, std::vector<float> * v)
+static option_base * new_option (const std::string & n, const std::string & d, std::vector<float> * v)
 {
-  return new option_float_list (n, v);
+  return new option_float_list (n, d, v);
 }
 
-static option_base * new_option (const std::string & n, float * v)
+static option_base * new_option (const std::string & n, const std::string & d, float * v)
 {
-  return new option_float (n, v);
+  return new option_float (n, d, v);
 }
 
-static option_base * new_option (const std::string & n, int * v)
+static option_base * new_option (const std::string & n, const std::string & d, int * v)
 {
-  return new option_int (n, v);
+  return new option_int (n, d, v);
 }
 
-static option_base * new_option (const std::string & n, bool * v)
+static option_base * new_option (const std::string & n, const std::string & d, bool * v)
 {
-  return new option_bool (n, v);
+  return new option_bool (n, d, v);
+}
+
+typedef std::vector <option_base*> optionlist;
+
+static optionlist get_optionlist (glgrib_options * opts)
+{
+  optionlist options;
+#define ADD_OPT(x,d) do { options.push_back (new_option (std::string (#x), std::string (#d), &opts->x)); } while (0)
+
+  ADD_OPT (scene.light,               Enable light);
+  ADD_OPT (scene.rotate_earth,        Make earth rotate);
+  ADD_OPT (scene.rotate_light,        Make sunlight move);
+
+  ADD_OPT (field.list,                List of GRIB files);
+  ADD_OPT (field.scale,               Scales to be applied to fields);
+  ADD_OPT (field.palette,             Palettes);
+
+  ADD_OPT (window.width,              Window width);
+  ADD_OPT (window.height,             Window height);
+  ADD_OPT (window.offscreen,          Run in offline mode);
+  ADD_OPT (window.offscreen_frames,   Number of frames to issue in offline mode);
+
+
+  ADD_OPT (grid.resolution,           Grid resolution);
+
+  ADD_OPT (coastlines.path,           Path to coastlines file);
+
+  ADD_OPT (landscape.orography,       Factor to apply to orography);
+  ADD_OPT (landscape.path,            Path to landscape image in BMP format);
+  ADD_OPT (landscape.geometry,        GRIB files to take geometry from);
+
+  ADD_OPT (shell,                     Run command line);
+  ADD_OPT (help,                      Show help message);
+
+#undef ADD_OPT
+
+  return options;
+}
+
+void glgrib_options::show_help ()
+{
+  glgrib_options opts;
+  optionlist options = get_optionlist (&opts);
+  printf ("Usage:\n");
+  size_t name_size = 0, type_size = 0;
+  for (optionlist::iterator it = options.begin (); it != options.end (); it++)
+    {
+      name_size = std::max ((*it)->name.length (), name_size);
+      type_size = std::max ((*it)->type ().length (), type_size);
+    }
+  char format[64];
+  sprintf (format, " --%%-%ds : %%-%ds :", name_size, type_size);
+  for (optionlist::iterator it = options.begin (); it != options.end (); it++)
+    {
+      printf (format, (*it)->name.c_str (), (*it)->type ().c_str ());
+      printf ("      %s\n", (*it)->asString ().c_str ());
+      printf ("      %s\n", (*it)->desc.c_str ());
+      printf ("\n");
+    }
 }
 
 void glgrib_options::parse (int argc, char * argv[])
 {
   std::map <std::string,option_base*> name2option;
-  typedef std::vector <option_base*> optionlist;
-  optionlist options;
+  optionlist options = get_optionlist (this);
 
-
-#define ADD_OPT(x) do { options.push_back (new_option (std::string (#x), &x)); } while (0)
-
-  ADD_OPT (field.list);
-  ADD_OPT (field.scale);
-  ADD_OPT (field.palette);
-
-  ADD_OPT (window.width);
-  ADD_OPT (window.height);
-  ADD_OPT (window.offscreen);
-
-  ADD_OPT (shell);
-
-
-  ADD_OPT (grid.resolution);
-
-  ADD_OPT (coastlines.path);
-
-  ADD_OPT (landscape.orography);
-  ADD_OPT (landscape.path);
-  ADD_OPT (landscape.geometry);
-
-
-#undef ADD_OPT
-
+  // Parse options
   int nopt = options.size ();
 
   for (int iopt = 0; iopt < nopt; iopt++)
@@ -211,9 +274,15 @@ void glgrib_options::parse (int argc, char * argv[])
   catch (const std::exception & e)
     {
       std::cout << "Failed to parse options : " << e.what () << std::endl;
+      show_help ();
       exit (EXIT_FAILURE);
     }
 
+  if (help)
+    {
+      show_help ();
+      exit (EXIT_SUCCESS);
+    }
 
 
   for (int iopt = 0; iopt < nopt; iopt++)

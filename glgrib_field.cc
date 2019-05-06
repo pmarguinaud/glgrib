@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void glgrib_field::init (const std::string & field, const glgrib_options & o, const glgrib_geometry * geom)
+void glgrib_field::init (const std::string & field, const glgrib_options & o, const glgrib_geometry_ptr geom)
 {
   unsigned char * col;
 

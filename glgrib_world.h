@@ -8,7 +8,8 @@ class glgrib_world : public glgrib_polyhedron
 {
 public:
   void def_from_vertexbuffer_col_elementbuffer 
-          (unsigned char *, const glgrib_geometry *);
+          (unsigned char *, const glgrib_geometry_ptr);
+  glgrib_geometry_ptr geometry;
 };
 
 #endif

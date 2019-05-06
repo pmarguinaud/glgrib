@@ -14,7 +14,7 @@ public:
   virtual bool use_alpha () { return false; }
   virtual ~glgrib_polygon ();
   GLuint VertexArrayID;
-  GLuint vertexbuffer, colorbuffer, elementbuffer;
+  opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer;
   unsigned int ncol, nl;
   int np;
 };

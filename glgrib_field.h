@@ -19,7 +19,7 @@ public:
 class glgrib_field : public glgrib_world
 {
 public:
-  void init (const std::string & field, const glgrib_options &, const glgrib_geometry *);
+  void init (const std::string & field, const glgrib_options &, const glgrib_geometry_ptr);
   virtual glgrib_program_kind get_program_kind () const 
     { 
       return GLGRIB_PROGRAM_GRADIENT_FLAT_SCALE;
@@ -31,7 +31,6 @@ public:
   virtual float getValue (int index) const { return values[index]; }
   float valmis, valmin, valmax;
   virtual ~glgrib_field ();
-  const glgrib_geometry * geometry;
 };
 
 #endif

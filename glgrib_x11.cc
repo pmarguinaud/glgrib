@@ -42,7 +42,7 @@ void x11_display (const glgrib_options & opts)
   
   gl_init ();
 
-  glgrib_geometry * geom = glgrib_geometry_load (opts);
+  glgrib_geometry_ptr geom = glgrib_geometry_load (opts);
 
   if (opts.landscape.path != "")
     {
@@ -92,7 +92,6 @@ void x11_display (const glgrib_options & opts)
   glfwTerminate ();
   
 
-  delete geom;
   delete gwindow;
  
 }

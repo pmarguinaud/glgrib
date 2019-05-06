@@ -216,7 +216,7 @@ void glgrib_options::show_help ()
       type_size = std::max ((*it)->type ().length (), type_size);
     }
   char format[64];
-  sprintf (format, " --%%-%ds : %%-%ds :", name_size, type_size);
+  sprintf (format, " --%%-%lds : %%-%lds :", name_size, type_size);
   for (optionlist::iterator it = options.begin (); it != options.end (); it++)
     {
       printf (format, (*it)->name.c_str (), (*it)->type ().c_str ());

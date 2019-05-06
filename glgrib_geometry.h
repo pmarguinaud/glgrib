@@ -3,6 +3,7 @@
 
 #include "glgrib_options.h"
 #include "glgrib_opengl.h"
+#include <memory>
 
 class glgrib_geometry
 {
@@ -14,9 +15,10 @@ public:
   virtual ~glgrib_geometry ();
   int np; 
   unsigned int nt;
-  GLuint vertexbuffer, elementbuffer;
+  opengl_buffer_ptr vertexbuffer, elementbuffer;
 };
 
-extern glgrib_geometry * glgrib_geometry_load (const glgrib_options &);
+typedef std::shared_ptr<glgrib_geometry> glgrib_geometry_ptr;
+extern glgrib_geometry_ptr glgrib_geometry_load (const glgrib_options &);
 
 #endif

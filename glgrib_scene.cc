@@ -73,6 +73,6 @@ void glgrib_scene::update ()
   if (rotate_earth)
     view.params.lonc += 1.;
   if (rotate_light)
-    lightx += 1.;
+    lightx -= 1.;
 }
 

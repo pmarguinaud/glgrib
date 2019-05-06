@@ -3,6 +3,7 @@
 
 #include "glgrib_world.h"
 #include "glgrib_options.h"
+#include "glgrib_opengl.h"
 #include "glgrib_geometry.h"
 
 #include <string>
@@ -10,12 +11,12 @@
 class glgrib_landscape : public glgrib_world
 {
 public:
-  virtual void init (const glgrib_options &, const glgrib_geometry *);
+  virtual void init (const glgrib_options &, const glgrib_geometry_ptr);
   virtual glgrib_program_kind get_program_kind () const 
     { 
       return GLGRIB_PROGRAM_FLAT_TEX;
     }
-  GLuint textureID;
+  opengl_texture_ptr texture;
   void render (const glgrib_view *) const;
   virtual ~glgrib_landscape ();
   virtual bool use_alpha () { return false; }

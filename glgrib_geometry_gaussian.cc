@@ -6,6 +6,7 @@
 
 #include "glgrib_load.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <openssl/md5.h>
 
 #include <iostream>
 
@@ -378,5 +379,22 @@ int glgrib_geometry_gaussian::latlon2index (float lat, float lon) const
 
   return jglooff[jlat-1] + jlon;
 }
+
+std::string glgrib_geometry_gaussian::md5 () const
+{
+  unsigned char out[MD5_DIGEST_LENGTH];
+  MD5_CTX c;
+  MD5_Init (&c);
+  
+  MD5_Update (&c, &Nj, sizeof (Nj));
+  MD5_Update (&c, pl, Nj * sizeof (pl[0]));
+  MD5_Update (&c, &stretchingFactor, sizeof (stretchingFactor));
+  MD5_Update (&c, &latitudeOfStretchingPoleInDegrees, sizeof (latitudeOfStretchingPoleInDegrees));
+  MD5_Update (&c, &longitudeOfStretchingPoleInDegrees, sizeof (longitudeOfStretchingPoleInDegrees));
+  MD5_Final (out, &c);
+
+  return md5string (out);
+}
+
 
 

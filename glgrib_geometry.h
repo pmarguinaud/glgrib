@@ -4,6 +4,7 @@
 #include "glgrib_options.h"
 #include "glgrib_opengl.h"
 #include <memory>
+#include <string>
 
 class glgrib_geometry
 {
@@ -16,6 +17,8 @@ public:
   int np; 
   unsigned int nt;
   opengl_buffer_ptr vertexbuffer, elementbuffer;
+  virtual std::string md5 () const = 0;
+  std::string md5string (const unsigned char []) const;
 };
 
 typedef std::shared_ptr<glgrib_geometry> glgrib_geometry_ptr;

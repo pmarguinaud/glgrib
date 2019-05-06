@@ -11,6 +11,7 @@
 class glgrib_geometry_gaussian : public glgrib_geometry
 {
 public:
+  virtual std::string md5 () const;
   virtual int latlon2index (float, float) const;
   glgrib_geometry_gaussian (const glgrib_options &, codes_handle *);
   virtual void genlatlon (float *, float *) const;

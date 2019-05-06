@@ -222,12 +222,18 @@ void main ()
   if (val < valmin)
     {
       pal = 0;
-      color = total * RGBA0[pal];
+      color.r = total * RGBA0[pal].r;
+      color.g = total * RGBA0[pal].g;
+      color.b = total * RGBA0[pal].b;
+      color.a =         RGBA0[pal].a;
     }
   else
     {
       pal = max (1, min (int (1 + 254 * (val - palmin) / (palmax - palmin)), 255));
-      color = total * RGBA0[pal];
+      color.r = total * RGBA0[pal].r;
+      color.g = total * RGBA0[pal].g;
+      color.b = total * RGBA0[pal].b;
+      color.a =         RGBA0[pal].a;
     }
 
 }

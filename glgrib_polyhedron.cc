@@ -42,7 +42,7 @@ void glgrib_polyhedron::render (const glgrib_view * view) const
 
 glgrib_polyhedron::~glgrib_polyhedron ()
 {
-  glDeleteBuffers (1, &vertexbuffer);
+  glDeleteBuffers (1, &elementbuffer);
   glDeleteBuffers (1, &colorbuffer);
   glDeleteBuffers (1, &vertexbuffer);
   glDeleteVertexArrays (1, &VertexArrayID);

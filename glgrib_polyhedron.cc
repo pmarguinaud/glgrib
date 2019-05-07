@@ -8,9 +8,9 @@
 void glgrib_polyhedron::def_from_xyz_col_ind (const float * xyz, unsigned char * col, unsigned int * ind)
 {
 
-  vertexbuffer  = new_opengl_buffer_ptr (3 * np * sizeof (float), xyz);
-  colorbuffer   = new_opengl_buffer_ptr (ncol * np * sizeof (unsigned char), col);
-  elementbuffer = new_opengl_buffer_ptr (3 * nt * sizeof (unsigned int), ind);
+  vertexbuffer  = new_glgrib_opengl_buffer_ptr (3 * np * sizeof (float), xyz);
+  colorbuffer   = new_glgrib_opengl_buffer_ptr (ncol * np * sizeof (unsigned char), col);
+  elementbuffer = new_glgrib_opengl_buffer_ptr (3 * nt * sizeof (unsigned int), ind);
 
   //
   glGenVertexArrays (1, &VertexArrayID);

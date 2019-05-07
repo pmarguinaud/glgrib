@@ -14,7 +14,7 @@ public:
   virtual ~glgrib_polyhedron ();
   void def_from_xyz_col_ind (const float *, unsigned char *, unsigned int *);
   GLuint VertexArrayID;
-  opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer;
+  glgrib_opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer;
   unsigned int ncol, nt;
   int np;
   bool wireframe = false;

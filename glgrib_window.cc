@@ -124,11 +124,17 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (CONTROL, DOWN  , rotate_light_south       ());
       if_key (CONTROL, LEFT  , rotate_light_west        ());
       if_key (CONTROL, RIGHT , rotate_light_east        ());
+      if_key (NONE,    K,      movie                    ());
 
 
     }
 
 #undef if_key
+}
+
+void glgrib_window::movie ()
+{
+  scene.toggleMovie ();
 }
 
 void glgrib_window::rotate_light_north ()
@@ -453,6 +459,8 @@ void glgrib_window::create (const glgrib_options & opts)
 {
   scene.rotate_light = opts.scene.rotate_light;
   scene.rotate_earth = opts.scene.rotate_earth;
+  if (opts.scene.movie)
+    scene.setMovie ();
   if (opts.scene.light)
     scene.setLight ();
 

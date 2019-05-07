@@ -9,7 +9,7 @@ void glgrib_world::def_from_vertexbuffer_col_elementbuffer
   np = geom->np;
   nt = geom->nt;
 
-  colorbuffer = new_opengl_buffer_ptr (ncol * np * sizeof (unsigned char), col);
+  colorbuffer = new_glgrib_opengl_buffer_ptr (ncol * np * sizeof (unsigned char), col);
 
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);

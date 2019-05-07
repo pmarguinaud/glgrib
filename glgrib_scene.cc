@@ -2,6 +2,7 @@
 #include "glgrib_opengl.h"
 
 #include <stdio.h>
+#include <sys/time.h>
 
 
 using namespace glm;
@@ -68,11 +69,35 @@ void glgrib_scene::display () const
 
 }
 
+static double current_time ()
+{
+  struct timeval tv; 
+  struct timezone tz;
+  gettimeofday (&tv, &tz);
+  return tv.tv_sec + (double)tv.tv_usec / 1000000.0;
+}
+
 void glgrib_scene::update ()
 {
+  double t = current_time ();
   if (rotate_earth)
     view.params.lonc += 1.;
   if (rotate_light)
     lightx -= 1.;
+  if (movie && ((t - movie_time) > 1.0))
+    {
+      for (int i = 0; i < fieldlist.size (); i++)
+        hidden.insert (fieldlist[i]);
+      hidden.erase (fieldlist[movie_index]);
+      for (int i = 0; i < fieldlist.size (); i++) // All fields may be NULL
+        {
+          movie_index++;
+	  if (movie_index >= fieldlist.size ())
+            movie_index = 0;
+	  if (fieldlist[movie_index])
+            break;
+	}
+      movie_time = t;
+    }
 }
 

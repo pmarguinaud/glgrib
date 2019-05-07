@@ -7,6 +7,24 @@
 #include "glgrib_palette.h"
 
 #include <string>
+#include <memory>
+
+
+class glgrib_field_float_buffer
+{
+public:
+  glgrib_field_float_buffer (size_t);
+  glgrib_field_float_buffer (float *);
+  ~glgrib_field_float_buffer ();
+  float * data () { return data_; }
+private:
+  float * data_ = NULL;
+};
+
+typedef std::shared_ptr<glgrib_field_float_buffer> glgrib_field_float_buffer_ptr;
+extern glgrib_field_float_buffer_ptr new_glgrib_field_float_buffer_ptr (size_t);
+extern glgrib_field_float_buffer_ptr new_glgrib_field_float_buffer_ptr (float *);
+
 
 class glgrib_field_display_options
 {
@@ -27,8 +45,8 @@ public:
   virtual bool use_alpha () { return false; }
   virtual void render (const glgrib_view * view) const { render (view, glgrib_field_display_options ()); }
   virtual void render (const glgrib_view *, const glgrib_field_display_options &) const;
-  float * values = NULL;
-  virtual float getValue (int index) const { return values[index]; }
+  glgrib_field_float_buffer_ptr values;
+  virtual float getValue (int index) const { return values->data ()[index]; }
   float valmis, valmin, valmax;
   virtual ~glgrib_field ();
 };

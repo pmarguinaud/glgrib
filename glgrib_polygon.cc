@@ -5,10 +5,10 @@
 
 void glgrib_polygon::def_from_xyz_col_ind (const float * xyz, const unsigned char * col, const unsigned int * ind)
 {
-  vertexbuffer = new_opengl_buffer_ptr (3 * np * sizeof (float), xyz);
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * np * sizeof (float), xyz);
   if (col != NULL)
-    colorbuffer = new_opengl_buffer_ptr (ncol * np * sizeof (unsigned char), col);
-  elementbuffer = new_opengl_buffer_ptr (2 * nl * sizeof (unsigned int), ind);
+    colorbuffer = new_glgrib_opengl_buffer_ptr (ncol * np * sizeof (unsigned char), col);
+  elementbuffer = new_glgrib_opengl_buffer_ptr (2 * nl * sizeof (unsigned int), ind);
 
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);

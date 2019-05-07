@@ -16,7 +16,7 @@ public:
   virtual ~glgrib_geometry ();
   int np; 
   unsigned int nt;
-  opengl_buffer_ptr vertexbuffer, elementbuffer;
+  glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
   virtual std::string md5 () const = 0;
   std::string md5string (const unsigned char []) const;
 };

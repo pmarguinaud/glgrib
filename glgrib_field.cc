@@ -6,6 +6,34 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+
+glgrib_field_float_buffer::glgrib_field_float_buffer (size_t size)
+{
+  data_ = new float[size];
+}
+
+glgrib_field_float_buffer::glgrib_field_float_buffer (float * data)
+{
+  data_ = data;
+}
+
+glgrib_field_float_buffer::~glgrib_field_float_buffer ()
+{
+  if (data_)
+    delete [] data_;
+  data_ = NULL;
+}
+
+glgrib_field_float_buffer_ptr new_glgrib_field_float_buffer_ptr (size_t size)
+{
+  return std::make_shared<glgrib_field_float_buffer>(size);
+}
+
+glgrib_field_float_buffer_ptr new_glgrib_field_float_buffer_ptr (float * data)
+{
+  return std::make_shared<glgrib_field_float_buffer>(data);
+}
+
 void glgrib_field::init (const std::string & field, const glgrib_options & o, const glgrib_geometry_ptr geom)
 {
   unsigned char * col;
@@ -14,15 +42,17 @@ void glgrib_field::init (const std::string & field, const glgrib_options & o, co
 
   ncol = 1;
 
-  glgrib_load (field, &values, &valmin, &valmax, &valmis);
+  float * data;
+  glgrib_load (field, &data, &valmin, &valmax, &valmis);
+  values = new_glgrib_field_float_buffer_ptr (data);
 
   col = (unsigned char *)malloc (ncol * geom->np * sizeof (unsigned char));
 
   for (int i = 0; i < geom->np; i++)
-    if (values[i] == valmis)
+    if (data[i] == valmis)
       col[i] = 0;
     else
-      col[i] = 1 + (int)(254 * (values[i] - valmin)/(valmax - valmin));
+      col[i] = 1 + (int)(254 * (data[i] - valmin)/(valmax - valmin));
 
   def_from_vertexbuffer_col_elementbuffer (col, geom);
 
@@ -59,8 +89,6 @@ void glgrib_field::render (const glgrib_view * view, const glgrib_field_display_
 
 glgrib_field::~glgrib_field ()
 {
-  if (values)
-    free (values);
 }
 
 

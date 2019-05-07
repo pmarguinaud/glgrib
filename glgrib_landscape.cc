@@ -17,7 +17,7 @@ void glgrib_landscape::init (const glgrib_options & opts, const glgrib_geometry_
 
   glgrib_bmp (opts.landscape.path.c_str (), &rgb, &w, &h);
 
-  texture = new_opengl_texture_ptr (w, h, rgb);
+  texture = new_glgrib_opengl_texture_ptr (w, h, rgb);
 
   free (rgb);
 

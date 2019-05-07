@@ -46,6 +46,7 @@ public:
   bool rotate_earth = false;
   bool rotate_light = false;
   bool light = false;
+  bool movie = false;
 };
 
 

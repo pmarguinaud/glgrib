@@ -175,6 +175,7 @@ static optionlist get_optionlist (glgrib_options * opts)
 #define ADD_OPT(x,d) do { options.push_back (new_option (std::string (#x), std::string (#d), &opts->x)); } while (0)
 
   ADD_OPT (scene.light,               Enable light);
+  ADD_OPT (scene.movie,               Movie);
   ADD_OPT (scene.rotate_earth,        Make earth rotate);
   ADD_OPT (scene.rotate_light,        Make sunlight move);
 

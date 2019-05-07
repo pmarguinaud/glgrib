@@ -76,6 +76,7 @@ public:
   void rotate_light_south ();
   void rotate_light_west  ();
   void rotate_light_east  ();
+  void movie              ();
   void create (const glgrib_options &);
 };
 

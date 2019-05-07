@@ -55,10 +55,15 @@ public:
   void update ();
   bool rotate_earth = false;
   bool rotate_light = false;
+  void toggleMovie () { movie = ! movie; movie_index = 0; }
+  void setMovie () { movie = true; movie_index = 0; }
 
 private:
   float lightx = 0., lighty = 0.;
   bool light = false;
+  bool movie = false;
+  int movie_index = 0;
+  double movie_time = 0;
   void setLightShader (GLuint) const;
 };
 

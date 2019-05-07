@@ -16,7 +16,7 @@ public:
     { 
       return GLGRIB_PROGRAM_FLAT_TEX;
     }
-  opengl_texture_ptr texture;
+  glgrib_opengl_texture_ptr texture;
   void render (const glgrib_view *) const;
   virtual ~glgrib_landscape ();
   virtual bool use_alpha () { return false; }

@@ -42,7 +42,7 @@ void glgrib_load (const std::string & file, float ** val, float * valmin, float 
 
   fclose (in);
 
-  *val = (float *)malloc (sizeof (float) * v_len);
+  *val = new float [v_len];
   for (int i = 0; i < v_len; i++)
     (*val)[i] = v[i];
 

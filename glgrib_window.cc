@@ -518,11 +518,11 @@ glgrib_window * glgrib_window::clone ()
   COPY (height);
   COPY (title);
 
-  w->window = NULL;  // except for this one
   w->createGFLWwindow (window); // use already existing context
   w->makeCurrent ();
+  gl_init ();
 
-  COPY (scene);
+  COPY (scene);                 // copy the scene; invoke operator=
 #undef COPY
   w->scene.view.setViewport (width, height);
 

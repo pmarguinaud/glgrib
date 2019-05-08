@@ -1,3 +1,5 @@
 Multiple windows
 Fields, landscape, grid, coastlines owned by scene, and with a copy constructor.
 Make movie with a changing field
+
+Move gl_init in glgrib_window clone, creation

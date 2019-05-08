@@ -21,7 +21,7 @@ public:
   mutable glgrib_program * program = NULL;
   bool isReady () const { return ready_; }
   void setReady () { ready_ = true; }
-private:
+protected:
   bool ready_ = false;
 };
 

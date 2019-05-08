@@ -53,11 +53,11 @@ void glgrib_scene::display () const
       display_obj (&landscape);
     }
 
-  if (coastlines && (hidden.find (coastlines) == hidden.end ()))
-    display_obj (coastlines);
+  if (hidden.find (&coastlines) == hidden.end ())
+    display_obj (&coastlines);
 
-  if (grid && (hidden.find (grid) == hidden.end ()))
-    display_obj (grid);
+  if (hidden.find (&grid) == hidden.end ())
+    display_obj (&grid);
 
   for (int i = 0; i < fieldlist.size (); i++)
     {

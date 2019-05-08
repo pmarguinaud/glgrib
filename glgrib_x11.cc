@@ -5,9 +5,7 @@
 
 #include "glgrib_field.h"
 #include "glgrib_scene.h"
-#include "glgrib_grid.h"
 #include "glgrib_view.h"
-#include "glgrib_coastlines.h"
 #include "glgrib_x11.h"
 #include "glgrib_shell.h"
 #include "glgrib_window.h"
@@ -19,8 +17,6 @@
 
 void x11_display (const glgrib_options & opts)
 {
-  glgrib_coastlines Coast;
-  glgrib_grid Grid;
   glgrib_field Field[10];
 
   if (! glfwInit ())
@@ -43,21 +39,14 @@ void x11_display (const glgrib_options & opts)
   glgrib_geometry_ptr geom = glgrib_geometry_load (opts);
 
   if (opts.landscape.path != "")
-    {
-      gwindow->scene.landscape.init (opts, geom);
-    }
+    gwindow->scene.landscape.init (opts, geom);
 
   if (opts.grid.resolution)
-    {
-      Grid.init (opts);
-      gwindow->scene.setGrid (&Grid);
-    }
+    gwindow->scene.grid.init (opts);
 
   if (opts.coastlines.path != "")
-    {
-      Coast.init (opts);
-      gwindow->scene.setCoastlines (&Coast);
-    }
+    gwindow->scene.coastlines.init (opts);
+   
 
   for (int i = 0; i < opts.field.list.size (); i++)
     {

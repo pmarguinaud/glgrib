@@ -8,7 +8,9 @@
 class glgrib_polygon : public glgrib_object
 {
 public:
-  void def_from_xyz_col_ind (const float *, const unsigned char *, const unsigned int *);
+  void def_from_xyz_col_ind (glgrib_opengl_buffer_ptr, 
+                             glgrib_opengl_buffer_ptr, 
+                             glgrib_opengl_buffer_ptr);
   virtual void render (const glgrib_view *) const;
   virtual glgrib_program_kind get_program_kind () const { return GLGRIB_PROGRAM_RGB; }
   virtual bool use_alpha () { return false; }

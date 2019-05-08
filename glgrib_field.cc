@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <iostream>
 
 glgrib_field_float_buffer::glgrib_field_float_buffer (size_t size)
 {
@@ -32,6 +32,18 @@ glgrib_field_float_buffer_ptr new_glgrib_field_float_buffer_ptr (size_t size)
 glgrib_field_float_buffer_ptr new_glgrib_field_float_buffer_ptr (float * data)
 {
   return std::make_shared<glgrib_field_float_buffer>(data);
+}
+
+glgrib_field & glgrib_field::operator= (const glgrib_field & field)
+{
+  if (field.isReady ())
+    {
+      glgrib_world::operator= (field);
+      ready_ = false;
+      std::cout << " glgrib_field::operator= " << std::endl;
+//    def_from_xyz_col_ind (vertexbuffer, colorbuffer, elementbuffer);
+      setReady ();
+    }
 }
 
 void glgrib_field::init (const std::string & field, const glgrib_options & o, const glgrib_geometry_ptr geom)

@@ -9,16 +9,16 @@
 
 glgrib_landscape & glgrib_landscape::operator= (const glgrib_landscape & landscape)
 {
-  glgrib_world::operator= (landscape);
-  ready_ = false;
-
-  std::cout << " glgrib_landscape::operator= " << std::endl;
-
-  texture = landscape.texture;
-  flat    = landscape.flat;
-  def_from_vertexbuffer_col_elementbuffer (NULL, geometry);
-
-  setReady ();
+  if (landscape.isReady ())
+    {
+      glgrib_world::operator= (landscape);
+      ready_ = false;
+      std::cout << " glgrib_landscape::operator= " << std::endl;
+      texture = landscape.texture;
+      flat    = landscape.flat;
+      def_from_vertexbuffer_col_elementbuffer (NULL, geometry);
+      setReady ();
+   }
 }
 
 void glgrib_landscape::init (const glgrib_options & opts, const glgrib_geometry_ptr geom)

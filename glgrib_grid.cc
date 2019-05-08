@@ -4,6 +4,19 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
+
+glgrib_grid & glgrib_grid::operator= (const glgrib_grid & grid)
+{
+  if (grid.isReady ())
+    {
+      glgrib_polygon::operator= (grid);
+      ready_ = false;
+      std::cout << " glgrib_grid::operator= " << std::endl;
+      def_from_xyz_col_ind (vertexbuffer, colorbuffer, elementbuffer);
+      setReady ();
+    }
+}
 
 void glgrib_grid::init (const glgrib_options & opts)
 {
@@ -99,8 +112,10 @@ void glgrib_grid::init (const glgrib_options & opts)
 
     }
 
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * np * sizeof (float), xyz);
+  elementbuffer = new_glgrib_opengl_buffer_ptr (2 * nl * sizeof (unsigned int), ind);
 
-  def_from_xyz_col_ind (xyz, NULL, ind);
+  def_from_xyz_col_ind (vertexbuffer, colorbuffer, elementbuffer);
 
   free (ind);
   free (xyz);

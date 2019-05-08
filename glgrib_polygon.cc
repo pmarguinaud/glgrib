@@ -3,12 +3,17 @@
 
 #include <stdio.h>
 
-void glgrib_polygon::def_from_xyz_col_ind (const float * xyz, const unsigned char * col, const unsigned int * ind)
+void glgrib_polygon::def_from_xyz_col_ind 
+  (glgrib_opengl_buffer_ptr vertexbuffer, 
+   glgrib_opengl_buffer_ptr colorbuffer, 
+   glgrib_opengl_buffer_ptr elementbuffer)
 {
+#ifdef UNDEF
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * np * sizeof (float), xyz);
   if (col != NULL)
     colorbuffer = new_glgrib_opengl_buffer_ptr (ncol * np * sizeof (unsigned char), col);
   elementbuffer = new_glgrib_opengl_buffer_ptr (2 * nl * sizeof (unsigned int), ind);
+#endif
 
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
@@ -17,7 +22,7 @@ void glgrib_polygon::def_from_xyz_col_ind (const float * xyz, const unsigned cha
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
 
-  if (col != NULL)
+  if (colorbuffer)
     {
       glBindBuffer (GL_ARRAY_BUFFER, colorbuffer->id ());
       glEnableVertexAttribArray (1); 

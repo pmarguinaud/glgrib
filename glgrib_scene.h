@@ -28,11 +28,9 @@ public:
   glgrib_landscape landscape;
   glgrib_field * currentField = NULL;
   glgrib_field_display_options * currentFieldOpts = NULL;
-  glgrib_coastlines * coastlines = NULL;
-  glgrib_grid * grid = NULL;
-  void setGrid (glgrib_grid * g) { grid = g; }
+  glgrib_coastlines coastlines;
+  glgrib_grid grid;
   void setField (glgrib_field * f) { currentField = f; }
-  void setCoastlines (glgrib_coastlines * c) { coastlines = c; }
   std::set <const glgrib_object*> hidden;
 
   void getLightPos (float * x, float * y)

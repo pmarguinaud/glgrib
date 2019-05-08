@@ -4,6 +4,20 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
+
+glgrib_coastlines & glgrib_coastlines::operator= (const glgrib_coastlines & coastlines)
+{
+  if (coastlines.isReady ())
+    {
+      glgrib_polygon::operator= (coastlines);
+      ready_ = false;
+      std::cout << " glgrib_coastlines::operator= " << std::endl;
+      def_from_xyz_col_ind (vertexbuffer, colorbuffer, elementbuffer);
+      setReady ();
+    }
+}
+
 
 typedef struct head_t
 {
@@ -93,7 +107,10 @@ void glgrib_coastlines::init (const glgrib_options & opts)
 
   free (pl);
 
-  def_from_xyz_col_ind (xyz, NULL, ind);
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * np * sizeof (float), xyz);
+  elementbuffer = new_glgrib_opengl_buffer_ptr (2 * nl * sizeof (unsigned int), ind);
+
+  def_from_xyz_col_ind (vertexbuffer, colorbuffer, elementbuffer);
 
   free (ind);
   free (xyz);

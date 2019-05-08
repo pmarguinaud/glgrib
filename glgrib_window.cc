@@ -513,9 +513,18 @@ glgrib_window * glgrib_window::clone ()
 {
   glgrib_window * w = new glgrib_window ();
 
-  *w = *this;        // bit copy (or operator=) for all members
+#define COPY(x) do { w->x = x; } while (0)
+  COPY (width);
+  COPY (height);
+  COPY (title);
+
   w->window = NULL;  // except for this one
   w->createGFLWwindow (window); // use already existing context
+  w->makeCurrent ();
+
+  COPY (scene);
+#undef COPY
+  w->scene.view.setViewport (width, height);
 
   return w;
 }

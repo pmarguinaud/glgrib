@@ -8,7 +8,7 @@
 
 glgrib_coastlines & glgrib_coastlines::operator= (const glgrib_coastlines & coastlines)
 {
-  if (coastlines.isReady ())
+  if ((this != &coastlines) && coastlines.isReady ())
     {
       glgrib_polygon::operator= (coastlines);
       ready_ = false;

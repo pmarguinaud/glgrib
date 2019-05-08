@@ -43,6 +43,7 @@ void glgrib_polygon::render (const glgrib_view * view) const
 
 glgrib_polygon::~glgrib_polygon ()
 {
-  glDeleteVertexArrays (1, &VertexArrayID);
+  if (isReady ())
+    glDeleteVertexArrays (1, &VertexArrayID);
 }
 

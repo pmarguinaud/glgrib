@@ -17,7 +17,6 @@
 
 void x11_display (const glgrib_options & opts)
 {
-  glgrib_field Field[10];
 
   if (! glfwInit ())
     {
@@ -50,13 +49,18 @@ void x11_display (const glgrib_options & opts)
 
   for (int i = 0; i < opts.field.list.size (); i++)
     {
-      Field[i].init (opts.field.list[i], opts, geom);
-      
-      gwindow->scene.setField (&Field[i]);
-      gwindow->scene.fieldlist[i] = &Field[i];
+      glgrib_field fld;
+      glgrib_field_display_options fldopts;
 
-      gwindow->scene.fieldoptslist[i].scale = opts.field.scale[i];
-      gwindow->scene.fieldoptslist[i].palette = get_palette_by_name (opts.field.palette[i]);
+      fldopts.scale   = opts.field.scale[i];
+      fldopts.palette = get_palette_by_name (opts.field.palette[i]);
+
+      fld.init (opts.field.list[i], opts, geom);
+      gwindow->scene.fieldlist.push_back (fld);
+
+      gwindow->scene.fieldoptslist.push_back (fldopts);
+  
+      gwindow->scene.setField (&gwindow->scene.fieldlist[i]);
       gwindow->scene.currentFieldOpts = &gwindow->scene.fieldoptslist[i];
     }
 

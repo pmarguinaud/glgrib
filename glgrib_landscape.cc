@@ -9,7 +9,7 @@
 
 glgrib_landscape & glgrib_landscape::operator= (const glgrib_landscape & landscape)
 {
-  if (landscape.isReady ())
+  if ((this != &landscape) && landscape.isReady ())
     {
       glgrib_world::operator= (landscape);
       ready_ = false;
@@ -34,7 +34,7 @@ void glgrib_landscape::init (const glgrib_options & opts, const glgrib_geometry_
 
   free (rgb);
 
-  def_from_vertexbuffer_col_elementbuffer (NULL, geom);
+  def_from_vertexbuffer_col_elementbuffer (colorbuffer, geom);
   
   setReady ();
 }

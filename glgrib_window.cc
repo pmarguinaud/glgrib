@@ -211,7 +211,7 @@ void glgrib_window::scale_palette_down ()
 
 void glgrib_window::select_field (int ifield)
 {
-  scene.currentField      = scene.fieldlist[ifield];
+  scene.currentField     = &scene.fieldlist[ifield];
   scene.currentFieldOpts = &scene.fieldoptslist[ifield];
 }
 
@@ -236,13 +236,13 @@ void glgrib_window::toggle_hide_field ()
 void glgrib_window::hide_all_fields ()
 {
   for (int i = 0; i < scene.fieldlist.size (); i++)
-    scene.hidden.insert (scene.fieldlist[i]);
+    scene.hidden.insert (&scene.fieldlist[i]);
 }
 
 void glgrib_window::show_all_fields ()
 {
   for (int i = 0; i < scene.fieldlist.size (); i++)
-    scene.hidden.erase (scene.fieldlist[i]);
+    scene.hidden.erase (&scene.fieldlist[i]);
 }
 
 int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)

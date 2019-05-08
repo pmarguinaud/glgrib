@@ -2,14 +2,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
 
 void glgrib_world::def_from_vertexbuffer_col_elementbuffer 
-  (unsigned char * col, const glgrib_geometry_ptr geom)
+  (const glgrib_opengl_buffer_ptr colorbuffer, const glgrib_geometry_ptr geom)
 {
   np = geom->np;
   nt = geom->nt;
-
-  colorbuffer = new_glgrib_opengl_buffer_ptr (ncol * np * sizeof (unsigned char), col);
 
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
@@ -18,7 +17,7 @@ void glgrib_world::def_from_vertexbuffer_col_elementbuffer
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
   
-  if (col != NULL)
+  if (colorbuffer && colorbuffer->allocated ())
     {
       glBindBuffer (GL_ARRAY_BUFFER, colorbuffer->id ());
       glEnableVertexAttribArray (1); 

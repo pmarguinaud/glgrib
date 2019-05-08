@@ -34,14 +34,28 @@ glgrib_field_float_buffer_ptr new_glgrib_field_float_buffer_ptr (float * data)
   return std::make_shared<glgrib_field_float_buffer>(data);
 }
 
-glgrib_field & glgrib_field::operator= (const glgrib_field & field)
+glgrib_field::glgrib_field (const glgrib_field & field)
 {
   if (field.isReady ())
     {
+      std::cout << " glgrib_field copy " << std::endl;
+      // Cleanup already existing VAOs
+      cleanup ();
+      operator= (field);
+    }
+}
+
+glgrib_field & glgrib_field::operator= (const glgrib_field & field)
+{
+  if ((this != &field) && field.isReady ())
+    {
+      std::cout << " glgrib_field::operator= " << std::endl;
       glgrib_world::operator= (field);
       ready_ = false;
-      std::cout << " glgrib_field::operator= " << std::endl;
-//    def_from_xyz_col_ind (vertexbuffer, colorbuffer, elementbuffer);
+      valmis = field.valmis;
+      valmin = field.valmin;
+      valmax = field.valmax;
+      def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
       setReady ();
     }
 }
@@ -66,7 +80,9 @@ void glgrib_field::init (const std::string & field, const glgrib_options & o, co
     else
       col[i] = 1 + (int)(254 * (data[i] - valmin)/(valmax - valmin));
 
-  def_from_vertexbuffer_col_elementbuffer (col, geom);
+  colorbuffer = new_glgrib_opengl_buffer_ptr (ncol * geom->np * sizeof (unsigned char), col);
+
+  def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
 
   free (col);
 

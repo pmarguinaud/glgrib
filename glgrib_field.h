@@ -39,7 +39,9 @@ public:
 class glgrib_field : public glgrib_world
 {
 public:
-  glgrib_field & operator=(const glgrib_field &);
+  glgrib_field & operator= (const glgrib_field &);
+  glgrib_field () { }
+  glgrib_field (const glgrib_field &);
   void init (const std::string & field, const glgrib_options &, const glgrib_geometry_ptr);
   virtual glgrib_program_kind get_program_kind () const 
     { 

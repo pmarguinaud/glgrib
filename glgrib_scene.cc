@@ -61,9 +61,7 @@ void glgrib_scene::display () const
 
   for (int i = 0; i < fieldlist.size (); i++)
     {
-      glgrib_field * fld = fieldlist[i];
-      if (fld == NULL)
-        continue;
+      const glgrib_field * fld = &fieldlist[i];
       if (! fld->isReady ())
         continue;
       if (hidden.find (fld) == hidden.end ())
@@ -96,16 +94,10 @@ void glgrib_scene::update ()
   if (movie && ((t - movie_time) > 1.0))
     {
       for (int i = 0; i < fieldlist.size (); i++)
-        hidden.insert (fieldlist[i]);
-      hidden.erase (fieldlist[movie_index]);
-      for (int i = 0; i < fieldlist.size (); i++) // All fields may be NULL
-        {
-          movie_index++;
-	  if (movie_index >= fieldlist.size ())
-            movie_index = 0;
-	  if (fieldlist[movie_index])
-            break;
-	}
+        hidden.insert (&fieldlist[i]);
+      hidden.erase (&fieldlist[movie_index]);
+      movie_index++;
+      movie_index %= fieldlist.size ();
       movie_time = t;
     }
 }

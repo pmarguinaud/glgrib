@@ -1,4 +1,5 @@
 #include "glgrib_opengl.h"
+#include <iostream>
 
 void gl_init ()
 {

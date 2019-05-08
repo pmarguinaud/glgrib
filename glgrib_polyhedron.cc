@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
 
 
 void glgrib_polyhedron::def_from_xyz_col_ind (const float * xyz, unsigned char * col, unsigned int * ind)
@@ -12,7 +13,6 @@ void glgrib_polyhedron::def_from_xyz_col_ind (const float * xyz, unsigned char *
   colorbuffer   = new_glgrib_opengl_buffer_ptr (ncol * np * sizeof (unsigned char), col);
   elementbuffer = new_glgrib_opengl_buffer_ptr (3 * nt * sizeof (unsigned int), ind);
 
-  //
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
 
@@ -40,8 +40,9 @@ void glgrib_polyhedron::render (const glgrib_view * view) const
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 }
 
-glgrib_polyhedron::~glgrib_polyhedron ()
+void glgrib_polyhedron::cleanup ()
 {
-  glDeleteVertexArrays (1, &VertexArrayID);
+  if (isReady ())
+    glDeleteVertexArrays (1, &VertexArrayID);
 }
 

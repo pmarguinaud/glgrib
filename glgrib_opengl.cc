@@ -17,14 +17,14 @@ glgrib_opengl_buffer::glgrib_opengl_buffer (size_t size, const void * data)
   glGenBuffers (1, &id_);
   glBindBuffer (GL_ARRAY_BUFFER, id_);
   glBufferData (GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-  allocated = true;
+  allocated_ = true;
 }
 
 glgrib_opengl_buffer::~glgrib_opengl_buffer ()
 {
-  if (allocated)
+  if (allocated_)
     glDeleteBuffers (1, &id_);
-  allocated = false;
+  allocated_ = false;
 }
 
 glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (size_t size, const void * data)
@@ -42,14 +42,14 @@ glgrib_opengl_texture::glgrib_opengl_texture (int width, int height, const void 
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data); 
   glBindTexture (GL_TEXTURE_2D, 0); 
-  allocated = true;
+  allocated_ = true;
 }
 
 glgrib_opengl_texture::~glgrib_opengl_texture ()
 {
-  if (allocated)
+  if (allocated_)
     glDeleteTextures (1, &id_);
-  allocated = false;
+  allocated_ = false;
 }
 
 glgrib_opengl_texture_ptr new_glgrib_opengl_texture_ptr (int width, int height, const void * data)

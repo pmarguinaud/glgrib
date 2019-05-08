@@ -12,8 +12,9 @@ public:
   glgrib_opengl_buffer (size_t, const void *);
   ~glgrib_opengl_buffer ();
   GLuint id () { return id_; }
+  bool allocated () { return allocated_; }
 private:
-  bool allocated = false;
+  bool allocated_ = false;
   GLuint id_;
 };
 
@@ -26,8 +27,9 @@ public:
   glgrib_opengl_texture (int, int, const void *);
   ~glgrib_opengl_texture ();
   GLuint id () { return id_; }
+  bool allocated () { return allocated_; }
 private:
-  bool allocated = false;
+  bool allocated_ = false;
   GLuint id_;
 };
 

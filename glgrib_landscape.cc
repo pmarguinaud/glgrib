@@ -23,6 +23,7 @@ void glgrib_landscape::init (const glgrib_options & opts, const glgrib_geometry_
 
   def_from_vertexbuffer_col_elementbuffer (NULL, geom);
   
+  setReady ();
 }
 
 void glgrib_landscape::render (const glgrib_view * view) const

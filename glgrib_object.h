@@ -19,6 +19,10 @@ public:
   virtual glgrib_program_kind get_program_kind () const { return GLGRIB_PROGRAM_NONE; }
   virtual bool use_alpha () { return true; }
   mutable glgrib_program * program = NULL;
+  bool isReady () const { return ready_; }
+  void setReady () { ready_ = true; }
+private:
+  bool ready_ = false;
 };
 
 #endif

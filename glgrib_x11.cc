@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "glgrib_landscape.h"
 #include "glgrib_field.h"
 #include "glgrib_scene.h"
 #include "glgrib_grid.h"
@@ -23,7 +22,6 @@ void x11_display (const glgrib_options & opts)
   glgrib_coastlines Coast;
   glgrib_grid Grid;
   glgrib_field Field[10];
-  glgrib_landscape Landscape;
 
   if (! glfwInit ())
     {
@@ -46,8 +44,7 @@ void x11_display (const glgrib_options & opts)
 
   if (opts.landscape.path != "")
     {
-      Landscape.init (opts, geom);
-      gwindow->scene.setLandscape (&Landscape);
+      gwindow->scene.landscape.init (opts, geom);
     }
 
   if (opts.grid.resolution)
@@ -87,13 +84,31 @@ void x11_display (const glgrib_options & opts)
       }
     }
   else
-    gwindow->run ();
+    {
+      glgrib_window * gwindow1 = NULL;
+      while (1)
+        {
+          gwindow->run ();
+          if (gwindow->isClosed ())
+            break;
+          if (gwindow1 == NULL)
+            {
+              gwindow1 = gwindow->clone ();
+            }
+          else
+            {
+              gwindow1->run ();
+              if (gwindow1->isClosed ())
+                break;
+            }
+        }
+       delete gwindow;
+       if (gwindow1)
+         delete gwindow1;
+    }
 
   glfwTerminate ();
   
-
-  delete gwindow;
- 
 }
 
 

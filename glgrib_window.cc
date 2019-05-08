@@ -420,15 +420,12 @@ void glgrib_window::renderFrame ()
 
 void glgrib_window::run (glgrib_shell * shell)
 {
-  while (1)
-    {
-      renderFrame ();
-      glfwPollEvents ();
+  renderFrame ();
+  glfwPollEvents ();
   
-      if ((glfwGetKey (window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-       || (glfwWindowShouldClose (window) != 0) || (shell && shell->closed ()))
-        break;
-    } 
+  if ((glfwGetKey (window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+   || (glfwWindowShouldClose (window) != 0) || (shell && shell->closed ()))
+    closed = true;;
 }
 
 
@@ -464,14 +461,18 @@ void glgrib_window::create (const glgrib_options & opts)
   if (opts.scene.light)
     scene.setLight ();
 
-  setHints ();
-
   title = opts.landscape.geometry;
   width = opts.window.width;
   height = opts.window.height;
 
+  createGFLWwindow (NULL);
+}
+
+void glgrib_window::createGFLWwindow (GLFWwindow * context)
+{
+  setHints ();
   
-  window = glfwCreateWindow (width, height, title.c_str (), NULL, NULL);
+  window = glfwCreateWindow (width, height, title.c_str (), NULL, context);
   glfwSetWindowUserPointer (window, this);
 
   if (window == NULL)
@@ -500,11 +501,24 @@ void glgrib_window::create (const glgrib_options & opts)
   glfwSetFramebufferSizeCallback (window, resize_callback);  
 
 }
+
   
 glgrib_window::~glgrib_window ()
 {
   if (window)
     glfwDestroyWindow (window);
 }
+
+glgrib_window * glgrib_window::clone ()
+{
+  glgrib_window * w = new glgrib_window ();
+
+  *w = *this;        // bit copy (or operator=) for all members
+  w->window = NULL;  // except for this one
+  w->createGFLWwindow (window); // use already existing context
+
+  return w;
+}
+
 
 

@@ -97,6 +97,8 @@ void glgrib_coastlines::init (const glgrib_options & opts)
 
   free (ind);
   free (xyz);
+
+  setReady ();
 }
 
 void glgrib_coastlines::render (const glgrib_view * view) const

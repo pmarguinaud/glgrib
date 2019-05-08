@@ -21,20 +21,21 @@ public:
   virtual void renderFrame ();
   virtual void run (class glgrib_shell * = NULL);
   void makeCurrent () { glfwMakeContextCurrent (window); }
-  int width, height;
+
+  int width = 0, height = 0;
   int snapshot_cnt = 0;
   glgrib_scene scene;
   bool cursorpos = false;
   std::string title = "";
-  GLFWwindow * window;
+  GLFWwindow * window = NULL;
+  bool closed = false;
 
   void toggle_cursorpos_display ();
   void framebuffer              ();
   void snapshot                 ();
   void toggle_flat ()
   {
-    if (scene.landscape != NULL)
-      scene.landscape->toggle_flat ();
+    scene.landscape.toggle_flat ();
   }
   void reset_view ()
   {
@@ -43,7 +44,7 @@ public:
   }
   void toggle_rotate       () { scene.rotate_earth       = ! scene.rotate_earth;       }
   void toggle_rotate_light () { scene.rotate_light = ! scene.rotate_light; }
-  void toggle_wireframe    () { scene.landscape->toggle_wireframe (); }
+  void toggle_wireframe    () { scene.landscape.toggle_wireframe (); }
   void widen_fov           () { scene.view.params.fov += 1.; }
   void shrink_fov          () { scene.view.params.fov -= 1.; }
   void increase_radius     () { scene.view.params.rc += 0.1; }
@@ -78,6 +79,12 @@ public:
   void rotate_light_east  ();
   void movie              ();
   void create (const glgrib_options &);
+
+  class glgrib_window * clone ();
+  bool isClosed () { return closed; }
+
+private:
+  void createGFLWwindow (GLFWwindow * = NULL);
 };
 
 #endif

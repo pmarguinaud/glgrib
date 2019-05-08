@@ -31,6 +31,9 @@ void glgrib_scene::setLightShader (GLuint programID) const
 
 void glgrib_scene::display_obj (const glgrib_object * obj) const
 {
+  if (! obj->isReady ())
+    return;
+
   const glgrib_program * program = obj->get_program ();
   program->use ();
   view.setMVP (program->matrixID);
@@ -45,8 +48,10 @@ void glgrib_scene::display () const
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
   hidden.end ();
-  if (landscape && (hidden.find (landscape) == hidden.end ()))
-    display_obj (landscape);
+  if ((hidden.find (&landscape) == hidden.end ()))
+    {
+      display_obj (&landscape);
+    }
 
   if (coastlines && (hidden.find (coastlines) == hidden.end ()))
     display_obj (coastlines);
@@ -57,7 +62,11 @@ void glgrib_scene::display () const
   for (int i = 0; i < fieldlist.size (); i++)
     {
       glgrib_field * fld = fieldlist[i];
-      if (fld && (hidden.find (fld) == hidden.end ()))
+      if (fld == NULL)
+        continue;
+      if (! fld->isReady ())
+        continue;
+      if (hidden.find (fld) == hidden.end ())
         {
           const glgrib_program * program = fld->get_program ();
           program->use ();

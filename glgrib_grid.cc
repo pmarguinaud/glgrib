@@ -104,6 +104,8 @@ void glgrib_grid::init (const glgrib_options & opts)
 
   free (ind);
   free (xyz);
+
+  setReady ();
 }
 
 void glgrib_grid::render (const glgrib_view * view) const

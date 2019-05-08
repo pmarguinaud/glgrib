@@ -57,6 +57,8 @@ void glgrib_field::init (const std::string & field, const glgrib_options & o, co
   def_from_vertexbuffer_col_elementbuffer (col, geom);
 
   free (col);
+
+  setReady ();
 }
 
 glgrib_field_display_options::glgrib_field_display_options ()

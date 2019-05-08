@@ -28,14 +28,12 @@ def (rotate)
 
 def (wireframe)
 {
-  if (gwindow->scene.landscape)
-    gwindow->scene.landscape->toggle_wireframe ();
+  gwindow->toggle_wireframe ();
 }
 
 def (flat)
 {
-  if (gwindow->scene.landscape != NULL)
-    gwindow->scene.landscape->toggle_flat (); 
+  gwindow->toggle_flat (); 
 }
 
 def (close)

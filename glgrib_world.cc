@@ -7,7 +7,7 @@
 void glgrib_world::def_from_vertexbuffer_col_elementbuffer 
   (const glgrib_opengl_buffer_ptr colorbuffer, const glgrib_geometry_ptr geom)
 {
-  np = geom->np;
+  numberOfPoints = geom->numberOfPoints;
   nt = geom->nt;
 
   glGenVertexArrays (1, &VertexArrayID);

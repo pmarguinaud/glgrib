@@ -275,7 +275,7 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
   glgauss (Nj, pl, ind, nstripe, indoff);
       
   xyz = (float *)malloc (3 * sizeof (float) * v_len);
-  np  = v_len;
+  numberOfPoints  = v_len;
 
   int iglooff[Nj];
   iglooff[0] = 0;
@@ -321,7 +321,7 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
   if (opts.landscape.orography > 0.0f)
     free (v);
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * np * sizeof (float), xyz);
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
   elementbuffer = new_glgrib_opengl_buffer_ptr (3 * nt * sizeof (unsigned int), ind);
 
   free (xyz); xyz = NULL;

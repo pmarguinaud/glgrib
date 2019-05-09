@@ -70,15 +70,15 @@ void glgrib_field::init (const std::string & field, const glgrib_options & o, co
   glgrib_load (field, &data, &valmin, &valmax, &valmis);
   values = new_glgrib_field_float_buffer_ptr (data);
 
-  col = (unsigned char *)malloc (ncol * geom->np * sizeof (unsigned char));
+  col = (unsigned char *)malloc (ncol * geom->numberOfPoints * sizeof (unsigned char));
 
-  for (int i = 0; i < geom->np; i++)
+  for (int i = 0; i < geom->numberOfPoints; i++)
     if (data[i] == valmis)
       col[i] = 0;
     else
       col[i] = 1 + (int)(254 * (data[i] - valmin)/(valmax - valmin));
 
-  colorbuffer = new_glgrib_opengl_buffer_ptr (ncol * geom->np * sizeof (unsigned char), col);
+  colorbuffer = new_glgrib_opengl_buffer_ptr (ncol * geom->numberOfPoints * sizeof (unsigned char), col);
 
   def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
 

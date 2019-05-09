@@ -7,7 +7,6 @@
 
 using namespace glm;
 
-
 void glgrib_scene::setLightShader (GLuint programID) const
 {
   int lightid = glGetUniformLocation (programID, "light");

@@ -61,8 +61,7 @@ void x11_display (const glgrib_options & opts)
 
       gwindow->scene.fieldoptslist.push_back (fldopts);
   
-      gwindow->scene.setField (&gwindow->scene.fieldlist[i]);
-      gwindow->scene.currentFieldOpts = &gwindow->scene.fieldoptslist[i];
+      gwindow->scene.setCurrentFieldRank (i);
     }
 
 

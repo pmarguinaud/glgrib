@@ -26,7 +26,7 @@ void glgrib_grid::init (const glgrib_options & opts)
   unsigned int * ind = NULL;
 
   int ip = 0, il = 0;
-  np = 0;
+  numberOfPoints = 0;
   nl = 0;
 
   float r = 1.005;
@@ -62,7 +62,7 @@ void glgrib_grid::init (const glgrib_options & opts)
                 }
               else
                 {
-                  np++;
+                  numberOfPoints++;
                   if (jlat < nlatv)
                     nl++;
                 }
@@ -96,7 +96,7 @@ void glgrib_grid::init (const glgrib_options & opts)
                 }
               else
                 {
-                  np++;
+                  numberOfPoints++;
                   nl++;
                 }
 
@@ -105,13 +105,13 @@ void glgrib_grid::init (const glgrib_options & opts)
 
       if (pass == 0)
         {
-          xyz = (float *)malloc (3 * np * sizeof (float));
+          xyz = (float *)malloc (3 * numberOfPoints * sizeof (float));
           ind = (unsigned int *)malloc (nl * 2 * sizeof (unsigned int));
 	}
 
     }
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * np * sizeof (float), xyz);
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
   elementbuffer = new_glgrib_opengl_buffer_ptr (2 * nl * sizeof (unsigned int), ind);
 
   def_from_xyz_col_ind (vertexbuffer, colorbuffer, elementbuffer);

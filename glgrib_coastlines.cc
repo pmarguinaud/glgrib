@@ -47,7 +47,7 @@ void glgrib_coastlines::init (const glgrib_options & opts)
   point_t * pl = NULL;
   FILE * fp = NULL;
   int ip = 0, il = 0;
-  np = 0;
+  numberOfPoints = 0;
   nl = 0;
 
   float r = 1.005;
@@ -66,7 +66,7 @@ void glgrib_coastlines::init (const glgrib_options & opts)
 	    {
 	      if (pass == 0)
                 {
-                  np += h.n;
+                  numberOfPoints += h.n;
 	          nl += h.n;
 	        }
 	      else
@@ -97,7 +97,7 @@ void glgrib_coastlines::init (const glgrib_options & opts)
 
       if (pass == 0)
         {
-          xyz = (float *)malloc (3 * np * sizeof (float));
+          xyz = (float *)malloc (3 * numberOfPoints * sizeof (float));
           ind = (unsigned int *)malloc (nl * 2 * sizeof (unsigned int));
 	}
 
@@ -106,7 +106,7 @@ void glgrib_coastlines::init (const glgrib_options & opts)
 
   free (pl);
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * np * sizeof (float), xyz);
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
   elementbuffer = new_glgrib_opengl_buffer_ptr (2 * nl * sizeof (unsigned int), ind);
 
   def_from_xyz_col_ind (vertexbuffer, colorbuffer, elementbuffer);

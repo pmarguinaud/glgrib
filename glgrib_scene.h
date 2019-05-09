@@ -21,12 +21,18 @@ public:
   std::vector<glgrib_field_display_options> fieldoptslist;
   glgrib_view view;
   glgrib_landscape landscape;
-  glgrib_field * currentField = NULL;
-  glgrib_field_display_options * currentFieldOpts = NULL;
   glgrib_coastlines coastlines;
   glgrib_grid grid;
-  void setField (glgrib_field * f) { currentField = f; }
   std::set <const glgrib_object*> hidden;
+
+  glgrib_field * getCurrentField () 
+    { 
+      return currentFieldRank < fieldlist.size () ? &fieldlist[currentFieldRank] : NULL; 
+    }
+  glgrib_field_display_options * getCurrentFieldOpts () 
+    { 
+      return currentFieldRank < fieldoptslist.size () ? &fieldoptslist[currentFieldRank] : NULL; 
+    }
 
   void getLightPos (float * x, float * y)
     {
@@ -49,6 +55,7 @@ public:
   bool rotate_light = false;
   void toggleMovie () { movie = ! movie; movie_index = 0; }
   void setMovie () { movie = true; movie_index = 0; }
+  void setCurrentFieldRank (int r) { currentFieldRank = r; }
 
 private:
   float lightx = 0., lighty = 0.;
@@ -57,6 +64,7 @@ private:
   int movie_index = 0;
   double movie_time = 0;
   void setLightShader (GLuint) const;
+  int currentFieldRank = 0;
 };
 
 #endif

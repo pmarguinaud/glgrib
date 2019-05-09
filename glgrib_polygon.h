@@ -18,7 +18,7 @@ public:
   GLuint VertexArrayID;
   glgrib_opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer;
   unsigned int ncol, nl;
-  int np;
+  int numberOfPoints;
 };
 
 #endif

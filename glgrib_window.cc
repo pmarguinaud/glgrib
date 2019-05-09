@@ -185,16 +185,17 @@ void glgrib_window::toggle_light ()
 
 void glgrib_window::next_palette ()
 {
-  glgrib_field_display_options * fopt = scene.currentFieldOpts;
-  fopt->palette = get_next_palette (fopt->palette);
+  glgrib_field_display_options * fopt = scene.getCurrentFieldOpts ();
+  if (fopt)
+    fopt->palette = get_next_palette (fopt->palette);
 }
 
 void glgrib_window::scale_palette_up ()
 {
-  glgrib_field * fld  = scene.currentField;
+  glgrib_field * fld  = scene.getCurrentField ();
   if (fld == NULL)
     return;
-  glgrib_field_display_options * fopt = scene.currentFieldOpts;
+  glgrib_field_display_options * fopt = scene.getCurrentFieldOpts ();
   if (! fopt->palette.hasMin ()) fopt->palette.min = fld->valmin;
   if (! fopt->palette.hasMax ()) fopt->palette.max = fld->valmax;
   float d = fopt->palette.max - fopt->palette.min;
@@ -204,10 +205,10 @@ void glgrib_window::scale_palette_up ()
 
 void glgrib_window::scale_palette_down ()
 {
-  glgrib_field * fld  = scene.currentField;
+  glgrib_field * fld  = scene.getCurrentField ();
   if (fld == NULL)
     return;
-  glgrib_field_display_options * fopt = scene.currentFieldOpts;
+  glgrib_field_display_options * fopt = scene.getCurrentFieldOpts ();
   if (! fopt->palette.hasMin ()) fopt->palette.min = fld->valmin;
   if (! fopt->palette.hasMax ()) fopt->palette.max = fld->valmax;
   float d = fopt->palette.max - fopt->palette.min;
@@ -217,26 +218,32 @@ void glgrib_window::scale_palette_down ()
 
 void glgrib_window::select_field (int ifield)
 {
-  scene.currentField     = &scene.fieldlist[ifield];
-  scene.currentFieldOpts = &scene.fieldoptslist[ifield];
+  scene.setCurrentFieldRank (ifield);
 }
 
 void glgrib_window::scale_field_down ()
 {
-  scene.currentFieldOpts->scale -= 0.01;
+  glgrib_field_display_options * fopt = scene.getCurrentFieldOpts ();
+  if (fopt)
+    fopt->scale -= 0.01;
 }
 
 void glgrib_window::scale_field_up ()
 {
-  scene.currentFieldOpts->scale += 0.01;
+  glgrib_field_display_options * fopt = scene.getCurrentFieldOpts ();
+  if (fopt)
+    fopt->scale += 0.01;
 }
 
 void glgrib_window::toggle_hide_field ()
 {
-  if (scene.hidden.find (scene.currentField) != scene.hidden.end ())
-    scene.hidden.erase (scene.currentField);
+  glgrib_field * fld = scene.getCurrentField ();
+  if (fld == NULL)
+    return;
+  if (scene.hidden.find (fld) != scene.hidden.end ())
+    scene.hidden.erase (fld);
   else
-    scene.hidden.insert (scene.currentField);
+    scene.hidden.insert (fld);
 }
 
 void glgrib_window::hide_all_fields ()
@@ -340,12 +347,14 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
   if (get_latlon_from_cursor (&lat, &lon))
     {
       char title[128];
-      const glgrib_field * field = scene.currentField;
-      int jglo = field->geometry->latlon2index (lat, lon);
-      float value = field->getValue (jglo);
-
-      sprintf (title, "(%7.2f, %7.2f, %f)", lat, lon, value);
-      glfwSetWindowTitle (window, title);
+      const glgrib_field * field = scene.getCurrentField ();
+      if (field)
+        {
+          int jglo = field->geometry->latlon2index (lat, lon);
+          float value = field->getValue (jglo);
+          sprintf (title, "(%7.2f, %7.2f, %f)", lat, lon, value);
+          glfwSetWindowTitle (window, title);
+        }
     }
   else
     {

@@ -14,7 +14,7 @@ public:
   virtual int size () const = 0;
   virtual int latlon2index (float, float) const = 0;
   virtual ~glgrib_geometry ();
-  int np; 
+  int numberOfPoints; 
   unsigned int nt;
   glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
   virtual std::string md5 () const = 0;

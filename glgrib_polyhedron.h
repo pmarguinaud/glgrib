@@ -16,7 +16,7 @@ public:
   GLuint VertexArrayID;
   glgrib_opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer;
   unsigned int ncol, nt;
-  int np;
+  int numberOfPoints;
   bool wireframe = false;
   void toggle_wireframe () { wireframe = ! wireframe; }
 protected:

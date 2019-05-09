@@ -8,3 +8,5 @@ Refactor glgrib_polygon::def_from_xyz_col_ind : take opengl_buffer as arguments.
 Add methods to opengl_buffer
 rename nt -> numberOfTriangles
 rename np -> numberOfPoints
+
+Accessor for scene.hidden

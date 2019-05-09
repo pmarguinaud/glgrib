@@ -9,9 +9,9 @@ void glgrib_polygon::def_from_xyz_col_ind
    glgrib_opengl_buffer_ptr elementbuffer)
 {
 #ifdef UNDEF
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * np * sizeof (float), xyz);
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
   if (col != NULL)
-    colorbuffer = new_glgrib_opengl_buffer_ptr (ncol * np * sizeof (unsigned char), col);
+    colorbuffer = new_glgrib_opengl_buffer_ptr (ncol * numberOfPoints * sizeof (unsigned char), col);
   elementbuffer = new_glgrib_opengl_buffer_ptr (2 * nl * sizeof (unsigned int), ind);
 #endif
 

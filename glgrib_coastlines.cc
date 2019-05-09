@@ -38,7 +38,7 @@ typedef struct point_t
 void glgrib_coastlines::init (const glgrib_options & opts)
 {
 
-  ncol = use_alpha () ? 4 : 3;
+  numberOfColors = use_alpha () ? 4 : 3;
 
   float * xyz = NULL;
   unsigned int * ind = NULL;

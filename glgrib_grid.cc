@@ -20,7 +20,7 @@ glgrib_grid & glgrib_grid::operator= (const glgrib_grid & grid)
 void glgrib_grid::init (const glgrib_options & opts)
 {
 
-  ncol = use_alpha () ? 4 : 3;
+  numberOfColors = use_alpha () ? 4 : 3;
 
   float * xyz = NULL;
   unsigned int * ind = NULL;

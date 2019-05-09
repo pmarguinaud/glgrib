@@ -21,7 +21,7 @@ void glgrib_world::def_from_vertexbuffer_col_elementbuffer
     {
       glBindBuffer (GL_ARRAY_BUFFER, colorbuffer->id ());
       glEnableVertexAttribArray (1); 
-      glVertexAttribPointer (1, ncol, GL_UNSIGNED_BYTE, GL_TRUE, ncol * sizeof (unsigned char), NULL); 
+      glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, numberOfColors * sizeof (unsigned char), NULL); 
     }
 
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, geom->elementbuffer->id ());

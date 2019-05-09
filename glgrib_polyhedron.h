@@ -15,7 +15,7 @@ public:
   void def_from_xyz_col_ind (const float *, unsigned char *, unsigned int *);
   GLuint VertexArrayID;
   glgrib_opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer;
-  unsigned int ncol, nt;
+  unsigned int numberOfColors, nt;
   int numberOfPoints;
   bool wireframe = false;
   void toggle_wireframe () { wireframe = ! wireframe; }

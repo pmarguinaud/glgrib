@@ -11,7 +11,7 @@ void glgrib_polygon::def_from_xyz_col_ind
 #ifdef UNDEF
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
   if (col != NULL)
-    colorbuffer = new_glgrib_opengl_buffer_ptr (ncol * numberOfPoints * sizeof (unsigned char), col);
+    colorbuffer = new_glgrib_opengl_buffer_ptr (numberOfColors * numberOfPoints * sizeof (unsigned char), col);
   elementbuffer = new_glgrib_opengl_buffer_ptr (2 * nl * sizeof (unsigned int), ind);
 #endif
 
@@ -26,7 +26,7 @@ void glgrib_polygon::def_from_xyz_col_ind
     {
       glBindBuffer (GL_ARRAY_BUFFER, colorbuffer->id ());
       glEnableVertexAttribArray (1); 
-      glVertexAttribPointer (1, ncol, GL_UNSIGNED_BYTE, GL_TRUE, ncol * sizeof (unsigned char), NULL);
+      glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, numberOfColors * sizeof (unsigned char), NULL);
     }
 
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer->id ());

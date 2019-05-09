@@ -16,16 +16,16 @@ void glgrib_bmp (const char * file, unsigned char ** rgb, int * width, int * hei
   fread (h, sizeof (h), 1, fp);
   
   int ioff = S4 (&h[10]); 
-  int ncol = S4 (&h[18]);
+  int numberOfColors = S4 (&h[18]);
   int nrow = S4 (&h[22]);
   
-  *rgb = (unsigned char *)malloc (3 * ncol * nrow * sizeof (unsigned char));
+  *rgb = (unsigned char *)malloc (3 * numberOfColors * nrow * sizeof (unsigned char));
   
   fseek (fp, ioff, SEEK_SET);
 
-  fread ((*rgb), 3 * ncol * nrow, 1, fp);
+  fread ((*rgb), 3 * numberOfColors * nrow, 1, fp);
 
-  for (int i = 0; i < ncol * nrow; i++)
+  for (int i = 0; i < numberOfColors * nrow; i++)
     {
       unsigned char r = (*rgb)[3*i+2];
       unsigned char g = (*rgb)[3*i+1];
@@ -37,7 +37,7 @@ void glgrib_bmp (const char * file, unsigned char ** rgb, int * width, int * hei
   
   fclose (fp);
 
-  *width = ncol;
+  *width = numberOfColors;
   *height = nrow;
 }
   

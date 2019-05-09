@@ -13,9 +13,11 @@ public:
   ~glgrib_opengl_buffer ();
   GLuint id () { return id_; }
   bool allocated () { return allocated_; }
+  void bind (GLenum);
 private:
   bool allocated_ = false;
   GLuint id_;
+  size_t size_;
 };
 
 typedef std::shared_ptr<glgrib_opengl_buffer> glgrib_opengl_buffer_ptr;

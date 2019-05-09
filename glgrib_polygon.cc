@@ -8,28 +8,22 @@ void glgrib_polygon::def_from_xyz_col_ind
    glgrib_opengl_buffer_ptr colorbuffer, 
    glgrib_opengl_buffer_ptr elementbuffer)
 {
-#ifdef UNDEF
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
-  if (col != NULL)
-    colorbuffer = new_glgrib_opengl_buffer_ptr (numberOfColors * numberOfPoints * sizeof (unsigned char), col);
-  elementbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfLines * sizeof (unsigned int), ind);
-#endif
 
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
   
-  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer->id ());
+  vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
 
-  if (colorbuffer)
+  if (colorbuffer && colorbuffer->allocated ())
     {
-      glBindBuffer (GL_ARRAY_BUFFER, colorbuffer->id ());
+      colorbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (1); 
       glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, numberOfColors * sizeof (unsigned char), NULL);
     }
 
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer->id ());
+  elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 
   glBindVertexArray (0);
 }

@@ -16,15 +16,15 @@ void glgrib_polyhedron::def_from_xyz_col_ind (const float * xyz, unsigned char *
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
 
-  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer->id ());
+  vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
   
-  glBindBuffer (GL_ARRAY_BUFFER, colorbuffer->id ());
+  colorbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, numberOfColors * sizeof (unsigned char), NULL); 
   
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer->id ());
+  elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 
   glBindVertexArray (0);
 }

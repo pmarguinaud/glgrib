@@ -13,12 +13,18 @@ void gl_init ()
   glDepthFunc (GL_LESS); 
 }
   
+void glgrib_opengl_buffer::bind (GLenum target)
+{
+  glBindBuffer (target, id_);
+}
+
 glgrib_opengl_buffer::glgrib_opengl_buffer (size_t size, const void * data)
 {
   glGenBuffers (1, &id_);
   glBindBuffer (GL_ARRAY_BUFFER, id_);
   glBufferData (GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
   allocated_ = true;
+  size_ = size;
 }
 
 glgrib_opengl_buffer::~glgrib_opengl_buffer ()

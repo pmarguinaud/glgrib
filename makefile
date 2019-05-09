@@ -26,8 +26,12 @@ glwhat.x: glwhat.cc
 test_bw: glgrib.x
 	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field.list t1198c2.2/N.grb  --field.scale 1.03  --grid.resolution 0 --coastlines.path ""
 
-test_3l: glgrib.x
+test_3l_t1198: glgrib.x
 	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field.list t1198c2.2/SURFNEBUL.BASSE.grb t1198c2.2/SURFNEBUL.MOYENN.grb t1198c2.2/SURFNEBUL.HAUTE.grb \
+		--field.scale 1.03 1.04 1.05  --grid.resolution 0 --coastlines.path ""  --field.palette cloud_auto cloud_auto cloud_auto
+
+test_3l_t1798: glgrib.x
+	./glgrib.x --landscape.geometry t1798/Z.grb --field.list t1798/SURFNEBUL.BASSE.grb t1798/SURFNEBUL.MOYENN.grb t1798/SURFNEBUL.HAUTE.grb \
 		--field.scale 1.03 1.04 1.05  --grid.resolution 0 --coastlines.path ""  --field.palette cloud_auto cloud_auto cloud_auto
 
 test_movie: glgrib.x

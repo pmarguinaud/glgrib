@@ -11,7 +11,7 @@ void glgrib_polyhedron::def_from_xyz_col_ind (const float * xyz, unsigned char *
 
   vertexbuffer  = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
   colorbuffer   = new_glgrib_opengl_buffer_ptr (numberOfColors * numberOfPoints * sizeof (unsigned char), col);
-  elementbuffer = new_glgrib_opengl_buffer_ptr (3 * nt * sizeof (unsigned int), ind);
+  elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (unsigned int), ind);
 
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
@@ -34,7 +34,7 @@ void glgrib_polyhedron::render (const glgrib_view * view) const
   glBindVertexArray (VertexArrayID);
   if (wireframe)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
-  glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
+  glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
   glBindVertexArray (0);
   if (wireframe)
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);

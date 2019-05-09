@@ -84,7 +84,7 @@ public:
   bool isClosed () { return closed; }
   bool isCloned () { return cloned; }
 
-private:
+protected:
   void createGFLWwindow (GLFWwindow * = NULL);
   bool closed = false;
   bool cloned = false;

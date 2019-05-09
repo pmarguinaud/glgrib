@@ -8,7 +8,7 @@ void glgrib_world::def_from_vertexbuffer_col_elementbuffer
   (const glgrib_opengl_buffer_ptr colorbuffer, const glgrib_geometry_ptr geom)
 {
   numberOfPoints = geom->numberOfPoints;
-  nt = geom->nt;
+  numberOfTriangles = geom->numberOfTriangles;
 
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);

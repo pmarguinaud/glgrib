@@ -1,12 +1,5 @@
-Multiple windows
-Fields, landscape, grid, coastlines owned by scene, and with a copy constructor.
 Make movie with a changing field
 
-Move gl_init in glgrib_window clone, creation
-Refactor glgrib_polygon::def_from_xyz_col_ind : take opengl_buffer as arguments.
-
 Add methods to opengl_buffer
-rename nt -> numberOfTriangles
-rename np -> numberOfPoints
 
 Accessor for scene.hidden

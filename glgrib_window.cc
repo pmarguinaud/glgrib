@@ -240,22 +240,22 @@ void glgrib_window::toggle_hide_field ()
   glgrib_field * fld = scene.getCurrentField ();
   if (fld == NULL)
     return;
-  if (scene.hidden.find (fld) != scene.hidden.end ())
-    scene.hidden.erase (fld);
+  if (scene.isVisible (fld))
+    scene.hide (fld);
   else
-    scene.hidden.insert (fld);
+    scene.show (fld);
 }
 
 void glgrib_window::hide_all_fields ()
 {
   for (int i = 0; i < scene.fieldlist.size (); i++)
-    scene.hidden.insert (&scene.fieldlist[i]);
+    scene.hide (&scene.fieldlist[i]);
 }
 
 void glgrib_window::show_all_fields ()
 {
   for (int i = 0; i < scene.fieldlist.size (); i++)
-    scene.hidden.erase (&scene.fieldlist[i]);
+    scene.show (&scene.fieldlist[i]);
 }
 
 int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)
@@ -500,6 +500,7 @@ void glgrib_window::createGFLWwindow (GLFWwindow * context)
     }
 
   makeCurrent ();
+  gl_init ();
   
   glewExperimental = true; // Needed for core profile
   if (glewInit () != GLEW_OK) 
@@ -534,8 +535,6 @@ glgrib_window * glgrib_window::clone ()
   COPY (title);
 
   w->createGFLWwindow (window); // use already existing context
-  w->makeCurrent ();
-  gl_init ();
 
   COPY (scene);                 // copy the scene; invoke operator=
 #undef COPY

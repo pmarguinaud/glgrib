@@ -12,7 +12,7 @@ void glgrib_polygon::def_from_xyz_col_ind
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
   if (col != NULL)
     colorbuffer = new_glgrib_opengl_buffer_ptr (numberOfColors * numberOfPoints * sizeof (unsigned char), col);
-  elementbuffer = new_glgrib_opengl_buffer_ptr (2 * nl * sizeof (unsigned int), ind);
+  elementbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfLines * sizeof (unsigned int), ind);
 #endif
 
   glGenVertexArrays (1, &VertexArrayID);
@@ -37,7 +37,7 @@ void glgrib_polygon::def_from_xyz_col_ind
 void glgrib_polygon::render (const glgrib_view * view) const
 {
   glBindVertexArray (VertexArrayID);
-  glDrawElements (GL_LINES, 2 * nl, GL_UNSIGNED_INT, NULL);
+  glDrawElements (GL_LINES, 2 * numberOfLines, GL_UNSIGNED_INT, NULL);
   glBindVertexArray (0);
 }
 

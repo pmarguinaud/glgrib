@@ -34,8 +34,6 @@ void x11_display (const glgrib_options & opts)
   
   gwindow->scene.view.setViewport (opts);
   
-  gl_init ();
-
   glgrib_geometry_ptr geom = glgrib_geometry_load (opts);
 
   if (opts.landscape.path != "")

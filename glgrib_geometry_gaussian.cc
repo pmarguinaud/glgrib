@@ -256,9 +256,9 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
   codes_get_long_array (h, "pl", pl, &pl_len);
 
   // Compute number of triangles
-  nt = 0;
+  numberOfTriangles = 0;
   for (int jlat = 1; jlat < Nj; jlat++)
-    nt += pl[jlat-1] + pl[jlat];
+    numberOfTriangles += pl[jlat-1] + pl[jlat];
   
   // Compute number of triangles per stripe
   for (int istripe = 0; istripe < nstripe; istripe++)
@@ -270,7 +270,7 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
         indoff[istripe] += pl[jlat-1] + pl[jlat];
     }
 
-  ind = (unsigned int *)malloc (3 * nt * sizeof (unsigned int));
+  ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
   // OpenMP generation of triangles
   glgauss (Nj, pl, ind, nstripe, indoff);
       
@@ -322,7 +322,7 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
     free (v);
 
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
-  elementbuffer = new_glgrib_opengl_buffer_ptr (3 * nt * sizeof (unsigned int), ind);
+  elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (unsigned int), ind);
 
   free (xyz); xyz = NULL;
   free (ind); ind = NULL;

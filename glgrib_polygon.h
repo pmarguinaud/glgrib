@@ -17,7 +17,7 @@ public:
   virtual ~glgrib_polygon ();
   GLuint VertexArrayID;
   glgrib_opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer;
-  unsigned int numberOfColors, nl;
+  unsigned int numberOfColors, numberOfLines;
   int numberOfPoints;
 };
 

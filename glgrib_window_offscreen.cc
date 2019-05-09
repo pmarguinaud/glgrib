@@ -15,4 +15,5 @@ void glgrib_window_offscreen::run (class glgrib_shell * shell)
       scene.update ();
       framebuffer ();
     }
+  closed = true;
 }

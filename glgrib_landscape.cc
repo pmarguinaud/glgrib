@@ -13,7 +13,6 @@ glgrib_landscape & glgrib_landscape::operator= (const glgrib_landscape & landsca
     {
       glgrib_world::operator= (landscape);
       ready_ = false;
-      std::cout << " glgrib_landscape::operator= " << std::endl;
       texture = landscape.texture;
       flat    = landscape.flat;
       def_from_vertexbuffer_col_elementbuffer (NULL, geometry);

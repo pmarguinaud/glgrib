@@ -38,7 +38,6 @@ glgrib_field::glgrib_field (const glgrib_field & field)
 {
   if (field.isReady ())
     {
-      std::cout << " glgrib_field copy " << std::endl;
       // Cleanup already existing VAOs
       cleanup ();
       operator= (field);
@@ -49,7 +48,6 @@ glgrib_field & glgrib_field::operator= (const glgrib_field & field)
 {
   if ((this != &field) && field.isReady ())
     {
-      std::cout << " glgrib_field::operator= " << std::endl;
       glgrib_world::operator= (field);
       ready_ = false;
       valmis = field.valmis;

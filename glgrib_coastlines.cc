@@ -12,7 +12,6 @@ glgrib_coastlines & glgrib_coastlines::operator= (const glgrib_coastlines & coas
     {
       glgrib_polygon::operator= (coastlines);
       ready_ = false;
-      std::cout << " glgrib_coastlines::operator= " << std::endl;
       def_from_xyz_col_ind (vertexbuffer, colorbuffer, elementbuffer);
       setReady ();
     }

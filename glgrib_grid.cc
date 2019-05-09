@@ -12,7 +12,6 @@ glgrib_grid & glgrib_grid::operator= (const glgrib_grid & grid)
     {
       glgrib_polygon::operator= (grid);
       ready_ = false;
-      std::cout << " glgrib_grid::operator= " << std::endl;
       def_from_xyz_col_ind (vertexbuffer, colorbuffer, elementbuffer);
       setReady ();
     }

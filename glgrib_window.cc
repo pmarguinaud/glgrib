@@ -125,11 +125,17 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (CONTROL, LEFT  , rotate_light_west        ());
       if_key (CONTROL, RIGHT , rotate_light_east        ());
       if_key (NONE,    K,      movie                    ());
+      if_key (CONTROL, C,      duplicate                ());
 
 
     }
 
 #undef if_key
+}
+
+void glgrib_window::duplicate ()
+{
+  cloned = true;
 }
 
 void glgrib_window::movie ()
@@ -525,6 +531,8 @@ glgrib_window * glgrib_window::clone ()
   COPY (scene);                 // copy the scene; invoke operator=
 #undef COPY
   w->scene.view.setViewport (width, height);
+
+  cloned = false;
 
   return w;
 }

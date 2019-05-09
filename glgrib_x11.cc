@@ -14,6 +14,7 @@
 #include "glgrib_geometry.h"
 
 #include <iostream>
+#include <set>
 
 void x11_display (const glgrib_options & opts)
 {
@@ -78,26 +79,30 @@ void x11_display (const glgrib_options & opts)
     }
   else
     {
-      glgrib_window * gwindow1 = NULL;
-      while (1)
+      typedef std::set<glgrib_window*> wset_t;
+      wset_t wset;
+      wset.insert (gwindow);
+
+      while (! wset.empty ())
         {
-          gwindow->run ();
-          if (gwindow->isClosed ())
-            break;
-          if (gwindow1 == NULL)
+          for (wset_t::iterator it = wset.begin (); it != wset.end (); it++)
             {
-              gwindow1 = gwindow->clone ();
-            }
-          else
-            {
-              gwindow1->run ();
-              if (gwindow1->isClosed ())
-                break;
-            }
-        }
-       delete gwindow;
-       if (gwindow1)
-         delete gwindow1;
+              glgrib_window * w = *it;
+              w->run ();
+              if (w->isClosed ())
+	        {
+                  wset.erase (w);
+		  delete w;
+                  break;
+	        }
+              if (w->isCloned ())
+	        {
+                  glgrib_window * w1 = w->clone ();
+		  wset.insert (w1);
+                  break;
+	        }
+	    }
+	}
     }
 
   glfwTerminate ();

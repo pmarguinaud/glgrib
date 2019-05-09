@@ -28,7 +28,6 @@ public:
   bool cursorpos = false;
   std::string title = "";
   GLFWwindow * window = NULL;
-  bool closed = false;
 
   void toggle_cursorpos_display ();
   void framebuffer              ();
@@ -78,13 +77,17 @@ public:
   void rotate_light_west  ();
   void rotate_light_east  ();
   void movie              ();
+  void duplicate          ();
   void create (const glgrib_options &);
 
   class glgrib_window * clone ();
   bool isClosed () { return closed; }
+  bool isCloned () { return cloned; }
 
 private:
   void createGFLWwindow (GLFWwindow * = NULL);
+  bool closed = false;
+  bool cloned = false;
 };
 
 #endif

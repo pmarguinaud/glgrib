@@ -395,7 +395,6 @@ if ((button == GLFW_MOUSE_BUTTON_##k) && (mm == mods)) \
     {
       if_click (NONE,    LEFT, centerViewAtCursorPos ());
       if_click (CONTROL, LEFT, centerLightAtCursorPos ());
-
     }
 }
 
@@ -444,10 +443,10 @@ void glgrib_window::run (glgrib_shell * shell)
 }
 
 
-void glgrib_window::resize (int width, int height)
+void glgrib_window::resize (int w, int h)
 {
-  width = width;
-  height = height;
+  width = w;
+  height = h;
   makeCurrent ();
   glViewport (0, 0, width, height);
   scene.view.setViewport (width, height);

@@ -2,6 +2,7 @@
 #include "glgrib_opengl.h"
 
 #include <iostream>
+#include <fstream>
 #include <stdio.h>
 
 std::string palette_directory;
@@ -9,9 +10,11 @@ std::string palette_directory;
 typedef std::map<std::string,glgrib_palette> name2palette_t;
 static name2palette_t name2palette;
 
-void glgrib_palette::register_ (const glgrib_palette & p)
+glgrib_palette & glgrib_palette::register_ (const glgrib_palette & p)
 {
   name2palette.insert (std::pair<std::string, glgrib_palette>(name, p));
+  name2palette_t::iterator it = name2palette.find (name);
+  return it->second;
 }
 
 static
@@ -30,11 +33,30 @@ glgrib_palette & get_palette_by_name (const std::string & name)
   if (it != name2palette.end ())
     return it->second;
 
-//std::string pp = palette_directory + "/" + name + ".dat";
-//std::iftream fh (pp);
-//if (! fh.is_open ())
-
+  std::string pp = palette_directory + "/" + name + ".dat";
+  std::ifstream fh (pp);
+  if (fh.is_open ())
+    {
+      glgrib_palette p = glgrib_palette (fh);
+      p.name = name;
+      return p.register_ (p);
+    }
+    
   return palette_white_black;
+}
+
+glgrib_palette::glgrib_palette (std::ifstream & fh)
+{
+  std::string head;
+  std::getline (fh, head);
+  if (head[0] == '-')
+    {
+    }
+  int r, g, b, a;
+  fh >> r >> g >> b >> a;
+  rgba_mis = glgrib_rgba ((byte)r, (byte)g, (byte)b, (byte)a);
+  while (fh >> r >> g >> b >> a)
+    rgba.push_back (glgrib_rgba ((byte)r, (byte)g, (byte)b, (byte)a));
 }
 
 glgrib_palette & get_next_palette (const glgrib_palette & p)

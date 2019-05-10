@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <map>
 #include <limits>
@@ -35,6 +36,7 @@ public:
   float getMax () const { return max; }
   bool hasMin () const { return min != std::numeric_limits<float>::max(); }
   bool hasMax () const { return max != std::numeric_limits<float>::min(); }
+  glgrib_palette (std::ifstream &);
   glgrib_palette () {}
   glgrib_palette (const std::string & n, bool) : name (n)
   {
@@ -60,6 +62,7 @@ public:
   }
   friend std::ostream & operator << (std::ostream &, const glgrib_palette &);
   void setRGBA255 (GLuint) const;
+  glgrib_palette & register_ (const glgrib_palette &);
 private:
   template <typename T, typename... Types> 
   glgrib_palette (const std::string & n, bool record, T r, T g, T b, T a, Types... vars)
@@ -70,7 +73,6 @@ private:
       rgba.push_back (*it);
     name = n;
   }
-  void register_ (const glgrib_palette &);
 };
 
 

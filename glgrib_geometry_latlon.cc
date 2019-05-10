@@ -117,8 +117,14 @@ int glgrib_geometry_latlon::latlon2index (float lat, float lon) const
   lat = lat * deg2rad;
   lon = lon * deg2rad;
 
-  int i = (lon - lon0) / dlon;
-  int j = (lat - lat0) / dlat;
+  float dl = lon - lon0;
+  while (dl < 0.)
+    dl += 2 * M_PI;
+  while (dl >= 2 * M_PI)
+    dl -= 2 * M_PI;
+
+  int i = dl / dlon;
+  int j = (lat0 - lat) / dlat;
 
   if ((i < 0) || (i >= Ni))
     return -1;

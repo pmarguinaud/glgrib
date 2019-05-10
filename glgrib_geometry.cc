@@ -1,9 +1,13 @@
 #include "glgrib_geometry.h"
 #include "glgrib_geometry_gaussian.h"
+#include "glgrib_geometry_latlon.h"
+
 #include <stdio.h>
 #include <iostream>
 #include <openssl/md5.h>
+
 #include <map>
+#include <stdexcept>
 
 typedef std::map <std::string,glgrib_geometry_ptr> cache_t;
 static cache_t cache;
@@ -17,7 +21,23 @@ glgrib_geometry_ptr glgrib_geometry_load (const std::string & file,
   in = fopen (file.c_str (), "r");
   codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
 
-  glgrib_geometry_ptr geom = std::make_shared<glgrib_geometry_gaussian> (h);
+  long int gridDefinitionTemplateNumber;
+  codes_get_long (h, "gridDefinitionTemplateNumber", &gridDefinitionTemplateNumber);
+
+  glgrib_geometry_ptr geom;
+ 
+  switch (gridDefinitionTemplateNumber)
+    {
+      case 43:
+        geom = std::make_shared<glgrib_geometry_gaussian> (h);
+	break;
+      case 0:
+        geom = std::make_shared<glgrib_geometry_latlon> (h);
+	break;
+      default:
+        throw std::runtime_error (std::string ("Unexpected gridDefinitionTemplateNumber ") 
+			        + std::to_string (gridDefinitionTemplateNumber));
+    }
 
   auto it = cache.find (geom->md5 ());
   if (it != cache.end ())

@@ -80,6 +80,10 @@ void glgrib_field::init (const std::string & field, const glgrib_options & o)
     else
       col[i] = 1 + (int)(254 * (data[i] - valmin)/(valmax - valmin));
 
+  std::cout << " numberOfPoints = " << geometry->numberOfPoints << std::endl;
+  for (int i = 0; i < geometry->numberOfPoints; i++)
+     col[i] = 255;
+
   colorbuffer = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints * sizeof (unsigned char), col);
 
   def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);

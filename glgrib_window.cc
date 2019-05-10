@@ -255,12 +255,7 @@ void glgrib_window::hide_all_fields ()
 void glgrib_window::show_all_fields ()
 {
   for (int i = 0; i < scene.fieldlist.size (); i++)
-    {
-      std::cout << i << " => " << scene.fieldlist[i].visible () << std::endl;
-      scene.fieldlist[i].show ();
-      std::cout << i << " => " << scene.fieldlist[i].visible () << std::endl;
-
-    }
+    scene.fieldlist[i].show ();
 }
 
 int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)

@@ -5,11 +5,12 @@
 #include <openssl/md5.h>
 #include <map>
 
-typedef std::map <std::string,glgrib_geometry_ptr*> cache_t;
+typedef std::map <std::string,glgrib_geometry_ptr> cache_t;
 static cache_t cache;
 
 
-glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const glgrib_options * opts)
+glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, 
+		                          const glgrib_options * opts)
 {
   FILE * in = NULL;
   int err = 0;
@@ -17,23 +18,36 @@ glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const glgrib
   codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
 
   glgrib_geometry_ptr geom = std::make_shared<glgrib_geometry_gaussian> (h);
-  geom->md5hash = geom->md5 ();
 
-  auto it = cache.find (geom->md5hash);
+  auto it = cache.find (geom->md5 ());
   if (it != cache.end ())
-    geom = *(it->second);
+    {
+      geom = it->second;
+    }
   else
-    geom->init (h, opts);
+    {
+      geom->init (h, opts);
+      cache.insert (std::pair<std::string,glgrib_geometry_ptr>
+		    (geom->md5 (), geom));
+    }
 
   codes_handle_delete (h);
   fclose (in);
+
+  // Remove geometries with a single reference (they only belong to the cache)
+again:
+  for (it = cache.begin (); it != cache.end (); it++)
+    if (it->second.use_count () == 1)
+      {
+        cache.erase (it->second->md5 ());
+        goto again;
+      }
 
   return geom;
 }
 
 glgrib_geometry::~glgrib_geometry ()
 {
-  cache.erase (md5hash);
 }
 
 std::string glgrib_geometry::md5string (const unsigned char md5[]) const

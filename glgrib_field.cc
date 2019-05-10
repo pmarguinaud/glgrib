@@ -60,11 +60,11 @@ glgrib_field & glgrib_field::operator= (const glgrib_field & field)
     }
 }
 
-void glgrib_field::init (const std::string & field, const glgrib_options & o, const glgrib_geometry_ptr geom)
+void glgrib_field::init (const std::string & field, const glgrib_options & o)
 {
   unsigned char * col;
 
-  geometry = geom;
+  geometry = glgrib_geometry_load (field);
 
   numberOfColors = 1;
 
@@ -72,15 +72,15 @@ void glgrib_field::init (const std::string & field, const glgrib_options & o, co
   glgrib_load (field, &data, &valmin, &valmax, &valmis);
   values = new_glgrib_field_float_buffer_ptr (data);
 
-  col = (unsigned char *)malloc (numberOfColors * geom->numberOfPoints * sizeof (unsigned char));
+  col = (unsigned char *)malloc (numberOfColors * geometry->numberOfPoints * sizeof (unsigned char));
 
-  for (int i = 0; i < geom->numberOfPoints; i++)
+  for (int i = 0; i < geometry->numberOfPoints; i++)
     if (data[i] == valmis)
       col[i] = 0;
     else
       col[i] = 1 + (int)(254 * (data[i] - valmin)/(valmax - valmin));
 
-  colorbuffer = new_glgrib_opengl_buffer_ptr (numberOfColors * geom->numberOfPoints * sizeof (unsigned char), col);
+  colorbuffer = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints * sizeof (unsigned char), col);
 
   def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
 

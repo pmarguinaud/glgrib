@@ -12,7 +12,7 @@ class glgrib_landscape : public glgrib_world
 {
 public:
   glgrib_landscape & operator=(const glgrib_landscape &);
-  virtual void init (const glgrib_options &, const glgrib_geometry_ptr);
+  virtual void init (const glgrib_options &);
   virtual glgrib_program_kind get_program_kind () const 
     { 
       return GLGRIB_PROGRAM_FLAT_TEX;

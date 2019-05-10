@@ -42,7 +42,7 @@ public:
   glgrib_field & operator= (const glgrib_field &);
   glgrib_field () { }
   glgrib_field (const glgrib_field &);
-  void init (const std::string & field, const glgrib_options &, const glgrib_geometry_ptr);
+  void init (const std::string & field, const glgrib_options &);
   virtual glgrib_program_kind get_program_kind () const 
     { 
       return GLGRIB_PROGRAM_GRADIENT_FLAT_SCALE;

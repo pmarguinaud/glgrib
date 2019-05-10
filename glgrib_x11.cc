@@ -34,10 +34,8 @@ void x11_display (const glgrib_options & opts)
   else
     gwindow = new glgrib_window (opts);
   
-  glgrib_geometry_ptr geom = glgrib_geometry_load (opts.landscape.geometry, &opts);
-
   if (opts.landscape.path != "")
-    gwindow->scene.landscape.init (opts, geom);
+    gwindow->scene.landscape.init (opts);
 
   if (opts.grid.resolution)
     gwindow->scene.grid.init (opts);
@@ -53,7 +51,7 @@ void x11_display (const glgrib_options & opts)
       fld.dopts.scale   = opts.field.scale[i];
       fld.dopts.palette = get_palette_by_name (opts.field.palette[i]);
 
-      fld.init (opts.field.list[i], opts, geom);
+      fld.init (opts.field.list[i], opts);
       gwindow->scene.fieldlist.push_back (fld);
 
       gwindow->scene.setCurrentFieldRank (i);

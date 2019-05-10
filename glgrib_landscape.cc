@@ -20,12 +20,12 @@ glgrib_landscape & glgrib_landscape::operator= (const glgrib_landscape & landsca
    }
 }
 
-void glgrib_landscape::init (const glgrib_options & opts, const glgrib_geometry_ptr geom)
+void glgrib_landscape::init (const glgrib_options & opts)
 {
   unsigned char * rgb;
   int w, h;
 
-  geometry = geom;
+  geometry = glgrib_geometry_load (opts.landscape.geometry, &opts);
 
   glgrib_bmp (opts.landscape.path.c_str (), &rgb, &w, &h);
 
@@ -33,7 +33,7 @@ void glgrib_landscape::init (const glgrib_options & opts, const glgrib_geometry_
 
   free (rgb);
 
-  def_from_vertexbuffer_col_elementbuffer (colorbuffer, geom);
+  def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
   
   setReady ();
 }

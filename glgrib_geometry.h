@@ -20,8 +20,8 @@ public:
   unsigned int numberOfTriangles;
   glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
   virtual std::string md5 () const = 0;
+protected:
   std::string md5string (const unsigned char []) const;
-  std::string md5hash;
 };
 
 typedef std::shared_ptr<glgrib_geometry> glgrib_geometry_ptr;

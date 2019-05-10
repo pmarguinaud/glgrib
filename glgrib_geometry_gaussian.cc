@@ -188,28 +188,8 @@ int glgrib_geometry_gaussian::size () const
   return jglooff[Nj-1] + pl[Nj-1];
 }
 
-glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts, codes_handle * h)
+glgrib_geometry_gaussian::glgrib_geometry_gaussian (codes_handle * h)
 {
-  float * xyz = NULL;
-  unsigned int * ind = NULL;
-  const int nstripe = 8;
-  int indoff[nstripe];
-
-
-  size_t v_len = 0;
-  codes_get_size (h, "values", &v_len);
-      
-  double vmin, vmax, vmis;
-
-  double * v = NULL;
-  if (opts.landscape.orography > 0.0f)
-    {
-      v = (double *)malloc (v_len * sizeof (double));
-      codes_get_double_array (h, "values", v, &v_len);
-      codes_get_double (h, "maximum",      &vmax);
-      codes_get_double (h, "minimum",      &vmin);
-      codes_get_double (h, "missingValue", &vmis);
-    }
 
   if (codes_is_defined (h, "stretchingFactor"))
     codes_get_double (h, "stretchingFactor", &stretchingFactor);
@@ -254,6 +234,28 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (const glgrib_options & opts,
   codes_get_size (h, "pl", &pl_len);
   pl = (long int *)malloc (sizeof (long int) * pl_len);
   codes_get_long_array (h, "pl", pl, &pl_len);
+
+}
+
+void glgrib_geometry_gaussian::init (const glgrib_options & opts, codes_handle * h)
+{
+  float * xyz = NULL;
+  unsigned int * ind = NULL;
+  const int nstripe = 8;
+  int indoff[nstripe];
+
+  size_t v_len = 0;
+  codes_get_size (h, "values", &v_len);
+  double vmin, vmax, vmis;
+  double * v = NULL;
+  if (opts.landscape.orography > 0.0f)
+    {
+      v = (double *)malloc (v_len * sizeof (double));
+      codes_get_double_array (h, "values", v, &v_len);
+      codes_get_double (h, "maximum",      &vmax);
+      codes_get_double (h, "minimum",      &vmin);
+      codes_get_double (h, "missingValue", &vmis);
+    }
 
   // Compute number of triangles
   numberOfTriangles = 0;

@@ -3,15 +3,27 @@
 #include <stdio.h>
 #include <iostream>
 #include <openssl/md5.h>
+#include <map>
 
-glgrib_geometry_ptr glgrib_geometry_load (const glgrib_options & opts)
+typedef std::map <std::string,glgrib_geometry_ptr*> cache_t;
+static cache_t cache;
+
+
+glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const glgrib_options & opts)
 {
   FILE * in = NULL;
   int err = 0;
-  in = fopen (opts.landscape.geometry.c_str (), "r");
+  in = fopen (file.c_str (), "r");
   codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
 
-  glgrib_geometry_ptr geom = std::make_shared<glgrib_geometry_gaussian> (opts, h);
+  glgrib_geometry_ptr geom = std::make_shared<glgrib_geometry_gaussian> (h);
+  geom->md5hash = geom->md5 ();
+
+  auto it = cache.find (geom->md5hash);
+  if (it != cache.end ())
+    geom = *(it->second);
+  else
+    geom->init (opts, h);
 
   codes_handle_delete (h);
   fclose (in);
@@ -21,6 +33,7 @@ glgrib_geometry_ptr glgrib_geometry_load (const glgrib_options & opts)
 
 glgrib_geometry::~glgrib_geometry ()
 {
+  cache.erase (md5hash);
 }
 
 std::string glgrib_geometry::md5string (const unsigned char md5[]) const

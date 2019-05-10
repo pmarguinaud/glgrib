@@ -3,12 +3,14 @@
 
 #include "glgrib_options.h"
 #include "glgrib_opengl.h"
+#include <eccodes.h>
 #include <memory>
 #include <string>
 
 class glgrib_geometry
 {
 public:
+  virtual void init (const glgrib_options &, codes_handle *) = 0;
   virtual void genlatlon (float *, float *) const = 0;
   virtual void gencoords (float *, float *) const = 0;
   virtual int size () const = 0;
@@ -19,9 +21,10 @@ public:
   glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
   virtual std::string md5 () const = 0;
   std::string md5string (const unsigned char []) const;
+  std::string md5hash;
 };
 
 typedef std::shared_ptr<glgrib_geometry> glgrib_geometry_ptr;
-extern glgrib_geometry_ptr glgrib_geometry_load (const glgrib_options &);
+extern glgrib_geometry_ptr glgrib_geometry_load (const std::string &, const glgrib_options &);
 
 #endif

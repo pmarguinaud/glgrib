@@ -21,8 +21,14 @@ public:
   mutable glgrib_program * program = NULL;
   bool isReady () const { return ready_; }
   void setReady () { ready_ = true; }
+  void hide () { hidden = true; }
+  void show () { hidden = false; }
+  bool visible () const { return ! hidden; }
 protected:
   bool ready_ = false;
+private:
+  bool hidden = false;
 };
+
 
 #endif

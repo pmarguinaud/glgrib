@@ -240,22 +240,27 @@ void glgrib_window::toggle_hide_field ()
   glgrib_field * fld = scene.getCurrentField ();
   if (fld == NULL)
     return;
-  if (scene.isVisible (fld))
-    scene.hide (fld);
+  if (fld->visible ())
+    fld->hide ();
   else
-    scene.show (fld);
+    fld->show ();
 }
 
 void glgrib_window::hide_all_fields ()
 {
   for (int i = 0; i < scene.fieldlist.size (); i++)
-    scene.hide (&scene.fieldlist[i]);
+    scene.fieldlist[i].hide ();
 }
 
 void glgrib_window::show_all_fields ()
 {
   for (int i = 0; i < scene.fieldlist.size (); i++)
-    scene.show (&scene.fieldlist[i]);
+    {
+      std::cout << i << " => " << scene.fieldlist[i].visible () << std::endl;
+      scene.fieldlist[i].show ();
+      std::cout << i << " => " << scene.fieldlist[i].visible () << std::endl;
+
+    }
 }
 
 int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)

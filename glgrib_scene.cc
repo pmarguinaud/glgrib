@@ -46,13 +46,13 @@ void glgrib_scene::display () const
 
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
-  if (isVisible (&landscape))
+  if (landscape.visible ())
     display_obj (&landscape);
 
-  if (isVisible (&coastlines))
+  if (coastlines.visible ())
     display_obj (&coastlines);
 
-  if (isVisible (&grid))
+  if (grid.visible ())
     display_obj (&grid);
 
   for (int i = 0; i < fieldlist.size (); i++)
@@ -60,7 +60,7 @@ void glgrib_scene::display () const
       const glgrib_field * fld = &fieldlist[i];
       if (! fld->isReady ())
         continue;
-      if (isVisible (fld))
+      if (fld->visible ())
         {
           const glgrib_program * program = fld->get_program ();
           program->use ();
@@ -90,8 +90,8 @@ void glgrib_scene::update ()
   if (movie && ((t - movie_time) > 1.0))
     {
       for (int i = 0; i < fieldlist.size (); i++)
-        hide (&fieldlist[i]);
-      show (&fieldlist[movie_index]);
+        fieldlist[i].hide ();
+      fieldlist[movie_index].show ();
       movie_index++;
       movie_index %= fieldlist.size ();
       movie_time = t;

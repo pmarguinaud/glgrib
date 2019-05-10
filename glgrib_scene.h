@@ -55,11 +55,6 @@ public:
   void setMovie () { movie = true; movie_index = 0; }
   void setCurrentFieldRank (int r) { currentFieldRank = r; }
 
-  void show (const glgrib_object * obj) { hidden.erase (obj); }
-  void hide (const glgrib_object * obj) { hidden.insert (obj); }
-  bool isHidden (const glgrib_object * obj) const { return hidden.find (obj) != hidden.end (); }
-  bool isVisible (const glgrib_object * obj) const { return ! isHidden (obj); }
-
 private:
   float lightx = 0., lighty = 0.;
   bool light = false;
@@ -68,7 +63,6 @@ private:
   double movie_time = 0;
   void setLightShader (GLuint) const;
   int currentFieldRank = 0;
-  std::set <const glgrib_object*> hidden;
 };
 
 #endif

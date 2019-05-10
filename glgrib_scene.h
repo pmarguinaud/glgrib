@@ -18,7 +18,6 @@ public:
   void display () const;
   void display_obj (const glgrib_object *) const;
   std::vector<glgrib_field> fieldlist;
-  std::vector<glgrib_field_display_options> fieldoptslist;
   glgrib_view view;
   glgrib_landscape landscape;
   glgrib_coastlines coastlines;
@@ -30,7 +29,7 @@ public:
     }
   glgrib_field_display_options * getCurrentFieldOpts () 
     { 
-      return currentFieldRank < fieldoptslist.size () ? &fieldoptslist[currentFieldRank] : NULL; 
+      return currentFieldRank < fieldlist.size () ? &fieldlist[currentFieldRank].dopts : NULL; 
     }
 
   void getLightPos (float * x, float * y)

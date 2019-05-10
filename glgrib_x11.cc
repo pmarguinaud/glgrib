@@ -49,16 +49,13 @@ void x11_display (const glgrib_options & opts)
   for (int i = 0; i < opts.field.list.size (); i++)
     {
       glgrib_field fld;
-      glgrib_field_display_options fldopts;
 
-      fldopts.scale   = opts.field.scale[i];
-      fldopts.palette = get_palette_by_name (opts.field.palette[i]);
+      fld.dopts.scale   = opts.field.scale[i];
+      fld.dopts.palette = get_palette_by_name (opts.field.palette[i]);
 
       fld.init (opts.field.list[i], opts, geom);
       gwindow->scene.fieldlist.push_back (fld);
 
-      gwindow->scene.fieldoptslist.push_back (fldopts);
-  
       gwindow->scene.setCurrentFieldRank (i);
     }
 

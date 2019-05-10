@@ -54,6 +54,7 @@ glgrib_field & glgrib_field::operator= (const glgrib_field & field)
       valmin = field.valmin;
       valmax = field.valmax;
       values = field.values;
+      dopts  = field.dopts;
       def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
       setReady ();
     }
@@ -94,7 +95,7 @@ glgrib_field_display_options::glgrib_field_display_options ()
     palette = palette_cold_hot;
 }
 
-void glgrib_field::render (const glgrib_view * view, const glgrib_field_display_options & dopts) const
+void glgrib_field::render (const glgrib_view * view) const
 {
   const glgrib_program * program = get_program (); 
   float scale0[3] = {dopts.scale, dopts.scale, dopts.scale};

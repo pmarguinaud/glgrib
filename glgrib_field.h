@@ -48,12 +48,12 @@ public:
       return GLGRIB_PROGRAM_GRADIENT_FLAT_SCALE;
     }
   virtual bool use_alpha () { return false; }
-  virtual void render (const glgrib_view * view) const { render (view, glgrib_field_display_options ()); }
-  virtual void render (const glgrib_view *, const glgrib_field_display_options &) const;
+  virtual void render (const glgrib_view *) const;
   glgrib_field_float_buffer_ptr values;
   virtual float getValue (int index) const { return values->data ()[index]; }
   float valmis, valmin, valmax;
   virtual ~glgrib_field ();
+  glgrib_field_display_options dopts;
 };
 
 #endif

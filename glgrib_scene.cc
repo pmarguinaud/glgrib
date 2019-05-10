@@ -66,7 +66,7 @@ void glgrib_scene::display () const
           program->use ();
           view.setMVP (program->matrixID);
           setLightShader (program->programID);
-          fld->render (&view, fieldoptslist[i]);
+          fld->render (&view);
         }
     }
 

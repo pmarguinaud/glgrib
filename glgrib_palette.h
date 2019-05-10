@@ -77,6 +77,7 @@ private:
 extern glgrib_palette palette_cold_hot;
 extern glgrib_palette palette_cloud;
 extern glgrib_palette palette_cloud_auto;
+extern std::string palette_directory;
 
 glgrib_palette & get_palette_by_name (const std::string &);
 glgrib_palette & get_next_palette (const glgrib_palette &);

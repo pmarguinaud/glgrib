@@ -515,6 +515,8 @@ void glgrib_window::createGFLWwindow (GLFWwindow * context)
   glfwSetMouseButtonCallback (window, mouse_button_callback);
   glfwSetFramebufferSizeCallback (window, resize_callback);  
 
+  scene.view.setViewport (width, height);
+
 }
 
   
@@ -537,7 +539,6 @@ glgrib_window * glgrib_window::clone ()
 
   COPY (scene);                 // copy the scene; invoke operator=
 #undef COPY
-  w->scene.view.setViewport (width, height);
 
   cloned = false;
 

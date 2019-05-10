@@ -25,14 +25,14 @@ void x11_display (const glgrib_options & opts)
       return;
     }
 
+  palette_directory = opts.field.palette_directory;
+
   glgrib_window * gwindow;
 
   if (opts.window.offscreen)
     gwindow = new glgrib_window_offscreen (opts);
   else
     gwindow = new glgrib_window (opts);
-  
-  gwindow->scene.view.setViewport (opts);
   
   glgrib_geometry_ptr geom = glgrib_geometry_load (opts);
 

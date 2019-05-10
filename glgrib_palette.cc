@@ -2,6 +2,9 @@
 #include "glgrib_opengl.h"
 
 #include <iostream>
+#include <stdio.h>
+
+std::string palette_directory;
 
 typedef std::map<std::string,glgrib_palette> name2palette_t;
 static name2palette_t name2palette;
@@ -23,10 +26,15 @@ glgrib_palette palette_white_black
 glgrib_palette & get_palette_by_name (const std::string & name)
 {
   name2palette_t::iterator it = name2palette.find (name);
+
   if (it != name2palette.end ())
     return it->second;
-  else
-    return palette_white_black;
+
+//std::string pp = palette_directory + "/" + name + ".dat";
+//std::iftream fh (pp);
+//if (! fh.is_open ())
+
+  return palette_white_black;
 }
 
 glgrib_palette & get_next_palette (const glgrib_palette & p)

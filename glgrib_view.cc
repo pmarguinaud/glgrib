@@ -27,12 +27,6 @@ void glgrib_view::calcMVP () const
 
 }
 
-void glgrib_view::setViewport (const glgrib_options & opts)
-{
-  width = opts.window.width;
-  height = opts.window.height;
-}
-
 void glgrib_view::setViewport (int w, int h)
 {
   width = w;

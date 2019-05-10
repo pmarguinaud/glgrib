@@ -10,6 +10,7 @@ public:
   std::vector<std::string> list;
   std::vector<std::string> palette;
   std::vector<float> scale;
+  std::string palette_directory = "palettes";
 };
 
 class glgrib_options_grid

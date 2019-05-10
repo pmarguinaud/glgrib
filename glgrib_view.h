@@ -20,7 +20,6 @@ public:
   glgrib_view_params params;
   void setMVP (GLuint) const;
   void calcMVP () const;
-  void setViewport (const glgrib_options & opts);
   void setViewport (int, int);
   int width, height;
   mutable glm::mat4 Model, View, Projection, MVP;

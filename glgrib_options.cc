@@ -182,6 +182,7 @@ static optionlist get_optionlist (glgrib_options * opts)
   ADD_OPT (field.list,                List of GRIB files);
   ADD_OPT (field.scale,               Scales to be applied to fields);
   ADD_OPT (field.palette,             Palettes);
+  ADD_OPT (field.palette_directory,   Directory where palettes are stored);
 
   ADD_OPT (window.width,              Window width);
   ADD_OPT (window.height,             Window height);

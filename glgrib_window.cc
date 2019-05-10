@@ -351,15 +351,16 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
       if (field)
         {
           int jglo = field->geometry->latlon2index (lat, lon);
-          float value = field->getValue (jglo);
-          sprintf (title, "(%7.2f, %7.2f, %f)", lat, lon, value);
-          glfwSetWindowTitle (window, title);
+	  if (jglo >= 0)
+            {
+              float value = field->getValue (jglo);
+              sprintf (title, "(%7.2f, %7.2f, %f)", lat, lon, value);
+              glfwSetWindowTitle (window, title);
+	      return;
+	    }
         }
     }
-  else
-    {
-      glfwSetWindowTitle (window, title.c_str ());
-    }
+  glfwSetWindowTitle (window, title.c_str ());
 }
 
 void glgrib_window::toggle_cursorpos_display ()

@@ -19,6 +19,7 @@ public:
   virtual void gencoords (float *, float *) const;
   virtual int size () const;
   virtual ~glgrib_geometry_gaussian ();
+private:
   long int * pl = NULL;
   long int Nj;
   int * jglooff = NULL;

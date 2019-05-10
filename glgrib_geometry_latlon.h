@@ -18,11 +18,13 @@ public:
   virtual void gencoords (float *, float *) const;
   virtual int size () const;
   virtual ~glgrib_geometry_latlon ();
+private:
   long int Ni, Nj;
   double latitudeOfFirstGridPointInDegrees;
   double longitudeOfFirstGridPointInDegrees;
   double latitudeOfLastGridPointInDegrees;
   double longitudeOfLastGridPointInDegrees;
+  double dlat, dlon, lat0, lon0;
 };
 
 #endif

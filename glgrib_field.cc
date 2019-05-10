@@ -68,6 +68,7 @@ void glgrib_field::init (const std::string & field, const glgrib_options & o)
 
   numberOfColors = 1;
 
+
   float * data;
   glgrib_load (field, &data, &valmin, &valmax, &valmis);
   values = new_glgrib_field_float_buffer_ptr (data);
@@ -79,10 +80,6 @@ void glgrib_field::init (const std::string & field, const glgrib_options & o)
       col[i] = 0;
     else
       col[i] = 1 + (int)(254 * (data[i] - valmin)/(valmax - valmin));
-
-  std::cout << " numberOfPoints = " << geometry->numberOfPoints << std::endl;
-  for (int i = 0; i < geometry->numberOfPoints; i++)
-     col[i] = 255;
 
   colorbuffer = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints * sizeof (unsigned char), col);
 

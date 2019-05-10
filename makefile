@@ -45,3 +45,6 @@ test_offscreen: glgrib.x
 
 test_eurat01: glgrib.x
 	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field.list t1198c2.2/N.grb  eurat01/lfpw_0_0_0_pl_1000_t.grib2 --field.scale 1.02 1.03  --grid.resolution 0 --coastlines.path "" --field.palette cloud_auto cold_hot
+
+test_landscape_eurat01:
+	./glgrib.x --landscape.geometry  eurat01/lfpw_0_0_0_pl_1000_t.grib2 --landscape.orography 0

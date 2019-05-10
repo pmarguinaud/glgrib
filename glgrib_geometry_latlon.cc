@@ -43,25 +43,7 @@ void glgrib_geometry_latlon::init (codes_handle * h, const glgrib_options * opts
 {
   float * xyz = NULL;
   unsigned int * ind = NULL;
-
-  // Compute number of triangles
-  numberOfTriangles = 2 * (Ni - 1) * (Nj - 1);
-  
-  ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
-  // Generation of triangles
-  for (int j = 0, t = 0; j < Nj-1; j++)
-    for (int i = 0; i < Ni-1; i++)
-      {
-        int ind0 = (j + 0) * Ni + (i + 0); 
-        int ind1 = (j + 0) * Ni + (i + 1); 
-        int ind2 = (j + 1) * Ni + (i + 0); 
-        int ind3 = (j + 1) * Ni + (i + 1); 
-        ind[3*t+0] = ind0; ind[3*t+1] = ind2; ind[3*t+2] = ind1; t++;
-        ind[3*t+0] = ind1; ind[3*t+1] = ind2; ind[3*t+2] = ind3; t++;
-      }
-
-  xyz = (float *)malloc (3 * sizeof (float) * Ni * Nj);
-  numberOfPoints  = Ni * Nj;
+  bool periodic = false;
 
   dlat = deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees) / (Nj - 1);
   dlon = longitudeOfLastGridPointInDegrees - longitudeOfFirstGridPointInDegrees;
@@ -74,6 +56,37 @@ void glgrib_geometry_latlon::init (codes_handle * h, const glgrib_options * opts
   lat0 = deg2rad * latitudeOfFirstGridPointInDegrees;
   lon0 = deg2rad * longitudeOfFirstGridPointInDegrees;
 
+  periodic = fabs (lon0 + (Ni + 1) * dlon - 2 * M_PI) < 1E-2;
+
+  // Compute number of triangles
+  
+  if (periodic)
+    numberOfTriangles = 2 * Ni * (Nj - 1);
+  else
+    numberOfTriangles = 2 * (Ni - 1) * (Nj - 1);
+  
+  ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
+  // Generation of triangles
+  for (int j = 0, t = 0; j < Nj-1; j++)
+    {
+      for (int i = 0; i < Ni-1; i++)
+        {
+          int ind0 = (j + 0) * Ni + (i + 0); int ind1 = (j + 0) * Ni + (i + 1); 
+          int ind2 = (j + 1) * Ni + (i + 0); int ind3 = (j + 1) * Ni + (i + 1); 
+          ind[3*t+0] = ind0; ind[3*t+1] = ind2; ind[3*t+2] = ind1; t++;
+          ind[3*t+0] = ind1; ind[3*t+1] = ind2; ind[3*t+2] = ind3; t++;
+        }
+      if (periodic)
+        {
+          int ind0 = (j + 0) * Ni + Ni-1; int ind1 = (j + 0) * Ni + 0; 
+          int ind2 = (j + 1) * Ni + Ni-1; int ind3 = (j + 1) * Ni + 0; 
+          ind[3*t+0] = ind0; ind[3*t+1] = ind2; ind[3*t+2] = ind1; t++;
+          ind[3*t+0] = ind1; ind[3*t+1] = ind2; ind[3*t+2] = ind3; t++;
+	}
+    }
+
+  xyz = (float *)malloc (3 * sizeof (float) * Ni * Nj);
+  numberOfPoints  = Ni * Nj;
 
   double sinlon[Ni];
   double coslon[Ni];

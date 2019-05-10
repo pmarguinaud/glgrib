@@ -50,4 +50,4 @@ test_landscape_eurat01:
 	./glgrib.x --landscape.geometry  eurat01/lfpw_0_0_0_pl_1000_t.grib2 --landscape.orography 0
 
 test_glob01:
-	./glgrib.x --landscape.path "" --field.list glob01/lfpw_0_0_0_sfc_0_t.grib2 --field.scale 1.02  --field.palette cold_hot_temp
+	./glgrib.x --landscape.path "" --field.list glob01/lfpw_0_0_0_sfc_0_t.grib2 --field.scale 1.00  --field.palette cold_hot_temp

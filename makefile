@@ -43,4 +43,5 @@ test_offscreen: glgrib.x
 		--field.scale 1.03 1.04 1.05  --grid.resolution 0 --coastlines.path ""  --field.palette cloud_auto cloud_auto cloud_auto --window.offscreen \
 		--scene.rotate-light --scene.light --window.offscreen_frames 10
 
-
+test_eurat01: glgrib.x
+	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field.list t1198c2.2/N.grb  eurat01/lfpw_0_0_0_pl_1000_t.grib2 --field.scale 1.02 1.03  --grid.resolution 0 --coastlines.path "" --field.palette cloud_auto cold_hot

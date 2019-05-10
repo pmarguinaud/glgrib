@@ -56,7 +56,13 @@ void glgrib_geometry_latlon::init (codes_handle * h, const glgrib_options * opts
   lat0 = deg2rad * latitudeOfFirstGridPointInDegrees;
   lon0 = deg2rad * longitudeOfFirstGridPointInDegrees;
 
-  periodic = fabs (lon0 + (Ni + 1) * dlon - 2 * M_PI) < 1E-2;
+  double ddlon = lon0 + (Ni + 1) * dlon - 2 * M_PI;
+  while (ddlon < 0.)
+    ddlon += 2 * M_PI;
+  while (ddlon >= 2. * M_PI)
+    ddlon -= 2 * M_PI;
+    
+  periodic = fabs (ddlon) < 1E-2;
 
   // Compute number of triangles
   

@@ -237,18 +237,19 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (codes_handle * h)
 
 }
 
-void glgrib_geometry_gaussian::init (const glgrib_options & opts, codes_handle * h)
+void glgrib_geometry_gaussian::init (codes_handle * h, const glgrib_options * opts)
 {
   float * xyz = NULL;
   unsigned int * ind = NULL;
   const int nstripe = 8;
   int indoff[nstripe];
 
+  bool orog = opts && (opts->landscape.orography > 0.0f);
   size_t v_len = 0;
   codes_get_size (h, "values", &v_len);
   double vmin, vmax, vmis;
   double * v = NULL;
-  if (opts.landscape.orography > 0.0f)
+  if (orog)
     {
       v = (double *)malloc (v_len * sizeof (double));
       codes_get_double_array (h, "values", v, &v_len);
@@ -301,7 +302,7 @@ void glgrib_geometry_gaussian::init (const glgrib_options & opts, codes_handle *
 
           float radius;
  
-          if (opts.landscape.orography > 0.0f)
+          if (orog)
             radius = (1.0 + ((v[jglo] == vmis) ? 0. : 0.05 * v[jglo]/vmax));
           else
             radius = 1.0f;
@@ -320,7 +321,7 @@ void glgrib_geometry_gaussian::init (const glgrib_options & opts, codes_handle *
         }
     }
 
-  if (opts.landscape.orography > 0.0f)
+  if (orog)
     free (v);
 
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);

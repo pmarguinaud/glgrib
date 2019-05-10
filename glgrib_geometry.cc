@@ -9,7 +9,7 @@ typedef std::map <std::string,glgrib_geometry_ptr*> cache_t;
 static cache_t cache;
 
 
-glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const glgrib_options & opts)
+glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const glgrib_options * opts)
 {
   FILE * in = NULL;
   int err = 0;
@@ -23,7 +23,7 @@ glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const glgrib
   if (it != cache.end ())
     geom = *(it->second);
   else
-    geom->init (opts, h);
+    geom->init (h, opts);
 
   codes_handle_delete (h);
   fclose (in);

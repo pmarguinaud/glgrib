@@ -14,7 +14,7 @@ public:
   virtual std::string md5 () const;
   virtual int latlon2index (float, float) const;
   glgrib_geometry_gaussian (codes_handle *);
-  virtual void init (const glgrib_options &, codes_handle *);
+  virtual void init (codes_handle *, const glgrib_options * = NULL);
   virtual void genlatlon (float *, float *) const;
   virtual void gencoords (float *, float *) const;
   virtual int size () const;

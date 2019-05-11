@@ -24,30 +24,46 @@ glwhat.x: glwhat.cc
 	g++ $(CXXFLAGS) -g -o glwhat.x glwhat.cc $(LDFLAGS)
 
 test_bw: glgrib.x
-	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field.list t1198c2.2/N.grb  --field.scale 1.03  --grid.resolution 0 --coastlines.path ""
+	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field[0].path t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path ""
 
 test_3l_t1198: glgrib.x
-	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field.list t1198c2.2/SURFNEBUL.BASSE.grb t1198c2.2/SURFNEBUL.MOYENN.grb t1198c2.2/SURFNEBUL.HAUTE.grb \
-		--field.scale 1.03 1.04 1.05  --grid.resolution 0 --coastlines.path ""  --field.palette cloud_auto cloud_auto cloud_auto
+	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path ""  \
+               --field[0].path t1198c2.2/SURFNEBUL.BASSE.grb --field[1].path t1198c2.2/SURFNEBUL.MOYENN.grb --field[2].path t1198c2.2/SURFNEBUL.HAUTE.grb \
+               --field[0].scale                         1.03 --field[1].scale                          1.04 --field[2].scale                         1.05 \
+               --field[0].palette                 cloud_auto --field[1].palette                  cloud_auto --field[2].palette                 cloud_auto \
 
 test_3l_t1798: glgrib.x
-	./glgrib.x --landscape.geometry t1798/Z.grb --field.list t1798/SURFNEBUL.BASSE.grb t1798/SURFNEBUL.MOYENN.grb t1798/SURFNEBUL.HAUTE.grb \
-		--field.scale 1.03 1.04 1.05  --grid.resolution 0 --coastlines.path ""  --field.palette cloud_auto cloud_auto cloud_auto
+	./glgrib.x --landscape.geometry t1798/Z.grb --grid.resolution 0 --coastlines.path ""  \
+                --field[0].path t1798/SURFNEBUL.BASSE.grb --field[1].path t1798/SURFNEBUL.MOYENN.grb --field[2].path t1798/SURFNEBUL.HAUTE.grb \
+                --field[0].scale                     1.03 --field[1].scale                      1.04 --field[2].scale                     1.05 \
+                --field[0].palette             cloud_auto --field[1].palette              cloud_auto --field[2].palette             cloud_auto
+
 
 test_movie: glgrib.x
-	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field.list t1198c2.2/SURFNEBUL.BASSE.grb t1198c2.2/SURFNEBUL.MOYENN.grb t1198c2.2/SURFNEBUL.HAUTE.grb \
-		--field.scale 1.03 1.03 1.03  --grid.resolution 0 --coastlines.path ""  --field.palette cloud_auto cloud_auto cloud_auto --scene.movie
+	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path ""   --scene.movie \
+               --field[0].path t1198c2.2/SURFNEBUL.BASSE.grb --field[1].path t1198c2.2/SURFNEBUL.MOYENN.grb --field[2].path t1198c2.2/SURFNEBUL.HAUTE.grb \
+               --field[0].scale                         1.03 --field[1].scale                          1.04 --field[2].scale                         1.05 \
+               --field[0].palette                 cloud_auto --field[1].palette                  cloud_auto --field[2].palette                 cloud_auto \
+
+
 
 test_offscreen: glgrib.x
-	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field.list t1198c2.2/SURFNEBUL.BASSE.grb t1198c2.2/SURFNEBUL.MOYENN.grb t1198c2.2/SURFNEBUL.HAUTE.grb \
-		--field.scale 1.03 1.04 1.05  --grid.resolution 0 --coastlines.path ""  --field.palette cloud_auto cloud_auto cloud_auto --window.offscreen \
-		--scene.rotate-light --scene.light --window.offscreen_frames 10
+	./glgrib.x --landscape.geometry t1198c2.2/Z.grb \
+               --grid.resolution 0 --coastlines.path ""  --scene.rotate-light --scene.light --window.offscreen_frames 10  --window.offscreen \
+               --field[0].path t1198c2.2/SURFNEBUL.BASSE.grb --field[1].path t1198c2.2/SURFNEBUL.MOYENN.grb --field[2].path t1198c2.2/SURFNEBUL.HAUTE.grb \
+               --field[0].scale                         1.03 --field[1].scale                          1.04 --field[2].scale                         1.05 \
+               --field[0].palette                 cloud_auto --field[1].palette                  cloud_auto --field[2].palette                 cloud_auto 
 
 test_eurat01: glgrib.x
-	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field.list t1198c2.2/N.grb  eurat01/lfpw_0_0_0_pl_1000_t.grib2 --field.scale 1.02 1.03  --grid.resolution 0 --coastlines.path "" --field.palette cloud_auto cold_hot
+	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path "" \
+               --field[0].path t1198c2.2/N.grb  --field[1].path eurat01/lfpw_0_0_0_pl_1000_t.grib2 \
+               --field[0].scale           1.02  --field[1].scale                              1.03 \
+               --field[0].palette   cloud_auto  --field[1].palette                        cold_hot 
 
 test_landscape_eurat01:
 	./glgrib.x --landscape.geometry  eurat01/lfpw_0_0_0_pl_1000_t.grib2 --landscape.orography 0
 
 test_glob01:
-	./glgrib.x --landscape.path "" --field.list glob01/lfpw_0_0_0_sfc_0_t.grib2 --field.scale 1.00  --field.palette cold_hot_temp
+	./glgrib.x --landscape.path "" --field[0].path glob01/lfpw_0_0_0_sfc_0_t.grib2 --field[0].scale 1.00  --field[0].palette cold_hot_temp
+
+

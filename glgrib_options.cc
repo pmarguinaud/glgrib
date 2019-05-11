@@ -179,10 +179,27 @@ static optionlist get_optionlist (glgrib_options * opts)
   ADD_OPT (scene.rotate_earth,        Make earth rotate);
   ADD_OPT (scene.rotate_light,        Make sunlight move);
 
-  ADD_OPT (field.list,                List of GRIB files);
-  ADD_OPT (field.scale,               Scales to be applied to fields);
-  ADD_OPT (field.palette,             Palettes);
-  ADD_OPT (field.palette_directory,   Directory where palettes are stored);
+#define ADD_FIELD_OPT(i) \
+  do {                                                                             \
+  ADD_OPT (field[i].path,                List of GRIB files);                      \
+  ADD_OPT (field[i].scale,               Scales to be applied to fields);          \
+  ADD_OPT (field[i].palette,             Palettes);                                \
+  } while (0)
+
+  ADD_FIELD_OPT (0);
+  ADD_FIELD_OPT (1);
+  ADD_FIELD_OPT (2);
+  ADD_FIELD_OPT (3);
+  ADD_FIELD_OPT (4);
+  ADD_FIELD_OPT (5);
+  ADD_FIELD_OPT (6);
+  ADD_FIELD_OPT (7);
+  ADD_FIELD_OPT (8);
+  ADD_FIELD_OPT (9);
+
+#undef ADD_FIELD_OPT
+
+  ADD_OPT (palette.directory,         Directory where palettes are stored);    
 
   ADD_OPT (window.width,              Window width);
   ADD_OPT (window.height,             Window height);
@@ -291,13 +308,17 @@ void glgrib_options::parse (int argc, char * argv[])
     delete options[iopt];
 
 
-  if (field.scale.size () == 0)
-    field.scale.push_back (1.00);
+  for (int j = 0; j < field[j].path.size (); j++)
+    {
+      if (field[j].scale.size () == 0)
+        field[j].scale.push_back (1.00);
+     
+      for (int i = field[j].scale.size (); i < field[j].path.size (); i++)
+        field[j].scale.push_back (field[j].scale[i-1] - 0.05);
+     
+      for (int i = field[j].palette.size (); i < field[j].path.size (); i++)
+        field[j].palette.push_back ("default");
 
-  for (int i = field.scale.size (); i < field.list.size (); i++)
-    field.scale.push_back (field.scale[i-1] - 0.05);
-
-  for (int i = field.palette.size (); i < field.list.size (); i++)
-    field.palette.push_back ("default");
+    }
 
 }

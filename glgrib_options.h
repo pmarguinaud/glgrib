@@ -7,10 +7,15 @@
 class glgrib_options_field
 {
 public:
-  std::vector<std::string> list;
+  std::vector<std::string> path;
   std::vector<std::string> palette;
   std::vector<float> scale;
-  std::string palette_directory = "palettes";
+};
+
+class glgrib_options_palette
+{
+public:
+  std::string directory = "palettes";
 };
 
 class glgrib_options_grid
@@ -55,7 +60,10 @@ public:
 class glgrib_options
 {
 public:
-  glgrib_options_field field;
+  std::vector<glgrib_options_field> field = 
+    {glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (),
+     glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field ()};
+  glgrib_options_palette palette;
   glgrib_options_coastlines coastlines;
   glgrib_options_window window;
   glgrib_options_landscape landscape;

@@ -104,7 +104,6 @@ void glgrib_field::render (const glgrib_view * view) const
 
   p.setRGBA255 (program->programID);
 
-
   glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
   glUniform1f (glGetUniformLocation (program->programID, "valmin"), valmin);
   glUniform1f (glGetUniformLocation (program->programID, "valmax"), valmax);

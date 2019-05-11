@@ -25,7 +25,7 @@ void x11_display (const glgrib_options & opts)
       return;
     }
 
-  palette_directory = opts.field.palette_directory;
+  palette_directory = opts.palette.directory;
 
   glgrib_window * gwindow;
 
@@ -44,17 +44,23 @@ void x11_display (const glgrib_options & opts)
     gwindow->scene.coastlines.init (opts);
    
 
-  for (int i = 0; i < opts.field.list.size (); i++)
+  for (int i = 0; i < opts.field.size (); i++)
     {
       glgrib_field fld;
+      bool defined = opts.field[i].path.size () != 0;
 
-      fld.dopts.scale   = opts.field.scale[i];
-      fld.dopts.palette = get_palette_by_name (opts.field.palette[i]);
+      if (defined)
+        {
+          fld.dopts.scale   = opts.field[i].scale[0];
+          fld.dopts.palette = get_palette_by_name (opts.field[i].palette[0]);
+          fld.init (opts.field[i].path[0], opts);
+        }
 
-      fld.init (opts.field.list[i], opts);
       gwindow->scene.fieldlist.push_back (fld);
 
-      gwindow->scene.setCurrentFieldRank (i);
+      if (defined)
+        gwindow->scene.setCurrentFieldRank (i);
+
     }
 
 

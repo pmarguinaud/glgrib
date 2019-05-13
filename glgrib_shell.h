@@ -62,7 +62,9 @@ public:
   int close = 0;
   std::map <std::string,glgrib_command> cmds;
   bool closed () { return close; }
-  void run (class glgrib_window *);
+  void run (class glgrib_window_set *);
+private:
+  glgrib_window_set * wset = NULL;
 };
 
 extern glgrib_shell Shell;

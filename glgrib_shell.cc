@@ -109,8 +109,9 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
     }
 }
 
-void glgrib_shell::run (glgrib_window * gwindow)
+void glgrib_shell::run (glgrib_window_set * ws)
 {
+  wset = ws;
   while (1)
     {
       char * line = readline("> ");
@@ -121,6 +122,7 @@ void glgrib_shell::run (glgrib_window * gwindow)
  
 #pragma omp critical (RUN)
       {
+        glgrib_window * gwindow = *(wset->begin ());
         execute (line, gwindow);
       }
       

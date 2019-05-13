@@ -14,7 +14,7 @@
 class glgrib_window
 {
 public:
-  glgrib_window () {}
+  glgrib_window ();
   glgrib_window (const glgrib_options &);
   virtual void setHints ();
   virtual ~glgrib_window ();
@@ -83,17 +83,21 @@ public:
   class glgrib_window * clone ();
   bool isClosed () { return closed; }
   bool isCloned () { return cloned; }
+  
+  int id () { return id_; }
 
 protected:
   void createGFLWwindow (GLFWwindow * = NULL);
   bool closed = false;
   bool cloned = false;
+private:
+  int id_;
 };
 
 class glgrib_window_set : public std::set<glgrib_window*> 
 {
 public:
-  void run ();
+  void run (glgrib_shell * = NULL);
 };
 
 #endif

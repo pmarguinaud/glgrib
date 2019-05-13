@@ -34,21 +34,22 @@ int main (int argc, char * argv[])
   
   gwindow->scene.init (opts);
 
+  glgrib_window_set wset;
+  wset.insert (gwindow);
+
   if (opts.shell)
     {
 #pragma omp parallel
       {
         int tid = omp_get_thread_num ();
         if (tid == 1)
-          Shell.run (gwindow);
+          Shell.run (&wset);
         else if (tid == 0)
-          gwindow->run (&Shell);
+          wset.run (&Shell);
       }
     }
   else
     {
-      glgrib_window_set wset;
-      wset.insert (gwindow);
       wset.run ();
     }
 

@@ -462,6 +462,14 @@ void glgrib_window::setHints ()
   glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 }
 
+static int idcount = 0;
+
+glgrib_window::glgrib_window ()
+{
+  id_ = idcount++;
+}
+
+
 glgrib_window::glgrib_window (const glgrib_options & opts)
 {
   create (opts);
@@ -469,6 +477,8 @@ glgrib_window::glgrib_window (const glgrib_options & opts)
 
 void glgrib_window::create (const glgrib_options & opts)
 {
+  id_ = idcount++;
+
   scene.rotate_light = opts.scene.rotate_light;
   scene.rotate_earth = opts.scene.rotate_earth;
   if (opts.scene.movie)
@@ -546,7 +556,7 @@ glgrib_window * glgrib_window::clone ()
   return w;
 }
 
-void glgrib_window_set::run ()
+void glgrib_window_set::run (glgrib_shell * shell)
 {
   while (! empty ())
     {
@@ -554,19 +564,23 @@ void glgrib_window_set::run ()
            it != end (); it++)
         {
           glgrib_window * w = *it;
-          w->run ();
+
+          w->run (shell);
+
           if (w->isClosed ())
             {
               erase (w);
-    	  delete w;
+    	      delete w;
               break;
             }
+
           if (w->isCloned ())
             {
               glgrib_window * w1 = w->clone ();
     	      insert (w1);
               break;
 	    }
+
 	}
     }
 }

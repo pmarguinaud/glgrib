@@ -63,6 +63,7 @@ public:
   std::map <std::string,glgrib_command> cmds;
   bool closed () { return close; }
   void run (class glgrib_window_set *);
+  int windowid = 0;
 private:
   glgrib_window_set * wset = NULL;
 };

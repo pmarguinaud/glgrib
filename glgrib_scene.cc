@@ -102,13 +102,13 @@ void glgrib_scene::init (const glgrib_options & opts)
 {
 
   if (opts.landscape.path != "")
-    landscape.init (opts);
+    landscape.init (opts.landscape);
 
   if (opts.grid.resolution)
-    grid.init (opts);
+    grid.init (opts.grid);
 
   if (opts.coastlines.path != "")
-    coastlines.init (opts);
+    coastlines.init (opts.coastlines);
 
   for (int i = 0; i < opts.field.size (); i++)
     {
@@ -116,11 +116,7 @@ void glgrib_scene::init (const glgrib_options & opts)
       bool defined = opts.field[i].path.size () != 0;
 
       if (defined)
-        {
-          fld.dopts.scale   = opts.field[i].scale[0];
-          fld.dopts.palette = get_palette_by_name (opts.field[i].palette[0]);
-          fld.init (opts.field[i].path[0], opts);
-        }
+        fld.init (opts.field[i]);
 
       fieldlist.push_back (fld);
 

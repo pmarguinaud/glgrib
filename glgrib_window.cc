@@ -585,3 +585,12 @@ void glgrib_window_set::run (glgrib_shell * shell)
     }
 }
 
+glgrib_window * glgrib_window_set::getWindowById (int id)
+{
+  for (glgrib_window_set::iterator it = begin (); it != end (); it++)
+    if ((*it)->id () == id)
+      return *it;
+  return NULL;
+}
+
+

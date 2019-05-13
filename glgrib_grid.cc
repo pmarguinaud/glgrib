@@ -17,7 +17,7 @@ glgrib_grid & glgrib_grid::operator= (const glgrib_grid & grid)
     }
 }
 
-void glgrib_grid::init (const glgrib_options & opts)
+void glgrib_grid::init (const glgrib_options_grid & opts)
 {
 
   numberOfColors = use_alpha () ? 4 : 3;
@@ -31,8 +31,8 @@ void glgrib_grid::init (const glgrib_options & opts)
 
   float r = 1.005;
 
-  const int nlatv = 200, nlonv = 2 * opts.grid.resolution;
-  const int nlath = opts.grid.resolution, nlonh = 400;
+  const int nlatv = 200, nlonv = 2 * opts.resolution;
+  const int nlath = opts.resolution, nlonh = 400;
 
   for (int pass = 0; pass < 2; pass++)
     {

@@ -60,17 +60,19 @@ glgrib_field & glgrib_field::operator= (const glgrib_field & field)
     }
 }
 
-void glgrib_field::init (const std::string & field, const glgrib_options & o)
+void glgrib_field::init (const glgrib_options_field & opts, int slot)
 {
   unsigned char * col;
 
-  geometry = glgrib_geometry_load (field);
+  dopts.scale   = opts.scale[slot];
+  dopts.palette = get_palette_by_name (opts.palette[slot]);
+
+  geometry = glgrib_geometry_load (opts.path[slot]);
 
   numberOfColors = 1;
 
-
   float * data;
-  glgrib_load (field, &data, &valmin, &valmax, &valmis);
+  glgrib_load (opts.path[slot], &data, &valmin, &valmax, &valmis);
   values = new_glgrib_field_float_buffer_ptr (data);
 
   col = (unsigned char *)malloc (numberOfColors * geometry->numberOfPoints * sizeof (unsigned char));

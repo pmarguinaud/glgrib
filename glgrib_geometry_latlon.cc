@@ -39,7 +39,7 @@ glgrib_geometry_latlon::glgrib_geometry_latlon (codes_handle * h)
   
 }
 
-void glgrib_geometry_latlon::init (codes_handle * h, const glgrib_options * opts)
+void glgrib_geometry_latlon::init (codes_handle * h, const float orography)
 {
   float * xyz = NULL;
   unsigned int * ind = NULL;

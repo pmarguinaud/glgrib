@@ -237,14 +237,14 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (codes_handle * h)
 
 }
 
-void glgrib_geometry_gaussian::init (codes_handle * h, const glgrib_options * opts)
+void glgrib_geometry_gaussian::init (codes_handle * h, const float orography)
 {
   float * xyz = NULL;
   unsigned int * ind = NULL;
   const int nstripe = 8;
   int indoff[nstripe];
 
-  bool orog = opts && (opts->landscape.orography > 0.0f);
+  bool orog = orography > 0.0f;
   size_t v_len = 0;
   codes_get_size (h, "values", &v_len);
   double vmin, vmax, vmis;

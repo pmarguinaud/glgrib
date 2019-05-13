@@ -1,7 +1,6 @@
 #ifndef _GLGRIB_GEOMETRY_H
 #define _GLGRIB_GEOMETRY_H
 
-#include "glgrib_options.h"
 #include "glgrib_opengl.h"
 #include <eccodes.h>
 #include <memory>
@@ -16,7 +15,7 @@ public:
   {
     return isEqual (geom);
   }
-  virtual void init (codes_handle *, const glgrib_options * = NULL) = 0;
+  virtual void init (codes_handle *, const float = 0.0f) = 0;
   virtual void genlatlon (float *, float *) const = 0;
   virtual void gencoords (float *, float *) const = 0;
   virtual int size () const = 0;
@@ -31,6 +30,6 @@ protected:
 };
 
 typedef std::shared_ptr<glgrib_geometry> glgrib_geometry_ptr;
-extern glgrib_geometry_ptr glgrib_geometry_load (const std::string &, const glgrib_options * = NULL);
+extern glgrib_geometry_ptr glgrib_geometry_load (const std::string &, const float = 0.0f);
 
 #endif

@@ -35,7 +35,7 @@ typedef struct point_t
   int y; /* latitude of a point in micro-degrees */
 } point_t;
 
-void glgrib_coastlines::init (const glgrib_options & opts)
+void glgrib_coastlines::init (const glgrib_options_coastlines & opts)
 {
 
   numberOfColors = use_alpha () ? 4 : 3;
@@ -55,7 +55,7 @@ void glgrib_coastlines::init (const glgrib_options & opts)
 
   for (int pass = 0; pass < 2; pass++)
     {
-      fp = fopen (opts.coastlines.path.c_str (), "r");
+      fp = fopen (opts.path.c_str (), "r");
      
       while (1) 
         {   

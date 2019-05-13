@@ -84,7 +84,9 @@ public:
   bool isClosed () { return closed; }
   bool isCloned () { return cloned; }
   
-  int id () { return id_; }
+  int id () const { return id_; }
+
+
 
 protected:
   void createGFLWwindow (GLFWwindow * = NULL);
@@ -98,6 +100,15 @@ class glgrib_window_set : public std::set<glgrib_window*>
 {
 public:
   void run (glgrib_shell * = NULL);
+  glgrib_window * getWindowById (int);
+  glgrib_window * getFirstWindow () 
+    { 
+      glgrib_window_set::iterator it = begin ();
+      if (it != end ())
+        return *it;
+      else
+        return NULL;
+    }
 };
 
 #endif

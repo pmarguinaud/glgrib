@@ -20,14 +20,14 @@ glgrib_landscape & glgrib_landscape::operator= (const glgrib_landscape & landsca
    }
 }
 
-void glgrib_landscape::init (const glgrib_options & opts)
+void glgrib_landscape::init (const glgrib_options_landscape & opts)
 {
   unsigned char * rgb;
   int w, h;
 
-  geometry = glgrib_geometry_load (opts.landscape.geometry, &opts);
+  geometry = glgrib_geometry_load (opts.geometry, opts.orography);
 
-  glgrib_bmp (opts.landscape.path.c_str (), &rgb, &w, &h);
+  glgrib_bmp (opts.path.c_str (), &rgb, &w, &h);
 
   texture = new_glgrib_opengl_texture_ptr (w, h, rgb);
 

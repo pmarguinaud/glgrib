@@ -12,6 +12,8 @@
 #include "glgrib_field.h"
 #include "glgrib_coastlines.h"
 
+#include <set>
+
 class glgrib_scene
 {
 public:

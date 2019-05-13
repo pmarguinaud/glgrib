@@ -546,5 +546,28 @@ glgrib_window * glgrib_window::clone ()
   return w;
 }
 
-
+void glgrib_window_set::run ()
+{
+  while (! empty ())
+    {
+      for (glgrib_window_set::iterator it = begin (); 
+           it != end (); it++)
+        {
+          glgrib_window * w = *it;
+          w->run ();
+          if (w->isClosed ())
+            {
+              erase (w);
+    	  delete w;
+              break;
+            }
+          if (w->isCloned ())
+            {
+              glgrib_window * w1 = w->clone ();
+    	      insert (w1);
+              break;
+	    }
+	}
+    }
+}
 

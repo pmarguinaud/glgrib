@@ -3,9 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "glgrib_field.h"
 #include "glgrib_scene.h"
-#include "glgrib_view.h"
 #include "glgrib_shell.h"
 #include "glgrib_window.h"
 #include "glgrib_window_offscreen.h"
@@ -13,7 +11,6 @@
 #include "glgrib_geometry.h"
 
 #include <iostream>
-#include <set>
 
 int main (int argc, char * argv[])
 {
@@ -50,30 +47,9 @@ int main (int argc, char * argv[])
     }
   else
     {
-      typedef std::set<glgrib_window*> wset_t;
-      wset_t wset;
+      glgrib_window_set wset;
       wset.insert (gwindow);
-
-      while (! wset.empty ())
-        {
-          for (wset_t::iterator it = wset.begin (); it != wset.end (); it++)
-            {
-              glgrib_window * w = *it;
-              w->run ();
-              if (w->isClosed ())
-	        {
-                  wset.erase (w);
-		  delete w;
-                  break;
-	        }
-              if (w->isCloned ())
-	        {
-                  glgrib_window * w1 = w->clone ();
-		  wset.insert (w1);
-                  break;
-	        }
-	    }
-	}
+      wset.run ();
     }
 
   glfwTerminate ();

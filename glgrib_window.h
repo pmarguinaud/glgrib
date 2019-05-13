@@ -90,4 +90,10 @@ protected:
   bool cloned = false;
 };
 
+class glgrib_window_set : public std::set<glgrib_window*> 
+{
+public:
+  void run ();
+};
+
 #endif

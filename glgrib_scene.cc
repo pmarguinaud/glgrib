@@ -131,4 +131,3 @@ void glgrib_scene::init (const glgrib_options & opts)
 
 }
 
-

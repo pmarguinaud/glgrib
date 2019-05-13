@@ -67,3 +67,5 @@ test_glob01:
 	./glgrib.x --landscape.path "" --field[0].path glob01/lfpw_0_0_0_sfc_0_t.grib2 --field[0].scale 1.00  --field[0].palette cold_hot_temp
 
 
+test_small:
+	./glgrib.x --landscape.geometry  t49/Z.grb  --field[0].scale 1.01  --field[0].path t49/SFX.CLAY.grb

@@ -15,6 +15,8 @@
 class glgrib_scene
 {
 public:
+  glgrib_scene () {}
+  void init (const glgrib_options &);
   void display () const;
   void display_obj (const glgrib_object *) const;
   std::vector<glgrib_field> fieldlist;

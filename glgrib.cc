@@ -35,35 +35,7 @@ int main (int argc, char * argv[])
   else
     gwindow = new glgrib_window (opts);
   
-  if (opts.landscape.path != "")
-    gwindow->scene.landscape.init (opts);
-
-  if (opts.grid.resolution)
-    gwindow->scene.grid.init (opts);
-
-  if (opts.coastlines.path != "")
-    gwindow->scene.coastlines.init (opts);
-   
-
-  for (int i = 0; i < opts.field.size (); i++)
-    {
-      glgrib_field fld;
-      bool defined = opts.field[i].path.size () != 0;
-
-      if (defined)
-        {
-          fld.dopts.scale   = opts.field[i].scale[0];
-          fld.dopts.palette = get_palette_by_name (opts.field[i].palette[0]);
-          fld.init (opts.field[i].path[0], opts);
-        }
-
-      gwindow->scene.fieldlist.push_back (fld);
-
-      if (defined)
-        gwindow->scene.setCurrentFieldRank (i);
-
-    }
-
+  gwindow->scene.init (opts);
 
   if (opts.shell)
     {

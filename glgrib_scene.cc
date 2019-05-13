@@ -98,3 +98,37 @@ void glgrib_scene::update ()
     }
 }
 
+void glgrib_scene::init (const glgrib_options & opts)
+{
+
+  if (opts.landscape.path != "")
+    landscape.init (opts);
+
+  if (opts.grid.resolution)
+    grid.init (opts);
+
+  if (opts.coastlines.path != "")
+    coastlines.init (opts);
+
+  for (int i = 0; i < opts.field.size (); i++)
+    {
+      glgrib_field fld;
+      bool defined = opts.field[i].path.size () != 0;
+
+      if (defined)
+        {
+          fld.dopts.scale   = opts.field[i].scale[0];
+          fld.dopts.palette = get_palette_by_name (opts.field[i].palette[0]);
+          fld.init (opts.field[i].path[0], opts);
+        }
+
+      fieldlist.push_back (fld);
+
+      if (defined)
+        setCurrentFieldRank (i);
+
+    }
+
+}
+
+

@@ -6,10 +6,16 @@
 #include <eccodes.h>
 #include <memory>
 #include <string>
+#include <iostream>
 
 class glgrib_geometry
 {
 public:
+  virtual bool isEqual (const glgrib_geometry &) = 0;
+  virtual bool operator== (const glgrib_geometry & geom)
+  {
+    return isEqual (geom);
+  }
   virtual void init (codes_handle *, const glgrib_options * = NULL) = 0;
   virtual void genlatlon (float *, float *) const = 0;
   virtual void gencoords (float *, float *) const = 0;

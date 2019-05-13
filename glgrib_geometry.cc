@@ -26,6 +26,7 @@ glgrib_geometry_ptr glgrib_geometry_load (const std::string & file,
 
   glgrib_geometry_ptr geom;
  
+  // Read geometry metadata
   switch (gridDefinitionTemplateNumber)
     {
       case 42:
@@ -43,14 +44,17 @@ glgrib_geometry_ptr glgrib_geometry_load (const std::string & file,
   auto it = cache.find (geom->md5 ());
   if (it != cache.end ())
     {
-      geom = it->second;
+      glgrib_geometry_ptr g = it->second;
+      if (*g == *geom)  // Same geometry
+        {
+          geom = g;
+	  goto found;
+	}
     }
-  else
-    {
-      geom->init (h, opts);
-      cache.insert (std::pair<std::string,glgrib_geometry_ptr>
-		    (geom->md5 (), geom));
-    }
+  geom->init (h, opts);
+  cache.insert (std::pair<std::string,glgrib_geometry_ptr> (geom->md5 (), geom));
+
+found:
 
   codes_handle_delete (h);
   fclose (in);

@@ -10,6 +10,7 @@
 class glgrib_geometry_latlon : public glgrib_geometry
 {
 public:
+  virtual bool isEqual (const glgrib_geometry &);
   virtual std::string md5 () const;
   virtual int latlon2index (float, float) const;
   glgrib_geometry_latlon (codes_handle *);

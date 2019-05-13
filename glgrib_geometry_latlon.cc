@@ -171,5 +171,22 @@ std::string glgrib_geometry_latlon::md5 () const
   return md5string (out);
 }
 
+bool glgrib_geometry_latlon::isEqual (const glgrib_geometry & geom)
+{
+  try
+    {
+      const glgrib_geometry_latlon & g = dynamic_cast<const glgrib_geometry_latlon &>(geom);
+      return (Ni                                 == g.Ni)
+          && (Nj                                 == g.Nj)
+          && (latitudeOfFirstGridPointInDegrees  == g.latitudeOfFirstGridPointInDegrees)
+          && (longitudeOfFirstGridPointInDegrees == g.longitudeOfFirstGridPointInDegrees)
+          && (latitudeOfLastGridPointInDegrees   == g.latitudeOfLastGridPointInDegrees)
+          && (longitudeOfLastGridPointInDegrees  == g.longitudeOfLastGridPointInDegrees);
+    }
+  catch (const std::bad_cast & e)
+    {
+      return false;
+    }
+}
 
 

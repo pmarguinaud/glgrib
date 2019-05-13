@@ -400,4 +400,19 @@ std::string glgrib_geometry_gaussian::md5 () const
 }
 
 
+bool glgrib_geometry_gaussian::isEqual (const glgrib_geometry & geom)
+{
+  try
+    {
+      const glgrib_geometry_gaussian & g = dynamic_cast<const glgrib_geometry_gaussian &>(geom);
+      return (Nj == g.Nj) && (stretchingFactor == g.stretchingFactor) &&
+             (latitudeOfStretchingPoleInDegrees == g.latitudeOfStretchingPoleInDegrees) &&
+	     (longitudeOfStretchingPoleInDegrees == g.longitudeOfStretchingPoleInDegrees) &&
+	     (memcmp (pl, g.pl, sizeof (long int) * Nj) == 0);
+    }
+  catch (const std::bad_cast & e)
+    {
+      return false;
+    }
+}
 

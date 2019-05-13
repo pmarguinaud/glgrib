@@ -87,19 +87,38 @@ void glgrib_scene::update ()
     view.params.lonc += 1.;
   if (rotate_light)
     lightx -= 1.;
-  if (movie && ((t - movie_time) > 1.0))
+
+
+  if (movie && ((t - movie_time) > opts.scene.movie_wait))
     {
+      bool advance = false;
+
       for (int i = 0; i < fieldlist.size (); i++)
-        fieldlist[i].hide ();
-      fieldlist[movie_index].show ();
-      movie_index++;
-      movie_index %= fieldlist.size ();
+        {
+          glgrib_field fld;
+          bool defined = opts.field[i].path.size () != 0;
+	  if (defined)
+            {
+	      int size = opts.field[i].path.size ();
+	      advance = movie_index < size;
+	      int slot = advance ? movie_index : size-1;
+              fld.init (opts.field[i], slot);
+	      fieldlist[i] = fld;
+	    }
+	}
+
+      if (advance)
+        movie_index++;
+      else
+        movie_index = 0;
+
       movie_time = t;
     }
 }
 
-void glgrib_scene::init (const glgrib_options & opts)
+void glgrib_scene::init (const glgrib_options & o)
 {
+  opts = o;
 
   if (opts.landscape.path != "")
     landscape.init (opts.landscape);

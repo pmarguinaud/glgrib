@@ -176,6 +176,7 @@ static optionlist get_optionlist (glgrib_options * opts)
 
   ADD_OPT (scene.light,               Enable light);
   ADD_OPT (scene.movie,               Movie);
+  ADD_OPT (scene.movie_wait,          Wait between movie frames);
   ADD_OPT (scene.rotate_earth,        Make earth rotate);
   ADD_OPT (scene.rotate_light,        Make sunlight move);
 

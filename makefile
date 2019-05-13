@@ -39,20 +39,13 @@ test_3l_t1798: glgrib.x
                 --field[0].palette             cloud_auto --field[1].palette              cloud_auto --field[2].palette             cloud_auto
 
 
-test_movie: glgrib.x
-	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path ""   --scene.movie \
-               --field[0].path t1198c2.2/SURFNEBUL.BASSE.grb --field[1].path t1198c2.2/SURFNEBUL.MOYENN.grb --field[2].path t1198c2.2/SURFNEBUL.HAUTE.grb \
-               --field[0].scale                         1.03 --field[1].scale                          1.04 --field[2].scale                         1.05 \
-               --field[0].palette                 cloud_auto --field[1].palette                  cloud_auto --field[2].palette                 cloud_auto 
-
-
-
 test_offscreen: glgrib.x
-	./glgrib.x --landscape.geometry t1198c2.2/Z.grb \
-               --grid.resolution 0 --coastlines.path ""  --scene.rotate-light --scene.light --window.offscreen_frames 10  --window.offscreen \
-               --field[0].path t1198c2.2/SURFNEBUL.BASSE.grb --field[1].path t1198c2.2/SURFNEBUL.MOYENN.grb --field[2].path t1198c2.2/SURFNEBUL.HAUTE.grb \
-               --field[0].scale                         1.03 --field[1].scale                          1.04 --field[2].scale                         1.05 \
-               --field[0].palette                 cloud_auto --field[1].palette                  cloud_auto --field[2].palette                 cloud_auto 
+	\rm -f snapshot*.png
+	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path ""  --window.offscreen  \
+		--window.offscreen_frames 10 --scene.movie --scene.movie-wait -1  --scene.rotate-light --scene.light        \
+		--field[0].path t1198c2.2/SURFNEBUL.BASSE.grb t1198c2.2/SURFNEBUL.MOYENN.grb  t1198c2.2/SURFNEBUL.HAUTE.grb \
+		--field[0].scale                         1.03                           1.03                           1.03 \
+		--field[0].palette                 cloud_auto                     cloud_auto                     cloud_auto 
 
 test_eurat01: glgrib.x
 	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path "" \

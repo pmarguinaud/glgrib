@@ -53,6 +53,7 @@ public:
   bool rotate_light = false;
   bool light = false;
   bool movie = false;
+  float movie_wait = 1.0f;
 };
 
 

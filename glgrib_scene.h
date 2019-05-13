@@ -18,6 +18,7 @@ class glgrib_scene
 {
 public:
   glgrib_scene () {}
+  glgrib_options opts;
   void init (const glgrib_options &);
   void display () const;
   void display_obj (const glgrib_object *) const;

@@ -38,20 +38,20 @@ public:
   }
   void reset_view ()
   {
-    glgrib_view_params params;
-    scene.view.params = params;
+    glgrib_options_camera o;
+    scene.view.opts = o;
   }
   void toggle_rotate       () { scene.rotate_earth       = ! scene.rotate_earth;       }
-  void toggle_rotate_light () { scene.rotate_light = ! scene.rotate_light; }
+  void toggle_rotate_light () { scene.light.rotate = ! scene.light.rotate; }
   void toggle_wireframe    () { scene.landscape.toggle_wireframe (); }
-  void widen_fov           () { scene.view.params.fov += 1.; }
-  void shrink_fov          () { scene.view.params.fov -= 1.; }
-  void increase_radius     () { scene.view.params.rc += 0.1; }
-  void decrease_radius     () { scene.view.params.rc -= 0.1; }
-  void rotate_north        () { scene.view.params.latc = scene.view.params.latc + 5.; }
-  void rotate_south        () { scene.view.params.latc = scene.view.params.latc - 5.; }
-  void rotate_west         () { scene.view.params.lonc = scene.view.params.lonc - 5.; }
-  void rotate_east         () { scene.view.params.lonc = scene.view.params.lonc + 5.; }
+  void widen_fov           () { scene.view.opts.fov += 1.; }
+  void shrink_fov          () { scene.view.opts.fov -= 1.; }
+  void increase_radius     () { scene.view.opts.distance += 0.1; }
+  void decrease_radius     () { scene.view.opts.distance -= 0.1; }
+  void rotate_north        () { scene.view.opts.lat = scene.view.opts.lat + 5.; }
+  void rotate_south        () { scene.view.opts.lat = scene.view.opts.lat - 5.; }
+  void rotate_west         () { scene.view.opts.lon = scene.view.opts.lon - 5.; }
+  void rotate_east         () { scene.view.opts.lon = scene.view.opts.lon + 5.; }
 
   void resize (int, int);
   void scroll (double, double);

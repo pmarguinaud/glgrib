@@ -10,6 +10,7 @@ public:
   std::vector<std::string> path;
   std::vector<std::string> palette;
   std::vector<float> scale;
+  bool no_value_pointer;
 };
 
 class glgrib_options_palette
@@ -46,17 +47,29 @@ public:
   int offscreen_frames = 1;
 };
 
+class glgrib_options_light
+{
+public:
+  bool on = false;
+  bool rotate = false;
+  float lon = 0.0f;
+  float lat = 0.0f;
+};
+
 class glgrib_options_scene
 {
 public:
   bool rotate_earth = false;
-  bool rotate_light = false;
-  bool light = false;
   bool movie = false;
   float movie_wait = 1.0f;
+  glgrib_options_light light;
 };
 
-
+class glgrib_options_camera
+{
+public:
+  float distance = 6.0, lat = 0., lon = 0., fov = 20.;
+};
 
 class glgrib_options
 {
@@ -70,6 +83,7 @@ public:
   glgrib_options_landscape landscape;
   glgrib_options_grid grid;
   glgrib_options_scene scene;
+  glgrib_options_camera camera;
   bool shell = false;
   bool help = false;
   void parse (int argc, char * argv[]);

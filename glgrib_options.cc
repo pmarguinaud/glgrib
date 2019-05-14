@@ -174,17 +174,24 @@ static optionlist get_optionlist (glgrib_options * opts)
   optionlist options;
 #define ADD_OPT(x,d) do { options.push_back (new_option (std::string (#x), std::string (#d), &opts->x)); } while (0)
 
-  ADD_OPT (scene.light,               Enable light);
+  ADD_OPT (scene.light.on,            Enable light);
+  ADD_OPT (scene.light.lon,           Light longitude);
+  ADD_OPT (scene.light.lat,           Light latitude);
+  ADD_OPT (scene.light.rotate,        Make sunlight move);
   ADD_OPT (scene.movie,               Movie);
   ADD_OPT (scene.movie_wait,          Wait between movie frames);
   ADD_OPT (scene.rotate_earth,        Make earth rotate);
-  ADD_OPT (scene.rotate_light,        Make sunlight move);
+  ADD_OPT (camera.lon,                Camera longitude);
+  ADD_OPT (camera.lat,                Camera latitude);
+  ADD_OPT (camera.fov,                Camera field of view);
+  ADD_OPT (camera.distance,           Camera distance);
 
 #define ADD_FIELD_OPT(i) \
   do {                                                                             \
   ADD_OPT (field[i].path,                List of GRIB files);                      \
   ADD_OPT (field[i].scale,               Scales to be applied to fields);          \
   ADD_OPT (field[i].palette,             Palettes);                                \
+  ADD_OPT (field[i].no_value_pointer,    Do not keep field values in memory);      \
   } while (0)
 
   ADD_FIELD_OPT (0);

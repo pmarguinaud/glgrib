@@ -13,14 +13,14 @@ void glgrib_scene::setLightShader (GLuint programID) const
   
   if (lightid != -1)
     {
-      glUniform1i (lightid, light);
-      if (light)
+      glUniform1i (lightid, light.on);
+      if (light.on)
         {
           const double deg2rad = M_PI / 180.0;
-          float coslon = cos (deg2rad * lightx);
-          float sinlon = sin (deg2rad * lightx);
-          float coslat = cos (deg2rad * lighty);
-          float sinlat = sin (deg2rad * lighty);
+          float coslon = cos (deg2rad * light.lon);
+          float sinlon = sin (deg2rad * light.lon);
+          float coslat = cos (deg2rad * light.lat);
+          float sinlat = sin (deg2rad * light.lat);
           float lightDir[3] = {coslon * coslat, sinlon * coslat, sinlat};
           glUniform3fv (glGetUniformLocation (programID, "lightDir"), 
                         1, &lightDir[0]);
@@ -84,9 +84,9 @@ void glgrib_scene::update ()
 {
   double t = current_time ();
   if (rotate_earth)
-    view.params.lonc += 1.;
-  if (rotate_light)
-    lightx -= 1.;
+    view.opts.lon += 1.;
+  if (light.rotate)
+    light.lon -= 1.;
 
 
   if (movie && ((t - movie_time) > opts.scene.movie_wait))
@@ -128,6 +128,10 @@ void glgrib_scene::init (const glgrib_options & o)
 
   if (opts.coastlines.path != "")
     coastlines.init (opts.coastlines);
+
+  light = opts.scene.light;
+
+  view.opts = opts.camera;
 
   for (int i = 0; i < opts.field.size (); i++)
     {

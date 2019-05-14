@@ -46,17 +46,26 @@ glgrib_field::glgrib_field (const glgrib_field & field)
 
 glgrib_field & glgrib_field::operator= (const glgrib_field & field)
 {
-  if ((this != &field) && field.isReady ())
+  if (this != &field)
     {
-      glgrib_world::operator= (field);
-      ready_ = false;
-      valmis = field.valmis;
-      valmin = field.valmin;
-      valmax = field.valmax;
-      values = field.values;
-      dopts  = field.dopts;
-      def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
-      setReady ();
+      if (field.isReady ())
+        {
+          glgrib_world::operator= (field);
+          ready_ = false;
+          valmis = field.valmis;
+          valmin = field.valmin;
+          valmax = field.valmax;
+          values = field.values;
+          dopts  = field.dopts;
+          def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
+          setReady ();
+        }
+      else
+       {
+         cleanup ();
+	 values = NULL;
+         ready_ = false;
+       }
     }
 }
 
@@ -73,7 +82,6 @@ void glgrib_field::init (const glgrib_options_field & opts, int slot)
 
   float * data;
   glgrib_load (opts.path[slot], &data, &valmin, &valmax, &valmis);
-  values = new_glgrib_field_float_buffer_ptr (data);
 
   col = (unsigned char *)malloc (numberOfColors * geometry->numberOfPoints * sizeof (unsigned char));
 
@@ -88,6 +96,14 @@ void glgrib_field::init (const glgrib_options_field & opts, int slot)
   def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
 
   free (col);
+
+  values = NULL;
+
+  if (opts.no_value_pointer)
+    free (data);
+  else
+    values = new_glgrib_field_float_buffer_ptr (data);
+
 
   setReady ();
 }

@@ -24,7 +24,7 @@ static void command_##name (glgrib_window * gwindow, class glgrib_shell * shell,
 glgrib_shell Shell 
 (
   C (close,     { shell->close = 1; },                            ""),
-  C (fov,       { gwindow->scene.view.params.fov += F (dfov);  }, "", A ("dfov", "+1.")),
+  C (fov,       { gwindow->scene.view.opts.fov += F (dfov);  }, "", A ("dfov", "+1.")),
   C (rotate,    { gwindow->scene.rotate_earth = ! gwindow->scene.rotate_earth; }, ""),
   C (wireframe, { gwindow->toggle_wireframe (); }, ""),
   C (flat,      { gwindow->toggle_flat (); }, ""),

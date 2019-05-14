@@ -42,7 +42,7 @@ test_3l_t1798: glgrib.x
 test_offscreen: glgrib.x
 	\rm -f snapshot*.png
 	./glgrib.x --landscape.geometry t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path ""  --window.offscreen  \
-		--window.offscreen_frames 10 --scene.movie --scene.movie-wait -1  --scene.rotate-light --scene.light        \
+		--window.offscreen_frames 10 --scene.movie --scene.movie-wait -1  --scene.light.rotate --scene.light.on     \
 		--field[0].path t1198c2.2/SURFNEBUL.BASSE.grb t1198c2.2/SURFNEBUL.MOYENN.grb  t1198c2.2/SURFNEBUL.HAUTE.grb \
 		--field[0].scale                         1.03                           1.03                           1.03 \
 		--field[0].palette                 cloud_auto                     cloud_auto                     cloud_auto 
@@ -65,3 +65,12 @@ test_small:
 
 test_shell:
 	./glgrib.x --shell --landscape.geometry  t49/Z.grb  --field[0].scale 1.01  --field[0].path t49/SFX.CLAY.grb
+
+test_novalue:
+	./glgrib.x --landscape.geometry t1798/Z.grb --grid.resolution 0 --coastlines.path ""  \
+		--field[0].path t1798/SURFNEBUL.BASSE.grb --field[0].scale 1.03 --field[0].palette cloud_auto --field[0].no_value_pointer
+
+test_t8000_noorog:
+	./glgrib.x  --window.width 2000  --window.height 2000 --landscape.geometry t479/Z.grb \--landscape.orography 0 --grid.resolution 0 --coastlines.path ""   \
+		--window.offscreen    --field[0].path t8000/SURFNEBUL.TOTALE.grb --field[0].scale 1.03 --field[0].palette cloud_auto  --field[0].no_value_pointer  \
+		--scene.light.on --scene.light.lon -25 --scene.light.lat 30.

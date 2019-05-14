@@ -37,32 +37,30 @@ public:
       return currentFieldRank < fieldlist.size () ? &fieldlist[currentFieldRank].dopts : NULL; 
     }
 
-  void getLightPos (float * x, float * y)
+  void getLightPos (float * lon, float * lat)
     {
-      *x = lightx;
-      *y = lighty;
+      *lon = light.lon;
+      *lat = light.lat;
     }
-  void setLightPos (float x, float y)
+  void setLightPos (float lon, float lat)
     { 
-      lightx = x;
-      lighty = y;
+      light.lon = lon;
+      light.lat = lat;
     }
   void setLight ()
     {
-      light = true;
+      light.on = true;
     }
-  void unsetLight () { light = false; }
-  bool hasLight () { return light; }
+  void unsetLight () { light.on = false; }
+  bool hasLight () { return light.on; }
   void update ();
   bool rotate_earth = false;
-  bool rotate_light = false;
   void toggleMovie () { movie = ! movie; movie_index = 0; }
   void setMovie () { movie = true; movie_index = 0; }
   void setCurrentFieldRank (int r) { currentFieldRank = r; }
 
+  glgrib_options_light light;
 private:
-  float lightx = 0., lighty = 0.;
-  bool light = false;
   bool movie = false;
   int movie_index = 0;
   double movie_time = 0;

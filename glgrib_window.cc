@@ -408,16 +408,16 @@ void glgrib_window::centerLightAtCursorPos ()
 
 void glgrib_window::centerViewAtCursorPos ()
 {
-  if (get_latlon_from_cursor (&scene.view.params.latc, &scene.view.params.lonc))
+  if (get_latlon_from_cursor (&scene.view.opts.lat, &scene.view.opts.lon))
     glfwSetCursorPos (window, width / 2., height / 2.);
 }
 
 void glgrib_window::scroll (double xoffset, double yoffset)
 {
   if (yoffset > 0)
-    scene.view.params.fov += 1;
+    scene.view.opts.fov += 1;
   else
-    scene.view.params.fov -= 1;
+    scene.view.opts.fov -= 1;
 }
 
 void glgrib_window::renderFrame ()
@@ -479,11 +479,11 @@ void glgrib_window::create (const glgrib_options & opts)
 {
   id_ = idcount++;
 
-  scene.rotate_light = opts.scene.rotate_light;
+  scene.light.rotate = opts.scene.light.rotate;
   scene.rotate_earth = opts.scene.rotate_earth;
   if (opts.scene.movie)
     scene.setMovie ();
-  if (opts.scene.light)
+  if (opts.scene.light.on)
     scene.setLight ();
 
   title = opts.landscape.geometry;

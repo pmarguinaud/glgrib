@@ -62,3 +62,6 @@ test_glob01:
 
 test_small:
 	./glgrib.x --landscape.geometry  t49/Z.grb  --field[0].scale 1.01  --field[0].path t49/SFX.CLAY.grb
+
+test_shell:
+	./glgrib.x --shell --landscape.geometry  t49/Z.grb  --field[0].scale 1.01  --field[0].path t49/SFX.CLAY.grb

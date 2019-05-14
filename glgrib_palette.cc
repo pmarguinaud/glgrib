@@ -71,6 +71,16 @@ glgrib_palette & get_next_palette (const glgrib_palette & p)
   return it->second;
 }
 
+glgrib_palette palette_zsdiff_big
+  (
+     -350.0f, +350.0f,
+     "zsdiff_big",
+       0,   0,   0,   0,
+       0,   0, 255, 255,
+     255, 255, 255, 255,
+     255,   0,   0, 255 
+  );
+
 glgrib_palette palette_cold_hot_temp
   (
      253.15, 313.15,

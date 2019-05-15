@@ -214,16 +214,16 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (codes_handle * h)
     }
   
   if (do_rot_str) 
-  if (latitudeOfStretchingPoleInDegrees != 90.0f 
-   && (latitudeOfStretchingPoleInDegrees != 0.0f 
-    && longitudeOfStretchingPoleInDegrees != 0.0f))
+  if ((latitudeOfStretchingPoleInDegrees != 90.0f && longitudeOfStretchingPoleInDegrees != 0.0f)
+   || (latitudeOfStretchingPoleInDegrees != 0.0f && longitudeOfStretchingPoleInDegrees != 0.0f))
     {
       rot = glm::rotate (glm::mat4 (1.0f),
                          glm::radians (90.0f-(float)latitudeOfStretchingPoleInDegrees), 
                          glm::vec3 (-sinf (glm::radians (longitudeOfStretchingPoleInDegrees)),
                                     +cosf (glm::radians (longitudeOfStretchingPoleInDegrees)),
-                                    0.0f)) 
-          *
+                                    0.0f));
+      if (fabs (stretchingFactor - 1.0f) < 1e-6)
+      rot = rot *
             glm::rotate (glm::mat4 (1.0f),
                          glm::radians (180.0f+(float)longitudeOfStretchingPoleInDegrees),
                          glm::vec3 (0.0f, 0.0f, 1.0f));

@@ -322,7 +322,7 @@ void glgrib_options::parse (int argc, char * argv[])
     delete options[iopt];
 
 
-  for (int j = 0; j < field[j].path.size (); j++)
+  for (int j = 0; j < field.size (); j++)
     {
       if (field[j].scale.size () == 0)
         field[j].scale.push_back (1.00);

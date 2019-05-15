@@ -415,9 +415,21 @@ void glgrib_window::centerViewAtCursorPos ()
 void glgrib_window::scroll (double xoffset, double yoffset)
 {
   if (yoffset > 0)
-    scene.view.opts.fov += 1;
-  else
-    scene.view.opts.fov -= 1;
+    {
+      if (scene.view.opts.fov < 1.0f)
+        scene.view.opts.fov += 0.1f;
+      else
+        scene.view.opts.fov += 1.0f;
+    }
+  else 
+    {
+      if (scene.view.opts.fov < 1.0f)
+        scene.view.opts.fov -= 0.1f;
+      else
+        scene.view.opts.fov -= 1.0f;
+      if (scene.view.opts.fov <= 0.0f)
+        scene.view.opts.fov = 0.1f;
+    }
 }
 
 void glgrib_window::renderFrame ()

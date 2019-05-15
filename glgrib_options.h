@@ -23,6 +23,7 @@ class glgrib_options_grid
 {
 public:
   int resolution = 9;
+  int r = 255, g = 255, b = 255;
 };
 
 class glgrib_options_landscape

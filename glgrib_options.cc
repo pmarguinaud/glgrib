@@ -216,6 +216,9 @@ static optionlist get_optionlist (glgrib_options * opts)
 
 
   ADD_OPT (grid.resolution,           Grid resolution);
+  ADD_OPT (grid.r,                    Grid red color component);
+  ADD_OPT (grid.g,                    Grid green color component);
+  ADD_OPT (grid.b,                    Grid blue color component);
 
   ADD_OPT (coastlines.path,           Path to coastlines file);
   ADD_OPT (coastlines.r,              Coastlines red color component);

@@ -17,8 +17,9 @@ glgrib_grid & glgrib_grid::operator= (const glgrib_grid & grid)
     }
 }
 
-void glgrib_grid::init (const glgrib_options_grid & opts)
+void glgrib_grid::init (const glgrib_options_grid & o)
 {
+  opts = o;
 
   numberOfColors = use_alpha () ? 4 : 3;
 
@@ -126,7 +127,7 @@ void glgrib_grid::render (const glgrib_view * view) const
 {
   const glgrib_program * program = get_program ();
   GLint color0 = glGetUniformLocation (program->programID, "color0");
-  float color[3] = {255., 255., 255.};
+  float color[3] = {(float)opts.r, (float)opts.g, (float)opts.b};
   glUniform3fv (color0, 1, color);
   glgrib_polygon::render (view);
 }

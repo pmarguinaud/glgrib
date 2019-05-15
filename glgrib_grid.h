@@ -12,6 +12,7 @@ public:
   virtual glgrib_program_kind get_program_kind () const { return GLGRIB_PROGRAM_MONO; }
   virtual bool use_alpha () { return false; }
   virtual void render (const glgrib_view * ) const;
+  glgrib_options_grid opts;
 };
 
 #endif

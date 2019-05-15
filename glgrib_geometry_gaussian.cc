@@ -222,7 +222,6 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (codes_handle * h)
                          glm::vec3 (-sinf (glm::radians (longitudeOfStretchingPoleInDegrees)),
                                     +cosf (glm::radians (longitudeOfStretchingPoleInDegrees)),
                                     0.0f));
-      if (fabs (stretchingFactor - 1.0f) < 1e-6)
       rot = rot *
             glm::rotate (glm::mat4 (1.0f),
                          glm::radians (180.0f+(float)longitudeOfStretchingPoleInDegrees),

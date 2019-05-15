@@ -37,6 +37,7 @@ class glgrib_options_coastlines
 {
 public:
   std::string path = "coastlines/gshhs(3).rim";
+  int r = 255, g = 255, b = 255;
 };
 
 class glgrib_options_window

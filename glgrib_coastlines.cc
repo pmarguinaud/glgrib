@@ -35,8 +35,9 @@ typedef struct point_t
   int y; /* latitude of a point in micro-degrees */
 } point_t;
 
-void glgrib_coastlines::init (const glgrib_options_coastlines & opts)
+void glgrib_coastlines::init (const glgrib_options_coastlines & o)
 {
+  opts = o;
 
   numberOfColors = use_alpha () ? 4 : 3;
 
@@ -121,7 +122,7 @@ void glgrib_coastlines::render (const glgrib_view * view) const
 {
   const glgrib_program * program = get_program ();
   GLint color0 = glGetUniformLocation (program->programID, "color0");
-  float color[3] = {255., 255., 255.};
+  float color[3] = {(float)opts.r, (float)opts.g, (float)opts.b};
   glUniform3fv (color0, 1, color);
   glgrib_polygon::render (view);
 }

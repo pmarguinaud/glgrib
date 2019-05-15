@@ -218,6 +218,9 @@ static optionlist get_optionlist (glgrib_options * opts)
   ADD_OPT (grid.resolution,           Grid resolution);
 
   ADD_OPT (coastlines.path,           Path to coastlines file);
+  ADD_OPT (coastlines.r,              Coastlines red color component);
+  ADD_OPT (coastlines.g,              Coastlines green color component);
+  ADD_OPT (coastlines.b,              Coastlines blue color component);
 
   ADD_OPT (landscape.orography,       Factor to apply to orography);
   ADD_OPT (landscape.path,            Path to landscape image in BMP format);

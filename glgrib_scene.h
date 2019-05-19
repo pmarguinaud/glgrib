@@ -4,6 +4,8 @@
 #include <vector>
 #include <set>
 
+#include "glgrib_font.h"
+#include "glgrib_string.h"
 #include "glgrib_view.h"
 #include "glgrib_object.h"
 #include "glgrib_program.h"
@@ -66,6 +68,8 @@ private:
   double movie_time = 0;
   void setLightShader (GLuint) const;
   int currentFieldRank = 0;
+  glgrib_font_ptr font;
+  glgrib_string str;
 };
 
 #endif

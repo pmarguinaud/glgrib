@@ -5,7 +5,7 @@
 #include <iostream>
 
 void glgrib_world::def_from_vertexbuffer_col_elementbuffer 
-  (const glgrib_opengl_buffer_ptr colorbuffer, const glgrib_geometry_ptr geom)
+  (const glgrib_opengl_buffer_ptr colorbuffer, const_glgrib_geometry_ptr geom)
 {
   numberOfPoints = geom->numberOfPoints;
   numberOfTriangles = geom->numberOfTriangles;

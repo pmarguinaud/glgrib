@@ -1,3 +1,5 @@
 Use mysql to store field options
 Make shell usable
 Try intel gpu tools
+Add statistics (frame/s)
+Add glstring_copy constructor

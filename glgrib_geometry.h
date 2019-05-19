@@ -30,6 +30,7 @@ protected:
 };
 
 typedef std::shared_ptr<glgrib_geometry> glgrib_geometry_ptr;
+typedef std::shared_ptr<const glgrib_geometry> const_glgrib_geometry_ptr;
 extern glgrib_geometry_ptr glgrib_geometry_load (const std::string &, const float = 0.0f);
 
 #endif

@@ -70,6 +70,18 @@ void glgrib_scene::display () const
         }
     }
 
+  float width = view.width, height = view.height;
+
+  float ratio = width / height;
+
+  if(1){
+  glm::mat4 p = glm::ortho(0.0f, ratio, 0.0f, 1.0f, 0.1f, 100.0f);
+  glm::mat4 v = glm::lookAt (glm::vec3 (+1.0f,0.0f,0.0f), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
+  glm::mat4 mvp = p * v;
+  str.render (mvp);
+  }
+
+
 }
 
 static double current_time ()
@@ -147,6 +159,11 @@ void glgrib_scene::init (const glgrib_options & o)
         setCurrentFieldRank (i);
 
     }
+
+  font = new_glgrib_font_ptr ();
+
+  font->init (std::string ("alpha-array-08.bmp"));
+  str.init (font, std::string ("ABC"), 0.0f, 0.0f, 0.05f, glgrib_string::SW);
 
 }
 

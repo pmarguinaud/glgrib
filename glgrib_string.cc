@@ -1,6 +1,22 @@
 #include "glgrib_string.h"
 
-glgrib_string::~glgrib_string ()
+glgrib_string & glgrib_string::operator= (const glgrib_string & str)
+{
+  if (this != &str)
+    {
+      cleanup ();
+      if (str.ready)
+        {
+          for (int i =0; i < 3; i++)
+            color0[i] = str.color0[i];
+          init (str.font, str.data, str.x, str.y, str.scale, str.align);
+        }
+    }
+}
+
+
+
+void glgrib_string::cleanup ()
 {
   if (ready)
     {
@@ -9,6 +25,12 @@ glgrib_string::~glgrib_string ()
       glDeleteBuffers (1, &elementbuffer);
       glDeleteVertexArrays (1, &VertexArrayID);
     }
+  ready = false;
+}
+
+glgrib_string::~glgrib_string ()
+{
+  cleanup ();
 }
 
 void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
@@ -18,10 +40,13 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
 }
 
 void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
-                          const std::vector<float> & x, const std::vector<float> & y, 
-                          float s, glgrib_string_align_t align)
+                          const std::vector<float> & _x, const std::vector<float> & _y, 
+                          float s, glgrib_string_align_t _align)
 {
   data = str;
+  x = _x;
+  y = _y;
+  align = _align;
   
   int len = 0;
   for (int i = 0; i < data.size (); i++)
@@ -143,6 +168,9 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::string & str,
 
 void glgrib_string::render (const glm::mat4 & MVP) const
 {
+  if (! ready)
+    return;
+
   font->select ();
 
   GLuint programID = font->getProgram ();

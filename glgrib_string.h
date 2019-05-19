@@ -25,6 +25,7 @@ public:
       SE  = SY | EX, NW  = NY | WX, SW  = SY | WX,
     }
   glgrib_string_align_t;
+  glgrib_string & operator= (const glgrib_string &);
   void init (const_glgrib_font_ptr, const std::string &, float, 
              float, float = 1.0f, glgrib_string_align_t = SW);
   void init (const_glgrib_font_ptr, const std::vector<std::string> &, const std::vector<float> &, 
@@ -35,8 +36,11 @@ public:
   void setColor (float r, float g, float b) { color0[0] = r; color0[1] = g; color0[2] = b; }
   ~glgrib_string ();
   void update (const std::vector<std::string> &);
+  void cleanup ();
 private:
   std::vector<std::string> data;
+  std::vector<float> x, y;
+  glgrib_string_align_t align;
   float color0[3];
   float scale;
   bool ready = false;

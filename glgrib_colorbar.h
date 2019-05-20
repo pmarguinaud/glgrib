@@ -16,7 +16,7 @@ public:
   void cleanup ();
   ~glgrib_colorbar ();
   glgrib_colorbar & operator= (const glgrib_colorbar &);
-  void render (const glm::mat4 &, const glgrib_palette &) const;
+  void render (const glm::mat4 &, const glgrib_palette &, float, float) const;
   void loadShader ();
 private:
   glgrib_options_colorbar opts;

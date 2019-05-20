@@ -73,37 +73,39 @@ glgrib_colorbar::~glgrib_colorbar ()
   cleanup ();
 }
 
-void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p) const
+void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
+                              float valmin, float valmax) const
 {
   if (! ready)
     return;
-
-  if (p != pref)
-    {
-      pref = p;
-
-      std::vector<std::string> str;
-      for (int i = 0; i < 11; i++)
-        {
-          char tmp[32];
-          sprintf (tmp, "%6.4g", p.min + i * (p.max - p.min) / 10.0f);
-	  std::string s (tmp);
-	  while (s.length () < 6)
-	    s += " ";
-          str.push_back (s);
-          std::cout << s << std::endl;
-        }
-
-
-      label.update (str);
-    }
-
 
   label.render (MVP);
 
   glUseProgram (programID);
 
-  pref.setRGBA255 (programID);
+  glgrib_palette p1 = p;
+  if (! p1.hasMin ())
+    p1.min = valmin;
+  if (! p1.hasMax ())
+    p1.max = valmax;
+
+  if (p1 != pref)
+    {
+      pref = p1;
+      std::vector<std::string> str;
+      for (int i = 0; i < 11; i++)
+        {
+          char tmp[32];
+          sprintf (tmp, "%6.4g", pref.min + i * (pref.max - pref.min) / 10.0f);
+	  std::string s (tmp);
+	  while (s.length () < 6)
+	    s += " ";
+          str.push_back (s);
+        }
+
+      label.update (str);
+      pref.setRGBA255 (programID);
+    }
 
   glUniformMatrix4fv (glGetUniformLocation (programID, "MVP"), 1, GL_FALSE, &MVP[0][0]);
 

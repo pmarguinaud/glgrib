@@ -12,6 +12,8 @@
 #include "glgrib_png.h"
 #include <iostream>
 
+#include "glgrib_x11.h"
+
 static double current_time ()
 {
   struct timeval tv;
@@ -459,6 +461,8 @@ void glgrib_window::renderFrame ()
     makeCurrent ();
     scene.display (); 
   }
+
+  glgribX11DrawText (this, std::string ("Toto"));
   
   glfwSwapBuffers (window);
 }

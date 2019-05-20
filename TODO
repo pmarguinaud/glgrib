@@ -4,3 +4,5 @@ Try intel gpu tools
 Create field palette object
 Test opengl errors
 Write text with X11
+Use opts in scene
+Use pthread to create the shell

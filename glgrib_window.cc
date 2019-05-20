@@ -20,6 +20,14 @@ static double current_time ()
   return (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
 }
 
+static
+void APIENTRY debug_callback (unsigned int source, unsigned int type, GLuint id, unsigned int severity, 
+                              int length, const char * message, const void * data)
+{
+  glgrib_window * gwindow = (glgrib_window *)data;
+  gwindow->debug (source, type, id, severity, length, message);
+}
+
 static 
 void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
 {
@@ -478,10 +486,14 @@ void glgrib_window::resize (int w, int h)
 void glgrib_window::setHints ()
 {
   glfwWindowHint (GLFW_SAMPLES, 4);
-  glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); 
   glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+  if (opts.debug)
+    glfwWindowHint (GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+
 }
 
 static int idcount = 0;
@@ -500,6 +512,7 @@ glgrib_window::glgrib_window (const glgrib_options & opts)
 void glgrib_window::create (const glgrib_options & o)
 {
   id_ = idcount++;
+  opts = o.window;
 
   scene.light.rotate = o.scene.light.rotate;
   scene.rotate_earth = o.scene.rotate_earth;
@@ -508,7 +521,6 @@ void glgrib_window::create (const glgrib_options & o)
   if (o.scene.light.on)
     scene.setLight ();
 
-  opts = o.window;
 
   createGFLWwindow (NULL);
 
@@ -542,6 +554,19 @@ void glgrib_window::createGFLWwindow (GLFWwindow * context)
       return;
     }
   
+  if (opts.debug)
+   {
+     GLint flags; 
+     glGetIntegerv (GL_CONTEXT_FLAGS, &flags);
+     if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+       {
+         glEnable (GL_DEBUG_OUTPUT);
+         glEnable (GL_DEBUG_OUTPUT_SYNCHRONOUS); 
+         glDebugMessageCallback (debug_callback, this);
+         glDebugMessageControl (GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+       }
+   }
+
   glfwSetInputMode (window, GLFW_STICKY_KEYS, GL_TRUE);
   glfwSetKeyCallback (window, key_callback);
   glfwSetScrollCallback (window, scroll_callback);
@@ -618,4 +643,50 @@ glgrib_window * glgrib_window_set::getWindowById (int id)
   return NULL;
 }
 
+#define GLMESS(x) case GL_DEBUG_SOURCE_##x: return #x
+static const char * debug_source (unsigned int source)
+{
+  switch (source)
+    {
+      GLMESS (API); GLMESS (WINDOW_SYSTEM); GLMESS (SHADER_COMPILER);
+      GLMESS (THIRD_PARTY); GLMESS (APPLICATION); GLMESS (OTHER);
+    }
+  return "UNKNOWN";
+}
+#undef GLMESS
+
+#define GLMESS(x) case GL_DEBUG_TYPE_##x: return #x
+static const char * debug_type (unsigned int type)
+{
+  switch (type)
+    {
+      GLMESS (ERROR); GLMESS (DEPRECATED_BEHAVIOR); GLMESS (UNDEFINED_BEHAVIOR);
+      GLMESS (PORTABILITY); GLMESS (PERFORMANCE); GLMESS (MARKER);
+      GLMESS (PUSH_GROUP); GLMESS (POP_GROUP); GLMESS (OTHER);
+    } 
+  return "UNKNOWN";
+}
+#undef GLMESS
+
+#define GLMESS(x) case GL_DEBUG_SEVERITY_##x: return #x
+static const char * debug_severity (unsigned int severity)
+{
+  switch (severity)
+    {
+      GLMESS (HIGH); GLMESS (MEDIUM);
+      GLMESS (LOW); GLMESS (NOTIFICATION);
+    } 
+  return "UNKNOWN";
+}
+#undef GLMESS
+
+void glgrib_window::debug (unsigned int source, unsigned int type, GLuint id, 
+		           unsigned int severity, int length, const char * message)
+{
+  // ignore non-significant error/warning codes
+  if (id == 131169 || id == 131185 || id == 131218 || id == 131204) 
+    return; 
+  printf ("%-20s | %-20s | %-30s | %10d | %s\n", debug_source (source), 
+          debug_severity (severity), debug_type (type), id, message);
+}
 

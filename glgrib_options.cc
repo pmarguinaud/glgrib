@@ -218,6 +218,7 @@ static optionlist get_optionlist (glgrib_options * opts)
   ADD_OPT (window.offscreen_frames,   Number of frames to issue in offline mode);
   ADD_OPT (window.statistics,         Issue statistics when window is closed);
   ADD_OPT (window.title,              Window title);
+  ADD_OPT (window.debug,              Enable OpenGL debugging);
 
 
   ADD_OPT (grid.resolution,           Grid resolution);

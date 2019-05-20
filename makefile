@@ -28,6 +28,9 @@ glwhat.x: glwhat.cc
 test_bw: glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field[0].path t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path ""
 
+test_bw_debug: glgrib.x
+	$(GDB) ./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field[0].path t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path "" --window.debug
+
 test_3l_t1198: glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path ""  \
                --field[0].path t1198c2.2/SURFNEBUL.BASSE.grb --field[1].path t1198c2.2/SURFNEBUL.MOYENN.grb --field[2].path t1198c2.2/SURFNEBUL.HAUTE.grb \

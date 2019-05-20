@@ -49,6 +49,7 @@ public:
   int offscreen_frames = 1;
   bool statistics = false;
   std::string title = "";
+  bool debug = false;
 };
 
 class glgrib_options_font

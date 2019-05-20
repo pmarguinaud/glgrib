@@ -21,7 +21,7 @@ public:
   virtual void renderFrame ();
   virtual void run (class glgrib_shell * = NULL);
   void makeCurrent () { glfwMakeContextCurrent (window); }
-
+  void debug (unsigned int, unsigned int, GLuint, unsigned int, int, const char *);
   glgrib_options_window opts;
   int snapshot_cnt = 0;
   glgrib_scene scene;

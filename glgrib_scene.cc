@@ -76,8 +76,12 @@ void glgrib_scene::display () const
   glm::mat4 p = glm::ortho(0.0f, ratio, 0.0f, 1.0f, 0.1f, 100.0f);
   glm::mat4 v = glm::lookAt (glm::vec3 (+1.0f,0.0f,0.0f), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
   glm::mat4 mvp = p * v;
-  str.render (mvp);
+  
+  const glgrib_field_display_options * fopt = currentFieldRank < fieldlist.size () ? &fieldlist[currentFieldRank].dopts : NULL;
+  if (fopt != NULL)
+    colorbar.render (mvp, fopt->palette);
   }
+  //str.render (mvp);
 
 
 }
@@ -158,10 +162,11 @@ void glgrib_scene::init (const glgrib_options & o)
 
     }
 
-  font = new_glgrib_font_ptr ();
-
-  font->init (opts.font);
+  if(0){
+  font = new_glgrib_font_ptr (opts.font);
   str.init (font, std::string ("ABC"), 0.0f, 0.0f, opts.font.scale, glgrib_string::SW);
+  }
+  colorbar.init (opts.colorbar);
 
 }
 

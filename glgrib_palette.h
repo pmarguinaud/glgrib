@@ -23,6 +23,14 @@ public:
   {
     out << "{" << (int)p.r << ", " << (int)p.g << ", " << (int)p.b << ", " << (int)p.a << "}";
   }
+  friend bool operator== (const glgrib_rgba & rgba1, const glgrib_rgba & rgba2)
+  {
+    return (rgba1.r == rgba2.r) && (rgba1.g == rgba2.g) && (rgba1.b == rgba2.b) && (rgba1.a == rgba2.a);
+  }
+  friend bool operator!= (const glgrib_rgba & rgba1, const glgrib_rgba & rgba2)
+  {
+    return ! (rgba1 == rgba2);
+  }
 };
 
 class glgrib_palette
@@ -63,6 +71,8 @@ public:
   friend std::ostream & operator << (std::ostream &, const glgrib_palette &);
   void setRGBA255 (GLuint) const;
   glgrib_palette & register_ (const glgrib_palette &);
+  friend bool operator== (const glgrib_palette &, const glgrib_palette &);
+  friend bool operator!= (const glgrib_palette &, const glgrib_palette &);
 private:
   template <typename T, typename... Types> 
   glgrib_palette (const std::string & n, bool record, T r, T g, T b, T a, Types... vars)
@@ -74,7 +84,6 @@ private:
     name = n;
   }
 };
-
 
 extern glgrib_palette palette_cold_hot;
 extern glgrib_palette palette_cloud;

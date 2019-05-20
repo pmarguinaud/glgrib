@@ -156,3 +156,22 @@ void glgrib_palette::setRGBA255 (GLuint programID) const
   glUniform4fv (glGetUniformLocation (programID, "RGBA0"), 256, &RGBA0[0][0]);
 }
 
+bool operator== (const glgrib_palette & p1, const glgrib_palette & p2)
+{
+  if (p1.rgba_mis != p2.rgba_mis)
+    return false;
+  if (p1.min != p2.min)
+    return false;
+  if (p1.max != p2.max)
+    return false;
+  if (p1.rgba != p2.rgba)
+    return false;
+  return true;
+}
+ 
+bool operator!= (const glgrib_palette & p1, const glgrib_palette & p2)
+{
+  return ! (p1 == p2);
+}
+ 
+

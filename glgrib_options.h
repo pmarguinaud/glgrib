@@ -55,6 +55,8 @@ public:
 class glgrib_options_font
 {
 public:
+  glgrib_options_font (const std::string & b, float s) : bitmap (b), scale (s) {}
+  glgrib_options_font () {}
   std::string bitmap = "fonts/08.bmp";
   float scale = 0.05f;
 };
@@ -66,6 +68,12 @@ public:
   bool rotate = false;
   float lon = 0.0f;
   float lat = 0.0f;
+};
+
+class glgrib_options_colorbar
+{
+public:
+  glgrib_options_font font = glgrib_options_font ("fonts/16.bmp", 0.02f);
 };
 
 class glgrib_options_scene
@@ -91,6 +99,7 @@ public:
      glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field ()};
   glgrib_options_palette palette;
   glgrib_options_coastlines coastlines;
+  glgrib_options_colorbar colorbar;
   glgrib_options_window window;
   glgrib_options_landscape landscape;
   glgrib_options_grid grid;

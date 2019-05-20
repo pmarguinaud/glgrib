@@ -3,9 +3,15 @@
 #include "glgrib_bmp.h"
 
 
-glgrib_font_ptr new_glgrib_font_ptr ()
+static glgrib_font_ptr font = NULL;
+glgrib_font_ptr new_glgrib_font_ptr (const glgrib_options_font & opts)
 {
-  return std::make_shared<glgrib_font> ();
+  if (font == NULL)
+    {
+      font = std::make_shared<glgrib_font> ();
+      font->init (opts);
+    }
+  return font;
 }
 
 GLuint glgrib_font::programID = 0;
@@ -194,6 +200,7 @@ void main()
 
 )CODE");
 
+  programReady = true;
 }
 
 

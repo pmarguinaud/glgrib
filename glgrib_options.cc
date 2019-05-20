@@ -211,6 +211,8 @@ static optionlist get_optionlist (glgrib_options * opts)
 #undef ADD_FIELD_OPT
 
   ADD_OPT (palette.directory,         Directory where palettes are stored);    
+  ADD_OPT (colorbar.font.bitmap,      Bitmap path);
+  ADD_OPT (colorbar.font.scale,       Bitmap scale);
 
   ADD_OPT (window.width,              Window width);
   ADD_OPT (window.height,             Window height);

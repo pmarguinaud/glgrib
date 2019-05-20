@@ -13,6 +13,7 @@
 #include "glgrib_grid.h"
 #include "glgrib_field.h"
 #include "glgrib_coastlines.h"
+#include "glgrib_colorbar.h"
 
 #include <set>
 
@@ -39,12 +40,12 @@ public:
       return currentFieldRank < fieldlist.size () ? &fieldlist[currentFieldRank].dopts : NULL; 
     }
 
-  void getLightPos (float * lon, float * lat)
+  void getLightPos (float * lon, float * lat) const
     {
       *lon = light.lon;
       *lat = light.lat;
     }
-  void setLightPos (float lon, float lat)
+  void setLightPos (float lon, float lat) 
     { 
       light.lon = lon;
       light.lat = lat;
@@ -54,7 +55,7 @@ public:
       light.on = true;
     }
   void unsetLight () { light.on = false; }
-  bool hasLight () { return light.on; }
+  bool hasLight () const { return light.on; }
   void update ();
   bool rotate_earth = false;
   void toggleMovie () { movie = ! movie; movie_index = 0; }
@@ -70,6 +71,7 @@ private:
   int currentFieldRank = 0;
   glgrib_font_ptr font;
   glgrib_string str;
+  glgrib_colorbar colorbar;
 };
 
 #endif

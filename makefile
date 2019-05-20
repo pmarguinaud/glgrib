@@ -1,7 +1,7 @@
 
 
 CXXFLAGS=-std=c++11 -g -fopenmp
-LDFLAGS=-fopenmp -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -ltinfo -lssl -lcrypto
+LDFLAGS=-fopenmp -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -ltinfo -lssl -lcrypto -lpthread 
 GDB=./gdbwrap
 GDB=
 

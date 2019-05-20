@@ -47,6 +47,8 @@ public:
   int width = 800, height = 800;
   bool offscreen = false;
   int offscreen_frames = 1;
+  bool statistics = false;
+  std::string title = "";
 };
 
 class glgrib_options_light

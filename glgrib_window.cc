@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <unistd.h>
 #include <string.h>
 #include <GL/glew.h>
@@ -11,6 +12,13 @@
 #include "glgrib_png.h"
 #include <iostream>
 
+static double current_time ()
+{
+  struct timeval tv;
+  struct timezone tz;
+  gettimeofday (&tv, &tz);
+  return (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+}
 
 static 
 void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
@@ -263,7 +271,7 @@ int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)
   double xpos, ypos;
 
   glfwGetCursorPos (window, &xpos, &ypos);
-  ypos = height - ypos;
+  ypos = opts.height - ypos;
   
   glm::vec3 centre (0.0f, 0.0f, 0.0f);
   glm::vec3 xc = scene.view.insersect_sphere (xpos, ypos, centre, 1.0f);
@@ -280,15 +288,15 @@ int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)
 
 void glgrib_window::snapshot ()
 {
-  unsigned char * rgb = new unsigned char[width * height * 4];
+  unsigned char * rgb = new unsigned char[opts.width * opts.height * 4];
   char filename[32];
 
   // glReadPixels does not seem to work well with all combinations of width/height
   // when GL_RGB is used; GL_RGBA on the other hand seems to work well
   // So we get it in RGBA mode and throw away the alpha channel
-  glReadPixels (0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, rgb);
+  glReadPixels (0, 0, opts.width, opts.height, GL_RGBA, GL_UNSIGNED_BYTE, rgb);
 
-  for (int i = 0; i < width * height; i++)
+  for (int i = 0; i < opts.width * opts.height; i++)
     for (int j = 0; j < 3; j++)
       rgb[3*i+j] = rgb[4*i+j];
 
@@ -302,7 +310,7 @@ void glgrib_window::snapshot ()
         snapshot_cnt++;
     }
 
-  glgrib_png (filename, width, height, rgb);
+  glgrib_png (filename, opts.width, opts.height, rgb);
   snapshot_cnt++;
 
   delete [] rgb;
@@ -318,7 +326,7 @@ void glgrib_window::framebuffer ()
   unsigned int textureColorbuffer;
   glGenTextures (1, &textureColorbuffer);
   glBindTexture (GL_TEXTURE_2D, textureColorbuffer);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, opts.width, opts.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
@@ -327,7 +335,7 @@ void glgrib_window::framebuffer ()
   glGenRenderbuffers (1, &rbo);
   glBindRenderbuffer (GL_RENDERBUFFER, rbo);
 
-  glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH32F_STENCIL8, width, height); 
+  glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH32F_STENCIL8, opts.width, opts.height); 
   glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); 
 
   if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -360,7 +368,7 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
 	    }
         }
     }
-  glfwSetWindowTitle (window, title.c_str ());
+  glfwSetWindowTitle (window, opts.title.c_str ());
 }
 
 void glgrib_window::toggle_cursorpos_display ()
@@ -370,7 +378,7 @@ void glgrib_window::toggle_cursorpos_display ()
   else
     glfwSetCursorPosCallback (window, cursor_position_callback);
   cursorpos = ! cursorpos;
-  glfwSetWindowTitle (window, title.c_str ());
+  glfwSetWindowTitle (window, opts.title.c_str ());
 }
 
 void glgrib_window::onclick (int button, int action, int mods)
@@ -409,7 +417,7 @@ void glgrib_window::centerLightAtCursorPos ()
 void glgrib_window::centerViewAtCursorPos ()
 {
   if (get_latlon_from_cursor (&scene.view.opts.lat, &scene.view.opts.lon))
-    glfwSetCursorPos (window, width / 2., height / 2.);
+    glfwSetCursorPos (window, opts.width / 2., opts.height / 2.);
 }
 
 void glgrib_window::scroll (double xoffset, double yoffset)
@@ -434,6 +442,8 @@ void glgrib_window::scroll (double xoffset, double yoffset)
 
 void glgrib_window::renderFrame ()
 {
+  nframes++;
+
   scene.update ();
 
 #pragma omp critical (RUN)
@@ -458,11 +468,11 @@ void glgrib_window::run (glgrib_shell * shell)
 
 void glgrib_window::resize (int w, int h)
 {
-  width = w;
-  height = h;
+  opts.width = w;
+  opts.height = h;
   makeCurrent ();
-  glViewport (0, 0, width, height);
-  scene.view.setViewport (width, height);
+  glViewport (0, 0, opts.width, opts.height);
+  scene.view.setViewport (opts.width, opts.height);
 }
 
 void glgrib_window::setHints ()
@@ -487,29 +497,29 @@ glgrib_window::glgrib_window (const glgrib_options & opts)
   create (opts);
 }
 
-void glgrib_window::create (const glgrib_options & opts)
+void glgrib_window::create (const glgrib_options & o)
 {
   id_ = idcount++;
 
-  scene.light.rotate = opts.scene.light.rotate;
-  scene.rotate_earth = opts.scene.rotate_earth;
-  if (opts.scene.movie)
+  scene.light.rotate = o.scene.light.rotate;
+  scene.rotate_earth = o.scene.rotate_earth;
+  if (o.scene.movie)
     scene.setMovie ();
-  if (opts.scene.light.on)
+  if (o.scene.light.on)
     scene.setLight ();
 
-  title = opts.landscape.geometry;
-  width = opts.window.width;
-  height = opts.window.height;
+  opts = o.window;
 
   createGFLWwindow (NULL);
+
+  t0 = current_time ();
 }
 
 void glgrib_window::createGFLWwindow (GLFWwindow * context)
 {
   setHints ();
   
-  window = glfwCreateWindow (width, height, title.c_str (), NULL, context);
+  window = glfwCreateWindow (opts.width, opts.height, opts.title.c_str (), NULL, context);
   glfwSetWindowUserPointer (window, this);
 
   if (window == NULL)
@@ -538,7 +548,7 @@ void glgrib_window::createGFLWwindow (GLFWwindow * context)
   glfwSetMouseButtonCallback (window, mouse_button_callback);
   glfwSetFramebufferSizeCallback (window, resize_callback);  
 
-  scene.view.setViewport (width, height);
+  scene.view.setViewport (opts.width, opts.height);
 
 }
 
@@ -547,6 +557,11 @@ glgrib_window::~glgrib_window ()
 {
   if (window)
     glfwDestroyWindow (window);
+  if (opts.statistics)
+    {
+      double t1 = current_time ();
+      printf ("Window #%d rendered %f frames/sec\n", id_, nframes/(t1 - t0));
+    }
 }
 
 glgrib_window * glgrib_window::clone ()
@@ -554,9 +569,7 @@ glgrib_window * glgrib_window::clone ()
   glgrib_window * w = new glgrib_window ();
 
 #define COPY(x) do { w->x = x; } while (0)
-  COPY (width);
-  COPY (height);
-  COPY (title);
+  COPY (opts);
 
   w->createGFLWwindow (window); // use already existing context
 

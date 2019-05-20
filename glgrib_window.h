@@ -22,11 +22,10 @@ public:
   virtual void run (class glgrib_shell * = NULL);
   void makeCurrent () { glfwMakeContextCurrent (window); }
 
-  int width = 0, height = 0;
+  glgrib_options_window opts;
   int snapshot_cnt = 0;
   glgrib_scene scene;
   bool cursorpos = false;
-  std::string title = "";
   GLFWwindow * window = NULL;
 
   void toggle_cursorpos_display ();
@@ -94,6 +93,8 @@ protected:
   bool cloned = false;
 private:
   int id_;
+  double t0;
+  int nframes = 0;
 };
 
 class glgrib_window_set : public std::set<glgrib_window*> 

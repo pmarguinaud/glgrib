@@ -18,8 +18,17 @@ void glgrib_view::calcMVP () const
         yc = opts.distance * glm::sin (glm::radians (opts.lon)) * glm::cos (glm::radians (opts.lat)),
         zc = opts.distance *                                      glm::sin (glm::radians (opts.lat));
 
+  
+
   Viewport   = glm::vec4 (0.0f, 0.0f, (float)width, (float)height);
-  Projection = glm::perspective (glm::radians (opts.fov), (float)width/(float)height, 0.1f, 100.0f);
+
+  float ratio = (float)width/(float)height;
+
+  glm::mat4 Trans = glm::mat4 (1.0f);
+  if (ratio > 1.0f)
+    Trans = glm::translate (Trans, glm::vec3 ((ratio - 1.0f) / 2.0f, 0.0f, 0.0f));
+   
+  Projection = Trans * glm::perspective (glm::radians (opts.fov), (float)width/(float)height, 0.1f, 100.0f);
   View       = glm::lookAt (glm::vec3 (xc,yc,zc), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
   Model      = glm::mat4 (1.0f);
 

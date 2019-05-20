@@ -70,11 +70,9 @@ void glgrib_scene::display () const
         }
     }
 
-  float width = view.width, height = view.height;
-
-  float ratio = width / height;
-
   if(1){
+  float width = view.width, height = view.height;
+  float ratio = width / height;
   glm::mat4 p = glm::ortho(0.0f, ratio, 0.0f, 1.0f, 0.1f, 100.0f);
   glm::mat4 v = glm::lookAt (glm::vec3 (+1.0f,0.0f,0.0f), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
   glm::mat4 mvp = p * v;

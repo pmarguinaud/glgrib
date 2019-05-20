@@ -69,7 +69,6 @@ private:
   double movie_time = 0;
   void setLightShader (GLuint) const;
   int currentFieldRank = 0;
-  glgrib_font_ptr font;
   glgrib_string str;
   glgrib_colorbar colorbar;
 };

@@ -80,7 +80,8 @@ void glgrib_scene::display () const
                         ? &fieldlist[currentFieldRank] : NULL;
   if (fld != NULL)
     colorbar.render (mvp, fld->dopts.palette, fld->valmin, fld->valmax);
-  //str.render (mvp);
+
+  str.render (mvp);
 
 
 }
@@ -161,10 +162,8 @@ void glgrib_scene::init (const glgrib_options & o)
 
     }
 
-  if(0){
-  font = new_glgrib_font_ptr (opts.font);
-  str.init (font, std::string ("ABC"), 0.0f, 0.0f, opts.font.scale, glgrib_string::SW);
-  }
+  glgrib_font_ptr font = new_glgrib_font_ptr (opts.font);
+  str.init (font, std::string ("ABC"), 1.0f, 1.0f, opts.font.scale, glgrib_string::NE);
   colorbar.init (opts.colorbar);
 
 }

@@ -5,4 +5,3 @@ Create field palette object
 Write text with X11
 Use opts in scene
 Use pthread to create the shell
-Create font cache

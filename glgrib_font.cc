@@ -2,14 +2,26 @@
 #include "glgrib_shader.h"
 #include "glgrib_bmp.h"
 
+#include <map>
 
-static glgrib_font_ptr font = NULL;
+
+typedef std::map <std::string,glgrib_font_ptr> cache_t;
+static cache_t cache;
+
+
 glgrib_font_ptr new_glgrib_font_ptr (const glgrib_options_font & opts)
 {
-  if (font == NULL)
+  auto it = cache.find (opts.bitmap);
+  glgrib_font_ptr font;
+  if (it != cache.end ())
+    { 
+      font = it->second;
+    }
+  else
     {
       font = std::make_shared<glgrib_font> ();
       font->init (opts);
+      cache.insert (std::pair<std::string,glgrib_font_ptr> (opts.bitmap, font));
     }
   return font;
 }

@@ -186,6 +186,9 @@ static optionlist get_optionlist (glgrib_options * opts)
   ADD_OPT (camera.fov,                Camera field of view);
   ADD_OPT (camera.distance,           Camera distance);
 
+  ADD_OPT (font.bitmap,               Bitmap path);
+  ADD_OPT (font.scale,                Bitmap scale);
+
 #define ADD_FIELD_OPT(i) \
   do {                                                                             \
   ADD_OPT (field[i].path,                List of GRIB files);                      \

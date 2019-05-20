@@ -2,3 +2,5 @@ Use mysql to store field options
 Make shell usable
 Try intel gpu tools
 Create field palette object
+Test opengl errors
+Write text with X11

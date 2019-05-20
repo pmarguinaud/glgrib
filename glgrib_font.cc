@@ -31,13 +31,14 @@ glgrib_font::~glgrib_font ()
     glDeleteTextures (1, &texture);
 }
 
-void glgrib_font::init (const std::string & f)
+void glgrib_font::init (const glgrib_options_font & o)
 {
+  opts = o;
   unsigned char * rgb = NULL;
   int w, h;
   std::vector<int> ioff, joff;
 
-  glgrib_bmp (f.c_str (), &rgb, &w, &h);
+  glgrib_bmp (opts.bitmap.c_str (), &rgb, &w, &h);
 
   for (int i = 0, p = w * (h - 2); i < w; i++, p += 1)
     if ((rgb[3*p+0] == 255) && (rgb[3*p+1] == 0) && (rgb[3*p+2] == 0))

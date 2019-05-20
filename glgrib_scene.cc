@@ -162,8 +162,8 @@ void glgrib_scene::init (const glgrib_options & o)
 
   font = new_glgrib_font_ptr ();
 
-  font->init (std::string ("alpha-array-08.bmp"));
-  str.init (font, std::string ("ABC"), 0.0f, 0.0f, 0.05f, glgrib_string::SW);
+  font->init (opts.font);
+  str.init (font, std::string ("ABC"), 0.0f, 0.0f, opts.font.scale, glgrib_string::SW);
 
 }
 

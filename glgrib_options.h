@@ -51,6 +51,13 @@ public:
   std::string title = "";
 };
 
+class glgrib_options_font
+{
+public:
+  std::string bitmap = "fonts/08.bmp";
+  float scale = 0.05f;
+};
+
 class glgrib_options_light
 {
 public:
@@ -88,6 +95,7 @@ public:
   glgrib_options_grid grid;
   glgrib_options_scene scene;
   glgrib_options_camera camera;
+  glgrib_options_font font;
   bool shell = false;
   bool help = false;
   void parse (int argc, char * argv[]);

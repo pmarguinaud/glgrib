@@ -4,12 +4,13 @@
 #include <vector>
 #include <memory>
 #include "glgrib_opengl.h"
+#include "glgrib_options.h"
 
 
 class glgrib_font
 {
 public:
-  void init (const std::string &);
+  void init (const glgrib_options_font &);
   ~glgrib_font ();
   int map (char c) const
   { 
@@ -26,6 +27,7 @@ public:
   float getPosBelow () const { return posb; }
   float getPosAbove () const { return posu; }
 private:
+  glgrib_options_font opts;
   static bool programReady;
   static GLuint programID;
   std::vector<float> xoff, yoff;

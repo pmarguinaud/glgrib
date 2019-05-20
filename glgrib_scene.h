@@ -63,6 +63,7 @@ public:
   void setCurrentFieldRank (int r) { currentFieldRank = r; }
 
   glgrib_options_light light;
+  void setViewport (int, int);
 private:
   bool movie = false;
   int movie_index = 0;
@@ -71,6 +72,7 @@ private:
   int currentFieldRank = 0;
   glgrib_string str;
   glgrib_colorbar colorbar;
+  glm::mat4 MVP_R, MVP_L;
 };
 
 #endif

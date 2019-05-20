@@ -70,18 +70,12 @@ void glgrib_scene::display () const
         }
     }
 
-  float width = view.width, height = view.height;
-  float ratio = width / height;
-  glm::mat4 p = glm::ortho(0.0f, ratio, 0.0f, 1.0f, 0.1f, 100.0f);
-  glm::mat4 v = glm::lookAt (glm::vec3 (+1.0f,0.0f,0.0f), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
-  glm::mat4 mvp = p * v;
-  
   const glgrib_field * fld = currentFieldRank < fieldlist.size () 
                         ? &fieldlist[currentFieldRank] : NULL;
   if (fld != NULL)
-    colorbar.render (mvp, fld->dopts.palette, fld->valmin, fld->valmax);
+    colorbar.render (MVP_L, fld->dopts.palette, fld->valmin, fld->valmax);
 
-  str.render (mvp);
+  str.render (MVP_R);
 
 
 }
@@ -167,4 +161,18 @@ void glgrib_scene::init (const glgrib_options & o)
   colorbar.init (opts.colorbar);
 
 }
+
+void glgrib_scene::setViewport (int _width, int _height)
+{
+  view.setViewport (_width, _height);
+  float width = view.width, height = view.height;
+  float ratio = width / height;
+
+  MVP_L = glm::ortho(0.0f, ratio, 0.0f, 1.0f, 0.1f, 100.0f)
+        * glm::lookAt (glm::vec3 (+1.0f,0.0f,0.0f), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
+  
+  MVP_R = glm::ortho(1.0f - ratio, 1.0f, 0.0f, 1.0f, 0.1f, 100.0f)
+        * glm::lookAt (glm::vec3 (+1.0f,0.0f,0.0f), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
+}
+
 

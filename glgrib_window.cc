@@ -480,7 +480,7 @@ void glgrib_window::resize (int w, int h)
   opts.height = h;
   makeCurrent ();
   glViewport (0, 0, opts.width, opts.height);
-  scene.view.setViewport (opts.width, opts.height);
+  scene.setViewport (opts.width, opts.height);
 }
 
 void glgrib_window::setHints ()
@@ -573,7 +573,7 @@ void glgrib_window::createGFLWwindow (GLFWwindow * context)
   glfwSetMouseButtonCallback (window, mouse_button_callback);
   glfwSetFramebufferSizeCallback (window, resize_callback);  
 
-  scene.view.setViewport (opts.width, opts.height);
+  scene.setViewport (opts.width, opts.height);
 
 }
 

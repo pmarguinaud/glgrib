@@ -454,12 +454,15 @@ void glgrib_window::renderFrame ()
 
   scene.update ();
 
-#pragma omp critical (RUN)
-  {
-    makeCurrent ();
-    scene.display (); 
-  }
+  if (Shell.started ())
+    Shell.lock ();
+
+  makeCurrent ();
+  scene.display (); 
   
+  if (Shell.started ())
+    Shell.unlock ();
+
   glfwSwapBuffers (window);
 }
 
@@ -470,7 +473,8 @@ void glgrib_window::run (glgrib_shell * shell)
   
   if ((glfwGetKey (window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
    || (glfwWindowShouldClose (window) != 0) || (shell && shell->closed ()))
-    closed = true;;
+    closed = true;
+
 }
 
 

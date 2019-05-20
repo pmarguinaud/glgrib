@@ -39,19 +39,13 @@ int main (int argc, char * argv[])
 
   if (opts.shell)
     {
-#pragma omp parallel
-      {
-        int tid = omp_get_thread_num ();
-        if (tid == 1)
-          Shell.run (&wset);
-        else if (tid == 0)
-          wset.run (&Shell);
-      }
+      Shell.start (&wset);
+      wset.run (&Shell);
+      Shell.wait ();
     }
   else
-    {
-      wset.run ();
-    }
+    wset.run ();
+   
 
   glfwTerminate ();
   

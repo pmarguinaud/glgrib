@@ -3,6 +3,7 @@
 
 #include "glgrib_window.h"
 
+#include <pthread.h>
 #include <string>
 #include <map>
 #include <list>
@@ -62,10 +63,17 @@ public:
   int close = 0;
   std::map <std::string,glgrib_command> cmds;
   bool closed () { return close; }
-  void run (class glgrib_window_set *);
+  void start (class glgrib_window_set *);
+  void run ();
   int windowid = 0;
+  void lock () { pthread_mutex_lock (&mutex); }
+  void unlock () { pthread_mutex_unlock (&mutex); }
+  void wait () { pthread_join (thread, NULL); }
+  bool started () { return wset != NULL; }
 private:
   glgrib_window_set * wset = NULL;
+  pthread_t thread;
+  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 };
 
 extern glgrib_shell Shell;

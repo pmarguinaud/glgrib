@@ -3,6 +3,5 @@ Make shell usable
 Try intel gpu tools
 Write text with X11
 Use opts in scene
-Use pthread to create the shell
 Show field values on the screen
 Use Mercator, polar stereo, lat/lon projections

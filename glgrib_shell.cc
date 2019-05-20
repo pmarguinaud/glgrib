@@ -90,9 +90,24 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
     }
 }
 
-void glgrib_shell::run (glgrib_window_set * ws)
+static 
+void * _run (void * data)
+{
+  glgrib_shell * shell = (glgrib_shell *)data;
+  shell->run ();
+  return NULL;
+}
+
+
+void glgrib_shell::start (glgrib_window_set * ws)
 {
   wset = ws;
+  pthread_create(&thread, NULL, _run, this);
+}
+
+
+void glgrib_shell::run ()
+{
   while (wset->size () > 0)
     {
       char * line = readline("> ");
@@ -101,9 +116,9 @@ void glgrib_shell::run (glgrib_window_set * ws)
       if (strlen (line) > 0) 
         add_history (line);
  
-#pragma omp critical (RUN)
+      lock ();
       {
-        if (ws->size ())
+        if (wset->size ())
           {
             glgrib_window * gwindow = wset->getWindowById (windowid);
 	    if (gwindow == NULL)
@@ -111,6 +126,7 @@ void glgrib_shell::run (glgrib_window_set * ws)
             execute (line, gwindow);
 	  }
       }
+      unlock ();
       
       free (line);
       

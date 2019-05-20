@@ -77,3 +77,6 @@ test_t8000_noorog:
 		--landscape.orography 0 --grid.resolution 0 --coastlines.path ""   \
 		--window.offscreen    --field[0].path t8000/SURFNEBUL.TOTALE.grb --field[0].scale 1.03 --field[0].palette cloud_auto  --field[0].no_value_pointer  \
 		--scene.light.on --scene.light.lon -25 --scene.light.lat 30.
+
+test_missingvalue:
+	$(GDB) ./glgrib.x --landscape.path "" --field[0].path t49/SFX.CLAY.grb

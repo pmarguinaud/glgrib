@@ -4,6 +4,71 @@
 
 #include <string>
 
+
+static const std::string projShaderInclude = 
+R"CODE(
+const int XYZ=0;
+const int POLAR_NORTH=1;
+const int POLAR_SOUTH=2;
+const int MERCATOR=3;
+const int LATLON=4;
+uniform int proj = 3;
+uniform bool isflat = true;
+const float pi = 3.1415926;
+uniform float lon0 = 180.0; // Latitude of right handside
+
+vec3 compNormedPos (vec3 vertexPos)
+{
+  float x = vertexPos.x;
+  float y = vertexPos.y;
+  float z = vertexPos.z;
+  float r = 1. / sqrt (x * x + y * y + z * z); 
+  return vec3 (x * r, y * r, z * r);
+}
+
+vec3 compProjedPos (vec3 vertexPos, vec3 normedPos)
+{
+  vec3 pos;
+  switch (proj)
+    {
+      case XYZ:
+        if (isflat)
+          pos = normedPos;
+        else
+          pos = vertexPos;
+        break;
+      case POLAR_NORTH:
+        pos =  vec3 (0., normedPos.x / (+normedPos.z + 1.0), 
+                     normedPos.y / (+normedPos.z + 1.0));
+        break;      
+      case POLAR_SOUTH:
+        pos =  vec3 (0., normedPos.x / (-normedPos.z + 1.0), 
+                     normedPos.y / (-normedPos.z + 1.0));
+        break;      
+      case MERCATOR:
+        {
+          float lat = asin (normedPos.z);
+          float lon = mod (atan (normedPos.y, normedPos.x), 2 * pi);
+          float X = (mod (lon - lon0 * pi / 180.0, 2 * pi) - pi) / pi;
+          float Y = log (tan (pi / 4. + lat / 2.)) / pi;
+          pos = vec3 (0., X, Y);
+        }
+        break;
+      case LATLON:
+        {
+          float lat = asin (normedPos.z);
+          float lon = mod (atan (normedPos.y, normedPos.x), 2 * pi);
+          float X = (mod (lon - lon0 * pi / 180.0, 2 * pi) - pi) / pi;
+          float Y = lat / pi;
+          pos = vec3 (0., X, Y);
+        }
+        break;
+    }
+
+  return pos;
+}
+)CODE";
+
 static glgrib_program PRG[GLGRIB_PROGRAM_SIZE] = 
 {
   glgrib_program (  // 3 colors + alpha channel
@@ -250,13 +315,11 @@ out vec3 fragmentPos;
 uniform mat4 MVP;
 uniform vec3 scale0 = vec3 (1.0, 1.0, 1.0);
 
+)CODE" + projShaderInclude + R"CODE(
+
 void main ()
 {
-  float x = vertexPos.x;
-  float y = vertexPos.y;
-  float z = vertexPos.z;
-  float r = 1. / sqrt (x * x + y * y + z * z); 
-  vec3 normedPos = vec3 (x * r, y * r, z * r);
+  vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos;
   pos.x = scale0.x * normedPos.x;
   pos.y = scale0.y * normedPos.y;
@@ -308,77 +371,16 @@ R"CODE(
 layout (location = 0) in vec3 vertexPos;
 
 out vec3 fragmentPos;
-
 uniform mat4 MVP;
 
-const int XYZ=0;
-const int POLAR_NORTH=1;
-const int POLAR_SOUTH=2;
-const int MERCATOR=3;
-const int LATLON=4;
-uniform int proj = 3;
-uniform bool isflat = true;
-const float pi = 3.1415926;
-uniform float lon0 = 180.0; // Latitude of right handside
-
-
-vec3 compPos ()
-{
-  return vec3 (0., 0., 0.);
-}
+)CODE" + projShaderInclude + R"CODE(
 
 void main()
 {
-  vec3 normedPos;
-
-  float x = vertexPos.x;
-  float y = vertexPos.y;
-  float z = vertexPos.z;
-  float r = 1. / sqrt (x * x + y * y + z * z); 
-  normedPos.x = x * r;
-  normedPos.y = y * r;
-  normedPos.z = z * r;
-
-  vec3 pos;
-
-  switch (proj)
-    {
-      case XYZ:
-        if (isflat)
-          gl_Position =  MVP * vec4 (normedPos, 1);
-        else
-          gl_Position =  MVP * vec4 (vertexPos, 1);
-        break;
-      case POLAR_NORTH:
-        gl_Position =  MVP * vec4 (0., normedPos.x / (+normedPos.z + 1.0), 
-                                   normedPos.y / (+normedPos.z + 1.0), 1);
-        break;      
-      case POLAR_SOUTH:
-        gl_Position =  MVP * vec4 (0., normedPos.x / (-normedPos.z + 1.0), 
-                                   normedPos.y / (-normedPos.z + 1.0), 1);
-        break;      
-      case MERCATOR:
-        {
-          float lat = asin (normedPos.z);
-          float lon = mod (atan (normedPos.y, normedPos.x), 2 * pi);
-          float X = (mod (lon - lon0 * pi / 180.0, 2 * pi) - pi) / pi;
-          float Y = log (tan (pi / 4. + lat / 2.)) / pi;
-          gl_Position =  MVP * vec4 (0., X, Y, 1.);
-        }
-        break;
-      case LATLON:
-        {
-          float lat = asin (normedPos.z);
-          float lon = mod (atan (normedPos.y, normedPos.x), 2 * pi);
-          float X = (mod (lon - lon0 * pi / 180.0, 2 * pi) - pi) / pi;
-          float Y = lat / pi;
-          gl_Position =  MVP * vec4 (0., X, Y, 1.);
-        }
-        break;
-    }
-
+  vec3 normedPos = compNormedPos (vertexPos);
+  vec3 pos = compProjedPos (vertexPos, normedPos);
+  gl_Position =  MVP * vec4 (pos, 1.);
   fragmentPos = normedPos;
-
 }
 )CODE"),
 

@@ -20,12 +20,12 @@ typedef enum
 class glgrib_program
 {
 public:
-  glgrib_program (const char * fsc, const char * vsc) 
+  glgrib_program (const std::string & fsc, const std::string & vsc) 
      : FragmentShaderCode (fsc), VertexShaderCode (vsc) { }
   virtual ~glgrib_program ();
   void use () const;
-  const char * FragmentShaderCode = NULL;
-  const char * VertexShaderCode = NULL;
+  std::string FragmentShaderCode;
+  std::string VertexShaderCode;
   GLuint programID;
   GLuint matrixID;
   bool loaded = false;

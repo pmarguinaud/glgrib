@@ -5,7 +5,7 @@
 
 #include "glgrib_opengl.h"
 
-GLuint glgrib_load_shader (const char * FragmentShaderCode, const char * VertexShaderCode)
+GLuint glgrib_load_shader (const std::string & FragmentShaderCode, const std::string & VertexShaderCode)
 {
   int len;
   GLint res = GL_FALSE;
@@ -14,7 +14,8 @@ GLuint glgrib_load_shader (const char * FragmentShaderCode, const char * VertexS
 
 
   // Compile Vertex Shader
-  glShaderSource (VertexShaderID, 1, &VertexShaderCode , NULL);
+  const char * VertexShaderCode_str = VertexShaderCode.c_str ();
+  glShaderSource (VertexShaderID, 1, &VertexShaderCode_str, NULL);
   glCompileShader (VertexShaderID);
 
   glGetShaderiv (VertexShaderID, GL_COMPILE_STATUS, &res);
@@ -28,7 +29,8 @@ GLuint glgrib_load_shader (const char * FragmentShaderCode, const char * VertexS
 
 
   // Compile Fragment Shader
-  glShaderSource (FragmentShaderID, 1, &FragmentShaderCode , NULL);
+  const char * FragmentShaderCode_str = FragmentShaderCode.c_str ();
+  glShaderSource (FragmentShaderID, 1, &FragmentShaderCode_str, NULL);
   glCompileShader (FragmentShaderID);
 
   glGetShaderiv (FragmentShaderID, GL_COMPILE_STATUS, &res);

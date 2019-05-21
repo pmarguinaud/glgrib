@@ -280,10 +280,12 @@ uniform vec3 lightDir = vec3 (0., 1., 0.);
 uniform vec3 lightCol = vec3 (1., 1., 1.);
 uniform bool light = false;
 
+const float pi = 3.1415926;
+
 void main ()
 {
-  float lon = (atan (fragmentPos.y, fragmentPos.x) / 3.1415926 + 1.0) * 0.5;
-  float lat = asin (fragmentPos.z) / 3.1415926 + 0.5;
+  float lon = (atan (fragmentPos.y, fragmentPos.x) / pi + 1.0) * 0.5;
+  float lat = asin (fragmentPos.z) / pi + 0.5;
 
   vec4 col = texture2D (texture, vec2 (lon, lat));
 
@@ -308,7 +310,16 @@ layout (location = 0) in vec3 vertexPos;
 out vec3 fragmentPos;
 
 uniform mat4 MVP;
+
+const int XYZ=0;
+const int POLAR_NORTH=1;
+const int POLAR_SOUTH=2;
+const int MERCATOR=3;
+const int LATLON=4;
+uniform int proj = 3;
 uniform bool isflat = true;
+const float pi = 3.1415926;
+uniform float lon0 = 180.0; // Latitude of right handside
 
 void main()
 {
@@ -322,13 +333,40 @@ void main()
   normedPos.y = y * r;
   normedPos.z = z * r;
 
-  if (isflat)
+  switch (proj)
     {
-      gl_Position =  MVP * vec4 (normedPos, 1);
-    }
-  else
-    {
-      gl_Position =  MVP * vec4 (vertexPos, 1);
+      case XYZ:
+        if (isflat)
+          gl_Position =  MVP * vec4 (normedPos, 1);
+        else
+          gl_Position =  MVP * vec4 (vertexPos, 1);
+        break;
+      case POLAR_NORTH:
+        gl_Position =  MVP * vec4 (0., normedPos.x / (+normedPos.z + 1.0), 
+                                   normedPos.y / (+normedPos.z + 1.0), 1);
+        break;      
+      case POLAR_SOUTH:
+        gl_Position =  MVP * vec4 (0., normedPos.x / (-normedPos.z + 1.0), 
+                                   normedPos.y / (-normedPos.z + 1.0), 1);
+        break;      
+      case MERCATOR:
+        {
+          float lat = asin (normedPos.z);
+          float lon = mod (atan (normedPos.y, normedPos.x), 2 * pi);
+          float X = (mod (lon - lon0 * pi / 180.0, 2 * pi) - pi) / pi;
+          float Y = log (tan (pi / 4. + lat / 2.)) / pi;
+          gl_Position =  MVP * vec4 (0., X, Y, 1.);
+        }
+        break;
+      case LATLON:
+        {
+          float lat = asin (normedPos.z);
+          float lon = mod (atan (normedPos.y, normedPos.x), 2 * pi);
+          float X = (mod (lon - lon0 * pi / 180.0, 2 * pi) - pi) / pi;
+          float Y = lat / pi;
+          gl_Position =  MVP * vec4 (0., X, Y, 1.);
+        }
+        break;
     }
 
   fragmentPos = normedPos;

@@ -6,10 +6,16 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "glgrib_projection.h"
 
-void glgrib_view::setMVP (GLuint matrixID) const
+void glgrib_view::setMVP (GLuint programID) const
 {
-  glUniformMatrix4fv (matrixID, 1, GL_FALSE, &MVP[0][0]);
+  GLuint matrixID = glGetUniformLocation (programID, "MVP");
+  if (matrixID >= 0)
+    glUniformMatrix4fv (matrixID, 1, GL_FALSE, &MVP[0][0]);
+  GLuint projID = glGetUniformLocation (programID, "proj");
+  if (projID >= 0)
+    glUniform1i (projID, proj);
 }
 
 void glgrib_view::calcMVP () const
@@ -18,8 +24,6 @@ void glgrib_view::calcMVP () const
         yc = opts.distance * glm::sin (glm::radians (opts.lon)) * glm::cos (glm::radians (opts.lat)),
         zc = opts.distance *                                      glm::sin (glm::radians (opts.lat));
 
-  
-
   Viewport   = glm::vec4 (0.0f, 0.0f, (float)width, (float)height);
 
   float ratio = (float)width/(float)height;
@@ -27,12 +31,23 @@ void glgrib_view::calcMVP () const
   glm::mat4 Trans = glm::mat4 (1.0f);
   if (ratio > 1.0f)
     Trans = glm::translate (Trans, glm::vec3 ((ratio - 1.0f) / 2.0f, 0.0f, 0.0f));
-   
-  Projection = Trans * glm::perspective (glm::radians (opts.fov), (float)width/(float)height, 0.1f, 100.0f);
-  View       = glm::lookAt (glm::vec3 (xc,yc,zc), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
-  Model      = glm::mat4 (1.0f);
-
-  MVP = Projection * View * Model; 
+       
+  if (proj == XYZ)
+    {
+      Projection = Trans * glm::perspective (glm::radians (opts.fov), ratio, 0.1f, 100.0f);
+      View       = glm::lookAt (glm::vec3 (xc,yc,zc), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
+      Model      = glm::mat4 (1.0f);
+      MVP = Projection * View * Model; 
+    }
+  else if (proj == POLAR_NORTH)
+    {
+      glgrib_projection_polar_north p;
+      glm::vec3 co = p.project (glm::vec3 (xc, yc, zc));
+      Projection = Trans * glm::perspective (glm::radians (opts.fov), ratio, 0.1f, 100.0f);
+      View       = glm::lookAt (glm::vec3 (opts.distance,co.y,co.z), glm::vec3 (0,co.y,co.z), glm::vec3 (0,-co.y,-co.z));
+      Model      = glm::mat4 (1.0f);
+      MVP = Projection * View * Model; 
+    }
 
 }
 

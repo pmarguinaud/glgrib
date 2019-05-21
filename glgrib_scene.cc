@@ -35,7 +35,7 @@ void glgrib_scene::display_obj (const glgrib_object * obj) const
 
   const glgrib_program * program = obj->get_program ();
   program->use ();
-  view.setMVP (program->matrixID);
+  view.setMVP (program->programID);
   setLightShader (program->programID);
   obj->render (&view);
 }
@@ -64,7 +64,7 @@ void glgrib_scene::display () const
         {
           const glgrib_program * program = fld->get_program ();
           program->use ();
-          view.setMVP (program->matrixID);
+          view.setMVP (program->programID);
           setLightShader (program->programID);
           fld->render (&view);
         }

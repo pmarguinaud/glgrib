@@ -340,6 +340,10 @@ void main ()
       pos.y = scale0.y * normedPos.y;
       pos.z = scale0.z * normedPos.z;
     }
+  else
+    {
+      pos.x = pos.x + scale0.x - 1.0f;
+    }
 
   gl_Position =  MVP * vec4 (pos, 1.);
 

@@ -142,11 +142,21 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (CONTROL, RIGHT , rotate_light_east        ());
       if_key (NONE,    K,      movie                    ());
       if_key (CONTROL, C,      duplicate                ());
+      if_key (CONTROL, P,      next_projection          ());
 
 
     }
 
 #undef if_key
+}
+
+void glgrib_window::next_projection ()
+{
+  std::cout << "next_projection" << std::endl;
+  if (scene.getCurrentProjType () == glgrib_view::POLAR_NORTH)
+    scene.setCurrentProjType (glgrib_view::XYZ);
+  else
+    scene.setCurrentProjType (glgrib_view::POLAR_NORTH);
 }
 
 void glgrib_window::duplicate ()

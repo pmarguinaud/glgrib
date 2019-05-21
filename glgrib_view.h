@@ -28,6 +28,16 @@ public:
   }
   glm::vec3 insersect_plane (const double &, const double &, const glm::vec3 &, const glm::vec3 &) const;
   glm::vec3 insersect_sphere (const double &, const double &, const glm::vec3 &, const float &) const;
+  typedef enum
+  {
+    XYZ=0,
+    POLAR_NORTH=1,
+    POLAR_SOUTH=2,
+    MERCATOR=3,
+    LATLON=4 ,
+    LAST=5
+  } proj_type;
+  proj_type proj = XYZ;
 };
 
 #endif

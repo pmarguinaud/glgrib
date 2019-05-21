@@ -85,7 +85,7 @@ public:
   
   int id () const { return id_; }
 
-
+  void next_projection ();
 
 protected:
   void createGFLWwindow (GLFWwindow * = NULL);

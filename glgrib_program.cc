@@ -321,6 +321,12 @@ uniform bool isflat = true;
 const float pi = 3.1415926;
 uniform float lon0 = 180.0; // Latitude of right handside
 
+
+vec3 compPos ()
+{
+  return vec3 (0., 0., 0.);
+}
+
 void main()
 {
   vec3 normedPos;
@@ -332,6 +338,8 @@ void main()
   normedPos.x = x * r;
   normedPos.y = y * r;
   normedPos.z = z * r;
+
+  vec3 pos;
 
   switch (proj)
     {

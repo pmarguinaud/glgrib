@@ -1,5 +1,7 @@
 #include "glgrib_string.h"
 
+#include <iostream>
+
 glgrib_string & glgrib_string::operator= (const glgrib_string & str)
 {
   if (this != &str)
@@ -183,15 +185,30 @@ void glgrib_string::render (const glm::mat4 & MVP) const
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
 }
 
+void glgrib_string::update (const std::string & str)
+{
+  update (std::vector<std::string>{str});
+}
+
 void glgrib_string::update (const std::vector<std::string> & str)
 {
-  if (str.size () != data.size ())
+  if (str.size () > data.size ())
     return;
   for (int i = 0; i < str.size (); i++)
     if (str[i].size () > data[i].size ())
       return;
 
-  data = str;
+  for (int i = 0; i < str.size (); i++)
+    {
+      for (int j = 0; j < str[i].size (); j++)
+        data[i][j] = str[i][j];
+      for (int j = str[i].size (); j < data[i].size (); j++)
+        data[i][j] = ' ';
+    }
+  for (int i = str.size (); i < data.size (); i++)
+    for (int j = 0; j < data[i].size (); j++)
+      data[i][j] = ' ';
+
   int len = 0;
   for (int i = 0; i < data.size (); i++)
     len += data[i].size ();

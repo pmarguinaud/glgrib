@@ -64,6 +64,8 @@ public:
 
   glgrib_options_light light;
   void setViewport (int, int);
+
+  void setMessage (const std::string & mess) { str.update (mess); }
 private:
   bool movie = false;
   int movie_index = 0;

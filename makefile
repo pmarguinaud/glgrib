@@ -27,7 +27,8 @@ glwhat.x: glwhat.cc
 
 test_colorbar: glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field[0].path t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path "" \
-		--colorbar.on --colorbar.font.r 0 --colorbar.font.g 255 --colorbar.font.b 0
+		--colorbar.on --colorbar.font.r 0 --colorbar.font.g 255 --colorbar.font.b 0 --window.width 1000 \
+		--font.r 0 --font.g 255 --font.b 0
 
 test_bw: glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field[0].path t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path ""

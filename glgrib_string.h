@@ -36,6 +36,7 @@ public:
   void setColor (float r, float g, float b) { color0[0] = r; color0[1] = g; color0[2] = b; }
   ~glgrib_string ();
   void update (const std::vector<std::string> &);
+  void update (const std::string &);
   void cleanup ();
 private:
   std::vector<std::string> data;

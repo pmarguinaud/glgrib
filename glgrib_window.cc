@@ -370,7 +370,8 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
 	  if (jglo >= 0)
             {
               float value = field->getValue (jglo);
-              sprintf (title, "(%7.2f, %7.2f, %f)", lat, lon, value);
+              sprintf (title, "%6.2f %6.2f %6.2g", lat, lon, value);
+	      scene.setMessage (std::string (title));
               glfwSetWindowTitle (window, title);
 	      return;
 	    }
@@ -386,6 +387,7 @@ void glgrib_window::toggle_cursorpos_display ()
   else
     glfwSetCursorPosCallback (window, cursor_position_callback);
   cursorpos = ! cursorpos;
+  scene.setMessage (std::string (""));
   glfwSetWindowTitle (window, opts.title.c_str ());
 }
 

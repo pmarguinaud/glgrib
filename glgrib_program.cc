@@ -12,7 +12,7 @@ const int POLAR_NORTH=1;
 const int POLAR_SOUTH=2;
 const int MERCATOR=3;
 const int LATLON=4;
-uniform int proj = 3;
+uniform int proj = 0;
 uniform bool isflat = true;
 const float pi = 3.1415926;
 uniform float lon0 = 180.0; // Latitude of right handside
@@ -163,9 +163,21 @@ layout(location = 0) in vec3 vertexPos;
 
 uniform mat4 MVP;
 
+)CODE" + projShaderInclude + R"CODE(
+
 void main()
 {
-  gl_Position =  MVP * vec4 (vertexPos, 1);
+  vec3 pos;
+  if (proj == XYZ)
+    {
+      pos = vertexPos;
+    }
+  else
+    {
+      vec3 normedPos = compNormedPos (vertexPos);
+      pos = compProjedPos (vertexPos, normedPos);
+    }
+  gl_Position =  MVP * vec4 (pos, 1.);
 }
 )CODE"),
 
@@ -320,11 +332,16 @@ uniform vec3 scale0 = vec3 (1.0, 1.0, 1.0);
 void main ()
 {
   vec3 normedPos = compNormedPos (vertexPos);
-  vec3 pos;
-  pos.x = scale0.x * normedPos.x;
-  pos.y = scale0.y * normedPos.y;
-  pos.z = scale0.z * normedPos.z;
-  gl_Position =  MVP * vec4 (pos, 1);
+  vec3 pos = compProjedPos (vertexPos, normedPos);
+
+  if (proj == XYZ)
+    {
+      pos.x = scale0.x * normedPos.x;
+      pos.y = scale0.y * normedPos.y;
+      pos.z = scale0.z * normedPos.z;
+    }
+
+  gl_Position =  MVP * vec4 (pos, 1.);
 
   fragmentVal = vertexVal;
   fragmentPos = normedPos;

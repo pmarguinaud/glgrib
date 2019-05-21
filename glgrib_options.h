@@ -59,6 +59,7 @@ public:
   glgrib_options_font () {}
   std::string bitmap = "fonts/08.bmp";
   float scale = 0.05f;
+  int r = 255, g = 255, b = 255;
 };
 
 class glgrib_options_light
@@ -73,6 +74,7 @@ public:
 class glgrib_options_colorbar
 {
 public:
+  bool on = false;
   glgrib_options_font font = glgrib_options_font ("fonts/16.bmp", 0.02f);
 };
 

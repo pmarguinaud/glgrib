@@ -25,6 +25,10 @@ view.x: view.cc
 glwhat.x: glwhat.cc
 	g++ $(CXXFLAGS) -g -o glwhat.x glwhat.cc $(LDFLAGS)
 
+test_colorbar: glgrib.x
+	$(GDB) ./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field[0].path t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path "" \
+		--colorbar.on --colorbar.font.r 0 --colorbar.font.g 255 --colorbar.font.b 0
+
 test_bw: glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field[0].path t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path ""
 

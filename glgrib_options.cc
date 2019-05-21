@@ -188,6 +188,9 @@ static optionlist get_optionlist (glgrib_options * opts)
 
   ADD_OPT (font.bitmap,               Bitmap path);
   ADD_OPT (font.scale,                Bitmap scale);
+  ADD_OPT (font.r,                    Red color);
+  ADD_OPT (font.g,                    Green color);
+  ADD_OPT (font.b,                    Blue color);
 
 #define ADD_FIELD_OPT(i) \
   do {                                                                             \
@@ -211,8 +214,12 @@ static optionlist get_optionlist (glgrib_options * opts)
 #undef ADD_FIELD_OPT
 
   ADD_OPT (palette.directory,         Directory where palettes are stored);    
+  ADD_OPT (colorbar.on,               Activate colorbar);
   ADD_OPT (colorbar.font.bitmap,      Bitmap path);
   ADD_OPT (colorbar.font.scale,       Bitmap scale);
+  ADD_OPT (colorbar.font.r,           Red color);
+  ADD_OPT (colorbar.font.g,           Green color);
+  ADD_OPT (colorbar.font.b,           Blue color);
 
   ADD_OPT (window.width,              Window width);
   ADD_OPT (window.height,             Window height);

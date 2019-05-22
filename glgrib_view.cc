@@ -40,7 +40,21 @@ void glgrib_view::calcMVP () const
   if (ratio > 1.0f)
     Trans = glm::translate (Trans, glm::vec3 ((ratio - 1.0f) / 2.0f, 0.0f, 0.0f));
        
-  Projection = Trans * glm::perspective (glm::radians (opts.fov), ratio, 0.1f, 100.0f);
+  glm::mat4 p;
+
+  switch (transtype)
+    {
+      case PERSPECTIVE:
+        p = glm::perspective (glm::radians (opts.fov), ratio, 0.1f, 100.0f);
+	break;
+      case ORTHOGRAPHIC:
+        const float margin = 1.05;
+        p = glm::ortho (-ratio * margin, +ratio * margin, -1.0f * margin, +1.0f * margin, 0.1f, 100.0f);
+	break;
+    }
+
+  Projection = Trans * p;
+
   View       = ps.current ()->getView (pos, opts.distance);
   Model      = glm::mat4 (1.0f);
   MVP = Projection * View * Model; 

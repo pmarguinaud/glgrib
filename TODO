@@ -4,3 +4,4 @@ Try intel gpu tools
 Write text with X11
 Use opts in scene
 Use orthographic projection
+Remove borders in latlon & mercator projection

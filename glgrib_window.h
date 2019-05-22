@@ -86,6 +86,7 @@ public:
   int id () const { return id_; }
 
   void next_projection ();
+  void toggle_transform_type ();
 
 protected:
   void createGFLWwindow (GLFWwindow * = NULL);

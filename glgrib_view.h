@@ -12,6 +12,11 @@
 class glgrib_view
 {
 public:
+  enum transform_type
+  {
+    PERSPECTIVE=0,
+    ORTHOGRAPHIC=1,
+  };
   glgrib_options_camera opts;
   void setMVP (GLuint) const;
   void calcMVP () const;
@@ -35,11 +40,14 @@ public:
   int getWidth () const { return width; }
   int getHeight () const { return height; }
 
+  void toggleTransformType () { transtype = transtype == PERSPECTIVE ? ORTHOGRAPHIC : PERSPECTIVE; calcMVP (); }
+
 private:
   glgrib_projection_set ps;
   int width, height;
   mutable glm::mat4 Model, View, Projection, MVP;
   mutable glm::vec4 Viewport;
+  transform_type transtype = PERSPECTIVE;
 };
 
 #endif

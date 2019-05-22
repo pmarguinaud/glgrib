@@ -143,11 +143,17 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (NONE,    K,      movie                    ());
       if_key (CONTROL, C,      duplicate                ());
       if_key (CONTROL, P,      next_projection          ());
+      if_key (SHIFT,   P,      toggle_transform_type    ());
 
 
     }
 
 #undef if_key
+}
+
+void glgrib_window::toggle_transform_type ()
+{
+  scene.view.toggleTransformType ();
 }
 
 void glgrib_window::next_projection ()
@@ -519,6 +525,9 @@ void glgrib_window::create (const glgrib_options & o)
 {
   id_ = idcount++;
   opts = o.window;
+
+  if (opts.title == "")
+    opts.title = std::string ("Window #") + std::to_string (id_);
 
   scene.light.rotate = o.scene.light.rotate;
   scene.rotate_earth = o.scene.rotate_earth;

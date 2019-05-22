@@ -181,6 +181,8 @@ static optionlist get_optionlist (glgrib_options * opts)
   ADD_OPT (scene.movie,               Movie);
   ADD_OPT (scene.movie_wait,          Wait between movie frames);
   ADD_OPT (scene.rotate_earth,        Make earth rotate);
+  ADD_OPT (scene.projection,          Mercator XYZ latlon polar_north polar_south);
+  ADD_OPT (scene.transformation,      Perspective or orthographic);
   ADD_OPT (camera.lon,                Camera longitude);
   ADD_OPT (camera.lat,                Camera latitude);
   ADD_OPT (camera.fov,                Camera field of view);

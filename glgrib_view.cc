@@ -1,12 +1,13 @@
 #include "glgrib_view.h"
 #include "glgrib_opengl.h"
+#include "glgrib_projection.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <stdio.h>
 #include <iostream>
+#include <cctype>
 
-#include "glgrib_projection.h"
 
 void glgrib_view::setMVP (GLuint programID) const
 {
@@ -82,5 +83,26 @@ int glgrib_view::get_latlon_from_screen_coords (float xpos, float ypos, float * 
 
   return 1;
 }
+
+void glgrib_view::init (const glgrib_options & o)
+{
+  opts = o.camera;
+  glgrib_projection::type pt = glgrib_projection::typeFromString (o.scene.projection);
+  ps.setType (pt);
+  transtype = glgrib_view::typeFromString (o.scene.transformation);
+}
+
+glgrib_view::transform_type glgrib_view::typeFromString (std::string str)
+{
+  for (int i = 0; i < str.length (); i++)
+    str[i] = std::toupper (str[i]);
+#define if_type(x) if (str == #x) return x
+    if_type (PERSPECTIVE);
+    if_type (ORTHOGRAPHIC);
+#undef if_type
+  return PERSPECTIVE;
+}
+
+
 
 

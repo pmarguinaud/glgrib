@@ -85,6 +85,8 @@ public:
   bool movie = false;
   float movie_wait = 1.0f;
   glgrib_options_light light;
+  std::string projection = "XYZ";
+  std::string transformation = "PERSPECTIVE";
 };
 
 class glgrib_options_camera

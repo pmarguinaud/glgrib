@@ -167,6 +167,19 @@ glm::mat4 glgrib_projection_polar_south::getView (const glm::vec3 & p, const flo
 }
 
 
+glgrib_projection::type glgrib_projection::typeFromString (std::string str)
+{
+  for (int i = 0; i < str.length (); i++)
+    str[i] = std::toupper (str[i]);
+#define if_type(x) if (str == #x) return x
+  if_type (XYZ);
+  if_type (POLAR_NORTH);
+  if_type (POLAR_SOUTH);
+  if_type (MERCATOR);
+  if_type (LATLON);
+#undef if_type
+  return XYZ;
+}
 
 
 

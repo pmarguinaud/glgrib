@@ -8,6 +8,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <string>
 
 class glgrib_view
 {
@@ -17,6 +18,9 @@ public:
     PERSPECTIVE=0,
     ORTHOGRAPHIC=1,
   };
+
+  static transform_type typeFromString (std::string);
+
   glgrib_options_camera opts;
   void setMVP (GLuint) const;
   void calcMVP () const;
@@ -41,6 +45,8 @@ public:
   int getHeight () const { return height; }
 
   void toggleTransformType () { transtype = transtype == PERSPECTIVE ? ORTHOGRAPHIC : PERSPECTIVE; calcMVP (); }
+
+  void init (const glgrib_options &);
 
 private:
   glgrib_projection_set ps;

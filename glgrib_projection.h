@@ -3,11 +3,12 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <string>
 
 class glgrib_projection
 {
 public:
-  enum
+  enum type
   {
     XYZ=0,
     POLAR_NORTH=1,
@@ -20,6 +21,7 @@ public:
   virtual glm::mat4 getView (const glm::vec3 &, const float) const = 0;
   virtual int getType () const = 0;
   virtual bool setLon0 (const float &) const = 0;
+  static type typeFromString (std::string str);
 };
 
 class glgrib_projection_xyz : public glgrib_projection
@@ -86,6 +88,7 @@ public:
   glgrib_projection_set & operator= (const glgrib_projection_set & ps)
   {
     init ();
+    current_ = ps.current_;
   }
   glgrib_projection * current () const
   {
@@ -95,8 +98,12 @@ public:
   {
     current_++; current_ %= 5; return current ();
   }
+  void setType (const glgrib_projection::type & type)
+  {
+    current_ = type;
+  }
 private:
-  int current_ = 0;
+  int current_ = glgrib_projection::XYZ;
   void init ()
   { 
      proj[0] = &proj_xyz;

@@ -139,7 +139,7 @@ void glgrib_scene::init (const glgrib_options & o)
 
   light = opts.scene.light;
 
-  view.opts = opts.camera;
+  view.init (opts);
 
   for (int i = 0; i < opts.field.size (); i++)
     {

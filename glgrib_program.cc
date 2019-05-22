@@ -167,6 +167,7 @@ out float alpha;
 
 uniform mat4 MVP;
 uniform bool do_alpha = false;
+uniform float posmax = 0.97;
 
 )CODE" + projShaderInclude + R"CODE(
 
@@ -185,10 +186,13 @@ void main()
       vec3 normedPos = compNormedPos (vertexPos);
       pos = compProjedPos (vertexPos, normedPos);
 
-      if (do_alpha)
+      if ((pos.y < -posmax) || (+posmax < pos.y))
       if ((proj == LATLON) || (proj == MERCATOR))
-      if ((pos.y < -0.95) || (+0.95 < pos.y))
-        alpha = 0.0;
+        {
+          pos.x = -0.1;
+          if (do_alpha)
+            alpha = 0.0;
+	}
 
       if (proj == POLAR_SOUTH)
         pos.x = pos.x - 0.005;

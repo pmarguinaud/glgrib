@@ -96,7 +96,7 @@ public:
     current_++; current_ %= 5; return current ();
   }
 private:
-  int current_ = 4;
+  int current_ = 0;
   void init ()
   { 
      proj[0] = &proj_xyz;

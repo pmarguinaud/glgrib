@@ -2,8 +2,7 @@
 
 CXXFLAGS=-std=c++11 -g -fopenmp
 LDFLAGS=-fopenmp -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -ltinfo -lssl -lcrypto -lpthread 
-GDB=./gdbwrap
-GDB=
+GDB=gdb -ex='set confirm on' -ex=run -ex=quit --args
 
 CXXFLAGS=-fopenmp -std=c++11 -g -I$(HOME)/install/eccodes-2.12.0/include -I$(HOME)/3d/usr/include -L$(HOME)/3d/usr/lib64 -Wl,-rpath,$(HOME)/3d/usr/lib64 -L$(HOME)/install/eccodes-2.12.0/lib -Wl,-rpath,$(HOME)/install/eccodes-2.12.0/lib -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto
 

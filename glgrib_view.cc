@@ -13,6 +13,7 @@ void glgrib_view::setMVP (GLuint programID) const
   GLuint matrixID = glGetUniformLocation (programID, "MVP");
   if (matrixID >= 0)
     glUniformMatrix4fv (matrixID, 1, GL_FALSE, &MVP[0][0]);
+
   GLuint projID = glGetUniformLocation (programID, "proj");
   if (projID >= 0)
     glUniform1i (projID, ps.current ()->getType ());
@@ -20,9 +21,7 @@ void glgrib_view::setMVP (GLuint programID) const
   GLuint lon0ID = glGetUniformLocation (programID, "lon0");
   float lon0 = opts.lon + 180.0f;
   if ((lon0ID >= 0) && ps.current ()->setLon0 (lon0))
-    {
-      glUniform1f (lon0ID, lon0);
-    }
+    glUniform1f (lon0ID, lon0);
 }
 
 void glgrib_view::calcMVP () const

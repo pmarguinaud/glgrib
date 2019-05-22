@@ -96,12 +96,19 @@ glm::vec3 glgrib_projection_mercator::project (const glm::vec3 & xyz) const
 
 int glgrib_projection_mercator::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
 {
-  return 0;
+  glm::vec3 pos = intersect_plane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
+  float lon = pos.y * pi + lon0 * pi / 180.0f + pi;
+  float lat = 2.0f * glm::atan (glm::exp (pos.z * pi)) - pi / 2.0f;
+  float coslat = glm::cos (lat), sinlat = glm::sin (lat);
+  float coslon = glm::cos (lon), sinlon = glm::sin (lon);
+  *xyz = glm::vec3 (coslat * coslon, coslat * sinlon, sinlat);
+  return 1;
 }
 
 glm::mat4 glgrib_projection_mercator::getView (const glm::vec3 & p, const float dist) const
 {
-  return glm::lookAt (p, glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 0.0f, 1.0f));
+  glm::vec3 co = project (p);
+  return glm::lookAt (glm::vec3 (+dist, co.y, co.z), glm::vec3 (0.0f, +co.y, +co.z), glm::vec3 (0.0f, 0.0f, +1.0f));
 }
 
 glm::vec3 glgrib_projection_polar_north::project (const glm::vec3 & xyz) const

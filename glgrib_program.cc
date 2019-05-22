@@ -164,37 +164,39 @@ R"CODE(
 layout(location = 0) in vec3 vertexPos;
 out float alpha;
 
+
 uniform mat4 MVP;
+uniform bool do_alpha = false;
 
 )CODE" + projShaderInclude + R"CODE(
 
 void main()
 {
   vec3 pos;
+
   alpha = 1.0;
+
   if (proj == XYZ)
     {
-      pos = vertexPos;
+      pos = 1.005 * vertexPos;
     }
   else
     {
       vec3 normedPos = compNormedPos (vertexPos);
       pos = compProjedPos (vertexPos, normedPos);
 
+      if (do_alpha)
       if ((proj == LATLON) || (proj == MERCATOR))
-        {
-          if ((pos.y < -0.95) || (+0.95 < pos.y))
-            alpha = 0.0;
-	}
+      if ((pos.y < -0.95) || (+0.95 < pos.y))
+        alpha = 0.0;
+
+      if (proj == POLAR_SOUTH)
+        pos.x = pos.x - 0.005;
+      else
+        pos.x = pos.x + 0.005;
     }
 
   gl_Position =  MVP * vec4 (pos, 1.);
-
-  if (proj == XYZ)
-    {
-//    if (gl_Position.z > 5.5)
-//      alpha = 0.0;
-    }
 
 }
 )CODE"),

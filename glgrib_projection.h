@@ -85,10 +85,10 @@ public:
   }
   glgrib_projection * next ()
   {
-    current_++; current_ %= 3; return current ();
+    current_++; current_ %= 4; return current ();
   }
 private:
-  int current_ = 0;
+  int current_ = 3;
   void init ()
   { 
      proj[0] = &proj_xyz;

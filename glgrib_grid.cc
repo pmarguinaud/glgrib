@@ -30,8 +30,6 @@ void glgrib_grid::init (const glgrib_options_grid & o)
   numberOfPoints = 0;
   numberOfLines = 0;
 
-  float r = 1.005;
-
   const int nlatv = 200, nlonv = 2 * opts.resolution;
   const int nlath = opts.resolution, nlonh = 400;
 
@@ -50,9 +48,9 @@ void glgrib_grid::init (const glgrib_options_grid & o)
               float sinlat = sin (zlat);
               if (pass == 1)
                 {
-                  xyz[ip*3+0] = r * coslon * coslat;
-                  xyz[ip*3+1] = r * sinlon * coslat;
-                  xyz[ip*3+2] = r *          sinlat;
+                  xyz[ip*3+0] = coslon * coslat;
+                  xyz[ip*3+1] = sinlon * coslat;
+                  xyz[ip*3+2] =          sinlat;
                   if (jlat < nlatv)
                     {
                       ind[il*2+0] = ip;
@@ -84,9 +82,9 @@ void glgrib_grid::init (const glgrib_options_grid & o)
 
               if (pass == 1) 
                 {
-                  xyz[ip*3+0] = r * coslon * coslat;
-                  xyz[ip*3+1] = r * sinlon * coslat;
-                  xyz[ip*3+2] = r *          sinlat;
+                  xyz[ip*3+0] = coslon * coslat;
+                  xyz[ip*3+1] = sinlon * coslat;
+                  xyz[ip*3+2] =          sinlat;
                   ind[il*2+0] = ip;
                   if (jlon < nloen-1)
                     ind[il*2+1] = ip + 1;
@@ -126,9 +124,9 @@ void glgrib_grid::init (const glgrib_options_grid & o)
 void glgrib_grid::render (const glgrib_view * view) const
 {
   const glgrib_program * program = get_program ();
-  GLint color0 = glGetUniformLocation (program->programID, "color0");
   float color[3] = {(float)opts.r, (float)opts.g, (float)opts.b};
-  glUniform3fv (color0, 1, color);
+  glUniform3fv (glGetUniformLocation (program->programID, "color0"), 1, color);
+  glUniform1i (glGetUniformLocation (program->programID, "do_alpha"), 0);
   glgrib_polygon::render (view);
 }
 

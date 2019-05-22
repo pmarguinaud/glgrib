@@ -51,7 +51,6 @@ void glgrib_coastlines::init (const glgrib_options_coastlines & o)
   numberOfPoints = 0;
   numberOfLines = 0;
 
-  float r = 1.005;
   const float millideg2rad = M_PI / (1000000. * 180.);
 
   for (int pass = 0; pass < 2; pass++)
@@ -79,9 +78,9 @@ void glgrib_coastlines::init (const glgrib_options_coastlines & o)
                       float sinlon = sin (millideg2rad * pl[i].x);
                       float coslat = cos (millideg2rad * pl[i].y);
                       float sinlat = sin (millideg2rad * pl[i].y);
-                      xyz[ip*3+0] = r * coslon * coslat;
-                      xyz[ip*3+1] = r * sinlon * coslat;
-                      xyz[ip*3+2] = r *          sinlat;
+                      xyz[ip*3+0] = coslon * coslat;
+                      xyz[ip*3+1] = sinlon * coslat;
+                      xyz[ip*3+2] =          sinlat;
 	              ind[il*2+0] = ip;
 	              if (i == h.n - 1)
                         ind[il*2+1] = ip0;
@@ -121,9 +120,9 @@ void glgrib_coastlines::init (const glgrib_options_coastlines & o)
 void glgrib_coastlines::render (const glgrib_view * view) const
 {
   const glgrib_program * program = get_program ();
-  GLint color0 = glGetUniformLocation (program->programID, "color0");
   float color[3] = {(float)opts.r, (float)opts.g, (float)opts.b};
-  glUniform3fv (color0, 1, color);
+  glUniform3fv (glGetUniformLocation (program->programID, "color0"), 1, color);
+  glUniform1i (glGetUniformLocation (program->programID, "do_alpha"), 1);
   glgrib_polygon::render (view);
 }
 

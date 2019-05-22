@@ -144,6 +144,8 @@ void main()
 R"CODE(
 #version 330 core
 
+in float alpha;
+
 out vec4 color;
 
 uniform vec3 color0; 
@@ -153,13 +155,14 @@ void main()
   color.r = color0.r;
   color.g = color0.g;
   color.b = color0.b;
-  color.a = 255;
+  color.a = alpha;
 }
 )CODE",
 R"CODE(
 #version 330 core
 
 layout(location = 0) in vec3 vertexPos;
+out float alpha;
 
 uniform mat4 MVP;
 
@@ -168,6 +171,7 @@ uniform mat4 MVP;
 void main()
 {
   vec3 pos;
+  alpha = 1.0;
   if (proj == XYZ)
     {
       pos = vertexPos;
@@ -176,7 +180,14 @@ void main()
     {
       vec3 normedPos = compNormedPos (vertexPos);
       pos = compProjedPos (vertexPos, normedPos);
+
+      if ((proj == LATLON) || (proj == MERCATOR))
+        {
+          if ((pos.y < -0.95) || (+0.95 < pos.y))
+            alpha = 0.0;
+	}
     }
+
   gl_Position =  MVP * vec4 (pos, 1.);
 }
 )CODE"),

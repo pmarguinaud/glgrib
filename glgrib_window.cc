@@ -291,17 +291,7 @@ int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)
   glfwGetCursorPos (window, &xpos, &ypos);
   ypos = opts.height - ypos;
   
-  glm::vec3 centre (0.0f, 0.0f, 0.0f);
-  glm::vec3 xc = scene.view.insersect_sphere (xpos, ypos, centre, 1.0f);
-
-  if (centre != xc)
-    {
-      *lat = glm::degrees (asinf (xc.z));
-      *lon = glm::degrees (atan2f (xc.y, xc.x));
-      return 1;
-    }
-
-  return 0;
+  return scene.view.get_latlon_from_screen_coords (xpos, ypos, lat, lon);
 }
 
 void glgrib_window::snapshot ()
@@ -376,15 +366,19 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
       const glgrib_field * field = scene.getCurrentField ();
       if (field)
         {
-          int jglo = field->geometry->latlon2index (lat, lon);
+          int jglo = field->geometry ? field->geometry->latlon2index (lat, lon) : -1;
 	  if (jglo >= 0)
             {
               float value = field->getValue (jglo);
               sprintf (title, "%6.2f %6.2f %6.2g", lat, lon, value);
-	      scene.setMessage (std::string (title));
-              glfwSetWindowTitle (window, title);
-	      return;
 	    }
+	  else
+            {
+              sprintf (title, "%6.2f %6.2f", lat, lon);
+	    }
+	  scene.setMessage (std::string (title));
+          glfwSetWindowTitle (window, title);
+	  return;
         }
     }
   glfwSetWindowTitle (window, opts.title.c_str ());

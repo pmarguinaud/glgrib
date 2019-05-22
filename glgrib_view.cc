@@ -57,7 +57,7 @@ void glgrib_view::setViewport (int w, int h)
   height = h;
 }
 
-glm::vec3 glgrib_view::insersect_plane (const double & xpos, const double & ypos, 
+glm::vec3 glgrib_view::intersect_plane (const double & xpos, const double & ypos, 
 		                        const glm::vec3 & p, const glm::vec3 & v) const
 {
 // The plane is defined by the normal v and p which belongs to the plane
@@ -74,7 +74,7 @@ glm::vec3 glgrib_view::insersect_plane (const double & xpos, const double & ypos
   return xa + lambda * u;
 }
 
-glm::vec3 glgrib_view::insersect_sphere (const double & xpos, const double & ypos, 
+glm::vec3 glgrib_view::intersect_sphere (const double & xpos, const double & ypos, 
 		                         const glm::vec3 & c, const float & r) const
 {
 // The sphere is defined by the radius r and its centre c
@@ -99,4 +99,30 @@ glm::vec3 glgrib_view::insersect_sphere (const double & xpos, const double & ypo
 
   return xa + lambda * u;
 }
+
+int glgrib_view::get_latlon_from_screen_coords (float xpos, float ypos, float * lat, float * lon)
+{
+  glm::vec3 pos;
+
+  if (proj == XYZ)
+    {
+      glm::vec3 centre (0.0f, 0.0f, 0.0f);
+      pos = intersect_sphere (xpos, ypos, centre, 1.0f);
+      if (centre == pos)
+        return 0;
+    }
+  else if (proj == POLAR_NORTH)
+    {
+      glgrib_projection_polar_north p;
+      pos = p.unproject (intersect_plane (xpos, ypos,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f)));
+    }
+  else
+    return 0;
+
+  *lat = glm::degrees (glm::asin (pos.z));
+  *lon = glm::degrees (glm::atan (pos.y, pos.x));
+
+  return 1;
+}
+
 

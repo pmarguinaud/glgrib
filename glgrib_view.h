@@ -26,8 +26,8 @@ public:
   {
     return glm::unProject (xyz, View * Model, Projection, Viewport);
   }
-  glm::vec3 insersect_plane (const double &, const double &, const glm::vec3 &, const glm::vec3 &) const;
-  glm::vec3 insersect_sphere (const double &, const double &, const glm::vec3 &, const float &) const;
+  glm::vec3 intersect_plane (const double &, const double &, const glm::vec3 &, const glm::vec3 &) const;
+  glm::vec3 intersect_sphere (const double &, const double &, const glm::vec3 &, const float &) const;
   typedef enum
   {
     XYZ=0,
@@ -38,6 +38,7 @@ public:
     LAST=5
   } proj_type;
   proj_type proj = XYZ;
+  int get_latlon_from_screen_coords (float, float, float *, float *);
 };
 
 #endif

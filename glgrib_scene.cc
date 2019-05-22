@@ -169,7 +169,7 @@ void glgrib_scene::init (const glgrib_options & o)
 void glgrib_scene::setViewport (int _width, int _height)
 {
   view.setViewport (_width, _height);
-  float width = view.width, height = view.height;
+  float width = view.getWidth (), height = view.getHeight ();
   float ratio = width / height;
 
   MVP_L = glm::ortho(0.0f, ratio, 0.0f, 1.0f, 0.1f, 100.0f)

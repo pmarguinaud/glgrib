@@ -67,9 +67,6 @@ public:
 
   void setMessage (const std::string & mess) { str.update (mess); }
 
-  glgrib_view::proj_type getCurrentProjType () { return view.proj; }
-  void setCurrentProjType (glgrib_view::proj_type p) { view.proj = p; view.calcMVP (); }
-
 private:
   bool movie = false;
   int movie_index = 0;

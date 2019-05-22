@@ -153,10 +153,7 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
 void glgrib_window::next_projection ()
 {
   std::cout << "next_projection" << std::endl;
-  if (scene.getCurrentProjType () == glgrib_view::POLAR_NORTH)
-    scene.setCurrentProjType (glgrib_view::XYZ);
-  else
-    scene.setCurrentProjType (glgrib_view::POLAR_NORTH);
+  scene.view.nextProjection ();
 }
 
 void glgrib_window::duplicate ()

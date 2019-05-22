@@ -4,6 +4,7 @@
 #include "glgrib_opengl.h"
 #include "glgrib_program.h"
 #include "glgrib_options.h"
+#include "glgrib_projection.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -15,9 +16,6 @@ public:
   void setMVP (GLuint) const;
   void calcMVP () const;
   void setViewport (int, int);
-  int width, height;
-  mutable glm::mat4 Model, View, Projection, MVP;
-  mutable glm::vec4 Viewport;
   glm::vec3 project (const glm::vec3 & xyz) const
   {
     return glm::project (xyz, View * Model, Projection, Viewport);
@@ -28,17 +26,20 @@ public:
   }
   glm::vec3 intersect_plane (const double &, const double &, const glm::vec3 &, const glm::vec3 &) const;
   glm::vec3 intersect_sphere (const double &, const double &, const glm::vec3 &, const float &) const;
-  typedef enum
-  {
-    XYZ=0,
-    POLAR_NORTH=1,
-    POLAR_SOUTH=2,
-    MERCATOR=3,
-    LATLON=4 ,
-    LAST=5
-  } proj_type;
-  proj_type proj = XYZ;
-  int get_latlon_from_screen_coords (float, float, float *, float *);
+
+  int get_latlon_from_screen_coords (float, float, float *, float *) const;
+
+  void nextProjection () { ps.next (); calcMVP (); }
+  glgrib_projection * getProjection () { return ps.current (); }
+
+  int getWidth () const { return width; }
+  int getHeight () const { return height; }
+
+private:
+  glgrib_projection_set ps;
+  int width, height;
+  mutable glm::mat4 Model, View, Projection, MVP;
+  mutable glm::vec4 Viewport;
 };
 
 #endif

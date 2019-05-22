@@ -15,39 +15,29 @@ void glgrib_view::setMVP (GLuint programID) const
     glUniformMatrix4fv (matrixID, 1, GL_FALSE, &MVP[0][0]);
   GLuint projID = glGetUniformLocation (programID, "proj");
   if (projID >= 0)
-    glUniform1i (projID, proj);
+    glUniform1i (projID, ps.current ()->getType ());
 }
 
 void glgrib_view::calcMVP () const
 {
-  float xc = opts.distance * glm::cos (glm::radians (opts.lon)) * glm::cos (glm::radians (opts.lat)), 
-        yc = opts.distance * glm::sin (glm::radians (opts.lon)) * glm::cos (glm::radians (opts.lat)),
-        zc = opts.distance *                                      glm::sin (glm::radians (opts.lat));
+  glm::vec3 pos
+    (opts.distance * glm::cos (glm::radians (opts.lon)) * glm::cos (glm::radians (opts.lat)), 
+     opts.distance * glm::sin (glm::radians (opts.lon)) * glm::cos (glm::radians (opts.lat)),
+     opts.distance *                                      glm::sin (glm::radians (opts.lat)));
 
   Viewport   = glm::vec4 (0.0f, 0.0f, (float)width, (float)height);
 
   float ratio = (float)width/(float)height;
 
   glm::mat4 Trans = glm::mat4 (1.0f);
+
   if (ratio > 1.0f)
     Trans = glm::translate (Trans, glm::vec3 ((ratio - 1.0f) / 2.0f, 0.0f, 0.0f));
        
-  if (proj == XYZ)
-    {
-      Projection = Trans * glm::perspective (glm::radians (opts.fov), ratio, 0.1f, 100.0f);
-      View       = glm::lookAt (glm::vec3 (xc,yc,zc), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
-      Model      = glm::mat4 (1.0f);
-      MVP = Projection * View * Model; 
-    }
-  else if (proj == POLAR_NORTH)
-    {
-      glgrib_projection_polar_north p;
-      glm::vec3 co = p.project (glm::vec3 (xc, yc, zc));
-      Projection = Trans * glm::perspective (glm::radians (opts.fov), ratio, 0.1f, 100.0f);
-      View       = glm::lookAt (glm::vec3 (opts.distance,co.y,co.z), glm::vec3 (0,co.y,co.z), glm::vec3 (0,-co.y,-co.z));
-      Model      = glm::mat4 (1.0f);
-      MVP = Projection * View * Model; 
-    }
+  Projection = Trans * glm::perspective (glm::radians (opts.fov), ratio, 0.1f, 100.0f);
+  View       = ps.current ()->getView (pos, opts.distance);
+  Model      = glm::mat4 (1.0f);
+  MVP = Projection * View * Model; 
 
 }
 
@@ -57,66 +47,14 @@ void glgrib_view::setViewport (int w, int h)
   height = h;
 }
 
-glm::vec3 glgrib_view::intersect_plane (const double & xpos, const double & ypos, 
-		                        const glm::vec3 & p, const glm::vec3 & v) const
-{
-// The plane is defined by the normal v and p which belongs to the plane
-
-  glm::vec3 pa = glm::vec3 (xpos, ypos, +0.985601f);
-  glm::vec3 pb = glm::vec3 (xpos, ypos, +0.900000f);
-  glm::vec3 xa = unproject (pa);
-  glm::vec3 xb = unproject (pb);
-
-  glm::vec3 u = xb - xa;
-
-  float lambda = glm::dot (v, p - xa) / glm::dot (u, v);
-
-  return xa + lambda * u;
-}
-
-glm::vec3 glgrib_view::intersect_sphere (const double & xpos, const double & ypos, 
-		                         const glm::vec3 & c, const float & r) const
-{
-// The sphere is defined by the radius r and its centre c
-
-  glm::vec3 pa = glm::vec3 (xpos, ypos, +0.985601f);
-  glm::vec3 pb = glm::vec3 (xpos, ypos, +0.900000f);
-  glm::vec3 xa = unproject (pa);
-  glm::vec3 xb = unproject (pb);
-
-  glm::vec3 u = xb - xa;
-  glm::vec3 dx = xa - c;
-
-  float A = glm::dot (u, u);
-  float B = 2. * glm::dot (dx, u);
-  float C = dot (dx, dx) - r * r;
-  float Delta = B * B - 4. * A * C;
-
-  if (Delta < 0)
-    return c;
-
-  float lambda = (-B + sqrt (Delta)) / (2. * A);
-
-  return xa + lambda * u;
-}
-
-int glgrib_view::get_latlon_from_screen_coords (float xpos, float ypos, float * lat, float * lon)
+int glgrib_view::get_latlon_from_screen_coords (float xpos, float ypos, float * lat, float * lon) const
 {
   glm::vec3 pos;
 
-  if (proj == XYZ)
-    {
-      glm::vec3 centre (0.0f, 0.0f, 0.0f);
-      pos = intersect_sphere (xpos, ypos, centre, 1.0f);
-      if (centre == pos)
-        return 0;
-    }
-  else if (proj == POLAR_NORTH)
-    {
-      glgrib_projection_polar_north p;
-      pos = p.unproject (intersect_plane (xpos, ypos,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f)));
-    }
-  else
+  glm::vec3 xa = unproject (glm::vec3 (xpos, ypos, +0.985601f));
+  glm::vec3 xb = unproject (glm::vec3 (xpos, ypos, +0.900000f));
+
+  if (! ps.current ()->unproject (xa, xb, &pos))
     return 0;
 
   *lat = glm::degrees (glm::asin (pos.z));

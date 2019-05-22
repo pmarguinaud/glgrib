@@ -189,6 +189,13 @@ void main()
     }
 
   gl_Position =  MVP * vec4 (pos, 1.);
+
+  if (proj == XYZ)
+    {
+//    if (gl_Position.z > 5.5)
+//      alpha = 0.0;
+    }
+
 }
 )CODE"),
 

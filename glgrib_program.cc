@@ -360,9 +360,13 @@ void main ()
       pos.y = scale0.y * normedPos.y;
       pos.z = scale0.z * normedPos.z;
     }
+  else if (proj == POLAR_SOUTH)
+    {
+      pos.x = pos.x - (scale0.x - 1.0f);
+    }
   else
     {
-      pos.x = pos.x + scale0.x - 1.0f;
+      pos.x = pos.x + (scale0.x - 1.0f);
     }
 
   gl_Position =  MVP * vec4 (pos, 1.);

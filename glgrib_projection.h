@@ -19,6 +19,7 @@ public:
   virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const = 0;
   virtual glm::mat4 getView (const glm::vec3 &, const float) const = 0;
   virtual int getType () const = 0;
+  virtual bool setLon0 (const float &) const = 0;
 };
 
 class glgrib_projection_xyz : public glgrib_projection
@@ -28,6 +29,7 @@ public:
   virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const;
   virtual glm::mat4 getView (const glm::vec3 &, const float) const;
   virtual int getType () const { return glgrib_projection::XYZ; }
+  virtual bool setLon0 (const float &) const { return false; }
 };
 
 class glgrib_projection_latlon : public glgrib_projection
@@ -35,9 +37,11 @@ class glgrib_projection_latlon : public glgrib_projection
 public:
   virtual glm::vec3 project (const glm::vec3 &) const;
   virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const;
-  float lon0 = 180.0; // Latitude of right handside
   virtual glm::mat4 getView (const glm::vec3 &, const float) const;
   virtual int getType () const { return glgrib_projection::LATLON; }
+  virtual bool setLon0 (const float & lon) const { lon0 = lon; return true; }
+private:
+  mutable float lon0 = 180.0; // Latitude of right handside
 };
 
 class glgrib_projection_mercator : public glgrib_projection
@@ -45,9 +49,11 @@ class glgrib_projection_mercator : public glgrib_projection
 public:
   virtual glm::vec3 project (const glm::vec3 &) const;
   virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const;
-  float lon0 = 180.0; // Latitude of right handside
   virtual glm::mat4 getView (const glm::vec3 &, const float) const;
   virtual int getType () const { return glgrib_projection::MERCATOR; }
+  virtual bool setLon0 (const float & lon) const { lon0 = lon; return true; }
+private:
+  mutable float lon0 = 180.0; // Latitude of right handside
 };
 
 class glgrib_projection_polar_north : public glgrib_projection
@@ -57,6 +63,7 @@ public:
   virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const;
   virtual glm::mat4 getView (const glm::vec3 &, const float) const;
   virtual int getType () const { return glgrib_projection::POLAR_NORTH; }
+  virtual bool setLon0 (const float &) const { return false; }
 };
 
 class glgrib_projection_polar_south : public glgrib_projection
@@ -66,6 +73,7 @@ public:
   virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const;
   virtual glm::mat4 getView (const glm::vec3 &, const float) const;
   virtual int getType () const { return glgrib_projection::POLAR_SOUTH; }
+  virtual bool setLon0 (const float &) const { return false; }
 };
 
 class glgrib_projection_set 
@@ -85,10 +93,10 @@ public:
   }
   glgrib_projection * next ()
   {
-    current_++; current_ %= 4; return current ();
+    current_++; current_ %= 5; return current ();
   }
 private:
-  int current_ = 3;
+  int current_ = 4;
   void init ()
   { 
      proj[0] = &proj_xyz;

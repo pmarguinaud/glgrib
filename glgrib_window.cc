@@ -152,7 +152,6 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
 
 void glgrib_window::next_projection ()
 {
-  std::cout << "next_projection" << std::endl;
   scene.view.nextProjection ();
 }
 

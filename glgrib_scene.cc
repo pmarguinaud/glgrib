@@ -21,7 +21,7 @@ void glgrib_scene::setLightShader (GLuint programID) const
           float sinlon = sin (deg2rad * light.lon);
           float coslat = cos (deg2rad * light.lat);
           float sinlat = sin (deg2rad * light.lat);
-          float lightDir[3] = {coslon * coslat, sinlon * coslat, sinlat};
+	  glm::vec3 lightDir = vec3 (coslon * coslat, sinlon * coslat, sinlat);
           glUniform3fv (glGetUniformLocation (programID, "lightDir"), 
                         1, &lightDir[0]);
         }

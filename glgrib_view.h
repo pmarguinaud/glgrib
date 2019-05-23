@@ -39,7 +39,7 @@ public:
   int get_latlon_from_screen_coords (float, float, float *, float *) const;
 
   void nextProjection () { ps.next (); calcMVP (); }
-  glgrib_projection * getProjection () { return ps.current (); }
+  glgrib_projection * getProjection () const { return ps.current (); }
 
   int getWidth () const { return width; }
   int getHeight () const { return height; }

@@ -188,6 +188,24 @@ int glgrib_geometry_gaussian::size () const
   return jglooff[Nj-1] + pl[Nj-1];
 }
 
+glgrib_geometry_gaussian::glgrib_geometry_gaussian (int _Nj)
+{
+  Nj = _Nj;
+
+  pl = (long int *)malloc (sizeof (long int) * Nj);
+
+  for (int jlat = 1; jlat <= Nj; jlat++)
+    {   
+      float lat = M_PI * (0.5 - (float)jlat / (float)(Nj + 1));
+      float coslat = cos (lat);
+      pl[jlat-1] = (2. * Nj * coslat);
+    }   
+
+  numberOfPoints  = 0;
+  for (int i = 0; i < Nj; i++)
+    numberOfPoints += pl[i];
+}
+
 glgrib_geometry_gaussian::glgrib_geometry_gaussian (codes_handle * h)
 {
 
@@ -234,6 +252,9 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (codes_handle * h)
   pl = (long int *)malloc (sizeof (long int) * pl_len);
   codes_get_long_array (h, "pl", pl, &pl_len);
 
+  numberOfPoints  = 0;
+  for (int i = 0; i < Nj; i++)
+    numberOfPoints += pl[i];
 }
 
 void glgrib_geometry_gaussian::init (codes_handle * h, const float orography)
@@ -243,14 +264,16 @@ void glgrib_geometry_gaussian::init (codes_handle * h, const float orography)
   const int nstripe = 8;
   int indoff[nstripe];
 
-  bool orog = orography > 0.0f;
-  size_t v_len = 0;
-  codes_get_size (h, "values", &v_len);
+  
+
+  bool orog = (orography > 0.0f) && (h != NULL);
+
   double vmin, vmax, vmis;
   double * v = NULL;
   if (orog)
     {
-      v = (double *)malloc (v_len * sizeof (double));
+      size_t v_len;
+      v = (double *)malloc (numberOfPoints * sizeof (double));
       codes_get_double_array (h, "values", v, &v_len);
       codes_get_double (h, "maximum",      &vmax);
       codes_get_double (h, "minimum",      &vmin);
@@ -276,8 +299,7 @@ void glgrib_geometry_gaussian::init (codes_handle * h, const float orography)
   // OpenMP generation of triangles
   glgauss (Nj, pl, ind, nstripe, indoff);
       
-  xyz = (float *)malloc (3 * sizeof (float) * v_len);
-  numberOfPoints  = v_len;
+  xyz = (float *)malloc (3 * sizeof (float) * numberOfPoints);
 
   int iglooff[Nj];
   iglooff[0] = 0;

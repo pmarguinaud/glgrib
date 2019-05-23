@@ -15,6 +15,7 @@ public:
   virtual std::string md5 () const;
   virtual int latlon2index (float, float) const;
   glgrib_geometry_gaussian (codes_handle *);
+  glgrib_geometry_gaussian (int);
   virtual void init (codes_handle *, const float = 0.0f);
   virtual void genlatlon (float *, float *) const;
   virtual void gencoords (float *, float *) const;
@@ -27,8 +28,8 @@ private:
   double stretchingFactor = 1.0f;
   double latitudeOfStretchingPoleInDegrees = 90.0f;
   double longitudeOfStretchingPoleInDegrees = 0.0f;
-  float omc2;
-  float opc2;
+  float omc2 = 0.0f;
+  float opc2 = 2.0f;
   glm::mat4 rot = glm::mat4 (1.0f);
 };
 

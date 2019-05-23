@@ -245,6 +245,7 @@ static optionlist get_optionlist (glgrib_options * opts)
   ADD_OPT (landscape.orography,       Factor to apply to orography);
   ADD_OPT (landscape.path,            Path to landscape image in BMP format);
   ADD_OPT (landscape.geometry,        GRIB files to take geometry from);
+  ADD_OPT (landscape.number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
 
   ADD_OPT (shell,                     Run command line);
   ADD_OPT (help,                      Show help message);

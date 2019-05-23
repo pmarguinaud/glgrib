@@ -32,6 +32,7 @@ public:
   std::string path = "landscape/Whole_world_-_land_and_oceans_8000.bmp";
   float orography = 0.05;
   std::string geometry = "";
+  int number_of_latitudes = 500;
 };
 
 class glgrib_options_coastlines

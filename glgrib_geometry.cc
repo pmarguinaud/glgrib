@@ -12,16 +12,31 @@
 typedef std::map <std::string,glgrib_geometry_ptr> cache_t;
 static cache_t cache;
 
-
-glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const float orography)
+glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const float orography, const int Nj)
 {
   FILE * in = NULL;
   int err = 0;
-  in = fopen (file.c_str (), "r");
-  codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
+  codes_handle * h = NULL;
 
-  long int gridDefinitionTemplateNumber;
-  codes_get_long (h, "gridDefinitionTemplateNumber", &gridDefinitionTemplateNumber);
+  if (file != "")
+    {
+      in = fopen (file.c_str (), "r");
+
+      if (in == NULL)
+        throw std::runtime_error (std::string ("Could not open ") + file + std::string (" for reading"));
+
+      h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
+
+      fclose (in);
+
+      if (h == NULL)
+        throw std::runtime_error (std::string ("File ") + file + std::string (" does not contain a GRIB message"));
+    }
+
+  long int gridDefinitionTemplateNumber = -1;
+
+  if (h != NULL)
+    codes_get_long (h, "gridDefinitionTemplateNumber", &gridDefinitionTemplateNumber);
 
   glgrib_geometry_ptr geom;
  
@@ -34,10 +49,14 @@ glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const float 
       case 0:
         geom = std::make_shared<glgrib_geometry_latlon> (h);
 	break;
+      case -1:
+        geom = std::make_shared<glgrib_geometry_gaussian> (Nj);
+	break;
       default:
         throw std::runtime_error (std::string ("Unexpected gridDefinitionTemplateNumber ") 
 			        + std::to_string (gridDefinitionTemplateNumber));
     }
+
 
   auto it = cache.find (geom->md5 ());
   if (it != cache.end ())
@@ -49,13 +68,13 @@ glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const float 
 	  goto found;
 	}
     }
+
   geom->init (h, orography);
   cache.insert (std::pair<std::string,glgrib_geometry_ptr> (geom->md5 (), geom));
 
 found:
 
   codes_handle_delete (h);
-  fclose (in);
 
   // Remove geometries with a single reference (they only belong to the cache)
 again:
@@ -89,5 +108,4 @@ std::string glgrib_geometry::md5string (const unsigned char md5[]) const
 
   return str;
 }
-
 

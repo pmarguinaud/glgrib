@@ -156,6 +156,7 @@ void main()
   color.g = color0.g;
   color.b = color0.b;
   color.a = alpha;
+
 }
 )CODE",
 R"CODE(
@@ -186,13 +187,16 @@ void main()
       vec3 normedPos = compNormedPos (vertexPos);
       pos = compProjedPos (vertexPos, normedPos);
 
-      if ((pos.y < -posmax) || (+posmax < pos.y))
       if ((proj == LATLON) || (proj == MERCATOR))
+      if ((pos.y < -posmax) || (+posmax < pos.y))
         {
           pos.x = -0.1;
           if (do_alpha)
             alpha = 0.0;
 	}
+      if (proj == LATLON)
+      if ((pos.z > +0.49) || (pos.z < -0.49))
+        alpha = 0.0;
 
       if (proj == POLAR_SOUTH)
         pos.x = pos.x - 0.005;

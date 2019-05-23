@@ -52,7 +52,8 @@ void glgrib_view::calcMVP () const
         const float margin = 1.05;
 	float zoom = opts.fov / 20.0f;
         p = glm::ortho (-ratio * margin * zoom, +ratio * margin * zoom, 
-			-1.0f * margin * zoom, +1.0f * margin * zoom, 0.1f, 100.0f);
+			 -1.0f * margin * zoom,  +1.0f * margin * zoom, 
+			 0.100f, 100.0f);
 	break;
     }
 

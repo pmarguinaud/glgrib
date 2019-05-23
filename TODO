@@ -1,4 +1,4 @@
-Use mysql to store field options
+Use sqlite3 to store field options
 Make shell usable
 Try intel gpu tools
 Write text with X11

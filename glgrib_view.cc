@@ -50,7 +50,9 @@ void glgrib_view::calcMVP () const
 	break;
       case ORTHOGRAPHIC:
         const float margin = 1.05;
-        p = glm::ortho (-ratio * margin, +ratio * margin, -1.0f * margin, +1.0f * margin, 0.1f, 100.0f);
+	float zoom = opts.fov / 20.0f;
+        p = glm::ortho (-ratio * margin * zoom, +ratio * margin * zoom, 
+			-1.0f * margin * zoom, +1.0f * margin * zoom, 0.1f, 100.0f);
 	break;
     }
 

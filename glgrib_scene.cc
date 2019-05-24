@@ -73,7 +73,7 @@ void glgrib_scene::display () const
   const glgrib_field * fld = currentFieldRank < fieldlist.size () 
                         ? &fieldlist[currentFieldRank] : NULL;
   if (fld != NULL)
-    colorbar.render (MVP_L, fld->dopts.palette, fld->valmin, fld->valmax);
+    colorbar.render (MVP_L, fld->dopts.palette, fld->meta.valmin, fld->meta.valmax);
 
   str.render (MVP_R);
 

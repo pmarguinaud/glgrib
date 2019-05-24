@@ -174,4 +174,9 @@ bool operator!= (const glgrib_palette & p1, const glgrib_palette & p2)
   return ! (p1 == p2);
 }
  
+glgrib_palette & get_palette_by_meta (const glgrib_field_metadata  & meta)
+{
+  return palette_white_black;
+}
+
 

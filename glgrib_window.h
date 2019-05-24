@@ -90,6 +90,8 @@ public:
   void load_field (const glgrib_options_field &, int = 0);
   void remove_field (int);
   void set_field_palette (const std::string &);
+  void set_field_palette_min (const float);
+  void set_field_palette_max (const float);
 
 protected:
   void createGFLWwindow (GLFWwindow * = NULL);

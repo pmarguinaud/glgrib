@@ -151,6 +151,22 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
 #undef if_key
 }
 
+void glgrib_window::set_field_palette_min (const float min)
+{
+  glgrib_field * f = scene.getCurrentField ();
+  if (f == NULL)
+    return;
+  f->dopts.palette.min = min;
+}
+
+void glgrib_window::set_field_palette_max (const float max)
+{
+  glgrib_field * f = scene.getCurrentField ();
+  if (f == NULL)
+    return;
+  f->dopts.palette.max = max;
+}
+
 void glgrib_window::set_field_palette (const std::string & p)
 {
   glgrib_field * f = scene.getCurrentField ();
@@ -258,8 +274,8 @@ void glgrib_window::scale_palette_up ()
   if (fld == NULL)
     return;
   glgrib_field_display_options * fopt = scene.getCurrentFieldOpts ();
-  if (! fopt->palette.hasMin ()) fopt->palette.min = fld->valmin;
-  if (! fopt->palette.hasMax ()) fopt->palette.max = fld->valmax;
+  if (! fopt->palette.hasMin ()) fopt->palette.min = fld->meta.valmin;
+  if (! fopt->palette.hasMax ()) fopt->palette.max = fld->meta.valmax;
   float d = fopt->palette.max - fopt->palette.min;
   fopt->palette.min -= d * 0.025;
   fopt->palette.max += d * 0.025;
@@ -271,8 +287,8 @@ void glgrib_window::scale_palette_down ()
   if (fld == NULL)
     return;
   glgrib_field_display_options * fopt = scene.getCurrentFieldOpts ();
-  if (! fopt->palette.hasMin ()) fopt->palette.min = fld->valmin;
-  if (! fopt->palette.hasMax ()) fopt->palette.max = fld->valmax;
+  if (! fopt->palette.hasMin ()) fopt->palette.min = fld->meta.valmin;
+  if (! fopt->palette.hasMax ()) fopt->palette.max = fld->meta.valmax;
   float d = fopt->palette.max - fopt->palette.min;
   fopt->palette.min += d * 0.025;
   fopt->palette.max -= d * 0.025;

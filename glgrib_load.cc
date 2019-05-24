@@ -9,7 +9,7 @@
 #include <errno.h>
 
 
-void glgrib_load (const std::string & file, float ** val, float * valmin, float * valmax, float * valmis)
+void glgrib_load (const std::string & file, float ** val, glgrib_field_metadata * meta)
 {
   FILE * in = fopen (file.c_str (), "r");
 
@@ -22,11 +22,10 @@ void glgrib_load (const std::string & file, float ** val, float * valmin, float 
 
   int err = 0;
   codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
+  fclose (in);
+
   if (h == NULL)
-    {
-      fclose (in);
-      throw std::runtime_error (std::string ("`") + file + "' does not contain GRIB data");
-    }
+    throw std::runtime_error (std::string ("`") + file + "' does not contain GRIB data");
 
   size_t v_len = 0;
   codes_get_size (h, "values", &v_len);
@@ -38,20 +37,27 @@ void glgrib_load (const std::string & file, float ** val, float * valmin, float 
   double * v = (double *)malloc (sizeof (double) * v_len);
   codes_get_double_array (h, "values", v, &v_len);
 
-  codes_handle_delete (h);
-
-  fclose (in);
-
   *val = new float [v_len];
   for (int i = 0; i < v_len; i++)
     (*val)[i] = v[i];
 
   free (v);
 
-  *valmis = vmis;
-  *valmin = vmin;
-  *valmax = vmax;
+  meta->valmis = vmis;
+  meta->valmin = vmin;
+  meta->valmax = vmax;
 
+  meta->CLNOMA = "";
+  if (codes_is_defined (h, "CLNOMA"))
+    {
+      size_t len;
+      codes_get_length (h, "CLNOMA", &len);
+      char CLNOMA[len+1];
+      codes_get_string (h, "CLNOMA", CLNOMA, &len);
+      meta->CLNOMA = std::string (CLNOMA);
+    }
+
+  codes_handle_delete (h);
 
 }
 

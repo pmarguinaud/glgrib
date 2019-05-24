@@ -44,7 +44,17 @@ glgrib_shell Shell
 	  {
             gwindow->set_field_palette (S (name));
 	  }, "",
-     A ("name", ""))
+     A ("name", "")),
+  C (palette_min,    
+	  {
+            gwindow->set_field_palette_min (F (min));
+	  }, "",
+     A ("min", "-1.")),
+  C (palette_max,    
+	  {
+            gwindow->set_field_palette_max (F (max));
+	  }, "",
+     A ("max", "+1."))
 );
 
 #undef C

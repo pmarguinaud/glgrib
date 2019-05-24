@@ -2,6 +2,7 @@
 #define _GLGRIB_PALETTE_H
 
 #include "glgrib_opengl.h"
+#include "glgrib_field_metatada.h"
 
 #include <vector>
 #include <iostream>
@@ -90,8 +91,9 @@ extern glgrib_palette palette_cloud;
 extern glgrib_palette palette_cloud_auto;
 extern std::string palette_directory;
 
-glgrib_palette & get_palette_by_name (const std::string &);
-glgrib_palette & get_next_palette (const glgrib_palette &);
+extern glgrib_palette & get_palette_by_name (const std::string &);
+extern glgrib_palette & get_next_palette (const glgrib_palette &);
+extern glgrib_palette & get_palette_by_meta (const glgrib_field_metadata &);
 
 
 

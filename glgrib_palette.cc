@@ -198,7 +198,7 @@ glgrib_palette get_palette_by_meta (const glgrib_field_metadata  & meta)
 
   std::cout << __FILE__ << ":" << __LINE__ << std::endl;
 
-  rc = sqlite3_bind_text (req, 1, meta.CLNOMA.c_str (), meta.CLNOMA.length () + 1, NULL);
+  rc = sqlite3_bind_text (req, 1, meta.CLNOMA.c_str (), meta.CLNOMA.length (), NULL);
 
   if (rc != SQLITE_OK)
     goto end;
@@ -208,7 +208,7 @@ glgrib_palette get_palette_by_meta (const glgrib_field_metadata  & meta)
 
   std::cout << rc << " " << SQLITE_ROW << std::endl;
 
-  if (sqlite3_step (req) == SQLITE_ROW)
+  if (rc == SQLITE_ROW)
     {
       printf ("%s %f %f\n", 
               sqlite3_column_text (req, 0), 

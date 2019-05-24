@@ -5,7 +5,7 @@
 #include "glgrib_options.h"
 #include "glgrib_geometry.h"
 #include "glgrib_palette.h"
-#include "glgrib_field_metata.h"
+#include "glgrib_field_metadata.h"
 
 #include <string>
 #include <memory>

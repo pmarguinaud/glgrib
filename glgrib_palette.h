@@ -2,7 +2,7 @@
 #define _GLGRIB_PALETTE_H
 
 #include "glgrib_opengl.h"
-#include "glgrib_field_metatada.h"
+#include "glgrib_field_metadata.h"
 
 #include <vector>
 #include <iostream>

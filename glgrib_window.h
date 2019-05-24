@@ -87,6 +87,9 @@ public:
 
   void next_projection ();
   void toggle_transform_type ();
+  void load_field (const glgrib_options_field &, int = 0);
+  void remove_field (int);
+  void set_field_palette (const std::string &);
 
 protected:
   void createGFLWwindow (GLFWwindow * = NULL);

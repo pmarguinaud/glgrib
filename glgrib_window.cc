@@ -151,6 +151,40 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
 #undef if_key
 }
 
+void glgrib_window::set_field_palette (const std::string & p)
+{
+  glgrib_field * f = scene.getCurrentField ();
+  if (f == NULL)
+    return;
+  f->setPalette (p);
+}
+
+void glgrib_window::remove_field (int rank)
+{
+  glgrib_field F;
+  if ((rank < 0) || (rank > scene.fieldlist.size ()-1))
+    return;
+  scene.fieldlist[rank] = F;
+}
+
+void glgrib_window::load_field (const glgrib_options_field & opts, int rank)
+{
+  glgrib_field F;
+
+  if ((rank < 0) || (rank > 11))
+    return;
+
+  makeCurrent ();
+
+  F.init (opts);
+
+  if (rank > scene.fieldlist.size () - 1)
+    scene.fieldlist.push_back (F);
+  else
+    scene.fieldlist[rank] = F;
+  
+}
+
 void glgrib_window::toggle_transform_type ()
 {
   scene.view.toggleTransformType ();

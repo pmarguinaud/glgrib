@@ -4,3 +4,4 @@ Try intel gpu tools
 Write text with X11
 Use opts in scene
 Reorganize shaders ?
+Change names like toggle_transform_type into toggleTransformType

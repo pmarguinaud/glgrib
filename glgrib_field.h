@@ -51,6 +51,7 @@ public:
   virtual void render (const glgrib_view *) const;
   glgrib_field_float_buffer_ptr values = NULL;
   virtual float getValue (int index) const { return values != NULL ? values->data ()[index] : 9999.0f; }
+  void setPalette (const std::string & p) { dopts.palette = get_palette_by_name (p); }
   float valmis, valmin, valmax;
   virtual ~glgrib_field ();
   glgrib_field_display_options dopts;

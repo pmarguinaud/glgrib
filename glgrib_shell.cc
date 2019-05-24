@@ -28,7 +28,23 @@ glgrib_shell Shell
   C (rotate,    { gwindow->scene.rotate_earth = ! gwindow->scene.rotate_earth; }, ""),
   C (wireframe, { gwindow->toggle_wireframe (); }, ""),
   C (flat,      { gwindow->toggle_flat (); }, ""),
-  C (select,    { shell->windowid = I (id); }, "", A ("id", "1"))
+  C (select,    { shell->windowid = I (id); }, "", A ("id", "1")),
+  C (remove,    { gwindow->remove_field (I (rank)); }, "", A ("rank", "0")),
+  C (load,      
+	  { 
+            glgrib_options_field opts; 
+	    std::cout << S (path) << std::endl;
+            opts.path.push_back (S (path)); 
+            opts.scale.push_back (F (scale));
+            opts.palette.push_back (S (palette));
+            gwindow->load_field (opts); 
+	  }, "", 
+     A ("palette", ""), A ("scale", "1.02"), A ("path", "")),
+  C (palette,    
+	  {
+            gwindow->set_field_palette (S (name));
+	  }, "",
+     A ("name", ""))
 );
 
 #undef C
@@ -108,9 +124,11 @@ void glgrib_shell::start (glgrib_window_set * ws)
 
 void glgrib_shell::run ()
 {
+  if (read_history (".glgrib_history") != 0)
+    write_history (".glgrib_history");
   while (wset->size () > 0)
     {
-      char * line = readline("> ");
+      char * line = readline ("glgrib> ");
       if (line == NULL)
         break;
       if (strlen (line) > 0) 
@@ -128,6 +146,8 @@ void glgrib_shell::run ()
       }
       unlock ();
       
+      append_history (1, ".glgrib_history");
+
       free (line);
       
       if (closed ()) 

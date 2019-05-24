@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
+#include <sqlite3.h>
 
 std::string palette_directory;
 
@@ -174,9 +175,55 @@ bool operator!= (const glgrib_palette & p1, const glgrib_palette & p2)
   return ! (p1 == p2);
 }
  
-glgrib_palette & get_palette_by_meta (const glgrib_field_metadata  & meta)
+glgrib_palette get_palette_by_meta (const glgrib_field_metadata  & meta)
 {
-  return palette_white_black;
+  sqlite3 * db = NULL;
+  sqlite3_stmt * req = NULL;
+  int rc;
+  glgrib_palette p = palette_white_black;
+
+  rc = sqlite3_open (".glgrib.db", &db);
+
+  std::cout << " rc = " << rc << std::endl;
+
+  if (rc != SQLITE_OK) 
+    goto end;
+
+  rc = sqlite3_prepare_v2 (db, "SELECT palette, min, max FROM CLNOMA2palette WHERE CLNOMA = ?;", -1, &req, 0);    
+
+  std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+
+  if (rc != SQLITE_OK)
+    goto end;
+
+  std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+
+  rc = sqlite3_bind_text (req, 1, meta.CLNOMA.c_str (), meta.CLNOMA.length () + 1, NULL);
+
+  if (rc != SQLITE_OK)
+    goto end;
+  std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+
+  rc = sqlite3_step (req);
+
+  std::cout << rc << " " << SQLITE_ROW << std::endl;
+
+  if (sqlite3_step (req) == SQLITE_ROW)
+    {
+      printf ("%s %f %f\n", 
+              sqlite3_column_text (req, 0), 
+	      sqlite3_column_double (req, 1), 
+	      sqlite3_column_double (req, 2));
+    }
+  std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+
+end:
+  if (req != NULL)
+    sqlite3_finalize (req);
+  if (db != NULL)
+    sqlite3_close (db);
+
+  return p;
 }
 
 

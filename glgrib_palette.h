@@ -93,7 +93,7 @@ extern std::string palette_directory;
 
 extern glgrib_palette & get_palette_by_name (const std::string &);
 extern glgrib_palette & get_next_palette (const glgrib_palette &);
-extern glgrib_palette & get_palette_by_meta (const glgrib_field_metadata &);
+extern glgrib_palette get_palette_by_meta (const glgrib_field_metadata &);
 
 
 

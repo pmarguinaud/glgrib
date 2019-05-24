@@ -76,7 +76,7 @@ void glgrib_field::init (const glgrib_options_field & opts, int slot)
 
   dopts.scale = opts.scale[slot];
 
-  if (opts.palette[slot] == "")
+  if (opts.palette[slot] == "default")
     dopts.palette = get_palette_by_meta (meta);
   else
     dopts.palette = get_palette_by_name (opts.palette[slot]);

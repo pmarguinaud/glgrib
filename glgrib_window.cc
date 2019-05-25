@@ -144,11 +144,20 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (CONTROL, C,      duplicate                ());
       if_key (CONTROL, P,      next_projection          ());
       if_key (SHIFT,   P,      toggle_transform_type    ());
+      if_key (CONTROL, S,      save_current_palette     ());
 
 
     }
 
 #undef if_key
+}
+
+void glgrib_window::save_current_palette ()
+{
+  glgrib_field * f = scene.getCurrentField ();
+  if (f == NULL)
+    return;
+  f->dopts.palette.save (f->meta);
 }
 
 void glgrib_window::set_field_palette_min (const float min)

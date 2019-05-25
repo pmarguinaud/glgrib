@@ -37,6 +37,7 @@ public:
 class glgrib_palette
 {
 public:
+  void save (const glgrib_field_metadata &) const;
   glgrib_rgba rgba_mis;
   std::vector<glgrib_rgba> rgba;
   std::string name;

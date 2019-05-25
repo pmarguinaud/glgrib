@@ -92,6 +92,7 @@ public:
   void set_field_palette (const std::string &);
   void set_field_palette_min (const float);
   void set_field_palette_max (const float);
+  void save_current_palette ();
 
 protected:
   void createGFLWwindow (GLFWwindow * = NULL);

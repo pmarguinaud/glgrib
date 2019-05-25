@@ -57,6 +57,17 @@ void glgrib_load (const std::string & file, float ** val, glgrib_field_metadata 
       meta->CLNOMA = std::string (CLNOMA);
     }
 
+#define CODES_GET(attr) \
+  do {                                             \
+    meta->attr = 255;                              \
+    if (codes_is_defined (h, #attr))               \
+      codes_get_long (h, #attr, &meta->attr);      \
+  } while (0)
+
+  CODES_GET (discipline);
+  CODES_GET (parameterCategory);
+  CODES_GET (parameterNumber);
+
   codes_handle_delete (h);
 
 }

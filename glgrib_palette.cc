@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
+#include <string.h>
 #include <sqlite3.h>
 
 std::string palette_directory;
@@ -179,43 +180,69 @@ glgrib_palette get_palette_by_meta (const glgrib_field_metadata  & meta)
 {
   sqlite3 * db = NULL;
   sqlite3_stmt * req = NULL;
+  std::string pname = "default";
+  float pmin = std::numeric_limits<float>::max ();
+  float pmax = std::numeric_limits<float>::min ();
   int rc;
-  glgrib_palette p = palette_white_black;
 
   rc = sqlite3_open (".glgrib.db", &db);
-
-  std::cout << " rc = " << rc << std::endl;
 
   if (rc != SQLITE_OK) 
     goto end;
 
-  rc = sqlite3_prepare_v2 (db, "SELECT palette, min, max FROM CLNOMA2palette WHERE CLNOMA = ?;", -1, &req, 0);    
 
-  std::cout << __FILE__ << ":" << __LINE__ << std::endl;
-
-  if (rc != SQLITE_OK)
-    goto end;
-
-  std::cout << __FILE__ << ":" << __LINE__ << std::endl;
-
-  rc = sqlite3_bind_text (req, 1, meta.CLNOMA.c_str (), meta.CLNOMA.length (), NULL);
-
-  if (rc != SQLITE_OK)
-    goto end;
-  std::cout << __FILE__ << ":" << __LINE__ << std::endl;
-
-  rc = sqlite3_step (req);
-
-  std::cout << rc << " " << SQLITE_ROW << std::endl;
-
-  if (rc == SQLITE_ROW)
+  if ((meta.discipline != 255) && (meta.parameterCategory != 255) && (meta.parameterNumber != 255))
     {
-      printf ("%s %f %f\n", 
-              sqlite3_column_text (req, 0), 
-	      sqlite3_column_double (req, 1), 
-	      sqlite3_column_double (req, 2));
+      rc = sqlite3_prepare_v2 (db, "SELECT palette, min, max FROM GRIB2PALETTE WHERE discipline = ? "
+                                   "AND parameterCategory = ? AND parameterNumber = ?;", -1, &req, 0);    
+
+      if (rc != SQLITE_OK)
+        goto end;
+     
+      rc = sqlite3_bind_int (req, 1, meta.discipline);
+      rc = sqlite3_bind_int (req, 2, meta.parameterCategory);
+      rc = sqlite3_bind_int (req, 3, meta.parameterNumber);
+     
+      if (rc != SQLITE_OK)
+        goto end;
+     
+      rc = sqlite3_step (req);
+      if (rc == SQLITE_ROW)
+        goto step;
+
+      sqlite3_finalize (req);
+      req = NULL;
     }
-  std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+
+  if (meta.CLNOMA != "")
+    {
+      rc = sqlite3_prepare_v2 (db, "SELECT palette, min, max FROM CLNOMA2PALETTE WHERE CLNOMA = ?;", -1, &req, 0);    
+     
+      if (rc != SQLITE_OK)
+        goto end;
+     
+      rc = sqlite3_bind_text (req, 1, meta.CLNOMA.c_str (), meta.CLNOMA.length (), NULL);
+     
+      if (rc != SQLITE_OK)
+        goto end;
+
+      rc = sqlite3_step (req);
+      if (rc == SQLITE_ROW)
+        goto step;
+
+      sqlite3_finalize (req);
+      req = NULL;
+    }
+
+  goto end;
+
+step:
+  
+  char name[32];
+  strcpy (name, (const char *)sqlite3_column_text (req, 0));
+  pmin = sqlite3_column_double (req, 1);
+  pmax = sqlite3_column_double (req, 2);
+  pname = std::string (name);
 
 end:
   if (req != NULL)
@@ -223,6 +250,9 @@ end:
   if (db != NULL)
     sqlite3_close (db);
 
+  glgrib_palette p = get_palette_by_name (pname);
+  p.min = pmin;
+  p.max = pmax;
   return p;
 }
 

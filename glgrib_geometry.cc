@@ -1,6 +1,7 @@
 #include "glgrib_geometry.h"
 #include "glgrib_geometry_gaussian.h"
 #include "glgrib_geometry_latlon.h"
+#include "glgrib_geometry_lambert.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -43,6 +44,8 @@ glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const float 
   // Read geometry metadata
   switch (gridDefinitionTemplateNumber)
     {
+      case 33:
+        geom = std::make_shared<glgrib_geometry_lambert> (h);
       case 40: case 41: case 42: case 43:
         geom = std::make_shared<glgrib_geometry_gaussian> (h);
 	break;

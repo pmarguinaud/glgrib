@@ -6,3 +6,4 @@ Reorganize shaders ?
 Change names like toggle_transform_type into toggleTransformType
 Make a view below field and above ground, with XYZ movement
 Fix cloned window title
+on/off options

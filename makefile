@@ -89,3 +89,6 @@ test_t8000_noorog: ./glgrib.x
 
 test_missingvalue: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.path "" --field[0].path t49/SFX.CLAY.grb
+
+test_aro: ./glgrib.x
+	$(GDB) ./glgrib.x --field[0].path ./aro2.5/SURFIND.TERREMER.grb --field[0].palette cold_hot --field[0].scale 1.00 --landscape.path ""

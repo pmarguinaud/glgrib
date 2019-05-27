@@ -150,7 +150,7 @@ int glgrib_geometry_latlon::latlon2index (float lat, float lon) const
   if ((j < 0) || (j >= Nj))
     return -1;
 
-  return j * Ni + Nj;
+  return j * Ni + i;
 }
 
 std::string glgrib_geometry_latlon::md5 () const

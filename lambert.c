@@ -130,7 +130,10 @@ int main (int argc, char * argv[])
 
   latlon = xy_to_latlon (pt_xy, p_pj);
 
-  printf (" lat = %f, lon = %f\n", rad2deg * latlon.lat, rad2deg * latlon.lon);
+  if (latlon.lon < 0)
+    latlon.lon += 2 * M_PI;
+
+  printf (" lat = %20.10f, lon = %20.10f\n", rad2deg * latlon.lat, rad2deg * latlon.lon);
 
 
   return 0;

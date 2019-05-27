@@ -20,7 +20,7 @@ public:
   virtual int size () const;
   virtual ~glgrib_geometry_lambert ();
 private:
-  long int Nx, Ny;
+  long int Nx, Ny, Nux, Nuy;
   double LaDInDegrees, LoVInDegrees, DxInMetres, DyInMetres;
 };
 

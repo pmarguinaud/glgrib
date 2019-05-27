@@ -12,6 +12,120 @@
 
 static const double rad2deg = 180.0 / M_PI;
 static const double deg2rad = M_PI / 180.0;
+static const double a = 6371229.0;
+
+class latlon_t
+{
+public:
+  double lat, lon;
+};
+
+class xy_t 
+{
+public:
+  xy_t (double _x, double _y) : x (_x), y (_y) {}
+  xy_t () { }
+  double x, y;
+};
+
+class proj_t
+{
+public:
+  proj_t (double lon, double lat)
+  {
+    ref_pt.lon = lon;
+    ref_pt.lat = lat;
+    pole       = 1.0;
+    kl = pole * sin (ref_pt.lat);
+    r_equateur = a * pow (cos (ref_pt.lat), 1.0 - kl) * pow (1.0 + kl, kl) / kl;
+  }
+  latlon_t ref_pt;
+  double pole;
+  double r_equateur;
+  double kl;
+};
+
+class rtheta_t
+{
+public:
+  double r, theta;
+};
+
+static inline double sign (double a, double b)
+{
+  return b > 0 ? +fabs (a) : -fabs (a);
+}
+
+static inline latlon_t stlp_rtheta_to_latlon (rtheta_t pt_rtheta, proj_t p_pj)
+{
+  latlon_t pt_coord;
+  pt_coord.lon = p_pj.ref_pt.lon + pt_rtheta.theta / p_pj.kl;
+  pt_coord.lat = p_pj.pole * ((M_PI / 2.0) - 2.0 * atan(pow (pt_rtheta.r / p_pj.r_equateur, 1.0 / p_pj.kl)));
+  return pt_coord;
+}
+
+static inline rtheta_t stlp_xy_to_rtheta (xy_t pt_xy, proj_t p_pj)
+{
+  rtheta_t pt_rtheta;
+  pt_rtheta.r = sqrt(pt_xy.x * pt_xy.x + pt_xy.y * pt_xy.y);
+  double tatng;
+
+
+  if (pt_xy.y == 0.0) 
+    {
+      if (pt_xy.x == 0.0) 
+        tatng = M_PI;
+      else 
+        tatng = sign (M_PI / 2.0, -p_pj.pole * pt_xy.x);
+    }
+  else
+    {
+      tatng = atan (-p_pj.pole * (pt_xy.x / pt_xy.y));
+    }
+
+  pt_rtheta.theta = M_PI * sign (1.0, pt_xy.x) * (sign (0.5, p_pj.pole * pt_xy.y) + 0.5) + tatng;
+
+  return pt_rtheta;
+}
+
+static inline latlon_t xy_to_latlon (xy_t pt_xy, proj_t p_pj)
+{
+  return stlp_rtheta_to_latlon (stlp_xy_to_rtheta (pt_xy, p_pj),p_pj);
+}
+
+static inline double dist_2ref (latlon_t pt_coord, latlon_t ref_coord)
+{
+  double z = pt_coord.lon - ref_coord.lon;
+  z = z - sign (M_PI, z) * (1.0 + sign (1.0, fabs (z) - M_PI));
+  return -z * sign (1.0, z - M_PI);
+}
+
+static inline rtheta_t stpl_latlon_to_rtheta (latlon_t pt_coord, proj_t p_pj)
+{
+  rtheta_t pt_rtheta;
+  pt_rtheta.r = p_pj.r_equateur * pow (tan ((M_PI / 4.0) - ((p_pj.pole * pt_coord.lat) / 2.0)), p_pj.kl);
+  pt_rtheta.theta = p_pj.kl * dist_2ref (pt_coord, p_pj.ref_pt);
+  return pt_rtheta;
+}
+
+static inline xy_t stlp_rtheta_to_xy (rtheta_t pt_rtheta, proj_t p_pj)
+{
+  return xy_t (pt_rtheta.r * sin (pt_rtheta.theta), -p_pj.pole * pt_rtheta.r * cos (pt_rtheta.theta));
+}
+
+static inline xy_t latlon_to_xy (latlon_t pt_coord, proj_t p_pj)
+{
+  return stlp_rtheta_to_xy (stpl_latlon_to_rtheta (pt_coord, p_pj), p_pj);
+}
+
+static inline xy_t xy_new_to_std_origin (latlon_t new_origin_coord, xy_t pt_xy_in_new_origin, proj_t p_pj)
+{
+  xy_t pt_xy_in_std_origin;
+  xy_t n_o_pt_xy = latlon_to_xy (new_origin_coord, p_pj);
+  pt_xy_in_std_origin.x = pt_xy_in_new_origin.x+n_o_pt_xy.x;
+  pt_xy_in_std_origin.y = pt_xy_in_new_origin.y+n_o_pt_xy.y;
+  return pt_xy_in_std_origin;
+}
 
 void glgrib_geometry_lambert::gencoords (float * px, float * py) const
 {
@@ -32,6 +146,8 @@ glgrib_geometry_lambert::glgrib_geometry_lambert (codes_handle * h)
 {
   codes_get_long (h, "Nx", &Nx);
   codes_get_long (h, "Ny", &Ny);
+  codes_get_long (h, "Nux", &Nux);
+  codes_get_long (h, "Nuy", &Nuy);
   codes_get_double (h, "LaDInDegrees", &LaDInDegrees);
   codes_get_double (h, "LoVInDegrees", &LoVInDegrees);
   codes_get_double (h, "DxInMetres", &DxInMetres);
@@ -62,32 +178,26 @@ void glgrib_geometry_lambert::init (codes_handle * h, const float orography)
   xyz = (float *)malloc (3 * sizeof (float) * Nx * Ny);
   numberOfPoints  = Nx * Ny;
 
+  proj_t p_pj (deg2rad * LoVInDegrees, deg2rad * LaDInDegrees);
 
-  const double a = 6371229.0;
-
-  double n = sin (deg2rad * LaDInDegrees);
-  double rho0 = a * cos (deg2rad * LaDInDegrees) * pow (tan (deg2rad * LaDInDegrees / 2 + M_PI / 4), n) / n;
   // Generation of coordinates
-//#pragma omp parallel for
+#pragma omp parallel for
   for (int j = 0; j < Ny; j++)
-    {
-      for (int i = 0; i < Nx; i++)
-        {
-          double X = i * DxInMetres;
-          double Y = (Ny / 2 - j) * DyInMetres;
-          double rho = sqrt (X * X + (rho0 - Y) * (rho0 - Y));
-          double theta = 2 * atan (X / (rho0 + rho - Y));
-          double lon = theta / n + LoVInDegrees * deg2rad;
-          double lat = M_PI / 2 + atan (pow (rho0 / rho, 1. / n));
-          int p = j * Nx + i;
-          double x = cos (lon) * cos (lat);
-          double y = sin (lon) * cos (lat);
-          double z =             sin (lat);
-          xyz[3*p+0] = x;
-          xyz[3*p+1] = y;
-          xyz[3*p+2] = z;
-        }
-    }
+    for (int i = 0; i < Nx; i++)
+      {
+        xy_t pt_xy;
+
+        pt_xy.x = (i - Nux / 2) * DxInMetres;
+        pt_xy.y = (j - Nuy / 2) * DyInMetres;
+
+        pt_xy = xy_new_to_std_origin (p_pj.ref_pt, pt_xy, p_pj);
+        latlon_t latlon = xy_to_latlon (pt_xy, p_pj);
+
+        int p = j * Nx + i;
+        xyz[3*p+0] = cos (latlon.lon) * cos (latlon.lat);
+        xyz[3*p+1] = sin (latlon.lon) * cos (latlon.lat);
+        xyz[3*p+2] =                    sin (latlon.lat);
+      }
       
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
   elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (unsigned int), ind);
@@ -133,6 +243,8 @@ std::string glgrib_geometry_lambert::md5 () const
 
   MD5_Update (&c, &Nx, sizeof (Nx));
   MD5_Update (&c, &Ny, sizeof (Ny));
+  MD5_Update (&c, &Nux, sizeof (Nux));
+  MD5_Update (&c, &Nuy, sizeof (Nuy));
   MD5_Update (&c, &LaDInDegrees, sizeof (LaDInDegrees));
   MD5_Update (&c, &LoVInDegrees, sizeof (LoVInDegrees));
   MD5_Update (&c, &DxInMetres, sizeof (DxInMetres));
@@ -149,6 +261,8 @@ bool glgrib_geometry_lambert::isEqual (const glgrib_geometry & geom)
       const glgrib_geometry_lambert & g = dynamic_cast<const glgrib_geometry_lambert &>(geom);
       return (Nx           == g.Nx)
           && (Ny           == g.Ny)
+          && (Nux          == g.Nux)
+          && (Nuy          == g.Nuy)
           && (LaDInDegrees == g.LaDInDegrees)
           && (LoVInDegrees == g.LoVInDegrees)
           && (DxInMetres   == g.DxInMetres)

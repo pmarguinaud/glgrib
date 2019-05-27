@@ -17,6 +17,7 @@ static const double a = 6371229.0;
 class latlon_t
 {
 public:
+  latlon_t (double _lon, double _lat) : lon (_lon), lat (_lat) {}
   double lat, lon;
 };
 
@@ -34,10 +35,8 @@ public:
 class proj_t
 {
 public:
-  proj_t (double lon, double lat)
+  proj_t (double lon, double lat) : ref_pt (lon, lat)
   {
-    ref_pt.lon = lon;
-    ref_pt.lat = lat;
     pole       = 1.0;
     kl = pole * sin (ref_pt.lat);
     r_equateur = a * pow (cos (ref_pt.lat), 1.0 - kl) * pow (1.0 + kl, kl) / kl;
@@ -62,10 +61,8 @@ static inline double sign (double a, double b)
 
 static inline latlon_t stlp_rtheta_to_latlon (rtheta_t pt_rtheta, proj_t p_pj)
 {
-  latlon_t pt_coord;
-  pt_coord.lon = p_pj.ref_pt.lon + pt_rtheta.theta / p_pj.kl;
-  pt_coord.lat = p_pj.pole * ((M_PI / 2.0) - 2.0 * atan(pow (pt_rtheta.r / p_pj.r_equateur, 1.0 / p_pj.kl)));
-  return pt_coord;
+  return latlon_t (p_pj.ref_pt.lon + pt_rtheta.theta / p_pj.kl,
+                   p_pj.pole * ((M_PI / 2.0) - 2.0 * atan(pow (pt_rtheta.r / p_pj.r_equateur, 1.0 / p_pj.kl))));
 }
 
 static inline rtheta_t stlp_xy_to_rtheta (xy_t pt_xy, proj_t p_pj)
@@ -79,6 +76,7 @@ static inline rtheta_t stlp_xy_to_rtheta (xy_t pt_xy, proj_t p_pj)
   else
     tatng = atan (-p_pj.pole * (pt_xy.x / pt_xy.y));
   theta = M_PI * sign (1.0, pt_xy.x) * (sign (0.5, p_pj.pole * pt_xy.y) + 0.5) + tatng;
+
   return rtheta_t (r, theta);
 }
 

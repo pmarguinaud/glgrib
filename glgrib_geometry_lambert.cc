@@ -24,8 +24,11 @@ class xy_t
 {
 public:
   xy_t (double _x, double _y) : x (_x), y (_y) {}
-  xy_t () { }
   double x, y;
+  xy_t operator+ (const xy_t & p)
+  {
+    return xy_t (x + p.x, y + p.y);
+  }
 };
 
 class proj_t
@@ -48,6 +51,7 @@ public:
 class rtheta_t
 {
 public:
+  rtheta_t (double _r, double _theta) : r (_r), theta (_theta) {}
   double r, theta;
 };
 
@@ -66,26 +70,16 @@ static inline latlon_t stlp_rtheta_to_latlon (rtheta_t pt_rtheta, proj_t p_pj)
 
 static inline rtheta_t stlp_xy_to_rtheta (xy_t pt_xy, proj_t p_pj)
 {
-  rtheta_t pt_rtheta;
-  pt_rtheta.r = sqrt(pt_xy.x * pt_xy.x + pt_xy.y * pt_xy.y);
+  double r = sqrt(pt_xy.x * pt_xy.x + pt_xy.y * pt_xy.y);
   double tatng;
-
+  double theta;
 
   if (pt_xy.y == 0.0) 
-    {
-      if (pt_xy.x == 0.0) 
-        tatng = M_PI;
-      else 
-        tatng = sign (M_PI / 2.0, -p_pj.pole * pt_xy.x);
-    }
+    tatng = (pt_xy.x == 0.0) ? M_PI : sign (M_PI / 2.0, -p_pj.pole * pt_xy.x);
   else
-    {
-      tatng = atan (-p_pj.pole * (pt_xy.x / pt_xy.y));
-    }
-
-  pt_rtheta.theta = M_PI * sign (1.0, pt_xy.x) * (sign (0.5, p_pj.pole * pt_xy.y) + 0.5) + tatng;
-
-  return pt_rtheta;
+    tatng = atan (-p_pj.pole * (pt_xy.x / pt_xy.y));
+  theta = M_PI * sign (1.0, pt_xy.x) * (sign (0.5, p_pj.pole * pt_xy.y) + 0.5) + tatng;
+  return rtheta_t (r, theta);
 }
 
 static inline latlon_t xy_to_latlon (xy_t pt_xy, proj_t p_pj)
@@ -102,10 +96,9 @@ static inline double dist_2ref (latlon_t pt_coord, latlon_t ref_coord)
 
 static inline rtheta_t stpl_latlon_to_rtheta (latlon_t pt_coord, proj_t p_pj)
 {
-  rtheta_t pt_rtheta;
-  pt_rtheta.r = p_pj.r_equateur * pow (tan ((M_PI / 4.0) - ((p_pj.pole * pt_coord.lat) / 2.0)), p_pj.kl);
-  pt_rtheta.theta = p_pj.kl * dist_2ref (pt_coord, p_pj.ref_pt);
-  return pt_rtheta;
+  return rtheta_t 
+	  (p_pj.r_equateur * pow (tan ((M_PI / 4.0) - ((p_pj.pole * pt_coord.lat) / 2.0)), p_pj.kl),
+           p_pj.kl * dist_2ref (pt_coord, p_pj.ref_pt));
 }
 
 static inline xy_t stlp_rtheta_to_xy (rtheta_t pt_rtheta, proj_t p_pj)
@@ -120,11 +113,7 @@ static inline xy_t latlon_to_xy (latlon_t pt_coord, proj_t p_pj)
 
 static inline xy_t xy_new_to_std_origin (latlon_t new_origin_coord, xy_t pt_xy_in_new_origin, proj_t p_pj)
 {
-  xy_t pt_xy_in_std_origin;
-  xy_t n_o_pt_xy = latlon_to_xy (new_origin_coord, p_pj);
-  pt_xy_in_std_origin.x = pt_xy_in_new_origin.x+n_o_pt_xy.x;
-  pt_xy_in_std_origin.y = pt_xy_in_new_origin.y+n_o_pt_xy.y;
-  return pt_xy_in_std_origin;
+  return pt_xy_in_new_origin + latlon_to_xy (new_origin_coord, p_pj);
 }
 
 void glgrib_geometry_lambert::gencoords (float * px, float * py) const
@@ -185,10 +174,7 @@ void glgrib_geometry_lambert::init (codes_handle * h, const float orography)
   for (int j = 0; j < Ny; j++)
     for (int i = 0; i < Nx; i++)
       {
-        xy_t pt_xy;
-
-        pt_xy.x = (i - Nux / 2) * DxInMetres;
-        pt_xy.y = (j - Nuy / 2) * DyInMetres;
+        xy_t pt_xy ((i - Nux / 2) * DxInMetres, (j - Nuy / 2) * DyInMetres);
 
         pt_xy = xy_new_to_std_origin (p_pj.ref_pt, pt_xy, p_pj);
         latlon_t latlon = xy_to_latlon (pt_xy, p_pj);

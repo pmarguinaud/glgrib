@@ -32,6 +32,18 @@ public:
   }
 };
 
+class rtheta_t
+{
+public:
+  rtheta_t (double _r, double _theta) : r (_r), theta (_theta) {}
+  double r, theta;
+};
+
+static inline double sign (double a, double b)
+{
+  return b > 0 ? +fabs (a) : -fabs (a);
+}
+
 class proj_t
 {
 public:
@@ -45,44 +57,32 @@ public:
   double pole;
   double r_equateur;
   double kl;
+
+  latlon_t stlp_rtheta_to_latlon (const rtheta_t & pt_rtheta)
+  {
+    return latlon_t (ref_pt.lon + pt_rtheta.theta / kl,
+                     pole * ((M_PI / 2.0) - 2.0 * atan(pow (pt_rtheta.r / r_equateur, 1.0 / kl))));
+  }
+  rtheta_t stlp_xy_to_rtheta (const xy_t & pt_xy)
+  {
+    double r = sqrt(pt_xy.x * pt_xy.x + pt_xy.y * pt_xy.y);
+    double tatng;
+    double theta;
+  
+    if (pt_xy.y == 0.0) 
+      tatng = (pt_xy.x == 0.0) ? M_PI : sign (M_PI / 2.0, -pole * pt_xy.x);
+    else
+      tatng = atan (-pole * (pt_xy.x / pt_xy.y));
+    theta = M_PI * sign (1.0, pt_xy.x) * (sign (0.5, pole * pt_xy.y) + 0.5) + tatng;
+  
+    return rtheta_t (r, theta);
+  }
+
 };
-
-class rtheta_t
-{
-public:
-  rtheta_t (double _r, double _theta) : r (_r), theta (_theta) {}
-  double r, theta;
-};
-
-static inline double sign (double a, double b)
-{
-  return b > 0 ? +fabs (a) : -fabs (a);
-}
-
-static inline latlon_t stlp_rtheta_to_latlon (rtheta_t pt_rtheta, proj_t p_pj)
-{
-  return latlon_t (p_pj.ref_pt.lon + pt_rtheta.theta / p_pj.kl,
-                   p_pj.pole * ((M_PI / 2.0) - 2.0 * atan(pow (pt_rtheta.r / p_pj.r_equateur, 1.0 / p_pj.kl))));
-}
-
-static inline rtheta_t stlp_xy_to_rtheta (xy_t pt_xy, proj_t p_pj)
-{
-  double r = sqrt(pt_xy.x * pt_xy.x + pt_xy.y * pt_xy.y);
-  double tatng;
-  double theta;
-
-  if (pt_xy.y == 0.0) 
-    tatng = (pt_xy.x == 0.0) ? M_PI : sign (M_PI / 2.0, -p_pj.pole * pt_xy.x);
-  else
-    tatng = atan (-p_pj.pole * (pt_xy.x / pt_xy.y));
-  theta = M_PI * sign (1.0, pt_xy.x) * (sign (0.5, p_pj.pole * pt_xy.y) + 0.5) + tatng;
-
-  return rtheta_t (r, theta);
-}
 
 static inline latlon_t xy_to_latlon (xy_t pt_xy, proj_t p_pj)
 {
-  return stlp_rtheta_to_latlon (stlp_xy_to_rtheta (pt_xy, p_pj),p_pj);
+  return p_pj.stlp_rtheta_to_latlon (p_pj.stlp_xy_to_rtheta (pt_xy));
 }
 
 static inline double dist_2ref (latlon_t pt_coord, latlon_t ref_coord)

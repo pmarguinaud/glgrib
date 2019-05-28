@@ -71,6 +71,26 @@ void glgrib_view::setViewport (int w, int h)
   height = h;
 }
 
+int glgrib_view::get_screen_coords_from_latlon (float * xpos, float * ypos, float lat, float lon) const
+{
+
+  lat = glm::radians (lat); 
+  lon = glm::radians (lon);
+
+  float coslon = glm::cos (lon), sinlon = glm::sin (lon);
+  float coslat = glm::cos (lat), sinlat = glm::sin (lat);
+
+  glm::vec3 xyz = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
+
+  glm::vec3 pos = ps.current ()->project (xyz);
+  pos = project (pos);
+
+  *xpos = pos.x;
+  *ypos = pos.y;
+
+  return 1;
+}
+
 int glgrib_view::get_latlon_from_screen_coords (float xpos, float ypos, float * lat, float * lon) const
 {
   glm::vec3 pos;

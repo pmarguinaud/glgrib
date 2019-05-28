@@ -492,7 +492,12 @@ void glgrib_window::centerLightAtCursorPos ()
 void glgrib_window::centerViewAtCursorPos ()
 {
   if (get_latlon_from_cursor (&scene.view.opts.lat, &scene.view.opts.lon))
-    glfwSetCursorPos (window, opts.width / 2., opts.height / 2.);
+    {
+      scene.view.calcMVP ();
+      float xpos, ypos;
+      scene.view.get_screen_coords_from_latlon (&xpos, &ypos, scene.view.opts.lat, scene.view.opts.lon);
+      glfwSetCursorPos (window, xpos, ypos);
+    }
 }
 
 void glgrib_window::scroll (double xoffset, double yoffset)

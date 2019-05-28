@@ -37,6 +37,7 @@ public:
   glm::vec3 intersect_sphere (const double &, const double &, const glm::vec3 &, const float &) const;
 
   int get_latlon_from_screen_coords (float, float, float *, float *) const;
+  int get_screen_coords_from_latlon (float *, float *, float, float) const;
 
   void nextProjection () { ps.next (); calcMVP (); }
   glgrib_projection * getProjection () const { return ps.current (); }

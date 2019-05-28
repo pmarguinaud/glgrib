@@ -19,6 +19,7 @@ typedef struct
 typedef struct
 {
   latlon_t ref_pt;
+  latlon_t cen_pt;
   double pole;
   double r_equateur;
   double kl;
@@ -74,15 +75,22 @@ latlon_t xy_to_latlon (xy_t pt_xy, proj_t p_pj)
 double dist_2ref (latlon_t pt_coord, latlon_t ref_coord)
 {
   double z = pt_coord.lon - ref_coord.lon;
+  printf (" pt_coord.lon = %f, ref_coord.lon = %f\n", pt_coord.lon, ref_coord.lon);
+  printf (" z = %f\n", z);
   z = z - sign (M_PI, z) * (1.0 + sign (1.0, fabs (z) - M_PI));
+  printf (" z = %f\n", z);
+  printf (" dist = %f\n", -z * sign (1.0, z - M_PI));
   return -z * sign (1.0, z - M_PI);
 }
 
 rteta_t stpl_latlon_to_rteta (latlon_t pt_coord, proj_t p_pj)
 {
   rteta_t pt_rteta;
+  printf (" pt_coord = %f, %f\n", pt_coord.lon, pt_coord.lat);
+  printf (" p_pj.ref_pt.lon = %f\n", p_pj.ref_pt.lon);
   pt_rteta.r = p_pj.r_equateur * pow (tan ((M_PI / 4.0) - ((p_pj.pole * pt_coord.lat) / 2.0)), p_pj.kl);
   pt_rteta.teta = p_pj.kl * dist_2ref (pt_coord, p_pj.ref_pt);
+  printf (" pt_rteta = %f, %f\n", pt_rteta.r, pt_rteta.teta);
   return pt_rteta;
 }
 
@@ -104,6 +112,8 @@ xy_t xy_new_to_std_origin (latlon_t new_origin_coord, xy_t pt_xy_in_new_origin, 
 {
   xy_t pt_xy_in_std_origin;
   xy_t n_o_pt_xy = latlon_to_xy (new_origin_coord, p_pj);
+  printf (" new_origin_coord = %f, %f\n", rad2deg * new_origin_coord.lon, rad2deg * new_origin_coord.lat);
+  printf (" n_o_pt_xy = %f, %f\n", n_o_pt_xy.x, n_o_pt_xy.y);
   pt_xy_in_std_origin.x = pt_xy_in_new_origin.x+n_o_pt_xy.x;
   pt_xy_in_std_origin.y = pt_xy_in_new_origin.y+n_o_pt_xy.y;
   return pt_xy_in_std_origin;
@@ -116,24 +126,36 @@ int main (int argc, char * argv[])
   proj_t p_pj;
   latlon_t latlon;
 
-  p_pj.ref_pt.lon = deg2rad *  2.0;
-  p_pj.ref_pt.lat = deg2rad * 46.7;
-  p_pj.pole       = 1.0;
+  p_pj.ref_pt.lon = deg2rad *  -80.0;
+  p_pj.ref_pt.lat = deg2rad *  -50.0;
+  p_pj.cen_pt.lon = deg2rad *  -70.0;
+  p_pj.cen_pt.lat = deg2rad *  -50.0;
+  p_pj.pole       = -1.0;
 
   p_pj.kl = p_pj.pole * sin (p_pj.ref_pt.lat);
   p_pj.r_equateur = a * pow (cos (p_pj.ref_pt.lat), 1.0 - p_pj.kl) * pow (1.0 + p_pj.kl, p_pj.kl) / p_pj.kl;
 
+  printf (" p_pj.kl = %f\n", p_pj.kl);
+  printf (" p_pj.r_equateur = %f\n", p_pj.r_equateur);
+
   pt_xy.x = atof (argv[1]);
   pt_xy.y = atof (argv[2]);
 
+  printf (" pt_xy.x = %f, pt_xy.y = %f\n", pt_xy.x, pt_xy.y);
+
+
   pt_xy = xy_new_to_std_origin (p_pj.ref_pt, pt_xy, p_pj);
+
+  printf (" pt_xy.x = %f, pt_xy.y = %f\n", pt_xy.x, pt_xy.y);
+
+  return 0;
 
   latlon = xy_to_latlon (pt_xy, p_pj);
 
-  if (latlon.lon < 0)
-    latlon.lon += 2 * M_PI;
+//if (latlon.lon < 0)
+//  latlon.lon += 2 * M_PI;
 
-  printf (" lat = %20.10f, lon = %20.10f\n", rad2deg * latlon.lat, rad2deg * latlon.lon);
+  printf (" lon = %20.10f, lat = %20.10f\n", rad2deg * latlon.lon, rad2deg * latlon.lat);
 
 
   return 0;

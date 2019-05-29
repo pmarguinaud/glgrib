@@ -10,6 +10,40 @@
 class glgrib_geometry_lambert : public glgrib_geometry
 {
 public:
+  class sampler: public glgrib_geometry::sampler
+  {
+  public:
+    sampler (const int lev, const glgrib_geometry_lambert * g) : geom (g) { level = lev; }
+    virtual int index () const
+    {
+      return jglo;
+    }
+    virtual bool next () 
+    {
+      jglo++;
+      jlon++;
+      if (jlon >= geom->Nx)
+        {
+          jlon = 0;
+	  jlat++;
+	}
+      return jlat < geom->Ny;
+    }
+    virtual bool defined () const
+    {
+      if (jlat % level != 0)
+        return false;
+      if (jlon % level != 0)
+        return false;
+      return true;
+    }
+  private:
+    const glgrib_geometry_lambert * geom = NULL;
+    int jglo = 0;
+    int jlat = 0;
+    int jlon = 0;
+  };
+
   static const double rad2deg;
   static const double deg2rad;
   static const double a;
@@ -120,11 +154,16 @@ public:
   virtual void gencoords (float *, float *) const;
   virtual int size () const;
   virtual ~glgrib_geometry_lambert ();
+  virtual glgrib_geometry::sampler * newSampler (const int level) const
+  {
+    return new sampler (level, this);
+  }
 private:
   long int Nx, Ny, Nux, Nuy, projectionCentreFlag;
   double LaDInDegrees, LoVInDegrees, DxInMetres, DyInMetres;
   proj_t p_pj;
   xy_t center_xy;
+  friend class sampler;
 };
 
 #endif

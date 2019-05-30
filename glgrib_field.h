@@ -41,19 +41,11 @@ public:
 class glgrib_field : public glgrib_world
 {
 public:
-  glgrib_field * clone () const;
-  glgrib_field & operator= (const glgrib_field &);
-  glgrib_field () { }
-  glgrib_field (const glgrib_field &);
-  void init (const glgrib_options_field &, int = 0);
-  virtual glgrib_program_kind get_program_kind () const 
-    { 
-      return GLGRIB_PROGRAM_GRADIENT_FLAT_SCALE;
-    }
+  virtual glgrib_field * clone () const  = 0;
+  virtual void init (const glgrib_options_field &, int = 0) = 0;
   virtual bool use_alpha () { return false; }
-  virtual void render (const glgrib_view *) const;
   void setPalette (const std::string & p) { dopts.palette = get_palette_by_name (p); }
-  virtual ~glgrib_field ();
+  virtual ~glgrib_field () {}
   glgrib_field_display_options dopts;
   virtual std::vector<float> getValue (int index) const 
   { 
@@ -82,6 +74,8 @@ public:
   virtual float getNormedMinValue () const 
   {
     std::vector<float> val = getMinValue ();
+    if (val.size () == 1)
+      return val[0];
     float n = 0.0f;
     for (int i = 0; i < val.size (); i++)
       n += val[i] * val[i];
@@ -90,12 +84,14 @@ public:
   virtual float getNormedMaxValue () const 
   {
     std::vector<float> val = getMaxValue ();
+    if (val.size () == 1)
+      return val[0];
     float n = 0.0f;
     for (int i = 0; i < val.size (); i++)
       n += val[i] * val[i];
     return sqrt (n);
   }
-private:
+protected:
   std::vector<glgrib_field_metadata> meta;
   std::vector<glgrib_field_float_buffer_ptr> values;
 };

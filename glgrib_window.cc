@@ -10,6 +10,7 @@
 #include <GLFW/glfw3.h>
 #include "glgrib_window.h"
 #include "glgrib_png.h"
+#include "glgrib_field_scalar.h"
 #include <iostream>
 
 static double current_time ()
@@ -202,7 +203,7 @@ void glgrib_window::load_field (const glgrib_options_field & opts, int rank)
 
   makeCurrent ();
 
-  glgrib_field * f = new glgrib_field ();
+  glgrib_field * f = new glgrib_field_scalar ();
   f->init (opts);
 
   if (rank > scene.fieldlist.size () - 1)

@@ -1,5 +1,6 @@
 #include "glgrib_scene.h"
 #include "glgrib_opengl.h"
+#include "glgrib_field_scalar.h"
 
 #include <stdio.h>
 #include <sys/time.h>
@@ -8,8 +9,19 @@
 glgrib_scene & glgrib_scene::operator= (const glgrib_scene & other)
 {
   d = other.d;
+
+  for (int i = 0; i < fieldlist.size (); i++)
+    if (fieldlist[i] != NULL)
+      delete fieldlist[i];
+
+  fieldlist.clear ();
+
   for (int i = 0; i < other.fieldlist.size (); i++)
-    fieldlist.push_back (other.fieldlist[i]->clone ());
+    if (other.fieldlist[i] == NULL)
+      fieldlist.push_back (NULL);
+    else
+      fieldlist.push_back (other.fieldlist[i]->clone ());
+
 }
 
 glgrib_scene::~glgrib_scene () 
@@ -127,7 +139,7 @@ void glgrib_scene::update ()
 	      int size = d.opts.field[i].path.size ();
 	      advance = d.movie_index < size;
 	      int slot = advance ? d.movie_index : size-1;
-              fld = new glgrib_field ();
+              fld = new glgrib_field_scalar ();
               fld->init (d.opts.field[i], slot);
 	      fieldlist[i] = fld;
 	    }
@@ -166,7 +178,7 @@ void glgrib_scene::init (const glgrib_options & o)
 
       if (defined)
         {
-          fld = new glgrib_field ();
+          fld = new glgrib_field_scalar ();
           fld->init (d.opts.field[i]);
         }
 

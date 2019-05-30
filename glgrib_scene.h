@@ -35,7 +35,10 @@ public:
     }
   glgrib_field_display_options * getCurrentFieldOpts () 
     { 
-      return d.currentFieldRank < fieldlist.size () ? &fieldlist[d.currentFieldRank]->dopts : NULL; 
+      if (d.currentFieldRank < fieldlist.size ())
+        if (fieldlist[d.currentFieldRank] != NULL)
+          return &fieldlist[d.currentFieldRank]->dopts;
+      return NULL;
     }
 
   void getLightPos (float * lon, float * lat) const

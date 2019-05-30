@@ -9,6 +9,7 @@
 
 #include <string>
 #include <memory>
+#include <vector>
 
 
 class glgrib_field_float_buffer
@@ -53,13 +54,49 @@ public:
   void setPalette (const std::string & p) { dopts.palette = get_palette_by_name (p); }
   virtual ~glgrib_field ();
   glgrib_field_display_options dopts;
-  virtual float getValue (int index) const { return values != NULL ? values->data ()[index] : 9999.0f; }
-  virtual void saveSettings () const { dopts.palette.save (meta); }
-  virtual float getMaxValue () const { return meta.valmax; }
-  virtual float getMinValue () const { return meta.valmin; }
+  virtual std::vector<float> getValue (int index) const 
+  { 
+    std::vector<float> val;
+    for (int i = 0; i < values.size (); i++)
+      val.push_back (values[i] != NULL ? values[i]->data ()[index] : 9999.0f);
+    return val;
+  }
+  virtual void saveSettings () const 
+  { 
+    for (int i = 0; i < meta.size (); i++)
+      dopts.palette.save (meta[i]); 
+  }
+  virtual std::vector<float> getMaxValue () const 
+  { 
+    std::vector<float> val; 
+    for (int i = 0; i < meta.size (); i++) val.push_back (meta[i].valmax); 
+    return val; 
+  }
+  virtual std::vector<float> getMinValue () const 
+  { 
+    std::vector<float> val; 
+    for (int i = 0; i < meta.size (); i++) val.push_back (meta[i].valmin); 
+    return val; 
+  }
+  virtual float getNormedMinValue () const 
+  {
+    std::vector<float> val = getMinValue ();
+    float n = 0.0f;
+    for (int i = 0; i < val.size (); i++)
+      n += val[i] * val[i];
+    return sqrt (n);
+  }
+  virtual float getNormedMaxValue () const 
+  {
+    std::vector<float> val = getMaxValue ();
+    float n = 0.0f;
+    for (int i = 0; i < val.size (); i++)
+      n += val[i] * val[i];
+    return sqrt (n);
+  }
 private:
-  glgrib_field_metadata meta;
-  glgrib_field_float_buffer_ptr values = NULL;
+  std::vector<glgrib_field_metadata> meta;
+  std::vector<glgrib_field_float_buffer_ptr> values;
 };
 
 #endif

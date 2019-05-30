@@ -61,7 +61,7 @@ glgrib_field & glgrib_field::operator= (const glgrib_field & field)
       else
        {
          cleanup ();
-	 values = NULL;
+	 values.clear ();
          ready_ = false;
        }
     }
@@ -72,12 +72,14 @@ void glgrib_field::init (const glgrib_options_field & opts, int slot)
   unsigned char * col;
 
   float * data;
-  glgrib_load (opts.path[slot], &data, &meta);
+  glgrib_field_metadata meta1;
+  glgrib_load (opts.path[slot], &data, &meta1);
+  meta.push_back (meta1);
 
   dopts.scale = opts.scale[slot];
 
   if (opts.palette[slot] == "default")
-    dopts.palette = get_palette_by_meta (meta);
+    dopts.palette = get_palette_by_meta (meta1);
   else
     dopts.palette = get_palette_by_name (opts.palette[slot]);
 
@@ -88,10 +90,10 @@ void glgrib_field::init (const glgrib_options_field & opts, int slot)
   col = (unsigned char *)malloc (numberOfColors * geometry->numberOfPoints * sizeof (unsigned char));
 
   for (int i = 0; i < geometry->numberOfPoints; i++)
-    if (data[i] == meta.valmis)
+    if (data[i] == meta1.valmis)
       col[i] = 0;
     else
-      col[i] = 1 + (int)(254 * (data[i] - meta.valmin)/(meta.valmax - meta.valmin));
+      col[i] = 1 + (int)(254 * (data[i] - meta1.valmin)/(meta1.valmax - meta1.valmin));
 
   colorbuffer = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints * sizeof (unsigned char), col);
 
@@ -99,12 +101,17 @@ void glgrib_field::init (const glgrib_options_field & opts, int slot)
 
   free (col);
 
-  values = NULL;
+  values.clear ();
 
   if (opts.no_value_pointer)
-    free (data);
+    {
+      values.push_back (NULL);
+      free (data);
+    }
   else
-    values = new_glgrib_field_float_buffer_ptr (data);
+    {
+      values.push_back (new_glgrib_field_float_buffer_ptr (data));
+    }
 
 
   setReady ();
@@ -125,11 +132,11 @@ void glgrib_field::render (const glgrib_view * view) const
   p.setRGBA255 (program->programID);
 
   glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
-  glUniform1f (glGetUniformLocation (program->programID, "valmin"), meta.valmin);
-  glUniform1f (glGetUniformLocation (program->programID, "valmax"), meta.valmax);
+  glUniform1f (glGetUniformLocation (program->programID, "valmin"), getNormedMinValue ());
+  glUniform1f (glGetUniformLocation (program->programID, "valmax"), getNormedMaxValue ());
 
-  float palmax = p.hasMax () ? p.getMax () : meta.valmax;
-  float palmin = p.hasMin () ? p.getMin () : meta.valmin;
+  float palmax = p.hasMax () ? p.getMax () : getNormedMinValue ();
+  float palmin = p.hasMin () ? p.getMin () : getNormedMaxValue ();
 
   glUniform1f (glGetUniformLocation (program->programID, "palmin"), palmin);
   glUniform1f (glGetUniformLocation (program->programID, "palmax"), palmax);

@@ -75,8 +75,8 @@ void glgrib_scene::display () const
   if (fld != NULL)
     colorbar.render (MVP_L, 
                      fld->dopts.palette, 
-                     fld->getMinValue (), 
-                     fld->getMaxValue ());
+                     fld->getNormedMinValue (), 
+                     fld->getNormedMaxValue ());
 
   str.render (MVP_R);
 

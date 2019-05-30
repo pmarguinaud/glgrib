@@ -283,8 +283,14 @@ void glgrib_window::scale_palette_up ()
   if (fld == NULL)
     return;
   glgrib_field_display_options * fopt = scene.getCurrentFieldOpts ();
-  if (! fopt->palette.hasMin ()) fopt->palette.min = fld->getMinValue ();
-  if (! fopt->palette.hasMax ()) fopt->palette.max = fld->getMaxValue ();
+  if (! fopt->palette.hasMin ()) 
+    {
+      fopt->palette.min = fld->getNormedMinValue ();
+    }
+  if (! fopt->palette.hasMax ()) 
+    {
+      fopt->palette.max = fld->getNormedMaxValue ();
+    }
   float d = fopt->palette.max - fopt->palette.min;
   fopt->palette.min -= d * 0.025;
   fopt->palette.max += d * 0.025;
@@ -296,8 +302,14 @@ void glgrib_window::scale_palette_down ()
   if (fld == NULL)
     return;
   glgrib_field_display_options * fopt = scene.getCurrentFieldOpts ();
-  if (! fopt->palette.hasMin ()) fopt->palette.min = fld->getMinValue ();
-  if (! fopt->palette.hasMax ()) fopt->palette.max = fld->getMaxValue ();
+  if (! fopt->palette.hasMin ()) 
+    {
+      fopt->palette.min = fld->getNormedMinValue ();
+    }
+  if (! fopt->palette.hasMax ()) 
+    {
+      fopt->palette.max = fld->getNormedMaxValue ();
+    }
   float d = fopt->palette.max - fopt->palette.min;
   fopt->palette.min += d * 0.025;
   fopt->palette.max -= d * 0.025;
@@ -423,22 +435,31 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
   float lat, lon;
   if (get_latlon_from_cursor (&lat, &lon))
     {
-      char title[128];
+      std::string title;
       const glgrib_field * field = scene.getCurrentField ();
       if (field)
         {
           int jglo = field->geometry ? field->geometry->latlon2index (lat, lon) : -1;
 	  if (jglo >= 0)
             {
-              float value = field->getValue (jglo);
-              sprintf (title, "%6.2f %6.2f %6.2g", lat, lon, value);
+              char tmp[128];
+              std::vector<float> value = field->getValue (jglo);
+              sprintf (tmp, "%6.2f %6.2f", lat, lon);
+              title = std::string (tmp);
+              for (int i = 0; i < value.size (); i++)
+                {
+                  sprintf (tmp, " %6.2g", value[i]);
+                  title = title + std::string (tmp);
+                }
 	    }
 	  else
             {
-              sprintf (title, "%6.2f %6.2f", lat, lon);
+              char tmp[128];
+              sprintf (tmp, "%6.2f %6.2f", lat, lon);
+              title = std::string (tmp);
 	    }
-	  scene.setMessage (std::string (title));
-          glfwSetWindowTitle (window, title);
+	  scene.setMessage (title);
+          glfwSetWindowTitle (window, title.c_str ());
 	  return;
         }
     }

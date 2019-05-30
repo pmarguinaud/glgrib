@@ -5,7 +5,6 @@
 
 void glgrib_polygon::def_from_xyz_col_ind 
   (glgrib_opengl_buffer_ptr vertexbuffer, 
-   glgrib_opengl_buffer_ptr colorbuffer, 
    glgrib_opengl_buffer_ptr elementbuffer)
 {
 
@@ -15,13 +14,6 @@ void glgrib_polygon::def_from_xyz_col_ind
   vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
-
-  if (colorbuffer && colorbuffer->allocated ())
-    {
-      colorbuffer->bind (GL_ARRAY_BUFFER);
-      glEnableVertexAttribArray (1); 
-      glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, numberOfColors * sizeof (unsigned char), NULL);
-    }
 
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 

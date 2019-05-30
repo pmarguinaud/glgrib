@@ -12,7 +12,7 @@ glgrib_coastlines & glgrib_coastlines::operator= (const glgrib_coastlines & coas
     {
       glgrib_polygon::operator= (coastlines);
       ready_ = false;
-      def_from_xyz_col_ind (vertexbuffer, colorbuffer, elementbuffer);
+      def_from_xyz_col_ind (vertexbuffer, elementbuffer);
       setReady ();
     }
 }
@@ -109,7 +109,7 @@ void glgrib_coastlines::init (const glgrib_options_coastlines & o)
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
   elementbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfLines * sizeof (unsigned int), ind);
 
-  def_from_xyz_col_ind (vertexbuffer, colorbuffer, elementbuffer);
+  def_from_xyz_col_ind (vertexbuffer, elementbuffer);
 
   free (ind);
   free (xyz);

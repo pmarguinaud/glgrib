@@ -186,10 +186,12 @@ void glgrib_window::set_field_palette (const std::string & p)
 
 void glgrib_window::remove_field (int rank)
 {
-  glgrib_field F;
+  glgrib_field * f = NULL;
   if ((rank < 0) || (rank > scene.fieldlist.size ()-1))
     return;
-  scene.fieldlist[rank] = F;
+  if (scene.fieldlist[rank] != NULL)
+    delete scene.fieldlist[rank];
+  scene.fieldlist[rank] = f;
 }
 
 void glgrib_window::load_field (const glgrib_options_field & opts, int rank)
@@ -200,17 +202,13 @@ void glgrib_window::load_field (const glgrib_options_field & opts, int rank)
 
   makeCurrent ();
 
-  glgrib_field F;
-  F.init (opts);
+  glgrib_field * f = new glgrib_field ();
+  f->init (opts);
 
   if (rank > scene.fieldlist.size () - 1)
-    {
-      scene.fieldlist.push_back (F);
-    }
+    scene.fieldlist.push_back (f);
   else
-    {
-      scene.fieldlist[rank] = F;
-    }
+    scene.fieldlist[rank] = f;
   
 }
 
@@ -352,13 +350,13 @@ void glgrib_window::toggle_hide_field ()
 void glgrib_window::hide_all_fields ()
 {
   for (int i = 0; i < scene.fieldlist.size (); i++)
-    scene.fieldlist[i].hide ();
+    scene.fieldlist[i]->hide ();
 }
 
 void glgrib_window::show_all_fields ()
 {
   for (int i = 0; i < scene.fieldlist.size (); i++)
-    scene.fieldlist[i].show ();
+    scene.fieldlist[i]->show ();
 }
 
 int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)

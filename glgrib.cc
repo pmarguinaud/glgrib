@@ -25,10 +25,7 @@ int main (int argc, char * argv[])
 
   palette_directory = opts.palette.directory;
 
-  glgrib_window * gwindow = new glgrib_window ();
-  glgrib_scene SS;
-  std::cout << " SS.str = " << &SS.str << " SS.str.ready = " << SS.str.ready << std::endl;
-  gwindow->scene = SS;
+  glgrib_window * gwindow;
 
   if (opts.window.offscreen)
     gwindow = new glgrib_window_offscreen (opts);

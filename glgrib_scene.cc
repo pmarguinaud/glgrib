@@ -5,23 +5,18 @@
 #include <sys/time.h>
 
 
-using namespace glm;
-
 glgrib_scene & glgrib_scene::operator= (const glgrib_scene & other)
 {
   d = other.d;
-  colorbar = other.colorbar;
-  str = other.str;
-  fieldlist = other.fieldlist;
-//for (int i = 0; i < fieldlist.size (); i++)
-//  fieldlist.push_back (fieldlist[i]->clone ());
+  for (int i = 0; i < other.fieldlist.size (); i++)
+    fieldlist.push_back (other.fieldlist[i]->clone ());
 }
 
 glgrib_scene::~glgrib_scene () 
 {
-//for (int i = 0; i < fieldlist.size (); i++)
-//  if (fieldlist[i] != NULL)
-//    delete fieldlist[i];
+  for (int i = 0; i < fieldlist.size (); i++)
+    if (fieldlist[i] != NULL)
+      delete fieldlist[i];
 }
 
 void glgrib_scene::setLightShader (GLuint programID) const
@@ -38,7 +33,7 @@ void glgrib_scene::setLightShader (GLuint programID) const
           float sinlon = sin (deg2rad * d.light.lon);
           float coslat = cos (deg2rad * d.light.lat);
           float sinlat = sin (deg2rad * d.light.lat);
-	  glm::vec3 lightDir = vec3 (coslon * coslat, sinlon * coslat, sinlat);
+	  glm::vec3 lightDir = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
           glUniform3fv (glGetUniformLocation (programID, "lightDir"), 
                         1, &lightDir[0]);
         }
@@ -74,7 +69,7 @@ void glgrib_scene::display () const
 
   for (int i = 0; i < fieldlist.size (); i++)
     {
-      const glgrib_field * fld = &fieldlist[i];
+      const glgrib_field * fld = fieldlist[i];
       if (fld == NULL)
         continue;
       if (! fld->isReady ())
@@ -90,14 +85,14 @@ void glgrib_scene::display () const
     }
 
   const glgrib_field * fld = d.currentFieldRank < fieldlist.size () 
-                           ? &fieldlist[d.currentFieldRank] : NULL;
+                           ? fieldlist[d.currentFieldRank] : NULL;
   if (fld != NULL)
-    colorbar.render (d.MVP_L, 
+    d.colorbar.render (d.MVP_L, 
                        fld->dopts.palette, 
                        fld->getNormedMinValue (), 
                        fld->getNormedMaxValue ());
 
-  str.render (d.MVP_R);
+  d.str.render (d.MVP_R);
 
 
 }
@@ -125,14 +120,15 @@ void glgrib_scene::update ()
 
       for (int i = 0; i < fieldlist.size (); i++)
         {
-          glgrib_field fld;
+          glgrib_field * fld = NULL;
           bool defined = d.opts.field[i].path.size () != 0;
 	  if (defined)
             {
 	      int size = d.opts.field[i].path.size ();
 	      advance = d.movie_index < size;
 	      int slot = advance ? d.movie_index : size-1;
-              fld.init (d.opts.field[i], slot);
+              fld = new glgrib_field ();
+              fld->init (d.opts.field[i], slot);
 	      fieldlist[i] = fld;
 	    }
 	}
@@ -165,12 +161,13 @@ void glgrib_scene::init (const glgrib_options & o)
 
   for (int i = 0; i < d.opts.field.size (); i++)
     {
-      glgrib_field fld;
+      glgrib_field * fld = NULL;
       bool defined = d.opts.field[i].path.size () != 0;
 
       if (defined)
         {
-          fld.init (d.opts.field[i]);
+          fld = new glgrib_field ();
+          fld->init (d.opts.field[i]);
         }
 
       fieldlist.push_back (fld);
@@ -183,9 +180,9 @@ void glgrib_scene::init (const glgrib_options & o)
   if (d.opts.colorbar.on)
     {
       glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
-      str.init (font, std::string (30, ' '), 1.0f, 1.0f, d.opts.font.scale, glgrib_string::NE);
-      str.setColor (d.opts.font.r / 255.0f, d.opts.font.g / 255.0f, d.opts.font.b / 255.0f);
-      colorbar.init (d.opts.colorbar);
+      d.str.init (font, std::string (30, ' '), 1.0f, 1.0f, d.opts.font.scale, glgrib_string::NE);
+      d.str.setColor (d.opts.font.r / 255.0f, d.opts.font.g / 255.0f, d.opts.font.b / 255.0f);
+      d.colorbar.init (d.opts.colorbar);
     }
 
 }

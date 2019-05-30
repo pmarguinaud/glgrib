@@ -31,11 +31,11 @@ public:
 
   glgrib_field * getCurrentField () 
     { 
-      return d.currentFieldRank < fieldlist.size () ? &fieldlist[d.currentFieldRank] : NULL; 
+      return d.currentFieldRank < fieldlist.size () ? fieldlist[d.currentFieldRank] : NULL; 
     }
   glgrib_field_display_options * getCurrentFieldOpts () 
     { 
-      return d.currentFieldRank < fieldlist.size () ? &fieldlist[d.currentFieldRank].dopts : NULL; 
+      return d.currentFieldRank < fieldlist.size () ? &fieldlist[d.currentFieldRank]->dopts : NULL; 
     }
 
   void getLightPos (float * lon, float * lat) const
@@ -61,9 +61,9 @@ public:
 
   void setViewport (int, int);
 
-  void setMessage (const std::string & mess) { str.update (mess); }
+  void setMessage (const std::string & mess) { d.str.update (mess); }
 
-  std::vector<glgrib_field> fieldlist;
+  std::vector<glgrib_field*> fieldlist;
 
   class _data
   {
@@ -76,6 +76,8 @@ public:
       glgrib_grid grid;
       bool rotate_earth = false;
     private:
+      glgrib_colorbar colorbar;
+      glgrib_string str;
       bool movie = false;
       int movie_index = 0;
       double movie_time = 0;
@@ -85,9 +87,6 @@ public:
   };
 
   _data d;
-
-  glgrib_colorbar colorbar;
-  glgrib_string str;
 
 
   private:

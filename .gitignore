@@ -5,3 +5,5 @@
 src
 usr
 big
+.glgrib_history
+*.png

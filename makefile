@@ -40,13 +40,13 @@ test_3l_t1198: glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path ""  \
                --field[0].path t1198c2.2/SURFNEBUL.BASSE.grb --field[1].path t1198c2.2/SURFNEBUL.MOYENN.grb --field[2].path t1198c2.2/SURFNEBUL.HAUTE.grb \
                --field[0].scale                         1.03 --field[1].scale                          1.04 --field[2].scale                         1.05 \
-               --field[0].palette                 cloud_auto --field[1].palette                  cloud_auto --field[2].palette                 cloud_auto 
+               --field[0].palette                      cloud --field[1].palette                       cloud --field[2].palette                      cloud 
 
 test_3l_t1798: glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry t1798/Z.grb --grid.resolution 0 --coastlines.path ""  \
                 --field[0].path t1798/SURFNEBUL.BASSE.grb --field[1].path t1798/SURFNEBUL.MOYENN.grb --field[2].path t1798/SURFNEBUL.HAUTE.grb \
                 --field[0].scale                     1.03 --field[1].scale                      1.04 --field[2].scale                     1.05 \
-                --field[0].palette             cloud_auto --field[1].palette              cloud_auto --field[2].palette             cloud_auto
+                --field[0].palette                  cloud --field[1].palette                   cloud --field[2].palette                  cloud
 
 
 test_offscreen: glgrib.x
@@ -94,3 +94,6 @@ test_aro: ./glgrib.x
 
 test_guyane: ./glgrib.x
 	$(GDB) ./glgrib.x --field\[0\].path ./aro_guyane/SURFTEMPERATURE.grb --field\[0\].palette cold_hot_temp --field\[0\].scale 1.01 --camera.lat 5 --camera.lon -51 --camera.fov 3
+
+
+test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane

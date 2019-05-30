@@ -41,6 +41,7 @@ public:
 class glgrib_field : public glgrib_world
 {
 public:
+  glgrib_field * clone () const;
   glgrib_field & operator= (const glgrib_field &);
   glgrib_field () { }
   glgrib_field (const glgrib_field &);

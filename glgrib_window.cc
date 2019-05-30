@@ -194,30 +194,34 @@ void glgrib_window::remove_field (int rank)
 
 void glgrib_window::load_field (const glgrib_options_field & opts, int rank)
 {
-  glgrib_field F;
 
   if ((rank < 0) || (rank > 11))
     return;
 
   makeCurrent ();
 
+  glgrib_field F;
   F.init (opts);
 
   if (rank > scene.fieldlist.size () - 1)
-    scene.fieldlist.push_back (F);
+    {
+      scene.fieldlist.push_back (F);
+    }
   else
-    scene.fieldlist[rank] = F;
+    {
+      scene.fieldlist[rank] = F;
+    }
   
 }
 
 void glgrib_window::toggle_transform_type ()
 {
-  scene.view.toggleTransformType ();
+  scene.d.view.toggleTransformType ();
 }
 
 void glgrib_window::next_projection ()
 {
-  scene.view.nextProjection ();
+  scene.d.view.nextProjection ();
 }
 
 void glgrib_window::duplicate ()
@@ -364,7 +368,7 @@ int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)
   glfwGetCursorPos (window, &xpos, &ypos);
   ypos = opts.height - ypos;
   
-  return scene.view.get_latlon_from_screen_coords (xpos, ypos, lat, lon);
+  return scene.d.view.get_latlon_from_screen_coords (xpos, ypos, lat, lon);
 }
 
 void glgrib_window::snapshot ()
@@ -512,11 +516,11 @@ void glgrib_window::centerLightAtCursorPos ()
 
 void glgrib_window::centerViewAtCursorPos ()
 {
-  if (get_latlon_from_cursor (&scene.view.opts.lat, &scene.view.opts.lon))
+  if (get_latlon_from_cursor (&scene.d.view.opts.lat, &scene.d.view.opts.lon))
     {
-      scene.view.calcMVP ();
+      scene.d.view.calcMVP ();
       float xpos, ypos;
-      scene.view.get_screen_coords_from_latlon (&xpos, &ypos, scene.view.opts.lat, scene.view.opts.lon);
+      scene.d.view.get_screen_coords_from_latlon (&xpos, &ypos, scene.d.view.opts.lat, scene.d.view.opts.lon);
       glfwSetCursorPos (window, xpos, ypos);
     }
 }
@@ -525,19 +529,19 @@ void glgrib_window::scroll (double xoffset, double yoffset)
 {
   if (yoffset > 0)
     {
-      if (scene.view.opts.fov < 1.0f)
-        scene.view.opts.fov += 0.1f;
+      if (scene.d.view.opts.fov < 1.0f)
+        scene.d.view.opts.fov += 0.1f;
       else
-        scene.view.opts.fov += 1.0f;
+        scene.d.view.opts.fov += 1.0f;
     }
   else 
     {
-      if (scene.view.opts.fov < 1.0f)
-        scene.view.opts.fov -= 0.1f;
+      if (scene.d.view.opts.fov < 1.0f)
+        scene.d.view.opts.fov -= 0.1f;
       else
-        scene.view.opts.fov -= 1.0f;
-      if (scene.view.opts.fov <= 0.0f)
-        scene.view.opts.fov = 0.1f;
+        scene.d.view.opts.fov -= 1.0f;
+      if (scene.d.view.opts.fov <= 0.0f)
+        scene.d.view.opts.fov = 0.1f;
     }
 }
 
@@ -614,8 +618,8 @@ void glgrib_window::create (const glgrib_options & o)
   if (opts.title == "")
     opts.title = std::string ("Window #") + std::to_string (id_);
 
-  scene.light.rotate = o.scene.light.rotate;
-  scene.rotate_earth = o.scene.rotate_earth;
+  scene.d.light.rotate = o.scene.light.rotate;
+  scene.d.rotate_earth = o.scene.rotate_earth;
   if (o.scene.movie)
     scene.setMovie ();
   if (o.scene.light.on)
@@ -693,12 +697,15 @@ glgrib_window * glgrib_window::clone ()
 {
   glgrib_window * w = new glgrib_window ();
 
+  w->scene.operator= (scene);
+
 #define COPY(x) do { w->x = x; } while (0)
   COPY (opts);
 
   w->createGFLWwindow (window); // use already existing context
 
   COPY (scene);                 // copy the scene; invoke operator=
+
 #undef COPY
 
   cloned = false;

@@ -7,20 +7,37 @@
 
 using namespace glm;
 
+glgrib_scene & glgrib_scene::operator= (const glgrib_scene & other)
+{
+  d = other.d;
+  colorbar = other.colorbar;
+  str = other.str;
+  fieldlist = other.fieldlist;
+//for (int i = 0; i < fieldlist.size (); i++)
+//  fieldlist.push_back (fieldlist[i]->clone ());
+}
+
+glgrib_scene::~glgrib_scene () 
+{
+//for (int i = 0; i < fieldlist.size (); i++)
+//  if (fieldlist[i] != NULL)
+//    delete fieldlist[i];
+}
+
 void glgrib_scene::setLightShader (GLuint programID) const
 {
   int lightid = glGetUniformLocation (programID, "light");
   
   if (lightid != -1)
     {
-      glUniform1i (lightid, light.on);
-      if (light.on)
+      glUniform1i (lightid, d.light.on);
+      if (d.light.on)
         {
           const double deg2rad = M_PI / 180.0;
-          float coslon = cos (deg2rad * light.lon);
-          float sinlon = sin (deg2rad * light.lon);
-          float coslat = cos (deg2rad * light.lat);
-          float sinlat = sin (deg2rad * light.lat);
+          float coslon = cos (deg2rad * d.light.lon);
+          float sinlon = sin (deg2rad * d.light.lon);
+          float coslat = cos (deg2rad * d.light.lat);
+          float sinlat = sin (deg2rad * d.light.lat);
 	  glm::vec3 lightDir = vec3 (coslon * coslat, sinlon * coslat, sinlat);
           glUniform3fv (glGetUniformLocation (programID, "lightDir"), 
                         1, &lightDir[0]);
@@ -35,50 +52,52 @@ void glgrib_scene::display_obj (const glgrib_object * obj) const
 
   const glgrib_program * program = obj->get_program ();
   program->use ();
-  view.setMVP (program->programID);
+  d.view.setMVP (program->programID);
   setLightShader (program->programID);
-  obj->render (&view);
+  obj->render (&d.view);
 }
 
 void glgrib_scene::display () const
 {
-  view.calcMVP ();  
+  d.view.calcMVP ();  
 
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
-  if (landscape.visible ())
-    display_obj (&landscape);
+  if (d.landscape.visible ())
+    display_obj (&d.landscape);
 
-  if (coastlines.visible ())
-    display_obj (&coastlines);
+  if (d.coastlines.visible ())
+    display_obj (&d.coastlines);
 
-  if (grid.visible ())
-    display_obj (&grid);
+  if (d.grid.visible ())
+    display_obj (&d.grid);
 
   for (int i = 0; i < fieldlist.size (); i++)
     {
       const glgrib_field * fld = &fieldlist[i];
+      if (fld == NULL)
+        continue;
       if (! fld->isReady ())
         continue;
       if (fld->visible ())
         {
           const glgrib_program * program = fld->get_program ();
           program->use ();
-          view.setMVP (program->programID);
+          d.view.setMVP (program->programID);
           setLightShader (program->programID);
-          fld->render (&view);
+          fld->render (&d.view);
         }
     }
 
-  const glgrib_field * fld = currentFieldRank < fieldlist.size () 
-                        ? &fieldlist[currentFieldRank] : NULL;
+  const glgrib_field * fld = d.currentFieldRank < fieldlist.size () 
+                           ? &fieldlist[d.currentFieldRank] : NULL;
   if (fld != NULL)
-    colorbar.render (MVP_L, 
-                     fld->dopts.palette, 
-                     fld->getNormedMinValue (), 
-                     fld->getNormedMaxValue ());
+    colorbar.render (d.MVP_L, 
+                       fld->dopts.palette, 
+                       fld->getNormedMinValue (), 
+                       fld->getNormedMaxValue ());
 
-  str.render (MVP_R);
+  str.render (d.MVP_R);
 
 
 }
@@ -94,63 +113,65 @@ static double current_time ()
 void glgrib_scene::update ()
 {
   double t = current_time ();
-  if (rotate_earth)
-    view.opts.lon += 1.;
-  if (light.rotate)
-    light.lon -= 1.;
+  if (d.rotate_earth)
+    d.view.opts.lon += 1.;
+  if (d.light.rotate)
+    d.light.lon -= 1.;
 
 
-  if (movie && ((t - movie_time) > opts.scene.movie_wait))
+  if (d.movie && ((t - d.movie_time) > d.opts.scene.movie_wait))
     {
       bool advance = false;
 
       for (int i = 0; i < fieldlist.size (); i++)
         {
           glgrib_field fld;
-          bool defined = opts.field[i].path.size () != 0;
+          bool defined = d.opts.field[i].path.size () != 0;
 	  if (defined)
             {
-	      int size = opts.field[i].path.size ();
-	      advance = movie_index < size;
-	      int slot = advance ? movie_index : size-1;
-              fld.init (opts.field[i], slot);
+	      int size = d.opts.field[i].path.size ();
+	      advance = d.movie_index < size;
+	      int slot = advance ? d.movie_index : size-1;
+              fld.init (d.opts.field[i], slot);
 	      fieldlist[i] = fld;
 	    }
 	}
 
       if (advance)
-        movie_index++;
+        d.movie_index++;
       else
-        movie_index = 0;
+        d.movie_index = 0;
 
-      movie_time = t;
+      d.movie_time = t;
     }
 }
 
 void glgrib_scene::init (const glgrib_options & o)
 {
-  opts = o;
+  d.opts = o;
 
-  if (opts.landscape.path != "")
-    landscape.init (opts.landscape);
+  if (d.opts.landscape.path != "")
+    d.landscape.init (d.opts.landscape);
 
-  if (opts.grid.resolution)
-    grid.init (opts.grid);
+  if (d.opts.grid.resolution)
+    d.grid.init (d.opts.grid);
 
-  if (opts.coastlines.path != "")
-    coastlines.init (opts.coastlines);
+  if (d.opts.coastlines.path != "")
+    d.coastlines.init (d.opts.coastlines);
 
-  light = opts.scene.light;
+  d.light = d.opts.scene.light;
 
-  view.init (opts);
+  d.view.init (d.opts);
 
-  for (int i = 0; i < opts.field.size (); i++)
+  for (int i = 0; i < d.opts.field.size (); i++)
     {
       glgrib_field fld;
-      bool defined = opts.field[i].path.size () != 0;
+      bool defined = d.opts.field[i].path.size () != 0;
 
       if (defined)
-        fld.init (opts.field[i]);
+        {
+          fld.init (d.opts.field[i]);
+        }
 
       fieldlist.push_back (fld);
 
@@ -159,27 +180,27 @@ void glgrib_scene::init (const glgrib_options & o)
 
     }
 
-  if (opts.colorbar.on)
+  if (d.opts.colorbar.on)
     {
-      glgrib_font_ptr font = new_glgrib_font_ptr (opts.font);
-      str.init (font, std::string (30, ' '), 1.0f, 1.0f, opts.font.scale, glgrib_string::NE);
-      str.setColor (opts.font.r / 255.0f, opts.font.g / 255.0f, opts.font.b / 255.0f);
-      colorbar.init (opts.colorbar);
+      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
+      str.init (font, std::string (30, ' '), 1.0f, 1.0f, d.opts.font.scale, glgrib_string::NE);
+      str.setColor (d.opts.font.r / 255.0f, d.opts.font.g / 255.0f, d.opts.font.b / 255.0f);
+      colorbar.init (d.opts.colorbar);
     }
 
 }
 
 void glgrib_scene::setViewport (int _width, int _height)
 {
-  view.setViewport (_width, _height);
-  float width = view.getWidth (), height = view.getHeight ();
+  d.view.setViewport (_width, _height);
+  float width = d.view.getWidth (), height = d.view.getHeight ();
   float ratio = width / height;
 
-  MVP_L = glm::ortho(0.0f, ratio, 0.0f, 1.0f, 0.1f, 100.0f)
-        * glm::lookAt (glm::vec3 (+1.0f,0.0f,0.0f), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
+  d.MVP_L = glm::ortho (0.0f, ratio, 0.0f, 1.0f, 0.1f, 100.0f)
+          * glm::lookAt (glm::vec3 (+1.0f,0.0f,0.0f), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
   
-  MVP_R = glm::ortho(1.0f - ratio, 1.0f, 0.0f, 1.0f, 0.1f, 100.0f)
-        * glm::lookAt (glm::vec3 (+1.0f,0.0f,0.0f), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
+  d.MVP_R = glm::ortho (1.0f - ratio, 1.0f, 0.0f, 1.0f, 0.1f, 100.0f)
+          * glm::lookAt (glm::vec3 (+1.0f,0.0f,0.0f), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
 }
 
 

@@ -38,13 +38,13 @@ public:
   void update (const std::vector<std::string> &);
   void update (const std::string &);
   void cleanup ();
+  bool ready = false;
 private:
   std::vector<std::string> data;
   std::vector<float> x, y;
   glgrib_string_align_t align;
   float color0[3];
   float scale;
-  bool ready = false;
   unsigned int nt;
   GLuint VertexArrayID;
   GLuint vertexbuffer, letterbuffer, elementbuffer;

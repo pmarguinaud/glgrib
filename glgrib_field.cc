@@ -44,6 +44,15 @@ glgrib_field::glgrib_field (const glgrib_field & field)
     }
 }
 
+glgrib_field * glgrib_field::clone () const
+{
+  if (this == NULL)
+    return NULL;
+  glgrib_field * fld = new glgrib_field ();
+  *fld = *this;
+  return fld;
+}
+
 glgrib_field & glgrib_field::operator= (const glgrib_field & field)
 {
   if (this != &field)

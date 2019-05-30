@@ -33,24 +33,24 @@ public:
   void snapshot                 ();
   void toggle_flat ()
   {
-    scene.landscape.toggle_flat ();
+    scene.d.landscape.toggle_flat ();
   }
   void reset_view ()
   {
     glgrib_options_camera o;
-    scene.view.opts = o;
+    scene.d.view.opts = o;
   }
-  void toggle_rotate       () { scene.rotate_earth       = ! scene.rotate_earth;       }
-  void toggle_rotate_light () { scene.light.rotate = ! scene.light.rotate; }
-  void toggle_wireframe    () { scene.landscape.toggle_wireframe (); }
-  void widen_fov           () { scene.view.opts.fov += 1.; }
-  void shrink_fov          () { scene.view.opts.fov -= 1.; }
-  void increase_radius     () { scene.view.opts.distance += 0.1; }
-  void decrease_radius     () { scene.view.opts.distance -= 0.1; }
-  void rotate_north        () { scene.view.opts.lat = scene.view.opts.lat + 5.; }
-  void rotate_south        () { scene.view.opts.lat = scene.view.opts.lat - 5.; }
-  void rotate_west         () { scene.view.opts.lon = scene.view.opts.lon - 5.; }
-  void rotate_east         () { scene.view.opts.lon = scene.view.opts.lon + 5.; }
+  void toggle_rotate       () { scene.d.rotate_earth       = ! scene.d.rotate_earth;       }
+  void toggle_rotate_light () { scene.d.light.rotate = ! scene.d.light.rotate; }
+  void toggle_wireframe    () { scene.d.landscape.toggle_wireframe (); }
+  void widen_fov           () { scene.d.view.opts.fov += 1.; }
+  void shrink_fov          () { scene.d.view.opts.fov -= 1.; }
+  void increase_radius     () { scene.d.view.opts.distance += 0.1; }
+  void decrease_radius     () { scene.d.view.opts.distance -= 0.1; }
+  void rotate_north        () { scene.d.view.opts.lat = scene.d.view.opts.lat + 5.; }
+  void rotate_south        () { scene.d.view.opts.lat = scene.d.view.opts.lat - 5.; }
+  void rotate_west         () { scene.d.view.opts.lon = scene.d.view.opts.lon - 5.; }
+  void rotate_east         () { scene.d.view.opts.lon = scene.d.view.opts.lon + 5.; }
 
   void resize (int, int);
   void scroll (double, double);

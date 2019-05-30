@@ -91,3 +91,6 @@ test_missingvalue: ./glgrib.x
 
 test_aro: ./glgrib.x
 	$(GDB) ./glgrib.x --field[0].path ./aro2.5/SURFIND.TERREMER.grb --field[0].palette cold_hot --field[0].scale 1.00 --landscape.path "" --camera.lat 46.2 --camera.lon 2.0 --camera.fov 5
+
+test_guyane: ./glgrib.x
+	$(GDB) ./glgrib.x --field\[0\].path ./aro_guyane/SURFTEMPERATURE.grb --field\[0\].palette cold_hot_temp --field\[0\].scale 1.01 --camera.lat 5 --camera.lon -51 --camera.fov 3

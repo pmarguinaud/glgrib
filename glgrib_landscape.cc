@@ -33,7 +33,7 @@ void glgrib_landscape::init (const glgrib_options_landscape & opts)
 
   free (rgb);
 
-  def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
+  def_from_vertexbuffer_col_elementbuffer (NULL, geometry);
   
   setReady ();
 }

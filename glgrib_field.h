@@ -50,12 +50,16 @@ public:
     }
   virtual bool use_alpha () { return false; }
   virtual void render (const glgrib_view *) const;
-  glgrib_field_float_buffer_ptr values = NULL;
-  virtual float getValue (int index) const { return values != NULL ? values->data ()[index] : 9999.0f; }
   void setPalette (const std::string & p) { dopts.palette = get_palette_by_name (p); }
   virtual ~glgrib_field ();
   glgrib_field_display_options dopts;
+  virtual float getValue (int index) const { return values != NULL ? values->data ()[index] : 9999.0f; }
+  virtual void saveSettings () const { dopts.palette.save (meta); }
+  virtual float getMaxValue () const { return meta.valmax; }
+  virtual float getMinValue () const { return meta.valmin; }
+private:
   glgrib_field_metadata meta;
+  glgrib_field_float_buffer_ptr values = NULL;
 };
 
 #endif

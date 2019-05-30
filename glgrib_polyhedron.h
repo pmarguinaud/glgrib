@@ -12,7 +12,6 @@ public:
   virtual glgrib_program_kind get_program_kind () const { return GLGRIB_PROGRAM_RGBA; }
   virtual bool use_alpha () { return true; }
   virtual ~glgrib_polyhedron () { cleanup (); }
-  void def_from_xyz_col_ind (const float *, unsigned char *, unsigned int *);
   GLuint VertexArrayID;
   glgrib_opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer;
   unsigned int numberOfColors, numberOfTriangles;

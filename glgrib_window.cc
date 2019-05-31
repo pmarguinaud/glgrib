@@ -440,7 +440,7 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
   float lat, lon;
   if (get_latlon_from_cursor (&lat, &lon))
     {
-      std::string title;
+      std::string title_;
       const glgrib_field * field = scene.getCurrentField ();
       if (field)
         {
@@ -450,25 +450,25 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
               char tmp[128];
               std::vector<float> value = field->getValue (jglo);
               sprintf (tmp, "%6.2f %6.2f", lat, lon);
-              title = std::string (tmp);
+              title_ = std::string (tmp);
               for (int i = 0; i < value.size (); i++)
                 {
                   sprintf (tmp, " %6.2g", value[i]);
-                  title = title + std::string (tmp);
+                  title_ = title_ + std::string (tmp);
                 }
 	    }
 	  else
             {
               char tmp[128];
               sprintf (tmp, "%6.2f %6.2f", lat, lon);
-              title = std::string (tmp);
+              title_ = std::string (tmp);
 	    }
-	  scene.setMessage (title);
-          glfwSetWindowTitle (window, title.c_str ());
+	  scene.setMessage (title_);
+          glfwSetWindowTitle (window, title_.c_str ());
 	  return;
         }
     }
-  glfwSetWindowTitle (window, opts.title.c_str ());
+  glfwSetWindowTitle (window, title.c_str ());
 }
 
 void glgrib_window::toggle_cursorpos_display ()
@@ -479,7 +479,7 @@ void glgrib_window::toggle_cursorpos_display ()
     glfwSetCursorPosCallback (window, cursor_position_callback);
   cursorpos = ! cursorpos;
   scene.setMessage (std::string (""));
-  glfwSetWindowTitle (window, opts.title.c_str ());
+  glfwSetWindowTitle (window, title.c_str ());
 }
 
 void glgrib_window::onclick (int button, int action, int mods)
@@ -617,7 +617,9 @@ void glgrib_window::create (const glgrib_options & o)
   opts = o.window;
 
   if (opts.title == "")
-    opts.title = std::string ("Window #") + std::to_string (id_);
+    title = std::string ("Window #") + std::to_string (id_);
+  else
+    title = opts.title;
 
   scene.d.light.rotate = o.scene.light.rotate;
   scene.d.rotate_earth = o.scene.rotate_earth;
@@ -636,7 +638,7 @@ void glgrib_window::createGFLWwindow (GLFWwindow * context)
 {
   setHints ();
   
-  window = glfwCreateWindow (opts.width, opts.height, opts.title.c_str (), NULL, context);
+  window = glfwCreateWindow (opts.width, opts.height, title.c_str (), NULL, context);
   glfwSetWindowUserPointer (window, this);
 
   if (window == NULL)
@@ -702,6 +704,13 @@ glgrib_window * glgrib_window::clone ()
 
 #define COPY(x) do { w->x = x; } while (0)
   COPY (opts);
+
+  if (w->opts.title == "")
+    w->title = std::string ("Window");
+  else
+    w->title = w->opts.title;
+
+  w->title = w->title + " #" + std::to_string (w->id_);
 
   w->createGFLWwindow (window); // use already existing context
 

@@ -102,6 +102,7 @@ private:
   int id_;
   double t0;
   int nframes = 0;
+  std::string title = "";
 };
 
 class glgrib_window_set : public std::set<glgrib_window*> 

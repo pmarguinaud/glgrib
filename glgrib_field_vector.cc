@@ -209,7 +209,6 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
   geometry->elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
   glBindVertexArray (0); 
 
-  values.clear ();
 
   if (opts.no_value_pointer)
     {

@@ -17,6 +17,7 @@ public:
     }
   virtual void render (const glgrib_view *) const;
   virtual ~glgrib_field_vector ();
+  void setupVertexAttributes ();
 private:
   glgrib_opengl_buffer_ptr colorbuffer0, colorbuffer1;
   GLuint VertexArrayIDvector = 0;

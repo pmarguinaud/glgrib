@@ -35,10 +35,9 @@ glgrib_field_vector & glgrib_field_vector::operator= (const glgrib_field_vector 
         {
           glgrib_field::operator= (field);
           ready_ = false;
-	  meta   = field.meta;
-          values = field.values;
-          dopts  = field.dopts;
-          def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
+          colorbuffer0 = field.colorbuffer0;
+          colorbuffer1 = field.colorbuffer1;
+          setupVertexAttributes ();
           setReady ();
         }
       else
@@ -46,6 +45,69 @@ glgrib_field_vector & glgrib_field_vector::operator= (const glgrib_field_vector 
          ready_ = false;
        }
     }
+}
+
+
+void glgrib_field_vector::setupVertexAttributes ()
+{
+  // Norm/direction
+
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
+
+  // Position
+  geometry->vertexbuffer->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (0); 
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  
+  // Norm
+  colorbuffer0->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (1); 
+  glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
+                         numberOfColors * sizeof (unsigned char), NULL); 
+
+
+  // Direction
+  colorbuffer1->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (2); 
+  glVertexAttribPointer (2, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
+                         numberOfColors * sizeof (unsigned char), NULL); 
+
+
+  geometry->elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+  glBindVertexArray (0); 
+
+
+  // Vector
+
+  glGenVertexArrays (1, &VertexArrayIDvector);
+  glBindVertexArray (VertexArrayIDvector);
+
+  // Position
+  geometry->vertexbuffer->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (0); 
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  glVertexAttribDivisor (0, 1);  
+  
+  // Norm
+  colorbuffer0->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (1); 
+  glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
+                         numberOfColors * sizeof (unsigned char), NULL); 
+  glVertexAttribDivisor (1, 1);  
+
+
+  // Direction
+  colorbuffer1->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (2); 
+  glVertexAttribPointer (2, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
+                         numberOfColors * sizeof (unsigned char), NULL); 
+  glVertexAttribDivisor (2, 1);  
+
+
+  geometry->elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+  glBindVertexArray (0); 
+
 }
 
 void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
@@ -151,64 +213,7 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
   numberOfPoints = geometry->numberOfPoints;
   numberOfTriangles = geometry->numberOfTriangles;
 
-  // Norm/direction
-
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
-
-  // Position
-  geometry->vertexbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
-  
-  // Norm
-  colorbuffer0->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
-                         numberOfColors * sizeof (unsigned char), NULL); 
-
-
-  // Direction
-  colorbuffer1->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (2); 
-  glVertexAttribPointer (2, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
-                         numberOfColors * sizeof (unsigned char), NULL); 
-
-
-  geometry->elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
-  glBindVertexArray (0); 
-
-
-  // Vector
-
-  glGenVertexArrays (1, &VertexArrayIDvector);
-  glBindVertexArray (VertexArrayIDvector);
-
-  // Position
-  geometry->vertexbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
-  glVertexAttribDivisor (0, 1);  
-  
-  // Norm
-  colorbuffer0->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
-                         numberOfColors * sizeof (unsigned char), NULL); 
-  glVertexAttribDivisor (1, 1);  
-
-
-  // Direction
-  colorbuffer1->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (2); 
-  glVertexAttribPointer (2, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
-                         numberOfColors * sizeof (unsigned char), NULL); 
-  glVertexAttribDivisor (2, 1);  
-
-
-  geometry->elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
-  glBindVertexArray (0); 
-
+  setupVertexAttributes ();
 
   if (opts.no_value_pointer)
     {

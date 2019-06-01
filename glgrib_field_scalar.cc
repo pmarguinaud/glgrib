@@ -34,10 +34,30 @@ glgrib_field_scalar & glgrib_field_scalar::operator= (const glgrib_field_scalar 
       if (field.isReady ())
         {
           glgrib_field::operator= (field);
-          def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
+          setupVertexAttributes ();
           setReady ();
         }
     }
+}
+
+void glgrib_field_scalar::setupVertexAttributes ()
+{
+  numberOfPoints = geometry->numberOfPoints;
+  numberOfTriangles = geometry->numberOfTriangles;
+
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
+
+  geometry->vertexbuffer->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (0); 
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  
+  colorbuffer->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (1); 
+  glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, numberOfColors * sizeof (unsigned char), NULL); 
+
+  geometry->elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+  glBindVertexArray (0); 
 }
 
 void glgrib_field_scalar::init (const glgrib_options_field & opts, int slot)
@@ -70,9 +90,9 @@ void glgrib_field_scalar::init (const glgrib_options_field & opts, int slot)
 
   colorbuffer = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints * sizeof (unsigned char), col);
 
-  def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
-
   free (col);
+
+  setupVertexAttributes ();
 
   if (opts.no_value_pointer)
     {

@@ -17,6 +17,7 @@ public:
     }
   virtual void render (const glgrib_view *) const;
   virtual ~glgrib_field_scalar ();
+  void setupVertexAttributes ();
 };
 
 #endif

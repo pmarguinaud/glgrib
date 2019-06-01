@@ -24,6 +24,7 @@ public:
   bool flat = false;
   void set_flat (bool f) { flat = f; }
   void toggle_flat () { flat = ! flat; program = NULL; }
+  void setupVertexAttributes ();
 };
 
 #endif

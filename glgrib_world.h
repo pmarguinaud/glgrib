@@ -8,8 +8,6 @@
 class glgrib_world : public glgrib_polyhedron
 {
 public:
-  void def_from_vertexbuffer_col_elementbuffer 
-          (const glgrib_opengl_buffer_ptr, const_glgrib_geometry_ptr);
   const_glgrib_geometry_ptr geometry;
 };
 

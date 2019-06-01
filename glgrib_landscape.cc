@@ -15,9 +15,25 @@ glgrib_landscape & glgrib_landscape::operator= (const glgrib_landscape & landsca
       glgrib_world::operator= (landscape);
       texture = landscape.texture;
       flat    = landscape.flat;
-      def_from_vertexbuffer_col_elementbuffer (NULL, geometry);
+      setupVertexAttributes ();
       setReady ();
    }
+}
+
+void glgrib_landscape::setupVertexAttributes ()
+{
+  numberOfPoints = geometry->numberOfPoints;
+  numberOfTriangles = geometry->numberOfTriangles;
+
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
+
+  geometry->vertexbuffer->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (0); 
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  
+  geometry->elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+  glBindVertexArray (0); 
 }
 
 void glgrib_landscape::init (const glgrib_options_landscape & opts)
@@ -33,7 +49,7 @@ void glgrib_landscape::init (const glgrib_options_landscape & opts)
 
   free (rgb);
 
-  def_from_vertexbuffer_col_elementbuffer (NULL, geometry);
+  setupVertexAttributes ();
   
   setReady ();
 }

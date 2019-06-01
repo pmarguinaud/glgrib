@@ -444,7 +444,7 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
       const glgrib_field * field = scene.getCurrentField ();
       if (field)
         {
-          int jglo = field->geometry ? field->geometry->latlon2index (lat, lon) : -1;
+          int jglo = field->getGeometry ()->latlon2index (lat, lon);
 	  if (jglo >= 0)
             {
               char tmp[128];

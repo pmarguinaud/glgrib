@@ -13,10 +13,11 @@ public:
   virtual glgrib_program::kind get_program_kind () const { return glgrib_program::RGBA; }
   virtual bool use_alpha () { return true; }
   virtual ~glgrib_world () { cleanup (); }
-  glgrib_opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer;
   void toggle_wireframe () { wireframe = ! wireframe; }
-  const_glgrib_geometry_ptr geometry;
+  const_glgrib_geometry_ptr getGeometry () const { return geometry; }
 protected:
+  glgrib_opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer;
+  const_glgrib_geometry_ptr geometry;
   int numberOfPoints;
   virtual void cleanup ();
   bool wireframe = false;

@@ -30,6 +30,7 @@ glgrib_field_vector & glgrib_field_vector::operator= (const glgrib_field_vector 
 {
   if (this != &field)
     {
+      cleanup ();
       if (field.isReady ())
         {
           glgrib_field::operator= (field);
@@ -42,8 +43,6 @@ glgrib_field_vector & glgrib_field_vector::operator= (const glgrib_field_vector 
         }
       else
        {
-         cleanup ();
-	 values.clear ();
          ready_ = false;
        }
     }

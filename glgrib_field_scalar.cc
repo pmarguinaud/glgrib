@@ -30,6 +30,7 @@ glgrib_field_scalar & glgrib_field_scalar::operator= (const glgrib_field_scalar 
 {
   if (this != &field)
     {
+      cleanup ();
       if (field.isReady ())
         {
           glgrib_field::operator= (field);
@@ -42,8 +43,6 @@ glgrib_field_scalar & glgrib_field_scalar::operator= (const glgrib_field_scalar 
         }
       else
        {
-         cleanup ();
-	 values.clear ();
          ready_ = false;
        }
     }
@@ -82,8 +81,6 @@ void glgrib_field_scalar::init (const glgrib_options_field & opts, int slot)
   def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
 
   free (col);
-
-  values.clear ();
 
   if (opts.no_value_pointer)
     {

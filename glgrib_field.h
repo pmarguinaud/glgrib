@@ -91,6 +91,7 @@ public:
       n += val[i] * val[i];
     return sqrt (n);
   }
+  virtual void cleanup ();
 protected:
   std::vector<glgrib_field_metadata> meta;
   std::vector<glgrib_field_float_buffer_ptr> values;

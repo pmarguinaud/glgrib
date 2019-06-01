@@ -40,3 +40,9 @@ glgrib_field_display_options::glgrib_field_display_options ()
   palette = palette_cold_hot;
 }
 
+void glgrib_field::cleanup ()
+{
+  values.clear ();
+  meta.clear ();
+  glgrib_world::cleanup ();
+}

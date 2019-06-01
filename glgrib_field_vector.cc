@@ -297,4 +297,44 @@ void glgrib_field_vector::cleanup ()
   glgrib_field::cleanup ();
 }
 
+void glgrib_field_vector::reSample (int level)
+{
+  buffer_d->bind (GL_ARRAY_BUFFER);
+  unsigned char * col_d = (unsigned char *)glMapBufferRange (GL_ARRAY_BUFFER, 0, 
+                                           numberOfPoints * sizeof (unsigned char), 
+                                           GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
+
+  float * val_d = values[1]->data ();
+  const glgrib_field_metadata & meta_d = meta[1];
+
+  glgrib_geometry::sampler * sampler = geometry->newSampler (level);
+  do
+    {
+      int i = sampler->index ();
+      if (val_d[i] == meta_d.valmis)
+        {
+          col_d[i] = 0;
+        }
+      else
+        {
+          if (sampler->defined ())
+            col_d[i] = 1 + (int)(254 * (val_d[i] - meta_d.valmin)
+                         / (meta_d.valmax - meta_d.valmin));
+          else
+            col_d[i] = 0;
+        }
+    }
+  while (sampler->next ());
+  delete sampler;
+
+  glFlushMappedBufferRange (GL_ARRAY_BUFFER, 0, numberOfPoints * sizeof (unsigned char));
+  glUnmapBuffer (GL_ARRAY_BUFFER);
+
+
+}
+
+
+
+
+
 

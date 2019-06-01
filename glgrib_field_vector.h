@@ -18,6 +18,7 @@ public:
   virtual void render (const glgrib_view *) const;
   virtual ~glgrib_field_vector ();
   void setupVertexAttributes ();
+  void reSample (int);
 private:
   glgrib_opengl_buffer_ptr buffer_n, buffer_d;
   GLuint VertexArrayIDvector = 0;

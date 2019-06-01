@@ -11,6 +11,7 @@
 #include "glgrib_window.h"
 #include "glgrib_png.h"
 #include "glgrib_field_scalar.h"
+#include "glgrib_field_vector.h"
 #include <iostream>
 
 static double current_time ()
@@ -146,11 +147,36 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (CONTROL, P,      next_projection          ());
       if_key (SHIFT,   P,      toggle_transform_type    ());
       if_key (CONTROL, S,      save_current_palette     ());
+      if_key (ALT,     S,      resample_current_field   ());
 
 
     }
 
 #undef if_key
+}
+
+void glgrib_window::resample_current_field ()
+{
+  glgrib_field * f = scene.getCurrentField ();
+  if (f == NULL) 
+    return;
+
+  glgrib_field_vector * v = NULL;
+
+  try
+    {
+      v = dynamic_cast<glgrib_field_vector*>(f);
+    }
+  catch (const std::bad_cast & e)
+    {
+      return;
+    }
+
+  if (v == NULL)
+    return;
+
+  v->reSample (5);
+
 }
 
 void glgrib_window::save_current_palette ()

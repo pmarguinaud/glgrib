@@ -29,7 +29,12 @@ void glgrib_polygon::render (const glgrib_view * view) const
 
 glgrib_polygon::~glgrib_polygon ()
 {
-  if (isReady ())
-    glDeleteVertexArrays (1, &VertexArrayID);
+  cleanup ();
 }
 
+void glgrib_polygon::cleanup ()
+{
+  if (isReady ())
+    glDeleteVertexArrays (1, &VertexArrayID);
+  glgrib_object::cleanup ();
+}

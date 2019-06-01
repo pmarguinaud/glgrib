@@ -8,10 +8,10 @@
 
 glgrib_grid & glgrib_grid::operator= (const glgrib_grid & grid)
 {
+  cleanup ();
   if ((this != &grid) && grid.isReady ())
     {
       glgrib_polygon::operator= (grid);
-      ready_ = false;
       def_from_xyz_col_ind (vertexbuffer, elementbuffer);
       setReady ();
     }

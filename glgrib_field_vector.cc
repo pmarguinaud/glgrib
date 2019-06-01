@@ -34,16 +34,11 @@ glgrib_field_vector & glgrib_field_vector::operator= (const glgrib_field_vector 
       if (field.isReady ())
         {
           glgrib_field::operator= (field);
-          ready_ = false;
           colorbuffer0 = field.colorbuffer0;
           colorbuffer1 = field.colorbuffer1;
           setupVertexAttributes ();
           setReady ();
         }
-      else
-       {
-         ready_ = false;
-       }
     }
 }
 

@@ -24,9 +24,10 @@ public:
   void hide () { hidden = true; }
   void show () { hidden = false; }
   bool visible () const { return ! hidden; }
-protected:
-  bool ready_ = false;
+  void cleanup () { ready_ = false; }
+
 private:
+  bool ready_ = false;
   bool hidden = false;
 };
 

@@ -34,14 +34,9 @@ glgrib_field_scalar & glgrib_field_scalar::operator= (const glgrib_field_scalar 
       if (field.isReady ())
         {
           glgrib_field::operator= (field);
-          ready_ = false;
           def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
           setReady ();
         }
-      else
-       {
-         ready_ = false;
-       }
     }
 }
 

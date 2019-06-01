@@ -8,10 +8,10 @@
 
 glgrib_coastlines & glgrib_coastlines::operator= (const glgrib_coastlines & coastlines)
 {
+  cleanup ();
   if ((this != &coastlines) && coastlines.isReady ())
     {
       glgrib_polygon::operator= (coastlines);
-      ready_ = false;
       def_from_xyz_col_ind (vertexbuffer, elementbuffer);
       setReady ();
     }

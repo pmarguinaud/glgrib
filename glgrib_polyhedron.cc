@@ -21,5 +21,6 @@ void glgrib_polyhedron::cleanup ()
 {
   if (isReady ())
     glDeleteVertexArrays (1, &VertexArrayID);
+  glgrib_object::cleanup ();
 }
 

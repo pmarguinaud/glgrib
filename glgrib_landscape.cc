@@ -9,10 +9,10 @@
 
 glgrib_landscape & glgrib_landscape::operator= (const glgrib_landscape & landscape)
 {
+  cleanup ();
   if ((this != &landscape) && landscape.isReady ())
     {
       glgrib_world::operator= (landscape);
-      ready_ = false;
       texture = landscape.texture;
       flat    = landscape.flat;
       def_from_vertexbuffer_col_elementbuffer (NULL, geometry);

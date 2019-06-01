@@ -18,6 +18,7 @@ public:
   glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
   unsigned int numberOfColors, numberOfLines;
   int numberOfPoints;
+  void cleanup ();
 };
 
 #endif

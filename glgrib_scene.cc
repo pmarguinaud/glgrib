@@ -1,6 +1,7 @@
 #include "glgrib_scene.h"
 #include "glgrib_opengl.h"
 #include "glgrib_field_scalar.h"
+#include "glgrib_field_vector.h"
 
 #include <stdio.h>
 #include <sys/time.h>
@@ -178,7 +179,10 @@ void glgrib_scene::init (const glgrib_options & o)
 
       if (defined)
         {
-          fld = new glgrib_field_scalar ();
+          if (d.opts.field[i].vector)
+            fld = new glgrib_field_vector ();
+          else
+            fld = new glgrib_field_scalar ();
           fld->init (d.opts.field[i]);
         }
 

@@ -4,22 +4,23 @@
 #include "glgrib_opengl.h"
 
 
-typedef enum 
-{
-  GLGRIB_PROGRAM_NONE=-1,
-  GLGRIB_PROGRAM_RGBA=0,
-  GLGRIB_PROGRAM_RGB=1,
-  GLGRIB_PROGRAM_MONO=2,
-  GLGRIB_PROGRAM_RGB_FLAT=3,
-  GLGRIB_PROGRAM_RGB_POSITION_SCALE=4,
-  GLGRIB_PROGRAM_GRADIENT_FLAT_SCALE=5,
-  GLGRIB_PROGRAM_FLAT_TEX=6,
-  GLGRIB_PROGRAM_SIZE=7,
-} glgrib_program_kind;
-
 class glgrib_program
 {
 public:
+  typedef enum 
+  {
+    NONE=-1,
+    RGBA=0,
+    RGB=1,
+    MONO=2,
+    RGB_FLAT=3,
+    RGB_POSITION_SCALE=4,
+    GRADIENT_FLAT_SCALE_SCALAR=5,
+    FLAT_TEX=6,
+    GRADIENT_FLAT_SCALE_VECTOR=7,
+    SIZE=8,
+  } kind;
+
   glgrib_program (const std::string & fsc, const std::string & vsc) 
      : FragmentShaderCode (fsc), VertexShaderCode (vsc) { }
   virtual ~glgrib_program ();
@@ -32,6 +33,6 @@ public:
   mutable bool active = false;
 };
 
-glgrib_program * glgrib_program_load (glgrib_program_kind);
+glgrib_program * glgrib_program_load (glgrib_program::kind);
 
 #endif

@@ -11,6 +11,7 @@ public:
   std::vector<std::string> palette;
   std::vector<float> scale;
   bool no_value_pointer;
+  bool vector;
 };
 
 class glgrib_options_palette

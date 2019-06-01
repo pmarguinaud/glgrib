@@ -20,8 +20,8 @@ public:
     int level = 1;
   };
 
-  virtual bool isEqual (const glgrib_geometry &) = 0;
-  virtual bool operator== (const glgrib_geometry & geom)
+  virtual bool isEqual (const glgrib_geometry &) const = 0;
+  virtual bool operator== (const glgrib_geometry & geom) const
   {
     return isEqual (geom);
   }

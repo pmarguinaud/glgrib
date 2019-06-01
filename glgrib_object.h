@@ -16,7 +16,7 @@ public:
         program = glgrib_program_load (get_program_kind ());
       return program;
     }
-  virtual glgrib_program_kind get_program_kind () const { return GLGRIB_PROGRAM_NONE; }
+  virtual glgrib_program::kind get_program_kind () const { return glgrib_program::NONE; }
   virtual bool use_alpha () { return true; }
   mutable glgrib_program * program = NULL;
   bool isReady () const { return ready_; }

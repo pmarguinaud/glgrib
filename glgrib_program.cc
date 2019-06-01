@@ -69,7 +69,84 @@ vec3 compProjedPos (vec3 vertexPos, vec3 normedPos)
 }
 )CODE";
 
-static glgrib_program PRG[GLGRIB_PROGRAM_SIZE] = 
+
+static const std::string scalePositionInclude = 
+R"CODE(
+
+uniform vec3 scale0 = vec3 (1.0, 1.0, 1.0);
+
+vec3 scalePosition (vec3 pos, vec3 normedPos)
+{
+  if (proj == XYZ)
+    {
+      pos.x = scale0.x * normedPos.x;
+      pos.y = scale0.y * normedPos.y;
+      pos.z = scale0.z * normedPos.z;
+    }
+  else if (proj == POLAR_SOUTH)
+    {
+      pos.x = pos.x - (scale0.x - 1.0f);
+    }
+  else
+    {
+      pos.x = pos.x + (scale0.x - 1.0f);
+    }
+
+  return pos;
+}
+
+
+)CODE";
+
+
+static const std::string enlightFragmentInclude = 
+R"CODE(
+
+uniform vec4 RGBA0[256];
+uniform float valmin, valmax;
+uniform float palmin, palmax;
+
+uniform vec3 lightDir = vec3 (0., 1., 0.);
+uniform vec3 lightCol = vec3 (1., 1., 1.);
+uniform bool light = false;
+
+vec4 enlightFragment (vec3 fragmentPos, float fragmentVal)
+{
+  vec4 color;
+
+  float total = 1.;
+
+  if (light)
+    {
+      total = 0.1 + 0.9 * max (dot (fragmentPos, lightDir), 0.0);
+    }
+
+  float val = valmin + (valmax - valmin) * (255.0 * fragmentVal - 1.0) / 254.0;
+
+  int pal;
+  if (val < valmin)
+    {
+      pal = 0;
+      color.r = total * RGBA0[pal].r;
+      color.g = total * RGBA0[pal].g;
+      color.b = total * RGBA0[pal].b;
+      color.a =         RGBA0[pal].a;
+    }
+  else
+    {
+      pal = max (1, min (int (1 + 254 * (val - palmin) / (palmax - palmin)), 255));
+      color.r = total * RGBA0[pal].r;
+      color.g = total * RGBA0[pal].g;
+      color.b = total * RGBA0[pal].b;
+      color.a =         RGBA0[pal].a;
+    }
+
+  return color;
+}
+)CODE";
+
+
+static glgrib_program PRG[glgrib_program::SIZE] = 
 {
   glgrib_program (  // 3 colors + alpha channel
 R"CODE(
@@ -294,53 +371,20 @@ void main()
 }
 )CODE"),
 
-  glgrib_program (  // gradient color + alpha, flat
+  glgrib_program (  // GRADIENT_FLAT_SCALE_SCALAR
 R"CODE(
 #version 330 core
 
 in float fragmentVal;
 in vec3 fragmentPos;
-
 out vec4 color;
 
-uniform vec4 RGBA0[256];
-
-uniform float valmin, valmax;
-uniform float palmin, palmax;
-
-uniform vec3 lightDir = vec3 (0., 1., 0.);
-uniform vec3 lightCol = vec3 (1., 1., 1.);
-uniform bool light = false;
-
+)CODE" +
+enlightFragmentInclude +
+R"CODE(
 void main ()
 {
-  float total = 1.;
-
-  if (light)
-    {
-      total = 0.1 + 0.9 * max (dot (fragmentPos, lightDir), 0.0);
-    }
-
-  float val = valmin + (valmax - valmin) * (255.0 * fragmentVal - 1.0) / 254.0;
-
-  int pal;
-  if (val < valmin)
-    {
-      pal = 0;
-      color.r = total * RGBA0[pal].r;
-      color.g = total * RGBA0[pal].g;
-      color.b = total * RGBA0[pal].b;
-      color.a =         RGBA0[pal].a;
-    }
-  else
-    {
-      pal = max (1, min (int (1 + 254 * (val - palmin) / (palmax - palmin)), 255));
-      color.r = total * RGBA0[pal].r;
-      color.g = total * RGBA0[pal].g;
-      color.b = total * RGBA0[pal].b;
-      color.a =         RGBA0[pal].a;
-    }
-
+  color = enlightFragment (fragmentPos, fragmentVal);
 }
 )CODE",
 R"CODE(
@@ -353,29 +397,17 @@ out float fragmentVal;
 out vec3 fragmentPos;
 
 uniform mat4 MVP;
-uniform vec3 scale0 = vec3 (1.0, 1.0, 1.0);
 
-)CODE" + projShaderInclude + R"CODE(
+)CODE" 
++ projShaderInclude 
++ scalePositionInclude 
++ R"CODE(
 
 void main ()
 {
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);
-
-  if (proj == XYZ)
-    {
-      pos.x = scale0.x * normedPos.x;
-      pos.y = scale0.y * normedPos.y;
-      pos.z = scale0.z * normedPos.z;
-    }
-  else if (proj == POLAR_SOUTH)
-    {
-      pos.x = pos.x - (scale0.x - 1.0f);
-    }
-  else
-    {
-      pos.x = pos.x + (scale0.x - 1.0f);
-    }
+  pos = scalePosition (pos, normedPos);
 
   gl_Position =  MVP * vec4 (pos, 1.);
 
@@ -384,7 +416,7 @@ void main ()
 }
 )CODE"),
 
-  glgrib_program (
+  glgrib_program (  // FLAT_TEX
 R"CODE(
 #version 330 core
 
@@ -437,9 +469,94 @@ void main()
 }
 )CODE"),
 
+  glgrib_program (  // GRADIENT_FLAT_SCALE_VECTOR
+R"CODE(
+#version 330 core
+
+out vec4 color;
+
+uniform vec3 color0;
+
+void main ()
+{
+  color.r = color0.r;
+  color.g = color0.g;
+  color.b = color0.b;
+  color.a = 1.;
+}
+
+)CODE",
+R"CODE(
+#version 330 core
+
+layout(location = 0) in vec3 vertexPos;
+layout(location = 1) in float vertexVal_n;
+layout(location = 2) in float vertexVal_d;
+
+out vec3 fragmentPos;
+
+
+uniform float valmin_n, valmax_n;
+uniform float valmin_d, valmax_d;
+
+uniform mat4 MVP;
+
+)CODE" 
++ projShaderInclude 
++ scalePositionInclude 
++ R"CODE(
+
+vec3 vprod (vec3 u, vec3 v)
+{
+  return vec3 (u.y * v.z - u.z * v.y, 
+               u.z * v.x - u.x * v.z, 
+               u.x * v.y - u.y * v.x);
+}
+
+const float deg2rad = pi / 180.0;
+
+void main ()
+{
+  vec3 u = normalize (vec3 (-vertexPos.y, +vertexPos.x, 0.));
+  vec3 v = vprod (vertexPos, u);
+
+  vec3 pos;
+  
+  // TODO : handle missing values
+  float N = valmin_n + (valmax_n - valmin_n) * (255.0 * vertexVal_n - 1.0) / 254.0;
+  float D = valmin_d + (valmax_d - valmin_d) * (255.0 * vertexVal_d - 1.0) / 254.0;
+  D = D * deg2rad;
+  float X = 0.01 * N * cos (D) / valmax_n;
+  float Y = 0.01 * N * sin (D) / valmax_n;
+
+  if (gl_VertexID == 0)
+    pos = vec3 (+0.0, +0.0, +0.0);
+  else if (gl_VertexID == 1)
+    pos = vec3 (+1.0, +0.0, +0.0);
+  else if (gl_VertexID == 2)
+    pos = vec3 (+0.9, +0.1, +0.0);
+  else if (gl_VertexID == 3)
+    pos = vec3 (+0.9, -0.1, +0.0);
+  else if (gl_VertexID == 4)
+    pos = vec3 (+1.0, +0.0, +0.0);
+
+  pos = vertexPos + (pos.x * X - pos.y * Y) * u + (pos.x * Y + pos.y * X) * v;
+
+  if (gl_InstanceID % 101 != 0)
+    pos = vec3 (+0.0, +0.0, +0.0);
+
+  vec3 normedPos = compNormedPos (pos);
+  vec3 projedPos = compProjedPos (pos, normedPos);
+  pos = scalePosition (projedPos, normedPos);
+
+  gl_Position =  MVP * vec4 (pos, 1.);
+
+}
+)CODE"),
+
 };
 
-glgrib_program * glgrib_program_load (glgrib_program_kind kind)
+glgrib_program * glgrib_program_load (glgrib_program::kind kind)
 {
   if (! PRG[kind].loaded)
     {
@@ -464,7 +581,7 @@ void glgrib_program::use () const
     {
       glUseProgram (programID);
       active = true;
-      for (int i = 0; i < GLGRIB_PROGRAM_SIZE; i++) 
+      for (int i = 0; i < glgrib_program::SIZE; i++) 
         if (PRG[i].programID != programID)
           PRG[i].active = false;
     }

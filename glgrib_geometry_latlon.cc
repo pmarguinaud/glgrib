@@ -171,7 +171,7 @@ std::string glgrib_geometry_latlon::md5 () const
   return md5string (out);
 }
 
-bool glgrib_geometry_latlon::isEqual (const glgrib_geometry & geom)
+bool glgrib_geometry_latlon::isEqual (const glgrib_geometry & geom) const
 {
   try
     {

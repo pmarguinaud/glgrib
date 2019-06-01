@@ -421,7 +421,7 @@ std::string glgrib_geometry_gaussian::md5 () const
 }
 
 
-bool glgrib_geometry_gaussian::isEqual (const glgrib_geometry & geom)
+bool glgrib_geometry_gaussian::isEqual (const glgrib_geometry & geom) const
 {
   try
     {

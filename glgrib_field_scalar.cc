@@ -111,8 +111,8 @@ void glgrib_field_scalar::render (const glgrib_view * view) const
   glUniform1f (glGetUniformLocation (program->programID, "valmin"), getNormedMinValue ());
   glUniform1f (glGetUniformLocation (program->programID, "valmax"), getNormedMaxValue ());
 
-  float palmax = p.hasMax () ? p.getMax () : getNormedMinValue ();
-  float palmin = p.hasMin () ? p.getMin () : getNormedMaxValue ();
+  float palmax = p.hasMax () ? p.getMax () : getNormedMaxValue ();
+  float palmin = p.hasMin () ? p.getMin () : getNormedMinValue ();
 
   glUniform1f (glGetUniformLocation (program->programID, "palmin"), palmin);
   glUniform1f (glGetUniformLocation (program->programID, "palmax"), palmax);

@@ -200,6 +200,7 @@ static optionlist get_optionlist (glgrib_options * opts)
   ADD_OPT (field[i].scale,               Scales to be applied to fields);          \
   ADD_OPT (field[i].palette,             Palettes);                                \
   ADD_OPT (field[i].no_value_pointer,    Do not keep field values in memory);      \
+  ADD_OPT (field[i].vector,              Vector field);                            \
   } while (0)
 
   ADD_FIELD_OPT (0);

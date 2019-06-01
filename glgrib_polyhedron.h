@@ -9,7 +9,7 @@ class glgrib_polyhedron : public glgrib_object
 {
 public:
   virtual void render (const glgrib_view *) const;
-  virtual glgrib_program_kind get_program_kind () const { return GLGRIB_PROGRAM_RGBA; }
+  virtual glgrib_program::kind get_program_kind () const { return glgrib_program::RGBA; }
   virtual bool use_alpha () { return true; }
   virtual ~glgrib_polyhedron () { cleanup (); }
   GLuint VertexArrayID;
@@ -19,7 +19,7 @@ public:
   bool wireframe = false;
   void toggle_wireframe () { wireframe = ! wireframe; }
 protected:
-  void cleanup ();
+  virtual void cleanup ();
 };
 
 #endif

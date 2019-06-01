@@ -35,9 +35,6 @@ glgrib_field_scalar & glgrib_field_scalar::operator= (const glgrib_field_scalar 
         {
           glgrib_field::operator= (field);
           ready_ = false;
-	  meta   = field.meta;
-          values = field.values;
-          dopts  = field.dopts;
           def_from_vertexbuffer_col_elementbuffer (colorbuffer, geometry);
           setReady ();
         }

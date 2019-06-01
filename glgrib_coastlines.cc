@@ -6,13 +6,14 @@
 #include <stdio.h>
 #include <iostream>
 
-glgrib_coastlines & glgrib_coastlines::operator= (const glgrib_coastlines & coastlines)
+glgrib_coastlines & glgrib_coastlines::operator= (const glgrib_coastlines & other)
 {
   cleanup ();
-  if ((this != &coastlines) && coastlines.isReady ())
+  if ((this != &other) && other.isReady ())
     {
-      glgrib_polygon::operator= (coastlines);
-      def_from_xyz_col_ind (vertexbuffer, elementbuffer);
+      glgrib_polygon::operator= (other);
+      opts = other.opts;
+      setupVertexAttributes ();
       setReady ();
     }
 }
@@ -109,7 +110,7 @@ void glgrib_coastlines::init (const glgrib_options_coastlines & o)
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
   elementbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfLines * sizeof (unsigned int), ind);
 
-  def_from_xyz_col_ind (vertexbuffer, elementbuffer);
+  setupVertexAttributes ();
 
   free (ind);
   free (xyz);

@@ -8,17 +8,17 @@
 class glgrib_polygon : public glgrib_object
 {
 public:
-  void def_from_xyz_col_ind (glgrib_opengl_buffer_ptr, 
-                             glgrib_opengl_buffer_ptr);
+  void setupVertexAttributes ();
   virtual void render (const glgrib_view *) const;
   virtual glgrib_program::kind get_program_kind () const { return glgrib_program::RGB; }
   virtual bool use_alpha () { return false; }
   virtual ~glgrib_polygon ();
+protected:
   GLuint VertexArrayID;
   glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
   unsigned int numberOfColors, numberOfLines;
   int numberOfPoints;
-  void cleanup ();
+  virtual void cleanup ();
 };
 
 #endif

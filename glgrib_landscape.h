@@ -17,14 +17,15 @@ public:
     { 
       return glgrib_program::FLAT_TEX;
     }
-  glgrib_opengl_texture_ptr texture;
   void render (const glgrib_view *) const;
   virtual ~glgrib_landscape ();
   virtual bool use_alpha () { return false; }
-  bool flat = false;
   void set_flat (bool f) { flat = f; }
-  void toggle_flat () { flat = ! flat; program = NULL; }
+  void toggle_flat () { flat = ! flat; }
   void setupVertexAttributes ();
+private:
+  bool flat = false;
+  glgrib_opengl_texture_ptr texture;
 };
 
 #endif

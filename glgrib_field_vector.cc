@@ -34,8 +34,8 @@ glgrib_field_vector & glgrib_field_vector::operator= (const glgrib_field_vector 
       if (field.isReady ())
         {
           glgrib_field::operator= (field);
-          colorbuffer0 = field.colorbuffer0;
-          colorbuffer1 = field.colorbuffer1;
+          buffer_n = field.buffer_n;
+          buffer_d = field.buffer_d;
           setupVertexAttributes ();
           setReady ();
         }
@@ -56,14 +56,14 @@ void glgrib_field_vector::setupVertexAttributes ()
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
   
   // Norm
-  colorbuffer0->bind (GL_ARRAY_BUFFER);
+  buffer_n->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
                          numberOfColors * sizeof (unsigned char), NULL); 
 
 
   // Direction
-  colorbuffer1->bind (GL_ARRAY_BUFFER);
+  buffer_d->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (2); 
   glVertexAttribPointer (2, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
                          numberOfColors * sizeof (unsigned char), NULL); 
@@ -85,7 +85,7 @@ void glgrib_field_vector::setupVertexAttributes ()
   glVertexAttribDivisor (0, 1);  
   
   // Norm
-  colorbuffer0->bind (GL_ARRAY_BUFFER);
+  buffer_n->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
                          numberOfColors * sizeof (unsigned char), NULL); 
@@ -93,7 +93,7 @@ void glgrib_field_vector::setupVertexAttributes ()
 
 
   // Direction
-  colorbuffer1->bind (GL_ARRAY_BUFFER);
+  buffer_d->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (2); 
   glVertexAttribPointer (2, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
                          numberOfColors * sizeof (unsigned char), NULL); 
@@ -193,10 +193,10 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
                     / (meta_d.valmax - meta_d.valmin));
       }
 
-  colorbuffer0 = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
+  buffer_n = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
                                                * sizeof (unsigned char), col0);
 
-  colorbuffer1 = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
+  buffer_d = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
                                                * sizeof (unsigned char), col1);
 
   free (col0);

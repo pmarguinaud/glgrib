@@ -13,15 +13,15 @@ public:
   virtual glgrib_program::kind get_program_kind () const { return glgrib_program::RGBA; }
   virtual bool use_alpha () { return true; }
   virtual ~glgrib_world () { cleanup (); }
-  GLuint VertexArrayID;
   glgrib_opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer;
-  unsigned int numberOfColors, numberOfTriangles;
-  int numberOfPoints;
-  bool wireframe = false;
   void toggle_wireframe () { wireframe = ! wireframe; }
   const_glgrib_geometry_ptr geometry;
 protected:
+  int numberOfPoints;
   virtual void cleanup ();
+  bool wireframe = false;
+  unsigned int numberOfColors, numberOfTriangles;
+  GLuint VertexArrayID;
 };
 
 #endif

@@ -19,7 +19,7 @@ public:
   virtual ~glgrib_field_vector ();
   void setupVertexAttributes ();
 private:
-  glgrib_opengl_buffer_ptr colorbuffer0, colorbuffer1;
+  glgrib_opengl_buffer_ptr buffer_n, buffer_d;
   GLuint VertexArrayIDvector = 0;
 protected:
   virtual void cleanup ();

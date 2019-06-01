@@ -6,13 +6,14 @@
 #include <stdio.h>
 #include <iostream>
 
-glgrib_grid & glgrib_grid::operator= (const glgrib_grid & grid)
+glgrib_grid & glgrib_grid::operator= (const glgrib_grid & other)
 {
   cleanup ();
-  if ((this != &grid) && grid.isReady ())
+  if ((this != &other) && other.isReady ())
     {
-      glgrib_polygon::operator= (grid);
-      def_from_xyz_col_ind (vertexbuffer, elementbuffer);
+      glgrib_polygon::operator= (other);
+      opts = other.opts;
+      setupVertexAttributes ();
       setReady ();
     }
 }
@@ -113,7 +114,7 @@ void glgrib_grid::init (const glgrib_options_grid & o)
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
   elementbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfLines * sizeof (unsigned int), ind);
 
-  def_from_xyz_col_ind (vertexbuffer, elementbuffer);
+  setupVertexAttributes ();
 
   free (ind);
   free (xyz);

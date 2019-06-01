@@ -3,9 +3,7 @@
 
 #include <stdio.h>
 
-void glgrib_polygon::def_from_xyz_col_ind 
-  (glgrib_opengl_buffer_ptr vertexbuffer, 
-   glgrib_opengl_buffer_ptr elementbuffer)
+void glgrib_polygon::setupVertexAttributes ()
 {
 
   glGenVertexArrays (1, &VertexArrayID);

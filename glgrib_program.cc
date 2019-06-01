@@ -522,16 +522,10 @@ void main ()
   vec3 u = normalize (vec3 (-vertexPos.y, +vertexPos.x, 0.));
   vec3 v = vprod (vertexPos, u);
 
+  bool defined = vertexVal_d != 0;
   vec3 pos;
   
-  // TODO : handle missing values
-  float N = valmin_n + (valmax_n - valmin_n) * (255.0 * vertexVal_n - 1.0) / 254.0;
-  float D = valmin_d + (valmax_d - valmin_d) * (255.0 * vertexVal_d - 1.0) / 254.0;
-  D = D * deg2rad;
-  float X = vscale * N * cos (D) / valmax_n;
-  float Y = vscale * N * sin (D) / valmax_n;
-
-  if (D < valmin_d)
+  if (! defined)
     pos = vec3 (+0.0, +0.0, +0.0);
   else if (gl_VertexID == 0)
     pos = vec3 (+0.0, +0.0, +0.0);
@@ -544,14 +538,20 @@ void main ()
   else if (gl_VertexID == 4)
     pos = vec3 (+1.0, +0.0, +0.0);
 
-  pos = vertexPos + (pos.x * X - pos.y * Y) * u + (pos.x * Y + pos.y * X) * v;
-
-  if (gl_InstanceID % 101 != 0)
-    pos = vec3 (+0.0, +0.0, +0.0);
-
-  vec3 normedPos = compNormedPos (pos);
-  vec3 projedPos = compProjedPos (pos, normedPos);
-  pos = scalePosition (projedPos, normedPos);
+  if (defined)
+    {
+      float N = valmin_n + (valmax_n - valmin_n) * (255.0 * vertexVal_n - 1.0) / 254.0;
+      float D = valmin_d + (valmax_d - valmin_d) * (255.0 * vertexVal_d - 1.0) / 254.0;
+      D = D * deg2rad;
+      float X = vscale * N * cos (D) / valmax_n;
+      float Y = vscale * N * sin (D) / valmax_n;
+     
+      pos = vertexPos + (pos.x * X - pos.y * Y) * u + (pos.x * Y + pos.y * X) * v;
+     
+      vec3 normedPos = compNormedPos (pos);
+      vec3 projedPos = compProjedPos (pos, normedPos);
+      pos = scalePosition (projedPos, normedPos);
+    }
 
   gl_Position =  MVP * vec4 (pos, 1.);
 

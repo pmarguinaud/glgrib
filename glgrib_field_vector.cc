@@ -136,6 +136,7 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
 
   geometry = geom1;
 
+
   data_n = (float *)malloc (geometry->numberOfPoints * sizeof (float));
   data_d = (float *)malloc (geometry->numberOfPoints * sizeof (float));
 
@@ -148,7 +149,6 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
   meta_n.valmax = 0.0f;
   meta_d.valmin = -180.0f;
   meta_d.valmax = +180.0f;
-  
 
 
   for (int i = 0; i < geometry->numberOfPoints; i++)
@@ -169,38 +169,50 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
     else
       throw std::runtime_error ("Inconsistent domain definition for U/V");
 
+
   free (data_u);
   free (data_v);
 
   numberOfColors = 1;
 
-  unsigned char * col0 = (unsigned char *)malloc (numberOfColors 
-                       * geometry->numberOfPoints * sizeof (unsigned char));
-  unsigned char * col1 = (unsigned char *)malloc (numberOfColors 
-                       * geometry->numberOfPoints * sizeof (unsigned char));
+  unsigned char * col_n = (unsigned char *)malloc (numberOfColors 
+                        * geometry->numberOfPoints * sizeof (unsigned char));
+  unsigned char * col_d = (unsigned char *)malloc (numberOfColors 
+                        * geometry->numberOfPoints * sizeof (unsigned char));
 
-  for (int i = 0; i < geometry->numberOfPoints; i++)
-    if (data_n[i] == meta_n.valmis)
-      {
-        col0[i] = 0;
-        col1[i] = 0;
-      }
-    else
-      {
-        col0[i] = 1 + (int)(254 * (data_n[i] - meta_n.valmin)
-                    / (meta_n.valmax - meta_n.valmin));
-        col1[i] = 1 + (int)(254 * (data_d[i] - meta_d.valmin)
-                    / (meta_d.valmax - meta_d.valmin));
-      }
+  glgrib_geometry::sampler * sampler = geometry->newSampler (10);
+
+  do
+    {
+      int i = sampler->index ();
+      if (data_n[i] == meta_n.valmis)
+        {
+          col_n[i] = 0;
+          col_d[i] = 0;
+        }
+      else
+        {
+          col_n[i] = 1 + (int)(254 * (data_n[i] - meta_n.valmin)
+                       / (meta_n.valmax - meta_n.valmin));
+          if (sampler->defined ())
+            col_d[i] = 1 + (int)(254 * (data_d[i] - meta_d.valmin)
+                         / (meta_d.valmax - meta_d.valmin));
+          else
+            col_d[i] = 0;
+        }
+    }
+  while (sampler->next ());
+
+  delete sampler;
 
   buffer_n = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
-                                               * sizeof (unsigned char), col0);
+                                               * sizeof (unsigned char), col_n);
 
   buffer_d = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
-                                               * sizeof (unsigned char), col1);
+                                               * sizeof (unsigned char), col_d);
 
-  free (col0);
-  free (col1);
+  free (col_n);
+  free (col_d);
 
   meta.push_back (meta_n);
   meta.push_back (meta_d);

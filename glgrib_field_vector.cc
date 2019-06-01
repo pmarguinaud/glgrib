@@ -259,6 +259,8 @@ void glgrib_field_vector::render (const glgrib_view * view) const
   float color0[3] = {1.0f, 0.0f, 0.0f};
   glUniform3fv (glGetUniformLocation (program->programID, "color0"), 1, color0);
 
+  glUniform1f (glGetUniformLocation (program->programID, "vscale"), 0.01);
+
 #ifdef UNDEF
 //glgrib_field::render (view);
   glBindVertexArray (VertexArrayID);

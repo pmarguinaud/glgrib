@@ -515,6 +515,8 @@ vec3 vprod (vec3 u, vec3 v)
 
 const float deg2rad = pi / 180.0;
 
+uniform float vscale = 0.01;
+
 void main ()
 {
   vec3 u = normalize (vec3 (-vertexPos.y, +vertexPos.x, 0.));
@@ -526,10 +528,12 @@ void main ()
   float N = valmin_n + (valmax_n - valmin_n) * (255.0 * vertexVal_n - 1.0) / 254.0;
   float D = valmin_d + (valmax_d - valmin_d) * (255.0 * vertexVal_d - 1.0) / 254.0;
   D = D * deg2rad;
-  float X = 0.01 * N * cos (D) / valmax_n;
-  float Y = 0.01 * N * sin (D) / valmax_n;
+  float X = vscale * N * cos (D) / valmax_n;
+  float Y = vscale * N * sin (D) / valmax_n;
 
-  if (gl_VertexID == 0)
+  if (D < valmin_d)
+    pos = vec3 (+0.0, +0.0, +0.0);
+  else if (gl_VertexID == 0)
     pos = vec3 (+0.0, +0.0, +0.0);
   else if (gl_VertexID == 1)
     pos = vec3 (+1.0, +0.0, +0.0);

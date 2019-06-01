@@ -37,9 +37,9 @@ glgrib_shell Shell
             opts.path.push_back (S (path)); 
             opts.scale.push_back (F (scale));
             opts.palette.push_back (S (palette));
-            gwindow->load_field (opts); 
+            gwindow->load_field (opts, I (rank)); 
 	  }, "", 
-     A ("palette", ""), A ("scale", "1.02"), A ("path", "")),
+     A ("palette", ""), A ("scale", "1.02"), A ("path", ""), A ("rank", "0")),
   C (palette,    
 	  {
             gwindow->set_field_palette (S (name));

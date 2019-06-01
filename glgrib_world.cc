@@ -1,4 +1,4 @@
-#include "glgrib_polyhedron.h"
+#include "glgrib_world.h"
 #include "glgrib_opengl.h"
 
 #include <stdlib.h>
@@ -6,7 +6,7 @@
 #include <iostream>
 
 
-void glgrib_polyhedron::render (const glgrib_view * view) const
+void glgrib_world::render (const glgrib_view * view) const
 {
   glBindVertexArray (VertexArrayID);
   if (wireframe)
@@ -17,7 +17,7 @@ void glgrib_polyhedron::render (const glgrib_view * view) const
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void glgrib_polyhedron::cleanup ()
+void glgrib_world::cleanup ()
 {
   if (isReady ())
     glDeleteVertexArrays (1, &VertexArrayID);

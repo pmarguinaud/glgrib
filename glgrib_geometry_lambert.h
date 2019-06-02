@@ -14,6 +14,10 @@ public:
   {
   public:
     sampler (const int lev, const glgrib_geometry_lambert * g) : geom (g) { level = lev; }
+    virtual float getUVangle () const 
+    {
+      return 0.0f;
+    }
     virtual int index () const
     {
       return jglo;

@@ -2,6 +2,8 @@
 #define _GLGRIB_GEOMETRY_H
 
 #include "glgrib_opengl.h"
+
+#include <glm/glm.hpp>
 #include <eccodes.h>
 #include <memory>
 #include <string>
@@ -16,6 +18,7 @@ public:
     virtual int index () const  = 0;
     virtual bool next () = 0;
     virtual bool defined () const = 0;
+    virtual float getUVangle () const = 0;
   protected:
     int level = 1;
   };

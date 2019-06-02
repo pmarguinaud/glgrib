@@ -194,11 +194,22 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
         {
           col_n[i] = 1 + (int)(254 * (data_n[i] - meta_n.valmin)
                        / (meta_n.valmax - meta_n.valmin));
-          if (sampler->defined ())
-            col_d[i] = 1 + (int)(254 * (data_d[i] - meta_d.valmin)
-                         / (meta_d.valmax - meta_d.valmin));
-          else
-            col_d[i] = 0;
+//        if (sampler->defined ())
+            {
+              float alpha = sampler->getUVangle ();
+              float angle = data_d[i] + alpha;
+              angle = data_d[i];
+
+              if (angle < -180.0f)
+                angle += 180.0f;
+              if (angle > +180.0f)
+                angle -= 180.0f;
+
+              col_d[i] = 1 + (int)(254 * (angle - meta_d.valmin)
+                           / (meta_d.valmax - meta_d.valmin));
+            }
+//        else
+//          col_d[i] = 0;
         }
     }
   while (sampler->next ());
@@ -269,7 +280,7 @@ void glgrib_field_vector::render (const glgrib_view * view) const
   float color0[3] = {1.0f, 0.0f, 0.0f};
   glUniform3fv (glGetUniformLocation (program->programID, "color0"), 1, color0);
 
-  glUniform1f (glGetUniformLocation (program->programID, "vscale"), 0.01);
+  glUniform1f (glGetUniformLocation (program->programID, "vscale"), 0.2);
 
 #ifdef UNDEF
 //glgrib_field::render (view);

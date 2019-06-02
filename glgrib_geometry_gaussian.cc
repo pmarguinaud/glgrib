@@ -10,8 +10,8 @@
 
 #include <iostream>
 
-static const double rad2deg = 180.0 / M_PI;
-static const double deg2rad = M_PI / 180.0;
+const double glgrib_geometry_gaussian::rad2deg = 180.0 / M_PI;
+const double glgrib_geometry_gaussian::deg2rad = M_PI / 180.0;
 
 #define MODULO(x, y) ((x)%(y))
 #define JDLON(JLON1, JLON2) (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1))
@@ -244,6 +244,7 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (codes_handle * h)
             glm::rotate (glm::mat4 (1.0f),
                          glm::radians (180.0f+(float)longitudeOfStretchingPoleInDegrees),
                          glm::vec3 (0.0f, 0.0f, 1.0f));
+      rotated = true;
     }
 
   size_t pl_len;

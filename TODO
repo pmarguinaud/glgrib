@@ -10,3 +10,4 @@ Draw 2d vectors using arrows & OpenGL instances
 Accessors for scene
 Better container than fieldlist
 Make geometry member of glgrib_world protected
+Optimize samplers

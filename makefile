@@ -104,4 +104,10 @@ test_small_aro: ./glgrib.x
 test_wind_arp: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry t31c2.4/Z.grb --field[0].vector --field\[0\].path t31c2.4/S015WIND.U.PHYS.grb t31c2.4/S015WIND.V.PHYS.grb   --field[0].scale 1.01
 
+test_wind_glob25: ./glgrib.x
+	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector --field\[0\].path arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 arpt1798_wind/lfpw_0_2_3_sfc_20_v.grib2  --field[0].scale 1.01
+
+test_wind_t1798: ./glgrib.x
+	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/S105WIND.U.PHYS.grb --landscape.orography 0  --field[0].vector --field\[0\].path arpt1798_wind/S105WIND.U.PHYS.grb arpt1798_wind/S105WIND.V.PHYS.grb  --field[0].scale 1.01
+
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane

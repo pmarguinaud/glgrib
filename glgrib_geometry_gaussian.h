@@ -65,9 +65,12 @@ public:
     }
     virtual bool defined () const
     {
-      if (jlat % level != 0)
+      int latlevel = (float)geom->Nj / (float)level;
+      float lat = M_PI * (0.5 - (float)(jlat+1) / (float)(geom->Nj + 1));
+      int lonlevel = latlevel / (2 * cos (lat));
+      if (jlat % latlevel != 0)
         return false;
-      if (jlon % level != 0)
+      if (jlon % lonlevel != 0)
         return false;
       return true;
     }

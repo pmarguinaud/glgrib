@@ -43,10 +43,9 @@ public:
       float dlat = Dlat / (geom->Nj - 1);
       float lat0 = deg2rad * geom->latitudeOfFirstGridPointInDegrees;
       float lat = lat0 + dlat * (float)jlat;
-      int lonlevel = (level * Dlat) / (Dlon * cos (lat));
-      if (lonlevel == 0)
-        lonlevel = level;
-      if (jlat % level != 0)
+      int latlevel = (geom->Nj * M_PI) / (level * Dlat);
+      int lonlevel = (latlevel * Dlat) / (Dlon * cos (lat));
+      if (jlat % latlevel != 0)
         return false;
       if (jlon % lonlevel != 0)
         return false;

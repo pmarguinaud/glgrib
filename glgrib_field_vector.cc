@@ -180,8 +180,7 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
   unsigned char * col_d = (unsigned char *)malloc (numberOfColors 
                         * geometry->numberOfPoints * sizeof (unsigned char));
 
-  glgrib_geometry::sampler * sampler = geometry->newSampler (10);
-
+  glgrib_geometry::sampler * sampler = geometry->newSampler (50);
   do
     {
       int i = sampler->index ();

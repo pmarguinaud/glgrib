@@ -35,9 +35,25 @@ public:
     }
     virtual bool defined () const
     {
-      if (jlat % level != 0)
+      xy_t pt_sw ((-geom->Nux / 2) * geom->DxInMetres, 
+                  (-geom->Nuy / 2) * geom->DyInMetres);
+      xy_t pt_ne ((+geom->Nux / 2) * geom->DxInMetres, 
+                  (+geom->Nuy / 2) * geom->DyInMetres);
+      pt_sw = pt_sw + geom->center_xy;
+      pt_ne = pt_ne + geom->center_xy;
+      latlon_t latlon_sw = geom->p_pj.xy_to_latlon (pt_sw);
+      latlon_t latlon_ne = geom->p_pj.xy_to_latlon (pt_ne);
+
+      float Dlat = latlon_ne.lat - latlon_sw.lat;
+      float Dlon = latlon_ne.lon - latlon_sw.lon;
+      float lat = (latlon_ne.lat + latlon_sw.lat) / 2.0f;
+
+      int latlevel = (geom->Ny * M_PI) / (level * Dlat);
+      int lonlevel = (latlevel * Dlat) / (Dlon * cos (lat));
+
+      if (jlat % latlevel != 0)
         return false;
-      if (jlon % level != 0)
+      if (jlon % lonlevel != 0)
         return false;
       return true;
     }

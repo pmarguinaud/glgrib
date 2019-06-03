@@ -194,22 +194,22 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
         {
           col_n[i] = 1 + (int)(254 * (data_n[i] - meta_n.valmin)
                        / (meta_n.valmax - meta_n.valmin));
-//        if (sampler->defined ())
+          if (sampler->defined ())
             {
               float alpha = sampler->getUVangle ();
               float angle = data_d[i] + alpha;
               angle = data_d[i];
 
               if (angle < -180.0f)
-                angle += 180.0f;
+                angle += 360.0f;
               if (angle > +180.0f)
-                angle -= 180.0f;
+                angle -= 360.0f;
 
               col_d[i] = 1 + (int)(254 * (angle - meta_d.valmin)
                            / (meta_d.valmax - meta_d.valmin));
             }
-//        else
-//          col_d[i] = 0;
+          else
+            col_d[i] = 0;
         }
     }
   while (sampler->next ());

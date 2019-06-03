@@ -10,8 +10,8 @@
 #include <iostream>
 #include <stdexcept>
 
-static const double rad2deg = 180.0 / M_PI;
-static const double deg2rad = M_PI / 180.0;
+const double glgrib_geometry_latlon::rad2deg = 180.0 / M_PI;
+const double glgrib_geometry_latlon::deg2rad = M_PI / 180.0;
 
 void glgrib_geometry_latlon::gencoords (float * px, float * py) const
 {

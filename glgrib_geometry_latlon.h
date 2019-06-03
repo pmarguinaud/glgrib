@@ -10,6 +10,9 @@
 class glgrib_geometry_latlon : public glgrib_geometry
 {
 public:
+  static const double rad2deg;
+  static const double deg2rad;
+
   class sampler: public glgrib_geometry::sampler
   {
   public:
@@ -35,9 +38,17 @@ public:
     }
     virtual bool defined () const
     {
+      float Dlat = deg2rad * (geom->latitudeOfFirstGridPointInDegrees - geom->latitudeOfLastGridPointInDegrees);
+      float Dlon = deg2rad * (geom->longitudeOfLastGridPointInDegrees - geom->longitudeOfFirstGridPointInDegrees);
+      float dlat = Dlat / (geom->Nj - 1);
+      float lat0 = deg2rad * geom->latitudeOfFirstGridPointInDegrees;
+      float lat = lat0 + dlat * (float)jlat;
+      int lonlevel = (level * Dlat) / (Dlon * cos (lat));
+      if (lonlevel == 0)
+        lonlevel = level;
       if (jlat % level != 0)
         return false;
-      if (jlon % level != 0)
+      if (jlon % lonlevel != 0)
         return false;
       return true;
     }

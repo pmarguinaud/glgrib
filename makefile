@@ -101,4 +101,7 @@ test_vector: ./glgrib.x
 test_small_aro: ./glgrib.x
 	$(GDB) ./glgrib.x --field[0].vector --field\[0\].path ./aro_small/S041WIND.U.PHYS.grb ./aro_small/S041WIND.V.PHYS.grb  --field\[0\].scale 1.00 --landscape.path '' --camera.lon 26.64 --camera.lat 67.36 --camera.fov 0.5
 
+test_wind_arp: ./glgrib.x
+	$(GDB) ./glgrib.x --landscape.geometry t31c2.4/Z.grb --field[0].vector --field\[0\].path t31c2.4/S015WIND.U.PHYS.grb t31c2.4/S015WIND.V.PHYS.grb   --field[0].scale 1.01
+
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane

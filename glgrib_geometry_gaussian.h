@@ -24,6 +24,7 @@ public:
   virtual ~glgrib_geometry_gaussian ();
   virtual void applyUVangle (float *) const;
   virtual void sample (unsigned char *, const unsigned char, const int) const;
+  virtual float resolution (int level = 0) const { if (level == 0) level = Nj; return M_PI / level; }
 private:
   long int * pl = NULL;
   long int Nj;

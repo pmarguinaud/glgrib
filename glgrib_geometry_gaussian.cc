@@ -448,6 +448,7 @@ void glgrib_geometry_gaussian::applyUVangle (float * angle) const
       float sinlat0 = sin (deg2rad * latitudeOfStretchingPoleInDegrees);
       glm::vec3 xyz0 = glm::vec3 (coslon0 * coslat0, sinlon0 * coslat0, sinlat0);
    
+#pragma omp parallel for 
       for (int jlat = 0; jlat < Nj; jlat++)
         {
           float coordy = M_PI * (0.5 - (float)(jlat + 1) / (float)(Nj + 1));
@@ -485,14 +486,15 @@ void glgrib_geometry_gaussian::applyUVangle (float * angle) const
 
 void glgrib_geometry_gaussian::sample (unsigned char * p, const unsigned char p0, const int level) const
 {
-  int latlevel = (float)Nj / (float)level;
+  int lat_stride = (float)Nj / (float)level;
 
+#pragma omp parallel for 
   for (int jlat = 0; jlat < Nj; jlat++)
     {
       float lat = M_PI * (0.5 - (float)(jlat+1) / (float)(Nj + 1));
-      int lonlevel = latlevel / (2 * cos (lat));
-      for (int jlon = 0; jlon < Nj; jlon++)
-        if ((jlat % latlevel != 0) || (jlon % lonlevel != 0))
+      int lon_stride = lat_stride / cos (lat);
+      for (int jlon = 0; jlon < pl[jlat]; jlon++)
+        if ((jlat % lat_stride != 0) || (jlon % lon_stride != 0))
           p[jglooff[jlat]+jlon] = p0;
     }
 }

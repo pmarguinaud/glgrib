@@ -165,16 +165,28 @@ void glgrib_geometry_lambert::sample (unsigned char * p, const unsigned char p0,
   float Dlon = latlon_ne.lon - latlon_sw.lon;
   float lat = (latlon_ne.lat + latlon_sw.lat) / 2.0f;
   
-  int latlevel = (Ny * M_PI) / (level * Dlat);
+  int lat_stride = (Ny * M_PI) / (level * Dlat);
 
   for (int jlat = 0; jlat < Ny; jlat++)
     {
-      int lonlevel = (latlevel * Dlat) / (Dlon * cos (lat));
+      int lon_stride = (lat_stride * Dlat) / (Dlon * cos (lat));
       for (int jlon = 0; jlon < Nx; jlon++)
-        if ((jlat % latlevel != 0) || (jlon % lonlevel != 0))
+        if ((jlat % lat_stride != 0) || (jlon % lon_stride != 0))
           p[jlat*Nx+jlon] = p0;
     }
+}
 
-  
+float glgrib_geometry_lambert::resolution (int level) const 
+{
+  if (level == 0)
+    level == Ny;
+  xy_t pt_sw ((-Nux / 2) * DxInMetres, (-Nuy / 2) * DyInMetres);
+  xy_t pt_ne ((+Nux / 2) * DxInMetres, (+Nuy / 2) * DyInMetres);
+  pt_sw = pt_sw + center_xy;
+  pt_ne = pt_ne + center_xy;
+  latlon_t latlon_sw = p_pj.xy_to_latlon (pt_sw);
+  latlon_t latlon_ne = p_pj.xy_to_latlon (pt_ne);
+  float Dlat = latlon_ne.lat - latlon_sw.lat;
+  return Dlat / level;
 }
 

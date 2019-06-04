@@ -191,7 +191,9 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
                    / (meta_d.valmax - meta_d.valmin));
     }
 
-  geometry->sample (col_d, 0, 50);
+  float resolution = geometry->resolution ();
+  const int npts = 50;
+  geometry->sample (col_d, 0, npts);
 
   buffer_n = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
                                                * sizeof (unsigned char), col_n);
@@ -222,6 +224,8 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
       values.push_back (new_glgrib_field_float_buffer_ptr (data_n));
       values.push_back (new_glgrib_field_float_buffer_ptr (data_d));
     }
+
+  vscale = (M_PI / npts) / (meta_n.valmax || 1.0f);
 
   setReady ();
 }
@@ -257,7 +261,7 @@ void glgrib_field_vector::render (const glgrib_view * view) const
   float color0[3] = {1.0f, 0.0f, 0.0f};
   glUniform3fv (glGetUniformLocation (program->programID, "color0"), 1, color0);
 
-  glUniform1f (glGetUniformLocation (program->programID, "vscale"), 0.2);
+  glUniform1f (glGetUniformLocation (program->programID, "vscale"), vscale);
 
 #ifdef UNDEF
 //glgrib_field::render (view);
@@ -285,7 +289,7 @@ void glgrib_field_vector::cleanup ()
   glgrib_field::cleanup ();
 }
 
-void glgrib_field_vector::reSample (int level)
+void glgrib_field_vector::reSample (const glgrib_view & view)
 {
   buffer_d->bind (GL_ARRAY_BUFFER);
   unsigned char * col_d = (unsigned char *)glMapBufferRange (GL_ARRAY_BUFFER, 0, 
@@ -293,15 +297,20 @@ void glgrib_field_vector::reSample (int level)
                                            GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
 
   float * data_d = values[1]->data ();
+  const glgrib_field_metadata & meta_n = meta[0];
   const glgrib_field_metadata & meta_d = meta[1];
 
-  for (int i = 0; i < geometry->numberOfPoints; i++)
-    {
-      col_d[i] = 1 + (int)(254 * (data_d[i] - meta_d.valmin)
-                   / (meta_d.valmax - meta_d.valmin));
-    }
+  const float deg2rad = M_PI / 180.0;
+  float w = view.opts.distance * deg2rad * view.opts.fov;
 
-  geometry->sample (col_d, 0, 50);
+  const int npts = 2 * 50 / w;
+
+  for (int i = 0; i < geometry->numberOfPoints; i++)
+    col_d[i] = 1 + (int)(254 * (data_d[i] - meta_d.valmin)
+                 / (meta_d.valmax - meta_d.valmin));
+  geometry->sample (col_d, 0, npts);
+
+  vscale = (M_PI / npts) / (meta_n.valmax || 1.0f);
 
   glFlushMappedBufferRange (GL_ARRAY_BUFFER, 0, numberOfPoints * sizeof (unsigned char));
   glUnmapBuffer (GL_ARRAY_BUFFER);

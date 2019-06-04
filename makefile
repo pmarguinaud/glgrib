@@ -7,6 +7,11 @@ GDB=gdb -ex='set confirm on' -ex=run -ex=quit --args
 CXXFLAGS=-fopenmp -std=c++11 -g -I$(HOME)/3d/usr/include -L$(HOME)/3d/usr/lib64 -Wl,-rpath,$(HOME)/3d/usr/lib64 -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto
 CXXFLAGS += -I$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/include -L$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib -Wl,-rpath,$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib
 
+all: set.x glgrib.x
+
+set.x: set.c
+	cc -I$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/include -L$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib -Wl,-rpath,$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib -g -o set.x set.c -leccodes
+
 glgrib.x: glgrib_field_vector.o glgrib_field_scalar.o glgrib_geometry_lambert.o glgrib_projection.o glgrib_colorbar.o glgrib_font.o glgrib_string.o glgrib_geometry_latlon.o glgrib_window_offscreen.o glgrib_geometry.o glgrib_geometry_gaussian.o glgrib_window.o glgrib_options.o glgrib_shell.o glgrib_bmp.o glgrib_landscape.o glgrib_palette.o glgrib_field.o glgrib_load.o glgrib_polygon.o glgrib_program.o glgrib_view.o glgrib_world.o glgrib.o glgrib_opengl.o glgrib_png.o glgrib_scene.o glgrib_coastlines.o glgrib_grid.o glgrib_shader.o
 	g++  $(CXXFLAGS) -o glgrib.x glgrib_field_vector.o glgrib_field_scalar.o glgrib_geometry_lambert.o glgrib_projection.o glgrib_colorbar.o glgrib_font.o glgrib_string.o glgrib_geometry_latlon.o glgrib_window_offscreen.o glgrib_geometry.o glgrib_geometry_gaussian.o glgrib_window.o glgrib_options.o glgrib_shell.o glgrib_bmp.o glgrib_landscape.o glgrib_palette.o glgrib_field.o glgrib_load.o glgrib_polygon.o glgrib_view.o glgrib_program.o glgrib_world.o glgrib.o glgrib_opengl.o glgrib_png.o glgrib_scene.o glgrib_coastlines.o glgrib_grid.o glgrib_shader.o $(LDFLAGS)
 
@@ -104,10 +109,16 @@ test_small_aro: ./glgrib.x
 test_wind_arp: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry t31c2.4/Z.grb --field[0].vector --field\[0\].path t31c2.4/S015WIND.U.PHYS.grb t31c2.4/S015WIND.V.PHYS.grb   --field[0].scale 1.01
 
+test_vector_glob25: ./glgrib.x
+	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector --field\[0\].path arpt1798_wind/glob25_+1.grb arpt1798_wind/glob25_+1.grb  --field[0].scale 1.01
+
 test_wind_glob25: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector --field\[0\].path arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 arpt1798_wind/lfpw_0_2_3_sfc_20_v.grib2  --field[0].scale 1.01
 
 test_wind_t1798: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/S105WIND.U.PHYS.grb --landscape.orography 0  --field[0].vector --field\[0\].path arpt1798_wind/S105WIND.U.PHYS.grb arpt1798_wind/S105WIND.V.PHYS.grb  --field[0].scale 1.01
+
+test_vector_t1798: ./glgrib.x
+	$(GDB) ./glgrib.x  --landscape.geometry arpt1798_wind/+1.grb --landscape.orography 0 --field[0].vector --field\[0\].path arpt1798_wind/+1.grb arpt1798_wind/+1.grb  --field[0].scale 1.01
 
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane

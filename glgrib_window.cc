@@ -175,7 +175,7 @@ void glgrib_window::resample_current_field ()
   if (v == NULL)
     return;
 
-  v->reSample (5);
+  v->reSample (scene.d.view);
 
 }
 

@@ -23,6 +23,12 @@ public:
   virtual ~glgrib_geometry_latlon ();
   virtual void applyUVangle (float *) const {}
   virtual void sample (unsigned char *, const unsigned char, const int) const;
+  virtual float resolution (int level = 0) const 
+  { 
+    if (level == 0)
+      level = Nj;
+    return deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees) / level;
+  }
 private:
   long int Ni, Nj;
   double latitudeOfFirstGridPointInDegrees;

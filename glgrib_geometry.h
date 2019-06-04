@@ -29,6 +29,7 @@ public:
   virtual std::string md5 () const = 0;
   virtual void applyUVangle (float *) const = 0;
   virtual void sample (unsigned char *, const unsigned char, const int) const = 0;
+  virtual float resolution (int = 0) const = 0;
 protected:
   std::string md5string (const unsigned char []) const;
 };

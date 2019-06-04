@@ -2,6 +2,7 @@
 #define _GLGRIB_FIELD_VECTOR_H
 
 #include "glgrib_field.h"
+#include "glgrib_view.h"
 
 class glgrib_field_vector : public glgrib_field
 {
@@ -18,10 +19,11 @@ public:
   virtual void render (const glgrib_view *) const;
   virtual ~glgrib_field_vector ();
   void setupVertexAttributes ();
-  void reSample (int);
+  void reSample (const glgrib_view &);
 private:
   glgrib_opengl_buffer_ptr buffer_n, buffer_d;
   GLuint VertexArrayIDvector = 0;
+  float vscale;
 protected:
   virtual void cleanup ();
 };

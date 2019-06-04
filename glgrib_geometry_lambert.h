@@ -122,6 +122,7 @@ public:
   virtual ~glgrib_geometry_lambert ();
   virtual void applyUVangle (float *) const {}
   virtual void sample (unsigned char *, const unsigned char, const int) const;
+  virtual float resolution (int = 0) const;
 private:
   long int Nx, Ny, Nux, Nuy, projectionCentreFlag;
   double LaDInDegrees, LoVInDegrees, DxInMetres, DyInMetres;

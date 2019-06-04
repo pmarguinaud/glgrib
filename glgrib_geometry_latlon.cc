@@ -196,15 +196,15 @@ void glgrib_geometry_latlon::sample (unsigned char * p, const unsigned char p0, 
   float dlat = Dlat / (Nj - 1);
   float lat0 = deg2rad * latitudeOfFirstGridPointInDegrees;
 
-  int latlevel = (Nj * M_PI) / (level * Dlat);
+  int lat_stride = (Nj * M_PI) / (level * Dlat);
 
   for (int jlat = 0; jlat < Nj; jlat++)
     {
       float lat = lat0 + dlat * (float)jlat;
       float coslat = cos (lat);
-      int lonlevel = (latlevel * Dlat) / (Dlon * coslat);
+      int lon_stride = 2 * (lat_stride * Dlat) / (Dlon * coslat);
       for (int jlon = 0; jlon < Ni; jlon++)
-        if ((jlat % latlevel != 0) || (jlon % lonlevel != 0))
+        if ((jlat % lat_stride != 0) || (jlon % lon_stride != 0))
           p[jlat*Ni+jlon] = p0;
     }
 }

@@ -166,10 +166,14 @@ void glgrib_geometry_lambert::sample (unsigned char * p, const unsigned char p0,
   float lat = (latlon_ne.lat + latlon_sw.lat) / 2.0f;
   
   int lat_stride = (Ny * M_PI) / (level * Dlat);
+  if (lat_stride == 0)
+    lat_stride = 1;
 
   for (int jlat = 0; jlat < Ny; jlat++)
     {
       int lon_stride = (lat_stride * Dlat) / (Dlon * cos (lat));
+      if (lon_stride == 0)
+        lon_stride = 1;
       for (int jlon = 0; jlon < Nx; jlon++)
         if ((jlat % lat_stride != 0) || (jlon % lon_stride != 0))
           p[jlat*Nx+jlon] = p0;

@@ -6,12 +6,13 @@ Reorganize shaders ?
 Change names like toggle_transform_type into toggleTransformType
 Make a view below field and above ground, with XYZ movement
 on/off options
-Draw 2d vectors using arrows & OpenGL instances
 Accessors for scene
 Better container than fieldlist
 Make geometry member of glgrib_world protected
 
+Adjust vector density when scale changes
 
-6 * 3.1415927 * (20/180) = 2.0943
+Review program management in scene rendering
+
 
 

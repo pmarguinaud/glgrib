@@ -234,12 +234,11 @@ void glgrib_field_vector::render (const glgrib_view * view) const
 {
   const glgrib_program * program = get_program (); 
   float scale0[3] = {dopts.scale, dopts.scale, dopts.scale};
-  const glgrib_palette & p = dopts.palette;
-
-  p.setRGBA255 (program->programID);
 
   std::vector<float> valmax = getMaxValue ();
   std::vector<float> valmin = getMinValue ();
+
+// Display vectors
 
   glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
 
@@ -252,28 +251,41 @@ void glgrib_field_vector::render (const glgrib_view * view) const
   glUniform1f (glGetUniformLocation (program->programID, "valmin"), valmin[0]);
   glUniform1f (glGetUniformLocation (program->programID, "valmax"), valmax[0]);
 
-  float palmax = p.hasMax () ? p.getMax () : valmax[0];
-  float palmin = p.hasMin () ? p.getMin () : valmax[1];
-
-  glUniform1f (glGetUniformLocation (program->programID, "palmin"), palmin);
-  glUniform1f (glGetUniformLocation (program->programID, "palmax"), palmax);
 
   float color0[3] = {1.0f, 0.0f, 0.0f};
   glUniform3fv (glGetUniformLocation (program->programID, "color0"), 1, color0);
 
   glUniform1f (glGetUniformLocation (program->programID, "vscale"), vscale);
 
-#ifdef UNDEF
-//glgrib_field::render (view);
+  glBindVertexArray (VertexArrayIDvector);
+  glDrawArraysInstanced (GL_LINE_STRIP, 0, 5, numberOfPoints); 
+
+// Display vector norm
+
+  program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
+  program->use ();
+  view->setMVP (program->programID);
+
+  const glgrib_palette & p = dopts.palette;
+  p.setRGBA255 (program->programID);
+
+  for (int i = 0; i < 3; i++)
+    scale0[i] *= 0.99;
+
+  glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
+  glUniform1f (glGetUniformLocation (program->programID, "valmin"), valmin[0]);
+  glUniform1f (glGetUniformLocation (program->programID, "valmax"), valmax[0]);
+
+  float palmax = p.hasMax () ? p.getMax () : valmax[0];
+  float palmin = p.hasMin () ? p.getMin () : valmin[0];
+
+  glUniform1f (glGetUniformLocation (program->programID, "palmin"), palmin);
+  glUniform1f (glGetUniformLocation (program->programID, "palmax"), palmax);
+
+
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
   glBindVertexArray (0);
-#endif
-
-  glBindVertexArray (VertexArrayIDvector);
-
-  glDrawArraysInstanced (GL_LINE_STRIP, 0, 5, numberOfPoints); 
-
 
 }
 

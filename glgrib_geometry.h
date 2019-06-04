@@ -12,17 +12,6 @@
 class glgrib_geometry
 {
 public:
-  class sampler
-  {
-  public:
-    virtual int index () const  = 0;
-    virtual bool next () = 0;
-    virtual bool defined () const = 0;
-    virtual float getUVangle () const = 0;
-  protected:
-    int level = 1;
-  };
-
   virtual bool isEqual (const glgrib_geometry &) const = 0;
   virtual bool operator== (const glgrib_geometry & geom) const
   {
@@ -38,7 +27,8 @@ public:
   unsigned int numberOfTriangles;
   glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
   virtual std::string md5 () const = 0;
-  virtual sampler * newSampler (const int) const = 0;
+  virtual void applyUVangle (float *) const = 0;
+  virtual void sample (unsigned char *, const unsigned char, const int) const = 0;
 protected:
   std::string md5string (const unsigned char []) const;
 };

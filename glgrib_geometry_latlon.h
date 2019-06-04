@@ -12,51 +12,6 @@ class glgrib_geometry_latlon : public glgrib_geometry
 public:
   static const double rad2deg;
   static const double deg2rad;
-
-  class sampler: public glgrib_geometry::sampler
-  {
-  public:
-    sampler (const int lev, const glgrib_geometry_latlon * g) : geom (g) { level = lev; }
-    virtual float getUVangle () const 
-    {
-      return 0.0f;
-    }
-    virtual int index () const
-    {
-      return jglo;
-    }
-    virtual bool next () 
-    {
-      jglo++;
-      jlon++;
-      if (jlon >= geom->Ni)
-        {
-          jlon = 0;
-	  jlat++;
-	}
-      return jlat < geom->Nj;
-    }
-    virtual bool defined () const
-    {
-      float Dlat = deg2rad * (geom->latitudeOfFirstGridPointInDegrees - geom->latitudeOfLastGridPointInDegrees);
-      float Dlon = deg2rad * (geom->longitudeOfLastGridPointInDegrees - geom->longitudeOfFirstGridPointInDegrees);
-      float dlat = Dlat / (geom->Nj - 1);
-      float lat0 = deg2rad * geom->latitudeOfFirstGridPointInDegrees;
-      float lat = lat0 + dlat * (float)jlat;
-      int latlevel = (geom->Nj * M_PI) / (level * Dlat);
-      int lonlevel = (latlevel * Dlat) / (Dlon * cos (lat));
-      if (jlat % latlevel != 0)
-        return false;
-      if (jlon % lonlevel != 0)
-        return false;
-      return true;
-    }
-  private:
-    const glgrib_geometry_latlon * geom = NULL;
-    int jglo = 0;
-    int jlat = 0;
-    int jlon = 0;
-  };
   virtual bool isEqual (const glgrib_geometry &) const;
   virtual std::string md5 () const;
   virtual int latlon2index (float, float) const;
@@ -66,10 +21,8 @@ public:
   virtual void gencoords (float *, float *) const;
   virtual int size () const;
   virtual ~glgrib_geometry_latlon ();
-  virtual glgrib_geometry::sampler * newSampler (const int level) const
-  {
-    return new sampler (level, this);
-  }
+  virtual void applyUVangle (float *) const {}
+  virtual void sample (unsigned char *, const unsigned char, const int) const;
 private:
   long int Ni, Nj;
   double latitudeOfFirstGridPointInDegrees;

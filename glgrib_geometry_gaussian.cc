@@ -438,3 +438,62 @@ bool glgrib_geometry_gaussian::isEqual (const glgrib_geometry & geom) const
     }
 }
 
+void glgrib_geometry_gaussian::applyUVangle (float * angle) const 
+{
+  if (rotated)
+    {
+      float coslon0 = cos (deg2rad * longitudeOfStretchingPoleInDegrees);
+      float sinlon0 = sin (deg2rad * longitudeOfStretchingPoleInDegrees);
+      float coslat0 = cos (deg2rad * latitudeOfStretchingPoleInDegrees);
+      float sinlat0 = sin (deg2rad * latitudeOfStretchingPoleInDegrees);
+      glm::vec3 xyz0 = glm::vec3 (coslon0 * coslat0, sinlon0 * coslat0, sinlat0);
+   
+      for (int jlat = 0; jlat < Nj; jlat++)
+        {
+          float coordy = M_PI * (0.5 - (float)(jlat + 1) / (float)(Nj + 1));
+          float sincoordy = sin (coordy);
+          float lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
+          float coslat = cos (lat); float sinlat = sin (lat);
+          for (int jlon = 0; jlon < pl[jlat]; jlon++)
+            {
+              int jglo = jglooff[jlat] + jlon;
+
+              float coordx = 2. * M_PI * (float)jlon / (float)pl[jlat];
+              float lon = coordx;
+              float coslon = cos (lon); float sinlon = sin (lon);
+  
+              glm::vec4 XYZ = rot * glm::vec4 (coslon * coslat, sinlon * coslat, sinlat, 0.0f);
+              glm::vec3 xyz = glm::vec3 (XYZ.x, XYZ.y, XYZ.z);
+  
+              glm::vec3 u1 = glm::normalize (glm::cross (xyz0 - xyz, xyz));
+              glm::vec3 u0 = glm::normalize (glm::cross (glm::vec3 (0.0f, 0.0f, 1.0f), xyz));
+              glm::vec3 v0 = glm::cross (xyz, u0);
+              float u0u1 = glm::dot (u0, u1);
+              float v0u1 = glm::dot (v0, u1);
+  
+              angle[jglo] += rad2deg * atan2 (v0u1, u0u1);
+
+              if (angle[jglo] < -180.0f)
+                angle[jglo] += 360.0f;
+              if (angle[jglo] > +180.0f)
+                angle[jglo] -= 360.0f;
+	    }
+        }
+    }
+  return;
+}
+
+void glgrib_geometry_gaussian::sample (unsigned char * p, const unsigned char p0, const int level) const
+{
+  int latlevel = (float)Nj / (float)level;
+
+  for (int jlat = 0; jlat < Nj; jlat++)
+    {
+      float lat = M_PI * (0.5 - (float)(jlat+1) / (float)(Nj + 1));
+      int lonlevel = latlevel / (2 * cos (lat));
+      for (int jlon = 0; jlon < Nj; jlon++)
+        if ((jlat % latlevel != 0) || (jlon % lonlevel != 0))
+          p[jglooff[jlat]+jlon] = p0;
+    }
+}
+

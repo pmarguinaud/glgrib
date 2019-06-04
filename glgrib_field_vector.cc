@@ -180,40 +180,18 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
   unsigned char * col_d = (unsigned char *)malloc (numberOfColors 
                         * geometry->numberOfPoints * sizeof (unsigned char));
 
-  glgrib_geometry::sampler * sampler = geometry->newSampler (50);
-  do
+
+  geometry->applyUVangle (data_d);
+
+  for (int i = 0; i < geometry->numberOfPoints; i++)
     {
-      int i = sampler->index ();
-      if (data_n[i] == meta_n.valmis)
-        {
-          col_n[i] = 0;
-          col_d[i] = 0;
-        }
-      else
-        {
-          col_n[i] = 1 + (int)(254 * (data_n[i] - meta_n.valmin)
-                       / (meta_n.valmax - meta_n.valmin));
-          if (sampler->defined ())
-            {
-              float alpha = sampler->getUVangle ();
-              float angle = data_d[i] + alpha;
-              angle = data_d[i];
-
-              if (angle < -180.0f)
-                angle += 360.0f;
-              if (angle > +180.0f)
-                angle -= 360.0f;
-
-              col_d[i] = 1 + (int)(254 * (angle - meta_d.valmin)
-                           / (meta_d.valmax - meta_d.valmin));
-            }
-          else
-            col_d[i] = 0;
-        }
+      col_n[i] = 1 + (int)(254 * (data_n[i] - meta_n.valmin)
+                   / (meta_n.valmax - meta_n.valmin));
+      col_d[i] = 1 + (int)(254 * (data_d[i] - meta_d.valmin)
+                   / (meta_d.valmax - meta_d.valmin));
     }
-  while (sampler->next ());
 
-  delete sampler;
+  geometry->sample (col_d, 0, 50);
 
   buffer_n = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
                                                * sizeof (unsigned char), col_n);
@@ -314,33 +292,19 @@ void glgrib_field_vector::reSample (int level)
                                            numberOfPoints * sizeof (unsigned char), 
                                            GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
 
-  float * val_d = values[1]->data ();
+  float * data_d = values[1]->data ();
   const glgrib_field_metadata & meta_d = meta[1];
 
-  glgrib_geometry::sampler * sampler = geometry->newSampler (level);
-  do
+  for (int i = 0; i < geometry->numberOfPoints; i++)
     {
-      int i = sampler->index ();
-      if (val_d[i] == meta_d.valmis)
-        {
-          col_d[i] = 0;
-        }
-      else
-        {
-          if (sampler->defined ())
-            col_d[i] = 1 + (int)(254 * (val_d[i] - meta_d.valmin)
-                         / (meta_d.valmax - meta_d.valmin));
-          else
-            col_d[i] = 0;
-        }
+      col_d[i] = 1 + (int)(254 * (data_d[i] - meta_d.valmin)
+                   / (meta_d.valmax - meta_d.valmin));
     }
-  while (sampler->next ());
-  delete sampler;
+
+  geometry->sample (col_d, 0, 50);
 
   glFlushMappedBufferRange (GL_ARRAY_BUFFER, 0, numberOfPoints * sizeof (unsigned char));
   glUnmapBuffer (GL_ARRAY_BUFFER);
-
-
 }
 
 

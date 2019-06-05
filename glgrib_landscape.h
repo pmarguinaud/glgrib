@@ -13,10 +13,6 @@ class glgrib_landscape : public glgrib_world
 public:
   glgrib_landscape & operator=(const glgrib_landscape &);
   virtual void init (const glgrib_options_landscape &);
-  virtual glgrib_program::kind get_program_kind () const 
-    { 
-      return glgrib_program::FLAT_TEX;
-    }
   void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual ~glgrib_landscape ();
   virtual bool use_alpha () { return false; }

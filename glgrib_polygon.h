@@ -10,7 +10,6 @@ class glgrib_polygon : public glgrib_object
 public:
   void setupVertexAttributes ();
   virtual void render (const glgrib_view &, const glgrib_options_light &) const;
-  virtual glgrib_program::kind get_program_kind () const { return glgrib_program::RGB; }
   virtual bool use_alpha () { return false; }
   virtual ~glgrib_polygon ();
 protected:

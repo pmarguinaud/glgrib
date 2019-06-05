@@ -12,10 +12,6 @@ public:
   glgrib_field_vector () { }
   glgrib_field_vector (const glgrib_field_vector &);
   virtual void init (const glgrib_options_field &, int = 0);
-  virtual glgrib_program::kind get_program_kind () const 
-    { 
-      return glgrib_program::GRADIENT_FLAT_SCALE_VECTOR;
-    }
   virtual void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual ~glgrib_field_vector ();
   void setupVertexAttributes ();

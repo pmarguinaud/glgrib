@@ -138,7 +138,7 @@ void glgrib_scene::init (const glgrib_options & o)
 
       if (defined)
         {
-          if (d.opts.field[i].vector)
+          if (d.opts.field[i].vector.on)
             fld = new glgrib_field_vector ();
           else
             fld = new glgrib_field_scalar ();

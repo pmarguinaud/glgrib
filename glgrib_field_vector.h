@@ -16,8 +16,8 @@ public:
   virtual ~glgrib_field_vector ();
   void setupVertexAttributes ();
   void reSample (const glgrib_view &);
-  void toggleShowVector () { opts.hide_vector = ! opts.hide_vector; }
-  void toggleShowNorm () { opts.hide_norm = ! opts.hide_norm; }
+  void toggleShowVector () { opts.vector.hide_arrow = ! opts.vector.hide_arrow; }
+  void toggleShowNorm () { opts.vector.hide_norm = ! opts.vector.hide_norm; }
   virtual void resize (const glgrib_view &);
 private:
   GLuint VertexArrayIDvector = 0;

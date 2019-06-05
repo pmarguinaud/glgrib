@@ -4,6 +4,15 @@
 #include <string>
 #include <vector>
 
+class glgrib_options_vector
+{
+public:
+  bool on;
+  bool hide_arrow;
+  bool hide_norm;
+  int r = 255, g = 255, b = 255;
+};
+
 class glgrib_options_field
 {
 public:
@@ -11,9 +20,7 @@ public:
   std::vector<std::string> palette;
   std::vector<float> scale;
   bool no_value_pointer;
-  bool vector;
-  bool hide_vector;
-  bool hide_norm;
+  glgrib_options_vector vector;
 };
 
 class glgrib_options_palette

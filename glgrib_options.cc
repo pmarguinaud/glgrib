@@ -200,7 +200,12 @@ static optionlist get_optionlist (glgrib_options * opts)
   ADD_OPT (field[i].scale,               Scales to be applied to fields);          \
   ADD_OPT (field[i].palette,             Palettes);                                \
   ADD_OPT (field[i].no_value_pointer,    Do not keep field values in memory);      \
-  ADD_OPT (field[i].vector,              Vector field);                            \
+  ADD_OPT (field[i].vector.on,           Field is a vector);                       \
+  ADD_OPT (field[i].vector.hide_arrow,   Hide arrows);                             \
+  ADD_OPT (field[i].vector.hide_norm,    Hide norm field);                         \
+  ADD_OPT (field[i].vector.r,            Red color for arrows);                    \
+  ADD_OPT (field[i].vector.g,            Green color for arrows);                  \
+  ADD_OPT (field[i].vector.b,            Blue color for arrows);                   \
   } while (0)
 
   ADD_FIELD_OPT (0);

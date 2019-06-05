@@ -101,24 +101,24 @@ test_guyane: ./glgrib.x
 	$(GDB) ./glgrib.x --field\[0\].path ./aro_guyane/SURFTEMPERATURE.grb --field\[0\].palette cold_hot_temp --field\[0\].scale 1.01 --camera.lat 5 --camera.lon -51 --camera.fov 3
 
 test_vector: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].vector --field\[0\].path ./aro2.5/S090WIND.U.PHYS.grb  ./aro2.5/S090WIND.V.PHYS.grb --field\[0\].scale 1.00 --landscape.path '' --camera.lat 46.2 --camera.lon 2.0 --camera.fov 5
+	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path ./aro2.5/S090WIND.U.PHYS.grb  ./aro2.5/S090WIND.V.PHYS.grb --field\[0\].scale 1.00 --field\[0\].vector.r 0 --field\[0\].vector.g 255 --field\[0\].vector.b 0 --landscape.path '' --camera.lat 46.2 --camera.lon 2.0 --camera.fov 5 
 
 test_small_aro: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].vector --field\[0\].path ./aro_small/S041WIND.U.PHYS.grb ./aro_small/S041WIND.V.PHYS.grb  --field\[0\].scale 1.00 --landscape.path '' --camera.lon 26.64 --camera.lat 67.36 --camera.fov 0.5
+	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path ./aro_small/S041WIND.U.PHYS.grb ./aro_small/S041WIND.V.PHYS.grb  --field\[0\].scale 1.00 --landscape.path '' --camera.lon 26.64 --camera.lat 67.36 --camera.fov 0.5
 
 test_wind_arp: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry t31c2.4/Z.grb --field[0].vector --field\[0\].path t31c2.4/S015WIND.U.PHYS.grb t31c2.4/S015WIND.V.PHYS.grb   --field[0].scale 1.01
+	$(GDB) ./glgrib.x --landscape.geometry t31c2.4/Z.grb --field[0].vector.on --field\[0\].path t31c2.4/S015WIND.U.PHYS.grb t31c2.4/S015WIND.V.PHYS.grb   --field[0].scale 1.01
 
 test_vector_glob25: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector --field\[0\].path arpt1798_wind/glob25_+1.grb arpt1798_wind/glob25_+1.grb  --field[0].scale 1.01
+	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector.on --field\[0\].path arpt1798_wind/glob25_+1.grb arpt1798_wind/glob25_+1.grb  --field[0].scale 1.01
 
 test_wind_glob25: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector --field\[0\].path arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 arpt1798_wind/lfpw_0_2_3_sfc_20_v.grib2  --field[0].scale 1.01
+	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector.on --field\[0\].path arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 arpt1798_wind/lfpw_0_2_3_sfc_20_v.grib2  --field[0].scale 1.01
 
 test_wind_t1798: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/S105WIND.U.PHYS.grb --landscape.orography 0  --field[0].vector --field\[0\].path arpt1798_wind/S105WIND.U.PHYS.grb arpt1798_wind/S105WIND.V.PHYS.grb  --field[0].scale 1.01
+	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/S105WIND.U.PHYS.grb --landscape.orography 0  --field[0].vector.on --field\[0\].path arpt1798_wind/S105WIND.U.PHYS.grb arpt1798_wind/S105WIND.V.PHYS.grb  --field[0].scale 1.01
 
 test_vector_t1798: ./glgrib.x
-	$(GDB) ./glgrib.x  --landscape.geometry arpt1798_wind/+1.grb --landscape.orography 0 --field[0].vector --field\[0\].path arpt1798_wind/+1.grb arpt1798_wind/+1.grb  --field[0].scale 1.01
+	$(GDB) ./glgrib.x  --landscape.geometry arpt1798_wind/+1.grb --landscape.orography 0 --field[0].vector.on --field\[0\].path arpt1798_wind/+1.grb arpt1798_wind/+1.grb  --field[0].scale 1.01
 
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane

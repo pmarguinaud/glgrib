@@ -39,6 +39,7 @@ public:
   {
     glgrib_options_camera o;
     scene.d.view.opts = o;
+    scene.resize ();
   }
   void toggle_rotate       () { scene.d.rotate_earth       = ! scene.d.rotate_earth;       }
   void toggle_rotate_light () { scene.d.light.rotate = ! scene.d.light.rotate; }

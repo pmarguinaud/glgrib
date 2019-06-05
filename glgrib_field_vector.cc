@@ -243,7 +243,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 
 // Display vectors
 
-  if (! opts.hide_vector)
+  if (! opts.vector.hide_arrow)
     {
       program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_VECTOR);
       program->use ();
@@ -258,7 +258,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       program->set1f ("valmin", valmin[0]);
       program->set1f ("valmax", valmax[0]);
 
-      float color0[3] = {1.0f, 0.0f, 0.0f};
+      float color0[3] = {opts.vector.r/255.0f, opts.vector.g/255.0f, opts.vector.b/255.0f};
       program->set3fv ("color0", color0);
       program->set1f ("vscale", d.vscale);
 
@@ -268,7 +268,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 
 // Display vector norm
 
-  if (! opts.hide_norm)
+  if (! opts.vector.hide_norm)
     {
       program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
       program->use ();
@@ -338,8 +338,7 @@ void glgrib_field_vector::reSample (const glgrib_view & view)
 
 void glgrib_field_vector::resize (const glgrib_view & view)
 {
-  if (! opts.hide_norm)
-    reSample (view);
+  reSample (view);
 }
 
 

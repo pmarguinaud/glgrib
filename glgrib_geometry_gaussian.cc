@@ -487,12 +487,15 @@ void glgrib_geometry_gaussian::applyUVangle (float * angle) const
 void glgrib_geometry_gaussian::sample (unsigned char * p, const unsigned char p0, const int level) const
 {
   int lat_stride = (float)Nj / (float)level;
-
+  if (lat_stride == 0)
+    lat_stride = 1;
 #pragma omp parallel for 
   for (int jlat = 0; jlat < Nj; jlat++)
     {
       float lat = M_PI * (0.5 - (float)(jlat+1) / (float)(Nj + 1));
       int lon_stride = lat_stride / cos (lat);
+      if (lon_stride == 0)
+        lon_stride = 1;
       for (int jlon = 0; jlon < pl[jlat]; jlon++)
         if ((jlat % lat_stride != 0) || (jlon % lon_stride != 0))
           p[jglooff[jlat]+jlon] = p0;

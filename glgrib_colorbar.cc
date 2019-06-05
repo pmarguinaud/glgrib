@@ -2,10 +2,6 @@
 #include "glgrib_shader.h"
 
 
-GLuint glgrib_colorbar::programID = 0;
-bool glgrib_colorbar::programReady = false;
-
-
 glgrib_colorbar & glgrib_colorbar::operator= (const glgrib_colorbar & colorbar)
 {
   if (this != &colorbar)
@@ -40,7 +36,7 @@ void glgrib_colorbar::init (const glgrib_options_colorbar & o)
   
   delete [] ind;
 
-  loadShader ();
+  program.compile ();
 
   glgrib_font_ptr font = new_glgrib_font_ptr (opts.font);
 
@@ -81,7 +77,7 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
 
   label.render (MVP);
 
-  glUseProgram (programID);
+  program.use ();
 
   glgrib_palette p1 = p;
   if (! p1.hasMin ())
@@ -104,10 +100,10 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
         }
 
       label.update (str);
-      pref.setRGBA255 (programID);
+      pref.setRGBA255 (program.programID);
     }
 
-  glUniformMatrix4fv (glGetUniformLocation (programID, "MVP"), 1, GL_FALSE, &MVP[0][0]);
+  program.setMatrix4fv ("MVP", &MVP[0][0]);
 
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
@@ -115,12 +111,7 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
 
 }
 
-void glgrib_colorbar::loadShader ()
-{
-  if (programReady)
-    return;
-
-  programID = glgrib_load_shader
+glgrib_program glgrib_colorbar::program = glgrib_program
 (
 R"CODE(
 #version 330 core
@@ -170,6 +161,4 @@ void main()
 
 )CODE");
 
-  programReady = true;
-}
 

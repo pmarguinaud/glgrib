@@ -17,7 +17,7 @@ public:
     { 
       return glgrib_program::FLAT_TEX;
     }
-  void render (const glgrib_view *) const;
+  void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual ~glgrib_landscape ();
   virtual bool use_alpha () { return false; }
   void set_flat (bool f) { flat = f; }

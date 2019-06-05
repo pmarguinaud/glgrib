@@ -54,17 +54,21 @@ void glgrib_landscape::init (const glgrib_options_landscape & opts)
   setReady ();
 }
 
-void glgrib_landscape::render (const glgrib_view * view) const
+void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  const glgrib_program * program = get_program (); 
-  glUniform1i (glGetUniformLocation (program->programID, "isflat"), flat);
+  glgrib_program * program = glgrib_program_load (glgrib_program::FLAT_TEX);
+  program->use ();
+
+  view.setMVP (program);
+  program->setLight (light);
+  program->set1i ("isflat", flat);
 
   // the texture selection process is a bit obscure
   glActiveTexture (GL_TEXTURE0); 
   glBindTexture (GL_TEXTURE_2D, texture->id ());
-  glUniform1i (glGetUniformLocation (program->programID, "texture"), 0);
+  program->set1i ("texture", 0);
 
-  glgrib_world::render (view);
+  glgrib_world::render (view, light);
 }
 
 glgrib_landscape::~glgrib_landscape ()

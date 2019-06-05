@@ -32,37 +32,15 @@ glgrib_scene::~glgrib_scene ()
       delete fieldlist[i];
 }
 
-void glgrib_scene::setLightShader (GLuint programID) const
-{
-  int lightid = glGetUniformLocation (programID, "light");
-  
-  if (lightid != -1)
-    {
-      glUniform1i (lightid, d.light.on);
-      if (d.light.on)
-        {
-          const double deg2rad = M_PI / 180.0;
-          float coslon = cos (deg2rad * d.light.lon);
-          float sinlon = sin (deg2rad * d.light.lon);
-          float coslat = cos (deg2rad * d.light.lat);
-          float sinlat = sin (deg2rad * d.light.lat);
-	  glm::vec3 lightDir = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
-          glUniform3fv (glGetUniformLocation (programID, "lightDir"), 
-                        1, &lightDir[0]);
-        }
-    }
-}
-
 void glgrib_scene::display_obj (const glgrib_object * obj) const
 {
+  if (obj == NULL)
+    return;
   if (! obj->isReady ())
     return;
-
-  const glgrib_program * program = obj->get_program ();
-  program->use ();
-  d.view.setMVP (program->programID);
-  setLightShader (program->programID);
-  obj->render (&d.view);
+  if (! obj->visible ())
+    return;
+  obj->render (d.view, d.light);
 }
 
 void glgrib_scene::display () const
@@ -71,31 +49,12 @@ void glgrib_scene::display () const
 
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
-  if (d.landscape.visible ())
-    display_obj (&d.landscape);
-
-  if (d.coastlines.visible ())
-    display_obj (&d.coastlines);
-
-  if (d.grid.visible ())
-    display_obj (&d.grid);
+  display_obj (&d.landscape);
+  display_obj (&d.coastlines);
+  display_obj (&d.grid);
 
   for (int i = 0; i < fieldlist.size (); i++)
-    {
-      const glgrib_field * fld = fieldlist[i];
-      if (fld == NULL)
-        continue;
-      if (! fld->isReady ())
-        continue;
-      if (fld->visible ())
-        {
-          const glgrib_program * program = fld->get_program ();
-          program->use ();
-          d.view.setMVP (program->programID);
-          setLightShader (program->programID);
-          fld->render (&d.view);
-        }
-    }
+    display_obj (fieldlist[i]);
 
   const glgrib_field * fld = d.currentFieldRank < fieldlist.size () 
                            ? fieldlist[d.currentFieldRank] : NULL;

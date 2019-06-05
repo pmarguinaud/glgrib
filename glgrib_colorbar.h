@@ -8,6 +8,7 @@
 #include "glgrib_font.h"
 #include "glgrib_string.h"
 #include "glgrib_options.h"
+#include "glgrib_program.h"
 
 class glgrib_colorbar
 {
@@ -17,11 +18,9 @@ public:
   ~glgrib_colorbar ();
   glgrib_colorbar & operator= (const glgrib_colorbar &);
   void render (const glm::mat4 &, const glgrib_palette &, float, float) const;
-  void loadShader ();
 private:
   glgrib_options_colorbar opts;
-  static bool programReady;
-  static GLuint programID;
+  static glgrib_program program;
   GLuint VertexArrayID;
   GLuint elementbuffer;
   bool ready = false;

@@ -22,7 +22,7 @@ public:
   static transform_type typeFromString (std::string);
 
   glgrib_options_camera opts;
-  void setMVP (GLuint) const;
+  void setMVP (glgrib_program *) const;
   void calcMVP () const;
   void setViewport (int, int);
   glm::vec3 project (const glm::vec3 & xyz) const

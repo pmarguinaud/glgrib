@@ -9,7 +9,7 @@
 class glgrib_world : public glgrib_object
 {
 public:
-  virtual void render (const glgrib_view *) const;
+  virtual void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual glgrib_program::kind get_program_kind () const { return glgrib_program::RGBA; }
   virtual bool use_alpha () { return true; }
   virtual ~glgrib_world () { cleanup (); }

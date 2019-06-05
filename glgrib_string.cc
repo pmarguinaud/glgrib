@@ -175,11 +175,11 @@ void glgrib_string::render (const glm::mat4 & MVP) const
 
   font->select ();
 
-  GLuint programID = font->getProgram ();
-  glUniformMatrix4fv (glGetUniformLocation (programID, "MVP"), 1, GL_FALSE, &MVP[0][0]);
-  glUniform1f (glGetUniformLocation (programID, "scale"), scale);
-  glUniform1i (glGetUniformLocation (programID, "texture"), 0);
-  glUniform3fv (glGetUniformLocation (programID, "color0"), 1, color0);
+  glgrib_program * program = font->getProgram ();
+  program->setMatrix4fv ("MVP", &MVP[0][0]);
+  program->set1f ("scale", scale);
+  program->set1i ("texture", 0);
+  program->set3fv ("color0", color0);
   
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);

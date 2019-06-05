@@ -2,7 +2,8 @@
 #define _GLGRIB_PROGRAM_H
 
 #include "glgrib_opengl.h"
-
+#include "glgrib_options.h"
+#include <string>
 
 class glgrib_program
 {
@@ -21,6 +22,17 @@ public:
     SIZE=8,
   } kind;
 
+
+  void set1f (const std::string &, float);
+  void set1fv (const std::string &, const float *, int = 1);
+  void set1i (const std::string &, int);
+  void set3fv (const std::string &, const float *, int = 1);
+  void set4fv (const std::string &, const float *, int = 1);
+  void setMatrix4fv (const std::string &, const float *, int = 1);
+
+  void compile ();
+
+  void setLight (const glgrib_options_light &);
   glgrib_program (const std::string & fsc, const std::string & vsc) 
      : FragmentShaderCode (fsc), VertexShaderCode (vsc) { }
   virtual ~glgrib_program ();

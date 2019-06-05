@@ -5,6 +5,7 @@
 #include <memory>
 #include "glgrib_opengl.h"
 #include "glgrib_options.h"
+#include "glgrib_program.h"
 
 
 class glgrib_font
@@ -20,16 +21,14 @@ public:
     int iy = 5 - (c - 32) / 16;
     return iy * nx + ix;
   }
-  void loadShader ();
-  GLuint getProgram () const { return programID; }
+  glgrib_program * getProgram () const { return &program; }
   void select () const;
   float getAspect () const { return aspect; }
   float getPosBelow () const { return posb; }
   float getPosAbove () const { return posu; }
 private:
   glgrib_options_font opts;
-  static bool programReady;
-  static GLuint programID;
+  static glgrib_program program;
   std::vector<float> xoff, yoff;
   int nx, ny;  // Array of letters dimension
   bool ready = false;

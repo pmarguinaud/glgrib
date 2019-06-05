@@ -3,12 +3,13 @@
 
 #include "glgrib_opengl.h"
 #include "glgrib_view.h"
+#include "glgrib_options.h"
 #include "glgrib_program.h"
 
 class glgrib_object
 {
 public:
-  virtual void render (const glgrib_view *) const = 0;
+  virtual void render (const glgrib_view &, const glgrib_options_light &) const = 0;
   void load_program ();
   glgrib_program * get_program () const
     { 

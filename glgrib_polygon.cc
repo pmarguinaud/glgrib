@@ -18,7 +18,7 @@ void glgrib_polygon::setupVertexAttributes ()
   glBindVertexArray (0);
 }
 
-void glgrib_polygon::render (const glgrib_view * view) const
+void glgrib_polygon::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_LINES, 2 * numberOfLines, GL_UNSIGNED_INT, NULL);

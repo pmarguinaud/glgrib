@@ -92,8 +92,6 @@ public:
   _data d;
 
 
-  private:
-    void setLightShader (GLuint) const;
 };
 
 #endif

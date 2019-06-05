@@ -26,20 +26,17 @@ glgrib_font_ptr new_glgrib_font_ptr (const glgrib_options_font & opts)
   return font;
 }
 
-GLuint glgrib_font::programID = 0;
-bool glgrib_font::programReady = false;
-
 void glgrib_font::select () const
 {
-  glUseProgram (programID);
-  glUniform1fv (glGetUniformLocation (programID, "xoff"), xoff.size (), xoff.data ());
-  glUniform1fv (glGetUniformLocation (programID, "yoff"), yoff.size (), yoff.data ());
-  glUniform1i (glGetUniformLocation (programID, "nx"), nx);
-  glUniform1i (glGetUniformLocation (programID, "ny"), ny);
-  glUniform1f (glGetUniformLocation (programID, "aspect"), aspect);
+  program.use ();
+  program.set1fv ("xoff", xoff.data (), xoff.size ());
+  program.set1fv ("yoff", yoff.data (), yoff.size ());
+  program.set1i ("nx", nx);
+  program.set1i ("ny", ny);
+  program.set1f ("aspect", aspect);
   glActiveTexture (GL_TEXTURE0); 
   glBindTexture (GL_TEXTURE_2D, texture);
-  glUniform1i (glGetUniformLocation (programID, "texture"), 0);
+  program.set1i ("texture", 0);
 
 }
 
@@ -133,18 +130,13 @@ found_u:
   // The third argument has to be GL_RED, but I do not understand why
   glTexImage2D (GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, rgb);
 
-  loadShader ();
+  program.compile ();
 
   free (rgb);
   ready = true;
 }
 
-void glgrib_font::loadShader ()
-{
-  if (programReady)
-    return;
-
-  programID = glgrib_load_shader
+glgrib_program glgrib_font::program = glgrib_program
 (
 R"CODE(
 #version 330 core
@@ -212,7 +204,5 @@ void main()
 
 )CODE");
 
-  programReady = true;
-}
 
 

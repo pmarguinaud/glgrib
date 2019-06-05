@@ -230,9 +230,10 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
   setReady ();
 }
 
-void glgrib_field_vector::render (const glgrib_view * view) const
+void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  const glgrib_program * program = get_program (); 
+  glgrib_program * program;
+  
   float scale0[3] = {dopts.scale, dopts.scale, dopts.scale};
 
   std::vector<float> valmax = getMaxValue ();
@@ -240,22 +241,22 @@ void glgrib_field_vector::render (const glgrib_view * view) const
 
 // Display vectors
 
-  glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
+  program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_VECTOR);
+  program->use ();
+  view.setMVP (program);
+  program->setLight (light);
 
-  glUniform1f (glGetUniformLocation (program->programID, "valmin_n"), valmin[0]);
-  glUniform1f (glGetUniformLocation (program->programID, "valmax_n"), valmax[0]);
-
-  glUniform1f (glGetUniformLocation (program->programID, "valmin_d"), valmin[1]);
-  glUniform1f (glGetUniformLocation (program->programID, "valmax_d"), valmax[1]);
-
-  glUniform1f (glGetUniformLocation (program->programID, "valmin"), valmin[0]);
-  glUniform1f (glGetUniformLocation (program->programID, "valmax"), valmax[0]);
-
+  program->set3fv ("scale0", scale0);
+  program->set1f ("valmin_n", valmin[0]);
+  program->set1f ("valmax_n", valmax[0]);
+  program->set1f ("valmin_d", valmin[1]);
+  program->set1f ("valmax_d", valmax[1]);
+  program->set1f ("valmin", valmin[0]);
+  program->set1f ("valmax", valmax[0]);
 
   float color0[3] = {1.0f, 0.0f, 0.0f};
-  glUniform3fv (glGetUniformLocation (program->programID, "color0"), 1, color0);
-
-  glUniform1f (glGetUniformLocation (program->programID, "vscale"), vscale);
+  program->set3fv ("color0", color0);
+  program->set1f ("vscale", vscale);
 
   glBindVertexArray (VertexArrayIDvector);
   glDrawArraysInstanced (GL_LINE_STRIP, 0, 5, numberOfPoints); 
@@ -264,7 +265,8 @@ void glgrib_field_vector::render (const glgrib_view * view) const
 
   program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
   program->use ();
-  view->setMVP (program->programID);
+  view.setMVP (program);
+  program->setLight (light);
 
   const glgrib_palette & p = dopts.palette;
   p.setRGBA255 (program->programID);
@@ -272,16 +274,14 @@ void glgrib_field_vector::render (const glgrib_view * view) const
   for (int i = 0; i < 3; i++)
     scale0[i] *= 0.99;
 
-  glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
-  glUniform1f (glGetUniformLocation (program->programID, "valmin"), valmin[0]);
-  glUniform1f (glGetUniformLocation (program->programID, "valmax"), valmax[0]);
-
   float palmax = p.hasMax () ? p.getMax () : valmax[0];
   float palmin = p.hasMin () ? p.getMin () : valmin[0];
 
-  glUniform1f (glGetUniformLocation (program->programID, "palmin"), palmin);
-  glUniform1f (glGetUniformLocation (program->programID, "palmax"), palmax);
-
+  program->set3fv ("scale0", scale0);
+  program->set1f ("valmin", valmin[0]);
+  program->set1f ("valmax", valmax[0]);
+  program->set1f ("palmin", palmin);
+  program->set1f ("palmax", palmax);
 
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);

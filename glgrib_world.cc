@@ -6,7 +6,7 @@
 #include <iostream>
 
 
-void glgrib_world::render (const glgrib_view * view) const
+void glgrib_world::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
   glBindVertexArray (VertexArrayID);
   if (wireframe)

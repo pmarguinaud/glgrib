@@ -15,7 +15,7 @@ public:
     { 
       return glgrib_program::GRADIENT_FLAT_SCALE_SCALAR;
     }
-  virtual void render (const glgrib_view *) const;
+  virtual void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual ~glgrib_field_scalar ();
   void setupVertexAttributes ();
 };

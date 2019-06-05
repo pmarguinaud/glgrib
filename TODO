@@ -12,7 +12,7 @@ Make geometry member of glgrib_world protected
 
 Adjust vector density when scale changes
 
-Review program management in scene rendering
+Refactor options
 
 
 

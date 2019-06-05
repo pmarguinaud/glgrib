@@ -108,25 +108,28 @@ void glgrib_field_scalar::init (const glgrib_options_field & opts, int slot)
   setReady ();
 }
 
-void glgrib_field_scalar::render (const glgrib_view * view) const
+void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  const glgrib_program * program = get_program (); 
+  glgrib_program * program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
+  program->use ();
   float scale0[3] = {dopts.scale, dopts.scale, dopts.scale};
   const glgrib_palette & p = dopts.palette;
 
+  view.setMVP (program);
+  program->setLight (light);
   p.setRGBA255 (program->programID);
 
-  glUniform3fv (glGetUniformLocation (program->programID, "scale0"), 1, scale0);
-  glUniform1f (glGetUniformLocation (program->programID, "valmin"), getNormedMinValue ());
-  glUniform1f (glGetUniformLocation (program->programID, "valmax"), getNormedMaxValue ());
+  program->set3fv ("scale0", scale0);
+  program->set1f ("valmin", getNormedMinValue ());
+  program->set1f ("valmax", getNormedMaxValue ());
 
   float palmax = p.hasMax () ? p.getMax () : getNormedMaxValue ();
   float palmin = p.hasMin () ? p.getMin () : getNormedMinValue ();
 
-  glUniform1f (glGetUniformLocation (program->programID, "palmin"), palmin);
-  glUniform1f (glGetUniformLocation (program->programID, "palmax"), palmax);
+  program->set1f ("palmin", palmin);
+  program->set1f ("palmax", palmax);
 
-  glgrib_field::render (view);
+  glgrib_field::render (view, light);
 }
 
 glgrib_field_scalar::~glgrib_field_scalar ()

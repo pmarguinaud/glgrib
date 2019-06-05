@@ -3,6 +3,8 @@
 #include "glgrib_shader.h"
 
 #include <string>
+#include <math.h>
+#include <glm/glm.hpp>
 
 
 static const std::string projShaderInclude = 
@@ -560,14 +562,19 @@ void main ()
 
 };
 
+void glgrib_program::compile ()
+{
+  if (loaded) 
+    return;
+  programID = glgrib_load_shader (FragmentShaderCode, VertexShaderCode);
+  matrixID = glGetUniformLocation (programID, "MVP");
+  loaded = true;
+}
+
 glgrib_program * glgrib_program_load (glgrib_program::kind kind)
 {
   if (! PRG[kind].loaded)
-    {
-      PRG[kind].programID = glgrib_load_shader (PRG[kind].FragmentShaderCode, PRG[kind].VertexShaderCode);
-      PRG[kind].matrixID = glGetUniformLocation (PRG[kind].programID, "MVP");
-      PRG[kind].loaded = true;
-    }
+    PRG[kind].compile ();
   return &PRG[kind];
 }
 
@@ -590,4 +597,68 @@ void glgrib_program::use () const
           PRG[i].active = false;
     }
 }
+
+void glgrib_program::setLight (const glgrib_options_light & light)
+{
+  int lightid = glGetUniformLocation (programID, "light");
+
+  if (lightid != -1)
+    {
+      glUniform1i (lightid, light.on);
+      if (light.on)
+        {
+          const double deg2rad = M_PI / 180.0;
+          float coslon = cos (deg2rad * light.lon);
+          float sinlon = sin (deg2rad * light.lon);
+          float coslat = cos (deg2rad * light.lat);
+          float sinlat = sin (deg2rad * light.lat);
+          glm::vec3 lightDir = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
+          glUniform3fv (glGetUniformLocation (programID, "lightDir"), 1, &lightDir[0]);
+        }
+    }
+}
+
+void glgrib_program::set1f (const std::string & key, float val)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniform1f (id, val);
+}
+
+void glgrib_program::set1fv (const std::string & key, const float * val, int size)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniform1fv (id, size, val);
+}
+
+void glgrib_program::set1i (const std::string & key, int val)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniform1i (id, val);
+}
+
+void glgrib_program::set3fv (const std::string & key, const float * val, int size)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniform3fv (id, size, val);
+}
+
+void glgrib_program::set4fv (const std::string & key, const float * val, int size)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniform4fv (id, size, val);
+}
+
+void glgrib_program::setMatrix4fv (const std::string & key, const float * val, int size)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniformMatrix4fv (id, size, GL_FALSE, val);
+}
+
+
 

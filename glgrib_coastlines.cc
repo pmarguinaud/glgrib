@@ -118,13 +118,16 @@ void glgrib_coastlines::init (const glgrib_options_coastlines & o)
   setReady ();
 }
 
-void glgrib_coastlines::render (const glgrib_view * view) const
+void glgrib_coastlines::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  const glgrib_program * program = get_program ();
+  glgrib_program * program = glgrib_program_load (glgrib_program::MONO);
+  program->use ();
   float color[3] = {(float)opts.r, (float)opts.g, (float)opts.b};
-  glUniform3fv (glGetUniformLocation (program->programID, "color0"), 1, color);
-  glUniform1i (glGetUniformLocation (program->programID, "do_alpha"), 1);
-  glgrib_polygon::render (view);
+  view.setMVP (program);
+  program->setLight (light);
+  program->set3fv ("color0", color);
+  program->set1i ("do_alpha", 1);
+  glgrib_polygon::render (view, light);
 }
 
 

@@ -65,8 +65,10 @@ public:
   void setViewport (int, int);
 
   void setMessage (const std::string & mess) { d.str.update (mess); }
+  void resize ();
 
   std::vector<glgrib_field*> fieldlist;
+
 
   class _data
   {

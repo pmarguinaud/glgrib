@@ -94,6 +94,8 @@ public:
   void set_field_palette_max (const float);
   void save_current_palette ();
   void resample_current_field ();
+  void toggle_show_vector ();
+  void toggle_show_norm ();
 
 protected:
   void createGFLWwindow (GLFWwindow * = NULL);

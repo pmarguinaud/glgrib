@@ -92,7 +92,9 @@ public:
     return sqrt (n);
   }
   virtual void cleanup ();
+  virtual void resize (const glgrib_view &) {}
 protected:
+  glgrib_options_field opts;
   std::vector<glgrib_field_metadata> meta;
   std::vector<glgrib_field_float_buffer_ptr> values;
 };

@@ -12,8 +12,9 @@ public:
   glgrib_opengl_buffer (size_t, const void *);
   ~glgrib_opengl_buffer ();
   GLuint id () { return id_; }
-  bool allocated () { return allocated_; }
-  void bind (GLenum);
+  bool allocated () const { return allocated_; }
+  void bind (GLenum) const;
+  size_t buffersize () const { return size_; }
 private:
   bool allocated_ = false;
   GLuint id_;
@@ -22,6 +23,7 @@ private:
 
 typedef std::shared_ptr<glgrib_opengl_buffer> glgrib_opengl_buffer_ptr;
 extern glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (size_t, const void *);
+extern glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (const glgrib_opengl_buffer_ptr &);
 
 class glgrib_opengl_texture
 {
@@ -36,6 +38,7 @@ private:
 };
 
 typedef std::shared_ptr<glgrib_opengl_texture> glgrib_opengl_texture_ptr;
+extern glgrib_opengl_texture_ptr new_glgrib_opengl_texture_ptr (const glgrib_opengl_texture_ptr &);
 extern glgrib_opengl_texture_ptr new_glgrib_opengl_texture_ptr (int, int, const void *);
 
 void gl_init ();

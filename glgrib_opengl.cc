@@ -13,7 +13,7 @@ void gl_init ()
   glDepthFunc (GL_LESS); 
 }
   
-void glgrib_opengl_buffer::bind (GLenum target)
+void glgrib_opengl_buffer::bind (GLenum target) const 
 {
   glBindBuffer (target, id_);
 }
@@ -37,6 +37,21 @@ glgrib_opengl_buffer::~glgrib_opengl_buffer ()
 glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (size_t size, const void * data)
 {
   return std::make_shared<glgrib_opengl_buffer>(size, data);
+}
+
+glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (const glgrib_opengl_buffer_ptr & oldptr)
+{
+  size_t size = oldptr->buffersize ();
+  glgrib_opengl_buffer_ptr newptr = new_glgrib_opengl_buffer_ptr (size, NULL);
+  oldptr->bind (GL_COPY_READ_BUFFER);
+  newptr->bind (GL_COPY_WRITE_BUFFER);
+
+  glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, size);
+
+  glBindBuffer (GL_COPY_WRITE_BUFFER, 0);
+  glBindBuffer (GL_COPY_READ_BUFFER, 0);
+
+  return newptr;
 }
 
 glgrib_opengl_texture::glgrib_opengl_texture (int width, int height, const void * data)
@@ -63,4 +78,5 @@ glgrib_opengl_texture_ptr new_glgrib_opengl_texture_ptr (int width, int height, 
 {
   return std::make_shared<glgrib_opengl_texture>(width, height, data);
 }
+
 

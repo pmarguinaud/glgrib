@@ -19,6 +19,7 @@ public:
   void set_flat (bool f) { flat = f; }
   void toggle_flat () { flat = ! flat; }
   void setupVertexAttributes ();
+  virtual void resize (const glgrib_view &) {}
 private:
   bool flat = false;
   glgrib_opengl_texture_ptr texture;

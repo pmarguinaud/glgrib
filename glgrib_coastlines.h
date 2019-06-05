@@ -13,6 +13,7 @@ public:
   virtual bool use_alpha () { return false; }
   virtual void render (const glgrib_view &, const glgrib_options_light &) const;
   glgrib_options_coastlines opts;
+  virtual void resize (const glgrib_view &) {}
 };
 
 #endif

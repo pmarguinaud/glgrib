@@ -60,8 +60,10 @@ void glgrib_field_scalar::setupVertexAttributes ()
   glBindVertexArray (0); 
 }
 
-void glgrib_field_scalar::init (const glgrib_options_field & opts, int slot)
+void glgrib_field_scalar::init (const glgrib_options_field & o, int slot)
 {
+  opts = o;
+
   unsigned char * col;
 
   float * data;

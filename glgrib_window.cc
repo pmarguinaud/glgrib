@@ -148,6 +148,8 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (SHIFT,   P,      toggle_transform_type    ());
       if_key (CONTROL, S,      save_current_palette     ());
       if_key (ALT,     S,      resample_current_field   ());
+      if_key (NONE,    V,      toggle_show_vector       ());
+      if_key (CONTROL, V,      toggle_show_norm         ());
 
 
     }
@@ -155,9 +157,46 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
 #undef if_key
 }
 
+static glgrib_field_vector * get_vector (glgrib_scene & scene)
+{
+  glgrib_field * f = scene.getCurrentField ();
+
+  if (f == NULL) 
+    return NULL;
+
+  glgrib_field_vector * v = NULL;
+
+  try
+    {
+      v = dynamic_cast<glgrib_field_vector*>(f);
+    }
+  catch (const std::bad_cast & e)
+    {
+      v = NULL;
+    }
+
+  return v;
+}
+
+void glgrib_window::toggle_show_vector ()
+{
+  glgrib_field_vector * v = get_vector (scene);
+  if (v)
+    v->toggleShowVector ();
+}
+
+
+void glgrib_window::toggle_show_norm ()
+{
+  glgrib_field_vector * v = get_vector (scene);
+  if (v)
+    v->toggleShowNorm ();
+}
+
 void glgrib_window::resample_current_field ()
 {
   glgrib_field * f = scene.getCurrentField ();
+
   if (f == NULL) 
     return;
 
@@ -570,6 +609,7 @@ void glgrib_window::scroll (double xoffset, double yoffset)
       if (scene.d.view.opts.fov <= 0.0f)
         scene.d.view.opts.fov = 0.1f;
     }
+  scene.resize ();
 }
 
 void glgrib_window::renderFrame ()

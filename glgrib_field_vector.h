@@ -16,10 +16,16 @@ public:
   virtual ~glgrib_field_vector ();
   void setupVertexAttributes ();
   void reSample (const glgrib_view &);
+  void toggleShowVector () { opts.hide_vector = ! opts.hide_vector; }
+  void toggleShowNorm () { opts.hide_norm = ! opts.hide_norm; }
+  virtual void resize (const glgrib_view &);
 private:
-  glgrib_opengl_buffer_ptr buffer_n, buffer_d;
   GLuint VertexArrayIDvector = 0;
-  float vscale;
+  struct
+    {
+      glgrib_opengl_buffer_ptr buffer_n, buffer_d;
+      float vscale;
+    } d;
 protected:
   virtual void cleanup ();
 };

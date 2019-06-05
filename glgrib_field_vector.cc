@@ -26,16 +26,16 @@ glgrib_field_vector * glgrib_field_vector::clone () const
   return fld;
 }
 
-glgrib_field_vector & glgrib_field_vector::operator= (const glgrib_field_vector & field)
+glgrib_field_vector & glgrib_field_vector::operator= (const glgrib_field_vector & other)
 {
-  if (this != &field)
+  if (this != &other)
     {
       cleanup ();
-      if (field.isReady ())
+      if (other.isReady ())
         {
-          glgrib_field::operator= (field);
-          buffer_n = field.buffer_n;
-          buffer_d = field.buffer_d;
+          glgrib_field::operator= (other);
+	  d = other.d;
+          d.buffer_d = new_glgrib_opengl_buffer_ptr (other.d.buffer_d);
           setupVertexAttributes ();
           setReady ();
         }
@@ -56,14 +56,14 @@ void glgrib_field_vector::setupVertexAttributes ()
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
   
   // Norm
-  buffer_n->bind (GL_ARRAY_BUFFER);
+  d.buffer_n->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
                          numberOfColors * sizeof (unsigned char), NULL); 
 
 
   // Direction
-  buffer_d->bind (GL_ARRAY_BUFFER);
+  d.buffer_d->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (2); 
   glVertexAttribPointer (2, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
                          numberOfColors * sizeof (unsigned char), NULL); 
@@ -85,7 +85,7 @@ void glgrib_field_vector::setupVertexAttributes ()
   glVertexAttribDivisor (0, 1);  
   
   // Norm
-  buffer_n->bind (GL_ARRAY_BUFFER);
+  d.buffer_n->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
                          numberOfColors * sizeof (unsigned char), NULL); 
@@ -93,7 +93,7 @@ void glgrib_field_vector::setupVertexAttributes ()
 
 
   // Direction
-  buffer_d->bind (GL_ARRAY_BUFFER);
+  d.buffer_d->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (2); 
   glVertexAttribPointer (2, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
                          numberOfColors * sizeof (unsigned char), NULL); 
@@ -105,8 +105,10 @@ void glgrib_field_vector::setupVertexAttributes ()
 
 }
 
-void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
+void glgrib_field_vector::init (const glgrib_options_field & o, int slot)
 {
+  opts = o;
+
   float * data_u, * data_v;
   glgrib_field_metadata meta_u, meta_v;
   float * data_n, * data_d;
@@ -195,10 +197,10 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
   const int npts = 50;
   geometry->sample (col_d, 0, npts);
 
-  buffer_n = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
+  d.buffer_n = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
                                                * sizeof (unsigned char), col_n);
 
-  buffer_d = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
+  d.buffer_d = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
                                                * sizeof (unsigned char), col_d);
 
   free (col_n);
@@ -225,7 +227,7 @@ void glgrib_field_vector::init (const glgrib_options_field & opts, int slot)
       values.push_back (new_glgrib_field_float_buffer_ptr (data_d));
     }
 
-  vscale = (M_PI / npts) / (meta_n.valmax || 1.0f);
+  d.vscale = (M_PI / npts) / (meta_n.valmax || 1.0f);
 
   setReady ();
 }
@@ -241,51 +243,57 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 
 // Display vectors
 
-  program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_VECTOR);
-  program->use ();
-  view.setMVP (program);
-  program->setLight (light);
+  if (! opts.hide_vector)
+    {
+      program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_VECTOR);
+      program->use ();
+      view.setMVP (program);
+      program->setLight (light);
 
-  program->set3fv ("scale0", scale0);
-  program->set1f ("valmin_n", valmin[0]);
-  program->set1f ("valmax_n", valmax[0]);
-  program->set1f ("valmin_d", valmin[1]);
-  program->set1f ("valmax_d", valmax[1]);
-  program->set1f ("valmin", valmin[0]);
-  program->set1f ("valmax", valmax[0]);
+      program->set3fv ("scale0", scale0);
+      program->set1f ("valmin_n", valmin[0]);
+      program->set1f ("valmax_n", valmax[0]);
+      program->set1f ("valmin_d", valmin[1]);
+      program->set1f ("valmax_d", valmax[1]);
+      program->set1f ("valmin", valmin[0]);
+      program->set1f ("valmax", valmax[0]);
 
-  float color0[3] = {1.0f, 0.0f, 0.0f};
-  program->set3fv ("color0", color0);
-  program->set1f ("vscale", vscale);
+      float color0[3] = {1.0f, 0.0f, 0.0f};
+      program->set3fv ("color0", color0);
+      program->set1f ("vscale", d.vscale);
 
-  glBindVertexArray (VertexArrayIDvector);
-  glDrawArraysInstanced (GL_LINE_STRIP, 0, 5, numberOfPoints); 
+      glBindVertexArray (VertexArrayIDvector);
+      glDrawArraysInstanced (GL_LINE_STRIP, 0, 5, numberOfPoints); 
+    }
 
 // Display vector norm
 
-  program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
-  program->use ();
-  view.setMVP (program);
-  program->setLight (light);
+  if (! opts.hide_norm)
+    {
+      program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
+      program->use ();
+      view.setMVP (program);
+      program->setLight (light);
 
-  const glgrib_palette & p = dopts.palette;
-  p.setRGBA255 (program->programID);
+      const glgrib_palette & p = dopts.palette;
+      p.setRGBA255 (program->programID);
 
-  for (int i = 0; i < 3; i++)
-    scale0[i] *= 0.99;
+      for (int i = 0; i < 3; i++)
+        scale0[i] *= 0.99;
 
-  float palmax = p.hasMax () ? p.getMax () : valmax[0];
-  float palmin = p.hasMin () ? p.getMin () : valmin[0];
+      float palmax = p.hasMax () ? p.getMax () : valmax[0];
+      float palmin = p.hasMin () ? p.getMin () : valmin[0];
 
-  program->set3fv ("scale0", scale0);
-  program->set1f ("valmin", valmin[0]);
-  program->set1f ("valmax", valmax[0]);
-  program->set1f ("palmin", palmin);
-  program->set1f ("palmax", palmax);
+      program->set3fv ("scale0", scale0);
+      program->set1f ("valmin", valmin[0]);
+      program->set1f ("valmax", valmax[0]);
+      program->set1f ("palmin", palmin);
+      program->set1f ("palmax", palmax);
 
-  glBindVertexArray (VertexArrayID);
-  glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
-  glBindVertexArray (0);
+      glBindVertexArray (VertexArrayID);
+      glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
+      glBindVertexArray (0);
+    }
 
 }
 
@@ -303,7 +311,7 @@ void glgrib_field_vector::cleanup ()
 
 void glgrib_field_vector::reSample (const glgrib_view & view)
 {
-  buffer_d->bind (GL_ARRAY_BUFFER);
+  d.buffer_d->bind (GL_ARRAY_BUFFER);
   unsigned char * col_d = (unsigned char *)glMapBufferRange (GL_ARRAY_BUFFER, 0, 
                                            numberOfPoints * sizeof (unsigned char), 
                                            GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
@@ -322,12 +330,17 @@ void glgrib_field_vector::reSample (const glgrib_view & view)
                  / (meta_d.valmax - meta_d.valmin));
   geometry->sample (col_d, 0, npts);
 
-  vscale = (M_PI / npts) / (meta_n.valmax || 1.0f);
+  d.vscale = (M_PI / npts) / (meta_n.valmax || 1.0f);
 
   glFlushMappedBufferRange (GL_ARRAY_BUFFER, 0, numberOfPoints * sizeof (unsigned char));
   glUnmapBuffer (GL_ARRAY_BUFFER);
 }
 
+void glgrib_field_vector::resize (const glgrib_view & view)
+{
+  if (! opts.hide_norm)
+    reSample (view);
+}
 
 
 

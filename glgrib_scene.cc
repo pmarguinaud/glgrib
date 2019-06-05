@@ -175,4 +175,14 @@ void glgrib_scene::setViewport (int _width, int _height)
           * glm::lookAt (glm::vec3 (+1.0f,0.0f,0.0f), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
 }
 
+void glgrib_scene::resize ()
+{
+  d.landscape.resize (d.view);
+  d.coastlines.resize (d.view);
+  d.grid.resize (d.view);
+  for (int i = 0; i < fieldlist.size (); i++)
+    if (fieldlist[i])
+      fieldlist[i]->resize (d.view);
+}
+
 

@@ -12,6 +12,8 @@ public:
   std::vector<float> scale;
   bool no_value_pointer;
   bool vector;
+  bool hide_vector;
+  bool hide_norm;
 };
 
 class glgrib_options_palette

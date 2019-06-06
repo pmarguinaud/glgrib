@@ -15,7 +15,8 @@
 int main (int argc, char * argv[])
 {
   glgrib_options opts;
-  opts.parse (argc, argv);  
+  if (! opts.parse (argc, argv))
+    return 0;
 
   if (! glfwInit ())
     {

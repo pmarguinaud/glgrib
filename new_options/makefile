@@ -4,5 +4,5 @@ CXXFLAGS=-fopenmp -std=c++11 -g -I$(HOME)/3d/usr/include -L$(HOME)/3d/usr/lib64 
 
 all: main.x 
 	
-main.x: main.cc 
-	g++ $(CXXFLAGS) -o main.x main.cc
+main.x: main.cc glgrib_options.h glgrib_options.cc
+	g++ $(CXXFLAGS) -o main.x main.cc glgrib_options.cc

@@ -194,3 +194,30 @@ float glgrib_geometry_lambert::resolution (int level) const
   return Dlat / level;
 }
 
+void glgrib_geometry_lambert::applyUVangle (float * angle) const 
+{
+
+  // Generation of coordinates
+#pragma omp parallel for
+  for (int j = 0; j < Ny; j++)
+    for (int i = 0; i < Nx; i++)
+      {
+        xy_j_t pt_xy (xy_t ((i - Nux / 2) * DxInMetres, (j - Nuy / 2) * DyInMetres), 
+                      xy_t (1.0, 0.0), xy_t (0.0, 1.0));
+        pt_xy.V = pt_xy.V + center_xy;
+        latlon_j_t latlon = p_pj.xy_to_latlon (pt_xy);
+
+        int p = j * Nx + i;
+        float coslat = cos (latlon.V.lat);
+
+        glm::vec2 U (a * coslat * latlon.A.lon, a * latlon.A.lat);
+//      glm::vec2 V (a * coslat * latlon.B.lon, a * latlon.B.lat);
+
+        U = glm::normalize (U);
+//      V = glm::normalize (V);
+
+        angle[p] += rad2deg * atan2 (U.y, U.x);        
+      }
+}
+
+

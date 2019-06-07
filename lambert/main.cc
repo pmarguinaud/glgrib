@@ -237,8 +237,8 @@ int main (int argc, char * argv[])
   glm::vec2 X (a * cos (latlon.lat) * latlon_j.A.lon, a * latlon_j.A.lat);
   glm::vec2 Y (a * cos (latlon.lat) * latlon_j.B.lon, a * latlon_j.B.lat);
 
-  std::cout << to_string (X) << std::endl;
-  std::cout << to_string (Y) << std::endl;
+  std::cout << X.x << " " << X.y << std::endl;
+  std::cout << Y.x << " " << Y.y << std::endl;
 
   std::cout << glm::dot (X, X) << std::endl;
   std::cout << glm::dot (Y, Y) << std::endl;

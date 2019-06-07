@@ -240,6 +240,8 @@ int main (int argc, char * argv[])
   std::cout << to_string (X) << std::endl;
   std::cout << to_string (Y) << std::endl;
 
+  std::cout << glm::dot (X, X) << std::endl;
+  std::cout << glm::dot (Y, Y) << std::endl;
   std::cout << glm::dot (X, Y) << std::endl;
 
 

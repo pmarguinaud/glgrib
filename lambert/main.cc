@@ -104,7 +104,7 @@ public:
   double r_equateur;
   double kl;
 
-  latlon_j_t rtheta_to_latlon_j (const rtheta_j_t & pt_rtheta) const 
+  latlon_j_t rtheta_to_latlon (const rtheta_j_t & pt_rtheta) const 
   {
     double lon = ref_pt.lon + pt_rtheta.V.theta / kl;
     double dlon_dA = pt_rtheta.A.theta / kl;
@@ -126,7 +126,7 @@ public:
     return latlon_t (ref_pt.lon + pt_rtheta.theta / kl,
                      pole * ((M_PI / 2.0) - 2.0 * atan(pow (pt_rtheta.r / r_equateur, 1.0 / kl))));
   }
-  rtheta_j_t xy_to_rtheta_j (const xy_j_t & pt_xy) const 
+  rtheta_j_t xy_to_rtheta (const xy_j_t & pt_xy) const 
   {
     double r2 = pt_xy.V.x * pt_xy.V.x + pt_xy.V.y * pt_xy.V.y;
     double r = sqrt (r2);
@@ -175,9 +175,9 @@ public:
   {
     return rtheta_to_latlon (xy_to_rtheta (pt_xy));
   }
-  latlon_j_t xy_to_latlon_j (const xy_j_t & pt_xy) const
+  latlon_j_t xy_to_latlon (const xy_j_t & pt_xy) const
   {
-    return rtheta_to_latlon_j (xy_to_rtheta_j (pt_xy));
+    return rtheta_to_latlon (xy_to_rtheta (pt_xy));
   }
   rtheta_t latlon_to_rtheta (const latlon_t & pt_coord) const 
   {
@@ -220,7 +220,7 @@ int main (int argc, char * argv[])
   
   xy_j_t xy_j (xy, xy_t (1.0, 0.0), xy_t (0.0, 1.0));
 
-  latlon_j_t latlon_j = p_pj.xy_to_latlon_j (xy_j);
+  latlon_j_t latlon_j = p_pj.xy_to_latlon (xy_j);
 
   printf (" %30.20f %30.20f\n", a * cos (latlon.lat) * latlon_j.A.lon, a * cos (latlon.lat) * (latlonx.lon - latlon.lon));
   printf (" %30.20f %30.20f\n", a *                    latlon_j.A.lat, a *                    (latlonx.lat - latlon.lat));

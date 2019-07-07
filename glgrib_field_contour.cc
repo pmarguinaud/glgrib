@@ -36,6 +36,8 @@ glgrib_field_contour & glgrib_field_contour::operator= (const glgrib_field_conto
       if (field.isReady ())
         {
           glgrib_field::operator= (field);
+          N   = field.N;
+          iso = field.iso;
           setupVertexAttributes ();
           setReady ();
         }

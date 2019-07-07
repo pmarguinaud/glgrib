@@ -123,6 +123,11 @@ void glgrib_field_contour::init (const glgrib_options_field & o, int slot)
         seen[i] = false;
       seen[0] = true;
 
+      // First visit edge triangles
+      for (int it = 0; it < geometry->numberOfTriangles; it++)
+        if (geometry->triangleIsEdge (it))
+          processTriangle (it, data, data0, seen+1, &iso_data[i]);
+
       for (int it = 0; it < geometry->numberOfTriangles; it++)
         processTriangle (it, data, data0, seen+1, &iso_data[i]);
 

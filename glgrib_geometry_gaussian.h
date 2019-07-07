@@ -51,7 +51,18 @@ private:
     float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
     float lon = coordx;
     float coslon = cos (lon); float sinlon = sin (lon);
-    return glm::vec3 (coslat * coslon, coslat * sinlon, sinlat);
+
+    float X = coslon * coslat;
+    float Y = sinlon * coslat;
+    float Z =          sinlat;
+
+    if (! rotated)
+      return glm::vec3 (X, Y, Z);
+   
+    glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
+    XYZ = rot * XYZ;
+ 
+    return glm::vec3 (XYZ.x, XYZ.y, XYZ.z);
   }
 
   long int * pl = NULL;

@@ -30,40 +30,40 @@ glwhat.x: glwhat.cc
 	g++ $(CXXFLAGS) -g -o glwhat.x glwhat.cc $(LDFLAGS)
 
 test_colorbar: glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field[0].path t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path "" \
+	$(GDB) ./glgrib.x --landscape.geometry testdata/t1198c2.2/Z.grb --field[0].path testdata/t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path "" \
 		--colorbar.on --colorbar.font.r 0 --colorbar.font.g 255 --colorbar.font.b 0 --window.width 1000 \
 		--font.r 0 --font.g 255 --font.b 0
 
 test_bw: glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field[0].path t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path ""
+	$(GDB) ./glgrib.x --landscape.geometry testdata/t1198c2.2/Z.grb --field[0].path testdata/t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path ""
 
 test_bw_debug: glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry t1198c2.2/Z.grb --field[0].path t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path "" --window.debug
+	$(GDB) ./glgrib.x --landscape.geometry testdata/t1198c2.2/Z.grb --field[0].path testdata/t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path "" --window.debug
 
 test_3l_t1198: glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path ""  \
-               --field[0].path t1198c2.2/SURFNEBUL.BASSE.grb --field[1].path t1198c2.2/SURFNEBUL.MOYENN.grb --field[2].path t1198c2.2/SURFNEBUL.HAUTE.grb \
+	$(GDB) ./glgrib.x --landscape.geometry testdata/t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path ""  \
+               --field[0].path testdata/t1198c2.2/SURFNEBUL.BASSE.grb --field[1].path testdata/t1198c2.2/SURFNEBUL.MOYENN.grb --field[2].path testdata/t1198c2.2/SURFNEBUL.HAUTE.grb \
                --field[0].scale                         1.03 --field[1].scale                          1.04 --field[2].scale                         1.05 \
                --field[0].palette                      cloud --field[1].palette                       cloud --field[2].palette                      cloud 
 
 test_3l_t1798: glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry t1798/Z.grb --grid.resolution 0 --coastlines.path ""  \
-                --field[0].path t1798/SURFNEBUL.BASSE.grb --field[1].path t1798/SURFNEBUL.MOYENN.grb --field[2].path t1798/SURFNEBUL.HAUTE.grb \
+	$(GDB) ./glgrib.x --landscape.geometry testdata/t1798/Z.grb --grid.resolution 0 --coastlines.path ""  \
+                --field[0].path testdata/t1798/SURFNEBUL.BASSE.grb --field[1].path testdata/t1798/SURFNEBUL.MOYENN.grb --field[2].path testdata/t1798/SURFNEBUL.HAUTE.grb \
                 --field[0].scale                     1.03 --field[1].scale                      1.04 --field[2].scale                     1.05 \
                 --field[0].palette                  cloud --field[1].palette                   cloud --field[2].palette                  cloud
 
 
 test_offscreen: glgrib.x
 	\rm -f snapshot*.png
-	$(GDB) ./glgrib.x --landscape.geometry t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path ""  --window.offscreen  \
+	$(GDB) ./glgrib.x --landscape.geometry testdata/t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path ""  --window.offscreen  \
 		--window.offscreen_frames 10 --scene.movie --scene.movie-wait -1  --scene.light.rotate --scene.light.on     \
-		--field[0].path t1198c2.2/SURFNEBUL.BASSE.grb t1198c2.2/SURFNEBUL.MOYENN.grb  t1198c2.2/SURFNEBUL.HAUTE.grb \
+		--field[0].path testdata/t1198c2.2/SURFNEBUL.BASSE.grb testdata/t1198c2.2/SURFNEBUL.MOYENN.grb  testdata/t1198c2.2/SURFNEBUL.HAUTE.grb \
 		--field[0].scale                         1.03                           1.03                           1.03 \
 		--field[0].palette                 cloud_auto                     cloud_auto                     cloud_auto 
 
 test_eurat01: glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path "" \
-               --field[0].path t1198c2.2/N.grb  --field[1].path eurat01/lfpw_0_0_0_pl_1000_t.grib2 \
+	$(GDB) ./glgrib.x --landscape.geometry testdata/t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path "" \
+               --field[0].path testdata/t1198c2.2/N.grb  --field[1].path eurat01/lfpw_0_0_0_pl_1000_t.grib2 \
                --field[0].scale           1.02  --field[1].scale                              1.03 \
                --field[0].palette   cloud_auto  --field[1].palette                        cold_hot 
 
@@ -75,59 +75,62 @@ test_glob01: ./glgrib.x
 
 
 test_small: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry  t49/Z.grb  --field[0].scale 1.01  --field[0].path t49/SFX.CLAY.grb
+	$(GDB) ./glgrib.x --landscape.geometry  testdata/t49/Z.grb  --field[0].scale 1.01  --field[0].path testdata/t49/SFX.CLAY.grb
 
 test_shell: ./glgrib.x
-	./glgrib.x --shell --landscape.geometry  t49/Z.grb  --field[0].scale 1.01  --field[0].path t49/SFX.CLAY.grb
+	./glgrib.x --shell --landscape.geometry  testdata/t49/Z.grb  --field[0].scale 1.01  --field[0].path testdata/t49/SFX.CLAY.grb
 
 test_novalue: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry t1798/Z.grb --grid.resolution 0 --coastlines.path ""  \
-		--field[0].path t1798/SURFNEBUL.BASSE.grb --field[0].scale 1.03 --field[0].palette cloud_auto --field[0].no_value_pointer
+	$(GDB) ./glgrib.x --landscape.geometry testdata/t1798/Z.grb --grid.resolution 0 --coastlines.path ""  \
+		--field[0].path testdata/t1798/SURFNEBUL.BASSE.grb --field[0].scale 1.03 --field[0].palette cloud_auto --field[0].no_value_pointer
 
 test_t8000_noorog: ./glgrib.x
-	$(GDB) ./glgrib.x  --window.width 2000  --window.height 2000 --landscape.geometry t479/Z.grb \
+	$(GDB) ./glgrib.x  --window.width 2000  --window.height 2000 --landscape.geometry testdata/t479/Z.grb \
 		--landscape.orography 0 --grid.resolution 0 --coastlines.path ""   \
-		--window.offscreen    --field[0].path t8000/SURFNEBUL.TOTALE.grb --field[0].scale 1.03 --field[0].palette cloud_auto  --field[0].no_value_pointer  \
+		--window.offscreen    --field[0].path testdata/t8000/SURFNEBUL.TOTALE.grb --field[0].scale 1.03 --field[0].palette cloud_auto  --field[0].no_value_pointer  \
 		--scene.light.on --scene.light.lon -25 --scene.light.lat 30.
 
 test_missingvalue: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.path "" --field[0].path t49/SFX.CLAY.grb
+	$(GDB) ./glgrib.x --landscape.path "" --field[0].path testdata/t49/SFX.CLAY.grb
 
 test_aro: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].path ./aro2.5/SURFIND.TERREMER.grb --field[0].palette cold_hot --field[0].scale 1.00 --landscape.path "" --camera.lat 46.2 --camera.lon 2.0 --camera.fov 5
+	$(GDB) ./glgrib.x --field[0].path testdata/aro2.5/SURFIND.TERREMER.grb --field[0].palette cold_hot --field[0].scale 1.00 --landscape.path "" --camera.lat 46.2 --camera.lon 2.0 --camera.fov 5
 
 test_guyane: ./glgrib.x
-	$(GDB) ./glgrib.x --field\[0\].path ./aro_guyane/SURFTEMPERATURE.grb --field\[0\].palette cold_hot_temp --field\[0\].scale 1.01 --camera.lat 5 --camera.lon -51 --camera.fov 3
+	$(GDB) ./glgrib.x --field\[0\].path testdata/aro_guyane/SURFTEMPERATURE.grb --field\[0\].palette cold_hot_temp --field\[0\].scale 1.01 --camera.lat 5 --camera.lon -51 --camera.fov 3
 
 test_vector: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path ./aro2.5/S090WIND.U.PHYS.grb  ./aro2.5/S090WIND.V.PHYS.grb --field\[0\].scale 1.00 --field\[0\].vector.r 0 --field\[0\].vector.g 255 --field\[0\].vector.b 0 --landscape.path '' --camera.lat 46.2 --camera.lon 2.0 --camera.fov 5 
+	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path testdata/aro2.5/S090WIND.U.PHYS.grb  testdata/aro2.5/S090WIND.V.PHYS.grb --field\[0\].scale 1.00 --field\[0\].vector.r 0 --field\[0\].vector.g 255 --field\[0\].vector.b 0 --landscape.path '' --camera.lat 46.2 --camera.lon 2.0 --camera.fov 5 
 
 test_small_aro: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path ./aro_small/S041WIND.U.PHYS.grb ./aro_small/S041WIND.V.PHYS.grb  --field\[0\].scale 1.00 --landscape.path '' --camera.lon 26.64 --camera.lat 67.36 --camera.fov 0.5
+	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path testdata/aro_small/S041WIND.U.PHYS.grb testdata/aro_small/S041WIND.V.PHYS.grb  --field\[0\].scale 1.00 --landscape.path '' --camera.lon 26.64 --camera.lat 67.36 --camera.fov 0.5
 
 test_wind_arp: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry t31c2.4/Z.grb --field[0].vector.on --field\[0\].path t31c2.4/S015WIND.U.PHYS.grb t31c2.4/S015WIND.V.PHYS.grb   --field[0].scale 1.01
+	$(GDB) ./glgrib.x --landscape.geometry testdata/t31c2.4/Z.grb --field[0].vector.on --field\[0\].path testdata/t31c2.4/S015WIND.U.PHYS.grb testdata/t31c2.4/S015WIND.V.PHYS.grb   --field[0].scale 1.01
 
 test_vector_glob25: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector.on --field\[0\].path arpt1798_wind/glob25_+1.grb arpt1798_wind/glob25_+1.grb  --field[0].scale 1.01
+	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector.on --field\[0\].path testdata/arpt1798_wind/glob25_+1.grb testdata/arpt1798_wind/glob25_+1.grb  --field[0].scale 1.01
 
 test_wind_glob25: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector.on --field\[0\].path arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 arpt1798_wind/lfpw_0_2_3_sfc_20_v.grib2  --field[0].scale 1.01
 
 test_wind_t1798: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/S105WIND.U.PHYS.grb --landscape.orography 0  --field[0].vector.on --field\[0\].path arpt1798_wind/S105WIND.U.PHYS.grb arpt1798_wind/S105WIND.V.PHYS.grb  --field[0].scale 1.01
+	$(GDB) ./glgrib.x --landscape.geometry testdata/arpt1798_wind/S105WIND.U.PHYS.grb --landscape.orography 0  --field[0].vector.on --field\[0\].path testdata/arpt1798_wind/S105WIND.U.PHYS.grb testdata/arpt1798_wind/S105WIND.V.PHYS.grb  --field[0].scale 1.01
 
 test_vector_t1798: ./glgrib.x
-	$(GDB) ./glgrib.x  --landscape.geometry arpt1798_wind/+1.grb --landscape.orography 0 --field[0].vector.on --field\[0\].path arpt1798_wind/+1.grb arpt1798_wind/+1.grb  --field[0].scale 1.01
+	$(GDB) ./glgrib.x  --landscape.geometry testdata/arpt1798_wind/+1.grb --landscape.orography 0 --field[0].vector.on --field\[0\].path testdata/arpt1798_wind/+1.grb arpt1798_wind/+1.grb  --field[0].scale 1.01
 
 test_contour1: ./glgrib.x
-	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.path landscape/black.bmp  --grid.resolution 0 --coastlines.path '' --field\[0\].path contour/t0049.grb --field\[0\].scale 1.03 --field\[0\].contour.on
+	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.path landscape/black.bmp  --grid.resolution 0 --coastlines.path '' --field\[0\].path testdata/contour/t0049.grb --field\[0\].scale 1.03 --field\[0\].contour.on
 
 test_contour2: ./glgrib.x
-	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.path landscape/black.bmp  --grid.resolution 0 --coastlines.path '' --field\[0\].path contour/t0479.grb --field\[0\].scale 1.03 --field\[0\].contour.on
+	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.path landscape/black.bmp  --grid.resolution 0 --coastlines.path '' --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.03 --field\[0\].contour.on
 
 test_contour3: ./glgrib.x
-	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.path landscape/black.bmp  --grid.resolution 0 --coastlines.path '' --field\[0\].path contour/t1798.grb --field\[0\].scale 1.03 --field\[0\].contour.on
+	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.path landscape/black.bmp  --grid.resolution 0 --coastlines.path '' --field\[0\].path testdata/contour/t1798.grb --field\[0\].scale 1.03 --field\[0\].contour.on
+
+test_contour_stretched: ./glgrib.x
+	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --grid.resolution 0 --coastlines.path '' --field\[0\].path testdata/t1198c2.2/Z.grb --field\[0\].scale 1.03 --field\[0\].contour.on
 
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane
 

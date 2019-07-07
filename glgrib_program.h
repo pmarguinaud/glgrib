@@ -19,7 +19,8 @@ public:
     GRADIENT_FLAT_SCALE_SCALAR=5,
     FLAT_TEX=6,
     GRADIENT_FLAT_SCALE_VECTOR=7,
-    SIZE=8,
+    CONTOUR=8,
+    SIZE=9,
   } kind;
 
 

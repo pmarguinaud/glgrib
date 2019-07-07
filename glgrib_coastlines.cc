@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+#include <stdexcept>
 
 glgrib_coastlines & glgrib_coastlines::operator= (const glgrib_coastlines & other)
 {
@@ -60,9 +61,14 @@ void glgrib_coastlines::init (const glgrib_options_coastlines & o)
      
       while (1) 
         {   
-          fread (&h, sizeof (h), 1, fp);
+          if (fread (&h, sizeof (h), 1, fp) != 1)
+            std::runtime_error (std::string ("Cannot read coastline data"));
+ 
           pl = (point_t *)realloc (pl, h.n * sizeof (point_t));
-          fread (pl, sizeof (point_t), h.n, fp);
+
+          if (fread (pl, sizeof (point_t), h.n, fp) != h.n)
+            std::runtime_error (std::string ("Cannot read coastline data"));
+
           if (h.level == 1)
 	    {
 	      if (pass == 0)

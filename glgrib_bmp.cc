@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdexcept>
 
 static int S4 (unsigned char * h)
 {
@@ -13,7 +14,9 @@ void glgrib_bmp (const char * file, unsigned char ** rgb, int * width, int * hei
 {
   unsigned char h[54];
   FILE * fp = fopen (file, "r");
-  fread (h, sizeof (h), 1, fp);
+
+  if (fread (h, sizeof (h), 1, fp) != 1)
+    std::runtime_error (std::string ("Cannot read BMP file"));
   
   int ioff = S4 (&h[10]); 
   int numberOfColors = S4 (&h[18]);
@@ -23,7 +26,8 @@ void glgrib_bmp (const char * file, unsigned char ** rgb, int * width, int * hei
   
   fseek (fp, ioff, SEEK_SET);
 
-  fread ((*rgb), 3 * numberOfColors * nrow, 1, fp);
+  if (fread ((*rgb), 3 * numberOfColors * nrow, 1, fp) != 1)
+    std::runtime_error (std::string ("Cannot read BMP file"));
 
   for (int i = 0; i < numberOfColors * nrow; i++)
     {

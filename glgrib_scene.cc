@@ -2,6 +2,7 @@
 #include "glgrib_opengl.h"
 #include "glgrib_field_scalar.h"
 #include "glgrib_field_vector.h"
+#include "glgrib_field_contour.h"
 
 #include <stdio.h>
 #include <sys/time.h>
@@ -140,6 +141,8 @@ void glgrib_scene::init (const glgrib_options & o)
         {
           if (d.opts.field[i].vector.on)
             fld = new glgrib_field_vector ();
+          else if (d.opts.field[i].contour.on)
+            fld = new glgrib_field_contour ();
           else
             fld = new glgrib_field_scalar ();
           fld->init (d.opts.field[i]);

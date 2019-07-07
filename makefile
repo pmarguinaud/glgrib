@@ -11,8 +11,8 @@ all: set.x glgrib.x
 set.x: set.c
 	cc -I$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/include -L$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib -Wl,-rpath,$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib -g -o set.x set.c -leccodes
 
-glgrib.x: glgrib_field_vector.o glgrib_field_scalar.o glgrib_geometry_lambert.o glgrib_projection.o glgrib_colorbar.o glgrib_font.o glgrib_string.o glgrib_geometry_latlon.o glgrib_window_offscreen.o glgrib_geometry.o glgrib_geometry_gaussian.o glgrib_window.o glgrib_options.o glgrib_shell.o glgrib_bmp.o glgrib_landscape.o glgrib_palette.o glgrib_field.o glgrib_load.o glgrib_polygon.o glgrib_program.o glgrib_view.o glgrib_world.o glgrib.o glgrib_opengl.o glgrib_png.o glgrib_scene.o glgrib_coastlines.o glgrib_grid.o glgrib_shader.o
-	g++  $(CXXFLAGS) -o glgrib.x glgrib_field_vector.o glgrib_field_scalar.o glgrib_geometry_lambert.o glgrib_projection.o glgrib_colorbar.o glgrib_font.o glgrib_string.o glgrib_geometry_latlon.o glgrib_window_offscreen.o glgrib_geometry.o glgrib_geometry_gaussian.o glgrib_window.o glgrib_options.o glgrib_shell.o glgrib_bmp.o glgrib_landscape.o glgrib_palette.o glgrib_field.o glgrib_load.o glgrib_polygon.o glgrib_view.o glgrib_program.o glgrib_world.o glgrib.o glgrib_opengl.o glgrib_png.o glgrib_scene.o glgrib_coastlines.o glgrib_grid.o glgrib_shader.o $(LDFLAGS)
+glgrib.x: glgrib_field_contour.o glgrib_field_vector.o glgrib_field_scalar.o glgrib_geometry_lambert.o glgrib_projection.o glgrib_colorbar.o glgrib_font.o glgrib_string.o glgrib_geometry_latlon.o glgrib_window_offscreen.o glgrib_geometry.o glgrib_geometry_gaussian.o glgrib_window.o glgrib_options.o glgrib_shell.o glgrib_bmp.o glgrib_landscape.o glgrib_palette.o glgrib_field.o glgrib_load.o glgrib_polygon.o glgrib_program.o glgrib_view.o glgrib_world.o glgrib.o glgrib_opengl.o glgrib_png.o glgrib_scene.o glgrib_coastlines.o glgrib_grid.o glgrib_shader.o
+	g++  $(CXXFLAGS) -o glgrib.x glgrib_field_contour.o glgrib_field_vector.o glgrib_field_scalar.o glgrib_geometry_lambert.o glgrib_projection.o glgrib_colorbar.o glgrib_font.o glgrib_string.o glgrib_geometry_latlon.o glgrib_window_offscreen.o glgrib_geometry.o glgrib_geometry_gaussian.o glgrib_window.o glgrib_options.o glgrib_shell.o glgrib_bmp.o glgrib_landscape.o glgrib_palette.o glgrib_field.o glgrib_load.o glgrib_polygon.o glgrib_view.o glgrib_program.o glgrib_world.o glgrib.o glgrib_opengl.o glgrib_png.o glgrib_scene.o glgrib_coastlines.o glgrib_grid.o glgrib_shader.o $(LDFLAGS)
 
 %.o: %.cc
 	g++ $(CXXFLAGS) -o $@ -c $<
@@ -120,4 +120,15 @@ test_wind_t1798: ./glgrib.x
 test_vector_t1798: ./glgrib.x
 	$(GDB) ./glgrib.x  --landscape.geometry arpt1798_wind/+1.grb --landscape.orography 0 --field[0].vector.on --field\[0\].path arpt1798_wind/+1.grb arpt1798_wind/+1.grb  --field[0].scale 1.01
 
+test_contour1: ./glgrib.x
+	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.path landscape/black.bmp  --grid.resolution 0 --coastlines.path '' --field\[0\].path contour/t0049.grb --field\[0\].scale 1.03 --field\[0\].contour.on
+
+test_contour2: ./glgrib.x
+	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.path landscape/black.bmp  --grid.resolution 0 --coastlines.path '' --field\[0\].path contour/t0479.grb --field\[0\].scale 1.03 --field\[0\].contour.on
+
+test_contour3: ./glgrib.x
+	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.path landscape/black.bmp  --grid.resolution 0 --coastlines.path '' --field\[0\].path contour/t1798.grb --field\[0\].scale 1.03 --field\[0\].contour.on
+
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane
+
+

@@ -32,6 +32,7 @@ public:
   virtual float resolution (int = 0) const = 0;
   virtual void getTriangleVertices (int, int [3]) const = 0;
   virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec3 [3]) const = 0;
+  virtual bool triangleIsEdge (int) const = 0;
 protected:
   std::string md5string (const unsigned char []) const;
 };

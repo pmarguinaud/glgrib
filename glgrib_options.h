@@ -219,6 +219,22 @@ public:
 #define APPLY(name, desc) do { cb->apply (p, #name, #desc, &name); } while (0)
 #define TRAVERSE(name) do { name.traverse (p + ( p == "" ? "" : ".") + #name, cb); } while (0)
 
+class glgrib_options_contour : public glgrib_options_base
+{
+public:
+  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  {
+    APPLY (on,          Enable contour);          
+    APPLY (r,           Red color for contour);       
+    APPLY (g,           Green color for contour);     
+    APPLY (b,           Blue color for contour);      
+  }
+  bool  on = false;
+  int   r  = 255;
+  int   g  = 255;
+  int   b  = 255;
+};
+
 class glgrib_options_vector : public glgrib_options_base
 {
 public:
@@ -249,12 +265,14 @@ public:
     APPLY (palette,          Palettes);                              
     APPLY (no_value_pointer, Do not keep field values in memory);    
     TRAVERSE (vector);
+    TRAVERSE (contour);
   }
   string_list  path;
   string_list  palette;
   float_list   scale;
   bool         no_value_pointer = false;
   glgrib_options_vector vector;
+  glgrib_options_contour contour;
 };
 
 

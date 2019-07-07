@@ -560,6 +560,77 @@ void main ()
 }
 )CODE"),
 
+  glgrib_program (  // CONTOUR
+R"CODE(
+#version 330 core
+
+in float norm;
+out vec4 color;
+
+uniform vec3 color0;
+
+void main ()
+{
+  color.r = 0.;
+  color.g = 1.;
+  color.b = 0.;
+  if (norm < 1.)
+    color.a = 0.;
+  else
+    color.a = 1.;
+}
+
+)CODE",
+R"CODE(
+#version 330 core
+
+layout(location = 0) in vec3 vertexPos0;
+layout(location = 1) in vec3 vertexPos1;
+layout(location = 2) in vec3 vertexPos2;
+layout(location = 3) in float norm0;
+layout(location = 4) in float norm1;
+
+out float norm;
+
+uniform mat4 MVP;
+
+void main ()
+{
+  vec3 vertexPos;
+  vec3 t;
+
+  if ((gl_VertexID == 0) || (gl_VertexID == 2))
+    {
+      t = normalize (vertexPos1 - vertexPos0);
+      vertexPos = vertexPos0;
+    }
+  else if ((gl_VertexID == 1) || (gl_VertexID == 3))
+    {
+      t = normalize (vertexPos2 - vertexPos1);
+      vertexPos = vertexPos1;  
+    }
+
+  vec3 p = normalize (vertexPos);
+  vec3 n = cross (t, p);
+
+  if (gl_VertexID == 2)
+    vertexPos = vertexPos + 0.001 * n;
+
+  if (gl_VertexID == 3)
+    vertexPos = vertexPos + 0.001 * n;
+
+  vertexPos = 1.03 * vertexPos;
+
+
+  gl_Position =  MVP * vec4 (vertexPos, 1);
+
+  norm = min (norm0, norm1);
+
+}
+)CODE"),
+
+
+
 };
 
 void glgrib_program::compile ()

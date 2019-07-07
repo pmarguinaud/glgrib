@@ -21,7 +21,7 @@ protected:
   virtual void cleanup ();
   bool wireframe = false;
   unsigned int numberOfColors, numberOfTriangles;
-  GLuint VertexArrayID;
+  GLuint VertexArrayID = 0;
 };
 
 #endif

@@ -30,7 +30,7 @@ void glgauss (const long int Nj, const long int pl[], unsigned int * ind, const 
   int indcntoff[nstripe];
 
   iglooff[0] = 0;
-  for (int jlat = 2; jlat <= Nj-1; jlat++)
+  for (int jlat = 2; jlat <= Nj; jlat++)
     iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
 
   indcntoff[0] = 0;
@@ -81,21 +81,20 @@ void glgauss (const long int Nj, const long int pl[], unsigned int * ind, const 
             {
               int jlon1 = 1;
               int jlon2 = 1;
-              for (;;)
+              bool turn = false;
+              while (1)
                 {
                   int ica = 0, icb = 0, icc = 0;
-     
-      
-                  int idlonc = JDLON (jlon1, jlon2);
+
                   int jlon1n = JNEXT (jlon1, iloen1);
                   int jlon2n = JNEXT (jlon2, iloen2);
-                  int idlonn = JDLON (jlon1n, jlon2n);
 
 #define AV1 \
   do {                                                                        \
     ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff1 + jlon1n;  \
     if (trid) trid[ica-1] = (inds - ind) / 3;                                 \
     jlon1 = jlon1n;                                                           \
+    turn = turn || jlon1 == 1;                                                \
   } while (0)
 
 #define AV2 \
@@ -103,45 +102,49 @@ void glgauss (const long int Nj, const long int pl[], unsigned int * ind, const 
     ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff2 + jlon2n;  \
     if (triu) triu[icb-1] = (inds - ind) / 3;                                 \
     jlon2 = jlon2n;                                                           \
+    turn = turn || jlon2 == 1;                                                \
   } while (0)
 
-                  if (idlonc > 0 || ((idlonc == 0) && (idlonn > 0)))
-                    {
-                      if (jlon2n != 1)
-                        AV2;
-                      else
-                        AV1;
-                    }
-                  else if (idlonc < 0 || ((idlonc == 0) && (idlonn < 0))) 
-                    {
-                      if (jlon1n != 1)
-                        AV1;
-                      else
-                        AV2;
-                    }
+                  int idlonc = JDLON (jlon1, jlon2);
+                  int idlonn;
+		  if ((jlon1n == 1) && (jlon2n != 1))
+                    idlonn = +1;
+		  else if ((jlon1n != 1) && (jlon2n == 1))
+                    idlonn = -1;
+		  else 
+                    idlonn = JDLON (jlon1n, jlon2n);
+
+                  if (idlonn > 0 || ((idlonn == 0) && (idlonc > 0)))
+                    AV2;
+                  else if (idlonn < 0 || ((idlonn == 0) && (idlonc < 0))) 
+                    AV1;
                   else
-                    {
-                      abort ();
-                    }
+                    abort ();
              
                   PRINT (ica, icb, icc);
                  
-                  if ((jlon1 == 1) && (jlon2 == iloen2)) 
+                  if (turn)
                     {
-                      ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff2 + jlon2n;
-                      PRINT (ica, icb, icc);
+                      if (jlon1 == 1)
+                        while (jlon2 != 1)
+                          {
+                            int jlon2n = JNEXT (jlon2, iloen2);
+                            AV2;
+                            PRINT (ica, icb, icc);
+                          }
+                      else if (jlon2 == 1)
+                        while (jlon1 != 1)
+                          {
+                            int jlon1n = JNEXT (jlon1, iloen1);
+                            AV1;
+                           PRINT (ica, icb, icc);
+                          }
+                      break;
                     }
-                  else if ((jlon1 == iloen1) && (jlon2 == 1)) 
-                    {
-                      ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff1 + jlon1n;
-                      PRINT (ica, icb, icc);
-                    }
-                  else
-                    {
-                      continue;
-                    }
-                  break;
-              }
+
+     
+      
+                }
          
          
             }
@@ -366,10 +369,10 @@ void glgrib_geometry_gaussian::init (codes_handle * h, const float orography)
 
   free (xyz); xyz = NULL;
   
-  jglooff = (int *)malloc (Nj * sizeof (int));
+  jglooff = (int *)malloc ((Nj + 1) * sizeof (int));
 
   jglooff[0] = 0;
-  for (int jlat = 2; jlat <= Nj; jlat++)
+  for (int jlat = 2; jlat <= Nj + 1; jlat++)
     jglooff[jlat-1] = jglooff[jlat-2] + pl[jlat-2];
 }
 
@@ -601,6 +604,25 @@ void glgrib_geometry_gaussian::getTriangleNeighbours (int it, int jglo[3], int i
 
 
 }
+
+bool glgrib_geometry_gaussian::triangleIsEdge (int it) const
+{
+  int jgloA = ind[3*it+0]; 
+  int jgloB = ind[3*it+1]; 
+  int jgloC = ind[3*it+2]; 
+
+  if ((jgloA >= jglooff[1]) && (jgloB >= jglooff[1]) && (jgloC >= jglooff[1]) 
+   && (jgloA < jglooff[Nj-1]) && (jgloB < jglooff[Nj-1]) && (jgloC < jglooff[Nj-1]))
+    return false;
+  
+  int jglo[3]; 
+  int itri[3]; 
+  glm::vec3 xyz[3];
+  getTriangleNeighbours (it, jglo, itri, xyz);
+
+  return itri[0] < 0;
+}
+
 
 
 

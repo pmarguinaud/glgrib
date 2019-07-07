@@ -33,6 +33,8 @@ public:
   { throw std::runtime_error (std::string ("Not implemented")); }
   virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec3 [3]) const
   { throw std::runtime_error (std::string ("Not implemented")); }
+  virtual bool triangleIsEdge (int) const
+  { throw std::runtime_error (std::string ("Not implemented")); }
 private:
   long int Ni, Nj;
   double latitudeOfFirstGridPointInDegrees;

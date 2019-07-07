@@ -27,7 +27,9 @@ public:
   virtual float resolution (int level = 0) const { if (level == 0) level = Nj; return M_PI / level; }
   virtual void getTriangleVertices (int, int [3]) const;
   virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec3 xyz[3]) const;
+  virtual bool triangleIsEdge (int) const;
 
+private:
   class jlonlat_t
   {
   public:
@@ -36,7 +38,6 @@ public:
     int jlon = 0;
     int jlat = 0;
   };
-private:
 
   jlonlat_t jlonlat (int) const;
   glm::vec3 jlonlat2xyz (const jlonlat_t & jlonlat) const

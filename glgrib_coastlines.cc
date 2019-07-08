@@ -128,7 +128,7 @@ void glgrib_coastlines::render (const glgrib_view & view, const glgrib_options_l
 {
   glgrib_program * program = glgrib_program_load (glgrib_program::MONO);
   program->use ();
-  float color[3] = {(float)opts.r, (float)opts.g, (float)opts.b};
+  float color[3] = {(float)opts.color.r, (float)opts.color.g, (float)opts.color.b};
   view.setMVP (program);
   program->setLight (light);
   program->set3fv ("color0", color);

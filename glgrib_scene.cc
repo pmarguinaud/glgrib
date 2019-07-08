@@ -159,7 +159,7 @@ void glgrib_scene::init (const glgrib_options & o)
     {
       glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
       d.str.init (font, std::string (30, ' '), 1.0f, 1.0f, d.opts.font.scale, glgrib_string::NE);
-      d.str.setColor (d.opts.font.r / 255.0f, d.opts.font.g / 255.0f, d.opts.font.b / 255.0f);
+      d.str.setColor (d.opts.font.color.r / 255.0f, d.opts.font.color.g / 255.0f, d.opts.font.color.b / 255.0f);
       d.colorbar.init (d.opts.colorbar);
     }
 

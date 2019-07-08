@@ -9,6 +9,15 @@
 #include <stdexcept>
 #include <algorithm>
 
+class glgrib_option_color
+{
+public:
+  glgrib_option_color () {}
+  glgrib_option_color (int _r, int _g, int _b) : r (_r), g (_g), b (_b) {}
+  int r = 255, g = 255, b = 255;
+};
+
+
 class glgrib_options_callback
 {
 public:
@@ -18,6 +27,7 @@ public:
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<std::string> * data) {}
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::string * data) {}
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<float> * data) {}
+  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_color * data) {}
 };
 
 class glgrib_options_parser : public glgrib_options_callback
@@ -89,6 +99,39 @@ private:
         return std::string (ss.str ());
       }
   };
+  class option_color : public option_base
+  {
+  public:
+    option_color (const std::string & n, const std::string & d, glgrib_option_color * v) : option_base (n, d), value (v)  {}  
+    virtual void set (const char * v)  
+      {   
+        try 
+          {
+            int c = std::stoi (v);
+            switch (count)
+              {
+                case 0: value->r = c; break;
+                case 1: value->g = c; break;
+                case 2: value->b = c; break;
+              }
+            count++;
+          }
+        catch (...)
+          {
+            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values"));
+          }
+      }   
+    glgrib_option_color * value;
+    virtual std::string type () { return std::string ("COLOR R G B"); }
+    virtual std::string asString ()
+      {
+        std::ostringstream ss;
+        ss << value->r << " " << value->g << " " << value->b;
+        return std::string (ss.str ());
+      }
+  private:
+    int count = 0;
+  };
   class option_string : public option_base
   {
   public:
@@ -142,7 +185,7 @@ private:
           }
         catch (...)
           {
-            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects real values"));
+            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values"));
           }
        }
     int * value;
@@ -196,6 +239,11 @@ private:
     std::string opt_name = get_opt_name (path, name);
     name2option.insert (opt_name, new option_float_list (opt_name, desc, data));
   }
+  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_color * data) 
+  {
+    std::string opt_name = get_opt_name (path, name);
+    name2option.insert (opt_name, new option_color (opt_name, desc, data));
+  }
 
 
 };
@@ -225,14 +273,10 @@ public:
   virtual void traverse (const std::string & p, glgrib_options_callback * cb)
   {
     APPLY (on,          Enable contour);          
-    APPLY (r,           Red color for contour);       
-    APPLY (g,           Green color for contour);     
-    APPLY (b,           Blue color for contour);      
+    APPLY (color,       Contour color);
   }
   bool  on = false;
-  int   r  = 255;
-  int   g  = 255;
-  int   b  = 255;
+  glgrib_option_color color;
 };
 
 class glgrib_options_vector : public glgrib_options_base
@@ -243,16 +287,12 @@ public:
     APPLY (on,          Field is a vector);          
     APPLY (hide_arrow,  Hide arrows);                
     APPLY (hide_norm,   Hide norm field);            
-    APPLY (r,           Red color for arrows);       
-    APPLY (g,           Green color for arrows);     
-    APPLY (b,           Blue color for arrows);      
+    APPLY (color,       Color for arrows);
   }
   bool  on         = false;
   bool  hide_arrow = false;
   bool  hide_norm  = false;
-  int   r  = 255;
-  int   g  = 255;
-  int   b  = 255;
+  glgrib_option_color color;
 };
 
 class glgrib_options_field : public glgrib_options_base
@@ -292,14 +332,10 @@ public:
   virtual void traverse (const std::string & p, glgrib_options_callback * cb)
   {
     APPLY (resolution,        Grid resolution);
-    APPLY (r,                 Grid red color component);
-    APPLY (g,                 Grid green color component);
-    APPLY (b,                 Grid blue color component);
+    APPLY (color,             Grid color);
   }
   int resolution = 9;
-  int r = 255; 
-  int g = 255; 
-  int b = 255;
+  glgrib_option_color color = glgrib_option_color (0, 255, 0);
 };
 
 class glgrib_options_landscape : public glgrib_options_base
@@ -324,14 +360,10 @@ public:
   virtual void traverse (const std::string & p, glgrib_options_callback * cb)
   {
     APPLY (path,               Path to coastlines file);
-    APPLY (r,                  Coastlines red color component);
-    APPLY (g,                  Coastlines green color component);
-    APPLY (b,                  Coastlines blue color component);
+    APPLY (color,              Coastlines color);
   }
   string path  = "coastlines/gshhs(3).rim";
-  int r = 255;
-  int g = 255;
-  int b = 255;
+  glgrib_option_color color;
 };
 
 class glgrib_options_window : public glgrib_options_base
@@ -417,13 +449,11 @@ public:
   {
     APPLY (bitmap, Bitmap path);
     APPLY (scale,  Bitmap scale);
-    APPLY (r,      Red color);
-    APPLY (g,      Green color);
-    APPLY (b,      Blue color);
+    APPLY (color,  Font color);
   }
   std::string bitmap = "fonts/08.bmp";
   float scale = 0.05f;
-  int r = 255, g = 255, b = 255;
+  glgrib_option_color color;
 };
 
 

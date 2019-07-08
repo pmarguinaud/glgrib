@@ -49,7 +49,7 @@ void glgrib_colorbar::init (const glgrib_options_colorbar & o)
       y.push_back ((ymax - ymin) * i / 10.0f + ymin);
     }
   label.init (font, str, x, y, opts.font.scale, glgrib_string::SW);
-  label.setColor (opts.font.r / 255.0f, opts.font.g / 255.0f, opts.font.b / 255.0f);
+  label.setColor (opts.font.color.r / 255.0f, opts.font.color.g / 255.0f, opts.font.color.b / 255.0f);
 
   ready = true;
 }

@@ -3,7 +3,7 @@
 LDFLAGS=-fopenmp -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -ltinfo -lssl -lcrypto -lpthread -lsqlite3
 GDB=gdb -ex='set confirm on' -ex=run -ex=quit --args
 
-CXXFLAGS=-O0 -fopenmp -std=c++11 -g -I$(HOME)/3d/usr/include -L$(HOME)/3d/usr/lib64 -Wl,-rpath,$(HOME)/3d/usr/lib64 -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto
+CXXFLAGS=-O2 -fopenmp -std=c++11 -g -I$(HOME)/3d/usr/include -L$(HOME)/3d/usr/lib64 -Wl,-rpath,$(HOME)/3d/usr/lib64 -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto
 CXXFLAGS += -I$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/include -L$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib -Wl,-rpath,$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib
 
 all: set.x glgrib.x
@@ -31,8 +31,8 @@ glwhat.x: glwhat.cc
 
 test_colorbar: glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry testdata/t1198c2.2/Z.grb --field[0].path testdata/t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path "" \
-		--colorbar.on --colorbar.font.r 0 --colorbar.font.g 255 --colorbar.font.b 0 --window.width 1000 \
-		--font.r 0 --font.g 255 --font.b 0
+		--colorbar.on --colorbar.font.color 0 255 --window.width 1000 \
+		--font.color 0 255 0
 
 test_bw: glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry testdata/t1198c2.2/Z.grb --field[0].path testdata/t1198c2.2/N.grb  --field[0].scale 1.03  --grid.resolution 0 --coastlines.path ""
@@ -100,7 +100,7 @@ test_guyane: ./glgrib.x
 	$(GDB) ./glgrib.x --field\[0\].path testdata/aro_guyane/SURFTEMPERATURE.grb --field\[0\].palette cold_hot_temp --field\[0\].scale 1.01 --camera.lat 5 --camera.lon -51 --camera.fov 3
 
 test_vector: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path testdata/aro2.5/S090WIND.U.PHYS.grb  testdata/aro2.5/S090WIND.V.PHYS.grb --field\[0\].scale 1.00 --field\[0\].vector.r 0 --field\[0\].vector.g 255 --field\[0\].vector.b 0 --landscape.path '' --camera.lat 46.2 --camera.lon 2.0 --camera.fov 5 
+	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path testdata/aro2.5/S090WIND.U.PHYS.grb  testdata/aro2.5/S090WIND.V.PHYS.grb --field\[0\].scale 1.00 --field\[0\].vector.color 0 255 0 --landscape.path '' --camera.lat 46.2 --camera.lon 2.0 --camera.fov 5 
 
 test_small_aro: ./glgrib.x
 	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path testdata/aro_small/S041WIND.U.PHYS.grb testdata/aro_small/S041WIND.V.PHYS.grb  --field\[0\].scale 1.00 --landscape.path '' --camera.lon 26.64 --camera.lat 67.36 --camera.fov 0.5

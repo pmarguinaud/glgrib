@@ -258,7 +258,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       program->set1f ("valmin", valmin[0]);
       program->set1f ("valmax", valmax[0]);
 
-      float color0[3] = {opts.vector.r/255.0f, opts.vector.g/255.0f, opts.vector.b/255.0f};
+      float color0[3] = {opts.vector.color.r/255.0f, opts.vector.color.g/255.0f, opts.vector.color.b/255.0f};
       program->set3fv ("color0", color0);
       program->set1f ("vscale", d.vscale);
 

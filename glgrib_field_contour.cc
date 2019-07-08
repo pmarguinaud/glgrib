@@ -295,7 +295,7 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
 
   view.setMVP (program);
   program->set3fv ("scale0", scale0);
-  float color0[3] = {opts.contour.r/255.0f, opts.contour.g/255.0f, opts.contour.b/255.0f};
+  float color0[3] = {opts.contour.color.r/255.0f, opts.contour.color.g/255.0f, opts.contour.color.b/255.0f};
   program->set3fv ("color0", color0);
 
   bool wide = false;

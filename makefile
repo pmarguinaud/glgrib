@@ -144,11 +144,17 @@ test_contour_latlon3: ./glgrib.x
 test_contour_latlon4: ./glgrib.x
 	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.path '' --grid.resolution 0 --coastlines.path '' --field\[0\].path testdata/glob025/lfpw_0_0_0_pl_1000_t.grib2 --field\[1\].path testdata/glob025/lfpw_0_0_0_pl_1000_t.grib2 --field\[1\].palette cold_hot --field\[1\].contour.on
 
-test_contour_aro: ./glgrib.x
+test_contour_aro1: ./glgrib.x
 	$(GDB) ./glgrib.x \
                --field\[0\].path testdata/aro_small/S041WIND.U.PHYS.grb --field\[0\].scale 1.00 --field[0].palette cold_hot \
                --field\[1\].path testdata/aro_small/S041WIND.U.PHYS.grb --field\[1\].scale 1.03 --field[1].contour.on       \
                --landscape.path '' --camera.lon 26.64 --camera.lat 67.36 --camera.fov 0.5
+
+test_contour_aro2: ./glgrib.x
+	$(GDB) ./glgrib.x \
+               --field\[0\].path testdata/aro2.5/S090WIND.U.PHYS.grb --field\[0\].scale 1.00 --field[0].palette cold_hot \
+               --field\[1\].path testdata/aro2.5/S090WIND.U.PHYS.grb --field\[1\].scale 1.03 --field[1].contour.on       \
+               --landscape.path '' --camera.lat 46.2 --camera.lon 2.0 --camera.fov 5
 
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane
 

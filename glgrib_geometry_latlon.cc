@@ -43,7 +43,7 @@ void glgrib_geometry_latlon::init (codes_handle * h, const float orography)
 {
   float * xyz = NULL;
   unsigned int * ind = NULL;
-  bool periodic = false;
+  periodic = false;
 
   dlat = deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees) / (Nj - 1);
   dlon = longitudeOfLastGridPointInDegrees - longitudeOfFirstGridPointInDegrees;
@@ -209,3 +209,92 @@ void glgrib_geometry_latlon::sample (unsigned char * p, const unsigned char p0, 
     }
 }
 
+void glgrib_geometry_latlon::getTriangleVertices (int it, int jglo[3]) const
+{ 
+  bool t021 = (it % 2) == 0;
+  it = t021 ? it : it - 1;
+  int nti = numberOfTriangles / (Nj - 1); // Number of triangles in a row
+  int i = (it % nti) / 2;
+  int j = (it / nti);
+  int ind0 = (j + 0) * Ni + (i + 0), ind1 = periodic && (i == Ni-1) ? (j + 0) * Ni : (j + 0) * Ni + (i + 1); 
+  int ind2 = (j + 1) * Ni + (i + 0), ind3 = periodic && (i == Ni-1) ? (j + 1) * Ni : (j + 1) * Ni + (i + 1); 
+
+  if (t021)
+    {
+      jglo[0] = ind0; jglo[1] = ind1; jglo[2] = ind2;
+    }
+  else
+    {
+      jglo[0] = ind2; jglo[1] = ind3; jglo[2] = ind1;
+    }
+
+  if (ind0 >= numberOfPoints) abort ();
+  if (ind1 >= numberOfPoints) abort ();
+  if (ind2 >= numberOfPoints) abort ();
+  if (ind3 >= numberOfPoints) abort ();
+}
+
+void glgrib_geometry_latlon::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
+{ 
+  bool t021 = (it % 2) == 0;
+  it = t021 ? it : it - 1;                // it is now the rank of the triangle 012
+  int nti = numberOfTriangles / (Nj - 1); // Number of triangles in a row
+  int i = (it % nti) / 2;
+  int j = (it / nti);
+  int ind0 = (j + 0) * Ni + (i + 0), ind1 = periodic && (i == Ni-1) ? (j + 0) * Ni : (j + 0) * Ni + (i + 1); 
+  int ind2 = (j + 1) * Ni + (i + 0), ind3 = periodic && (i == Ni-1) ? (j + 1) * Ni : (j + 1) * Ni + (i + 1); 
+
+  float coslon0 = cos (lon0 + dlon * (float)(i + 0)), sinlon0 = sin (lon0 + dlon * (float)(i + 0));
+  float coslon1 = cos (lon0 + dlon * (float)(i + 1)), sinlon1 = sin (lon0 + dlon * (float)(i + 1));
+  float coslat0 = cos (lat0 - dlat * (float)(j + 0)), sinlat0 = sin (lat0 - dlat * (float)(j + 0));
+  float coslat1 = cos (lat0 - dlat * (float)(j + 1)), sinlat1 = sin (lat0 - dlat * (float)(j + 1));
+
+  if (t021)
+    {
+      jglo[0] = ind0; jglo[1] = ind1; jglo[2] = ind2;
+      itri[0] = j > 0 ? it - nti + 1: -1;
+      itri[1] = it + 1;
+      itri[2] = i > 0 ? it - 1 : periodic ? it + nti - 1 : -1;
+      xyz[0] = glm::vec3 (coslon0 * coslat0, sinlon0 * coslat0, sinlat0);
+      xyz[1] = glm::vec3 (coslon1 * coslat0, sinlon1 * coslat0, sinlat0);
+      xyz[2] = glm::vec3 (coslon0 * coslat1, sinlon0 * coslat1, sinlat1);
+    }
+  else
+    {
+      jglo[0] = ind2; jglo[1] = ind3; jglo[2] = ind1;
+      itri[0] = j < Nj-2 ? it + nti : -1;
+      itri[1] = i < Ni-2 ? it + 2 : periodic ? it - nti + 1 : -1;
+      itri[2] = it;
+      xyz[0] = glm::vec3 (coslon0 * coslat1, sinlon0 * coslat1, sinlat1);
+      xyz[1] = glm::vec3 (coslon1 * coslat1, sinlon1 * coslat1, sinlat1);
+      xyz[2] = glm::vec3 (coslon1 * coslat0, sinlon1 * coslat0, sinlat0);
+    }
+
+  if (ind0 >= numberOfPoints) abort ();
+  if (ind1 >= numberOfPoints) abort ();
+  if (ind2 >= numberOfPoints) abort ();
+  if (ind3 >= numberOfPoints) abort ();
+
+  if ((itri[0] >= 0) && (itri[0] >= numberOfTriangles)) abort ();
+  if ((itri[1] >= 0) && (itri[1] >= numberOfTriangles)) abort ();
+  if ((itri[2] >= 0) && (itri[2] >= numberOfTriangles)) abort ();
+  
+
+}
+
+bool glgrib_geometry_latlon::triangleIsEdge (int it) const
+{ 
+  bool t021 = (it % 2) == 0;
+  it = t021 ? it : it - 1;
+  int nti = numberOfTriangles / (2 * (Nj - 1)); // Number of triangles in a row
+  int i = it % nti;
+  int j = it / nti;
+
+  if ((j == 0) || (j == Nj-1))
+    return true;
+    
+  if (((i == 0) || (j == Ni-1)) && (! periodic))
+    return true;
+
+  return false;
+}

@@ -29,12 +29,9 @@ public:
       level = Nj;
     return deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees) / level;
   }
-  virtual void getTriangleVertices (int, int [3]) const
-  { throw std::runtime_error (std::string ("Not implemented")); }
-  virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec3 [3]) const
-  { throw std::runtime_error (std::string ("Not implemented")); }
-  virtual bool triangleIsEdge (int) const
-  { throw std::runtime_error (std::string ("Not implemented")); }
+  virtual void getTriangleVertices (int, int [3]) const;
+  virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec3 [3]) const;
+  virtual bool triangleIsEdge (int) const;
 private:
   long int Ni, Nj;
   double latitudeOfFirstGridPointInDegrees;
@@ -42,6 +39,7 @@ private:
   double latitudeOfLastGridPointInDegrees;
   double longitudeOfLastGridPointInDegrees;
   double dlat, dlon, lat0, lon0;
+  bool periodic = false;
   friend class sampler;
 };
 

@@ -3,7 +3,7 @@
 LDFLAGS=-fopenmp -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -ltinfo -lssl -lcrypto -lpthread -lsqlite3
 GDB=gdb -ex='set confirm on' -ex=run -ex=quit --args
 
-CXXFLAGS=-O2 -fopenmp -std=c++11 -g -I$(HOME)/3d/usr/include -L$(HOME)/3d/usr/lib64 -Wl,-rpath,$(HOME)/3d/usr/lib64 -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto
+CXXFLAGS=-O0 -fopenmp -std=c++11 -g -I$(HOME)/3d/usr/include -L$(HOME)/3d/usr/lib64 -Wl,-rpath,$(HOME)/3d/usr/lib64 -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto
 CXXFLAGS += -I$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/include -L$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib -Wl,-rpath,$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib
 
 all: set.x glgrib.x
@@ -63,15 +63,15 @@ test_offscreen: glgrib.x
 
 test_eurat01: glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry testdata/t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path "" \
-               --field[0].path testdata/t1198c2.2/N.grb  --field[1].path eurat01/lfpw_0_0_0_pl_1000_t.grib2 \
+               --field[0].path testdata/t1198c2.2/N.grb  --field[1].path testdata/eurat01/lfpw_0_0_0_pl_1000_t.grib2 \
                --field[0].scale           1.02  --field[1].scale                              1.03 \
                --field[0].palette   cloud_auto  --field[1].palette                        cold_hot 
 
 test_landscape_eurat01: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry  eurat01/lfpw_0_0_0_pl_1000_t.grib2 --landscape.orography 0
+	$(GDB) ./glgrib.x --landscape.geometry  testdata/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --landscape.orography 0
 
 test_glob01: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.path "" --field[0].path glob01/lfpw_0_0_0_sfc_0_t.grib2 --field[0].scale 1.00  --field[0].palette cold_hot_temp
+	$(GDB) ./glgrib.x --landscape.path "" --field[0].path testdata/glob01/lfpw_0_0_0_sfc_0_t.grib2 --field[0].scale 1.00  --field[0].palette cold_hot_temp
 
 
 test_small: ./glgrib.x
@@ -109,10 +109,10 @@ test_wind_arp: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry testdata/t31c2.4/Z.grb --field[0].vector.on --field\[0\].path testdata/t31c2.4/S015WIND.U.PHYS.grb testdata/t31c2.4/S015WIND.V.PHYS.grb   --field[0].scale 1.01
 
 test_vector_glob25: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector.on --field\[0\].path testdata/arpt1798_wind/glob25_+1.grb testdata/arpt1798_wind/glob25_+1.grb  --field[0].scale 1.01
+	$(GDB) ./glgrib.x --landscape.geometry testdata/arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector.on --field\[0\].path testdata/arpt1798_wind/glob25_+1.grb testdata/arpt1798_wind/glob25_+1.grb  --field[0].scale 1.01
 
 test_wind_glob25: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.geometry arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector.on --field\[0\].path arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 arpt1798_wind/lfpw_0_2_3_sfc_20_v.grib2  --field[0].scale 1.01
+	$(GDB) ./glgrib.x --landscape.geometry testdata/arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector.on --field\[0\].path testdata/arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 testdata/arpt1798_wind/lfpw_0_2_3_sfc_20_v.grib2  --field[0].scale 1.01
 
 test_wind_t1798: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry testdata/arpt1798_wind/S105WIND.U.PHYS.grb --landscape.orography 0  --field[0].vector.on --field\[0\].path testdata/arpt1798_wind/S105WIND.U.PHYS.grb testdata/arpt1798_wind/S105WIND.V.PHYS.grb  --field[0].scale 1.01
@@ -131,6 +131,15 @@ test_contour3: ./glgrib.x
 
 test_contour_stretched: ./glgrib.x
 	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --grid.resolution 0 --coastlines.path '' --field\[0\].path testdata/t1198c2.2/Z.grb --field\[0\].scale 1.03 --field\[0\].contour.on
+
+test_contour_latlon1: ./glgrib.x
+	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.path landscape/black.bmp  --grid.resolution 0 --coastlines.path '' --field\[0\].path testdata/contour/latlon9x6.grb --field\[0\].scale 1.03 --field\[0\].contour.on
+
+test_contour_latlon2: ./glgrib.x
+	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.path landscape/black.bmp  --grid.resolution 0 --coastlines.path '' --field\[0\].path testdata/contour/latlon18x13.grb --field\[0\].scale 1.03 --field\[0\].contour.on
+
+test_contour_latlon3: ./glgrib.x
+	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.path landscape/black.bmp  --grid.resolution 0 --coastlines.path '' --field\[0\].path testdata/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --field\[0\].scale 1.03 --field\[0\].contour.on
 
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane
 

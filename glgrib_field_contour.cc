@@ -294,16 +294,9 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
   const glgrib_palette & p = dopts.palette;
 
   view.setMVP (program);
-//program->setLight (light);
-//p.setRGBA255 (program->programID);
-
-//program->set3fv ("scale0", scale0);
-
-//float palmax = p.hasMax () ? p.getMax () : getNormedMaxValue ();
-//float palmin = p.hasMin () ? p.getMin () : getNormedMinValue ();
-
-//program->set1f ("palmin", palmin);
-//program->set1f ("palmax", palmax);
+  program->set3fv ("scale0", scale0);
+  float color0[3] = {opts.contour.r/255.0f, opts.contour.g/255.0f, opts.contour.b/255.0f};
+  program->set3fv ("color0", color0);
 
   bool wide = false;
   for (int i = 0; i < N; i++)

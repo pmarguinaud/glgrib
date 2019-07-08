@@ -564,18 +564,18 @@ void main ()
 R"CODE(
 #version 330 core
 
-in float norm;
+in float alpha;
 out vec4 color;
 
 uniform vec3 color0;
 
 void main ()
 {
-  if (norm < 1.)
+  if (alpha < 1.)
     discard;
-  color.r = 0.;
-  color.g = 1.;
-  color.b = 0.;
+  color.r = color0.r;
+  color.g = color0.g;
+  color.b = color0.b;
   color.a = 1.;
 }
 
@@ -589,9 +589,17 @@ layout(location = 2) in vec3 vertexPos2;
 layout(location = 3) in float norm0;
 layout(location = 4) in float norm1;
 
-out float norm;
+out float alpha;
 
 uniform mat4 MVP;
+
+)CODE"
++ projShaderInclude
++ scalePositionInclude
++ R"CODE(
+
+uniform bool do_alpha = false;
+uniform float posmax = 0.97;
 
 void main ()
 {
@@ -618,12 +626,36 @@ void main ()
   if (gl_VertexID == 3)
     vertexPos = vertexPos + 0.001 * n;
 
-  vertexPos = 1.03 * vertexPos;
+  vec3 normedPos = compNormedPos (vertexPos);
+  vec3 pos = compProjedPos (vertexPos, normedPos);
 
+  alpha = min (norm0, norm1);
 
-  gl_Position =  MVP * vec4 (vertexPos, 1);
+  if (proj == XYZ)
+    {
+      pos = scalePosition (pos, normedPos);
+    }
+  else
+    {
+      if ((proj == LATLON) || (proj == MERCATOR))
+      if ((pos.y < -posmax) || (+posmax < pos.y))
+        {
+          pos.x = -0.1;
+          if (do_alpha)
+            alpha = 0.0;
+	}
+      if (proj == LATLON)
+      if ((pos.z > +0.49) || (pos.z < -0.49))
+        alpha = 0.0;
 
-  norm = min (norm0, norm1);
+      if (proj == POLAR_SOUTH)
+        pos.x = pos.x - 0.005;
+      else
+        pos.x = pos.x + 0.005;
+    }
+
+  gl_Position =  MVP * vec4 (pos, 1);
+
 
 }
 )CODE"),

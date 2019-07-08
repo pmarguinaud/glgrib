@@ -48,13 +48,12 @@ private:
   class isoline_t
   {
   public:
+    float level;
     GLuint VertexArrayID;
     glgrib_opengl_buffer_ptr vertexbuffer, normalbuffer;
     GLuint size;
   };
 
-
-  int N = 10;
   std::vector<isoline_t> iso;
   void processTriangle (int, float *, float, bool *, isoline_data_t *);
 };

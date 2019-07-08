@@ -36,7 +36,6 @@ glgrib_field_contour & glgrib_field_contour::operator= (const glgrib_field_conto
       if (field.isReady ())
         {
           glgrib_field::operator= (field);
-          N   = field.N;
           iso = field.iso;
           setupVertexAttributes ();
           setReady ();
@@ -47,7 +46,7 @@ glgrib_field_contour & glgrib_field_contour::operator= (const glgrib_field_conto
 void glgrib_field_contour::cleanup ()
 {
   if (isReady ()) 
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < iso.size (); i++)
       {
         glDeleteVertexArrays (1, &iso[i].VertexArrayID);
       }
@@ -59,7 +58,7 @@ void glgrib_field_contour::setupVertexAttributes ()
   numberOfPoints = geometry->numberOfPoints;
   numberOfTriangles = geometry->numberOfTriangles;
 
-  for (int i = 0; i < N; i++)
+  for (int i = 0; i < iso.size (); i++)
     {
       glGenVertexArrays (1, &iso[i].VertexArrayID);
       glBindVertexArray (iso[i].VertexArrayID);
@@ -97,11 +96,6 @@ void glgrib_field_contour::init (const glgrib_options_field & o, int slot)
 
   dopts.scale = opts.scale[slot];
 
-  if (opts.palette[slot] == "default")
-    dopts.palette = get_palette_by_meta (meta1);
-  else
-    dopts.palette = get_palette_by_name (opts.palette[slot]);
-
   geometry = glgrib_geometry_load (opts.path[slot]);
 
   numberOfColors = 1;
@@ -110,14 +104,19 @@ void glgrib_field_contour::init (const glgrib_options_field & o, int slot)
   float maxval = *std::max_element (data, data + size);
   float minval = *std::min_element (data, data + size);
 
+  std::vector<float> levels = opts.contour.levels;
 
-  isoline_data_t iso_data[N];
+  if (levels.size () == 0)
+    for (int i = 0; i < opts.contour.number; i++)
+      levels.push_back (minval + (i + 1) * (maxval - minval) / (opts.contour.number + 1));
+
+  isoline_data_t iso_data[levels.size ()];
+
 
 #pragma omp parallel for
-  for (int i = 0; i < N; i++)
+  for (int i = 0; i < levels.size (); i++)
     {
       bool * seen = (bool *)malloc (sizeof (bool) * (geometry->numberOfTriangles + 1));
-      float data0 = minval + (i + 1) * (maxval - minval) / (N + 1);
 
       for (int i = 0; i < geometry->numberOfTriangles + 1; i++)
         seen[i] = false;
@@ -126,21 +125,23 @@ void glgrib_field_contour::init (const glgrib_options_field & o, int slot)
       // First visit edge triangles
       for (int it = 0; it < geometry->numberOfTriangles; it++)
         if (geometry->triangleIsEdge (it))
-          processTriangle (it, data, data0, seen+1, &iso_data[i]);
+          processTriangle (it, data, levels[i], seen+1, &iso_data[i]);
 
       for (int it = 0; it < geometry->numberOfTriangles; it++)
-        processTriangle (it, data, data0, seen+1, &iso_data[i]);
+        processTriangle (it, data, levels[i], seen+1, &iso_data[i]);
 
       free (seen);
     }
 
-  iso.resize (N);
+  iso.resize (levels.size ());
 
-
-  for (int i = 0; i < N; i++)
+  for (int i = 0; i < levels.size (); i++)
     {
-      iso[i].vertexbuffer = new_glgrib_opengl_buffer_ptr (iso_data[i].xyz.size () * sizeof (float), iso_data[i].xyz.data ());
-      iso[i].normalbuffer = new_glgrib_opengl_buffer_ptr (iso_data[i].drw.size () * sizeof (float), iso_data[i].drw.data ());
+      iso[i].level = levels[i];
+      iso[i].vertexbuffer = new_glgrib_opengl_buffer_ptr (iso_data[i].xyz.size () * sizeof (float), 
+                                                          iso_data[i].xyz.data ());
+      iso[i].normalbuffer = new_glgrib_opengl_buffer_ptr (iso_data[i].drw.size () * sizeof (float), 
+                                                          iso_data[i].drw.data ());
       iso[i].size = iso_data[i].size () - 1;
       iso_data[i].clear ();
     }
@@ -299,7 +300,7 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
   program->set3fv ("color0", color0);
 
   bool wide = false;
-  for (int i = 0; i < N; i++)
+  for (int i = 0; i < iso.size (); i++)
     {
       glBindVertexArray (iso[i].VertexArrayID);
       if (! wide)

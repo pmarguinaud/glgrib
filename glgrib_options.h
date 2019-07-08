@@ -274,8 +274,12 @@ public:
   {
     APPLY (on,          Enable contour);          
     APPLY (color,       Contour color);
+    APPLY (number,      Number of levels);
+    APPLY (levels,      List of levels);
   }
-  bool  on = false;
+  bool on = false;
+  int number = 10;
+  std::vector<float> levels;
   glgrib_option_color color;
 };
 

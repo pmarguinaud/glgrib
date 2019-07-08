@@ -571,13 +571,12 @@ uniform vec3 color0;
 
 void main ()
 {
+  if (norm < 1.)
+    discard;
   color.r = 0.;
   color.g = 1.;
   color.b = 0.;
-  if (norm < 1.)
-    color.a = 0.;
-  else
-    color.a = 1.;
+  color.a = 1.;
 }
 
 )CODE",

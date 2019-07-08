@@ -220,4 +220,85 @@ void glgrib_geometry_lambert::applyUVangle (float * angle) const
       }
 }
 
+void glgrib_geometry_lambert::getTriangleVertices (int it, int jglo[3]) const
+{ 
+  bool t021 = (it % 2) == 0;
+  it = t021 ? it : it - 1;
+  int nti = numberOfTriangles / (Ny - 1); // Number of triangles in a row
+  int i = (it % nti) / 2;
+  int j = (it / nti);
+  int ind0 = (j + 0) * Nx + (i + 0), ind1 = (j + 0) * Nx + (i + 1); 
+  int ind2 = (j + 1) * Nx + (i + 0), ind3 = (j + 1) * Nx + (i + 1); 
+
+  if (t021)
+    {
+      jglo[0] = ind0; jglo[1] = ind1; jglo[2] = ind2;
+    }
+  else
+    {
+      jglo[0] = ind2; jglo[1] = ind3; jglo[2] = ind1;
+    }
+}
+
+void glgrib_geometry_lambert::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
+{ 
+  bool t021 = (it % 2) == 0;
+  it = t021 ? it : it - 1;                // it is now the rank of the triangle 012
+  int nti = numberOfTriangles / (Ny - 1); // Number of triangles in a row
+  int i = (it % nti) / 2;
+  int j = (it / nti);
+  int ind0 = (j + 0) * Nx + (i + 0), ind1 = (j + 0) * Nx + (i + 1); 
+  int ind2 = (j + 1) * Nx + (i + 0), ind3 = (j + 1) * Nx + (i + 1); 
+
+  glm::vec3 pos[4];
+  for (int p = 0, j_ = 0; j_ <= 1; j_++)
+  for (int i_ = 0; i_ <= 1; i_++, p++)
+    {
+      int I = i + i_, J = j + j_;
+      xy_t pt_xy ((I - Nux / 2) * DxInMetres, (J - Nuy / 2) * DyInMetres);
+      pt_xy = pt_xy + center_xy;
+      latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
+      pos[p] = glm::vec3 (cos (latlon.lon) * cos (latlon.lat),
+                          sin (latlon.lon) * cos (latlon.lat),
+                                             sin (latlon.lat));
+    }
+
+  if (t021)
+    {
+      jglo[0] = ind0; jglo[1] = ind1; jglo[2] = ind2;
+      itri[0] = j > 0 ? it - nti + 1: -1;
+      itri[1] = it + 1;
+      itri[2] = i > 0 ? it - 1 : -1;
+      xyz[0] = pos[0];
+      xyz[1] = pos[1];
+      xyz[2] = pos[2];
+    }
+  else
+    {
+      jglo[0] = ind2; jglo[1] = ind3; jglo[2] = ind1;
+      itri[0] = j < Ny-2 ? it + nti : -1;
+      itri[1] = i < Nx-2 ? it + 2 : -1;
+      itri[2] = it;
+      xyz[0] = pos[2];
+      xyz[1] = pos[3];
+      xyz[2] = pos[1];
+    }
+}
+
+bool glgrib_geometry_lambert::triangleIsEdge (int it) const
+{ 
+  bool t021 = (it % 2) == 0;
+  it = t021 ? it : it - 1;
+  int nti = numberOfTriangles / (2 * (Ny - 1)); // Number of triangles in a row
+  int i = it % nti;
+  int j = it / nti;
+
+  if ((j == 0) || (j == Ny-1))
+    return true;
+    
+  if ((i == 0) || (j == Nx-1))
+    return true;
+
+  return false;
+}
 

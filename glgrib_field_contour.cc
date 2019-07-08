@@ -113,10 +113,9 @@ void glgrib_field_contour::init (const glgrib_options_field & o, int slot)
 
   isoline_data_t iso_data[N];
 
-//#pragma omp parallel for
+#pragma omp parallel for
   for (int i = 0; i < N; i++)
     {
-//  if (i != N/2) continue;
       bool * seen = (bool *)malloc (sizeof (bool) * (geometry->numberOfTriangles + 1));
       float data0 = minval + (i + 1) * (maxval - minval) / (N + 1);
 
@@ -171,7 +170,7 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, bool *
   int it = it0;
   int its[2];
   static int II = 0;
-  bool dbg = true;
+  bool dbg = false;
   int ind_start = iso->size ();
   static FILE * fp = NULL;
 

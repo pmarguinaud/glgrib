@@ -93,6 +93,10 @@ public:
   }
   virtual void cleanup ();
   virtual void resize (const glgrib_view &) {}
+  const std::vector<glgrib_field_metadata> & getMeta () const
+  {
+    return meta;
+  }
 protected:
   glgrib_options_field opts;
   std::vector<glgrib_field_metadata> meta;

@@ -86,6 +86,27 @@ void glgrib_scene::update ()
   if (d.light.rotate)
     d.light.lon -= 1.;
 
+  if (d.light.date_from_grib)
+    {
+      for (int i = 0; i < fieldlist.size (); i++)
+        if (fieldlist[i]->isReady ())
+          {
+            glgrib_field * fld = fieldlist[i];
+            const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
+            const int nday[12] = {31, 28, 31, 30, 31, 30, 
+                                  31, 31, 30, 31, 30, 31};
+            const float dtrop = 23.0f + 26.0f / 60.0f;  // Tropics
+            const float eday  = 31 + 28 + 20;           // 20th of March, equinox
+            float cday = meta[0].term.day-1;
+            float time = (meta[0].term.hour * 60.0f + meta[0].term.minute) * 60.0f + meta[0].term.second;
+            for (int m = 0; m < meta[0].term.month-1; m++)
+              cday += nday[m];
+            d.light.lat = dtrop * sin (2.0f * M_PI * (cday - eday) / 365.0f);
+            d.light.lon = 360.0f * ((time + 12.0f * 3600.0f) / (24.0f * 3600.0f));
+            break;
+          }
+    }
+
 
   if (d.movie && ((t - d.movie_time) > d.opts.scene.movie_wait))
     {

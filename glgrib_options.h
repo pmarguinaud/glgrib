@@ -397,11 +397,13 @@ class glgrib_options_light : public glgrib_options_base
 public:
   virtual void traverse (const std::string & p, glgrib_options_callback * cb)
   {
-    APPLY (on,            Enable light);
-    APPLY (lon,           Light longitude);
-    APPLY (lat,           Light latitude);
-    APPLY (rotate,        Make sunlight move);
+    APPLY (date_from_grib, Calculate light position from GRIB date);
+    APPLY (on,             Enable light);
+    APPLY (lon,            Light longitude);
+    APPLY (lat,            Light latitude);
+    APPLY (rotate,         Make sunlight move);
   }
+  bool   date_from_grib = false;
   bool   on  = false;
   bool   rotate  = false;
   float  lon  = 0.0f;

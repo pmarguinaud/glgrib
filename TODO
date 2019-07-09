@@ -8,4 +8,3 @@ on/off options
 Accessors for scene
 Better container than fieldlist
 Make geometry member of glgrib_world protected
-Find light parameters using date

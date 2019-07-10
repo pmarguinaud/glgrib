@@ -1,0 +1,31 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\begin{document}
+
+Longitude : $ \lambda $. Latitude : $ \phi $.
+
+\begin{equation*}
+\mu = sin \left(\phi\right)
+\end{equation*}
+
+\begin{align*}
+\mu &= \frac{m + \mu' \times p}{p + \mu' \times m} \\
+m &= 1 - \frac{1}{C^2} \\
+p &= 1 + \frac{1}{C^2}
+\end{align*}
+
+\begin{align*}
+d\mu &= \frac{p^2 - m^2}{\left(p + \mu' \times m\right)^2} \times d\mu' \\
+dX' &= cos \left(\phi'\right) \times d\lambda' \\
+dY' &= d\phi'
+\end{align*}
+
+\begin{align*}
+dX' &= \frac{\left(p + \mu' \times m\right)^2}{p^2 - m^2} \times dX \\
+dY' &= \frac{\left(p + \mu' \times m\right)^2}{p^2 - m^2} \times dY
+\end{align*}
+
+
+
+
+\end{document}

@@ -7,3 +7,6 @@ usr
 big
 .glgrib_history
 *.png
+*.aux
+*.log
+

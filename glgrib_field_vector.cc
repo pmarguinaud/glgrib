@@ -163,14 +163,25 @@ void glgrib_field_vector::init (const glgrib_options_field & o, int slot)
       {
         data_n[i] = sqrt (data_u[i] * data_u[i] + data_v[i] * data_v[i]);
         data_d[i] = rad2deg * atan2 (data_v[i], data_u[i]);
+      }
+    else
+      throw std::runtime_error ("Inconsistent domain definition for U/V");
+
+  
+  geometry->applyNormScale (data_n);
+
+  for (int i = 0; i < geometry->numberOfPoints; i++)
+    if (data_u[i] != meta_u.valmis)
+      {
         if (data_n[i] < meta_n.valmin)
           meta_n.valmin = data_n[i];
         if (data_n[i] > meta_n.valmax)
           meta_n.valmax = data_n[i];
       }
     else
-      throw std::runtime_error ("Inconsistent domain definition for U/V");
-
+      {
+        data_n[i] = meta_u.valmis;
+      }
 
   free (data_u);
   free (data_v);

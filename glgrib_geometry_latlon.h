@@ -21,6 +21,7 @@ public:
   virtual void gencoords (float *, float *) const;
   virtual int size () const;
   virtual ~glgrib_geometry_latlon ();
+  virtual void applyNormScale (float *) const {}
   virtual void applyUVangle (float *) const {}
   virtual void sample (unsigned char *, const unsigned char, const int) const;
   virtual float resolution (int level = 0) const 

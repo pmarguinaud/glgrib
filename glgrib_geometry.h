@@ -28,6 +28,7 @@ public:
   glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
   virtual std::string md5 () const = 0;
   virtual void applyUVangle (float *) const = 0;
+  virtual void applyNormScale (float *) const = 0;
   virtual void sample (unsigned char *, const unsigned char, const int) const = 0;
   virtual float resolution (int = 0) const = 0;
   virtual void getTriangleVertices (int, int [3]) const = 0;

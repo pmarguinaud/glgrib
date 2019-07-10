@@ -624,5 +624,23 @@ bool glgrib_geometry_gaussian::triangleIsEdge (int it) const
 }
 
 
+void glgrib_geometry_gaussian::applyNormScale (float * data) const 
+{
+#pragma omp parallel for 
+  for (int jlat = 0; jlat < Nj; jlat++)
+    {
+      float coordy = M_PI * (0.5 - (float)(jlat + 1) / (float)(Nj + 1));
+      float sincoordy = sin (coordy);
+      float N = sqrt ((opc2 + sincoordy * omc2) * (opc2 + sincoordy * omc2) 
+                    / (opc2 * opc2 - omc2 * omc2));
+      for (int jlon = 0; jlon < pl[jlat]; jlon++)
+        {
+          int jglo = jglooff[jlat] + jlon;
+          data[jglo] = N * data[jglo];
+        }
+    }
+
+
+}
 
 

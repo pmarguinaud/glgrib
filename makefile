@@ -118,7 +118,7 @@ test_wind_t1798: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry testdata/arpt1798_wind/S105WIND.U.PHYS.grb --landscape.orography 0  --field[0].vector.on --field\[0\].path testdata/arpt1798_wind/S105WIND.U.PHYS.grb testdata/arpt1798_wind/S105WIND.V.PHYS.grb  --field[0].scale 1.01
 
 test_vector_t1798: ./glgrib.x
-	$(GDB) ./glgrib.x  --landscape.geometry testdata/arpt1798_wind/+1.grb --landscape.orography 0 --field[0].vector.on --field\[0\].path testdata/arpt1798_wind/+1.grb arpt1798_wind/+1.grb  --field[0].scale 1.01
+	$(GDB) ./glgrib.x  --landscape.geometry testdata/arpt1798_wind/+1.grb --landscape.orography 0 --field[0].vector.on --field\[0\].path testdata/arpt1798_wind/+1.grb testdata/arpt1798_wind/+1.grb  --field[0].scale 1.01
 
 test_contour1: ./glgrib.x
 	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.path landscape/black.bmp  --grid.resolution 0 --coastlines.path '' --field\[0\].path testdata/contour/t0049.grb --field\[0\].scale 1.03 --field\[0\].contour.on

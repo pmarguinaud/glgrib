@@ -22,6 +22,7 @@ public:
   virtual void gencoords (float *, float *) const;
   virtual int size () const;
   virtual ~glgrib_geometry_gaussian ();
+  virtual void applyNormScale (float *) const;
   virtual void applyUVangle (float *) const;
   virtual void sample (unsigned char *, const unsigned char, const int) const;
   virtual float resolution (int level = 0) const { if (level == 0) level = Nj; return M_PI / level; }

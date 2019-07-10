@@ -49,6 +49,8 @@ private:
   {
   public:
     float level;
+    bool wide = false;
+    float width = 0;
     GLuint VertexArrayID;
     glgrib_opengl_buffer_ptr vertexbuffer, normalbuffer;
     GLuint size;

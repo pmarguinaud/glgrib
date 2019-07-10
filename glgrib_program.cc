@@ -600,6 +600,7 @@ uniform mat4 MVP;
 
 uniform bool do_alpha = false;
 uniform float posmax = 0.97;
+uniform float width = 0.005;
 
 void main ()
 {
@@ -621,10 +622,10 @@ void main ()
   vec3 n = cross (t, p);
 
   if (gl_VertexID == 2)
-    vertexPos = vertexPos + 0.001 * n;
+    vertexPos = vertexPos + width * n;
 
   if (gl_VertexID == 3)
-    vertexPos = vertexPos + 0.001 * n;
+    vertexPos = vertexPos + width * n;
 
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);

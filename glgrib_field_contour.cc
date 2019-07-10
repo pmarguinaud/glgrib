@@ -143,6 +143,13 @@ void glgrib_field_contour::init (const glgrib_options_field & o, int slot)
       iso[i].normalbuffer = new_glgrib_opengl_buffer_ptr (iso_data[i].drw.size () * sizeof (float), 
                                                           iso_data[i].drw.data ());
       iso[i].size = iso_data[i].size () - 1;
+
+      if (i < opts.contour.widths.size ())
+        {
+          iso[i].width = opts.contour.widths[i];
+          iso[i].wide = true;
+        }
+
       iso_data[i].clear ();
     }
 
@@ -299,18 +306,18 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
   float color0[3] = {opts.contour.color.r/255.0f, opts.contour.color.g/255.0f, opts.contour.color.b/255.0f};
   program->set3fv ("color0", color0);
 
-  bool wide = false;
+  bool wide = true;
   for (int i = 0; i < iso.size (); i++)
     {
       glBindVertexArray (iso[i].VertexArrayID);
-      if (! wide)
-        {
-          glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, iso[i].size);
-        }
-      else
+      if (iso[i].wide)
         {
           unsigned int ind[6] = {1, 0, 2, 3, 1, 2};
           glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, iso[i].size);
+        }
+      else
+        {
+          glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, iso[i].size);
         }
       glBindVertexArray (0);
     }

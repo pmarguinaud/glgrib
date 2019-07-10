@@ -27,6 +27,7 @@ public:
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<std::string> * data) {}
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::string * data) {}
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<float> * data) {}
+  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<int> * data) {}
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_color * data) {}
 };
 
@@ -73,6 +74,31 @@ private:
     float * value;
     virtual std::string type () { return std::string ("FLOAT"); }
     virtual std::string asString () { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
+  };
+  class option_int_list : public option_base
+  {
+  public:
+    option_int_list (const std::string & n, const std::string & d, std::vector<int> * v) : option_base (n, d), value (v)  {}  
+    virtual void set (const char * v)  
+      {   
+        try 
+          {
+            value->push_back (std::stoi (v));
+          }
+        catch (...)
+          {
+            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values"));
+          }
+      }   
+    std::vector<int> * value;
+    virtual std::string type () { return std::string ("LIST OF INTEGERS"); }
+    virtual std::string asString ()
+      {
+        std::ostringstream ss;
+        for (std::vector<int>::iterator it = value->begin(); it != value->end (); it++)
+          ss << (*it) << " ";
+        return std::string (ss.str ());
+      }
   };
   class option_float_list : public option_base
   {
@@ -239,6 +265,11 @@ private:
     std::string opt_name = get_opt_name (path, name);
     name2option.insert (opt_name, new option_float_list (opt_name, desc, data));
   }
+  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<int> * data) 
+  {
+    std::string opt_name = get_opt_name (path, name);
+    name2option.insert (opt_name, new option_int_list (opt_name, desc, data));
+  }
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_color * data) 
   {
     std::string opt_name = get_opt_name (path, name);
@@ -276,10 +307,12 @@ public:
     APPLY (color,       Contour color);
     APPLY (number,      Number of levels);
     APPLY (levels,      List of levels);
+    APPLY (widths,      List of widths);
   }
   bool on = false;
   int number = 10;
   std::vector<float> levels;
+  std::vector<float> widths;
   glgrib_option_color color;
 };
 

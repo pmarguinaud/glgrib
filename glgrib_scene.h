@@ -85,6 +85,7 @@ public:
       glgrib_string str;
       bool movie = false;
       int movie_index = 0;
+      int nupdate = 0;
       double movie_time = 0;
       int currentFieldRank = 0;
       glm::mat4 MVP_R, MVP_L;

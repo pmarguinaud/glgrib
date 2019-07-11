@@ -104,9 +104,46 @@ void glgrib_scene::update ()
     }
     
 
+  if (d.opts.scene.travelling.on)
+    {
+      float frames = d.opts.scene.travelling.frames;
+      float a = (float)d.nupdate / frames;
+      if (a <= 1)
+        {
+          float lon1 = d.opts.scene.travelling.pos1.lon;
+          float lon2 = d.opts.scene.travelling.pos2.lon;
+          float dlon;
+          if (fabs (lon1 - lon2) < 180.0f)
+            {
+              dlon = lon2 - lon1;
+            }
+          else
+            {
+              lon2 += 360.0f;
+              dlon = lon2 - lon1;
+            }
+          
+          float lat1 = d.opts.scene.travelling.pos1.lat;
+          float lat2 = d.opts.scene.travelling.pos2.lat;
+          float dlat = lat2 - lat1;
+
+          float fov1 = d.opts.scene.travelling.pos1.fov;
+          float fov2 = d.opts.scene.travelling.pos2.fov;
+          float dfov = fov2 - fov1;
+
+          d.view.opts.lon = lon1 + dlon * a;
+          d.view.opts.lat = lat1 + dlat * a;
+          d.view.opts.fov = fov1 + dfov * a;
+
+        }
+
+    }
+  d.nupdate++;
+
+
+
   if (date != NULL)
     {
-
       const int nday[12] = {31, 28, 31, 30, 31, 30, 
                             31, 31, 30, 31, 30, 31};
       const float dtrop = 23.0f + 26.0f / 60.0f;  // Tropics

@@ -348,11 +348,12 @@ public:
 
 #define APPLY(name, desc) do { cb->apply (p, #name, #desc, &name); } while (0)
 #define TRAVERSE(name) do { name.traverse (p + ( p == "" ? "" : ".") + #name, cb); } while (0)
+#define TRAVERSE_DEF virtual void traverse (const std::string & p, glgrib_options_callback * cb)
 
 class glgrib_options_contour : public glgrib_options_base
 {
 public:
-  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  TRAVERSE_DEF
   {
     APPLY (on,          Enable contour);          
     APPLY (color,       Contour color);
@@ -370,7 +371,7 @@ public:
 class glgrib_options_vector : public glgrib_options_base
 {
 public:
-  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  TRAVERSE_DEF
   {
     APPLY (on,          Field is a vector);          
     APPLY (hide_arrow,  Hide arrows);                
@@ -386,7 +387,7 @@ public:
 class glgrib_options_field : public glgrib_options_base
 {
 public:
-  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  TRAVERSE_DEF
   {
     APPLY (path,             List of GRIB files);                    
     APPLY (scale,            Scales to be applied to fields);        
@@ -407,7 +408,7 @@ public:
 class glgrib_options_palette : public glgrib_options_base
 {
 public:
-  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  TRAVERSE_DEF
   {
     APPLY (directory,        Directory where palettes are stored);    
   }
@@ -417,7 +418,7 @@ public:
 class glgrib_options_grid : public glgrib_options_base
 {
 public:
-  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  TRAVERSE_DEF
   {
     APPLY (resolution,        Grid resolution);
     APPLY (color,             Grid color);
@@ -429,7 +430,7 @@ public:
 class glgrib_options_landscape : public glgrib_options_base
 {
 public:
-  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  TRAVERSE_DEF
   {
     APPLY (orography,           Factor to apply to orography);
     APPLY (path,                Path to landscape image in BMP format);
@@ -445,7 +446,7 @@ public:
 class glgrib_options_coastlines : public glgrib_options_base
 {
 public:
-  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  TRAVERSE_DEF
   {
     APPLY (path,               Path to coastlines file);
     APPLY (color,              Coastlines color);
@@ -457,7 +458,7 @@ public:
 class glgrib_options_window : public glgrib_options_base
 {
 public:
-  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  TRAVERSE_DEF
   {
     APPLY (width,              Window width);
     APPLY (height,             Window height);
@@ -479,7 +480,7 @@ public:
 class glgrib_options_light : public glgrib_options_base
 {
 public:
-  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  TRAVERSE_DEF
   {
     APPLY (date_from_grib, Calculate light position from GRIB date);
     APPLY (on,             Enable light);
@@ -496,10 +497,40 @@ public:
   float  lat  = 0.0f;
 };
 
+class glgrib_options_position : public glgrib_options_base
+{
+public:
+  TRAVERSE_DEF
+  {
+    APPLY (lon,            Longitude);
+    APPLY (lat,            Latitude);
+    APPLY (fov,            Field of view);
+  }
+  float  lon  = 0.0f;
+  float  lat  = 0.0f;
+  float  fov  = 0.0f;
+};
+
+class glgrib_options_travelling : public glgrib_options_base
+{
+public:
+  TRAVERSE_DEF
+  {
+    APPLY (on,             Enable travelling); 
+    APPLY (frames,         Number of frames);
+    TRAVERSE (pos1);
+    TRAVERSE (pos2);
+  }
+  bool   on     = false;
+  int    frames = 100;
+  glgrib_options_position pos1;
+  glgrib_options_position pos2;
+};
+
 class glgrib_options_scene : public glgrib_options_base
 {
 public:
-  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  TRAVERSE_DEF
   {
     APPLY (movie,               Movie);
     APPLY (movie_wait,          Wait between movie frames);
@@ -507,19 +538,21 @@ public:
     APPLY (projection,          Mercator XYZ latlon polar_north polar_south);
     APPLY (transformation,      Perspective or orthographic);
     TRAVERSE (light);
+    TRAVERSE (travelling);
   }
   bool    rotate_earth  = false;
   bool    movie  = false;
   float   movie_wait  = 1.0f;
   string  projection  = "XYZ";
   string  transformation  = "PERSPECTIVE";
-  glgrib_options_light   light  ;
+  glgrib_options_light light;  
+  glgrib_options_travelling travelling;
 };
 
 class glgrib_options_camera : public glgrib_options_base
 {
 public:
-  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  TRAVERSE_DEF
   {
     APPLY (lon,                Camera longitude);
     APPLY (lat,                Camera latitude);
@@ -537,7 +570,7 @@ class glgrib_options_font : public glgrib_options_base
 public:
   glgrib_options_font (const std::string & b, float s) : bitmap (b), scale (s) {}
   glgrib_options_font () {}
-  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  TRAVERSE_DEF
   {
     APPLY (bitmap, Bitmap path);
     APPLY (scale,  Bitmap scale);
@@ -552,7 +585,7 @@ public:
 class glgrib_options_colorbar : public glgrib_options_base
 {
 public:
-  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  TRAVERSE_DEF
   {
     APPLY (on, Activate colorbar);
     TRAVERSE (font);
@@ -564,7 +597,7 @@ public:
 class glgrib_options : public glgrib_options_base
 {
 public:
-  virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+  TRAVERSE_DEF
   {
     TRAVERSE (field[0]); TRAVERSE (field[1]); TRAVERSE (field[2]); TRAVERSE (field[3]); TRAVERSE (field[4]); 
     TRAVERSE (field[5]); TRAVERSE (field[6]); TRAVERSE (field[7]); TRAVERSE (field[8]); TRAVERSE (field[9]); 

@@ -86,6 +86,7 @@ void glgrib_scene::update ()
   if (d.light.rotate)
     d.light.lon -= 1.;
 
+  const glgrib_option_date * date = NULL;
   if (d.light.date_from_grib)
     {
       for (int i = 0; i < fieldlist.size (); i++)
@@ -93,18 +94,29 @@ void glgrib_scene::update ()
           {
             glgrib_field * fld = fieldlist[i];
             const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
-            const int nday[12] = {31, 28, 31, 30, 31, 30, 
-                                  31, 31, 30, 31, 30, 31};
-            const float dtrop = 23.0f + 26.0f / 60.0f;  // Tropics
-            const float eday  = 31 + 28 + 20;           // 20th of March, equinox
-            float cday = meta[0].term.day-1;
-            float time = (meta[0].term.hour * 60.0f + meta[0].term.minute) * 60.0f + meta[0].term.second;
-            for (int m = 0; m < meta[0].term.month-1; m++)
-              cday += nday[m];
-            d.light.lat = dtrop * sin (2.0f * M_PI * (cday - eday) / 365.0f);
-            d.light.lon = 360.0f * ((time + 12.0f * 3600.0f) / (24.0f * 3600.0f));
+            date = &meta[0].term;
             break;
           }
+    }
+  else if (d.light.date.year != 0)
+    {
+      date = &d.light.date;
+    }
+    
+
+  if (date != NULL)
+    {
+
+      const int nday[12] = {31, 28, 31, 30, 31, 30, 
+                            31, 31, 30, 31, 30, 31};
+      const float dtrop = 23.0f + 26.0f / 60.0f;  // Tropics
+      const float eday  = 31 + 28 + 20;           // 20th of March, equinox
+      float cday = date->day-1;
+      float time = (date->hour * 60.0f + date->minute) * 60.0f + date->second;
+      for (int m = 0; m < date->month-1; m++)
+        cday += nday[m];
+      d.light.lat = dtrop * sin (2.0f * M_PI * (cday - eday) / 365.0f);
+      d.light.lon = 360.0f * ((12.0f * 3600.0f - time) / (24.0f * 3600.0f));
     }
 
 

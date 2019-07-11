@@ -49,7 +49,7 @@ void glgrib_options_parser::show_help ()
       type_size = std::max (it->second->type ().length (), type_size);
     }   
   char format[64];
-  sprintf (format, " --%%-%lds : %%-%lds :", name_size, type_size);
+  sprintf (format, " %%-%lds : %%-%lds :", name_size, type_size);
   for (name2option_t::iterator it = name2option.begin (); 
        it != name2option.end (); it++)
     {   

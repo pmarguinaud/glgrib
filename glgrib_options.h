@@ -17,6 +17,15 @@ public:
   int r = 255, g = 255, b = 255;
 };
 
+class glgrib_option_date
+{
+public:
+  glgrib_option_date () {}
+  glgrib_option_date (int _year, int _month, int _day, int _hour, int _minute, int _second) : 
+    year (_year), month (_month), day (_day), hour (_hour), minute (_minute), second (_second) {}
+  long int year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0;
+};
+
 
 class glgrib_options_callback
 {
@@ -29,6 +38,7 @@ public:
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<float> * data) {}
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<int> * data) {}
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_color * data) {}
+  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_date * data) {}
 };
 
 class glgrib_options_parser : public glgrib_options_callback
@@ -124,6 +134,42 @@ private:
           ss << (*it) << " ";
         return std::string (ss.str ());
       }
+  };
+  class option_date : public option_base
+  {
+  public:
+    option_date (const std::string & n, const std::string & d, glgrib_option_date * v) : option_base (n, d), value (v)  {}  
+    virtual void set (const char * v)  
+      {   
+        try 
+          {
+            int c = std::stoi (v);
+            switch (count)
+              {
+                case 0: value->year   = c; break;
+                case 1: value->month  = c; break;
+                case 2: value->day    = c; break;
+                case 3: value->hour   = c; break;
+                case 4: value->minute = c; break;
+                case 5: value->second = c; break;
+              }
+            count++;
+          }
+        catch (...)
+          {
+            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values"));
+          }
+      }   
+    glgrib_option_date * value;
+    virtual std::string type () { return std::string ("DATE YEAR MONTH DAY HOUR MINUTE SECOND"); }
+    virtual std::string asString ()
+      {
+        std::ostringstream ss;
+        ss << value->year << " " << value->month << " " << value->day << " " << value->hour << " " << value->minute << " " << value->second;
+        return std::string (ss.str ());
+      }
+  private:
+    int count = 0;
   };
   class option_color : public option_base
   {
@@ -274,6 +320,11 @@ private:
   {
     std::string opt_name = get_opt_name (path, name);
     name2option.insert (opt_name, new option_color (opt_name, desc, data));
+  }
+  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_date * data) 
+  {
+    std::string opt_name = get_opt_name (path, name);
+    name2option.insert (opt_name, new option_date (opt_name, desc, data));
   }
 
 
@@ -435,7 +486,9 @@ public:
     APPLY (lon,            Light longitude);
     APPLY (lat,            Light latitude);
     APPLY (rotate,         Make sunlight move);
+    APPLY (date,           Date for sunlight position);
   }
+  glgrib_option_date date;
   bool   date_from_grib = false;
   bool   on  = false;
   bool   rotate  = false;

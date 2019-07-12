@@ -605,27 +605,31 @@ uniform float width = 0.005;
 void main ()
 {
   vec3 vertexPos;
-  vec3 t;
+  vec3 t0 = normalize (vertexPos1 - vertexPos0);
+  vec3 t1 = normalize (vertexPos2 - vertexPos1);
 
   if ((gl_VertexID == 0) || (gl_VertexID == 2))
-    {
-      t = normalize (vertexPos1 - vertexPos0);
-      vertexPos = vertexPos0;
-    }
+    vertexPos = vertexPos0;
   else if ((gl_VertexID == 1) || (gl_VertexID == 3))
-    {
-      t = normalize (vertexPos2 - vertexPos1);
-      vertexPos = vertexPos1;  
-    }
+    vertexPos = vertexPos1;  
 
   vec3 p = normalize (vertexPos);
-  vec3 n = cross (t, p);
+  vec3 n0 = cross (t0, p);
+  vec3 n1 = cross (t1, p);
+
+  float c = width;
+
+  if ((gl_VertexID >= 4) && (dot (cross (n0, n1), vertexPos) < 0.))
+    c = 0.0;
 
   if (gl_VertexID == 2)
-    vertexPos = vertexPos + width * n;
-
+    vertexPos = vertexPos + c * n0;
   if (gl_VertexID == 3)
-    vertexPos = vertexPos + width * n;
+    vertexPos = vertexPos + c * n0;
+  if (gl_VertexID == 4)
+    vertexPos = vertexPos + c * normalize (n0 + n1);
+  if (gl_VertexID == 5)
+    vertexPos = vertexPos + c * n1;
 
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);

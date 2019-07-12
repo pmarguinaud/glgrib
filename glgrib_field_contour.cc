@@ -146,8 +146,8 @@ void glgrib_field_contour::init (const glgrib_options_field & o, int slot)
 
       if (i < opts.contour.widths.size ())
         {
-          iso[i].width = opts.contour.widths[i];
-          iso[i].wide = true;
+          if ((iso[i].width = opts.contour.widths[i]))
+            iso[i].wide = true;
         }
 
       iso_data[i].clear ();
@@ -282,7 +282,7 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, bool *
   if (count > 0)
     {
       if (! edge)
-        iso->push (iso->xyz[3*(ind_start+1)+0], iso->xyz[3*(ind_start+1)+1], iso->xyz[3*(ind_start+2)+2], 0.);
+        iso->push (iso->xyz[3*(ind_start+1)+0], iso->xyz[3*(ind_start+1)+1], iso->xyz[3*(ind_start+1)+2], 0.);
       iso->push (0., 0., 0., 0.);
       if (dbg)
         fprintf (fp, "--------------------------------- %d\n", II);
@@ -312,8 +312,8 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
       glBindVertexArray (iso[i].VertexArrayID);
       if (iso[i].wide)
         {
-          unsigned int ind[6] = {1, 0, 2, 3, 1, 2};
-          glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, iso[i].size);
+          unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
+          glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, iso[i].size);
         }
       else
         {

@@ -66,15 +66,32 @@ void glgrib_view::setViewport (int w, int h)
 
 int glgrib_view::get_screen_coords_from_latlon (float * xpos, float * ypos, float lat, float lon) const
 {
-
   lat = glm::radians (lat); 
   lon = glm::radians (lon);
 
   float coslon = glm::cos (lon), sinlon = glm::sin (lon);
   float coslat = glm::cos (lat), sinlat = glm::sin (lat);
 
-  glm::vec3 xyz = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
+  glm::vec3 pos = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
 
+  return get_screen_coords_from_xyz (xpos, ypos, pos);
+}
+
+int glgrib_view::get_latlon_from_screen_coords (float xpos, float ypos, float * lat, float * lon) const
+{
+  glm::vec3 pos;
+
+  if (! get_xyz_from_screen_coords (xpos, ypos, &pos))
+    return 0;
+
+  *lat = glm::degrees (glm::asin (pos.z));
+  *lon = glm::degrees (glm::atan (pos.y, pos.x));
+
+  return 1;
+}
+
+int glgrib_view::get_screen_coords_from_xyz (float * xpos, float * ypos, const glm::vec3 & xyz) const
+{
   glm::vec3 pos = ps.current ()->project (xyz);
   pos = project (pos);
 
@@ -84,20 +101,43 @@ int glgrib_view::get_screen_coords_from_latlon (float * xpos, float * ypos, floa
   return 1;
 }
 
-int glgrib_view::get_latlon_from_screen_coords (float xpos, float ypos, float * lat, float * lon) const
+int glgrib_view::get_xyz_from_screen_coords (float xpos, float ypos, glm::vec3 * xyz) const
 {
-  glm::vec3 pos;
-
   glm::vec3 xa = unproject (glm::vec3 (xpos, ypos, +0.985601f));
   glm::vec3 xb = unproject (glm::vec3 (xpos, ypos, +0.900000f));
 
-  if (! ps.current ()->unproject (xa, xb, &pos))
+  if (! ps.current ()->unproject (xa, xb, xyz))
     return 0;
 
-  *lat = glm::degrees (glm::asin (pos.z));
-  *lon = glm::degrees (glm::atan (pos.y, pos.x));
-
   return 1;
+}
+
+float glgrib_view::pixel_to_dist_at_nadir (float pixels) const
+{
+  const double deg2rad = M_PI / 180.0;
+
+  float lon = deg2rad * opts.lon, lat = deg2rad * opts.lat;
+
+  float coslon0 = cos (lon), sinlon0 = sin (lon);
+  float coslat0 = cos (lat), sinlat0 = sin (lat);
+
+  glm::vec3 pos0 = glm::vec3 (coslon0 * coslat0, sinlon0 * coslat0, sinlat0);
+
+  float xpos0, ypos0;
+  get_screen_coords_from_xyz (&xpos0, &ypos0, pos0);
+  
+  float xpos1 = xpos0, ypos1 = ypos0 + pixels;
+
+  glm::vec3 pos1;
+
+  if (get_xyz_from_screen_coords (xpos1, ypos1, &pos1))
+    {
+      return acos (glm::dot (pos0, pos1));
+    }
+  else
+    {
+      return M_PI;
+    }
 }
 
 void glgrib_view::init (const glgrib_options & o)

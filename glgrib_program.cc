@@ -574,7 +574,7 @@ void main ()
 {
   if (alpha < 1.)
     discard;
-  if(false){
+  if(true){
   color.r = color0.r;
   color.g = color0.g;
   color.b = color0.b;

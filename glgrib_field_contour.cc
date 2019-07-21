@@ -317,12 +317,15 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
   float color0[3] = {opts.contour.color.r/255.0f, opts.contour.color.g/255.0f, opts.contour.color.b/255.0f};
   program->set3fv ("color0", color0);
 
-  bool wide = true;
+
   for (int i = 0; i < iso.size (); i++)
     {
+
       glBindVertexArray (iso[i].VertexArrayID);
       if (iso[i].wide)
         {
+          const float width = view.pixel_to_dist_at_nadir (iso[i].width);
+          program->set1f ("width", width);
           unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
           glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, iso[i].size);
         }

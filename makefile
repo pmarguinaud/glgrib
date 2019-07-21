@@ -156,6 +156,10 @@ test_contour_aro2: ./glgrib.x
                --field\[1\].path testdata/aro2.5/S090WIND.U.PHYS.grb --field\[1\].scale 1.03 --field[1].contour.on       \
                --landscape.path '' --camera.lat 46.2 --camera.lon 2.0 --camera.fov 5
 
+test_fill: ./glgrib.x
+	$(GDB) ./glgrib.x --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 --grid.resolution 0 --coastlines.path '' --field[0].palette RGBW   --colorbar.on --window.width 1200
+
+
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane
 
 

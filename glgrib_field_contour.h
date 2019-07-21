@@ -25,7 +25,7 @@ private:
     double dis_last = 0.;
     void push (const float x, const float y, const float z, const float d = 1.) 
     {
-      float D = 0.0f;
+      double D = 0.0f;
       if (d > 0)
         {
           int sz = size (), last = sz - 1;
@@ -34,7 +34,7 @@ private:
               float dx = x - xyz[3*last+0];
               float dy = y - xyz[3*last+1];
               float dz = z - xyz[3*last+2];
-              D = dis[last] + sqrt (dx * dx + dy * dy + dz * dz);
+              D = dis_last + sqrt (dx * dx + dy * dy + dz * dz);
             }
         }
       xyz.push_back (x);
@@ -42,6 +42,7 @@ private:
       xyz.push_back (z);
       drw.push_back (d);
       dis.push_back (D);
+      dis_last = D;
     }
     void pop ()
     {

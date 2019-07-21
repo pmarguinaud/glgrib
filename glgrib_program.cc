@@ -570,7 +570,7 @@ out vec4 color;
 
 uniform vec3 color0;
 uniform int N = 0;
-uniform int pattern[256];
+uniform bool pattern[256];
 uniform float length;
 uniform bool dash;
 
@@ -588,6 +588,18 @@ void main ()
   else
     {
       float r = mod (dist / length, 1.0f);
+      int k = int (N * r);
+
+      color.r = color0.r;
+      color.g = color0.g;
+      color.b = color0.b;
+
+      if (pattern[k])
+        color.a = 1.;
+      else
+        color.a = 0.;
+
+if(false){
       if (r > 0.5f)
         {
           color.r = 1.;
@@ -600,8 +612,9 @@ void main ()
           color.g = 1.;
           color.b = 0.;
         }
-      
       color.a = 1.;
+}
+      
   }
 }
 

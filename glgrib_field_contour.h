@@ -71,6 +71,7 @@ private:
     float width = 0.0f;
     bool dash = false;
     float length = 0.0f;
+    glgrib_option_color color;
     std::vector<int> pattern;
     GLuint VertexArrayID;
     glgrib_opengl_buffer_ptr vertexbuffer, normalbuffer, distancebuffer;

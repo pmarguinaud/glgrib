@@ -8,3 +8,8 @@ on/off options
 Accessors for scene
 Better container than fieldlist
 Make geometry member of glgrib_world protected
+
+Diff mode
+Handle missing values with a float, which when > 0 and passed to the fragment shader disables visibility (=1. missing, =0. not missing)
+Show grid point number when pointing values
+For each field, create a "mode" option (=scalar, contour, arrows)

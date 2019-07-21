@@ -166,7 +166,13 @@ void glgrib_field_contour::init (const glgrib_options_field & o, int slot)
             iso[i].pattern.push_back (opts.contour.patterns[i][j] == opts.contour.patterns[i][0]);
         }
 
+      int size = opts.contour.colors.size ();
+      if (size > 0)
+        iso[i].color = opts.contour.colors[i % size];
+
       iso_data[i].clear ();
+
+
     }
 
 
@@ -319,8 +325,6 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
 
   view.setMVP (program);
   program->set3fv ("scale0", scale0);
-  float color0[3] = {opts.contour.color.r/255.0f, opts.contour.color.g/255.0f, opts.contour.color.b/255.0f};
-  program->set3fv ("color0", color0);
 
 
   for (int i = 0; i < iso.size (); i++)
@@ -328,6 +332,12 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
       glBindVertexArray (iso[i].VertexArrayID);
 
       program->set1i ("dash", iso[i].dash);
+
+      float color0[3] = {iso[i].color.r/255.0f, 
+                         iso[i].color.g/255.0f, 
+                         iso[i].color.b/255.0f};
+      program->set3fv ("color0", color0);
+
 
       if (iso[i].dash)
         {

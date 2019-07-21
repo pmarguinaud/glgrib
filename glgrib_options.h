@@ -38,6 +38,7 @@ public:
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<float> * data) {}
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<int> * data) {}
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_color * data) {}
+  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<glgrib_option_color> * data) {}
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_date * data) {}
 };
 
@@ -213,6 +214,44 @@ private:
     virtual std::string type () { return std::string ("STRING"); }
     virtual std::string asString () { return std::string ('"' + *value + '"') ; }
   };
+  class option_color_list : public option_base
+  {
+  public:
+    option_color_list (const std::string & n, const std::string & d, std::vector<glgrib_option_color> * v) : option_base (n, d), value (v)  {}
+    virtual void set (const char * v) 
+      { 
+        try 
+          {
+            int c = std::stoi (v);
+            if (count == 0)
+              value->push_back (glgrib_option_color ());
+            int last = value->size () - 1;
+            switch (count)
+              {
+                case 0: (*value)[last].r = c; break;
+                case 1: (*value)[last].g = c; break;
+                case 2: (*value)[last].b = c; break;
+              }
+            count++;
+            count = count % 3;
+          }
+        catch (...)
+          {
+            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values"));
+          }
+      }
+    std::vector<glgrib_option_color> * value;
+    virtual std::string type () { return std::string ("LIST OF COLORS R G B"); }
+    virtual std::string asString ()
+      {
+        std::ostringstream ss;
+        for (std::vector<glgrib_option_color>::iterator it = value->begin(); it != value->end (); it++)
+          ss << it->r << " " << it->g << " " << it->b;
+        return std::string (ss.str ());
+      }
+  private:
+    int count = 0;
+  };
   class option_string_list : public option_base
   {
   public:
@@ -321,6 +360,11 @@ private:
     std::string opt_name = get_opt_name (path, name);
     name2option.insert (opt_name, new option_color (opt_name, desc, data));
   }
+  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<glgrib_option_color> * data) 
+  {
+    std::string opt_name = get_opt_name (path, name);
+    name2option.insert (opt_name, new option_color_list (opt_name, desc, data));
+  }
   virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_date * data) 
   {
     std::string opt_name = get_opt_name (path, name);
@@ -356,7 +400,7 @@ public:
   TRAVERSE_DEF
   {
     APPLY (on,            Enable contour);          
-    APPLY (color,         Contour color);
+    APPLY (colors,        Contour colors);
     APPLY (number,        Number of levels);
     APPLY (levels,        List of levels);
     APPLY (widths,        List of widths);
@@ -367,7 +411,7 @@ public:
   int number = 10;
   std::vector<float> levels;
   std::vector<float> widths;
-  glgrib_option_color color;
+  std::vector<glgrib_option_color> colors;
   std::vector<std::string> patterns;
   std::vector<float> lengths;
 };

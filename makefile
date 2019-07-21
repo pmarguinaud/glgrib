@@ -159,8 +159,14 @@ test_contour_aro2: ./glgrib.x
 test_fill: ./glgrib.x
 	$(GDB) ./glgrib.x --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 --grid.resolution 0 --coastlines.path '' --field[0].palette RGBW   --colorbar.on --window.width 1200
 
-test_dashed: ./glgrib.x
+test_dashed1: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.orography 0 --landscape.wireframe --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --grid.resolution 0 --coastlines.path '' --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.00 --field\[0\].contour.on --field[0].contour.lengths 100  --field[0].contour.patterns X- --camera.fov 5
+
+test_dashed2: ./glgrib.x
+	$(GDB) ./glgrib.x --landscape.orography 0 --landscape.wireframe --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --grid.resolution 0 --coastlines.path '' --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.01 --field\[0\].contour.on --field\[0\].contour.lengths 100 --field\[0\].contour.patterns XXXXXXXXX-X- --camera.fov 5  --field\[0\].contour.widths 5
+
+test_dashed3: ./glgrib.x
+	$(GDB) ./glgrib.x --landscape.orography 0 --landscape.wireframe --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --grid.resolution 0 --coastlines.path '' --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.01 --field\[0\].contour.on --field\[0\].contour.lengths 100 --field\[0\].contour.patterns XXXXXXXXX-X- --camera.fov 5  --field\[0\].contour.widths 5 --field\[0\].contour.colors 255 0 0 0 255 0 0 0 255
 
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane
 

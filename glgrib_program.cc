@@ -569,32 +569,39 @@ in float dist;
 out vec4 color;
 
 uniform vec3 color0;
+uniform int N = 0;
+uniform int pattern[256];
+uniform float length;
+uniform bool dash;
 
 void main ()
 {
   if (alpha < 1.)
     discard;
-  if(true){
-  color.r = color0.r;
-  color.g = color0.g;
-  color.b = color0.b;
-  color.a = 1.;
-  }else{
-  float r = mod (dist, 0.02);
-  if (r > 0.01)
+  if(! dash)
     {
-      color.r = 1.;
-      color.g = 0.;
-      color.b = 0.;
+      color.r = color0.r;
+      color.g = color0.g;
+      color.b = color0.b;
+      color.a = 1.;
     }
   else
     {
-      color.r = 0.;
-      color.g = 1.;
-      color.b = 0.;
-    }
-  
-  color.a = 1.;
+      float r = mod (dist / length, 1.0f);
+      if (r > 0.5f)
+        {
+          color.r = 1.;
+          color.g = 0.;
+          color.b = 0.;
+        }
+      else
+        {
+          color.r = 0.;
+          color.g = 1.;
+          color.b = 0.;
+        }
+      
+      color.a = 1.;
   }
 }
 
@@ -685,7 +692,7 @@ void main ()
 
   gl_Position =  MVP * vec4 (pos, 1);
 
-  if ((gl_VertexID == 0) && (gl_VertexID == 2))
+  if ((gl_VertexID == 0) || (gl_VertexID == 2))
     {
       dist = dist0;
     }
@@ -771,6 +778,13 @@ void glgrib_program::set1fv (const std::string & key, const float * val, int siz
   int id = glGetUniformLocation (programID, key.c_str ());
   if (id != -1)
     glUniform1fv (id, size, val);
+}
+
+void glgrib_program::set1iv (const std::string & key, const int * val, int size)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniform1iv (id, size, val);
 }
 
 void glgrib_program::set1i (const std::string & key, int val)

@@ -68,7 +68,10 @@ private:
   public:
     float level;
     bool wide = false;
-    float width = 0;
+    float width = 0.0f;
+    bool dash = false;
+    float length = 0.0f;
+    std::vector<int> pattern;
     GLuint VertexArrayID;
     glgrib_opengl_buffer_ptr vertexbuffer, normalbuffer, distancebuffer;
     GLuint size;

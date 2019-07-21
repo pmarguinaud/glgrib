@@ -26,6 +26,7 @@ public:
 
   void set1f (const std::string &, float);
   void set1fv (const std::string &, const float *, int = 1);
+  void set1iv (const std::string &, const int *, int = 1);
   void set1i (const std::string &, int);
   void set3fv (const std::string &, const float *, int = 1);
   void set4fv (const std::string &, const float *, int = 1);

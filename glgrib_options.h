@@ -355,17 +355,21 @@ class glgrib_options_contour : public glgrib_options_base
 public:
   TRAVERSE_DEF
   {
-    APPLY (on,          Enable contour);          
-    APPLY (color,       Contour color);
-    APPLY (number,      Number of levels);
-    APPLY (levels,      List of levels);
-    APPLY (widths,      List of widths);
+    APPLY (on,            Enable contour);          
+    APPLY (color,         Contour color);
+    APPLY (number,        Number of levels);
+    APPLY (levels,        List of levels);
+    APPLY (widths,        List of widths);
+    APPLY (patterns,      List of dash patterns);
+    APPLY (lengths,       List of dash lengths);
   }
   bool on = false;
   int number = 10;
   std::vector<float> levels;
   std::vector<float> widths;
   glgrib_option_color color;
+  std::vector<std::string> patterns;
+  std::vector<float> lengths;
 };
 
 class glgrib_options_vector : public glgrib_options_base
@@ -436,11 +440,13 @@ public:
     APPLY (path,                Path to landscape image in BMP format);
     APPLY (geometry,            GRIB files to take geometry from);
     APPLY (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
+    APPLY (wireframe,           Draw landscape in wireframe mode);
   }
   string  path  = "landscape/Whole_world_-_land_and_oceans_8000.bmp";
   float  orography  = 0.05;
   string  geometry  = "";
   int  number_of_latitudes  = 500;
+  bool wireframe = false;
 };
 
 class glgrib_options_coastlines : public glgrib_options_base

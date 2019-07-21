@@ -157,8 +157,13 @@ void glgrib_field_contour::init (const glgrib_options_field & o, int slot)
 
       if (i < opts.contour.widths.size ())
         {
-          if ((iso[i].width = opts.contour.widths[i]))
-            iso[i].wide = true;
+          iso[i].wide = (iso[i].width = opts.contour.widths[i]);
+        }
+      if ((i < opts.contour.lengths.size ()) && (i < opts.contour.patterns.size ()))
+        {
+          iso[i].dash = (iso[i].length = opts.contour.lengths[i]);
+          for (int j = 0; j < opts.contour.patterns[i].length (); j++)
+            iso[i].pattern.push_back (opts.contour.patterns[i][j] == opts.contour.patterns[i][0]);
         }
 
       iso_data[i].clear ();
@@ -320,11 +325,20 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
 
   for (int i = 0; i < iso.size (); i++)
     {
-
       glBindVertexArray (iso[i].VertexArrayID);
+
+      program->set1i ("dash", iso[i].dash);
+
+      if (iso[i].dash)
+        {
+          float length = view.pixel_to_dist_at_nadir (iso[i].length);
+          program->set1f ("length", length);
+          program->set1i ("N", iso[i].pattern.size ());
+          program->set1iv ("pattern", iso[i].pattern.data (), iso[i].pattern.size ());
+        }
       if (iso[i].wide)
         {
-          const float width = view.pixel_to_dist_at_nadir (iso[i].width);
+          float width = view.pixel_to_dist_at_nadir (iso[i].width);
           program->set1f ("width", width);
           unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
           glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, iso[i].size);

@@ -41,6 +41,8 @@ void glgrib_landscape::init (const glgrib_options_landscape & opts)
   unsigned char * rgb;
   int w, h;
 
+  wireframe = opts.wireframe;
+
   geometry = glgrib_geometry_load (opts.geometry, opts.orography, opts.number_of_latitudes);
 
   glgrib_bmp (opts.path.c_str (), &rgb, &w, &h);

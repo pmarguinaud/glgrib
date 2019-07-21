@@ -19,14 +19,29 @@ private:
   class isoline_data_t
   {
   public:
-    std::vector<float> xyz;
-    std::vector<float> drw;
+    std::vector<float> xyz; // Position
+    std::vector<float> drw; // Flag (=0, hide, =1 show)
+    std::vector<float> dis; // Distance 
+    double dis_last = 0.;
     void push (const float x, const float y, const float z, const float d = 1.) 
     {
+      float D = 0.0f;
+      if (d > 0)
+        {
+          int sz = size (), last = sz - 1;
+          if (sz > 0)
+            {
+              float dx = x - xyz[3*last+0];
+              float dy = y - xyz[3*last+1];
+              float dz = z - xyz[3*last+2];
+              D = dis[last] + sqrt (dx * dx + dy * dy + dz * dz);
+            }
+        }
       xyz.push_back (x);
       xyz.push_back (y);
       xyz.push_back (z);
       drw.push_back (d);
+      dis.push_back (D);
     }
     void pop ()
     {
@@ -34,11 +49,13 @@ private:
       xyz.pop_back (); 
       xyz.pop_back (); 
       drw.pop_back (); 
+      dis.pop_back (); 
     }
     void clear ()
     {
       xyz.clear (); 
       drw.clear (); 
+      dis.clear (); 
     }
     int size ()
     {
@@ -52,7 +69,7 @@ private:
     bool wide = false;
     float width = 0;
     GLuint VertexArrayID;
-    glgrib_opengl_buffer_ptr vertexbuffer, normalbuffer;
+    glgrib_opengl_buffer_ptr vertexbuffer, normalbuffer, distancebuffer;
     GLuint size;
   };
 

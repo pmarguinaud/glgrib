@@ -81,6 +81,15 @@ void glgrib_field_contour::setupVertexAttributes ()
           glVertexAttribDivisor (3 + j, 1);
         }
 
+      iso[i].distancebuffer->bind (GL_ARRAY_BUFFER);
+
+      for (int j = 0; j < 2; j++)
+        {
+          glEnableVertexAttribArray (5 + j); 
+          glVertexAttribPointer (5 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float))); 
+          glVertexAttribDivisor (5 + j, 1);
+        }
+
       glBindVertexArray (0); 
     }
 }
@@ -138,10 +147,12 @@ void glgrib_field_contour::init (const glgrib_options_field & o, int slot)
   for (int i = 0; i < levels.size (); i++)
     {
       iso[i].level = levels[i];
-      iso[i].vertexbuffer = new_glgrib_opengl_buffer_ptr (iso_data[i].xyz.size () * sizeof (float), 
-                                                          iso_data[i].xyz.data ());
-      iso[i].normalbuffer = new_glgrib_opengl_buffer_ptr (iso_data[i].drw.size () * sizeof (float), 
-                                                          iso_data[i].drw.data ());
+      iso[i].vertexbuffer   = new_glgrib_opengl_buffer_ptr (iso_data[i].xyz.size () * sizeof (float), 
+                                                            iso_data[i].xyz.data ());
+      iso[i].normalbuffer   = new_glgrib_opengl_buffer_ptr (iso_data[i].drw.size () * sizeof (float), 
+                                                            iso_data[i].drw.data ());
+      iso[i].distancebuffer = new_glgrib_opengl_buffer_ptr (iso_data[i].dis.size () * sizeof (float), 
+                                                            iso_data[i].dis.data ());
       iso[i].size = iso_data[i].size () - 1;
 
       if (i < opts.contour.widths.size ())

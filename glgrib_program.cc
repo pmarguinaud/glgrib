@@ -565,6 +565,7 @@ R"CODE(
 #version 330 core
 
 in float alpha;
+in float dist;
 out vec4 color;
 
 uniform vec3 color0;
@@ -573,10 +574,28 @@ void main ()
 {
   if (alpha < 1.)
     discard;
+  if(false){
   color.r = color0.r;
   color.g = color0.g;
   color.b = color0.b;
   color.a = 1.;
+  }else{
+  float r = mod (dist, 0.02);
+  if (r > 0.01)
+    {
+      color.r = 1.;
+      color.g = 0.;
+      color.b = 0.;
+    }
+  else
+    {
+      color.r = 0.;
+      color.g = 1.;
+      color.b = 0.;
+    }
+  
+  color.a = 1.;
+  }
 }
 
 )CODE",
@@ -588,8 +607,13 @@ layout(location = 1) in vec3 vertexPos1;
 layout(location = 2) in vec3 vertexPos2;
 layout(location = 3) in float norm0;
 layout(location = 4) in float norm1;
+layout(location = 5) in float dist0;
+layout(location = 6) in float dist1;
+
 
 out float alpha;
+out float dist;
+
 
 uniform mat4 MVP;
 
@@ -660,6 +684,16 @@ void main ()
     }
 
   gl_Position =  MVP * vec4 (pos, 1);
+
+  if ((gl_VertexID == 0) && (gl_VertexID == 2))
+    {
+      dist = dist0;
+    }
+  else
+    {
+      dist = dist1;
+    }
+
 
 
 }

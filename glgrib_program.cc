@@ -97,6 +97,23 @@ vec3 scalePosition (vec3 pos, vec3 normedPos)
   return pos;
 }
 
+float scalingFactor (vec3 normedPos)
+{
+  if (proj == POLAR_SOUTH)
+    {
+      return 1.0 / (1.0 - normedPos.z);
+    }
+  else if (proj == POLAR_NORTH)
+    {
+      return 1.0 / (1.0 + normedPos.z);
+    }
+  else if (proj == MERCATOR)
+    {
+      return 1.0 / sqrt (1 - normedPos.z * normedPos.z);
+    }
+  return 1.0;
+}
+
 
 )CODE";
 
@@ -661,7 +678,7 @@ void main ()
   vec3 n0 = cross (t0, p);
   vec3 n1 = cross (t1, p);
 
-  float c = width;
+  float c = width / scalingFactor (p);
 
   if ((gl_VertexID >= 4) && (dot (cross (n0, n1), vertexPos) < 0.))
     c = 0.0;

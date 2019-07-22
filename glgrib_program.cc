@@ -131,6 +131,9 @@ uniform bool light = false;
 
 vec4 enlightFragment (vec3 fragmentPos, float fragmentVal, float missingFlag)
 {
+  if (missingFlag > 0.)
+    discard;
+
   vec4 color;
 
   float total = 1.;
@@ -142,25 +145,12 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal, float missingFlag)
 
   float val = valmin + (valmax - valmin) * (255.0 * fragmentVal - 1.0) / 254.0;
 
-  int pal;
-//if (val < valmin)
-  if (missingFlag > 0.)
-    {
-      discard;
-      pal = 0;
-      color.r = total * RGBA0[pal].r;
-      color.g = total * RGBA0[pal].g;
-      color.b = total * RGBA0[pal].b;
-      color.a =         RGBA0[pal].a;
-    }
-  else
-    {
-      pal = max (1, min (int (1 + 254 * (val - palmin) / (palmax - palmin)), 255));
-      color.r = total * RGBA0[pal].r;
-      color.g = total * RGBA0[pal].g;
-      color.b = total * RGBA0[pal].b;
-      color.a =         RGBA0[pal].a;
-    }
+  int pal = max (1, min (int (1 + 254 * (val - palmin) / (palmax - palmin)), 255));
+
+  color.r = total * RGBA0[pal].r;
+  color.g = total * RGBA0[pal].g;
+  color.b = total * RGBA0[pal].b;
+  color.a =         RGBA0[pal].a;
 
   return color;
 }

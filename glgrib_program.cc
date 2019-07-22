@@ -129,7 +129,7 @@ uniform vec3 lightDir = vec3 (0., 1., 0.);
 uniform vec3 lightCol = vec3 (1., 1., 1.);
 uniform bool light = false;
 
-vec4 enlightFragment (vec3 fragmentPos, float fragmentVal)
+vec4 enlightFragment (vec3 fragmentPos, float fragmentVal, float missingFlag)
 {
   vec4 color;
 
@@ -143,8 +143,10 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal)
   float val = valmin + (valmax - valmin) * (255.0 * fragmentVal - 1.0) / 254.0;
 
   int pal;
-  if (val < valmin)
+//if (val < valmin)
+  if (missingFlag > 0.)
     {
+      discard;
       pal = 0;
       color.r = total * RGBA0[pal].r;
       color.g = total * RGBA0[pal].g;
@@ -396,6 +398,7 @@ R"CODE(
 
 in float fragmentVal;
 in vec3 fragmentPos;
+in float missingFlag;
 out vec4 color;
 
 )CODE" +
@@ -403,7 +406,7 @@ enlightFragmentInclude +
 R"CODE(
 void main ()
 {
-  color = enlightFragment (fragmentPos, fragmentVal);
+  color = enlightFragment (fragmentPos, fragmentVal, missingFlag);
 }
 )CODE",
 R"CODE(
@@ -414,6 +417,7 @@ layout(location = 1) in float vertexVal;
 
 out float fragmentVal;
 out vec3 fragmentPos;
+out float missingFlag;
 
 uniform mat4 MVP;
 
@@ -432,6 +436,8 @@ void main ()
 
   fragmentVal = vertexVal;
   fragmentPos = normedPos;
+  missingFlag = vertexVal == 0 ? 1. : 0.;
+
 }
 )CODE"),
 

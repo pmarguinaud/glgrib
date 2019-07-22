@@ -1,0 +1,38 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\begin{document}
+
+Longitude : $ \lambda $. Latitude : $ \phi $.
+
+\begin{align*}
+X' &= \frac{cos\left(\phi\right) \times cos\left(\lambda\right)}{1 + sin\left(\phi\right)} \\
+Y' &= \frac{cos\left(\phi\right) \times sin\left(\lambda\right)}{1 + sin\left(\phi\right)} \\
+dX' &= - \frac{+ cos\left(\lambda\right) \times d\phi + sin\left(\lambda\right) \times cos\left(\phi\right) \times d\lambda}{1 + sin\left(\phi\right)} \\
+dY' &= + \frac{- sin\left(\lambda\right) \times d\phi + cos\left(\lambda\right) \times cos\left(\phi\right) \times d\lambda}{1 + sin\left(\phi\right)} \\
+dX &= cos\left(\phi\right) \times d\lambda \\
+dY &= d\phi 
+\end{align*}
+
+
+\begin{equation*}
+\begin{bmatrix}
+dX' \\
+dY'
+\end{bmatrix}
+= 
+\frac{1}{1 + sin\left(\phi\right)} \times
+\begin{bmatrix}
++ sin\left(\lambda\right) & + cos\left(\lambda\right) \\
++ cos\left(\lambda\right) & - sin\left(\lambda\right) 
+\end{bmatrix}
+\times
+\begin{bmatrix}
+dX \\
+dY
+\end{bmatrix}
+\end{equation*}
+
+
+
+
+\end{document}

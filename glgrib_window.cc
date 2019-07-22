@@ -514,7 +514,7 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
             {
               char tmp[128];
               std::vector<float> value = field->getValue (jglo);
-              sprintf (tmp, "%6.2f %6.2f", lat, lon);
+              sprintf (tmp, "%6.2f %6.2f %8d", lat, lon, jglo);
               title_ = std::string (tmp);
               for (int i = 0; i < value.size (); i++)
                 {

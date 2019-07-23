@@ -425,11 +425,17 @@ public:
     APPLY (hide_arrow,  Hide arrows);                
     APPLY (hide_norm,   Hide norm field);            
     APPLY (color,       Color for arrows);
+    APPLY (density,     Vector density);
+    APPLY (scale,       Vector scale);
+    APPLY (head_size,   Vector head size);
   }
   bool  on         = false;
   bool  hide_arrow = false;
   bool  hide_norm  = false;
   glgrib_option_color color;
+  float density = 50.0f;
+  float scale = 1.0f;
+  float head_size = 0.1f;
 };
 
 class glgrib_options_field : public glgrib_options_base

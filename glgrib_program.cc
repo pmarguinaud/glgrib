@@ -531,6 +531,7 @@ vec3 vprod (vec3 u, vec3 v)
 const float deg2rad = pi / 180.0;
 
 uniform float vscale = 0.01;
+uniform float head = 0.1;
 
 void main ()
 {
@@ -541,17 +542,17 @@ void main ()
   vec3 pos;
   
   if (! defined)
-    pos = vec3 (+0.0, +0.0, +0.0);
+    pos = vec3 (+0.0     ,  +0.0, +0.0);
   else if (gl_VertexID == 0)
-    pos = vec3 (+0.0, +0.0, +0.0);
+    pos = vec3 (+0.0     ,  +0.0, +0.0);
   else if (gl_VertexID == 1)
-    pos = vec3 (+1.0, +0.0, +0.0);
+    pos = vec3 (+1.0     ,  +0.0, +0.0);
   else if (gl_VertexID == 2)
-    pos = vec3 (+0.9, +0.1, +0.0);
+    pos = vec3 (+1.0-head, +head, +0.0);
   else if (gl_VertexID == 3)
-    pos = vec3 (+0.9, -0.1, +0.0);
+    pos = vec3 (+1.0-head, -head, +0.0);
   else if (gl_VertexID == 4)
-    pos = vec3 (+1.0, +0.0, +0.0);
+    pos = vec3 (+1.0     ,  +0.0, +0.0);
 
   if (defined)
     {

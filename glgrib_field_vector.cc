@@ -205,7 +205,7 @@ void glgrib_field_vector::init (const glgrib_options_field & o, int slot)
     }
 
   float resolution = geometry->resolution ();
-  const int npts = 50;
+  const int npts = opts.vector.density;
   geometry->sample (col_d, 0, npts);
 
   d.buffer_n = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
@@ -238,7 +238,7 @@ void glgrib_field_vector::init (const glgrib_options_field & o, int slot)
       values.push_back (new_glgrib_field_float_buffer_ptr (data_d));
     }
 
-  d.vscale = (M_PI / npts) / (meta_n.valmax || 1.0f);
+  d.vscale = opts.vector.scale * (M_PI / npts) / (meta_n.valmax || 1.0f);
 
   setReady ();
 }
@@ -272,6 +272,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       float color0[3] = {opts.vector.color.r/255.0f, opts.vector.color.g/255.0f, opts.vector.color.b/255.0f};
       program->set3fv ("color0", color0);
       program->set1f ("vscale", d.vscale);
+      program->set1f ("head", opts.vector.head_size);
 
       glBindVertexArray (VertexArrayIDvector);
       glDrawArraysInstanced (GL_LINE_STRIP, 0, 5, numberOfPoints); 
@@ -334,14 +335,14 @@ void glgrib_field_vector::reSample (const glgrib_view & view)
   const float deg2rad = M_PI / 180.0;
   float w = view.opts.distance * deg2rad * view.opts.fov;
 
-  const int npts = 2 * 50 / w;
+  const int npts = 2 * opts.vector.density / w;
 
   for (int i = 0; i < geometry->numberOfPoints; i++)
     col_d[i] = 1 + (int)(254 * (data_d[i] - meta_d.valmin)
                  / (meta_d.valmax - meta_d.valmin));
   geometry->sample (col_d, 0, npts);
 
-  d.vscale = (M_PI / npts) / (meta_n.valmax || 1.0f);
+  d.vscale = opts.vector.scale * (M_PI / npts) / (meta_n.valmax || 1.0f);
 
   glFlushMappedBufferRange (GL_ARRAY_BUFFER, 0, numberOfPoints * sizeof (unsigned char));
   glUnmapBuffer (GL_ARRAY_BUFFER);

@@ -50,15 +50,15 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
   y = _y;
   align = _align;
   
-  int len = 0;
+  int len = 0; // Total number of letters
   for (int i = 0; i < data.size (); i++)
     len += data[i].size ();
 
-  int np = 4 * len;
-  nt = 2 * len;
+  int np = 4 * len;  // Total number of vertices
+  nt = 2 * len;      // Number of triangles
 
-  float * xy = new float[2*np];
-  float * let = new float[3*np];
+  float * xy = new float[2*np];     // Coordinates of letter corners
+  float * let = new float[3*np];    // Letter attributes (position x, y + value)
   unsigned int *ind = new unsigned int[3*nt];
   
   color0[0] = 1.;
@@ -78,17 +78,20 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
 
   float x0, y0; // last coordinates used
 
+  // For each string
   for (int j = 0, ii = 0; j < data.size (); j++)
     {
       int len = data[j].size ();
      
-      float xx, yy;
+      float xx, yy; // Base position
 
+      // Use coordinates if provided or compute position
       if (j < x.size ())
         xx = x[j];
       else
         xx = x0;
 
+      // Use coordinates if provided or compute position
       if (j < y.size ())
         yy = y[j];
       else
@@ -113,19 +116,23 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
         {
           int rank = font->map (data[j][i]);
      
+	  // 4 corners x 2 coordinates
           xy[8*ii+2*0+0] = xx   ; xy[8*ii+2*0+1] = yy   ;
           xy[8*ii+2*1+0] = xx+dx; xy[8*ii+2*1+1] = yy   ; 
           xy[8*ii+2*2+0] = xx+dx; xy[8*ii+2*2+1] = yy+dy; 
           xy[8*ii+2*3+0] = xx   ; xy[8*ii+2*3+1] = yy+dy; 
      
+	  // 4 corners x 3 attributes
           let[12*ii+3*0+0] = xx; let[12*ii+3*0+1] = yy; let[12*ii+3*0+2] = rank; 
           let[12*ii+3*1+0] = xx; let[12*ii+3*1+1] = yy; let[12*ii+3*1+2] = rank; 
           let[12*ii+3*2+0] = xx; let[12*ii+3*2+1] = yy; let[12*ii+3*2+2] = rank; 
           let[12*ii+3*3+0] = xx; let[12*ii+3*3+1] = yy; let[12*ii+3*3+2] = rank; 
      
+	  // 2 triangles
           ind[6*ii+0] = 4*ii+0; ind[6*ii+1] = 4*ii+1; ind[6*ii+2] = 4*ii+2; 
           ind[6*ii+3] = 4*ii+2; ind[6*ii+4] = 4*ii+3; ind[6*ii+5] = 4*ii+0; 
      
+	  // Advance
           xx = xx + dx;
         }
 

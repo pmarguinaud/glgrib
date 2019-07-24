@@ -814,6 +814,7 @@ void main ()
 {
   vec3 letterXYZ = letterXYZA.xyz;
   float A = letterXYZA.w;
+  float cosA = cos (A), sinA = sin (A);
 
   float xx = letterPos.x;
   float yy = letterPos.y;
@@ -840,7 +841,6 @@ void main ()
           vec3 vx = normalize (cross (northPos, pos));
           vec3 vy = normalize (cross (pos, vx));
 
-          float cosA = cos (A), sinA = sin (A);
           vec3 wx = + cosA * vx + sinA * vy;
           vec3 wy = - sinA * vx + cosA * vy;
          
@@ -853,14 +853,17 @@ void main ()
           vec3 vertexPos = letterXYZ;
           vec3 normedPos = compNormedPos (vertexPos);
           vec3 pos = compProjedPos (vertexPos, normedPos);
-          pos = scalePosition (pos, normedPos);
-     
+
+          pos.x = pos.x + 0.1;
+
           gl_Position =  MVP * vec4 (pos, 1.);
        
-          gl_Position.x = gl_Position.x + pos2.x * 10;
-          gl_Position.y = gl_Position.y + pos2.y * 10;
-          gl_Position.z = 0.0f;
-          gl_Position.w = 6.0f;
+//        gl_Position.x = gl_Position.x + 10. * (+ cosA * pos2.x + sinA * pos2.y);
+//        gl_Position.y = gl_Position.y + 10. * (- sinA * pos2.x + cosA * pos2.y);
+          gl_Position.x = gl_Position.x + 10. * pos2.x;
+          gl_Position.y = gl_Position.y + 10. * pos2.y;
+//        gl_Position.z = 0.0f;
+//        gl_Position.w = 3.0f;
         }
     }
   else 

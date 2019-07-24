@@ -488,12 +488,15 @@ void main()
 R"CODE(
 #version 330 core
 
+in float alpha;
 out vec4 color;
 
 uniform vec3 color0;
 
 void main ()
 {
+  if (alpha == 0.)
+    discard;
   color.r = color0.r;
   color.g = color0.g;
   color.b = color0.b;
@@ -509,6 +512,7 @@ layout(location = 1) in float vertexVal_n;
 layout(location = 2) in float vertexVal_d;
 
 out vec3 fragmentPos;
+out float alpha;
 
 
 uniform float valmin_n, valmax_n;
@@ -532,6 +536,7 @@ const float deg2rad = pi / 180.0;
 
 uniform float vscale = 0.01;
 uniform float head = 0.1;
+uniform float posmax = 0.97;
 
 void main ()
 {
@@ -554,6 +559,7 @@ void main ()
   else if (gl_VertexID == 4)
     pos = vec3 (+1.0     ,  +0.0, +0.0);
 
+  alpha = 1.;
   if (defined)
     {
       float N = valmin_n + (valmax_n - valmin_n) * (255.0 * vertexVal_n - 1.0) / 254.0;
@@ -567,6 +573,13 @@ void main ()
       vec3 normedPos = compNormedPos (pos);
       vec3 projedPos = compProjedPos (pos, normedPos);
       pos = scalePosition (projedPos, normedPos);
+
+      if ((proj == LATLON) || (proj == MERCATOR))
+      if ((pos.y < -posmax) || (+posmax < pos.y))
+        {
+          pos.x = -0.1;
+          alpha = 0.0;
+	}
     }
 
   gl_Position =  MVP * vec4 (pos, 1.);
@@ -733,6 +746,92 @@ void main ()
 }
 )CODE"),
 
+  glgrib_program (  // FONT
+R"CODE(
+#version 330 core
+
+in vec2 fragmentPos;
+in vec2 letterPos;
+in float letterRank;
+
+out vec4 color;
+
+uniform sampler2D texture;
+
+uniform float xoff[30];
+uniform float yoff[30];
+uniform int nx = 0;
+uniform int ny = 0;
+uniform float aspect = 1.0;
+uniform float scale = 1.0;
+uniform vec3 color0;
+
+void main ()
+{
+  float dx = scale * aspect;
+  float dy = scale;
+
+  int ix = int (mod (letterRank, nx));
+  int iy = int (letterRank / nx);
+
+  float tx = (fragmentPos.x - letterPos.x) / dx;
+  float ty = (fragmentPos.y - letterPos.y) / dy;
+
+  tx = xoff[ix] + tx * (xoff[ix+1] - xoff[ix]);
+  ty = yoff[iy] + ty * (yoff[iy+1] - yoff[iy]);
+
+  vec4 col = texture2D (texture, vec2 (tx, ty));
+
+  color.r = color0.r;
+  color.g = color0.g;
+  color.b = color0.b;
+  color.a = 1. - col.r;
+   
+}
+)CODE",
+R"CODE(
+
+#version 330 core
+
+layout (location = 0) in vec2 vertexPos;
+layout (location = 1) in vec3 letterAtt;
+layout (location = 2) in vec3 letterXYZ;
+
+out vec2 fragmentPos;
+out vec2 letterPos;
+out float letterRank;
+
+uniform mat4 MVP;
+uniform bool l3d = false;
+
+void main()
+{
+  if (l3d)
+    {
+      vec3 pos = vec3 (letterXYZ.x, 
+                       letterXYZ.y + vertexPos.x,
+                       letterXYZ.z + vertexPos.y);
+      gl_Position =  MVP * vec4 (pos, 1.);
+    }
+  else if (l3d)
+    {
+      gl_Position =  MVP * vec4 (letterXYZ, 1.);
+      gl_Position.x = gl_Position.x + vertexPos.x * 10;
+      gl_Position.y = gl_Position.y + vertexPos.y * 10;
+      gl_Position.z = 0.0f;
+      gl_Position.w = 6.0f;
+    }
+  else
+    {
+      gl_Position =  MVP * vec4 (         0., vertexPos.x, vertexPos.y, 1.);
+    }
+  fragmentPos = vec2 (vertexPos.x, vertexPos.y);
+  letterRank = letterAtt.z;
+  letterPos  = vec2 (letterAtt.x, letterAtt.y);
+}
+
+
+)CODE"),
 
 
 };

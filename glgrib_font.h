@@ -21,14 +21,13 @@ public:
     int iy = 5 - (c - 32) / 16;
     return iy * nx + ix;
   }
-  glgrib_program * getProgram () const { return &program; }
+  glgrib_program * getProgram () const { return glgrib_program_load (glgrib_program::FONT); }
   void select () const;
   float getAspect () const { return aspect; }
   float getPosBelow () const { return posb; }
   float getPosAbove () const { return posu; }
 private:
   glgrib_options_font opts;
-  static glgrib_program program;
   std::vector<float> xoff, yoff;
   int nx, ny;  // Array of letters dimension
   bool ready = false;

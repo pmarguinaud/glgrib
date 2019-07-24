@@ -20,7 +20,8 @@ public:
     FLAT_TEX=6,
     GRADIENT_FLAT_SCALE_VECTOR=7,
     CONTOUR=8,
-    SIZE=9,
+    FONT=9,
+    SIZE=10,
   } kind;
 
 

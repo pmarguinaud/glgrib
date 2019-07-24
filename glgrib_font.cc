@@ -28,15 +28,16 @@ glgrib_font_ptr new_glgrib_font_ptr (const glgrib_options_font & opts)
 
 void glgrib_font::select () const
 {
-  program.use ();
-  program.set1fv ("xoff", xoff.data (), xoff.size ());
-  program.set1fv ("yoff", yoff.data (), yoff.size ());
-  program.set1i ("nx", nx);
-  program.set1i ("ny", ny);
-  program.set1f ("aspect", aspect);
+  glgrib_program * program = glgrib_program_load (glgrib_program::FONT);
+  program->use ();
+  program->set1fv ("xoff", xoff.data (), xoff.size ());
+  program->set1fv ("yoff", yoff.data (), yoff.size ());
+  program->set1i ("nx", nx);
+  program->set1i ("ny", ny);
+  program->set1f ("aspect", aspect);
   glActiveTexture (GL_TEXTURE0); 
   glBindTexture (GL_TEXTURE_2D, texture);
-  program.set1i ("texture", 0);
+  program->set1i ("texture", 0);
 
 }
 
@@ -130,99 +131,7 @@ found_u:
   // The third argument has to be GL_RED, but I do not understand why
   glTexImage2D (GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, rgb);
 
-  program.compile ();
-
   free (rgb);
   ready = true;
 }
-
-glgrib_program glgrib_font::program = glgrib_program
-(
-R"CODE(
-#version 330 core
-
-in vec2 fragmentPos;
-in vec2 letterPos;
-in float letterRank;
-
-out vec4 color;
-
-uniform sampler2D texture;
-
-uniform float xoff[30];
-uniform float yoff[30];
-uniform int nx = 0;
-uniform int ny = 0;
-uniform float aspect = 1.0;
-uniform float scale = 1.0;
-uniform vec3 color0;
-
-void main ()
-{
-  float dx = scale * aspect;
-  float dy = scale;
-
-  int ix = int (mod (letterRank, nx));
-  int iy = int (letterRank / nx);
-
-  float tx = (fragmentPos.x - letterPos.x) / dx;
-  float ty = (fragmentPos.y - letterPos.y) / dy;
-
-  tx = xoff[ix] + tx * (xoff[ix+1] - xoff[ix]);
-  ty = yoff[iy] + ty * (yoff[iy+1] - yoff[iy]);
-
-  vec4 col = texture2D (texture, vec2 (tx, ty));
-
-  color.r = color0.r;
-  color.g = color0.g;
-  color.b = color0.b;
-  color.a = 1. - col.r;
-   
-}
-)CODE",
-R"CODE(
-
-#version 330 core
-
-layout (location = 0) in vec2 vertexPos;
-layout (location = 1) in vec3 letterAtt;
-layout (location = 2) in vec3 letterXYZ;
-
-out vec2 fragmentPos;
-out vec2 letterPos;
-out float letterRank;
-
-uniform mat4 MVP;
-uniform bool l3d = false;
-
-void main()
-{
-  if (l3d)
-    {
-      vec3 pos = vec3 (letterXYZ.x, 
-                       letterXYZ.y + vertexPos.x,
-                       letterXYZ.z + vertexPos.y);
-      gl_Position =  MVP * vec4 (pos, 1.);
-    }
-  else if (l3d)
-    {
-      gl_Position =  MVP * vec4 (letterXYZ, 1.);
-      gl_Position.x = gl_Position.x + vertexPos.x * 10;
-      gl_Position.y = gl_Position.y + vertexPos.y * 10;
-      gl_Position.z = 0.0f;
-      gl_Position.w = 6.0f;
-    }
-  else
-    {
-      gl_Position =  MVP * vec4 (         0., vertexPos.x, vertexPos.y, 1.);
-    }
-  fragmentPos = vec2 (vertexPos.x, vertexPos.y);
-  letterRank = letterAtt.z;
-  letterPos  = vec2 (letterAtt.x, letterAtt.y);
-}
-
-
-)CODE");
-
-
 

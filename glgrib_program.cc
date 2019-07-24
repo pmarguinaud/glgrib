@@ -857,16 +857,11 @@ void main ()
           vec3 pos = compProjedPos (vertexPos, normedPos);
           pos = scalePosition (pos, normedPos, scale0);
 
-//        pos.x = pos.x + 0.1;
-
           gl_Position =  MVP * vec4 (pos, 1.);
        
-//        gl_Position.x = gl_Position.x + 10. * (+ cosA * pos2.x + sinA * pos2.y);
-//        gl_Position.y = gl_Position.y + 10. * (- sinA * pos2.x + cosA * pos2.y);
-          gl_Position.x = gl_Position.x + 10. * pos2.x;
-          gl_Position.y = gl_Position.y + 10. * pos2.y;
-//        gl_Position.z = 0.0f;
-//        gl_Position.w = 3.0f;
+          gl_Position.x = gl_Position.x + 10. * (+ cosA * pos2.x + sinA * pos2.y);
+          gl_Position.y = gl_Position.y + 10. * (- sinA * pos2.x + cosA * pos2.y);
+          gl_Position.z = 0.0f;
         }
     }
   else 

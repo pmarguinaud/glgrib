@@ -52,6 +52,8 @@ public:
 
   void init (const glgrib_options &);
 
+  const glm::mat4 & getMVP () const { return MVP; }
+
 private:
   glgrib_projection_set ps;
   int width, height;

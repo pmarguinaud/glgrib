@@ -65,7 +65,7 @@ void glgrib_scene::display () const
                        fld->getNormedMinValue (), 
                        fld->getNormedMaxValue ());
 
-  d.str.render (d.MVP_R);
+  d.str.render (d.view);
 
 
 }
@@ -228,8 +228,18 @@ void glgrib_scene::init (const glgrib_options & o)
   if (d.opts.colorbar.on)
     {
       glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
-      d.str.init (font, std::string (30, ' '), 1.0f, 1.0f, d.opts.font.scale, glgrib_string::NE);
-      d.str.setColor (d.opts.font.color.r / 255.0f, d.opts.font.color.g / 255.0f, d.opts.font.color.b / 255.0f);
+//    d.str.init (font, std::string (30, ' '), 1.0f, 1.0f, d.opts.font.scale, glgrib_string::NE);
+      d.str.init (font, std::vector<std::string>{"ABCD"},
+                  std::vector<float>{0.0f}, 
+                  std::vector<float>{0.0f}, 
+		  d.opts.font.scale, glgrib_string::C,
+		  std::vector<float>{1.1f},
+		  std::vector<float>{0.0f},
+		  std::vector<float>{0.0f}
+		  );
+      d.str.setColor (d.opts.font.color.r / 255.0f, 
+		      d.opts.font.color.g / 255.0f, 
+		      d.opts.font.color.b / 255.0f);
       d.colorbar.init (d.opts.colorbar);
     }
 

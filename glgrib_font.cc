@@ -186,16 +186,36 @@ R"CODE(
 
 layout (location = 0) in vec2 vertexPos;
 layout (location = 1) in vec3 letterAtt;
+layout (location = 2) in vec3 letterXYZ;
 
 out vec2 fragmentPos;
 out vec2 letterPos;
 out float letterRank;
 
 uniform mat4 MVP;
+uniform bool l3d = false;
 
 void main()
 {
-  gl_Position =  MVP * vec4 (0., vertexPos.x, vertexPos.y, 1.);
+  if (l3d)
+    {
+      vec3 pos = vec3 (letterXYZ.x, 
+                       letterXYZ.y + vertexPos.x,
+                       letterXYZ.z + vertexPos.y);
+      gl_Position =  MVP * vec4 (pos, 1.);
+    }
+  else if (l3d)
+    {
+      gl_Position =  MVP * vec4 (letterXYZ, 1.);
+      gl_Position.x = gl_Position.x + vertexPos.x * 10;
+      gl_Position.y = gl_Position.y + vertexPos.y * 10;
+      gl_Position.z = 0.0f;
+      gl_Position.w = 6.0f;
+    }
+  else
+    {
+      gl_Position =  MVP * vec4 (         0., vertexPos.x, vertexPos.y, 1.);
+    }
   fragmentPos = vec2 (vertexPos.x, vertexPos.y);
   letterRank = letterAtt.z;
   letterPos  = vec2 (letterAtt.x, letterAtt.y);

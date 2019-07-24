@@ -2,6 +2,7 @@
 #define _GLGRIB_STRING_H
 
 #include "glgrib_font.h"
+#include "glgrib_view.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "glgrib_opengl.h"
@@ -24,15 +25,21 @@ public:
       W   = CY | WX, E   = CY | EX, NE  = NY | EX, 
       SE  = SY | EX, NW  = NY | WX, SW  = SY | WX,
     }
-  glgrib_string_align_t;
+  align_t;
   glgrib_string & operator= (const glgrib_string &);
   void init (const_glgrib_font_ptr, const std::string &, float, 
-             float, float = 1.0f, glgrib_string_align_t = SW);
-  void init (const_glgrib_font_ptr, const std::vector<std::string> &, const std::vector<float> &, 
-             const std::vector<float> &, float = 1.0f, glgrib_string_align_t = SW);
+             float, float = 1.0f, align_t = SW);
+  void init (const_glgrib_font_ptr, const std::vector<std::string> &, 
+             const std::vector<float> &, 
+             const std::vector<float> &, 
+	     float = 1.0f, align_t = SW,
+	     const std::vector<float> & = std::vector<float>{},
+	     const std::vector<float> & = std::vector<float>{},
+	     const std::vector<float> & = std::vector<float>{});
   void init (const_glgrib_font_ptr, const std::vector<std::string> &, float, 
-             float, float = 1.0f, glgrib_string_align_t = SW);
+             float, float = 1.0f, align_t = SW);
   void render (const glm::mat4 &) const;
+  void render (const glgrib_view &) const;
   void setColor (float r, float g, float b) { color0[0] = r; color0[1] = g; color0[2] = b; }
   ~glgrib_string ();
   void update (const std::vector<std::string> &);
@@ -42,12 +49,13 @@ public:
 private:
   std::vector<std::string> data;
   std::vector<float> x, y;
-  glgrib_string_align_t align;
+  std::vector<float> X, Y, Z;
+  align_t align;
   float color0[3];
   float scale;
   unsigned int nt;
   GLuint VertexArrayID;
-  GLuint vertexbuffer, letterbuffer, elementbuffer;
+  GLuint xyzbuffer, vertexbuffer, letterbuffer, elementbuffer;
   const_glgrib_font_ptr font = NULL; 
 };
 

@@ -11,7 +11,7 @@ glgrib_string & glgrib_string::operator= (const glgrib_string & str)
         {
           for (int i =0; i < 3; i++)
             color0[i] = str.color0[i];
-          init (str.font, str.data, str.x, str.y, str.scale, str.align);
+          init (str.font, str.data, str.x, str.y, str.scale, str.align, str.X, str.Y, str.Z);
         }
     }
 }
@@ -22,6 +22,7 @@ void glgrib_string::cleanup ()
 {
   if (ready)
     {
+      glDeleteBuffers (1, &xyzbuffer);
       glDeleteBuffers (1, &vertexbuffer);
       glDeleteBuffers (1, &letterbuffer);
       glDeleteBuffers (1, &elementbuffer);
@@ -36,18 +37,24 @@ glgrib_string::~glgrib_string ()
 }
 
 void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
-                          float x, float y, float s, glgrib_string_align_t align)
+                          float x, float y, float s, align_t align)
 {
   init (ff, str, std::vector<float>{x}, std::vector<float>{y}, s, align);
 }
 
 void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
                           const std::vector<float> & _x, const std::vector<float> & _y, 
-                          float s, glgrib_string_align_t _align)
+                          float s, align_t _align,
+			  const std::vector<float> & _X, 
+			  const std::vector<float> & _Y,
+			  const std::vector<float> & _Z)
 {
   data = str;
   x = _x;
   y = _y;
+  X = _X;
+  Y = _Y;
+  Z = _Z;
   align = _align;
   
   int len = 0; // Total number of letters
@@ -59,6 +66,7 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
 
   float * xy = new float[2*np];     // Coordinates of letter corners
   float * let = new float[3*np];    // Letter attributes (position x, y + value)
+  float * xyz = new float[3*np];    // Letter xyz
   unsigned int *ind = new unsigned int[3*nt];
   
   color0[0] = 1.;
@@ -112,6 +120,10 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
       else if (align & NY)
         yy = yy - dym;
      
+      float X = j < _X.size () ?  _X[j] : 0.0f;
+      float Y = j < _Y.size () ?  _Y[j] : 0.0f;
+      float Z = j < _Z.size () ?  _Z[j] : 0.0f;
+
       for (int i = 0; i < len; i++, ii++)
         {
           int rank = font->map (data[j][i]);
@@ -127,6 +139,12 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
           let[12*ii+3*1+0] = xx; let[12*ii+3*1+1] = yy; let[12*ii+3*1+2] = rank; 
           let[12*ii+3*2+0] = xx; let[12*ii+3*2+1] = yy; let[12*ii+3*2+2] = rank; 
           let[12*ii+3*3+0] = xx; let[12*ii+3*3+1] = yy; let[12*ii+3*3+2] = rank; 
+     
+	  // 4 corners x 3 coordinates
+          xyz[12*ii+3*0+0] = X; xyz[12*ii+3*0+1] = Y; xyz[12*ii+3*0+2] = Z; 
+          xyz[12*ii+3*1+0] = X; xyz[12*ii+3*1+1] = Y; xyz[12*ii+3*1+2] = Z; 
+          xyz[12*ii+3*2+0] = X; xyz[12*ii+3*2+1] = Y; xyz[12*ii+3*2+2] = Z; 
+          xyz[12*ii+3*3+0] = X; xyz[12*ii+3*3+1] = Y; xyz[12*ii+3*3+2] = Z; 
      
 	  // 2 triangles
           ind[6*ii+0] = 4*ii+0; ind[6*ii+1] = 4*ii+1; ind[6*ii+2] = 4*ii+2; 
@@ -153,6 +171,12 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
   
+  glGenBuffers (1, &xyzbuffer);
+  glBindBuffer (GL_ARRAY_BUFFER, xyzbuffer);
+  glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
+  glEnableVertexAttribArray (2); 
+  glVertexAttribPointer (2, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  
   glGenBuffers (1, &elementbuffer);
   glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
   glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), ind , GL_STATIC_DRAW);
@@ -167,12 +191,30 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
 
 
 void glgrib_string::init (const_glgrib_font_ptr ff, const std::string & str, 
-                          float x, float y, float s, glgrib_string_align_t align)
+                          float x, float y, float s, align_t align)
 {
   std::vector<std::string> _str = {str};
   std::vector<float>       _x   = {x};
   std::vector<float>       _y   = {y};
   init (ff, _str, _x, _y, s, align);
+}
+
+void glgrib_string::render (const glgrib_view & view) const
+{
+  if (! ready)
+    return;
+
+  font->select ();
+
+  glgrib_program * program = font->getProgram ();
+  view.setMVP (program);
+  program->set1f ("scale", scale);
+  program->set1i ("texture", 0);
+  program->set1i ("l3d", 1);
+  program->set3fv ("color0", color0);
+  
+  glBindVertexArray (VertexArrayID);
+  glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
 }
 
 void glgrib_string::render (const glm::mat4 & MVP) const
@@ -186,6 +228,7 @@ void glgrib_string::render (const glm::mat4 & MVP) const
   program->setMatrix4fv ("MVP", &MVP[0][0]);
   program->set1f ("scale", scale);
   program->set1i ("texture", 0);
+  program->set1i ("l3d", 0);
   program->set3fv ("color0", color0);
   
   glBindVertexArray (VertexArrayID);

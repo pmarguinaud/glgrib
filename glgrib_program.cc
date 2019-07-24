@@ -804,13 +804,22 @@ out float letterRank;
 uniform mat4 MVP;
 uniform bool l3d = false;
 
+)CODE" 
++ projShaderInclude 
++ scalePositionInclude 
++ R"CODE(
+
 void main()
 {
   if (l3d)
     {
-      vec3 pos = vec3 (letterXYZ.x, 
-                       letterXYZ.y + vertexPos.x,
-                       letterXYZ.z + vertexPos.y);
+      vec3 vertexPOS = vec3 (letterXYZ.x, 
+                             letterXYZ.y + vertexPos.x,
+                             letterXYZ.z + vertexPos.y);
+      vec3 normedPOS = compNormedPos (vertexPOS);
+      vec3 pos = compProjedPos (vertexPOS, normedPOS);
+      pos = scalePosition (pos, normedPOS);
+
       gl_Position =  MVP * vec4 (pos, 1.);
     }
   else if (l3d)

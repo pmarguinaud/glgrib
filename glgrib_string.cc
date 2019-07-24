@@ -195,7 +195,7 @@ void glgrib_string::render (const glgrib_view & view) const
   program->set1i ("texture", 0);
   program->set1i ("l3d", 2);
   program->set3fv ("color0", color0);
-  program->set1f ("length", length);
+  program->set1f ("length10", length);
   
 
   glBindVertexArray (VertexArrayID);

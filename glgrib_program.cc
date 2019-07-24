@@ -77,7 +77,7 @@ R"CODE(
 
 uniform vec3 scale0 = vec3 (1.0, 1.0, 1.0);
 
-vec3 scalePosition (vec3 pos, vec3 normedPos)
+vec3 scalePosition (vec3 pos, vec3 normedPos, vec3 scale0)
 {
   if (proj == XYZ)
     {
@@ -420,7 +420,7 @@ void main ()
 {
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);
-  pos = scalePosition (pos, normedPos);
+  pos = scalePosition (pos, normedPos, scale0);
 
   gl_Position =  MVP * vec4 (pos, 1.);
 
@@ -572,7 +572,7 @@ void main ()
      
       vec3 normedPos = compNormedPos (pos);
       vec3 projedPos = compProjedPos (pos, normedPos);
-      pos = scalePosition (projedPos, normedPos);
+      pos = scalePosition (projedPos, normedPos, scale0);
 
       if ((proj == LATLON) || (proj == MERCATOR))
       if ((pos.y < -posmax) || (+posmax < pos.y))
@@ -709,7 +709,7 @@ void main ()
 
   if (proj == XYZ)
     {
-      pos = scalePosition (pos, normedPos);
+      pos = scalePosition (pos, normedPos, scale0);
     }
   else
     {
@@ -803,7 +803,7 @@ out float fletterVal;
 
 uniform mat4 MVP;
 uniform bool l3d = false;
-uniform float length;
+uniform float length10;
 
 )CODE" 
 + projShaderInclude 
@@ -844,17 +844,20 @@ void main ()
           vec3 wx = + cosA * vx + sinA * vy;
           vec3 wy = - sinA * vx + cosA * vy;
          
-          pos = pos + 50 * length * (pos2.x * wx + pos2.y * wy);
+          pos = pos + 50 * length10 * (pos2.x * wx + pos2.y * wy);
       
           gl_Position =  MVP * vec4 (pos, 1.);
         }
       else 
         {
+          float scale00 = length (letterXYZ);
+          vec3 scale0 = vec3 (scale00, scale00, scale00);
           vec3 vertexPos = letterXYZ;
           vec3 normedPos = compNormedPos (vertexPos);
           vec3 pos = compProjedPos (vertexPos, normedPos);
+          pos = scalePosition (pos, normedPos, scale0);
 
-          pos.x = pos.x + 0.1;
+//        pos.x = pos.x + 0.1;
 
           gl_Position =  MVP * vec4 (pos, 1.);
        

@@ -795,7 +795,7 @@ R"CODE(
 
 layout (location = 0) in vec4  letterPos;
 layout (location = 1) in float letterVal;
-layout (location = 2) in vec3  letterXYZ;
+layout (location = 2) in vec4  letterXYZA;
 
 out vec2 fragmentPos;
 out vec2 fletterPos;
@@ -812,6 +812,9 @@ uniform float length;
 
 void main ()
 {
+  vec3 letterXYZ = letterXYZA.xyz;
+  float A = letterXYZA.w;
+
   float xx = letterPos.x;
   float yy = letterPos.y;
   float dx = letterPos.z;
@@ -836,7 +839,12 @@ void main ()
           vec3 northPos  = vec3 (0., 0., 1.);
           vec3 vx = normalize (cross (northPos, pos));
           vec3 vy = normalize (cross (pos, vx));
-          pos = pos + 50 * length * (pos2.x * vx + pos2.y * vy);
+
+          float cosA = cos (A), sinA = sin (A);
+          vec3 wx = + cosA * vx + sinA * vy;
+          vec3 wy = - sinA * vx + cosA * vy;
+         
+          pos = pos + 50 * length * (pos2.x * wx + pos2.y * wy);
       
           gl_Position =  MVP * vec4 (pos, 1.);
         }

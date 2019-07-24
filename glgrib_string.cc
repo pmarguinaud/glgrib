@@ -11,7 +11,8 @@ glgrib_string & glgrib_string::operator= (const glgrib_string & str)
         {
           for (int i =0; i < 3; i++)
             color0[i] = str.color0[i];
-          init (str.font, str.data, str.x, str.y, str.scale, str.align, str.X, str.Y, str.Z);
+          init (str.font, str.data, str.x, str.y, str.scale, 
+                str.align, str.X, str.Y, str.Z, str.A);
         }
     }
 }
@@ -44,16 +45,14 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
 void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
                           const std::vector<float> & _x, const std::vector<float> & _y, 
                           float s, align_t _align,
-			  const std::vector<float> & _X, 
-			  const std::vector<float> & _Y,
-			  const std::vector<float> & _Z)
+			  const std::vector<float> & _X, const std::vector<float> & _Y,
+			  const std::vector<float> & _Z, const std::vector<float> & _A)
 {
   data = str;
   x = _x;
   y = _y;
-  X = _X;
-  Y = _Y;
-  Z = _Z;
+  X = _X; Y = _Y;
+  Z = _Z; A = _A;
   align = _align;
   
   len = 0; // Total number of letters
@@ -116,9 +115,11 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
       else if (align & NY)
         yy = yy - dym;
      
+      const float deg2rad = M_PI / 180.0;
       float X = j < _X.size () ?  _X[j] : 0.0f;
       float Y = j < _Y.size () ?  _Y[j] : 0.0f;
       float Z = j < _Z.size () ?  _Z[j] : 0.0f;
+      float A = j < _A.size () ?  _A[j] : 0.0f;
 
       for (int i = 0; i < len; i++, ii++)
         {
@@ -132,6 +133,7 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
           xyz.push_back (X); 
           xyz.push_back (Y); 
           xyz.push_back (Z); 
+          xyz.push_back (A * deg2rad); 
      
 	  // Advance
           xx = xx + dx;
@@ -160,7 +162,7 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
   glBindBuffer (GL_ARRAY_BUFFER, xyzbuffer);
   glBufferData (GL_ARRAY_BUFFER, xyz.size () * sizeof (float), xyz.data (), GL_STATIC_DRAW);
   glEnableVertexAttribArray (2); 
-  glVertexAttribPointer (2, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  glVertexAttribPointer (2, 4, GL_FLOAT, GL_FALSE, 0, NULL); 
   glVertexAttribDivisor (2, 1);
   
   ready = true;

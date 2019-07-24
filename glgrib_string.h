@@ -30,12 +30,10 @@ public:
   void init (const_glgrib_font_ptr, const std::string &, float, 
              float, float = 1.0f, align_t = SW);
   void init (const_glgrib_font_ptr, const std::vector<std::string> &, 
-             const std::vector<float> &, 
-             const std::vector<float> &, 
+             const std::vector<float> &, const std::vector<float> &, 
 	     float = 1.0f, align_t = SW,
-	     const std::vector<float> & = std::vector<float>{},
-	     const std::vector<float> & = std::vector<float>{},
-	     const std::vector<float> & = std::vector<float>{});
+	     const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
+	     const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{});
   void init (const_glgrib_font_ptr, const std::vector<std::string> &, float, 
              float, float = 1.0f, align_t = SW);
   void render (const glm::mat4 &) const;
@@ -48,8 +46,8 @@ public:
   bool ready = false;
 private:
   std::vector<std::string> data;
-  std::vector<float> x, y;
-  std::vector<float> X, Y, Z;
+  std::vector<float> x, y;       // Position of letters vertices
+  std::vector<float> X, Y, Z, A; // Position & angle of each letter on the sphere
   align_t align;
   float color0[3];
   float scale;

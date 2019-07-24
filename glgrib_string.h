@@ -53,9 +53,9 @@ private:
   align_t align;
   float color0[3];
   float scale;
-  unsigned int nt;
+  int len;    // Total number of characters
   GLuint VertexArrayID;
-  GLuint xyzbuffer, vertexbuffer, letterbuffer, elementbuffer;
+  GLuint xyzbuffer, vertexbuffer, letterbuffer;
   const_glgrib_font_ptr font = NULL; 
 };
 

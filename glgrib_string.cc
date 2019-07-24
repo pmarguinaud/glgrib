@@ -25,7 +25,6 @@ void glgrib_string::cleanup ()
       glDeleteBuffers (1, &xyzbuffer);
       glDeleteBuffers (1, &vertexbuffer);
       glDeleteBuffers (1, &letterbuffer);
-      glDeleteBuffers (1, &elementbuffer);
       glDeleteVertexArrays (1, &VertexArrayID);
     }
   ready = false;
@@ -57,17 +56,14 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
   Z = _Z;
   align = _align;
   
-  int len = 0; // Total number of letters
+  len = 0; // Total number of letters
   for (int i = 0; i < data.size (); i++)
     len += data[i].size ();
 
-  int np = 4 * len;  // Total number of vertices
-  nt = 2 * len;      // Number of triangles
-
-  float * xy = new float[2*np];     // Coordinates of letter corners
-  float * let = new float[3*np];    // Letter attributes (position x, y + value)
-  float * xyz = new float[3*np];    // Letter xyz
-  unsigned int *ind = new unsigned int[3*nt];
+  std::vector<float> xy, let, xyz;
+  xy.reserve (4 * len);
+  let.reserve (len);
+  xyz.reserve (3 * len);
   
   color0[0] = 1.;
   color0[1] = 1.;
@@ -128,27 +124,14 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
         {
           int rank = font->map (data[j][i]);
      
-	  // 4 corners x 2 coordinates
-          xy[8*ii+2*0+0] = xx   ; xy[8*ii+2*0+1] = yy   ;
-          xy[8*ii+2*1+0] = xx+dx; xy[8*ii+2*1+1] = yy   ; 
-          xy[8*ii+2*2+0] = xx+dx; xy[8*ii+2*2+1] = yy+dy; 
-          xy[8*ii+2*3+0] = xx   ; xy[8*ii+2*3+1] = yy+dy; 
-     
-	  // 4 corners x 3 attributes
-          let[12*ii+3*0+0] = xx; let[12*ii+3*0+1] = yy; let[12*ii+3*0+2] = rank; 
-          let[12*ii+3*1+0] = xx; let[12*ii+3*1+1] = yy; let[12*ii+3*1+2] = rank; 
-          let[12*ii+3*2+0] = xx; let[12*ii+3*2+1] = yy; let[12*ii+3*2+2] = rank; 
-          let[12*ii+3*3+0] = xx; let[12*ii+3*3+1] = yy; let[12*ii+3*3+2] = rank; 
-     
-	  // 4 corners x 3 coordinates
-          xyz[12*ii+3*0+0] = X; xyz[12*ii+3*0+1] = Y; xyz[12*ii+3*0+2] = Z; 
-          xyz[12*ii+3*1+0] = X; xyz[12*ii+3*1+1] = Y; xyz[12*ii+3*1+2] = Z; 
-          xyz[12*ii+3*2+0] = X; xyz[12*ii+3*2+1] = Y; xyz[12*ii+3*2+2] = Z; 
-          xyz[12*ii+3*3+0] = X; xyz[12*ii+3*3+1] = Y; xyz[12*ii+3*3+2] = Z; 
-     
-	  // 2 triangles
-          ind[6*ii+0] = 4*ii+0; ind[6*ii+1] = 4*ii+1; ind[6*ii+2] = 4*ii+2; 
-          ind[6*ii+3] = 4*ii+2; ind[6*ii+4] = 4*ii+3; ind[6*ii+5] = 4*ii+0; 
+	  xy.push_back (xx);
+	  xy.push_back (yy);
+	  xy.push_back (dx);
+	  xy.push_back (dy);
+          let.push_back (rank);
+          xyz.push_back (X); 
+          xyz.push_back (Y); 
+          xyz.push_back (Z); 
      
 	  // Advance
           xx = xx + dx;
@@ -161,31 +144,26 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
   
   glGenBuffers (1, &vertexbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
-  glBufferData (GL_ARRAY_BUFFER, 2 * np * sizeof (float), xy, GL_STATIC_DRAW);
+  glBufferData (GL_ARRAY_BUFFER, xy.size () * sizeof (float), xy.data (), GL_STATIC_DRAW);
   glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL); 
+  glVertexAttribPointer (0, 4, GL_FLOAT, GL_FALSE, 0, NULL); 
+  glVertexAttribDivisor (0, 1);
   
   glGenBuffers (1, &letterbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, letterbuffer);
-  glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), let, GL_STATIC_DRAW);
+  glBufferData (GL_ARRAY_BUFFER, let.size () * sizeof (float), let.data (), GL_STATIC_DRAW);
   glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  glVertexAttribPointer (1, 1, GL_FLOAT, GL_FALSE, 0, NULL); 
+  glVertexAttribDivisor (1, 1);
   
   glGenBuffers (1, &xyzbuffer);
   glBindBuffer (GL_ARRAY_BUFFER, xyzbuffer);
-  glBufferData (GL_ARRAY_BUFFER, 3 * np * sizeof (float), xyz, GL_STATIC_DRAW);
+  glBufferData (GL_ARRAY_BUFFER, xyz.size () * sizeof (float), xyz.data (), GL_STATIC_DRAW);
   glEnableVertexAttribArray (2); 
   glVertexAttribPointer (2, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  glVertexAttribDivisor (2, 1);
   
-  glGenBuffers (1, &elementbuffer);
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), ind , GL_STATIC_DRAW);
-
   ready = true;
-
-  delete [] xy;
-  delete [] let;
-  delete [] ind;
 
 }
 
@@ -213,8 +191,10 @@ void glgrib_string::render (const glgrib_view & view) const
   program->set1i ("l3d", 1);
   program->set3fv ("color0", color0);
   
+
   glBindVertexArray (VertexArrayID);
-  glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
+  unsigned int ind[12] = {0, 1, 2, 2, 3, 0};
+  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, len);
 }
 
 void glgrib_string::render (const glm::mat4 & MVP) const
@@ -232,7 +212,8 @@ void glgrib_string::render (const glm::mat4 & MVP) const
   program->set3fv ("color0", color0);
   
   glBindVertexArray (VertexArrayID);
-  glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
+  unsigned int ind[12] = {0, 1, 2, 2, 3, 0};
+  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, len);
 }
 
 void glgrib_string::update (const std::string & str)
@@ -259,27 +240,18 @@ void glgrib_string::update (const std::vector<std::string> & str)
     for (int j = 0; j < data[i].size (); j++)
       data[i][j] = ' ';
 
-  int len = 0;
-  for (int i = 0; i < data.size (); i++)
-    len += data[i].size ();
-
-  int np = 4 * len;
-
   glBindBuffer (GL_ARRAY_BUFFER, letterbuffer);
-  float * let = (float *)glMapBufferRange (GL_ARRAY_BUFFER, 0, 3 * np * sizeof (float), 
+  float * let = (float *)glMapBufferRange (GL_ARRAY_BUFFER, 0, len * sizeof (float), 
   	                                   GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
 
   for (int j = 0, ii = 0; j < data.size (); j++)
     for (int i = 0; i < data[j].size (); i++, ii++) 
       {
         int rank = font->map (data[j][i]);
-        let[12*ii+3*0+2] = rank; 
-        let[12*ii+3*1+2] = rank; 
-        let[12*ii+3*2+2] = rank; 
-        let[12*ii+3*3+2] = rank; 
+        let[ii] = rank; 
       }
 
-  glFlushMappedBufferRange (GL_ARRAY_BUFFER, 0, 3 * np * sizeof (float));
+  glFlushMappedBufferRange (GL_ARRAY_BUFFER, 0, len * sizeof (float));
   glUnmapBuffer (GL_ARRAY_BUFFER);
 }
 

@@ -751,8 +751,8 @@ R"CODE(
 #version 330 core
 
 in vec2 fragmentPos;
-in vec2 letterPos;
-in float letterRank;
+in vec2 fletterPos;
+in float fletterVal;
 
 out vec4 color;
 
@@ -771,11 +771,11 @@ void main ()
   float dx = scale * aspect;
   float dy = scale;
 
-  int ix = int (mod (letterRank, nx));
-  int iy = int (letterRank / nx);
+  int ix = int (mod (fletterVal, nx));
+  int iy = int (fletterVal / nx);
 
-  float tx = (fragmentPos.x - letterPos.x) / dx;
-  float ty = (fragmentPos.y - letterPos.y) / dy;
+  float tx = (fragmentPos.x - fletterPos.x) / dx;
+  float ty = (fragmentPos.y - fletterPos.y) / dy;
 
   tx = xoff[ix] + tx * (xoff[ix+1] - xoff[ix]);
   ty = yoff[iy] + ty * (yoff[iy+1] - yoff[iy]);
@@ -793,13 +793,13 @@ R"CODE(
 
 #version 330 core
 
-layout (location = 0) in vec2 vertexPos;
-layout (location = 1) in vec3 letterAtt;
-layout (location = 2) in vec3 letterXYZ;
+layout (location = 0) in vec4  letterPos;
+layout (location = 1) in float letterVal;
+layout (location = 2) in vec3  letterXYZ;
 
 out vec2 fragmentPos;
-out vec2 letterPos;
-out float letterRank;
+out vec2 fletterPos;
+out float fletterVal;
 
 uniform mat4 MVP;
 uniform bool l3d = false;
@@ -811,32 +811,48 @@ uniform bool l3d = false;
 
 void main()
 {
-  if (l3d)
-    {
-      vec3 vertexPOS = vec3 (letterXYZ.x, 
-                             letterXYZ.y + vertexPos.x,
-                             letterXYZ.z + vertexPos.y);
-      vec3 normedPOS = compNormedPos (vertexPOS);
-      vec3 pos = compProjedPos (vertexPOS, normedPOS);
-      pos = scalePosition (pos, normedPOS);
+  float xx = letterPos.x;
+  float yy = letterPos.y;
+  float dx = letterPos.z;
+  float dy = letterPos.w;
 
-      gl_Position =  MVP * vec4 (pos, 1.);
-    }
-  else if (l3d)
+  vec2 pos2;
+
+  if (gl_VertexID == 0)
+    pos2 = vec2 (xx     , yy     );
+  else if (gl_VertexID == 1)
+    pos2 = vec2 (xx + dx, yy     );
+  else if (gl_VertexID == 2)
+    pos2 = vec2 (xx + dx, yy + dy);
+  else if (gl_VertexID == 3)
+    pos2 = vec2 (xx     , yy + dy);
+
+  if (l3d && false)
     {
-      gl_Position =  MVP * vec4 (letterXYZ, 1.);
-      gl_Position.x = gl_Position.x + vertexPos.x * 10;
-      gl_Position.y = gl_Position.y + vertexPos.y * 10;
-      gl_Position.z = 0.0f;
-      gl_Position.w = 6.0f;
+//    vec3 vertexPOS = vec3 (letterXYZ.x, 
+//                           letterXYZ.y + vertexPos.x,
+//                           letterXYZ.z + vertexPos.y);
+//    vec3 normedPOS = compNormedPos (vertexPOS);
+//    vec3 pos = compProjedPos (vertexPOS, normedPOS);
+//    pos = scalePosition (pos, normedPOS);
+//
+//    gl_Position =  MVP * vec4 (pos, 1.);
+    }
+  else if (l3d && false)
+    {
+//    gl_Position =  MVP * vec4 (letterXYZ, 1.);
+//    gl_Position.x = gl_Position.x + vertexPos.x * 10;
+//    gl_Position.y = gl_Position.y + vertexPos.y * 10;
+//    gl_Position.z = 0.0f;
+//    gl_Position.w = 6.0f;
     }
   else
     {
-      gl_Position =  MVP * vec4 (         0., vertexPos.x, vertexPos.y, 1.);
+      gl_Position =  MVP * vec4 (0., pos2.x, pos2.y, 1.);
     }
-  fragmentPos = vec2 (vertexPos.x, vertexPos.y);
-  letterRank = letterAtt.z;
-  letterPos  = vec2 (letterAtt.x, letterAtt.y);
+  fragmentPos = pos2;
+  fletterVal  = letterVal;
+  fletterPos  = vec2 (xx, yy);
 }
 
 

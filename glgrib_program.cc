@@ -803,13 +803,14 @@ out float fletterVal;
 
 uniform mat4 MVP;
 uniform bool l3d = false;
+uniform float length;
 
 )CODE" 
 + projShaderInclude 
 + scalePositionInclude 
 + R"CODE(
 
-void main()
+void main ()
 {
   float xx = letterPos.x;
   float yy = letterPos.y;
@@ -827,26 +828,34 @@ void main()
   else if (gl_VertexID == 3)
     pos2 = vec2 (xx     , yy + dy);
 
-  if (l3d && false)
+  if (l3d) 
     {
-//    vec3 vertexPOS = vec3 (letterXYZ.x, 
-//                           letterXYZ.y + vertexPos.x,
-//                           letterXYZ.z + vertexPos.y);
-//    vec3 normedPOS = compNormedPos (vertexPOS);
-//    vec3 pos = compProjedPos (vertexPOS, normedPOS);
-//    pos = scalePosition (pos, normedPOS);
-//
-//    gl_Position =  MVP * vec4 (pos, 1.);
+      if (proj == XYZ)
+        {
+          vec3 pos = letterXYZ;
+          vec3 northPos  = vec3 (0., 0., 1.);
+          vec3 vx = normalize (cross (northPos, pos));
+          vec3 vy = normalize (cross (pos, vx));
+          pos = pos + 50 * length * (pos2.x * vx + pos2.y * vy);
+      
+          gl_Position =  MVP * vec4 (pos, 1.);
+        }
+      else 
+        {
+          vec3 vertexPos = letterXYZ;
+          vec3 normedPos = compNormedPos (vertexPos);
+          vec3 pos = compProjedPos (vertexPos, normedPos);
+          pos = scalePosition (pos, normedPos);
+     
+          gl_Position =  MVP * vec4 (pos, 1.);
+       
+          gl_Position.x = gl_Position.x + pos2.x * 10;
+          gl_Position.y = gl_Position.y + pos2.y * 10;
+          gl_Position.z = 0.0f;
+          gl_Position.w = 6.0f;
+        }
     }
-  else if (l3d && false)
-    {
-//    gl_Position =  MVP * vec4 (letterXYZ, 1.);
-//    gl_Position.x = gl_Position.x + vertexPos.x * 10;
-//    gl_Position.y = gl_Position.y + vertexPos.y * 10;
-//    gl_Position.z = 0.0f;
-//    gl_Position.w = 6.0f;
-    }
-  else
+  else 
     {
       gl_Position =  MVP * vec4 (0., pos2.x, pos2.y, 1.);
     }

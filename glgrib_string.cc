@@ -186,10 +186,14 @@ void glgrib_string::render (const glgrib_view & view) const
 
   glgrib_program * program = font->getProgram ();
   view.setMVP (program);
+
+  float length = view.pixel_to_dist_at_nadir (10);
+
   program->set1f ("scale", scale);
   program->set1i ("texture", 0);
-  program->set1i ("l3d", 1);
+  program->set1i ("l3d", 2);
   program->set3fv ("color0", color0);
+  program->set1f ("length", length);
   
 
   glBindVertexArray (VertexArrayID);

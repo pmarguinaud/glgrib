@@ -229,13 +229,13 @@ void glgrib_scene::init (const glgrib_options & o)
     {
       glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
 //    d.str.init (font, std::string (30, ' '), 1.0f, 1.0f, d.opts.font.scale, glgrib_string::NE);
-      d.str.init (font, std::vector<std::string>{"ABCD"},
-                  std::vector<float>{0.0f}, 
-                  std::vector<float>{0.0f}, 
+      d.str.init (font, std::vector<std::string>{"ABCD","EFGH","IJKL","MNOP"},
+                  std::vector<float>{0.0f,0.0f,0.0f,0.0f}, 
+                  std::vector<float>{0.0f,0.0f,0.0f,0.0f}, 
 		  d.opts.font.scale, glgrib_string::C,
-		  std::vector<float>{1.1f},
-		  std::vector<float>{0.0f},
-		  std::vector<float>{0.0f}
+		  std::vector<float>{+1.1f,-1.1f,+0.0f,+0.707f*1.1f},
+		  std::vector<float>{+0.0f,+0.0f,+1.1f,+0.000f*1.1f},
+		  std::vector<float>{+0.0f,+0.0f,+0.0f,+0.707f*1.1f}
 		  );
       d.str.setColor (d.opts.font.color.r / 255.0f, 
 		      d.opts.font.color.g / 255.0f, 

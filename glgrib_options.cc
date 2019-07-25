@@ -4,6 +4,29 @@
 #include <map>
 
 
+void glgrib_option_color::parse (int * count, glgrib_option_color * value, const char * v)
+{
+  if ((*count == 0) && (v[0] == '#') && (strlen (v) == 7))
+    {
+      *value = color_by_hexa (v);
+    }
+  else if ((*count == 0) && (! isdigit (v[0])))
+    {
+      *value = color_by_name (v);
+    }
+  else
+    {
+      int c = std::stoi (v);
+      switch (*count)
+        {
+          case 0: value->r = c; break;
+          case 1: value->g = c; break;
+          case 2: value->b = c; break;
+        }
+      (*count)++;
+    }
+}
+
 glgrib_option_color glgrib_option_color::color_by_hexa (const char * name)
 {
   glgrib_option_color color;

@@ -15,6 +15,7 @@ class glgrib_option_color
 public:
   static glgrib_option_color color_by_name (const char *);
   static glgrib_option_color color_by_hexa (const char *);
+  static void parse (int *, glgrib_option_color *, const char *);
 
   glgrib_option_color () {}
   glgrib_option_color (int _r, int _g, int _b) : r (_r), g (_g), b (_b) {}
@@ -184,25 +185,7 @@ private:
       {   
         try 
           {
-            if ((count == 0) && (v[0] == '#') && (strlen (v) == 7))
-              {
-                *value = glgrib_option_color::color_by_hexa (v);
-              }
-            else if ((count == 0) && (! isdigit (v[0])))
-              {
-                *value = glgrib_option_color::color_by_name (v);
-              }
-            else
-              {
-                int c = std::stoi (v);
-                switch (count)
-                  {
-                    case 0: value->r = c; break;
-                    case 1: value->g = c; break;
-                    case 2: value->b = c; break;
-                  }
-                count++;
-              }
+            glgrib_option_color::parse (&count, value, v);
           }
         catch (...)
           {
@@ -237,17 +220,12 @@ private:
       { 
         try 
           {
-            int c = std::stoi (v);
             if (count == 0)
               value->push_back (glgrib_option_color ());
             int last = value->size () - 1;
-            switch (count)
-              {
-                case 0: (*value)[last].r = c; break;
-                case 1: (*value)[last].g = c; break;
-                case 2: (*value)[last].b = c; break;
-              }
-            count++;
+
+            glgrib_option_color::parse (&count, &(*value)[last], v);
+            
             count = count % 3;
           }
         catch (...)

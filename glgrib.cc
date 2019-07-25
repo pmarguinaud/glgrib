@@ -12,11 +12,20 @@
 
 #include <iostream>
 
+
+static void error_callback (int c, const char * desc)
+{
+  fprintf (stderr, "Error: %4d | %s\n", c, desc);
+  abort ();
+}
+
 int main (int argc, char * argv[])
 {
   glgrib_options opts;
   if (! opts.parse (argc, argv))
     return 0;
+
+  glfwSetErrorCallback (error_callback);
 
   if (! glfwInit ())
     {

@@ -523,6 +523,8 @@ public:
     APPLY (statistics,         Issue statistics when window is closed);
     APPLY (title,              Window title);
     APPLY (debug,              Enable OpenGL debugging);
+    APPLY (version_major,      GLFW_CONTEXT_VERSION_MAJOR);
+    APPLY (version_minor,      GLFW_CONTEXT_VERSION_MINOR);
   }
   int     width  = 800;
   int     height  = 800;
@@ -531,6 +533,8 @@ public:
   bool    statistics  = false;
   string  title  = "";
   bool    debug  = false;
+  int     version_major = 4;
+  int     version_minor = 3;
 };
 
 class glgrib_options_light : public glgrib_options_base

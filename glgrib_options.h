@@ -8,10 +8,14 @@
 #include <sstream>
 #include <stdexcept>
 #include <algorithm>
+#include <string.h>
 
 class glgrib_option_color
 {
 public:
+  static glgrib_option_color color_by_name (const char *);
+  static glgrib_option_color color_by_hexa (const char *);
+
   glgrib_option_color () {}
   glgrib_option_color (int _r, int _g, int _b) : r (_r), g (_g), b (_b) {}
   int r = 255, g = 255, b = 255;
@@ -180,18 +184,29 @@ private:
       {   
         try 
           {
-            int c = std::stoi (v);
-            switch (count)
+            if ((count == 0) && (v[0] == '#') && (strlen (v) == 7))
               {
-                case 0: value->r = c; break;
-                case 1: value->g = c; break;
-                case 2: value->b = c; break;
+                *value = glgrib_option_color::color_by_hexa (v);
               }
-            count++;
+            else if ((count == 0) && (! isdigit (v[0])))
+              {
+                *value = glgrib_option_color::color_by_name (v);
+              }
+            else
+              {
+                int c = std::stoi (v);
+                switch (count)
+                  {
+                    case 0: value->r = c; break;
+                    case 1: value->g = c; break;
+                    case 2: value->b = c; break;
+                  }
+                count++;
+              }
           }
         catch (...)
           {
-            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values"));
+            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values or color names, or hexadecimal codes"));
           }
       }   
     glgrib_option_color * value;

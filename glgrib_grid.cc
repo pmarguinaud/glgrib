@@ -126,7 +126,7 @@ void glgrib_grid::render (const glgrib_view & view, const glgrib_options_light &
 {
   glgrib_program * program = glgrib_program_load (glgrib_program::MONO);
   program->use ();
-  float color[3] = {(float)opts.color.r, (float)opts.color.g, (float)opts.color.b};
+  float color[3] = {(float)opts.color.r / 255.0f, (float)opts.color.g / 255.0f, (float)opts.color.b / 255.0f};
 
   view.setMVP (program);
   program->set3fv ("color0", color);

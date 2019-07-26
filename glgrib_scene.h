@@ -58,6 +58,10 @@ public:
   void unsetLight () { d.light.on = false; }
   bool hasLight () const { return d.light.on; }
   void update ();
+  void update_light ();
+  void update_movie ();
+  void update_view ();
+
   void toggleMovie () { d.movie = ! d.movie; d.movie_index = 0; }
   void setMovie () { d.movie = true; d.movie_index = 0; }
   void setCurrentFieldRank (int r) { d.currentFieldRank = r; }

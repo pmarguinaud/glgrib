@@ -81,15 +81,13 @@ static double current_time ()
   return tv.tv_sec + (double)tv.tv_usec / 1000000.0;
 }
 
-void glgrib_scene::update ()
+void glgrib_scene::update_light ()
 {
-  double t = current_time ();
-  if (d.rotate_earth)
-    d.view.opts.lon += 1.;
   if (d.light.rotate)
     d.light.lon -= 1.;
 
   const glgrib_option_date * date = NULL;
+
   if (d.light.date_from_grib)
     {
       for (int i = 0; i < fieldlist.size (); i++)
@@ -105,8 +103,26 @@ void glgrib_scene::update ()
     {
       date = &d.light.date;
     }
-    
 
+  if (date != NULL)
+    {
+      const int nday[12] = {31, 28, 31, 30, 31, 30, 
+                            31, 31, 30, 31, 30, 31};
+      const float dtrop = 23.0f + 26.0f / 60.0f;  // Tropics
+      const float eday  = 31 + 28 + 20;           // 20th of March, equinox
+      float cday = date->day-1;
+      float time = (date->hour * 60.0f + date->minute) * 60.0f + date->second;
+      for (int m = 0; m < date->month-1; m++)
+        cday += nday[m];
+      d.light.lat = dtrop * sin (2.0f * M_PI * (cday - eday) / 365.0f);
+      d.light.lon = 360.0f * ((12.0f * 3600.0f - time) / (24.0f * 3600.0f));
+    }
+}
+
+void glgrib_scene::update_view ()
+{
+  if (d.rotate_earth)
+    d.view.opts.lon += 1.;
   if (d.opts.scene.travelling.on)
     {
       float frames = d.opts.scene.travelling.frames;
@@ -141,25 +157,11 @@ void glgrib_scene::update ()
         }
 
     }
-  d.nupdate++;
+}
 
-
-
-  if (date != NULL)
-    {
-      const int nday[12] = {31, 28, 31, 30, 31, 30, 
-                            31, 31, 30, 31, 30, 31};
-      const float dtrop = 23.0f + 26.0f / 60.0f;  // Tropics
-      const float eday  = 31 + 28 + 20;           // 20th of March, equinox
-      float cday = date->day-1;
-      float time = (date->hour * 60.0f + date->minute) * 60.0f + date->second;
-      for (int m = 0; m < date->month-1; m++)
-        cday += nday[m];
-      d.light.lat = dtrop * sin (2.0f * M_PI * (cday - eday) / 365.0f);
-      d.light.lon = 360.0f * ((12.0f * 3600.0f - time) / (24.0f * 3600.0f));
-    }
-
-
+void glgrib_scene::update_movie ()
+{
+  double t = current_time ();
   if (d.movie && ((t - d.movie_time) > d.opts.scene.movie_wait))
     {
       bool advance = false;
@@ -186,6 +188,17 @@ void glgrib_scene::update ()
 
       d.movie_time = t;
     }
+}
+
+void glgrib_scene::update ()
+{
+
+  update_view ();
+  update_light ();
+  update_movie ();
+
+  d.nupdate++;
+
 }
 
 void glgrib_scene::init (const glgrib_options & o)

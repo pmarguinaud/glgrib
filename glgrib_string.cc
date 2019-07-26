@@ -36,10 +36,30 @@ glgrib_string::~glgrib_string ()
   cleanup ();
 }
 
-void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
-                          float x, float y, float s, align_t align)
+void glgrib_string::init3D (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
+	                    const std::vector<float> & _X, const std::vector<float> & _Y,
+	                    const std::vector<float> & _Z, const std::vector<float> & _A,
+	                    float s, align_t _align)
+{
+  std::vector<float> _x, _y;
+  for (int i = 0; i < str.size (); i++)
+    {
+      _x.push_back (0.0f);
+      _y.push_back (0.0f);
+    }
+  init (ff, str, _x, _y, s, _align, _X, _Y, _Z, _A);
+}
+
+void glgrib_string::init2D (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
+                            float x, float y, float s, align_t align)
 {
   init (ff, str, std::vector<float>{x}, std::vector<float>{y}, s, align);
+}
+
+void glgrib_string::init2D (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
+                            const std::vector<float> & x, const std::vector<float> & y, float s, align_t align)
+{
+  init (ff, str, x, y, s, align);
 }
 
 void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
@@ -170,8 +190,8 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
 }
 
 
-void glgrib_string::init (const_glgrib_font_ptr ff, const std::string & str, 
-                          float x, float y, float s, align_t align)
+void glgrib_string::init2D (const_glgrib_font_ptr ff, const std::string & str, 
+                            float x, float y, float s, align_t align)
 {
   std::vector<std::string> _str = {str};
   std::vector<float>       _x   = {x};

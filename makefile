@@ -171,6 +171,11 @@ test_dashed3: ./glgrib.x
 test_travelling: ./glgrib.x
 	$(GDB) ./glgrib.x --scene.travelling.on --scene.travelling.pos1.lon 0 --scene.travelling.pos1.lat 0 --scene.travelling.pos1.fov 30 --scene.travelling.pos2.lon 90 --scene.travelling.pos2.lat 45 --scene.travelling.pos2.fov 10 --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 --grid.resolution 0 --coastlines.path ''
 
+test_strxyz: ./glgrib.x
+	$(GDB) ./glgrib.x --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 0.99 --grid.resolution 0 \
+		--coastlines.path '' --colorbar.on --colorbar.font.color 0 255 --window.width 1000 --font.color 0 255 0 \
+		--scene.projection XYZ --scene.test_strxyz
+
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane
 
 

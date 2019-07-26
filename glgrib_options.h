@@ -595,6 +595,7 @@ public:
     APPLY (transformation,      Perspective or orthographic);
     TRAVERSE (light);
     TRAVERSE (travelling);
+    APPLY (test_strxyz,         Test XYZ string);
   }
   bool    rotate_earth  = false;
   bool    movie  = false;
@@ -603,6 +604,7 @@ public:
   string  transformation  = "PERSPECTIVE";
   glgrib_options_light light;  
   glgrib_options_travelling travelling;
+  bool    test_strxyz = false;
 };
 
 class glgrib_options_camera : public glgrib_options_base

@@ -65,7 +65,10 @@ void glgrib_scene::display () const
                        fld->getNormedMinValue (), 
                        fld->getNormedMaxValue ());
 
-  d.str.render (d.view);
+  d.str.render (d.MVP_R);
+
+  if (d.opts.scene.test_strxyz)
+    d.strxyz.render (d.view);
 
 
 }
@@ -228,20 +231,24 @@ void glgrib_scene::init (const glgrib_options & o)
   if (d.opts.colorbar.on)
     {
       glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
-//    d.str.init (font, std::string (30, ' '), 1.0f, 1.0f, d.opts.font.scale, glgrib_string::NE);
-      d.str.init (font, std::vector<std::string>{"ABCD","EFGH","IJKL","MNOP"},
-                  std::vector<float>{0.0f,0.0f,0.0f,0.0f}, 
-                  std::vector<float>{0.0f,0.0f,0.0f,0.0f}, 
-		  d.opts.font.scale, glgrib_string::C,
-		  std::vector<float>{+1.01f,-1.01f,+0.00f,+0.707*1.010f},
-		  std::vector<float>{+0.00f,+0.00f,+1.01f,+0.707*0.000f},
-		  std::vector<float>{+0.00f,+0.00f,+0.00f,+0.707*1.010f},
-		  std::vector<float>{+0.0f,+0.0f,+90.0f,+0.0f}
-		  );
+      d.str.init2D (font, std::string (30, ' '), 1.0f, 1.0f, d.opts.font.scale, glgrib_string::NE);
       d.str.setColor (d.opts.font.color.r / 255.0f, 
 		      d.opts.font.color.g / 255.0f, 
 		      d.opts.font.color.b / 255.0f);
       d.colorbar.init (d.opts.colorbar);
+    }
+  if (d.opts.scene.test_strxyz)
+    {
+      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
+      d.strxyz.init3D (font, std::vector<std::string>{"ABCD","EFGH","IJKL","MNOP"},
+                       std::vector<float>{+1.01f,-1.01f,+0.00f,+0.707*1.010f},
+                       std::vector<float>{+0.00f,+0.00f,+1.01f,+0.707*0.000f},
+                       std::vector<float>{+0.00f,+0.00f,+0.00f,+0.707*1.010f},
+                       std::vector<float>{+0.0f,+0.0f,+90.0f,+0.0f},
+                       d.opts.font.scale, glgrib_string::C);
+      d.strxyz.setColor (d.opts.font.color.r / 255.0f, 
+		         d.opts.font.color.g / 255.0f, 
+		         d.opts.font.color.b / 255.0f);
     }
 
 }

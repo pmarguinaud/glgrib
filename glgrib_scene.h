@@ -83,6 +83,7 @@ public:
     private:
       glgrib_colorbar colorbar;
       glgrib_string str;
+      glgrib_string strxyz;
       bool movie = false;
       int movie_index = 0;
       int nupdate = 0;

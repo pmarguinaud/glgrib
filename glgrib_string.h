@@ -27,15 +27,23 @@ public:
     }
   align_t;
   glgrib_string & operator= (const glgrib_string &);
-  void init (const_glgrib_font_ptr, const std::string &, float, 
-             float, float = 1.0f, align_t = SW);
+  void init2D (const_glgrib_font_ptr, const std::string &, float, 
+               float, float = 1.0f, align_t = SW);
+  void init2D (const_glgrib_font_ptr, const std::vector<std::string> &, 
+	       const std::vector<float> & = std::vector<float>{}, 
+	       const std::vector<float> & = std::vector<float>{}, 
+	       float = 1.0f, align_t = SW);
+  void init3D (const_glgrib_font_ptr, const std::vector<std::string> &, 
+	       const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
+	       const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
+	       float = 1.0f, align_t = SW);
   void init (const_glgrib_font_ptr, const std::vector<std::string> &, 
              const std::vector<float> &, const std::vector<float> &, 
 	     float = 1.0f, align_t = SW,
 	     const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
 	     const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{});
-  void init (const_glgrib_font_ptr, const std::vector<std::string> &, float, 
-             float, float = 1.0f, align_t = SW);
+  void init2D (const_glgrib_font_ptr, const std::vector<std::string> &, float, 
+               float, float = 1.0f, align_t = SW);
   void render (const glm::mat4 &) const;
   void render (const glgrib_view &) const;
   void setColor (float r, float g, float b) { color0[0] = r; color0[1] = g; color0[2] = b; }

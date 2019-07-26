@@ -630,8 +630,8 @@ void glgrib_geometry_gaussian::applyNormScale (float * data) const
     {
       float coordy = M_PI * (0.5 - (float)(jlat + 1) / (float)(Nj + 1));
       float sincoordy = sin (coordy);
-      float N = sqrt ((opc2 + sincoordy * omc2) * (opc2 + sincoordy * omc2) 
-                    / (opc2 * opc2 - omc2 * omc2));
+      float N = 1.0f / sqrt ((opc2 + sincoordy * omc2) * (opc2 + sincoordy * omc2) 
+                           / (opc2 * opc2 - omc2 * omc2));
       for (int jlon = 0; jlon < pl[jlat]; jlon++)
         {
           int jglo = jglooff[jlat] + jlon;

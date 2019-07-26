@@ -268,7 +268,7 @@ void glgrib_window::load_field (const glgrib_options_field & opts, int rank)
   makeCurrent ();
 
   glgrib_field * f = new glgrib_field_scalar ();
-  f->init (opts);
+  f->init (&scene.ld, opts);
 
   if (rank > scene.fieldlist.size () - 1)
     scene.fieldlist.push_back (f);

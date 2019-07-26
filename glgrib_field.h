@@ -7,6 +7,7 @@
 #include "glgrib_palette.h"
 #include "glgrib_field_metadata.h"
 #include "glgrib_field_float_buffer.h"
+#include "glgrib_loader.h"
 
 #include <string>
 #include <vector>
@@ -25,7 +26,7 @@ class glgrib_field : public glgrib_world
 {
 public:
   virtual glgrib_field * clone () const  = 0;
-  virtual void init (const glgrib_options_field &, float = 0) = 0;
+  virtual void init (glgrib_loader *, const glgrib_options_field &, float = 0) = 0;
   virtual bool use_alpha () { return false; }
   void setPalette (const std::string & p) { dopts.palette = get_palette_by_name (p); }
   virtual ~glgrib_field () {}

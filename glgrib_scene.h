@@ -14,6 +14,7 @@
 #include "glgrib_field.h"
 #include "glgrib_coastlines.h"
 #include "glgrib_colorbar.h"
+#include "glgrib_loader.h"
 
 #include <set>
 
@@ -93,6 +94,8 @@ public:
   };
 
   _data d;
+
+  glgrib_loader ld;
 
 
 };

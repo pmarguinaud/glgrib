@@ -1,5 +1,4 @@
 #include "glgrib_field_scalar.h"
-#include "glgrib_load.h"
 #include "glgrib_program.h"
 #include "glgrib_palette.h"
 
@@ -60,14 +59,14 @@ void glgrib_field_scalar::setupVertexAttributes ()
   glBindVertexArray (0); 
 }
 
-void glgrib_field_scalar::init (const glgrib_options_field & o, float slot)
+void glgrib_field_scalar::init (glgrib_loader * ld, const glgrib_options_field & o, float slot)
 {
   opts = o;
 
   unsigned char * col;
 
   glgrib_field_metadata meta1;
-  glgrib_field_float_buffer_ptr data = glgrib_load (opts.path, slot, &meta1);
+  glgrib_field_float_buffer_ptr data = ld->load (opts.path, slot, &meta1);
   meta.push_back (meta1);
 
   dopts.scale = opts.scale;

@@ -1,5 +1,4 @@
 #include "glgrib_field_vector.h"
-#include "glgrib_load.h"
 #include "glgrib_program.h"
 #include "glgrib_palette.h"
 
@@ -105,15 +104,15 @@ void glgrib_field_vector::setupVertexAttributes ()
 
 }
 
-void glgrib_field_vector::init (const glgrib_options_field & o, float slot)
+void glgrib_field_vector::init (glgrib_loader * ld, const glgrib_options_field & o, float slot)
 {
   opts = o;
 
   glgrib_field_metadata meta_u, meta_v;
   glgrib_field_metadata meta_n, meta_d;
 
-  glgrib_field_float_buffer_ptr data_u = glgrib_load (opts.path, slot, &meta_u, 2, 0);
-  glgrib_field_float_buffer_ptr data_v = glgrib_load (opts.path, slot, &meta_v, 2, 1);
+  glgrib_field_float_buffer_ptr data_u = ld->load (opts.path, slot, &meta_u, 2, 0);
+  glgrib_field_float_buffer_ptr data_v = ld->load (opts.path, slot, &meta_v, 2, 1);
 
   dopts.scale = opts.scale;
 

@@ -191,7 +191,7 @@ void glgrib_scene::update_interpolation ()
               else
                 fld = new glgrib_field_scalar ();
 
-              fld->init (d.opts.field[i], slot);
+              fld->init (&ld, d.opts.field[i], slot);
 	      fieldlist[i] = fld;
 	    }
 	}
@@ -212,6 +212,21 @@ void glgrib_scene::update ()
 void glgrib_scene::init (const glgrib_options & o)
 {
   d.opts = o;
+
+  if (d.opts.scene.interpolation.on)
+    {
+      int size = 0;
+      for (int i = 0; i < d.opts.field.size (); i++)
+        {
+          if (d.opts.field[i].vector.on)
+            size += 4;
+          else if (d.opts.field[i].contour.on)
+            size += 2;
+          else
+            size += 2;
+	}
+      ld.setSize (size);
+    }
 
   if (d.opts.landscape.path != "")
     d.landscape.init (d.opts.landscape);
@@ -239,7 +254,7 @@ void glgrib_scene::init (const glgrib_options & o)
             fld = new glgrib_field_contour ();
           else
             fld = new glgrib_field_scalar ();
-          fld->init (d.opts.field[i]);
+          fld->init (&ld, d.opts.field[i]);
         }
 
       fieldlist.push_back (fld);

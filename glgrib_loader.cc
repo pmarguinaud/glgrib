@@ -1,4 +1,4 @@
-#include "glgrib_load.h"
+#include "glgrib_loader.h"
 #include "glgrib_geometry.h"
 
 #include <stdio.h>
@@ -11,13 +11,13 @@
 #include <time.h>
 
 
-glgrib_field_float_buffer_ptr glgrib_load (const std::vector<std::string> & file, float fslot, 
-                                           glgrib_field_metadata * meta, int mult, int base)
+glgrib_field_float_buffer_ptr glgrib_loader::load (const std::vector<std::string> & file, float fslot, 
+                                                   glgrib_field_metadata * meta, int mult, int base)
 {
   int islot = (int)fslot;
 
   if (fslot == (float)islot)
-    return glgrib_load (file[mult*islot+base], meta);
+    return load (file[mult*islot+base], meta);
 
   float alpha = 1.0f  - (fslot - (float)islot);
 
@@ -35,8 +35,8 @@ glgrib_field_float_buffer_ptr glgrib_load (const std::vector<std::string> & file
 
   glgrib_field_metadata meta1, meta2;
 
-  glgrib_field_float_buffer_ptr val1 = glgrib_load (file1, &meta1);
-  glgrib_field_float_buffer_ptr val2 = glgrib_load (file2, &meta2);
+  glgrib_field_float_buffer_ptr val1 = load (file1, &meta1);
+  glgrib_field_float_buffer_ptr val2 = load (file2, &meta2);
 
   int size = geom1->size ();
   for (int i = 0; i < size; i++)
@@ -49,14 +49,28 @@ glgrib_field_float_buffer_ptr glgrib_load (const std::vector<std::string> & file
   return val1;
 }
 
-glgrib_field_float_buffer_ptr glgrib_load (const std::string & file, glgrib_field_metadata * meta)
+glgrib_field_float_buffer_ptr glgrib_loader::load (const std::string & file, glgrib_field_metadata * meta)
 {
+
+  // Search cache
+  for (std::list<entry>::iterator it = cache.begin (); it != cache.end (); it++)
+    {
+      if (it->file == file)
+        {
+	  entry e = *it;
+	  cache.erase (it);
+          glgrib_field_float_buffer_ptr data = e.data;
+	  *meta = e.meta;
+	  cache.push_front (e);
+          return data;
+	}
+    }
+
+
   FILE * in = fopen (file.c_str (), "r");
 
   if (in == NULL)
-    {
-      throw std::runtime_error (std::string ("Cannot open ") + file + ": " + strerror (errno));
-    }
+    throw std::runtime_error (std::string ("Cannot open ") + file + ": " + strerror (errno));
 
   int err = 0;
   codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
@@ -170,6 +184,20 @@ glgrib_field_float_buffer_ptr glgrib_load (const std::string & file, glgrib_fiel
    << " " << meta->term.second
    << " " << std::endl;
 
+
+  if (this->size > 0)
+    {
+      entry e;
+      e.file = file;
+      e.data = val;
+      e.meta = *meta;
+     
+      cache.push_front (e);
+     
+      // Reduce cache size
+      while (cache.size () > this->size)
+        cache.pop_back ();
+    }
 
   return val;
 }

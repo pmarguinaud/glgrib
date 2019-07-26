@@ -10,7 +10,7 @@ public:
   glgrib_field_contour & operator= (const glgrib_field_contour &);
   glgrib_field_contour () { }
   glgrib_field_contour (const glgrib_field_contour &);
-  virtual void init (const glgrib_options_field &, float = 0);
+  virtual void init (glgrib_loader *, const glgrib_options_field &, float = 0);
   virtual void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual ~glgrib_field_contour ();
   void setupVertexAttributes ();

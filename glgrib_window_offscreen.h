@@ -8,7 +8,7 @@ class glgrib_window_offscreen : public glgrib_window
 public:
   glgrib_window_offscreen (const glgrib_options & opts)
   {
-    frames = opts.window.offscreen_frames;
+    frames = opts.window.offscreen.frames;
     glgrib_window::create (opts);
   }
   virtual void run (class glgrib_shell * shell = NULL);

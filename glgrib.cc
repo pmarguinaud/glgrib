@@ -37,7 +37,7 @@ int main (int argc, char * argv[])
 
   glgrib_window * gwindow;
 
-  if (opts.window.offscreen)
+  if (opts.window.offscreen.on)
     gwindow = new glgrib_window_offscreen (opts);
   else
     gwindow = new glgrib_window (opts);

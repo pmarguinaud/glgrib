@@ -110,7 +110,6 @@ void glgrib_field_vector::init (const glgrib_options_field & o, float slot)
   opts = o;
 
   glgrib_field_metadata meta_u, meta_v;
-  float * data_n, * data_d;
   glgrib_field_metadata meta_n, meta_d;
 
   glgrib_field_float_buffer_ptr data_u = glgrib_load (opts.path, slot, &meta_u, 2, 0);
@@ -125,8 +124,8 @@ void glgrib_field_vector::init (const glgrib_options_field & o, float slot)
 
   geometry = glgrib_geometry_load (opts.path[0]);
 
-  data_n = (float *)malloc (geometry->numberOfPoints * sizeof (float));
-  data_d = (float *)malloc (geometry->numberOfPoints * sizeof (float));
+  glgrib_field_float_buffer_ptr data_n = new_glgrib_field_float_buffer_ptr (geometry->numberOfPoints);
+  glgrib_field_float_buffer_ptr data_d = new_glgrib_field_float_buffer_ptr (geometry->numberOfPoints);
 
   const double rad2deg = 180.0 / M_PI;
 
@@ -142,31 +141,31 @@ void glgrib_field_vector::init (const glgrib_options_field & o, float slot)
   for (int i = 0; i < geometry->numberOfPoints; i++)
     if ((*data_u)[i] == meta_u.valmis)
       {
-        data_n[i] = meta_u.valmis;
-        data_d[i] = meta_u.valmis;
+        (*data_n)[i] = meta_u.valmis;
+        (*data_d)[i] = meta_u.valmis;
       }
     else if ((*data_v)[i] != meta_u.valmis)
       {
-        data_n[i] = sqrt ((*data_u)[i] * (*data_u)[i] + (*data_v)[i] * (*data_v)[i]);
-        data_d[i] = rad2deg * atan2 ((*data_v)[i], (*data_u)[i]);
+        (*data_n)[i] = sqrt ((*data_u)[i] * (*data_u)[i] + (*data_v)[i] * (*data_v)[i]);
+        (*data_d)[i] = rad2deg * atan2 ((*data_v)[i], (*data_u)[i]);
       }
     else
       throw std::runtime_error ("Inconsistent domain definition for U/V");
 
   
-  geometry->applyNormScale (data_n);
+  geometry->applyNormScale (data_n->data ());
 
   for (int i = 0; i < geometry->numberOfPoints; i++)
     if ((*data_u)[i] != meta_u.valmis)
       {
-        if (data_n[i] < meta_n.valmin)
-          meta_n.valmin = data_n[i];
-        if (data_n[i] > meta_n.valmax)
-          meta_n.valmax = data_n[i];
+        if ((*data_n)[i] < meta_n.valmin)
+          meta_n.valmin = (*data_n)[i];
+        if ((*data_n)[i] > meta_n.valmax)
+          meta_n.valmax = (*data_n)[i];
       }
     else
       {
-        data_n[i] = meta_u.valmis;
+        (*data_n)[i] = meta_u.valmis;
       }
 
   numberOfColors = 1;
@@ -176,14 +175,13 @@ void glgrib_field_vector::init (const glgrib_options_field & o, float slot)
   unsigned char * col_d = (unsigned char *)malloc (numberOfColors 
                         * geometry->numberOfPoints * sizeof (unsigned char));
 
-
-  geometry->applyUVangle (data_d);
+  geometry->applyUVangle (data_d->data ());
 
   for (int i = 0; i < geometry->numberOfPoints; i++)
     {
-      col_n[i] = 1 + (int)(254 * (data_n[i] - meta_n.valmin)
+      col_n[i] = 1 + (int)(254 * ((*data_n)[i] - meta_n.valmin)
                    / (meta_n.valmax - meta_n.valmin));
-      col_d[i] = 1 + (int)(254 * (data_d[i] - meta_d.valmin)
+      col_d[i] = 1 + (int)(254 * ((*data_d)[i] - meta_d.valmin)
                    / (meta_d.valmax - meta_d.valmin));
     }
 
@@ -212,13 +210,11 @@ void glgrib_field_vector::init (const glgrib_options_field & o, float slot)
     {
       values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
       values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
-      free (data_n);
-      free (data_d);
     }
   else
     {
-      values.push_back (new_glgrib_field_float_buffer_ptr (data_n));
-      values.push_back (new_glgrib_field_float_buffer_ptr (data_d));
+      values.push_back (data_n);
+      values.push_back (data_d);
     }
 
   d.vscale = opts.vector.scale * (M_PI / npts) / (meta_n.valmax || 1.0f);

@@ -19,7 +19,7 @@ glgrib_field_float_buffer_ptr glgrib_load (const std::vector<std::string> & file
   if (fslot == (float)islot)
     return glgrib_load (file[mult*islot+base], meta);
 
-  float alpha = fslot - (float)islot;
+  float alpha = 1.0f  - (fslot - (float)islot);
 
   const std::string file1 = file[mult*(islot+0)+base];
   const std::string file2 = file[mult*(islot+1)+base];
@@ -44,7 +44,7 @@ glgrib_field_float_buffer_ptr glgrib_load (const std::vector<std::string> & file
 
   *meta = meta1;
 
-  meta->term = glgrib_option_date::interpolate (meta1.term, meta2.term, fslot - alpha);
+  meta->term = glgrib_option_date::interpolate (meta1.term, meta2.term, alpha);
 
   return val1;
 }

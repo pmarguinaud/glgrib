@@ -73,14 +73,6 @@ void glgrib_scene::display () const
 
 }
 
-static double current_time ()
-{
-  struct timeval tv; 
-  struct timezone tz;
-  gettimeofday (&tv, &tz);
-  return tv.tv_sec + (double)tv.tv_usec / 1000000.0;
-}
-
 void glgrib_scene::update_light ()
 {
   if (d.light.rotate)
@@ -159,34 +151,50 @@ void glgrib_scene::update_view ()
     }
 }
 
-void glgrib_scene::update_movie ()
+void glgrib_scene::update_interpolation ()
 {
-  double t = current_time ();
-  if (d.movie && ((t - d.movie_time) > d.opts.scene.movie_wait))
+  if (d.opts.scene.interpolation.on)
     {
-      bool advance = false;
+      int slotmax = 0;
 
       for (int i = 0; i < fieldlist.size (); i++)
         {
-          glgrib_field * fld = NULL;
-          bool defined = d.opts.field[i].path.size () != 0;
-	  if (defined)
+	  if (fieldlist[i] != NULL)
             {
-	      int size = d.opts.field[i].path.size ();
-	      advance = d.movie_index < size;
-	      int slot = advance ? d.movie_index : size-1;
-              fld = new glgrib_field_scalar ();
+              if (d.opts.field[i].vector.on)
+                slotmax = std::max (slotmax, (int)d.opts.field[i].path.size () / 2);
+              else if (d.opts.field[i].contour.on)
+                slotmax = std::max (slotmax, (int)d.opts.field[i].path.size ());
+              else
+                slotmax = std::max (slotmax, (int)d.opts.field[i].path.size ());
+	    }
+	}
+      slotmax--;
+
+      float slot = (float)d.nupdate / (float)d.opts.scene.interpolation.frames;
+      if (slot > slotmax)
+        slot = slotmax;
+
+      for (int i = 0; i < fieldlist.size (); i++)
+        {
+	  if (fieldlist[i] != NULL)
+            {
+              delete fieldlist[i];
+	      fieldlist[i] = NULL;
+
+              glgrib_field * fld = NULL;
+
+              if (d.opts.field[i].vector.on)
+                fld = new glgrib_field_vector ();
+              else if (d.opts.field[i].contour.on)
+                fld = new glgrib_field_contour ();
+              else
+                fld = new glgrib_field_scalar ();
+
               fld->init (d.opts.field[i], slot);
 	      fieldlist[i] = fld;
 	    }
 	}
-
-      if (advance)
-        d.movie_index++;
-      else
-        d.movie_index = 0;
-
-      d.movie_time = t;
     }
 }
 
@@ -195,7 +203,7 @@ void glgrib_scene::update ()
 
   update_view ();
   update_light ();
-  update_movie ();
+  update_interpolation ();
 
   d.nupdate++;
 

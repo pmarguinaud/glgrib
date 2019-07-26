@@ -584,28 +584,38 @@ public:
   glgrib_options_position pos2;
 };
 
+class glgrib_options_interpolation : public glgrib_options_base
+{
+public:
+  TRAVERSE_DEF
+  {
+    APPLY (on,             Enable interpolation);
+    APPLY (frames,         Number of frames);
+  }
+  bool on = false;
+  int frames = 10;
+};
+
 class glgrib_options_scene : public glgrib_options_base
 {
 public:
   TRAVERSE_DEF
   {
-    APPLY (movie,               Movie);
-    APPLY (movie_wait,          Wait between movie frames);
     APPLY (rotate_earth,        Make earth rotate);
     APPLY (projection,          Mercator XYZ latlon polar_north polar_south);
     APPLY (transformation,      Perspective or orthographic);
     TRAVERSE (light);
     TRAVERSE (travelling);
     APPLY (test_strxyz,         Test XYZ string);
+    TRAVERSE (interpolation);
   }
   bool    rotate_earth  = false;
-  bool    movie  = false;
-  float   movie_wait  = 1.0f;
   string  projection  = "XYZ";
   string  transformation  = "PERSPECTIVE";
   glgrib_options_light light;  
   glgrib_options_travelling travelling;
   bool    test_strxyz = false;
+  glgrib_options_interpolation interpolation;
 };
 
 class glgrib_options_camera : public glgrib_options_base

@@ -59,11 +59,9 @@ public:
   bool hasLight () const { return d.light.on; }
   void update ();
   void update_light ();
-  void update_movie ();
+  void update_interpolation ();
   void update_view ();
 
-  void toggleMovie () { d.movie = ! d.movie; d.movie_index = 0; }
-  void setMovie () { d.movie = true; d.movie_index = 0; }
   void setCurrentFieldRank (int r) { d.currentFieldRank = r; }
 
   void setViewport (int, int);
@@ -88,10 +86,7 @@ public:
       glgrib_colorbar colorbar;
       glgrib_string str;
       glgrib_string strxyz;
-      bool movie = false;
-      int movie_index = 0;
       int nupdate = 0;
-      double movie_time = 0;
       int currentFieldRank = 0;
       glm::mat4 MVP_R, MVP_L;
       friend class glgrib_scene;

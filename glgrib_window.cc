@@ -142,7 +142,6 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (CONTROL, DOWN  , rotate_light_south       ());
       if_key (CONTROL, LEFT  , rotate_light_west        ());
       if_key (CONTROL, RIGHT , rotate_light_east        ());
-      if_key (NONE,    K,      movie                    ());
       if_key (CONTROL, C,      duplicate                ());
       if_key (CONTROL, P,      next_projection          ());
       if_key (SHIFT,   P,      toggle_transform_type    ());
@@ -291,11 +290,6 @@ void glgrib_window::next_projection ()
 void glgrib_window::duplicate ()
 {
   cloned = true;
-}
-
-void glgrib_window::movie ()
-{
-  scene.toggleMovie ();
 }
 
 void glgrib_window::rotate_light_north ()
@@ -689,8 +683,6 @@ void glgrib_window::create (const glgrib_options & o)
 
   scene.d.light.rotate = o.scene.light.rotate;
   scene.d.rotate_earth = o.scene.rotate_earth;
-  if (o.scene.movie)
-    scene.setMovie ();
   if (o.scene.light.on)
     scene.setLight ();
 

@@ -11,3 +11,4 @@ Make geometry member of glgrib_world protected
 
 Diff mode
 For each field, create a "mode" option (=scalar, contour, arrows)
+Move palette definitions in sqlite3 database

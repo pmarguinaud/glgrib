@@ -118,25 +118,7 @@ void glgrib_load (const std::string & file, float ** val, glgrib_field_metadata 
         throw std::runtime_error (std::string ("Unexpected indicatorOfUnitOfTimeRange found in `") + file + std::string ("'"));
     }
 
-
-  struct tm t;
-  t.tm_sec    = meta->base.second;
-  t.tm_min    = meta->base.minute;
-  t.tm_hour   = meta->base.hour;
-  t.tm_mday   = meta->base.day;
-  t.tm_mon    = meta->base.month - 1;  
-  t.tm_year   = meta->base.year - 1900; 
-
-  time_t time = mktime (&t) + meta->forecastTerm;
-
-  gmtime_r (&time, &t);
-
-  meta->term.second = t.tm_sec;
-  meta->term.minute = t.tm_min;
-  meta->term.hour   = t.tm_hour;
-  meta->term.day    = t.tm_mday;
-  meta->term.month  = t.tm_mon + 1;
-  meta->term.year   = t.tm_year + 1900;
+  meta->term = glgrib_option_date::date_from_t (glgrib_option_date::t_from_date (meta->base) + meta->forecastTerm);
 
   if (false)
   std::cout 

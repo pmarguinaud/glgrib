@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <string.h>
+#include <time.h>
 
 class glgrib_option_color
 {
@@ -29,6 +30,9 @@ public:
   glgrib_option_date (int _year, int _month, int _day, int _hour, int _minute, int _second) : 
     year (_year), month (_month), day (_day), hour (_hour), minute (_minute), second (_second) {}
   long int year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0;
+  static glgrib_option_date interpolate (const glgrib_option_date &, const glgrib_option_date &, const float);
+  static glgrib_option_date date_from_t (time_t);
+  static time_t t_from_date (const glgrib_option_date &);
 };
 
 

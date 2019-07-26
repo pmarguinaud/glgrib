@@ -1,8 +1,43 @@
 #include "glgrib_options.h"
 #include <sqlite3.h>
 #include <string.h>
+#include <time.h>
 #include <map>
 
+glgrib_option_date glgrib_option_date::date_from_t (time_t time)
+{
+  struct tm t;
+  glgrib_option_date d;
+  gmtime_r (&time, &t);
+  d.second = t.tm_sec;
+  d.minute = t.tm_min;
+  d.hour   = t.tm_hour;
+  d.day    = t.tm_mday;
+  d.month  = t.tm_mon + 1;
+  d.year   = t.tm_year + 1900;
+  return d;
+}
+
+time_t glgrib_option_date::t_from_date (const glgrib_option_date & d)
+{
+  time_t time;
+  struct tm t;                  
+  t.tm_sec    = d.second;       
+  t.tm_min    = d.minute;       
+  t.tm_hour   = d.hour;         
+  t.tm_mday   = d.day;          
+  t.tm_mon    = d.month - 1;    
+  t.tm_year   = d.year - 1900;  
+  return mktime (&t);             
+}
+
+glgrib_option_date glgrib_option_date::interpolate 
+(
+  const glgrib_option_date & d1, const glgrib_option_date & d2, const float alpha
+)
+{
+  return date_from_t (alpha * t_from_date (d1) + (1.0f - alpha) * t_from_date (d2));
+}
 
 void glgrib_option_color::parse (int * count, glgrib_option_color * value, const char * v)
 {

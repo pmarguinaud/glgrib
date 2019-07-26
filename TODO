@@ -12,3 +12,4 @@ Make geometry member of glgrib_world protected
 Diff mode
 For each field, create a "mode" option (=scalar, contour, arrows)
 Move palette definitions in sqlite3 database
+Add [] operator to glgrib_field_float_buffer_ptr

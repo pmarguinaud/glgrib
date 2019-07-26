@@ -2,6 +2,7 @@
 #define _GLGRIB_FIELD_FLOAT_BUFFER_H
 
 #include <memory>
+
 class glgrib_field_float_buffer
 {
 public:

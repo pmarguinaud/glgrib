@@ -98,9 +98,8 @@ void glgrib_field_contour::init (const glgrib_options_field & o, float slot)
 {
   opts = o;
 
-  float * data;
   glgrib_field_metadata meta1;
-  glgrib_load (opts.path, slot, &data, &meta1);
+  glgrib_field_float_buffer_ptr data = glgrib_load (opts.path, slot, &meta1);
   meta.push_back (meta1);
 
   dopts.scale = opts.scale;
@@ -110,8 +109,8 @@ void glgrib_field_contour::init (const glgrib_options_field & o, float slot)
   numberOfColors = 1;
 
   int size = geometry->size ();
-  float maxval = *std::max_element (data, data + size);
-  float minval = *std::min_element (data, data + size);
+  float maxval = *std::max_element (data->data (), data->data () + size);
+  float minval = *std::min_element (data->data (), data->data () + size);
 
   std::vector<float> levels = opts.contour.levels;
 
@@ -134,10 +133,10 @@ void glgrib_field_contour::init (const glgrib_options_field & o, float slot)
       // First visit edge triangles
       for (int it = 0; it < geometry->numberOfTriangles; it++)
         if (geometry->triangleIsEdge (it))
-          processTriangle (it, data, levels[i], seen+1, &iso_data[i]);
+          processTriangle (it, data->data (), levels[i], seen+1, &iso_data[i]);
 
       for (int it = 0; it < geometry->numberOfTriangles; it++)
-        processTriangle (it, data, levels[i], seen+1, &iso_data[i]);
+        processTriangle (it, data->data (), levels[i], seen+1, &iso_data[i]);
 
       free (seen);
     }
@@ -180,12 +179,11 @@ void glgrib_field_contour::init (const glgrib_options_field & o, float slot)
 
   if (opts.no_value_pointer)
     {
-      values.push_back (NULL);
-      free (data);
+      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
     }
   else
     {
-      values.push_back (new_glgrib_field_float_buffer_ptr (data));
+      values.push_back (data);
     }
 
 

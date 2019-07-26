@@ -11,13 +11,15 @@
 #include <time.h>
 
 
-void glgrib_load (const std::vector<std::string> & file, float fslot, float ** val, 
-                  glgrib_field_metadata * meta, int mult, int base)
+glgrib_field_float_buffer_ptr glgrib_load (const std::vector<std::string> & file, float fslot, 
+                                           glgrib_field_metadata * meta, int mult, int base)
 {
   int islot = (int)fslot;
 
   if (fslot == (float)islot)
-    return glgrib_load (file[mult*islot+base], val, meta);
+    return glgrib_load (file[mult*islot+base], meta);
+
+  float alpha = fslot - (float)islot;
 
   const std::string file1 = file[mult*(islot+0)+base];
   const std::string file2 = file[mult*(islot+1)+base];
@@ -31,21 +33,23 @@ void glgrib_load (const std::vector<std::string> & file, float fslot, float ** v
                                 + file1 + ", " + file2);
     }
 
-  float * val1 = NULL, * val2 = NULL;
   glgrib_field_metadata meta1, meta2;
 
-  glgrib_load (file1, &val1, &meta1);
-  glgrib_load (file2, &val2, &meta2);
+  glgrib_field_float_buffer_ptr val1 = glgrib_load (file1, &meta1);
+  glgrib_field_float_buffer_ptr val2 = glgrib_load (file2, &meta2);
 
+  int size = geom1->size ();
+  for (int i = 0; i < size; i++)
+    (*val1)[i] = alpha * (*val1)[i] + (1.0 - alpha) * (*val2)[i];
 
   *meta = meta1;
 
-  float alpha = fslot - (float)islot;
   meta->term = glgrib_option_date::interpolate (meta1.term, meta2.term, fslot - alpha);
 
+  return val1;
 }
 
-void glgrib_load (const std::string & file, float ** val, glgrib_field_metadata * meta)
+glgrib_field_float_buffer_ptr glgrib_load (const std::string & file, glgrib_field_metadata * meta)
 {
   FILE * in = fopen (file.c_str (), "r");
 
@@ -53,8 +57,6 @@ void glgrib_load (const std::string & file, float ** val, glgrib_field_metadata 
     {
       throw std::runtime_error (std::string ("Cannot open ") + file + ": " + strerror (errno));
     }
-
-  *val = NULL;
 
   int err = 0;
   codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
@@ -73,7 +75,8 @@ void glgrib_load (const std::string & file, float ** val, glgrib_field_metadata 
   double * v = (double *)malloc (sizeof (double) * v_len);
   codes_get_double_array (h, "values", v, &v_len);
 
-  *val = new float [v_len];
+  glgrib_field_float_buffer_ptr val = new_glgrib_field_float_buffer_ptr (v_len);
+
   for (int i = 0; i < v_len; i++)
     (*val)[i] = v[i];
 
@@ -123,6 +126,8 @@ void glgrib_load (const std::string & file, float ** val, glgrib_field_metadata 
 
 #undef CODES_GET
 
+  codes_handle_delete (h);
+
   switch (meta->indicatorOfUnitOfTimeRange)
     {
       case  0:        // m Minute 
@@ -165,7 +170,7 @@ void glgrib_load (const std::string & file, float ** val, glgrib_field_metadata 
    << " " << meta->term.second
    << " " << std::endl;
 
-  codes_handle_delete (h);
 
+  return val;
 }
 

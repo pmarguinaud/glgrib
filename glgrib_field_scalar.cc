@@ -66,9 +66,8 @@ void glgrib_field_scalar::init (const glgrib_options_field & o, float slot)
 
   unsigned char * col;
 
-  float * data;
   glgrib_field_metadata meta1;
-  glgrib_load (opts.path, slot, &data, &meta1);
+  glgrib_field_float_buffer_ptr data = glgrib_load (opts.path, slot, &meta1);
   meta.push_back (meta1);
 
   dopts.scale = opts.scale;
@@ -85,10 +84,10 @@ void glgrib_field_scalar::init (const glgrib_options_field & o, float slot)
   col = (unsigned char *)malloc (numberOfColors * geometry->numberOfPoints * sizeof (unsigned char));
 
   for (int i = 0; i < geometry->numberOfPoints; i++)
-    if (data[i] == meta1.valmis)
+    if ((*data)[i] == meta1.valmis)
       col[i] = 0;
     else
-      col[i] = 1 + (int)(254 * (data[i] - meta1.valmin)/(meta1.valmax - meta1.valmin));
+      col[i] = 1 + (int)(254 * ((*data)[i] - meta1.valmin)/(meta1.valmax - meta1.valmin));
 
   colorbuffer = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints * sizeof (unsigned char), col);
 
@@ -98,12 +97,11 @@ void glgrib_field_scalar::init (const glgrib_options_field & o, float slot)
 
   if (opts.no_value_pointer)
     {
-      values.push_back (NULL);
-      free (data);
+      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
     }
   else
     {
-      values.push_back (new_glgrib_field_float_buffer_ptr (data));
+      values.push_back (data);
     }
 
 

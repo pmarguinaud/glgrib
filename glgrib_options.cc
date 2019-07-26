@@ -193,16 +193,6 @@ void glgrib_options_parser::show_help ()
 bool glgrib_options::parse (int argc, char * argv[])
 {
   bool v = glgrib_options_base::parse (argc, argv);
-  if (v)
-    for (int j = 0; j < field.size (); j++)
-      {
-        if (field[j].scale.size () == 0)
-          field[j].scale.push_back (1.00);
-        for (int i = field[j].scale.size (); i < field[j].path.size (); i++)
-          field[j].scale.push_back (field[j].scale[i-1] - 0.05);
-        for (int i = field[j].palette.size (); i < field[j].path.size (); i++)
-          field[j].palette.push_back ("default");
-      }
   return v;
 }
 

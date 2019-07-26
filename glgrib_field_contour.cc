@@ -94,18 +94,18 @@ void glgrib_field_contour::setupVertexAttributes ()
     }
 }
 
-void glgrib_field_contour::init (const glgrib_options_field & o, int slot)
+void glgrib_field_contour::init (const glgrib_options_field & o, float slot)
 {
   opts = o;
 
   float * data;
   glgrib_field_metadata meta1;
-  glgrib_load (opts.path[slot], &data, &meta1);
+  glgrib_load (opts.path, slot, &data, &meta1);
   meta.push_back (meta1);
 
-  dopts.scale = opts.scale[slot];
+  dopts.scale = opts.scale;
 
-  geometry = glgrib_geometry_load (opts.path[slot]);
+  geometry = glgrib_geometry_load (opts.path[0]);
 
   numberOfColors = 1;
 

@@ -448,8 +448,8 @@ public:
     TRAVERSE (contour);
   }
   string_list  path;
-  string_list  palette;
-  float_list   scale;
+  string       palette = "default";
+  float        scale;
   bool         no_value_pointer = false;
   glgrib_options_vector vector;
   glgrib_options_contour contour;

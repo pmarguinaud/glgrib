@@ -105,7 +105,7 @@ void glgrib_field_vector::setupVertexAttributes ()
 
 }
 
-void glgrib_field_vector::init (const glgrib_options_field & o, int slot)
+void glgrib_field_vector::init (const glgrib_options_field & o, float slot)
 {
   opts = o;
 
@@ -114,30 +114,18 @@ void glgrib_field_vector::init (const glgrib_options_field & o, int slot)
   float * data_n, * data_d;
   glgrib_field_metadata meta_n, meta_d;
 
-  glgrib_load (opts.path[2*slot+0], &data_u, &meta_u);
-  glgrib_load (opts.path[2*slot+1], &data_v, &meta_v);
+  glgrib_load (opts.path, slot, &data_u, &meta_u, 2, 0);
+  glgrib_load (opts.path, slot, &data_v, &meta_v, 2, 1);
 
 
-  dopts.scale = opts.scale[slot];
+  dopts.scale = opts.scale;
 
-  if (opts.palette[slot] == "default")
+  if (opts.palette == "default")
     dopts.palette = get_palette_by_meta (meta_u);
   else
-    dopts.palette = get_palette_by_name (opts.palette[slot]);
+    dopts.palette = get_palette_by_name (opts.palette);
 
-  const_glgrib_geometry_ptr geom1 = glgrib_geometry_load (opts.path[2*slot+0]);
-
-  const_glgrib_geometry_ptr geom2 = glgrib_geometry_load (opts.path[2*slot+1]);
-
-  if (! geom1->isEqual (*geom2))
-    {
-      throw std::runtime_error (std::string ("Vector components have different geometries : ") 
-                                + opts.path[2*slot+0] + ", " + opts.path[2*slot+1]);
-    }
-
-
-  geometry = geom1;
-
+  geometry = glgrib_geometry_load (opts.path[0]);
 
   data_n = (float *)malloc (geometry->numberOfPoints * sizeof (float));
   data_d = (float *)malloc (geometry->numberOfPoints * sizeof (float));

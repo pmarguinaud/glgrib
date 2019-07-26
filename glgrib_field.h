@@ -6,28 +6,11 @@
 #include "glgrib_geometry.h"
 #include "glgrib_palette.h"
 #include "glgrib_field_metadata.h"
+#include "glgrib_field_float_buffer.h"
 
 #include <string>
-#include <memory>
 #include <vector>
 
-
-class glgrib_field_float_buffer
-{
-public:
-  glgrib_field_float_buffer (size_t);
-  glgrib_field_float_buffer (float *);
-  ~glgrib_field_float_buffer ();
-  float * data () { return data_; }
-  float & operator[] (int i) { return data_[i]; }
-private:
-  float * data_ = NULL;
-};
-
-typedef std::shared_ptr<glgrib_field_float_buffer> glgrib_field_float_buffer_ptr;
-
-extern glgrib_field_float_buffer_ptr new_glgrib_field_float_buffer_ptr (size_t);
-extern glgrib_field_float_buffer_ptr new_glgrib_field_float_buffer_ptr (float *);
 
 
 class glgrib_field_display_options
@@ -42,7 +25,7 @@ class glgrib_field : public glgrib_world
 {
 public:
   virtual glgrib_field * clone () const  = 0;
-  virtual void init (const glgrib_options_field &, int = 0) = 0;
+  virtual void init (const glgrib_options_field &, float = 0) = 0;
   virtual bool use_alpha () { return false; }
   void setPalette (const std::string & p) { dopts.palette = get_palette_by_name (p); }
   virtual ~glgrib_field () {}

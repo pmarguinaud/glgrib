@@ -60,7 +60,7 @@ void glgrib_field_scalar::setupVertexAttributes ()
   glBindVertexArray (0); 
 }
 
-void glgrib_field_scalar::init (const glgrib_options_field & o, int slot)
+void glgrib_field_scalar::init (const glgrib_options_field & o, float slot)
 {
   opts = o;
 
@@ -68,17 +68,17 @@ void glgrib_field_scalar::init (const glgrib_options_field & o, int slot)
 
   float * data;
   glgrib_field_metadata meta1;
-  glgrib_load (opts.path[slot], &data, &meta1);
+  glgrib_load (opts.path, slot, &data, &meta1);
   meta.push_back (meta1);
 
-  dopts.scale = opts.scale[slot];
+  dopts.scale = opts.scale;
 
-  if (opts.palette[slot] == "default")
+  if (opts.palette == "default")
     dopts.palette = get_palette_by_meta (meta1);
   else
-    dopts.palette = get_palette_by_name (opts.palette[slot]);
+    dopts.palette = get_palette_by_name (opts.palette);
 
-  geometry = glgrib_geometry_load (opts.path[slot]);
+  geometry = glgrib_geometry_load (opts.path[0]);
 
   numberOfColors = 1;
 

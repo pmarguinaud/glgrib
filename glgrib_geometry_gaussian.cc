@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "glgrib_load.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <openssl/md5.h>
 

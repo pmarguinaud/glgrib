@@ -1,4 +1,5 @@
 #include "glgrib_load.h"
+#include "glgrib_geometry.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,6 +10,40 @@
 #include <errno.h>
 #include <time.h>
 
+
+void glgrib_load (const std::vector<std::string> & file, float fslot, float ** val, 
+                  glgrib_field_metadata * meta, int mult, int base)
+{
+  int islot = (int)fslot;
+
+  if (fslot == (float)islot)
+    return glgrib_load (file[mult*islot+base], val, meta);
+
+  const std::string file1 = file[mult*(islot+0)+base];
+  const std::string file2 = file[mult*(islot+1)+base];
+
+  const_glgrib_geometry_ptr geom1 = glgrib_geometry_load (file1);
+  const_glgrib_geometry_ptr geom2 = glgrib_geometry_load (file2);
+
+  if (! geom1->isEqual (*geom2))
+    {
+      throw std::runtime_error (std::string ("Vector components have different geometries : ") 
+                                + file1 + ", " + file2);
+    }
+
+  float * val1 = NULL, * val2 = NULL;
+  glgrib_field_metadata meta1, meta2;
+
+  glgrib_load (file1, &val1, &meta1);
+  glgrib_load (file2, &val2, &meta2);
+
+
+  *meta = meta1;
+
+  float alpha = fslot - (float)islot;
+  meta->term = glgrib_option_date::interpolate (meta1.term, meta2.term, fslot - alpha);
+
+}
 
 void glgrib_load (const std::string & file, float ** val, glgrib_field_metadata * meta)
 {

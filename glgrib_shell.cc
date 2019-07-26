@@ -35,8 +35,8 @@ glgrib_shell Shell
             glgrib_options_field opts; 
 	    std::cout << S (path) << std::endl;
             opts.path.push_back (S (path)); 
-            opts.scale.push_back (F (scale));
-            opts.palette.push_back (S (palette));
+            opts.scale = F (scale);
+            opts.palette = S (palette);
             gwindow->load_field (opts, I (rank)); 
 	  }, "", 
      A ("palette", ""), A ("scale", "1.02"), A ("path", ""), A ("rank", "0")),

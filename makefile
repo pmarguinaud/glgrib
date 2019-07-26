@@ -54,8 +54,8 @@ test_3l_t1798: glgrib.x
 
 test_offscreen: glgrib.x
 	\rm -f snapshot*.png
-	$(GDB) ./glgrib.x --landscape.geometry testdata/t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path ""  --window.offscreen  \
-		--window.offscreen_frames 10 --scene.movie --scene.movie-wait -1  --scene.light.rotate --scene.light.on     \
+	$(GDB) ./glgrib.x --landscape.geometry testdata/t1198c2.2/Z.grb --grid.resolution 0 --coastlines.path ""  --window.offscreen.on  \
+		--window.offscreen.frames 10 --scene.movie --scene.movie-wait -1  --scene.light.rotate --scene.light.on     \
 		--field[0].path testdata/t1198c2.2/SURFNEBUL.BASSE.grb testdata/t1198c2.2/SURFNEBUL.MOYENN.grb  testdata/t1198c2.2/SURFNEBUL.HAUTE.grb \
 		--field[0].scale                         1.03                           1.03                           1.03 \
 		--field[0].palette                 cloud_auto                     cloud_auto                     cloud_auto 
@@ -86,7 +86,7 @@ test_novalue: ./glgrib.x
 test_t8000_noorog: ./glgrib.x
 	$(GDB) ./glgrib.x  --window.width 2000  --window.height 2000 --landscape.geometry testdata/t479/Z.grb \
 		--landscape.orography 0 --grid.resolution 0 --coastlines.path ""   \
-		--window.offscreen    --field[0].path testdata/t8000/SURFNEBUL.TOTALE.grb --field[0].scale 1.03 --field[0].palette cloud_auto  --field[0].no_value_pointer  \
+		--window.offscreen.on    --field[0].path testdata/t8000/SURFNEBUL.TOTALE.grb --field[0].scale 1.03 --field[0].palette cloud_auto  --field[0].no_value_pointer  \
 		--scene.light.on --scene.light.lon -25 --scene.light.lat 30.
 
 test_missingvalue: ./glgrib.x

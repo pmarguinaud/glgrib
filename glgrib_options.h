@@ -508,6 +508,18 @@ public:
   glgrib_option_color color;
 };
 
+class glgrib_options_offscreen : public glgrib_options_base
+{
+public:
+  TRAVERSE_DEF
+  {
+    APPLY (on,       Run in offline mode);
+    APPLY (frames,   Number of frames to issue in offline mode);
+  }
+  bool on  = false;
+  int  frames  = 1;
+};
+
 class glgrib_options_window : public glgrib_options_base
 {
 public:
@@ -515,23 +527,21 @@ public:
   {
     APPLY (width,              Window width);
     APPLY (height,             Window height);
-    APPLY (offscreen,          Run in offline mode);
-    APPLY (offscreen_frames,   Number of frames to issue in offline mode);
     APPLY (statistics,         Issue statistics when window is closed);
     APPLY (title,              Window title);
     APPLY (debug,              Enable OpenGL debugging);
     APPLY (version_major,      GLFW_CONTEXT_VERSION_MAJOR);
     APPLY (version_minor,      GLFW_CONTEXT_VERSION_MINOR);
+    TRAVERSE (offscreen);
   }
   int     width  = 800;
   int     height  = 800;
-  bool    offscreen  = false;
-  int     offscreen_frames  = 1;
   bool    statistics  = false;
   string  title  = "";
   bool    debug  = false;
   int     version_major = 4;
   int     version_minor = 3;
+  glgrib_options_offscreen offscreen;
 };
 
 class glgrib_options_light : public glgrib_options_base

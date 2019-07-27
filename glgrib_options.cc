@@ -1,14 +1,24 @@
 #include "glgrib_options.h"
 #include <sqlite3.h>
 #include <string.h>
+#include <stdio.h>
 #include <time.h>
 #include <map>
+
+
+std::string glgrib_option_date::asString () const 
+{
+  char tmp[128];
+  sprintf (tmp, "%4.4ld/%2.2ld/%2.2ld %2.2ld:%2.2ld:%2.2ld", year, month, day, hour, minute, second);
+  return std::string (tmp);
+}
 
 glgrib_option_date glgrib_option_date::date_from_t (time_t time)
 {
   struct tm t;
   glgrib_option_date d;
-  gmtime_r (&time, &t);
+  localtime_r (&time, &t);
+//gmtime_r (&time, &t);
   d.second = t.tm_sec;
   d.minute = t.tm_min;
   d.hour   = t.tm_hour;

@@ -67,7 +67,7 @@ public:
 
   void setViewport (int, int);
 
-  void setMessage (const std::string & mess) { d.str.update (mess); }
+  void setMessage (const std::string & mess) { d.strmess.update (mess); }
   void resize ();
 
   std::vector<glgrib_field*> fieldlist;
@@ -85,7 +85,8 @@ public:
       bool rotate_earth = false;
     private:
       glgrib_colorbar colorbar;
-      glgrib_string str;
+      glgrib_string strmess;
+      glgrib_string strdate;
       glgrib_string strxyz;
       int nupdate = 0;
       int currentFieldRank = 0;

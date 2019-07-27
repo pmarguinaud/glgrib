@@ -65,7 +65,8 @@ void glgrib_scene::display () const
                        fld->getNormedMinValue (), 
                        fld->getNormedMaxValue ());
 
-  d.str.render (d.MVP_R);
+  d.strmess.render (d.MVP_R);
+  d.strdate.render (d.MVP_R);
 
   if (d.opts.scene.test_strxyz)
     d.strxyz.render (d.view);
@@ -175,6 +176,7 @@ void glgrib_scene::update_interpolation ()
       if (slot > slotmax)
         slot = slotmax;
 
+      bool seen_date = false;
       for (int i = 0; i < fieldlist.size (); i++)
         {
 	  if (fieldlist[i] != NULL)
@@ -193,6 +195,13 @@ void glgrib_scene::update_interpolation ()
 
               fld->init (&ld, d.opts.field[i], slot);
 	      fieldlist[i] = fld;
+
+              if (! seen_date)
+                {
+                  const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
+                  d.strdate.update (meta[0].term.asString ());
+                  seen_date = true;
+                }
 	    }
 	}
     }
@@ -241,6 +250,7 @@ void glgrib_scene::init (const glgrib_options & o)
 
   d.view.init (d.opts);
 
+  bool seen_date = false;
   for (int i = 0; i < d.opts.field.size (); i++)
     {
       glgrib_field * fld = NULL;
@@ -262,15 +272,29 @@ void glgrib_scene::init (const glgrib_options & o)
       if (defined)
         setCurrentFieldRank (i);
 
+      if (defined && (! seen_date))
+        {
+          seen_date = true;
+    
+          glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
+          d.strdate.init2D (font, std::string (20, 'X'), 1.0f, 0.0f, d.opts.font.scale, glgrib_string::SE);
+          d.strdate.setColor (d.opts.font.color.r / 255.0f, 
+                              d.opts.font.color.g / 255.0f, 
+                              d.opts.font.color.b / 255.0f);
+
+          const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
+          d.strdate.update (meta[0].term.asString ());
+        }
+
     }
 
   if (d.opts.colorbar.on)
     {
       glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
-      d.str.init2D (font, std::string (30, ' '), 1.0f, 1.0f, d.opts.font.scale, glgrib_string::NE);
-      d.str.setColor (d.opts.font.color.r / 255.0f, 
-		      d.opts.font.color.g / 255.0f, 
-		      d.opts.font.color.b / 255.0f);
+      d.strmess.init2D (font, std::string (30, ' '), 1.0f, 1.0f, d.opts.font.scale, glgrib_string::NE);
+      d.strmess.setColor (d.opts.font.color.r / 255.0f, 
+		          d.opts.font.color.g / 255.0f, 
+		          d.opts.font.color.b / 255.0f);
       d.colorbar.init (d.opts.colorbar);
     }
   if (d.opts.scene.test_strxyz)

@@ -33,6 +33,7 @@ public:
   static glgrib_option_date interpolate (const glgrib_option_date &, const glgrib_option_date &, const float);
   static glgrib_option_date date_from_t (time_t);
   static time_t t_from_date (const glgrib_option_date &);
+  std::string asString () const;
 };
 
 

@@ -6,6 +6,7 @@
 #include <eccodes.h>
 #include <iostream>
 #include <stdexcept>
+#include <algorithm>
 #include <string>
 #include <errno.h>
 #include <time.h>
@@ -39,14 +40,47 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::vector<std::string
   glgrib_field_float_buffer_ptr val2 = load (file2, &meta2);
 
   int size = geom1->size ();
+  glgrib_field_float_buffer_ptr val = new_glgrib_field_float_buffer_ptr (size);
+
+  float valmin = std::numeric_limits<float>::max (), 
+        valmax = std::numeric_limits<float>::min (), 
+        valmis;
+  bool valmis_ok = true;
   for (int i = 0; i < size; i++)
-    (*val1)[i] = alpha * (*val1)[i] + (1.0 - alpha) * (*val2)[i];
+    {
+      float v1 = (*val1)[i], v2 = (*val2)[i];
+      if ((v1 == meta1.valmis) || (v2 == meta2.valmis))
+        {
+          (*val)[i] = valmis;
+        }
+      else
+        {
+          float v = alpha * (*val1)[i] + (1.0 - alpha) * (*val2)[i];
+          (*val)[i] = v;
+          valmin = std::min (v, valmin);
+          valmax = std::max (v, valmax);
+          valmis_ok = valmis_ok && (v != valmis);
+        }
+    }
+  if (! valmis_ok)
+    {
+      valmis = valmax * 1.1;
+      for (int i = 0; i < size; i++)
+        {
+          float v1 = (*val1)[i], v2 = (*val2)[i];
+          if ((v1 == meta1.valmis) || (v2 == meta2.valmis))
+            (*val)[i] = valmis;
+        }
+    }
 
   *meta = meta1;
 
   meta->term = glgrib_option_date::interpolate (meta1.term, meta2.term, alpha);
+  meta->valmin = valmin;
+  meta->valmax = valmax;
+  meta->valmis = valmis;
 
-  return val1;
+  return val;
 }
 
 glgrib_field_float_buffer_ptr glgrib_loader::load (const std::string & file, glgrib_field_metadata * meta)
@@ -175,14 +209,25 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::string & file, glg
   meta->term = glgrib_option_date::date_from_t (glgrib_option_date::t_from_date (meta->base) + meta->forecastTerm);
 
   if (false)
-  std::cout 
-   << " " << meta->term.year  
-   << " " << meta->term.month 
-   << " " << meta->term.day   
-   << " " << meta->term.hour  
-   << " " << meta->term.minute
-   << " " << meta->term.second
-   << " " << std::endl;
+    {
+      std::cout << meta->indicatorOfUnitOfTimeRange << " " << meta->forecastTime << " " << meta->forecastTerm << std::endl;
+      std::cout 
+       << " " << meta->base.year  
+       << " " << meta->base.month 
+       << " " << meta->base.day   
+       << " " << meta->base.hour  
+       << " " << meta->base.minute
+       << " " << meta->base.second
+       << " " << std::endl;
+      std::cout 
+       << " " << meta->term.year  
+       << " " << meta->term.month 
+       << " " << meta->term.day   
+       << " " << meta->term.hour  
+       << " " << meta->term.minute
+       << " " << meta->term.second
+       << " " << std::endl;
+    }
 
 
   if (this->size > 0)

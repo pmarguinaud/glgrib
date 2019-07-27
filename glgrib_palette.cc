@@ -35,16 +35,53 @@ glgrib_palette & get_palette_by_name (const std::string & name)
   if (it != name2palette.end ())
     return it->second;
 
-  std::string pp = palette_directory + "/" + name + ".dat";
-  std::ifstream fh (pp);
-  if (fh.is_open ())
+  glgrib_palette p;
+  bool found = false;
+
+  sqlite3 * db = NULL;
+  sqlite3_stmt * req = NULL;
+  int rc;
+#define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
+
+  TRY (sqlite3_open (".glgrib.db", &db));
+  TRY (sqlite3_prepare_v2 (db, "SELECT hexa FROM PALETTES WHERE name = ?;", -1, &req, 0));
+  TRY (sqlite3_bind_text (req, 1, name.c_str (), strlen (name.c_str ()), NULL));
+
+  if ((rc = sqlite3_step (req)) == SQLITE_ROW)
     {
-      glgrib_palette p = glgrib_palette (fh);
+      found = true;
+      char hexa[2049];
+      strcpy (hexa, (const char *)sqlite3_column_text (req, 0));
+      for (int i = 0; i < 256; i++)
+        {
+          int r, g, b, a;
+          if (sscanf (&hexa[8*i], "%2x%2x%2x%2x", &r, &g, &b, &a) != 4)
+            throw std::runtime_error ("Cannot parse hexa color");
+          if (i == 0)
+            p.rgba_mis = glgrib_rgba ((byte)r, (byte)g, (byte)b, (byte)a);
+          else
+            p.rgba.push_back (glgrib_rgba ((byte)r, (byte)g, (byte)b, (byte)a));
+        }
+ 
+      rc = SQLITE_OK;
+      found = true;
+
       p.name = name;
-      return p.register_ (p);
     }
+
+#undef TRY
+
+end:
+
+  if (rc != SQLITE_OK)
+    printf ("%s\n", sqlite3_errmsg (db));
+
+  if (req != NULL)
+    sqlite3_finalize (req);
+  if (db != NULL)
+    sqlite3_close (db);
     
-  return palette_white_black;
+  return found ? p.register_ (p) : palette_white_black;
 }
 
 glgrib_palette::glgrib_palette (std::ifstream & fh)

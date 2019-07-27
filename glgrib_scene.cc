@@ -66,7 +66,9 @@ void glgrib_scene::display () const
                        fld->getNormedMaxValue ());
 
   d.strmess.render (d.MVP_R);
-  d.strdate.render (d.MVP_R);
+
+  if (d.opts.scene.display_date)
+    d.strdate.render (d.MVP_R);
 
   if (d.opts.scene.test_strxyz)
     d.strxyz.render (d.view);
@@ -196,7 +198,7 @@ void glgrib_scene::update_interpolation ()
               fld->init (&ld, d.opts.field[i], slot);
 	      fieldlist[i] = fld;
 
-              if (! seen_date)
+              if ((! seen_date) && (d.opts.scene.display_date))
                 {
                   const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
                   d.strdate.update (meta[0].term.asString ());
@@ -272,7 +274,7 @@ void glgrib_scene::init (const glgrib_options & o)
       if (defined)
         setCurrentFieldRank (i);
 
-      if (defined && (! seen_date))
+      if (defined && (! seen_date) && d.opts.scene.display_date)
         {
           seen_date = true;
     

@@ -619,6 +619,7 @@ public:
     TRAVERSE (travelling);
     APPLY (test_strxyz,         Test XYZ string);
     TRAVERSE (interpolation);
+    APPLY (display_date,        Display date);
   }
   bool    rotate_earth  = false;
   string  projection  = "XYZ";
@@ -627,6 +628,7 @@ public:
   glgrib_options_travelling travelling;
   bool    test_strxyz = false;
   glgrib_options_interpolation interpolation;
+  bool    display_date = false;
 };
 
 class glgrib_options_camera : public glgrib_options_base

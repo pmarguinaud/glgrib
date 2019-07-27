@@ -177,7 +177,8 @@ test_strxyz: ./glgrib.x
 
 test_interpolation: ./glgrib.x
 	$(GDB) ./glgrib.x --field\[0\].path testdata/interp/01.grb testdata/interp/36.grb  --field\[0\].scale 1.03 --field\[0\].palette cold_hot_temp  \
-		--camera.lon 2 --camera.lat 46.7 --camera.fov 5 --scene.interpolation.on --scene.interpolation.frames 200 --window.width 1000 --window.height 1000 --font.scale 0.03 --font.color red
+		--camera.lon 2 --camera.lat 46.7 --camera.fov 5 --scene.interpolation.on --scene.interpolation.frames 200 --window.width 1000 --window.height 1000 \
+                --font.scale 0.03 --font.color red --scene.display_date
 
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane
 

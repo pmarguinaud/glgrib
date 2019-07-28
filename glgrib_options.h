@@ -656,13 +656,16 @@ public:
   {
     APPLY (bitmap,     Bitmap path);
     APPLY (scale,      Bitmap scale);
-    APPLY (color,      Font color);
-    APPLY (background, Background color);
+    APPLY (color.foreground, Foreground color);
+    APPLY (color.background, Background color);
   }
   std::string bitmap = "fonts/08.bmp";
   float scale = 0.05f;
-  glgrib_option_color color;
-  glgrib_option_color background = glgrib_option_color (0.0f, 0.0f, 0.0f, 0.0f);
+  struct
+  {
+    glgrib_option_color foreground = glgrib_option_color (255, 255, 255, 255);
+    glgrib_option_color background = glgrib_option_color (  0,   0,   0,   0);
+  } color;
 };
 
 

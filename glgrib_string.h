@@ -46,9 +46,9 @@ public:
                float, float = 1.0f, align_t = SW);
   void render (const glm::mat4 &) const;
   void render (const glgrib_view &) const;
-  void setForeGroundColor (float r, float g, float b, float a = 1.0f) 
+  void setForegroundColor (float r, float g, float b, float a = 1.0f) 
     { color0[0] = r; color0[1] = g; color0[2] = b; color0[3] = a; }
-  void setBackGroundColor (float r, float g, float b, float a = 1.0f) 
+  void setBackgroundColor (float r, float g, float b, float a = 1.0f) 
     { color1[0] = r; color1[1] = g; color1[2] = b; color1[3] = a; }
   ~glgrib_string ();
   void update (const std::vector<std::string> &);

@@ -46,7 +46,10 @@ public:
                float, float = 1.0f, align_t = SW);
   void render (const glm::mat4 &) const;
   void render (const glgrib_view &) const;
-  void setColor (float r, float g, float b) { color0[0] = r; color0[1] = g; color0[2] = b; }
+  void setForeGroundColor (float r, float g, float b, float a = 1.0f) 
+    { color0[0] = r; color0[1] = g; color0[2] = b; color0[3] = a; }
+  void setBackGroundColor (float r, float g, float b, float a = 1.0f) 
+    { color1[0] = r; color1[1] = g; color1[2] = b; color1[3] = a; }
   ~glgrib_string ();
   void update (const std::vector<std::string> &);
   void update (const std::string &);
@@ -57,7 +60,8 @@ private:
   std::vector<float> x, y;       // Position of letters vertices
   std::vector<float> X, Y, Z, A; // Position & angle of each letter on the sphere
   align_t align;
-  float color0[3];
+  float color0[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+  float color1[4] = {0.0f, 0.0f, 0.0f, 0.0f};
   float scale;
   int len;    // Total number of characters
   GLuint VertexArrayID;

@@ -51,7 +51,7 @@ glgrib_option_date glgrib_option_date::interpolate
 
 void glgrib_option_color::parse (int * count, glgrib_option_color * value, const char * v)
 {
-  if ((*count == 0) && (v[0] == '#') && (strlen (v) == 7))
+  if ((*count == 0) && (v[0] == '#') && (strlen (v) == 7 || strlen (v) == 9))
     {
       *value = color_by_hexa (v);
     }
@@ -75,9 +75,24 @@ void glgrib_option_color::parse (int * count, glgrib_option_color * value, const
 glgrib_option_color glgrib_option_color::color_by_hexa (const char * name)
 {
   glgrib_option_color color;
-  if (sscanf (name, "#%2x%2x%2x", &color.r, &color.g, &color.b) != 3)
-    throw std::runtime_error ("Cannot parse hexa color");
+  if (strlen (name) == 7)
+    {
+      if (sscanf (name, "#%2x%2x%2x", &color.r, &color.g, &color.b) != 3)
+        goto error;
+    }
+  else if (strlen (name) == 9)
+    {
+      if (sscanf (name, "#%2x%2x%2x%2x", &color.r, &color.g, &color.b, &color.a) != 4)
+        goto error;
+    }
+  else
+    {
+      goto error;
+    }
   return color;
+
+error:
+  throw std::runtime_error ("Cannot parse hexa color");
 }
 
 typedef std::map<std::string,std::string> name2hexa_t;
@@ -90,10 +105,25 @@ static name2hexa_t name2hexa =
    {"black", "#000000"}
 };
 
-glgrib_option_color glgrib_option_color::color_by_name (const char * name)
+glgrib_option_color glgrib_option_color::color_by_name (const char * n)
 {
   glgrib_option_color color;
-  
+
+  int len = strlen (n);
+  char name[len+1];
+
+  if ((len > 3) && (n[len-3] == '#') && isalpha (n[len-2]) && isalpha (n[len-1]))
+    {
+      strncpy (name, n, len-3);
+      name[len-3] = '\0';
+      sscanf (name+len-2, "%2x", &color.a);
+    }
+  else
+    {
+      strcpy (name, n);
+    }
+
+
   name2hexa_t::const_iterator it = name2hexa.find (std::string (name));
   if (it != name2hexa.end ())
     return color_by_hexa (it->second.c_str ());

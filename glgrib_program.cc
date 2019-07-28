@@ -764,7 +764,8 @@ uniform int nx = 0;
 uniform int ny = 0;
 uniform float aspect = 1.0;
 uniform float scale = 1.0;
-uniform vec3 color0;
+uniform vec4 color0;
+uniform vec4 color1;
 
 void main ()
 {
@@ -782,11 +783,25 @@ void main ()
 
   vec4 col = texture2D (texture, vec2 (tx, ty));
 
-  color.r = color0.r;
-  color.g = color0.g;
-  color.b = color0.b;
-  color.a = 1. - col.r;
-   
+
+  float a = col.r;
+
+  bool usebg = color1.a > 0.0f;
+
+  if (usebg)
+    {
+      color.r = color1.r * a + (1.0 - a) * color0.r;
+      color.g = color1.g * a + (1.0 - a) * color0.g;
+      color.b = color1.b * a + (1.0 - a) * color0.b;
+      color.a = color1.a * a + (1.0 - a) * color0.a;
+    }
+  else
+    {
+      color.r = color0.r;
+      color.g = color0.g;
+      color.b = color0.b;
+      color.a = 1 - a;
+    }
 }
 )CODE",
 R"CODE(

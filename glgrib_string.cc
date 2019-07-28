@@ -9,8 +9,10 @@ glgrib_string & glgrib_string::operator= (const glgrib_string & str)
       cleanup ();
       if (str.ready)
         {
-          for (int i =0; i < 3; i++)
+          for (int i =0; i < 4; i++)
             color0[i] = str.color0[i];
+          for (int i =0; i < 4; i++)
+            color1[i] = str.color1[i];
           init (str.font, str.data, str.x, str.y, str.scale, 
                 str.align, str.X, str.Y, str.Z, str.A);
         }
@@ -84,9 +86,10 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
   let.reserve (len);
   xyz.reserve (3 * len);
   
-  color0[0] = 1.;
-  color0[1] = 1.;
-  color0[2] = 1.;
+  for (int i = 0; i < 4; i++)
+    color0[i] = 1.;
+  for (int i = 0; i < 4; i++)
+    color1[i] = 0.;
 
   font = ff;
   scale = s;
@@ -214,9 +217,9 @@ void glgrib_string::render (const glgrib_view & view) const
   program->set1f ("scale", scale);
   program->set1i ("texture", 0);
   program->set1i ("l3d", 2);
-  program->set3fv ("color0", color0);
+  program->set4fv ("color0", color0);
+  program->set4fv ("color1", color1);
   program->set1f ("length10", length);
-  
 
   glBindVertexArray (VertexArrayID);
   unsigned int ind[12] = {0, 1, 2, 2, 3, 0};
@@ -235,8 +238,9 @@ void glgrib_string::render (const glm::mat4 & MVP) const
   program->set1f ("scale", scale);
   program->set1i ("texture", 0);
   program->set1i ("l3d", 0);
-  program->set3fv ("color0", color0);
-  
+  program->set4fv ("color0", color0);
+  program->set4fv ("color1", color1);
+
   glBindVertexArray (VertexArrayID);
   unsigned int ind[12] = {0, 1, 2, 2, 3, 0};
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, len);

@@ -19,8 +19,8 @@ public:
   static void parse (int *, glgrib_option_color *, const char *);
 
   glgrib_option_color () {}
-  glgrib_option_color (int _r, int _g, int _b) : r (_r), g (_g), b (_b) {}
-  int r = 255, g = 255, b = 255;
+  glgrib_option_color (int _r, int _g, int _b, int _a = 255) : r (_r), g (_g), b (_b), a (_a) {}
+  int r = 255, g = 255, b = 255, a = 255;
 };
 
 class glgrib_option_date
@@ -654,13 +654,15 @@ public:
   glgrib_options_font () {}
   TRAVERSE_DEF
   {
-    APPLY (bitmap, Bitmap path);
-    APPLY (scale,  Bitmap scale);
-    APPLY (color,  Font color);
+    APPLY (bitmap,     Bitmap path);
+    APPLY (scale,      Bitmap scale);
+    APPLY (color,      Font color);
+    APPLY (background, Background color);
   }
   std::string bitmap = "fonts/08.bmp";
   float scale = 0.05f;
   glgrib_option_color color;
+  glgrib_option_color background = glgrib_option_color (0.0f, 0.0f, 0.0f, 0.0f);
 };
 
 

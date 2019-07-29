@@ -187,6 +187,9 @@ test_background: ./glgrib.x
 test_fa: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.path '' --field\[0\].path testdata/fa/PGD.t479.fa%SFX.FRAC_SEA  --field\[0\].scale 1.03 --grid.resolution 0 --coastlines.path ''
 
+test_select_grib: ./glgrib.x
+	$(GDB) ./glgrib.x --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb%'parameterCategory=6,year=2019' --field\[0\].scale 1.03 --grid.resolution 0 --coastlines.path ''
+
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane
 
 

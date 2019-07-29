@@ -54,8 +54,59 @@ codes_handle * glgrib_handle_from_file (const std::string & f)
           if (in == NULL)
             throw std::runtime_error (std::string ("Could not open ") + 
                                       file + std::string (" for reading"));
-          h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
+          while ((h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err)))
+            {
+	      std::string e = ext;
+	      while (e.length ())
+	        {
+                  int p;
+		  p = e.find_first_of (',');
+		  std::string m;
+
+		  if (p == std::string::npos)
+                    {
+                      m = e;
+		      e = "";
+		    }
+		  else
+		    {
+		      m = e.substr (0, p);
+		      e = e.substr (p+1);
+		    }
+
+                  p = m.find_first_of ('=');
+
+                  if (p == std::string::npos)
+                    throw std::runtime_error (std::string ("Malformed GRIB selector ") + ext);
+
+		  std::string key = m.substr (0, p), val = m.substr (p+1);
+		  long int v0, v1;
+
+		  try
+                    {
+		      v0 = std::stoi (val);
+		    }
+		  catch (...)
+		    {
+                      throw std::runtime_error (std::string ("Malformed GRIB selector ") + ext);
+		    }
+
+                  if (! codes_is_defined (h, key.c_str ()))
+                    goto next;
+                  codes_get_long (h, key.c_str (), &v1);
+		  if (v0 != v1)
+		    goto next;
+	        }
+	      break;
+next:
+              codes_handle_delete (h);
+	      h = NULL;
+	    }
           fclose (in);
+
+          if (h == NULL)
+            throw std::runtime_error (std::string ("No match for ") + ext + std::string (" in file ") + file);
+         
 	}
 	break;
       case LFI_PURE:
@@ -103,13 +154,13 @@ codes_handle * glgrib_handle_from_file (const std::string & f)
           h = codes_handle_new_from_message_copy (0, ITAB + 3, 8 * (ILONG - 3));
 	  free (ITAB);
 
+          if (h == NULL)
+            throw std::runtime_error (std::string ("Article ") + ext + std::string (" of file ") + file +
+                                      std::string (" does not contain a GRIB message"));
+         
 	}
 	break;
     }
-
-  if (h == NULL)
-    throw std::runtime_error (std::string ("File ") + f + 
-                              std::string (" does not contain a GRIB message"));
 
   return h;
 }

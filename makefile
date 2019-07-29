@@ -3,7 +3,7 @@
 LDFLAGS=-fopenmp -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -ltinfo -lssl -lcrypto -lpthread -lsqlite3
 GDB=gdb -ex='set confirm on' -ex=run -ex=quit --args
 
-CXXFLAGS=-O0 -fopenmp -std=c++11 -g -I$(HOME)/3d/usr/include -L$(HOME)/3d/usr/lib64 -Wl,-rpath,$(HOME)/3d/usr/lib64 -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto
+CXXFLAGS=-O2 -fopenmp -std=c++11 -g -I$(HOME)/3d/usr/include -L$(HOME)/3d/usr/lib64 -Wl,-rpath,$(HOME)/3d/usr/lib64 -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto
 CXXFLAGS += -I$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/include -L$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib -Wl,-rpath,$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib
 
 all: set.x glgrib.x
@@ -11,10 +11,8 @@ all: set.x glgrib.x
 set.x: set.c
 	cc -I$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/include -L$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib -Wl,-rpath,$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib -g -o set.x set.c -leccodes
 
-lib/liblfi.a: lfi/iswap8.c  lfi/lfi_abor.c  lfi/lfi_altm.c  lfi/lfi_alts.c  lfi/lfi_dumm.c  lfi/lfi_fmul.c  lfi/lfi_grok.c  lfi/lfi_hndl.c  lfi/lfi_intf.c  lfi/lfi_miss.c  lfi/lfi_util.c  lfi/lfi_verb.c
-	cd lfi && cc -c -g *.c && ar crv liblfi.a *.o
 
-glgrib.x: glgrib_field_float_buffer.o glgrib_field_contour.o glgrib_field_vector.o glgrib_field_scalar.o glgrib_geometry_lambert.o glgrib_projection.o glgrib_colorbar.o glgrib_font.o glgrib_string.o glgrib_geometry_latlon.o glgrib_window_offscreen.o glgrib_geometry.o glgrib_geometry_gaussian.o glgrib_window.o glgrib_options.o glgrib_shell.o glgrib_bmp.o glgrib_landscape.o glgrib_palette.o glgrib_field.o glgrib_loader.o glgrib_polygon.o glgrib_program.o glgrib_view.o glgrib_world.o glgrib.o glgrib_opengl.o glgrib_png.o glgrib_scene.o glgrib_coastlines.o glgrib_grid.o glgrib_shader.o lfi/liblfi.a
+glgrib.x: glgrib_field_float_buffer.o glgrib_field_contour.o glgrib_field_vector.o glgrib_field_scalar.o glgrib_geometry_lambert.o glgrib_projection.o glgrib_colorbar.o glgrib_font.o glgrib_string.o glgrib_geometry_latlon.o glgrib_window_offscreen.o glgrib_geometry.o glgrib_geometry_gaussian.o glgrib_window.o glgrib_options.o glgrib_shell.o glgrib_bmp.o glgrib_landscape.o glgrib_palette.o glgrib_field.o glgrib_loader.o glgrib_polygon.o glgrib_program.o glgrib_view.o glgrib_world.o glgrib.o glgrib_opengl.o glgrib_png.o glgrib_scene.o glgrib_coastlines.o glgrib_grid.o glgrib_shader.o 
 	g++  $(CXXFLAGS) -o glgrib.x glgrib_field_float_buffer.o glgrib_field_contour.o glgrib_field_vector.o glgrib_field_scalar.o glgrib_geometry_lambert.o glgrib_projection.o glgrib_colorbar.o glgrib_font.o glgrib_string.o glgrib_geometry_latlon.o glgrib_window_offscreen.o glgrib_geometry.o glgrib_geometry_gaussian.o glgrib_window.o glgrib_options.o glgrib_shell.o glgrib_bmp.o glgrib_landscape.o glgrib_palette.o glgrib_field.o glgrib_loader.o glgrib_polygon.o glgrib_view.o glgrib_program.o glgrib_world.o glgrib.o glgrib_opengl.o glgrib_png.o glgrib_scene.o glgrib_coastlines.o glgrib_grid.o glgrib_shader.o $(LDFLAGS) -Llfi -llfi
 
 %.o: %.cc

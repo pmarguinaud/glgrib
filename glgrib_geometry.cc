@@ -1,4 +1,5 @@
 #include "glgrib_geometry.h"
+#include "glgrib_loader.h"
 #include "glgrib_geometry_gaussian.h"
 #include "glgrib_geometry_latlon.h"
 #include "glgrib_geometry_lambert.h"
@@ -15,24 +16,7 @@ static cache_t cache;
 
 glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const float orography, const int Nj)
 {
-  FILE * in = NULL;
-  int err = 0;
-  codes_handle * h = NULL;
-
-  if (file != "")
-    {
-      in = fopen (file.c_str (), "r");
-
-      if (in == NULL)
-        throw std::runtime_error (std::string ("Could not open ") + file + std::string (" for reading"));
-
-      h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
-
-      fclose (in);
-
-      if (h == NULL)
-        throw std::runtime_error (std::string ("File ") + file + std::string (" does not contain a GRIB message"));
-    }
+  codes_handle * h = file != "" ? glgrib_handle_from_file (file) : NULL;
 
   long int gridDefinitionTemplateNumber = -1;
 
@@ -78,7 +62,8 @@ glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const float 
 
 found:
 
-  codes_handle_delete (h);
+  if (h != NULL)
+    codes_handle_delete (h);
 
   // Remove geometries with a single reference (they only belong to the cache)
 again:

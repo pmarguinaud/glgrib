@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include <eccodes.h>
 #include "glgrib_field_metadata.h"
 #include "glgrib_field_float_buffer.h"
 
@@ -24,5 +25,7 @@ private:
   };
   std::list<entry> cache;
 };
+
+extern codes_handle * glgrib_handle_from_file (const std::string &);
 
 #endif

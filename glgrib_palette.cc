@@ -68,6 +68,11 @@ glgrib_palette & get_palette_by_name (const std::string & name)
 
       p.name = name;
     }
+  else
+    {
+      TRY (sqlite3_finalize (req));
+      req = NULL;
+    }
 
 #undef TRY
 
@@ -276,6 +281,8 @@ end:
     sqlite3_finalize (req);
   if (db != NULL)
     sqlite3_close (db);
+
+
 
   glgrib_palette p = get_palette_by_name (pname);
   p.min = pmin;

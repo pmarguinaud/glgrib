@@ -11,6 +11,108 @@
 #include <errno.h>
 #include <time.h>
 
+extern "C"
+{
+#include "lfi/lfi_grok.h"
+#include "lfi/lfi_type.h"
+#include "lfi/lfi_args.h"
+#include "lfi/lfi_fort.h"
+extern void lfiouv_mt64_ (LFIOUV_ARGS_DECL);
+extern void lfinfo_mt64_ (LFINFO_ARGS_DECL);
+extern void lfilec_mt64_ (LFILEC_ARGS_DECL);
+extern void lfifer_mt64_ (LFIFER_ARGS_DECL);
+}
+
+codes_handle * glgrib_handle_from_file (const std::string & f)
+{
+  codes_handle * h = NULL;
+
+  int k = f.find_last_of ('%');
+
+  std::string file, ext;
+
+  if (k >= 0)
+    {
+      ext = f.substr (k+1);
+      file = f.substr (0, k);
+    }
+  else
+    {
+      file = f;
+    }
+
+
+  lfi_grok_t type = lfi_grok (file.c_str (), file.length ());
+
+  switch (type)
+    {
+      case LFI_NONE:
+      case LFI_UNKN:
+        {
+          int err = 0;
+          FILE * in = fopen (file.c_str (), "r");
+          if (in == NULL)
+            throw std::runtime_error (std::string ("Could not open ") + 
+                                      file + std::string (" for reading"));
+          h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
+          fclose (in);
+	}
+	break;
+      case LFI_PURE:
+      case LFI_ALTM:
+        {
+          lficom_t lficomm;
+          void * LFI = &lficomm;
+	  integer64 IREP, INUMER = 77, INIMES = 0, INBARP = 0, INBARI = 0,
+		    ILONG = 0, IPOSEX = 0;
+          logical LLNOMM = fort_TRUE, LLERFA = fort_TRUE, LLIMST = fort_FALSE;
+	  character * CLNOMF = (character*)file.c_str (), * CLSTTO = (character*)"OLD", 
+		    * CLSTTC = (character*)"KEEP", * CLNOMA = (character*)ext.c_str ();
+	  character_len CLNOMF_len = file.length (), CLSTTO_len = 3, CLSTTC_len = 4, 
+			CLNOMA_len = ext.length ();
+	  integer64 * ITAB = NULL;
+          
+
+	  strncpy (lficomm.cmagic, "LFI_FORT", 8);
+	  lficomm.lfihl = NULL;
+
+          lfiouv_mt64_ (LFI, &IREP, &INUMER, &LLNOMM, CLNOMF, CLSTTO, &LLERFA, &LLIMST, 
+			&INIMES, &INBARP, &INBARI, CLNOMF_len, CLSTTO_len);
+
+          if (IREP != 0)
+            throw std::runtime_error (std::string ("Error opening file ") + file);
+
+	  lfinfo_mt64_ (LFI, &IREP, &INUMER, CLNOMA, &ILONG, &IPOSEX, CLNOMA_len);
+
+          if (IREP != 0)
+            throw std::runtime_error (std::string ("File ") + file + 
+			    std::string (" does not contains ") + ext);
+
+	  ITAB = (integer64 *)malloc (8 * ILONG);
+	  lfilec_mt64_ (LFI, &IREP, &INUMER, CLNOMA, ITAB, &ILONG, CLNOMA_len);
+
+          if (IREP != 0)
+            throw std::runtime_error (std::string ("Reading ") + ext + 
+			    std::string (" in ") + f + std::string (" failed"));
+
+	  lfifer_mt64_ (LFI, &IREP, &INUMER, CLSTTC, CLSTTC_len);
+
+          if (IREP != 0)
+            throw std::runtime_error (std::string ("Closing ") + f + std::string (" failed"));
+
+          h = codes_handle_new_from_message_copy (0, ITAB + 3, 8 * (ILONG - 3));
+	  free (ITAB);
+
+	}
+	break;
+    }
+
+  if (h == NULL)
+    throw std::runtime_error (std::string ("File ") + f + 
+                              std::string (" does not contain a GRIB message"));
+
+  return h;
+}
 
 glgrib_field_float_buffer_ptr glgrib_loader::load (const std::vector<std::string> & file, float fslot, 
                                                    glgrib_field_metadata * meta, int mult, int base)
@@ -100,18 +202,7 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::string & file, glg
 	}
     }
 
-
-  FILE * in = fopen (file.c_str (), "r");
-
-  if (in == NULL)
-    throw std::runtime_error (std::string ("Cannot open ") + file + ": " + strerror (errno));
-
-  int err = 0;
-  codes_handle * h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err);
-  fclose (in);
-
-  if (h == NULL)
-    throw std::runtime_error (std::string ("`") + file + "' does not contain GRIB data");
+  codes_handle * h = glgrib_handle_from_file (file);
 
   size_t v_len = 0;
   codes_get_size (h, "values", &v_len);

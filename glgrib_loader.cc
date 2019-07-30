@@ -79,23 +79,42 @@ codes_handle * glgrib_handle_from_file (const std::string & f)
                   if (p == std::string::npos)
                     throw std::runtime_error (std::string ("Malformed GRIB selector ") + ext);
 
-		  std::string key = m.substr (0, p), val = m.substr (p+1);
-		  long int v0, v1;
-
-		  try
-                    {
-		      v0 = std::stoi (val);
-		    }
-		  catch (...)
-		    {
-                      throw std::runtime_error (std::string ("Malformed GRIB selector ") + ext);
-		    }
-
+		  std::string key = m.substr (0, p), val0 = m.substr (p+1);
+                  
                   if (! codes_is_defined (h, key.c_str ()))
                     goto next;
-                  codes_get_long (h, key.c_str (), &v1);
-		  if (v0 != v1)
-		    goto next;
+
+		  bool string = (val0[0] == '"') && (val0[val0.length ()-1] == '"');
+
+		  if (string)
+                    val0 = val0.substr (1, val0.length () - 2);
+      
+		  if (string)
+                    {
+		      size_t len = 128;
+                      char tmp[len];
+		      grib_get_string (h, key.c_str (), tmp, &len);
+		      std::string val1 = std::string (tmp);
+		      if (val0 != val1)
+                        goto next;
+		    }
+		  else
+		    {
+		      long int v0, v1;
+
+		      try
+                        {
+		          v0 = std::stoi (val0);
+		        }
+		      catch (...)
+		        {
+                          throw std::runtime_error (std::string ("Malformed GRIB selector ") + ext);
+		        }
+
+                      codes_get_long (h, key.c_str (), &v1);
+		      if (v0 != v1)
+		        goto next;
+		    }
 	        }
 	      break;
 next:

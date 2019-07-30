@@ -57,6 +57,8 @@ codes_handle * glgrib_handle_from_file (const std::string & f)
           while ((h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err)))
             {
 	      std::string e = ext;
+
+	      // Parse GRIB selector and see if current handle complies
 	      while (e.length ())
 	        {
                   int p;
@@ -79,11 +81,13 @@ codes_handle * glgrib_handle_from_file (const std::string & f)
                   if (p == std::string::npos)
                     throw std::runtime_error (std::string ("Malformed GRIB selector ") + ext);
 
+		  // Key, value
 		  std::string key = m.substr (0, p), val0 = m.substr (p+1);
                   
                   if (! codes_is_defined (h, key.c_str ()))
                     goto next;
 
+		  // Handle string & integer values
 		  bool string = (val0[0] == '"') && (val0[val0.length ()-1] == '"');
 
 		  if (string)
@@ -116,8 +120,12 @@ codes_handle * glgrib_handle_from_file (const std::string & f)
 		        goto next;
 		    }
 	        }
+
+	      // If we got here, then the GRIB message complies with the selector : keep GRIB handle and exit the loop
+	      
 	      break;
 next:
+	      // Free GRIB handle
               codes_handle_delete (h);
 	      h = NULL;
 	    }

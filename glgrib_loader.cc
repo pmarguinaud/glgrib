@@ -193,14 +193,24 @@ next:
 }
 
 glgrib_field_float_buffer_ptr glgrib_loader::load (const std::vector<std::string> & file, float fslot, 
-                                                   glgrib_field_metadata * meta, int mult, int base)
+                                                   glgrib_field_metadata * meta, int mult, int base, bool diff)
 {
   int islot = (int)fslot;
+  float a, b;
 
-  if (fslot == (float)islot)
-    return load (file[mult*islot+base], meta);
+  if (diff)
+    {
+      a = +1.0f; 
+      b = -1.0f;
+    }
+  else
+    {
+      b = fslot - (float)islot;
+      a = 1.0f  - b;
+      if (fslot == (float)islot)
+        return load (file[mult*islot+base], meta);
+    }
 
-  float alpha = 1.0f  - (fslot - (float)islot);
 
   const std::string file1 = file[mult*(islot+0)+base];
   const std::string file2 = file[mult*(islot+1)+base];
@@ -226,6 +236,7 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::vector<std::string
         valmax = std::numeric_limits<float>::min (), 
         valmis;
   bool valmis_ok = true;
+
   for (int i = 0; i < size; i++)
     {
       float v1 = (*val1)[i], v2 = (*val2)[i];
@@ -235,7 +246,7 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::vector<std::string
         }
       else
         {
-          float v = alpha * (*val1)[i] + (1.0 - alpha) * (*val2)[i];
+          float v = a * (*val1)[i] + b * (*val2)[i];
           (*val)[i] = v;
           valmin = std::min (v, valmin);
           valmax = std::max (v, valmax);
@@ -255,10 +266,24 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::vector<std::string
 
   *meta = meta1;
 
-  meta->term = glgrib_option_date::interpolate (meta1.term, meta2.term, alpha);
-  meta->valmin = valmin;
-  meta->valmax = valmax;
-  meta->valmis = valmis;
+  if (diff)
+    {
+      float valm = std::max (fabs (valmin), fabs (valmax));
+      meta->valmin = - valm;
+      meta->valmax = + valm;
+      meta->valmis = valmis;
+      meta->CLNOMA            = "diff";
+      meta->discipline        = 255;
+      meta->parameterCategory = 255;
+      meta->parameterNumber   = 255;
+    }
+  else
+    {
+      meta->term = glgrib_option_date::interpolate (meta1.term, meta2.term, a);
+      meta->valmin = valmin;
+      meta->valmax = valmax;
+      meta->valmis = valmis;
+    }
 
   return val;
 }

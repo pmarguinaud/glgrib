@@ -11,7 +11,8 @@
 class glgrib_loader 
 {
 public:
-  glgrib_field_float_buffer_ptr load (const std::vector<std::string> &, float, glgrib_field_metadata *, int = 1, int = 0);
+  glgrib_field_float_buffer_ptr load (const std::vector<std::string> &, float, glgrib_field_metadata *, 
+                                      int = 1, int = 0, bool diff = false);
   glgrib_field_float_buffer_ptr load (const std::string &, glgrib_field_metadata *);
   void setSize (int _size) { size = _size; }
 private:

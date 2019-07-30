@@ -445,13 +445,15 @@ public:
     APPLY (scale,            Scales to be applied to fields);        
     APPLY (palette,          Palettes);                              
     APPLY (no_value_pointer, Do not keep field values in memory);    
+    APPLY (diff,             Show field difference);
     TRAVERSE (vector);
     TRAVERSE (contour);
   }
   string_list  path;
   string       palette = "default";
-  float        scale;
+  float        scale   = 1.0f;
   bool         no_value_pointer = false;
+  bool         diff = false;
   glgrib_options_vector vector;
   glgrib_options_contour contour;
 };

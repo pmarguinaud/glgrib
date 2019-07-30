@@ -66,7 +66,8 @@ void glgrib_field_scalar::init (glgrib_loader * ld, const glgrib_options_field &
   unsigned char * col;
 
   glgrib_field_metadata meta1;
-  glgrib_field_float_buffer_ptr data = ld->load (opts.path, slot, &meta1);
+
+  glgrib_field_float_buffer_ptr data = ld->load (opts.path, slot, &meta1, 1, 0, opts.diff);
   meta.push_back (meta1);
 
   dopts.scale = opts.scale;
@@ -124,6 +125,12 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
 
   float palmax = p.hasMax () ? p.getMax () : getNormedMaxValue ();
   float palmin = p.hasMin () ? p.getMin () : getNormedMinValue ();
+
+  if (palmax == palmin)
+    {
+      palmin = meta[0].valmin;
+      palmax = meta[0].valmax;
+    }
 
   program->set1f ("palmin", palmin);
   program->set1f ("palmax", palmax);

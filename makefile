@@ -190,6 +190,13 @@ test_fa: ./glgrib.x
 test_select_grib: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb%'parameterCategory=6,year=2019' --field\[0\].scale 1.03 --grid.resolution 0 --coastlines.path ''
 
+test_scalar_diff: ./glgrib.x
+	$(GDB) ./glgrib.x --landscape.path '' --field[0].diff --field\[0\].path testdata/interp/01.grb testdata/interp/36.grb --grid.resolution 0 --coastlines.path '' --field\[0\].scale 1.01  --camera.lon 2 --camera.lat 46.7 --camera.fov 5 
+
+test_contour_diff: ./glgrib.x
+	$(GDB) ./glgrib.x --field[0].diff --field[0].contour.on --field\[0\].path testdata/glob01/lfpw_0_3_1_sfc_0_prmsl+0000.grib2 testdata/glob01/lfpw_0_3_1_sfc_0_prmsl+0102.grib2 \
+		--grid.resolution 0 --coastlines.path '' --field\[0\].scale 1.01  
+
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane
 
 

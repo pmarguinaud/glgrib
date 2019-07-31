@@ -1,5 +1,6 @@
 #include "glgrib_palette.h"
 #include "glgrib_opengl.h"
+#include "glgrib_resolve.h"
 
 #include <iostream>
 #include <fstream>
@@ -43,7 +44,7 @@ glgrib_palette & get_palette_by_name (const std::string & name)
   int rc;
 #define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
 
-  TRY (sqlite3_open (".glgrib.db", &db));
+  TRY (sqlite3_open (glgrib_resolve (std::string ("glgrib.db")).c_str (), &db));
   TRY (sqlite3_prepare_v2 (db, "SELECT hexa FROM PALETTES WHERE name = ?;", -1, &req, 0));
   TRY (sqlite3_bind_text (req, 1, name.c_str (), strlen (name.c_str ()), NULL));
 
@@ -228,7 +229,7 @@ glgrib_palette get_palette_by_meta (const glgrib_field_metadata  & meta)
   int rc;
 
 #define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
-  TRY (sqlite3_open (".glgrib.db", &db));
+  TRY (sqlite3_open (glgrib_resolve ("glgrib.db").c_str (), &db));
 
   if ((meta.discipline != 255) && (meta.parameterCategory != 255) && (meta.parameterNumber != 255))
     {
@@ -298,7 +299,7 @@ void glgrib_palette::save (const glgrib_field_metadata & meta) const
 
 #define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
 
-  TRY (sqlite3_open (".glgrib.db", &db));
+  TRY (sqlite3_open (glgrib_resolve ("glgrib.db").c_str (), &db));
 
   if ((meta.discipline != 255) && (meta.parameterCategory != 255) && (meta.parameterNumber != 255))
     {

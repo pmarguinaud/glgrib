@@ -1,5 +1,6 @@
 #include "glgrib_coastlines.h"
 #include "glgrib_program.h"
+#include "glgrib_resolve.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -57,7 +58,7 @@ void glgrib_coastlines::init (const glgrib_options_coastlines & o)
 
   for (int pass = 0; pass < 2; pass++)
     {
-      fp = fopen (opts.path.c_str (), "r");
+      fp = fopen (glgrib_resolve (opts.path).c_str (), "r");
      
       while (1) 
         {   

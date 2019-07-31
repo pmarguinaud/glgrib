@@ -1,4 +1,5 @@
 #include "glgrib_options.h"
+#include "glgrib_resolve.h"
 #include <sqlite3.h>
 #include <string.h>
 #include <stdio.h>
@@ -134,7 +135,7 @@ glgrib_option_color glgrib_option_color::color_by_name (const char * n)
   bool found = false;
 
 #define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
-  TRY (sqlite3_open (".glgrib.db", &db));
+  TRY (sqlite3_open (glgrib_resolve ("glgrib.db").c_str (), &db));
   TRY (sqlite3_prepare_v2 (db, "SELECT hexa FROM COLORS WHERE name = ?;", -1, &req, 0));
   TRY (sqlite3_bind_text (req, 1, name, strlen (name), NULL));
 

@@ -1,6 +1,7 @@
 #include "glgrib_landscape.h"
 #include "glgrib_program.h"
 #include "glgrib_bmp.h"
+#include "glgrib_resolve.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,7 +46,7 @@ void glgrib_landscape::init (const glgrib_options_landscape & opts)
 
   geometry = glgrib_geometry_load (opts.geometry, opts.orography, opts.number_of_latitudes);
 
-  glgrib_bmp (opts.path.c_str (), &rgb, &w, &h);
+  glgrib_bmp (glgrib_resolve (opts.path).c_str (), &rgb, &w, &h);
 
   texture = new_glgrib_opengl_texture_ptr (w, h, rgb);
 

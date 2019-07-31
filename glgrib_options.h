@@ -388,22 +388,22 @@ public:
 };
 
 
-#define APPLY(name, desc) do { cb->apply (p, #name, #desc, &name); } while (0)
-#define TRAVERSE(name) do { name.traverse (p + ( p == "" ? "" : ".") + #name, cb); } while (0)
-#define TRAVERSE_DEF virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+#define DESC(name, desc) do { cb->apply (p, #name, #desc, &name); } while (0)
+#define INCLUDE(name) do { name.traverse (p + ( p == "" ? "" : ".") + #name, cb); } while (0)
+#define DEFINE virtual void traverse (const std::string & p, glgrib_options_callback * cb)
 
 class glgrib_options_contour : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (on,            Enable contour);          
-    APPLY (colors,        Contour colors);
-    APPLY (number,        Number of levels);
-    APPLY (levels,        List of levels);
-    APPLY (widths,        List of widths);
-    APPLY (patterns,      List of dash patterns);
-    APPLY (lengths,       List of dash lengths);
+    DESC (on,            Enable contour);          
+    DESC (colors,        Contour colors);
+    DESC (number,        Number of levels);
+    DESC (levels,        List of levels);
+    DESC (widths,        List of widths);
+    DESC (patterns,      List of dash patterns);
+    DESC (lengths,       List of dash lengths);
   }
   bool on = false;
   int number = 10;
@@ -417,15 +417,15 @@ public:
 class glgrib_options_vector : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (on,          Field is a vector);          
-    APPLY (hide_arrow,  Hide arrows);                
-    APPLY (hide_norm,   Hide norm field);            
-    APPLY (color,       Color for arrows);
-    APPLY (density,     Vector density);
-    APPLY (scale,       Vector scale);
-    APPLY (head_size,   Vector head size);
+    DESC (on,          Field is a vector);          
+    DESC (hide_arrow,  Hide arrows);                
+    DESC (hide_norm,   Hide norm field);            
+    DESC (color,       Color for arrows);
+    DESC (density,     Vector density);
+    DESC (scale,       Vector scale);
+    DESC (head_size,   Vector head size);
   }
   bool  on         = false;
   bool  hide_arrow = false;
@@ -439,15 +439,15 @@ public:
 class glgrib_options_field : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (path,             List of GRIB files);                    
-    APPLY (scale,            Scales to be applied to fields);        
-    APPLY (palette,          Palettes);                              
-    APPLY (no_value_pointer, Do not keep field values in memory);    
-    APPLY (diff,             Show field difference);
-    TRAVERSE (vector);
-    TRAVERSE (contour);
+    DESC (path,             List of GRIB files);                    
+    DESC (scale,            Scales to be applied to fields);        
+    DESC (palette,          Palettes);                              
+    DESC (no_value_pointer, Do not keep field values in memory);    
+    DESC (diff,             Show field difference);
+    INCLUDE (vector);
+    INCLUDE (contour);
   }
   string_list  path;
   string       palette = "default";
@@ -462,9 +462,9 @@ public:
 class glgrib_options_palette : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (directory,        Directory where palettes are stored);    
+    DESC (directory,        Directory where palettes are stored);    
   }
   string  directory  = "palettes";
 };
@@ -472,11 +472,11 @@ public:
 class glgrib_options_grid : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (on,                Display grid);
-    APPLY (resolution,        Grid resolution);
-    APPLY (color,             Grid color);
+    DESC (on,                Display grid);
+    DESC (resolution,        Grid resolution);
+    DESC (color,             Grid color);
   }
   int resolution = 9;
   glgrib_option_color color = glgrib_option_color (0, 255, 0);
@@ -486,14 +486,14 @@ public:
 class glgrib_options_landscape : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (on,                  Enable landscape);
-    APPLY (orography,           Factor to apply to orography);
-    APPLY (path,                Path to landscape image in BMP format);
-    APPLY (geometry,            GRIB files to take geometry from);
-    APPLY (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
-    APPLY (wireframe,           Draw landscape in wireframe mode);
+    DESC (on,                  Enable landscape);
+    DESC (orography,           Factor to apply to orography);
+    DESC (path,                Path to landscape image in BMP format);
+    DESC (geometry,            GRIB files to take geometry from);
+    DESC (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
+    DESC (wireframe,           Draw landscape in wireframe mode);
   }
   string  path  = "landscape/Whole_world_-_land_and_oceans_8000.bmp";
   float  orography  = 0.05;
@@ -506,11 +506,11 @@ public:
 class glgrib_options_coastlines : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (on,                 Display coastlines);
-    APPLY (path,               Path to coastlines file);
-    APPLY (color,              Coastlines color);
+    DESC (on,                 Display coastlines);
+    DESC (path,               Path to coastlines file);
+    DESC (color,              Coastlines color);
   }
   string path  = "coastlines/gshhs(3).rim";
   glgrib_option_color color;
@@ -520,10 +520,10 @@ public:
 class glgrib_options_offscreen : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (on,       Run in offline mode);
-    APPLY (frames,   Number of frames to issue in offline mode);
+    DESC (on,       Run in offline mode);
+    DESC (frames,   Number of frames to issue in offline mode);
   }
   bool on  = false;
   int  frames  = 1;
@@ -532,16 +532,16 @@ public:
 class glgrib_options_window : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (width,              Window width);
-    APPLY (height,             Window height);
-    APPLY (statistics,         Issue statistics when window is closed);
-    APPLY (title,              Window title);
-    APPLY (debug,              Enable OpenGL debugging);
-    APPLY (version_major,      GLFW_CONTEXT_VERSION_MAJOR);
-    APPLY (version_minor,      GLFW_CONTEXT_VERSION_MINOR);
-    TRAVERSE (offscreen);
+    DESC (width,              Window width);
+    DESC (height,             Window height);
+    DESC (statistics,         Issue statistics when window is closed);
+    DESC (title,              Window title);
+    DESC (debug,              Enable OpenGL debugging);
+    DESC (version_major,      GLFW_CONTEXT_VERSION_MAJOR);
+    DESC (version_minor,      GLFW_CONTEXT_VERSION_MINOR);
+    INCLUDE (offscreen);
   }
   int     width  = 800;
   int     height  = 800;
@@ -556,14 +556,14 @@ public:
 class glgrib_options_light : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (date_from_grib, Calculate light position from GRIB date);
-    APPLY (on,             Enable light);
-    APPLY (lon,            Light longitude);
-    APPLY (lat,            Light latitude);
-    APPLY (rotate,         Make sunlight move);
-    APPLY (date,           Date for sunlight position);
+    DESC (date_from_grib, Calculate light position from GRIB date);
+    DESC (on,             Enable light);
+    DESC (lon,            Light longitude);
+    DESC (lat,            Light latitude);
+    DESC (rotate,         Make sunlight move);
+    DESC (date,           Date for sunlight position);
   }
   glgrib_option_date date;
   bool   date_from_grib = false;
@@ -576,11 +576,11 @@ public:
 class glgrib_options_position : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (lon,            Longitude);
-    APPLY (lat,            Latitude);
-    APPLY (fov,            Field of view);
+    DESC (lon,            Longitude);
+    DESC (lat,            Latitude);
+    DESC (fov,            Field of view);
   }
   float  lon  = 0.0f;
   float  lat  = 0.0f;
@@ -590,12 +590,12 @@ public:
 class glgrib_options_travelling : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (on,             Enable travelling); 
-    APPLY (frames,         Number of frames);
-    TRAVERSE (pos1);
-    TRAVERSE (pos2);
+    DESC (on,             Enable travelling); 
+    DESC (frames,         Number of frames);
+    INCLUDE (pos1);
+    INCLUDE (pos2);
   }
   bool   on     = false;
   int    frames = 100;
@@ -606,10 +606,10 @@ public:
 class glgrib_options_interpolation : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (on,             Enable interpolation);
-    APPLY (frames,         Number of frames);
+    DESC (on,             Enable interpolation);
+    DESC (frames,         Number of frames);
   }
   bool on = false;
   int frames = 10;
@@ -618,16 +618,16 @@ public:
 class glgrib_options_scene : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (rotate_earth,        Make earth rotate);
-    APPLY (projection,          Mercator XYZ latlon polar_north polar_south);
-    APPLY (transformation,      Perspective or orthographic);
-    TRAVERSE (light);
-    TRAVERSE (travelling);
-    APPLY (test_strxyz,         Test XYZ string);
-    TRAVERSE (interpolation);
-    APPLY (display_date,        Display date);
+    DESC (rotate_earth,        Make earth rotate);
+    DESC (projection,          Mercator XYZ latlon polar_north polar_south);
+    DESC (transformation,      Perspective or orthographic);
+    INCLUDE (light);
+    INCLUDE (travelling);
+    DESC (test_strxyz,         Test XYZ string);
+    INCLUDE (interpolation);
+    DESC (display_date,        Display date);
   }
   bool    rotate_earth  = false;
   string  projection  = "XYZ";
@@ -642,12 +642,12 @@ public:
 class glgrib_options_camera : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (lon,                Camera longitude);
-    APPLY (lat,                Camera latitude);
-    APPLY (fov,                Camera field of view);
-    APPLY (distance,           Camera distance);
+    DESC (lon,                Camera longitude);
+    DESC (lat,                Camera latitude);
+    DESC (fov,                Camera field of view);
+    DESC (distance,           Camera distance);
   }
   float  distance  = 6.0; 
   float  lat       = 0.0; 
@@ -660,12 +660,12 @@ class glgrib_options_font : public glgrib_options_base
 public:
   glgrib_options_font (const std::string & b, float s) : bitmap (b), scale (s) {}
   glgrib_options_font () {}
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (bitmap,     Bitmap path);
-    APPLY (scale,      Bitmap scale);
-    APPLY (color.foreground, Foreground color);
-    APPLY (color.background, Background color);
+    DESC (bitmap,     Bitmap path);
+    DESC (scale,      Bitmap scale);
+    DESC (color.foreground, Foreground color);
+    DESC (color.background, Background color);
   }
   std::string bitmap = "fonts/08.bmp";
   float scale = 0.05f;
@@ -680,10 +680,10 @@ public:
 class glgrib_options_colorbar : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    APPLY (on, Activate colorbar);
-    TRAVERSE (font);
+    DESC (on, Activate colorbar);
+    INCLUDE (font);
   }
   bool on = false;
   glgrib_options_font font = glgrib_options_font ("fonts/16.bmp", 0.02f);
@@ -692,20 +692,20 @@ public:
 class glgrib_options : public glgrib_options_base
 {
 public:
-  TRAVERSE_DEF
+  DEFINE
   {
-    TRAVERSE (field[0]); TRAVERSE (field[1]); TRAVERSE (field[2]); TRAVERSE (field[3]); TRAVERSE (field[4]); 
-    TRAVERSE (field[5]); TRAVERSE (field[6]); TRAVERSE (field[7]); TRAVERSE (field[8]); TRAVERSE (field[9]); 
-    TRAVERSE (palette);
-    TRAVERSE (coastlines);
-    TRAVERSE (window);
-    TRAVERSE (landscape);
-    TRAVERSE (grid);
-    TRAVERSE (scene);
-    TRAVERSE (camera);
-    TRAVERSE (colorbar);
-    TRAVERSE (font);
-    APPLY (shell, Run command line);
+    INCLUDE (field[0]); INCLUDE (field[1]); INCLUDE (field[2]); INCLUDE (field[3]); INCLUDE (field[4]); 
+    INCLUDE (field[5]); INCLUDE (field[6]); INCLUDE (field[7]); INCLUDE (field[8]); INCLUDE (field[9]); 
+    INCLUDE (palette);
+    INCLUDE (coastlines);
+    INCLUDE (window);
+    INCLUDE (landscape);
+    INCLUDE (grid);
+    INCLUDE (scene);
+    INCLUDE (camera);
+    INCLUDE (colorbar);
+    INCLUDE (font);
+    DESC (shell, Run command line);
   }
   std::vector<glgrib_options_field> field =
     {glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), 

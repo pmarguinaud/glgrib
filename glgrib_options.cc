@@ -209,7 +209,6 @@ bool glgrib_options_parser::parse (int argc, char * argv[])
 
 void glgrib_options_parser::show_help ()
 {
-  return;
   printf ("Usage:\n");
   size_t name_size = 0, type_size = 0;
   for (name2option_t::iterator it = name2option.begin (); 

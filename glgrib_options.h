@@ -474,11 +474,13 @@ class glgrib_options_grid : public glgrib_options_base
 public:
   TRAVERSE_DEF
   {
+    APPLY (on,                Display grid);
     APPLY (resolution,        Grid resolution);
     APPLY (color,             Grid color);
   }
   int resolution = 9;
   glgrib_option_color color = glgrib_option_color (0, 255, 0);
+  bool on = false;
 };
 
 class glgrib_options_landscape : public glgrib_options_base
@@ -486,6 +488,7 @@ class glgrib_options_landscape : public glgrib_options_base
 public:
   TRAVERSE_DEF
   {
+    APPLY (on,                  Enable landscape);
     APPLY (orography,           Factor to apply to orography);
     APPLY (path,                Path to landscape image in BMP format);
     APPLY (geometry,            GRIB files to take geometry from);
@@ -497,6 +500,7 @@ public:
   string  geometry  = "";
   int  number_of_latitudes  = 500;
   bool wireframe = false;
+  bool on = false;
 };
 
 class glgrib_options_coastlines : public glgrib_options_base
@@ -504,11 +508,13 @@ class glgrib_options_coastlines : public glgrib_options_base
 public:
   TRAVERSE_DEF
   {
+    APPLY (on,                 Display coastlines);
     APPLY (path,               Path to coastlines file);
     APPLY (color,              Coastlines color);
   }
   string path  = "coastlines/gshhs(3).rim";
   glgrib_option_color color;
+  bool on = false;
 };
 
 class glgrib_options_offscreen : public glgrib_options_base

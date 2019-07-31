@@ -239,13 +239,13 @@ void glgrib_scene::init (const glgrib_options & o)
       ld.setSize (size);
     }
 
-  if (d.opts.landscape.path != "")
+  if (d.opts.landscape.on)
     d.landscape.init (d.opts.landscape);
 
-  if (d.opts.grid.resolution)
+  if (d.opts.grid.on)
     d.grid.init (d.opts.grid);
 
-  if (d.opts.coastlines.path != "")
+  if (d.opts.coastlines.on)
     d.coastlines.init (d.opts.coastlines);
 
   d.light = d.opts.scene.light;

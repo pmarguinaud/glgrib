@@ -24,6 +24,7 @@ typedef struct lficb_t
   void (*lfifer) (LFIFER_ARGS_DECL);
   void (*lfilec) (LFILEC_ARGS_DECL);
   void (*lfinfo) (LFINFO_ARGS_DECL);
+  void (*lfinff) (LFINFF_ARGS_DECL);
   void (*lfipos) (LFIPOS_ARGS_DECL);
   void (*lfiver) (LFIVER_ARGS_DECL);
   void (*lfiofm) (LFIOFM_ARGS_DECL);

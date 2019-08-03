@@ -28,6 +28,7 @@ typedef struct lficb_verb_t
   void (*lfifer) (int, struct lfi_hndl_t *, LFIFER_ARGS_DECL);
   void (*lfilec) (int, struct lfi_hndl_t *, LFILEC_ARGS_DECL);
   void (*lfinfo) (int, struct lfi_hndl_t *, LFINFO_ARGS_DECL);
+  void (*lfinff) (int, struct lfi_hndl_t *, LFINFF_ARGS_DECL);
   void (*lfipos) (int, struct lfi_hndl_t *, LFIPOS_ARGS_DECL);
   void (*lfiver) (int, struct lfi_hndl_t *, LFIVER_ARGS_DECL);
   void (*lfiofm) (int, struct lfi_hndl_t *, LFIOFM_ARGS_DECL);

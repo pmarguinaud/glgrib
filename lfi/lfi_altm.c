@@ -447,7 +447,7 @@ static lfi_hndl_t * _getfhr (const char * base, character * CDNOMF, integer64 * 
   lfi_hndl_t * als = lfi_get_alts_hndl (NULL);
   const char * cnomf = resolve_filename (base, CDNOMF, CDNOMF_len, NULL);
 
-  als->cb->lfiouv (als->data, &IREP, KNUMER, &LLNOMM, cnomf, CLSTTO, &LLERFA, &LLIMST, &INIMES, &INBARP, &INBARI,
+  als->cb->lfiouv (als->data, &IREP, KNUMER, &LLNOMM, (character *)cnomf, CLSTTO, &LLERFA, &LLIMST, &INIMES, &INBARP, &INBARI,
                    strlen (cnomf), strlen (CLSTTO));
   
   if (IREP != 0)
@@ -902,7 +902,7 @@ error_omp:
 
         /* Make path of sub-file relative to path of main file */
         if (istrue (*LDRELATIVE))
-          cnoml = lfi_make_relative_path (cnomf, cnoml);
+          cnoml = lfi_make_relative_path (cnomf, (character *)cnoml);
 
         fh->fidx[ifh].als    = als;
         fh->fidx[ifh].cnomf  = cnoml;
@@ -945,7 +945,7 @@ error_omp:
 
             /* Make path of sub-file relative to path of main file */
             if (istrue (*LDRELATIVE))
-              cnoml = lfi_make_relative_path (cnomf, cnoml);
+              cnoml = lfi_make_relative_path (cnomf, (character *)cnoml);
 
             fh->fidx[ifh].als    = NULL;
             fh->fidx[ifh].cnomf  = cnoml;
@@ -1298,6 +1298,31 @@ static void lfinfo_altm (LFINFO_ARGS_DECL)
 
       *KPOSEX = iart;
 
+    }
+
+  DRHOOK_END (0);
+}
+
+static void lfinff_altm (LFINFF_ARGS_DECL)
+{
+  ALM_DECL;
+  FH_DECL (1);
+  ART_DECL;
+  DRHOOK_START ("lfinff_altm");
+
+  if (iart < 0)
+    {
+      *KREP   = 0;
+      CDNOMA[0] = '\0';
+      if (CDNOMF_len > 0)
+        CDNOMF[0] = '\0';
+    }
+  else
+    {
+      *KREP   = 0;
+      strncpy (CDNOMA, fh->aidx[iart].namf, CDNOMA_len);
+      strncpy (CDNOMF, fh->fidx[ifh].cnomf, CDNOMF_len);
+      fh->iart = iart;
     }
 
   DRHOOK_END (0);
@@ -1887,6 +1912,7 @@ lficb_t lficb_altm = {
   lfifer_altm,        /* KNUMER Fermeture                                                */
   lfilec_altm,        /* KNUMER Lecture                                                  */
   lfinfo_altm,        /* KNUMER Caracteristiques d'un article nomme                      */
+  lfinff_altm,        /* KNUMER Get real file & record name                              */
   lfipos_altm,        /* KNUMER Remise a zero du pointeur de fichier                     */
   lfiver_dumm,        /* KNUMER Verrouillage d'un fichier                                */
   lfiofm_altm,        /* KNUMER Obtention du facteur multiplicatif                       */
@@ -2172,7 +2198,7 @@ clean_alts:
 
             /* Make path of sub-file relative to path of main file */
             if (istrue (*LDRELATIVE))
-              cnoml2 = lfi_make_relative_path (cnomf2, cnoml2);
+              cnoml2 = lfi_make_relative_path (cnomf2, (character *)cnoml2);
 
             fh->fidx[ifh].cnomf = cnoml2;
 

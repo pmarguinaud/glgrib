@@ -988,6 +988,30 @@ static void lfinfo_alts (LFINFO_ARGS_DECL)
   DRHOOK_END (0);
 }
 
+static void lfinff_alts (LFINFF_ARGS_DECL)
+{
+  ALS_DECL;
+  FH_DECL (1);
+  ART_DECL;
+  DRHOOK_START ("lfinff_alts");
+
+  if (iart < 0)
+    {
+      *KREP   = 0;
+      CDNOMA[0] = '\0';
+      if (CDNOMF_len > 0)
+        CDNOMF[0] = '\0';
+    }
+  else
+    {
+      fh->iart = iart;
+      *KREP   = 0;
+      strncpy (CDNOMF, fh->cnomf, CDNOMF_len);
+    }
+
+  DRHOOK_END (0);
+}
+
 static void lfilec_alts (LFILEC_ARGS_DECL)
 {
   ALS_DECL;
@@ -1714,6 +1738,7 @@ lficb_t lficb_alts = {
   lfifer_alts,        /* KNUMER Fermeture                                                */
   lfilec_alts,        /* KNUMER Lecture                                                  */
   lfinfo_alts,        /* KNUMER Caracteristiques d'un article nomme                      */
+  lfinff_alts,        /* KNUMER Get real file & record name                              */
   lfipos_alts,        /* KNUMER Remise a zero du pointeur de fichier                     */
   lfiver_dumm,        /* KNUMER Verrouillage d'un fichier                                */
   lfiofm_alts,        /* KNUMER Obtention du facteur multiplicatif                       */

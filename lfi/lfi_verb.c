@@ -230,6 +230,15 @@ static void lfinfo_verb (int st, struct lfi_hndl_t * lfi, LFINFO_ARGS_DECL)
 }
 
 
+static void lfinff_verb (int st, struct lfi_hndl_t * lfi, LFINFF_ARGS_DECL)
+{
+  if (st)
+    lfi_verb (lfi, "LFINFF", "KREP", KREP, "CDNOMA", CDNOMA, CDNOMA_len, "CDNOMF", CDNOMF, CDNOMF_len, NULL);
+  else
+    lfi_verb (lfi, "LFINFF", "KNUMER", KNUMER, "CDNOMA", CDNOMA, CDNOMA_len, NULL);
+}
+
+
 static void lfipos_verb (int st, struct lfi_hndl_t * lfi, LFIPOS_ARGS_DECL)
 {
   if (st)
@@ -542,6 +551,7 @@ lficb_verb_t lficb_verb =
   lfifer_verb,
   lfilec_verb,
   lfinfo_verb,
+  lfinff_verb,
   lfipos_verb,
   lfiver_verb,
   lfiofm_verb,

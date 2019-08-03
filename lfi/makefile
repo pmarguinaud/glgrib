@@ -1,6 +1,18 @@
 
 
+CFLAGS=-O2 -g
 
-liblfi.a: iswap8.c  lfi_abor.c  lfi_altm.c  lfi_alts.c  lfi_dumm.c  lfi_fmul.c  lfi_grok.c  lfi_hndl.c  lfi_intf.c  lfi_miss.c  lfi_util.c  lfi_verb.c
-	cc -c -O2 -g *.c && ar crv liblfi.a *.o
+lfi.x: liblfi.a lfi.c
+	cc -g -o lfi.x lfi.c -L. -llfi
+
+liblfi.a: iswap8.o  lfi_abor.o  lfi_altm.o  lfi_alts.o  lfi_dumm.o  lfi_fmul.o  lfi_grok.o  lfi_hndl.o  lfi_intf.o  lfi_miss.o  lfi_util.o  lfi_verb.o
+	ar crv liblfi.a *.o
+
+
+%.o: %.c
+	gcc $(CFLAGS) -o $@ -c $<
+
+
+clean:
+	\rm -f *.a *.x *.o
 

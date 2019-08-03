@@ -203,6 +203,8 @@ lfi_intf_knumer_krep (lfilec, LFILEC)
 
 lfi_intf_knumer_krep (lfinfo, LFINFO)
 
+lfi_intf_knumer_krep (lfinff, LFINFF)
+
 lfi_intf_knumer_krep (lfipos, LFIPOS)
 
 lfi_intf (lfiver, LFIVER)

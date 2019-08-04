@@ -23,6 +23,7 @@ struct lfi_hndl_t;
 typedef struct lficb_verb_t
 {
   void (*lfiouv) (int, struct lfi_hndl_t *, LFIOUV_ARGS_DECL);
+  void (*lfican) (int, struct lfi_hndl_t *, LFICAN_ARGS_DECL);
   void (*lficas) (int, struct lfi_hndl_t *, LFICAS_ARGS_DECL);
   void (*lfiecr) (int, struct lfi_hndl_t *, LFIECR_ARGS_DECL);
   void (*lfifer) (int, struct lfi_hndl_t *, LFIFER_ARGS_DECL);

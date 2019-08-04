@@ -33,6 +33,7 @@ void lfixxx##_miss (LFIXXX##_ARGS_DECL)  \
 }
 
 lfi_miss (lfiouv, LFIOUV)
+lfi_miss (lfican, LFICAN)
 lfi_miss (lficas, LFICAS)
 lfi_miss (lfiecr, LFIECR)
 lfi_miss (lfifer, LFIFER)

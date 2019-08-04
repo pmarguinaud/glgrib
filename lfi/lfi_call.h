@@ -19,6 +19,7 @@
 typedef struct lficb_t
 {
   void (*lfiouv) (LFIOUV_ARGS_DECL);
+  void (*lfican) (LFICAN_ARGS_DECL);
   void (*lficas) (LFICAS_ARGS_DECL);
   void (*lfiecr) (LFIECR_ARGS_DECL);
   void (*lfifer) (LFIFER_ARGS_DECL);

@@ -27,6 +27,7 @@ void lfixxx##_dumm (LFIXXX##_ARGS_DECL) \
 
 
 lfi_dumm_krep (lfiouv, LFIOUV)
+lfi_dumm_krep (lfican, LFICAN)
 lfi_dumm_krep (lficas, LFICAS)
 lfi_dumm_krep (lfiecr, LFIECR)
 lfi_dumm_krep (lfifer, LFIFER)

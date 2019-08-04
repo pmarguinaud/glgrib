@@ -185,6 +185,15 @@ static void lfiouv_verb (int st, struct lfi_hndl_t * lfi, LFIOUV_ARGS_DECL)
 }
 
 
+static void lfican_verb (int st, struct lfi_hndl_t * lfi, LFICAN_ARGS_DECL)
+{
+  if (st)
+    lfi_verb (lfi, "LFICAN", "KREP", KREP, "CDNOMA", CDNOMA, CDNOMA_len, NULL);
+  else
+    lfi_verb (lfi, "LFICAN", "KNUMER", KNUMER, "LDAVAN", LDAVAN, NULL);
+}
+
+
 static void lficas_verb (int st, struct lfi_hndl_t * lfi, LFICAS_ARGS_DECL)
 {
   if (st)
@@ -546,6 +555,7 @@ static void lfifmd_verb (int st, struct lfi_hndl_t * lfi, LFIFMD_ARGS_DECL)
 lficb_verb_t lficb_verb = 
 {
   lfiouv_verb,
+  lfican_verb,
   lficas_verb,
   lfiecr_verb,
   lfifer_verb,

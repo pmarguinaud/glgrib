@@ -1208,6 +1208,36 @@ done:
   DRHOOK_END (0);
 }
 
+static void lfican_altm (LFICAN_ARGS_DECL)
+{
+  ALM_DECL;
+  FH_DECL (1);
+  int iart = seek_rc (fh, +1);
+  DRHOOK_START ("lfican_altm");
+  
+  *KREP = 0;
+  memset (CDNOMA, ' ', CDNOMA_len);
+      
+  if (iart < 0)
+    {
+      goto end; 
+    } 
+
+  memcpy (CDNOMA, fh->aidx[iart].name, minARTN (CDNOMA_len));
+
+  if (CDNOMA_len < lfi_fstrlen (fh->aidx[iart].name, ARTNLEN))
+    {
+      *KREP = -24;
+      goto end;
+    }
+
+  if (istrue (*LDAVAN))
+    fh->iart = iart;
+
+end:
+  DRHOOK_END (0);
+}
+
 static void lficas_altm (LFICAS_ARGS_DECL)
 {
   ALM_DECL;
@@ -1907,6 +1937,7 @@ static void lfinmg_altm (LFINMG_ARGS_DECL)
 
 lficb_t lficb_altm = {
   lfiouv_altm,        /*        Ouverture fichier                                        */
+  lfican_altm,        /* KNUMER Nom de l'article suivant                                 */
   lficas_altm,        /* KNUMER Caracteristiques de l'article suivant                    */
   lfiecr_altm,        /* KNUMER Ecriture                                                 */
   lfifer_altm,        /* KNUMER Fermeture                                                */

@@ -15,6 +15,7 @@
 #include "lfi_call.h"
 
 extern void lfiouv_miss (LFIOUV_ARGS_DECL);
+extern void lfican_miss (LFICAN_ARGS_DECL);
 extern void lficas_miss (LFICAS_ARGS_DECL);
 extern void lfiecr_miss (LFIECR_ARGS_DECL);
 extern void lfifer_miss (LFIFER_ARGS_DECL);

@@ -193,6 +193,8 @@ done:
 
 }
 
+lfi_intf_knumer_krep (lfican, LFICAN)
+
 lfi_intf_knumer_krep (lficas, LFICAS)
 
 lfi_intf_knumer_krep (lfiecr, LFIECR)

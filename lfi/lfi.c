@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <curl/curl.h>
+#include <sqlite3.h>
 
 #include "lfi_grok.h"
 #include "lfi_type.h"
@@ -157,6 +158,10 @@ int test_curl (const char * url)
     goto end;
 
 
+  int rc;
+  sqlite3 * db = NULL;
+  sqlite3_stmt * ins = NULL, * sel = NULL;
+
   {
     lficom_t lficomm;
     void * LFI = &lficomm;
@@ -179,20 +184,96 @@ int test_curl (const char * url)
     lfinaf_mt64_ (LFI, &IREP, &INUMER, &INALDO, &INTROU, &INARES, &INAMAX);
 
     lfipos_mt64_ (LFI, &IREP, &INUMER);
+
+
+#define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
+
+    TRY (sqlite3_open ("lfi.db", &db));
+    TRY (sqlite3_exec (db, "BEGIN", 0, 0, 0));
+
+    TRY (sqlite3_prepare_v2 (db, "SELECT INUMER FROM URL_TO_NUMER WHERE URL = ?;", -1, &sel, 0));
+    TRY (sqlite3_bind_text (sel, 1, url, strlen (url), NULL));
+
+    TRY (sqlite3_prepare_v2 (db, "INSERT INTO URL_TO_NUMER (URL) VALUES (?);", -1, &ins, 0));
+    TRY (sqlite3_bind_text (ins, 1, url, strlen (url), NULL));
+
+    int INUM;
+    if ((rc = sqlite3_step (sel)) == SQLITE_ROW)
+      {
+        INUM = sqlite3_column_int (sel, 0);
+        sqlite3_stmt * del = NULL;
+        TRY (sqlite3_prepare_v2 (db, "DELETE FROM LFI_PURE_INDEX WHERE INUMER = ?;", -1, &del, 0));
+        TRY (sqlite3_bind_int (del, 1, INUM));
+        if ((rc = sqlite3_step (del)) != SQLITE_DONE)
+          {
+            printf ("%s", sqlite3_errmsg (db));
+            goto end;
+          }
+        TRY (sqlite3_finalize (del));
+        del = NULL;
+      } 
+    else
+      {
+        if ((rc = sqlite3_step (ins)) != SQLITE_DONE)
+          {
+            printf ("%s", sqlite3_errmsg (db));
+            goto end;
+          }
+        if ((rc = sqlite3_step (sel)) == SQLITE_ROW)
+          INUM = sqlite3_column_int (sel, 0);
+        else
+          goto end;
+      }
+
+    printf (" INUM = %d\n", INUM);
+
+    TRY (sqlite3_finalize (sel));
+    sel = NULL;
+    TRY (sqlite3_finalize (ins));
+    ins = NULL;
+
+
+    TRY (sqlite3_prepare_v2 (db, "INSERT INTO LFI_PURE_INDEX VALUES (?, ?, ?, ?);", -1, &ins, 0));
+
+    printf (" INALDO = %lld\n", INALDO);
+
     for (int i = 0; i < INALDO; i++)
       {
         integer64 ILONGD, IPOSEX; 
         logical LLAVAN = fort_TRUE;
         lficas_mt64_ (LFI, &IREP, &INUMER, CLNOMA, &ILONGD, &IPOSEX, &LLAVAN, CLNOMA_len);
         CLNOMA[CLNOMA_len] = '\0';
+        TRY (sqlite3_bind_int  (ins, 1, INUM));
+        TRY (sqlite3_bind_text (ins, 2, CLNOMA, strlen (CLNOMA), NULL));
+        TRY (sqlite3_bind_int  (ins, 3, IPOSEX));
+        TRY (sqlite3_bind_int  (ins, 4, ILONGD));
+        if ((rc = sqlite3_step (ins)) != SQLITE_DONE)
+          {
+            printf ("%s", sqlite3_errmsg (db));
+            goto end;
+          }
         printf (" IPOSEX = %10lld, ILONGD = %10lld, CLNOMA = >%s<\n", IPOSEX, ILONGD, CLNOMA);
+        sqlite3_reset (ins);
       }
+    TRY (sqlite3_finalize (ins));
+    ins = NULL;
+
+    TRY (sqlite3_exec (db, "COMMIT", 0, 0, 0));
 
    
     lfifer_mt64_ (LFI, &IREP, &INUMER, CLSTTC, CLSTTC_len);
   }
 
 end:
+
+  if (rc != SQLITE_OK)
+    printf ("%s\n", sqlite3_errmsg (db));
+  if (ins != NULL)
+    sqlite3_finalize (ins);
+  if (sel != NULL)
+    sqlite3_finalize (sel);
+  if (db != NULL)
+    sqlite3_close (db);
   if (hnd != NULL)
     curl_easy_cleanup (hnd);
   hnd = NULL;

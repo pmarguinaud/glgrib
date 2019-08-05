@@ -69,6 +69,26 @@ int test_lfinff (int argc, char * argv[])
   return 0;
 }
 
+time_t filetime (const char * url)
+{
+  time_t t = 0;
+  long filetime = -1;
+  CURL * curl = curl_easy_init ();
+  curl_easy_setopt (curl, CURLOPT_URL, url);
+  curl_easy_setopt (curl, CURLOPT_FILETIME, 1L);
+  curl_easy_setopt (curl, CURLOPT_NOBODY, 1L);
+  curl_easy_setopt (curl, CURLOPT_NETRC, (long)CURL_NETRC_REQUIRED);
+  curl_easy_setopt (curl, CURLOPT_BUFFERSIZE, 102400L);
+  curl_easy_setopt (curl, CURLOPT_TCP_KEEPALIVE, 1L);
+  curl_easy_setopt (curl, CURLOPT_HEADER, 0L);
+  curl_easy_setopt (curl, CURLOPT_MAXREDIRS, 50L);
+  if (curl_easy_perform (curl) == CURLE_OK)
+    if ((curl_easy_getinfo (curl, CURLINFO_FILETIME, &filetime) == CURLE_OK ) && (filetime >= 0)) 
+      t = (time_t)filetime;
+  curl_easy_cleanup (curl);
+  return t;
+}
+
 typedef struct write_hdr_t
 {
   FILE * fp;
@@ -283,7 +303,8 @@ end:
 
 int main (int argc, char * argv[])
 {
-  test_curl (argv[1]);
+  printf ("%ld\n", filetime (argv[1]));
+//test_curl (argv[1]);
   return 0;
 }
 

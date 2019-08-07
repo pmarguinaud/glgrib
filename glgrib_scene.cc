@@ -353,6 +353,7 @@ void glgrib_scene::init (const glgrib_options & o)
       d.strxyz.setForegroundColor (d.opts.font.color.foreground);
     }
 
+  resize ();
 }
 
 void glgrib_scene::setViewport (int _width, int _height)

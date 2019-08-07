@@ -73,6 +73,10 @@ void glgrib_scene::display () const
   if (d.opts.scene.test_strxyz)
     d.strxyz.render (d.view);
 
+  for (std::vector<glgrib_string>::const_iterator it = d.str.begin ();
+       it != d.str.end (); it++)
+    it->render (d.MVP_R);
+
 
 }
 
@@ -301,15 +305,8 @@ void glgrib_scene::init (const glgrib_options & o)
           glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
           d.strdate.init2D (font, std::string (20, 'X'), 1.0f, 0.0f, d.opts.font.scale, glgrib_string::SE);
 
-          d.strdate.setForegroundColor (d.opts.font.color.foreground.r / 255.0f, 
-                                        d.opts.font.color.foreground.g / 255.0f, 
-                                        d.opts.font.color.foreground.b / 255.0f,
-                                        d.opts.font.color.foreground.a / 255.0f);
-
-          d.strdate.setBackgroundColor (d.opts.font.color.background.r / 255.0f, 
-                                        d.opts.font.color.background.g / 255.0f, 
-                                        d.opts.font.color.background.b / 255.0f,
-                                        d.opts.font.color.background.a / 255.0f);
+          d.strdate.setForegroundColor (d.opts.font.color.foreground);
+          d.strdate.setBackgroundColor (d.opts.font.color.background);
 
           const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
           d.strdate.update (meta[0].term.asString ());
@@ -317,13 +314,31 @@ void glgrib_scene::init (const glgrib_options & o)
 
     }
 
+  for (int i = 0; i < d.opts.scene.text.size (); i++)
+    {
+      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
+      glgrib_string str;
+      d.str.push_back (str);
+
+      if (i >= d.opts.scene.text_x.size ())
+        break;
+      if (i >= d.opts.scene.text_y.size ())
+        break;
+
+      glgrib_string::align_t a = i < d.opts.scene.text_a.size () ? 
+        glgrib_string::str2align (d.opts.scene.text_a[i]) : glgrib_string::C;
+
+      d.str[i].init2D (font, d.opts.scene.text[i], d.opts.scene.text_x[i], d.opts.scene.text_y[i], d.opts.font.scale, a);
+      d.str[i].setForegroundColor (d.opts.font.color.foreground);
+      d.str[i].setBackgroundColor (d.opts.font.color.background);
+
+    }
+
   if (d.opts.colorbar.on)
     {
       glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
       d.strmess.init2D (font, std::string (30, ' '), 1.0f, 1.0f, d.opts.font.scale, glgrib_string::NE);
-      d.strmess.setForegroundColor (d.opts.font.color.foreground.r / 255.0f, 
-		                    d.opts.font.color.foreground.g / 255.0f, 
-		                    d.opts.font.color.foreground.b / 255.0f);
+      d.strmess.setForegroundColor (d.opts.font.color.foreground);
       d.colorbar.init (d.opts.colorbar);
     }
   if (d.opts.scene.test_strxyz)
@@ -335,9 +350,7 @@ void glgrib_scene::init (const glgrib_options & o)
                        std::vector<float>{+0.00f,+0.00f,+0.00f,+0.707*1.010f},
                        std::vector<float>{+0.0f,+0.0f,+90.0f,+0.0f},
                        d.opts.font.scale, glgrib_string::C);
-      d.strxyz.setForegroundColor (d.opts.font.color.foreground.r / 255.0f, 
-		                   d.opts.font.color.foreground.g / 255.0f, 
-		                   d.opts.font.color.foreground.b / 255.0f);
+      d.strxyz.setForegroundColor (d.opts.font.color.foreground);
     }
 
 }

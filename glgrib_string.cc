@@ -9,12 +9,12 @@ glgrib_string & glgrib_string::operator= (const glgrib_string & str)
       cleanup ();
       if (str.ready)
         {
+          init (str.font, str.data, str.x, str.y, str.scale, 
+                str.align, str.X, str.Y, str.Z, str.A);
           for (int i =0; i < 4; i++)
             color0[i] = str.color0[i];
           for (int i =0; i < 4; i++)
             color1[i] = str.color1[i];
-          init (str.font, str.data, str.x, str.y, str.scale, 
-                str.align, str.X, str.Y, str.Z, str.A);
         }
     }
 }
@@ -220,6 +220,7 @@ void glgrib_string::render (const glgrib_view & view) const
   program->set4fv ("color0", color0);
   program->set4fv ("color1", color1);
   program->set1f ("length10", length);
+
 
   glBindVertexArray (VertexArrayID);
   unsigned int ind[12] = {0, 1, 2, 2, 3, 0};

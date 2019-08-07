@@ -26,6 +26,17 @@ public:
       SE  = SY | EX, NW  = NY | WX, SW  = SY | WX,
     }
   align_t;
+
+  static align_t str2align (const std::string & str)
+  {
+#define S2A(x) do { if (str == #x) return x; } while (0)
+    S2A (C);  S2A (N);  S2A (S); 
+    S2A (W);  S2A (E);  S2A (NE); 
+    S2A (SE); S2A (NW); S2A (SW);
+#undef S2A
+    return C;
+  }
+
   glgrib_string & operator= (const glgrib_string &);
   void init2D (const_glgrib_font_ptr, const std::string &, float, 
                float, float = 1.0f, align_t = SW);
@@ -46,6 +57,20 @@ public:
                float, float = 1.0f, align_t = SW);
   void render (const glm::mat4 &) const;
   void render (const glgrib_view &) const;
+  void setForegroundColor (const glgrib_option_color & color)
+  {
+    color0[0] = color.r / 255.0f; 
+    color0[1] = color.g / 255.0f; 
+    color0[2] = color.b / 255.0f;
+    color0[3] = color.a / 255.0f;
+  }
+  void setBackgroundColor (const glgrib_option_color & color)
+  {
+    color1[0] = color.r / 255.0f; 
+    color1[1] = color.g / 255.0f; 
+    color1[2] = color.b / 255.0f;
+    color1[3] = color.a / 255.0f;
+  }
   void setForegroundColor (float r, float g, float b, float a = 1.0f) 
     { color0[0] = r; color0[1] = g; color0[2] = b; color0[3] = a; }
   void setBackgroundColor (float r, float g, float b, float a = 1.0f) 

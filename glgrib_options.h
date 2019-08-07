@@ -629,6 +629,10 @@ public:
     DESC (test_strxyz,         Test XYZ string);
     INCLUDE (interpolation);
     DESC (display_date,        Display date);
+    DESC (text,                Strings to be displayed);
+    DESC (text_x,              Coordinates of strings);
+    DESC (text_y,              Coordinates of strings);
+    DESC (text_a,              Text alignment);
   }
   bool    rotate_earth  = false;
   float   lon_at_hour = -1.0f;
@@ -639,6 +643,10 @@ public:
   bool    test_strxyz = false;
   glgrib_options_interpolation interpolation;
   bool    display_date = false;
+  std::vector<std::string> text;
+  std::vector<float> text_x;
+  std::vector<float> text_y;
+  std::vector<std::string> text_a;
 };
 
 class glgrib_options_camera : public glgrib_options_base

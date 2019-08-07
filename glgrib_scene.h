@@ -89,6 +89,7 @@ public:
       glgrib_string strmess;
       glgrib_string strdate;
       glgrib_string strxyz;
+      std::vector<glgrib_string> str;
       int nupdate = 0;
       int currentFieldRank = 0;
       glm::mat4 MVP_R, MVP_L;

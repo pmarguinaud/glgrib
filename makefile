@@ -184,6 +184,10 @@ test_interpolation: ./glgrib.x
 test_background: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 --scene.display_date  --font.scale 0.03 --font.color.foreground red --font.color.background white
 
+test_text: ./glgrib.x
+	$(GDB) ./glgrib.x  --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 \
+		--scene.text "coucou" --scene.text_x 0.0 --scene.text_y 1.0 --scene.text_a NW  --font.scale 0.03 --font.color.foreground black --font.color.background white
+
 test_fa: ./glgrib.x
 	$(GDB) ./glgrib.x --field\[0\].path testdata/fa/PGD.t479.fa%SFX.FRAC_SEA  --field\[0\].scale 1.03 
 

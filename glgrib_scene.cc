@@ -155,6 +155,7 @@ void glgrib_scene::update_view ()
           d.view.opts.lat = lat1 + dlat * a;
           d.view.opts.fov = fov1 + dfov * a;
 
+	  resize ();
         }
     }
   else if ((d.opts.scene.lon_at_hour >= 0.0f) && 

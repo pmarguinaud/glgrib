@@ -620,6 +620,7 @@ class glgrib_options_scene : public glgrib_options_base
 public:
   DEFINE
   {
+    DESC (lon_at_hour,         Set longitude at solar time);
     DESC (rotate_earth,        Make earth rotate);
     DESC (projection,          Mercator XYZ latlon polar_north polar_south);
     DESC (transformation,      Perspective or orthographic);
@@ -630,6 +631,7 @@ public:
     DESC (display_date,        Display date);
   }
   bool    rotate_earth  = false;
+  float   lon_at_hour = -1.0f;
   string  projection  = "XYZ";
   string  transformation  = "PERSPECTIVE";
   glgrib_options_light light;  

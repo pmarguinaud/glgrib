@@ -76,6 +76,19 @@ void glgrib_scene::display () const
 
 }
 
+const glgrib_option_date * glgrib_scene::get_date ()
+{
+  for (int i = 0; i < fieldlist.size (); i++)
+    if (fieldlist[i]->isReady ())
+      {
+        glgrib_field * fld = fieldlist[i];
+        const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
+        return &meta[0].term;
+      }
+  return NULL;
+}
+
+
 void glgrib_scene::update_light ()
 {
   if (d.light.rotate)
@@ -84,20 +97,9 @@ void glgrib_scene::update_light ()
   const glgrib_option_date * date = NULL;
 
   if (d.light.date_from_grib)
-    {
-      for (int i = 0; i < fieldlist.size (); i++)
-        if (fieldlist[i]->isReady ())
-          {
-            glgrib_field * fld = fieldlist[i];
-            const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
-            date = &meta[0].term;
-            break;
-          }
-    }
+    date = get_date ();
   else if (d.light.date.year != 0)
-    {
-      date = &d.light.date;
-    }
+    date = &d.light.date;
 
   if (date != NULL)
     {
@@ -150,7 +152,25 @@ void glgrib_scene::update_view ()
           d.view.opts.fov = fov1 + dfov * a;
 
         }
-
+    }
+  else if ((d.opts.scene.lon_at_hour >= 0.0f) && 
+           (d.opts.scene.lon_at_hour <= 24.0f))
+    {
+      const glgrib_option_date * date = get_date ();
+      if (date != NULL)
+        {
+          float hh = d.opts.scene.lon_at_hour - (date->hour + date->minute / 60.0f);
+	  if (hh > 24.0f) 
+            hh -= 24.0f;
+	  else if (hh < 0.0f)
+            hh += 24.0f;
+	  float lon = 360.0f * (hh / 24.0f);
+	  if (lon < 0.0f)
+            lon += 360.0f;
+	  else if (lon > 360.0f)
+            lon -= 360.0f;
+          d.view.opts.lon = lon;
+        }
     }
 }
 

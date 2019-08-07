@@ -69,6 +69,7 @@ public:
 
   void setMessage (const std::string & mess) { d.strmess.update (mess); }
   void resize ();
+  const glgrib_option_date * get_date ();
 
   std::vector<glgrib_field*> fieldlist;
 

@@ -420,6 +420,7 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::string & file, glg
        << " " << meta->term.hour  
        << " " << meta->term.minute
        << " " << meta->term.second
+       << " " << glgrib_option_date::t_from_date (meta->term)
        << " " << std::endl;
     }
 

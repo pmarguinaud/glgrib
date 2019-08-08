@@ -307,6 +307,10 @@ void glgrib_field_vector::reSample (const glgrib_view & view)
                                            GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
 
   float * data_d = values[1]->data ();
+
+  if (data_d == NULL)
+    return; 
+
   const glgrib_field_metadata & meta_n = meta[0];
   const glgrib_field_metadata & meta_d = meta[1];
 

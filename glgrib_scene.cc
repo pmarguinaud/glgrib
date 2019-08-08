@@ -120,6 +120,15 @@ void glgrib_scene::update_light ()
     }
 }
 
+static float ffmod (float x, float y)
+{
+  while (x < 0)
+    x += y;
+  while (x > y)
+    x -= y;
+  return x;
+}
+
 void glgrib_scene::update_view ()
 {
   if (d.rotate_earth)
@@ -132,17 +141,12 @@ void glgrib_scene::update_view ()
         {
           float lon1 = d.opts.scene.travelling.pos1.lon;
           float lon2 = d.opts.scene.travelling.pos2.lon;
-          float dlon;
-          if (fabs (lon1 - lon2) < 180.0f)
-            {
-              dlon = lon2 - lon1;
-            }
-          else
-            {
-              lon2 += 360.0f;
-              dlon = lon2 - lon1;
-            }
-          
+          float dlon21 = ffmod (lon2 - lon1, 360);
+          float dlon12 = ffmod (lon1 - lon2, 360);
+
+	  // Choose shortest path
+	  float dlon = dlon21 > dlon12 ? -dlon12 : dlon21;
+
           float lat1 = d.opts.scene.travelling.pos1.lat;
           float lat2 = d.opts.scene.travelling.pos2.lat;
           float dlat = lat2 - lat1;

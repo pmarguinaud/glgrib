@@ -528,9 +528,11 @@ public:
   {
     DESC (on,       Run in offline mode);
     DESC (frames,   Number of frames to issue in offline mode);
+    DESC (format,   PNG format output);
   }
   bool on  = false;
   int  frames  = 1;
+  std::string format = "snapshot_%N.png";
 };
 
 class glgrib_options_window : public glgrib_options_base

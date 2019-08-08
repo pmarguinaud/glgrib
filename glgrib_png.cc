@@ -5,13 +5,13 @@
 
 #include "glgrib_png.h"
 
-void glgrib_png (const char * filename, int width, int height, unsigned char * pixels) 
+void glgrib_png (const std::string & filename, int width, int height, unsigned char * pixels) 
 {
   png_byte * png_bytes = NULL;
   png_byte ** png_rows = NULL;
   const size_t format_nchannels = 3;
   size_t nvals = format_nchannels * width * height;
-  FILE * fp = fopen (filename, "w");
+  FILE * fp = fopen (filename.c_str (), "w");
 
   png_bytes = (png_byte *)malloc (nvals * sizeof (png_byte));
   png_rows = (png_byte **)malloc (height * sizeof (png_byte *));

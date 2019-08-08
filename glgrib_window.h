@@ -29,8 +29,8 @@ public:
   GLFWwindow * window = NULL;
 
   void toggle_cursorpos_display ();
-  void framebuffer              ();
-  void snapshot                 ();
+  void framebuffer              (const std::string & = "snapshot_%N.png");
+  void snapshot                 (const std::string & = "snapshot_%N.png");
   void toggle_flat ()
   {
     scene.d.landscape.toggle_flat ();

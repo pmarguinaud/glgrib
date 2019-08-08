@@ -56,7 +56,7 @@ test_3l_t1798: glgrib.x
 test_offscreen: glgrib.x
 	\rm -f snapshot*.png
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --window.offscreen.on  \
-		--window.offscreen.frames 10 --scene.movie --scene.movie-wait -1  --scene.light.rotate --scene.light.on     \
+		--window.offscreen.frames 10 --scene.light.rotate --scene.light.on     \
 		--field[0].path testdata/t1198c2.2/SURFNEBUL.BASSE.grb testdata/t1198c2.2/SURFNEBUL.MOYENN.grb  testdata/t1198c2.2/SURFNEBUL.HAUTE.grb \
 		--field[0].scale                         1.03                           1.03                           1.03 \
 		--field[0].palette                 cloud_auto                     cloud_auto                     cloud_auto 

@@ -431,10 +431,9 @@ int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)
   return scene.d.view.get_latlon_from_screen_coords (xpos, ypos, lat, lon);
 }
 
-void glgrib_window::snapshot ()
+void glgrib_window::snapshot (const std::string & format)
 {
   unsigned char * rgb = new unsigned char[opts.width * opts.height * 4];
-  char filename[32];
 
   // glReadPixels does not seem to work well with all combinations of width/height
   // when GL_RGB is used; GL_RGBA on the other hand seems to work well
@@ -445,23 +444,69 @@ void glgrib_window::snapshot ()
     for (int j = 0; j < 3; j++)
       rgb[3*i+j] = rgb[4*i+j];
 
-  while (1)
+
+  // %N  -> snapshot_cnt
+  // %D  -> date
+
+  const glgrib_option_date * date = scene.get_date ();
+  std::string dstr = date ? date->asString () : "";
+  for (int i = 0; i < dstr.size (); i++)
+    if ((dstr[i] == ' ') || (dstr[i] == '/'))
+      dstr[i] = ':';
+
+  std::string fmt = format;
+
+  for (int i = 0; ; i++)
     {
-      struct stat st;
-      sprintf (filename, "snapshot_%4.4d.png", snapshot_cnt);
-      if (stat (filename, &st) < 0)
+      size_t pos = fmt.find ("%D", i);
+      if (pos == std::string::npos)
         break;
-      else
-        snapshot_cnt++;
+      i = pos + 1;
+      fmt.replace (pos, 2, dstr);
+    }
+
+  
+  std::vector<int> posN;
+  for (int i = 0; ; i++)
+    {
+      size_t pos = fmt.find ("%N", i);
+      if (pos == std::string::npos)
+        break;
+      posN.push_back (pos);
+      i = pos + 1;
+    }
+  
+  std::string filename;
+
+  if (posN.size () > 0)
+    {
+      while (1)
+        {
+          struct stat st;
+          char cnt[16];
+      
+          sprintf (cnt, "%4.4d", snapshot_cnt);
+           
+      
+          filename = fmt;
+      
+          for (int i = posN.size () - 1; i >= 0; i--)
+            filename.replace (posN[i], 2, std::string (cnt));
+      
+          if (stat (filename.c_str (), &st) < 0)
+            break;
+          else
+            snapshot_cnt++;
+        }
+      snapshot_cnt++;
     }
 
   glgrib_png (filename, opts.width, opts.height, rgb);
-  snapshot_cnt++;
 
   delete [] rgb;
 }
 
-void glgrib_window::framebuffer ()
+void glgrib_window::framebuffer (const std::string & format)
 {
   unsigned int framebuffer;
   glGenFramebuffers (1, &framebuffer);
@@ -488,7 +533,7 @@ void glgrib_window::framebuffer ()
 
   scene.display ();
 
-  snapshot ();
+  snapshot (format);
 
   glDeleteFramebuffers (1, &framebuffer);
   glBindFramebuffer (GL_FRAMEBUFFER, 0);

@@ -1,6 +1,8 @@
 #ifndef _GLGRIB_PNG
 #define _GLGRIB_PNG
 
-void glgrib_png (const char *, int, int, unsigned char *);
+#include <string>
+
+void glgrib_png (const std::string &, int, int, unsigned char *);
 
 #endif

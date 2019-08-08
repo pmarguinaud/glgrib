@@ -13,7 +13,7 @@ void glgrib_window_offscreen::run (class glgrib_shell * shell)
   for (int i = 0; i < frames; i++)
     {
       scene.update ();
-      framebuffer ();
+      framebuffer (opts.offscreen.format);
     }
   closed = true;
 }

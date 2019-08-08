@@ -131,6 +131,7 @@ void glgrib_grid::render (const glgrib_view & view, const glgrib_options_light &
   view.setMVP (program);
   program->set3fv ("color0", color);
   program->set1i ("do_alpha", 0);
+  program->set1f ("scale", opts.scale);
   glgrib_polygon::render (view, light);
 }
 

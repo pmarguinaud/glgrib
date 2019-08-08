@@ -477,10 +477,12 @@ public:
     DESC (on,                Display grid);
     DESC (resolution,        Grid resolution);
     DESC (color,             Grid color);
+    DESC (scale,             Grid scale);
   }
   int resolution = 9;
   glgrib_option_color color = glgrib_option_color (0, 255, 0);
   bool on = false;
+  float scale = 1.005;
 };
 
 class glgrib_options_landscape : public glgrib_options_base
@@ -511,10 +513,12 @@ public:
     DESC (on,                 Display coastlines);
     DESC (path,               Path to coastlines file);
     DESC (color,              Coastlines color);
+    DESC (scale,              Coastlines scale);
   }
   string path  = "coastlines/gshhs(3).rim";
   glgrib_option_color color;
   bool on = false;
+  float scale = 1.005;
 };
 
 class glgrib_options_offscreen : public glgrib_options_base

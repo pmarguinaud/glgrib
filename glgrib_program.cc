@@ -257,6 +257,7 @@ out float alpha;
 uniform mat4 MVP;
 uniform bool do_alpha = false;
 uniform float posmax = 0.97;
+uniform float scale = 1.005;
 
 )CODE" + projShaderInclude + R"CODE(
 
@@ -268,7 +269,7 @@ void main()
 
   if (proj == XYZ)
     {
-      pos = 1.005 * vertexPos;
+      pos = scale * vertexPos;
     }
   else
     {

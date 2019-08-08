@@ -134,6 +134,7 @@ void glgrib_coastlines::render (const glgrib_view & view, const glgrib_options_l
   program->setLight (light);
   program->set3fv ("color0", color);
   program->set1i ("do_alpha", 1);
+  program->set1f ("scale", opts.scale);
   glgrib_polygon::render (view, light);
 }
 

@@ -500,6 +500,10 @@ void glgrib_window::snapshot (const std::string & format)
         }
       snapshot_cnt++;
     }
+  else
+    {
+      filename = fmt;
+    }
 
   glgrib_png (filename, opts.width, opts.height, rgb);
 

@@ -23,8 +23,18 @@ extern void lfilec_mt64_ (LFILEC_ARGS_DECL);
 extern void lfifer_mt64_ (LFIFER_ARGS_DECL);
 }
 
-codes_handle * glgrib_handle_from_file (const std::string & f)
+glgrib_handle_ptr glgrib_loader::handle_from_file (const std::string & f)
 {
+  // Search cache
+  for (cache_t::iterator it = cache.begin (); it != cache.end (); it++)
+    if (it->file == f)
+      {
+        entry_t e = *it;
+        cache.erase (it);
+	cache.push_front (e);
+	return e.ghp;
+      }
+
   codes_handle * h = NULL;
 
   int k = f.find_last_of ('%');
@@ -41,7 +51,6 @@ codes_handle * glgrib_handle_from_file (const std::string & f)
       file = f;
     }
 
-
   lfi_grok_t type = lfi_grok (file.c_str (), file.length ());
 
   switch (type)
@@ -50,6 +59,7 @@ codes_handle * glgrib_handle_from_file (const std::string & f)
       case LFI_UNKN:
         {
           int err = 0;
+	  std::cout << " fopen " << file << std::endl;
           FILE * in = fopen (file.c_str (), "r");
           if (in == NULL)
             throw std::runtime_error (std::string ("Could not open ") + 
@@ -189,7 +199,20 @@ next:
 	break;
     }
 
-  return h;
+  glgrib_handle_ptr ghp = std::make_shared<glgrib_handle>(h);
+
+  if (this->size > 0)
+    {
+      entry_t e;
+      e.file = f;
+      e.ghp = ghp;
+      cache.push_front (e);
+      // Reduce cache size
+      while (cache.size () > this->size)
+        cache.pop_back ();
+    }
+
+  return ghp;
 }
 
 glgrib_field_float_buffer_ptr glgrib_loader::load (const std::vector<std::string> & file, float fslot, 
@@ -215,8 +238,8 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::vector<std::string
   const std::string file1 = file[mult*(islot+0)+base];
   const std::string file2 = file[mult*(islot+1)+base];
 
-  const_glgrib_geometry_ptr geom1 = glgrib_geometry_load (file1);
-  const_glgrib_geometry_ptr geom2 = glgrib_geometry_load (file2);
+  const_glgrib_geometry_ptr geom1 = glgrib_geometry_load (this, file1);
+  const_glgrib_geometry_ptr geom2 = glgrib_geometry_load (this, file2);
 
   if (! geom1->isEqual (*geom2))
     {
@@ -290,22 +313,8 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::vector<std::string
 
 glgrib_field_float_buffer_ptr glgrib_loader::load (const std::string & file, glgrib_field_metadata * meta)
 {
-
-  // Search cache
-  for (std::list<entry>::iterator it = cache.begin (); it != cache.end (); it++)
-    {
-      if (it->file == file)
-        {
-	  entry e = *it;
-	  cache.erase (it);
-          glgrib_field_float_buffer_ptr data = e.data;
-	  *meta = e.meta;
-	  cache.push_front (e);
-          return data;
-	}
-    }
-
-  codes_handle * h = glgrib_handle_from_file (file);
+  glgrib_handle_ptr ghp = handle_from_file (file);
+  codes_handle * h = ghp->getCodesHandle ();
 
   size_t v_len = 0;
   codes_get_size (h, "values", &v_len);
@@ -368,8 +377,6 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::string & file, glg
 
 #undef CODES_GET
 
-  codes_handle_delete (h);
-
   switch (meta->indicatorOfUnitOfTimeRange)
     {
       case  0:        // m Minute 
@@ -424,20 +431,6 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::string & file, glg
        << " " << std::endl;
     }
 
-
-  if (this->size > 0)
-    {
-      entry e;
-      e.file = file;
-      e.data = val;
-      e.meta = *meta;
-     
-      cache.push_front (e);
-     
-      // Reduce cache size
-      while (cache.size () > this->size)
-        cache.pop_back ();
-    }
 
   return val;
 }

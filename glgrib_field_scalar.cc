@@ -77,7 +77,7 @@ void glgrib_field_scalar::init (glgrib_loader * ld, const glgrib_options_field &
   else
     dopts.palette = get_palette_by_name (opts.palette);
 
-  geometry = glgrib_geometry_load (opts.path[0]);
+  geometry = glgrib_geometry_load (ld, opts.path[0]);
 
   numberOfColors = 1;
 

@@ -28,8 +28,9 @@ int glgrib_geometry_lambert::size () const
   return Nx * Ny;
 }
 
-glgrib_geometry_lambert::glgrib_geometry_lambert (codes_handle * h)
+glgrib_geometry_lambert::glgrib_geometry_lambert (glgrib_handle_ptr ghp)
 {
+  codes_handle * h = ghp->getCodesHandle ();
   codes_get_long (h, "Nx", &Nx);
   codes_get_long (h, "Ny", &Ny);
   codes_get_long (h, "Nux", &Nux);
@@ -42,8 +43,9 @@ glgrib_geometry_lambert::glgrib_geometry_lambert (codes_handle * h)
   
 }
 
-void glgrib_geometry_lambert::init (codes_handle * h, const float orography)
+void glgrib_geometry_lambert::init (glgrib_handle_ptr ghp, const float orography)
 {
+  codes_handle * h = ghp->getCodesHandle ();
   float * xyz = NULL;
   unsigned int * ind = NULL;
 

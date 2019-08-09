@@ -3,9 +3,7 @@
 
 #include "glgrib_geometry.h"
 #include "glgrib_options.h"
-
-#include <eccodes.h>
-
+#include "glgrib_handle.h"
 
 class glgrib_geometry_latlon : public glgrib_geometry
 {
@@ -15,8 +13,8 @@ public:
   virtual bool isEqual (const glgrib_geometry &) const;
   virtual std::string md5 () const;
   virtual int latlon2index (float, float) const;
-  glgrib_geometry_latlon (codes_handle *);
-  virtual void init (codes_handle *, const float = 0.0f);
+  glgrib_geometry_latlon (glgrib_handle_ptr);
+  virtual void init (glgrib_handle_ptr, const float = 0.0f);
   virtual void genlatlon (float *, float *) const;
   virtual void gencoords (float *, float *) const;
   virtual int size () const;

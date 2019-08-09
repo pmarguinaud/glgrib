@@ -121,7 +121,7 @@ void glgrib_field_vector::init (glgrib_loader * ld, const glgrib_options_field &
   else
     dopts.palette = get_palette_by_name (opts.palette);
 
-  geometry = glgrib_geometry_load (opts.path[0]);
+  geometry = glgrib_geometry_load (ld, opts.path[0]);
 
   glgrib_field_float_buffer_ptr data_n = new_glgrib_field_float_buffer_ptr (geometry->numberOfPoints);
   glgrib_field_float_buffer_ptr data_d = new_glgrib_field_float_buffer_ptr (geometry->numberOfPoints);

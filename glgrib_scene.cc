@@ -83,12 +83,13 @@ void glgrib_scene::display () const
 const glgrib_option_date * glgrib_scene::get_date ()
 {
   for (int i = 0; i < fieldlist.size (); i++)
-    if (fieldlist[i]->isReady ())
-      {
-        glgrib_field * fld = fieldlist[i];
-        const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
-        return &meta[0].term;
-      }
+    if (fieldlist[i])
+      if (fieldlist[i]->isReady ())
+        {
+          glgrib_field * fld = fieldlist[i];
+          const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
+          return &meta[0].term;
+        }
   return NULL;
 }
 
@@ -258,6 +259,9 @@ void glgrib_scene::init (const glgrib_options & o)
       int size = 0;
       for (int i = 0; i < d.opts.field.size (); i++)
         {
+          bool defined = d.opts.field[i].path.size () != 0;
+	  if (! defined)
+            continue;
           if (d.opts.field[i].vector.on)
             size += 4;
           else if (d.opts.field[i].contour.on)
@@ -269,7 +273,7 @@ void glgrib_scene::init (const glgrib_options & o)
     }
 
   if (d.opts.landscape.on)
-    d.landscape.init (d.opts.landscape);
+    d.landscape.init (&ld, d.opts.landscape);
 
   if (d.opts.grid.on)
     d.grid.init (d.opts.grid);

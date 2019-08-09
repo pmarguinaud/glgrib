@@ -103,7 +103,7 @@ void glgrib_field_contour::init (glgrib_loader * ld, const glgrib_options_field 
 
   dopts.scale = opts.scale;
 
-  geometry = glgrib_geometry_load (opts.path[0]);
+  geometry = glgrib_geometry_load (ld, opts.path[0]);
 
   numberOfColors = 1;
 

@@ -2,6 +2,7 @@
 #define _GLGRIB_GEOMETRY_H
 
 #include "glgrib_opengl.h"
+#include "glgrib_handle.h"
 
 #include <glm/glm.hpp>
 #include <eccodes.h>
@@ -17,7 +18,7 @@ public:
   {
     return isEqual (geom);
   }
-  virtual void init (codes_handle *, const float = 0.0f) = 0;
+  virtual void init (glgrib_handle_ptr, const float = 0.0f) = 0;
   virtual void genlatlon (float *, float *) const = 0;
   virtual void gencoords (float *, float *) const = 0;
   virtual int size () const = 0;
@@ -40,6 +41,6 @@ protected:
 
 typedef std::shared_ptr<glgrib_geometry> glgrib_geometry_ptr;
 typedef std::shared_ptr<const glgrib_geometry> const_glgrib_geometry_ptr;
-extern glgrib_geometry_ptr glgrib_geometry_load (const std::string &, const float = 0.0f, const int  = 0);
+extern glgrib_geometry_ptr glgrib_geometry_load (class glgrib_loader *, const std::string &, const float = 0.0f, const int  = 0);
 
 #endif

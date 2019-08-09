@@ -3,6 +3,7 @@
 #include "glgrib_geometry_gaussian.h"
 #include "glgrib_geometry_latlon.h"
 #include "glgrib_geometry_lambert.h"
+#include "glgrib_loader.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -14,9 +15,16 @@
 typedef std::map <std::string,glgrib_geometry_ptr> cache_t;
 static cache_t cache;
 
-glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const float orography, const int Nj)
+glgrib_geometry_ptr glgrib_geometry_load (glgrib_loader * ld, const std::string & file, const float orography, const int Nj)
 {
-  codes_handle * h = file != "" ? glgrib_handle_from_file (file) : NULL;
+  glgrib_handle_ptr ghp;
+  codes_handle * h = NULL;
+ 
+  if (file != "")
+    {
+      ghp = ld->handle_from_file (file);
+      h = ghp->getCodesHandle ();
+    }
 
   long int gridDefinitionTemplateNumber = -1;
 
@@ -29,13 +37,13 @@ glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const float 
   switch (gridDefinitionTemplateNumber)
     {
       case 30: case 33:
-        geom = std::make_shared<glgrib_geometry_lambert> (h);
+        geom = std::make_shared<glgrib_geometry_lambert> (ghp);
         break;
       case 40: case 41: case 42: case 43:
-        geom = std::make_shared<glgrib_geometry_gaussian> (h);
+        geom = std::make_shared<glgrib_geometry_gaussian> (ghp);
 	break;
       case 0:
-        geom = std::make_shared<glgrib_geometry_latlon> (h);
+        geom = std::make_shared<glgrib_geometry_latlon> (ghp);
 	break;
       case -1:
         geom = std::make_shared<glgrib_geometry_gaussian> (Nj);
@@ -57,13 +65,11 @@ glgrib_geometry_ptr glgrib_geometry_load (const std::string & file, const float 
 	}
     }
 
-  geom->init (h, orography);
+  geom->init (ghp, orography);
   cache.insert (std::pair<std::string,glgrib_geometry_ptr> (geom->md5 (), geom));
 
 found:
 
-  if (h != NULL)
-    codes_handle_delete (h);
 
   // Remove geometries with a single reference (they only belong to the cache)
 again:

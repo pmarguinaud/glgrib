@@ -222,8 +222,9 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (int _Nj)
     numberOfPoints += pl[i];
 }
 
-glgrib_geometry_gaussian::glgrib_geometry_gaussian (codes_handle * h)
+glgrib_geometry_gaussian::glgrib_geometry_gaussian (glgrib_handle_ptr ghp)
 {
+  codes_handle * h = ghp->getCodesHandle ();
 
   if (codes_is_defined (h, "stretchingFactor"))
     codes_get_double (h, "stretchingFactor", &stretchingFactor);
@@ -274,8 +275,9 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (codes_handle * h)
     numberOfPoints += pl[i];
 }
 
-void glgrib_geometry_gaussian::init (codes_handle * h, const float orography)
+void glgrib_geometry_gaussian::init (glgrib_handle_ptr ghp, const float orography)
 {
+  codes_handle * h = ghp->getCodesHandle ();
   float * xyz = NULL;
   const int nstripe = 8;
   int indoff[nstripe];

@@ -27,8 +27,9 @@ int glgrib_geometry_latlon::size () const
   return Ni * Nj;
 }
 
-glgrib_geometry_latlon::glgrib_geometry_latlon (codes_handle * h)
+glgrib_geometry_latlon::glgrib_geometry_latlon (glgrib_handle_ptr ghp)
 {
+  codes_handle * h = ghp->getCodesHandle ();
   codes_get_long (h, "Ni", &Ni);
   codes_get_long (h, "Nj", &Nj);
   codes_get_double (h, "latitudeOfFirstGridPointInDegrees"   , &latitudeOfFirstGridPointInDegrees  );
@@ -38,8 +39,9 @@ glgrib_geometry_latlon::glgrib_geometry_latlon (codes_handle * h)
   
 }
 
-void glgrib_geometry_latlon::init (codes_handle * h, const float orography)
+void glgrib_geometry_latlon::init (glgrib_handle_ptr ghp, const float orography)
 {
+  codes_handle * h = ghp->getCodesHandle ();
   float * xyz = NULL;
   unsigned int * ind = NULL;
   periodic = false;

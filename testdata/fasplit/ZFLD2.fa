@@ -1,13 +1,13 @@
 LFI_ALTM
-8 21
-ZFLD2.META.fa
-ZFLD2.CAL.fa.00000001
-ZFLD2.CAL.fa.00000002
-ZFLD2.CAL.fa.00000003
-ZFLD2.CAL.fa.00000004
-ZFLD2.INT.fa.00000002
-ZFLD2.INT.fa.00000003
-ZFLD2.INT.fa.00000004
+8 128
+/home/phi001/3d/glgrib/testdata/fasplit/ZFLD2.META.fa
+/home/phi001/3d/glgrib/testdata/fasplit/ZFLD2.CAL.fa.00000001
+/home/phi001/3d/glgrib/testdata/fasplit/ZFLD2.CAL.fa.00000002
+/home/phi001/3d/glgrib/testdata/fasplit/ZFLD2.CAL.fa.00000003
+/home/phi001/3d/glgrib/testdata/fasplit/ZFLD2.CAL.fa.00000004
+/home/phi001/3d/glgrib/testdata/fasplit/ZFLD2.INT.fa.00000002
+/home/phi001/3d/glgrib/testdata/fasplit/ZFLD2.INT.fa.00000003
+/home/phi001/3d/glgrib/testdata/fasplit/ZFLD2.INT.fa.00000004
 380 16
 0 CADRE-DIMENSIONS 
 0 CADRE-FRANKSCHMI 

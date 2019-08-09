@@ -203,9 +203,10 @@ int feed_LFI_PURE (const char * url, const char * file, sqlite3 * db,
     TRY (sqlite3_prepare_v2 (db, "SELECT IRANK FROM URL_TO_NUMER WHERE URL = ?;", -1, &sel, 0));
     TRY (sqlite3_bind_text (sel, 1, url, strlen (url), NULL));
   
-    TRY (sqlite3_prepare_v2 (db, "INSERT INTO URL_TO_NUMER (URL, TIME) VALUES (?, ?);", -1, &ins, 0));
-    TRY (sqlite3_bind_text (ins, 1, url, strlen (url), NULL));
+    TRY (sqlite3_prepare_v2 (db, "INSERT INTO URL_TO_NUMER (URL, TIME, KIND) VALUES (?, ?, ?);", -1, &ins, 0));
+    TRY (sqlite3_bind_text  (ins, 1, url, strlen (url), NULL));
     TRY (sqlite3_bind_int64 (ins, 2, ft));
+    TRY (sqlite3_bind_int   (ins, 3, 1));
   
     if ((rc = sqlite3_step (ins)) != SQLITE_DONE)
       goto end;
@@ -221,7 +222,7 @@ int feed_LFI_PURE (const char * url, const char * file, sqlite3 * db,
     ins = NULL;
   
   
-    TRY (sqlite3_prepare_v2 (db, "INSERT INTO LFI_PURE_INDEX (IRANK, CLNOMA, IPOSEX, ILONGD) VALUES (?, ?, ?, ?);", -1, &ins, 0));
+    TRY (sqlite3_prepare_v2 (db, "INSERT INTO LFI_PURE (IRANK, CLNOMA, IPOSEX, ILONGD) VALUES (?, ?, ?, ?);", -1, &ins, 0));
   
     for (int i = 0; i < INALDO; i++)
       {
@@ -263,16 +264,50 @@ end:
   return IRANK;
 }
 
-int check_url (const char * url, time_t ft, sqlite3 * db)
+void purge_LFI_PURE (sqlite3 * db, int IRANK, int intr)
+{
+  int rc;
+  sqlite3_stmt * del = NULL;
+
+  if (! intr)
+    TRY (sqlite3_exec (db, "BEGIN", 0, 0, 0));
+
+  TRY (sqlite3_prepare_v2 (db, "DELETE FROM LFI_PURE WHERE IRANK = ?;", -1, &del, 0));
+  TRY (sqlite3_bind_int (del, 1, IRANK));
+  if ((rc = sqlite3_step (del)) != SQLITE_DONE)
+    goto end;
+  TRY (sqlite3_finalize (del));
+  del = NULL;
+  
+  TRY (sqlite3_prepare_v2 (db, "DELETE FROM URL_TO_NUMER WHERE IRANK = ?;", -1, &del, 0));
+  TRY (sqlite3_bind_int (del, 1, IRANK));
+  if ((rc = sqlite3_step (del)) != SQLITE_DONE)
+    goto end;
+  TRY (sqlite3_finalize (del));
+  del = NULL;
+  
+  if (! intr)
+    TRY (sqlite3_exec (db, "COMMIT", 0, 0, 0));
+
+end:
+
+  if (rc != SQLITE_OK)
+    printf ("%s\n", sqlite3_errmsg (db));
+  if (del != NULL)
+    sqlite3_finalize (del);
+
+}
+
+int check_url_validity (const char * url, time_t ft, sqlite3 * db)
 {
   int IRANK = -1;
   int rc;
 
-  sqlite3_stmt * del = NULL, * sel = NULL;
+  sqlite3_stmt * sel = NULL;
 
   // Check timestamp & purge if outdated
   {
-    TRY (sqlite3_prepare_v2 (db, "SELECT IRANK, TIME FROM URL_TO_NUMER WHERE URL = ?;", -1, &sel, 0));
+    TRY (sqlite3_prepare_v2 (db, "SELECT IRANK, TIME, KIND FROM URL_TO_NUMER WHERE URL = ?;", -1, &sel, 0));
     TRY (sqlite3_bind_text (sel, 1, url, strlen (url), NULL));
     rc = sqlite3_step (sel);
     switch (rc)
@@ -281,27 +316,12 @@ int check_url (const char * url, time_t ft, sqlite3 * db)
           break;
         case SQLITE_ROW:
           {
-            IRANK = sqlite3_column_int (sel, 0);
+            IRANK    = sqlite3_column_int (sel, 0);
+            int KIND = sqlite3_column_int (sel, 1);
             time_t ft1 = sqlite3_column_int64 (sel, 1);
             if (ft != ft1) 
               {
-                TRY (sqlite3_exec (db, "BEGIN", 0, 0, 0));
-                TRY (sqlite3_prepare_v2 (db, "DELETE FROM LFI_PURE_INDEX WHERE IRANK = ?;", -1, &del, 0));
-                TRY (sqlite3_bind_int (del, 1, IRANK));
-                if ((rc = sqlite3_step (del)) != SQLITE_DONE)
-                  goto end;
-                TRY (sqlite3_finalize (del));
-                del = NULL;
-
-                TRY (sqlite3_prepare_v2 (db, "DELETE FROM URL_TO_NUMER WHERE IRANK = ?;", -1, &del, 0));
-                TRY (sqlite3_bind_int (del, 1, IRANK));
-                if ((rc = sqlite3_step (del)) != SQLITE_DONE)
-                  goto end;
-                TRY (sqlite3_finalize (del));
-                del = NULL;
-
-                TRY (sqlite3_exec (db, "COMMIT", 0, 0, 0));
-
+                purge_LFI_PURE (db, IRANK, 0);
                 IRANK = -1;
               }
           }
@@ -320,8 +340,6 @@ end:
       printf ("%s\n", sqlite3_errmsg (db));
       IRANK = -2;
     }
-  if (del != NULL)
-    sqlite3_finalize (del);
   if (sel != NULL)
     sqlite3_finalize (sel);
 
@@ -343,7 +361,7 @@ CURL * get_curl (CURL * hnd)
   return hnd;
 }
 
-int test_curl (const char * url, const char * name)
+int lfilec_netw (const char * url, const char * name)
 {
   CURLcode ret;
   int rc;
@@ -356,7 +374,7 @@ int test_curl (const char * url, const char * name)
 
   int IRANK = -1;
 
-  IRANK = check_url (url, ft, db);
+  IRANK = check_url_validity (url, ft, db);
 
   if (IRANK == -2)
     goto end;
@@ -416,7 +434,7 @@ int test_curl (const char * url, const char * name)
   
   {
     char CLNOMA[17];
-    TRY (sqlite3_prepare_v2 (db, "SELECT IPOSEX, ILONGD, DATA FROM LFI_PURE_INDEX "
+    TRY (sqlite3_prepare_v2 (db, "SELECT IPOSEX, ILONGD, DATA FROM LFI_PURE "
                              "WHERE IRANK = ? AND CLNOMA = ?;", -1, &sel, 0));
     TRY (sqlite3_bind_int (sel, 1, IRANK));
 
@@ -476,7 +494,7 @@ int test_curl (const char * url, const char * name)
               iswap_ (dat.ptr, dat.ptr, &t, &n);
             }
 
-            TRY (sqlite3_prepare_v2 (db, "UPDATE LFI_PURE_INDEX SET DATA = ? "
+            TRY (sqlite3_prepare_v2 (db, "UPDATE LFI_PURE SET DATA = ? "
                                      "WHERE IRANK = ? AND CLNOMA = ?;", -1, &upd, 0));
 
             TRY (sqlite3_bind_blob64 (upd, 1, dat.ptr, length, NULL));
@@ -512,10 +530,6 @@ end:
     printf ("%s\n", sqlite3_errmsg (db));
   if (upd != NULL)
     sqlite3_finalize (upd);
-  if (ins != NULL)
-    sqlite3_finalize (ins);
-  if (del != NULL)
-    sqlite3_finalize (del);
   if (sel != NULL)
     sqlite3_finalize (sel);
   if (db != NULL)
@@ -531,7 +545,7 @@ end:
 int main (int argc, char * argv[])
 {
   printf ("%ld\n", filetime (argv[1]));
-  test_curl (argv[1], argv[2]);
+  lfilec_netw (argv[1], argv[2]);
   return 0;
 }
 

@@ -621,6 +621,25 @@ public:
   int frames = 10;
 };
 
+class glgrib_options_image : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on,            Enable image display);
+    DESC (path,          Path to image);
+    DESC (x0,            Left abscissa);
+    DESC (y0,            Lower ordinate);
+    DESC (x1,            Right abscissa);
+    DESC (y1,            Upper ordinate);
+    DESC (align,         Image alignment);
+  }  
+  bool on = false;
+  std::string path = "";
+  float x0 = 0.0, x1 = 1.0, y0 = 0.0, y1 = 1.0;
+  std::string align;
+};
+
 class glgrib_options_scene : public glgrib_options_base
 {
 public:
@@ -639,6 +658,7 @@ public:
     DESC (text_x,              Coordinates of strings);
     DESC (text_y,              Coordinates of strings);
     DESC (text_a,              Text alignment);
+    INCLUDE (image);
   }
   bool    rotate_earth  = false;
   float   lon_at_hour = -1.0f;
@@ -653,6 +673,7 @@ public:
   std::vector<float> text_x;
   std::vector<float> text_y;
   std::vector<std::string> text_a;
+  glgrib_options_image image;
 };
 
 class glgrib_options_camera : public glgrib_options_base

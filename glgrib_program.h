@@ -21,7 +21,8 @@ public:
     GRADIENT_FLAT_SCALE_VECTOR=7,
     CONTOUR=8,
     FONT=9,
-    SIZE=10,
+    IMAGE=10,
+    SIZE=11,
   } kind;
 
 

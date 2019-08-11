@@ -164,6 +164,7 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
 
     }
      
+
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
   
@@ -187,6 +188,7 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
   glEnableVertexAttribArray (2); 
   glVertexAttribPointer (2, 4, GL_FLOAT, GL_FALSE, 0, NULL); 
   glVertexAttribDivisor (2, 1);
+  glBindVertexArray (0);
   
   ready = true;
 
@@ -223,7 +225,7 @@ void glgrib_string::render (const glgrib_view & view) const
 
 
   glBindVertexArray (VertexArrayID);
-  unsigned int ind[12] = {0, 1, 2, 2, 3, 0};
+  unsigned int ind[6] = {0, 1, 2, 2, 3, 0};
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, len);
 }
 

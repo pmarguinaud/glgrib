@@ -5,6 +5,7 @@
 #include <set>
 
 #include "glgrib_font.h"
+#include "glgrib_image.h"
 #include "glgrib_string.h"
 #include "glgrib_view.h"
 #include "glgrib_object.h"
@@ -85,6 +86,7 @@ public:
       glgrib_grid grid;
       bool rotate_earth = false;
     private:
+      glgrib_image image;
       glgrib_colorbar colorbar;
       glgrib_string strmess;
       glgrib_string strdate;

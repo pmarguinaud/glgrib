@@ -1,6 +1,6 @@
 #include "glgrib_font.h"
 #include "glgrib_shader.h"
-#include "glgrib_bmp.h"
+#include "glgrib_bitmap.h"
 #include "glgrib_resolve.h"
 
 #include <map>
@@ -55,7 +55,7 @@ void glgrib_font::init (const glgrib_options_font & o)
   int w, h;
   std::vector<int> ioff, joff;
 
-  glgrib_bmp (glgrib_resolve (opts.bitmap).c_str (), &rgb, &w, &h);
+  glgrib_bitmap (glgrib_resolve (opts.bitmap), &rgb, &w, &h);
 
   for (int i = 0, p = w * (h - 2); i < w; i++, p += 1)
     if ((rgb[3*p+0] == 255) && (rgb[3*p+1] == 0) && (rgb[3*p+2] == 0))

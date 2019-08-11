@@ -59,6 +59,8 @@ void glgrib_scene::display () const
 
   const glgrib_field * fld = d.currentFieldRank < fieldlist.size () 
                            ? fieldlist[d.currentFieldRank] : NULL;
+  d.image.render (d.MVP_L);
+
   if (fld != NULL)
     d.colorbar.render (d.MVP_L, 
                        fld->dopts.palette, 
@@ -254,6 +256,9 @@ void glgrib_scene::init (const glgrib_options & o)
 {
   d.opts = o;
 
+  if (d.opts.scene.image.on) 
+    d.image.init (d.opts.scene.image);
+
   if (d.opts.scene.interpolation.on)
     {
       int size = 0;
@@ -284,6 +289,7 @@ void glgrib_scene::init (const glgrib_options & o)
   d.light = d.opts.scene.light;
 
   d.view.init (d.opts);
+
 
   bool seen_date = false;
   for (int i = 0; i < d.opts.field.size (); i++)
@@ -323,6 +329,7 @@ void glgrib_scene::init (const glgrib_options & o)
 
     }
 
+
   for (int i = 0; i < d.opts.scene.text.size (); i++)
     {
       glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
@@ -342,6 +349,7 @@ void glgrib_scene::init (const glgrib_options & o)
       d.str[i].setBackgroundColor (d.opts.font.color.background);
 
     }
+
 
   if (d.opts.colorbar.on)
     {

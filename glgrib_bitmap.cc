@@ -1,4 +1,4 @@
-#include "glgrib_bmp.h"
+#include "glgrib_bitmap.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,13 +10,13 @@ static int S4 (unsigned char * h)
 }
   
   
-void glgrib_bmp (const char * file, unsigned char ** rgb, int * width, int * height)
+void glgrib_bitmap (const std::string & file, unsigned char ** rgb, int * width, int * height)
 {
   unsigned char h[54];
-  FILE * fp = fopen (file, "r");
+  FILE * fp = fopen (file.c_str (), "r");
 
   if (fread (h, sizeof (h), 1, fp) != 1)
-    std::runtime_error (std::string ("Cannot read BMP file"));
+    std::runtime_error (std::string ("Cannot read BMP file : ") + file);
   
   int ioff = S4 (&h[10]); 
   int numberOfColors = S4 (&h[18]);
@@ -27,7 +27,7 @@ void glgrib_bmp (const char * file, unsigned char ** rgb, int * width, int * hei
   fseek (fp, ioff, SEEK_SET);
 
   if (fread ((*rgb), 3 * numberOfColors * nrow, 1, fp) != 1)
-    std::runtime_error (std::string ("Cannot read BMP file"));
+    std::runtime_error (std::string ("Cannot read BMP file : ") + file);
 
   for (int i = 0; i < numberOfColors * nrow; i++)
     {

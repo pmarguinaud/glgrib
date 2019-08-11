@@ -59,7 +59,6 @@ glgrib_handle_ptr glgrib_loader::handle_from_file (const std::string & f)
       case LFI_UNKN:
         {
           int err = 0;
-	  std::cout << " fopen " << file << std::endl;
           FILE * in = fopen (file.c_str (), "r");
           if (in == NULL)
             throw std::runtime_error (std::string ("Could not open ") + 

@@ -201,6 +201,9 @@ test_contour_diff: ./glgrib.x
 	$(GDB) ./glgrib.x --field[0].diff --field[0].contour.on --field\[0\].path testdata/glob01/lfpw_0_3_1_sfc_0_prmsl+0000.grib2 testdata/glob01/lfpw_0_3_1_sfc_0_prmsl+0102.grib2 \
 		--field\[0\].scale 1.01  
 
+test_image: ./glgrib.x
+	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 --scene.image.on --scene.image.path testdata/image/B.bmp --scene.image.x0 0. --scene.image.y0 0.  --scene.image.x1 0.1 --scene.image.y1 0.1
+
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane
 
 

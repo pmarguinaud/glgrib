@@ -979,6 +979,9 @@ int lfinfo_netw (const char * url, const char * name, integer64 * IPOSEX, intege
 
 int main (int argc, char * argv[])
 {
+
+// ftp://giedi-prime//home/phi001/3d/glgrib/testdata/fasplit/ZFLD2.fa SFX.ZS
+
   lfinetw_ctx_t _ctx, * ctx = &_ctx;
   memset (ctx, 0, sizeof (*ctx));
 

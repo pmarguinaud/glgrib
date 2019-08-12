@@ -21,7 +21,7 @@ public:
   }
   codes_handle * getCodesHandle () 
   {
-    return h;
+    return this == NULL ? NULL : h;
   }
 private:
   codes_handle * h = NULL;

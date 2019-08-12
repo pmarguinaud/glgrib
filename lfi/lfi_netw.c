@@ -1,51 +1,66 @@
-#include <stdio.h>
+/**** *lfi_netw.c* - LFI library
+ *
+ *    Author. 
+ *    ------- 
+ *     Philippe Marguinaud *METEO-FRANCE*
+ *     Original : 12-08-2019
+ *
+ * Description :
+ * This LFI library can access LFI files using FTP & HTTP protocol
+ */
 #include <stdlib.h>
 #include <string.h>
-#include <curl/curl.h>
-#include <sqlite3.h>
+#include <stdio.h>
+#include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <errno.h>
 
-#include "lfi_grok.h"
-#include "lfi_type.h"
-#include "lfi_args.h"
-#include "lfi_fort.h"
+#include <curl/curl.h>
+#include <sqlite3.h>
 
-extern void lfiouv_mt64_ (LFIOUV_ARGS_DECL);
-extern void lfinff_mt64_ (LFINFF_ARGS_DECL);
-extern void lfipos_mt64_ (LFIPOS_ARGS_DECL);
-extern void lficas_mt64_ (LFICAS_ARGS_DECL);
-extern void lfican_mt64_ (LFICAN_ARGS_DECL);
-extern void lfinaf_mt64_ (LFINAF_ARGS_DECL);
-extern void lfifer_mt64_ (LFIFER_ARGS_DECL);
-extern void lfinff_mt64_ (LFINFF_ARGS_DECL);
+#include "lfi_type.h"
+#include "lfi_netw.h"
+#include "lfi_dumm.h"
+#include "lfi_miss.h"
+#include "lfi_abor.h"
+#include "lfi_misc.h"
+#include "lfi_verb.h"
+#include "lfi_fmul.h"
+#include "lfi_alts.h"
+#include "lfi_altm.h"
+#include "lfi_util.h"
+#include "lfi_grok.h"
+
+#include "drhook.h"
+
 extern void iswap_ (void *, void *, const int *, const int *);
 
-CURL * get_curl (CURL * hnd)
+static CURL * get_curl (CURL * ua)
 {
-  if (hnd != NULL)
-    return hnd;
+  if (ua != NULL)
+    return ua;
   // Create CURL handle
-  hnd = curl_easy_init();
-  curl_easy_setopt (hnd, CURLOPT_BUFFERSIZE, 102400L);
-  curl_easy_setopt (hnd, CURLOPT_NETRC, (long)CURL_NETRC_REQUIRED);
-  curl_easy_setopt (hnd, CURLOPT_USERAGENT, "curl/7.58.0");
-  curl_easy_setopt (hnd, CURLOPT_MAXREDIRS, 50L);
-  curl_easy_setopt (hnd, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_2TLS);
-  curl_easy_setopt (hnd, CURLOPT_TCP_KEEPALIVE, 1L);
-  return hnd;
+  ua = curl_easy_init();
+  curl_easy_setopt (ua, CURLOPT_BUFFERSIZE, 102400L);
+  curl_easy_setopt (ua, CURLOPT_NETRC, (long)CURL_NETRC_REQUIRED);
+  curl_easy_setopt (ua, CURLOPT_USERAGENT, "curl/7.58.0");
+  curl_easy_setopt (ua, CURLOPT_MAXREDIRS, 50L);
+  curl_easy_setopt (ua, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_2TLS);
+  curl_easy_setopt (ua, CURLOPT_TCP_KEEPALIVE, 1L);
+  return ua;
 }
-
 
 typedef struct
 {
   sqlite3 * db;
-  CURL * hnd;
+  CURL * ua;
   int status;
   char mess[1024];
-} lfinetw_ctx_t;
+} lfi_netw_ctx_t;
 
-
-char * parse_protohost (const char * url, char * protohost, int protohost_len)
+static char * parse_protohost (const char * url, char * protohost, int protohost_len)
 {
   char * ph = protohost;
   int len = protohost_len;
@@ -88,7 +103,7 @@ static size_t discard (void * ptr, size_t size, size_t nmemb, void * data)
   return (size_t)(size * nmemb);
 }
 
-time_t filetime (const char * url)
+static time_t filetime (const char * url)
 {
   time_t t = 0;
   long filetime = -1;
@@ -117,7 +132,6 @@ typedef struct write_hdr_t
   size_t off;
 } write_hdr_t;
 
-
 static size_t write_hdr (char * ptr, size_t size, size_t nmemb, void * userdata)
 {
   write_hdr_t * hdr = userdata;
@@ -133,7 +147,6 @@ typedef struct write_dat_t
   size_t off;
 } write_dat_t;
 
-
 static size_t write_dat (char * ptr, size_t size, size_t nmemb, void * userdata)
 {
   write_dat_t * dat = userdata;
@@ -144,9 +157,8 @@ static size_t write_dat (char * ptr, size_t size, size_t nmemb, void * userdata)
 
 #define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
 
-
-int new_LFI_MULT (const char * url, const char * file, lfinetw_ctx_t * ctx,
-                  write_hdr_t * hdr, time_t ft, int * pIRANK)
+static int new_LFI_MULT (const char * url, const char * file, lfi_netw_ctx_t * ctx,
+                         write_hdr_t * hdr, time_t ft, int * pIRANK)
 {
   int IRANK = *pIRANK;
   CURLcode ret = 0;
@@ -159,18 +171,18 @@ int new_LFI_MULT (const char * url, const char * file, lfinetw_ctx_t * ctx,
   if (fp == NULL)
     goto end;
 
-  ctx->hnd = get_curl (ctx->hnd);
-  curl_easy_setopt (ctx->hnd, CURLOPT_URL, url);
-  curl_easy_setopt (ctx->hnd, CURLOPT_WRITEFUNCTION, fwrite);
-  curl_easy_setopt (ctx->hnd, CURLOPT_WRITEDATA, fp);
+  ctx->ua = get_curl (ctx->ua);
+  curl_easy_setopt (ctx->ua, CURLOPT_URL, url);
+  curl_easy_setopt (ctx->ua, CURLOPT_WRITEFUNCTION, fwrite);
+  curl_easy_setopt (ctx->ua, CURLOPT_WRITEDATA, fp);
   
-  ret = curl_easy_perform (ctx->hnd);
+  ret = curl_easy_perform (ctx->ua);
 
   fclose (fp);
   
-  curl_easy_setopt (ctx->hnd, CURLOPT_URL, NULL);
-  curl_easy_setopt (ctx->hnd, CURLOPT_WRITEFUNCTION, NULL);
-  curl_easy_setopt (ctx->hnd, CURLOPT_WRITEDATA, NULL);
+  curl_easy_setopt (ctx->ua, CURLOPT_URL, NULL);
+  curl_easy_setopt (ctx->ua, CURLOPT_WRITEFUNCTION, NULL);
+  curl_easy_setopt (ctx->ua, CURLOPT_WRITEDATA, NULL);
   
   if (ret != 0)
     goto end;
@@ -178,8 +190,7 @@ int new_LFI_MULT (const char * url, const char * file, lfinetw_ctx_t * ctx,
 
   // Parse index & feed database
   {
-    lficom_t lficomm;
-    void * LFI = &lficomm;
+    lfi_hndl_t * alm = lfi_get_altm_hndl (NULL);
     integer64 IREP, INUMER = 77, INIMES = 0, INBARP = 0, INBARI = 0,
               INALDO, INTROU, INARES, INAMAX;
     logical LLNOMM = fort_TRUE, LLERFA = fort_TRUE, LLIMST = fort_FALSE;
@@ -187,15 +198,12 @@ int new_LFI_MULT (const char * url, const char * file, lfinetw_ctx_t * ctx,
               * CLSTTC = (character*)"KEEP";
     character_len CLNOMF_len = strlen (file), CLSTTO_len = 3, CLSTTC_len = 4;
    
-    strncpy (lficomm.cmagic, "LFI_FORT", 8);
-    lficomm.lfihl = NULL;
+    alm->cb->lfiouv (alm->data, &IREP, &INUMER, &LLNOMM, CLNOMF, CLSTTO, &LLERFA, &LLIMST, 
+          	     &INIMES, &INBARP, &INBARI, CLNOMF_len, CLSTTO_len);
     
-    lfiouv_mt64_ (LFI, &IREP, &INUMER, &LLNOMM, CLNOMF, CLSTTO, &LLERFA, &LLIMST, 
-          	      &INIMES, &INBARP, &INBARI, CLNOMF_len, CLSTTO_len);
-    
-    lfinaf_mt64_ (LFI, &IREP, &INUMER, &INALDO, &INTROU, &INARES, &INAMAX);
+    alm->cb->lfinaf (alm->data, &IREP, &INUMER, &INALDO, &INTROU, &INARES, &INAMAX);
   
-    lfipos_mt64_ (LFI, &IREP, &INUMER);
+    alm->cb->lfipos (alm->data, &IREP, &INUMER);
 
     TRY (sqlite3_exec (ctx->db, "BEGIN", 0, 0, 0));
   
@@ -256,12 +264,13 @@ int new_LFI_MULT (const char * url, const char * file, lfinetw_ctx_t * ctx,
    
         strcpy (CLNOMG, PROTOHOST);
  
-        lfican_mt64_ (LFI, &IREP, &INUMER, CLNOMA, &LLAVAN, CLNOMA_len);
+        alm->cb->lfican (alm->data, &IREP, &INUMER, CLNOMA, &LLAVAN, CLNOMA_len);
         CLNOMA[CLNOMA_len] = '\0';
 
         strcpy (CLNOMB, CLNOMA);
 
-        lfinff_mt64_ (LFI, &IREP, &INUMER, CLNOMB, &CLNOMG[PROTOHOST_len], CLNOMB_len, CLNOMG_len - PROTOHOST_len);
+        alm->cb->lfinff (alm->data, &IREP, &INUMER, CLNOMB, &CLNOMG[PROTOHOST_len], 
+                         CLNOMB_len, CLNOMG_len - PROTOHOST_len);
         CLNOMA[CLNOMB_len] = '\0';
  
         for (int i = CLNOMG_len-1; i >= 0; i--)
@@ -324,7 +333,7 @@ int new_LFI_MULT (const char * url, const char * file, lfinetw_ctx_t * ctx,
   
     TRY (sqlite3_exec (ctx->db, "COMMIT", 0, 0, 0));
   
-    lfifer_mt64_ (LFI, &IREP, &INUMER, CLSTTC, CLSTTC_len);
+    alm->cb->lfifer (alm->data, &IREP, &INUMER, CLSTTC, CLSTTC_len);
   }
 
 end:
@@ -353,8 +362,8 @@ end:
   return ctx->status;
 }
 
-int new_LFI_PURE (const char * url, const char * file, lfinetw_ctx_t * ctx,
-                  write_hdr_t * hdr, time_t ft, int * pIRANK)
+static int new_LFI_PURE (const char * url, const char * file, lfi_netw_ctx_t * ctx,
+                         write_hdr_t * hdr, time_t ft, int * pIRANK)
 {
   int IRANK = *pIRANK;
   CURLcode ret = 0;
@@ -378,22 +387,22 @@ int new_LFI_PURE (const char * url, const char * file, lfinetw_ctx_t * ctx,
 
   sprintf (range, "0-%lld", 3*8*hdr->dat[0]-1);
 
-  ctx->hnd = get_curl (ctx->hnd);
-  curl_easy_setopt (ctx->hnd, CURLOPT_URL, url);
-  curl_easy_setopt (ctx->hnd, CURLOPT_RANGE, range);
-  curl_easy_setopt (ctx->hnd, CURLOPT_WRITEFUNCTION, fwrite);
-  curl_easy_setopt (ctx->hnd, CURLOPT_WRITEDATA, fp);
+  ctx->ua = get_curl (ctx->ua);
+  curl_easy_setopt (ctx->ua, CURLOPT_URL, url);
+  curl_easy_setopt (ctx->ua, CURLOPT_RANGE, range);
+  curl_easy_setopt (ctx->ua, CURLOPT_WRITEFUNCTION, fwrite);
+  curl_easy_setopt (ctx->ua, CURLOPT_WRITEDATA, fp);
   
   // We should look at the header to see whether file has extra indexes, and get them too
   
-  ret = curl_easy_perform (ctx->hnd);
+  ret = curl_easy_perform (ctx->ua);
 
   fclose (fp);
   
-  curl_easy_setopt (ctx->hnd, CURLOPT_URL, NULL);
-  curl_easy_setopt (ctx->hnd, CURLOPT_RANGE, NULL);
-  curl_easy_setopt (ctx->hnd, CURLOPT_WRITEFUNCTION, NULL);
-  curl_easy_setopt (ctx->hnd, CURLOPT_WRITEDATA, NULL);
+  curl_easy_setopt (ctx->ua, CURLOPT_URL, NULL);
+  curl_easy_setopt (ctx->ua, CURLOPT_RANGE, NULL);
+  curl_easy_setopt (ctx->ua, CURLOPT_WRITEFUNCTION, NULL);
+  curl_easy_setopt (ctx->ua, CURLOPT_WRITEDATA, NULL);
   
   if (ret != 0)
     goto end;
@@ -401,8 +410,7 @@ int new_LFI_PURE (const char * url, const char * file, lfinetw_ctx_t * ctx,
   
   // Parse index & feed database
   {
-    lficom_t lficomm;
-    void * LFI = &lficomm;
+    lfi_hndl_t * als = lfi_get_alts_hndl (NULL);
     integer64 IREP, INUMER = 77, INIMES = 0, INBARP = 0, INBARI = 0,
               INALDO, INTROU, INARES, INAMAX;
     logical LLNOMM = fort_TRUE, LLERFA = fort_TRUE, LLIMST = fort_FALSE;
@@ -413,15 +421,12 @@ int new_LFI_PURE (const char * url, const char * file, lfinetw_ctx_t * ctx,
     character_len CLNOMA_len = 16;
     character CLNOMA[CLNOMA_len+1];
    
-    strncpy (lficomm.cmagic, "LFI_FORT", 8);
-    lficomm.lfihl = NULL;
-    
-    lfiouv_mt64_ (LFI, &IREP, &INUMER, &LLNOMM, CLNOMF, CLSTTO, &LLERFA, &LLIMST, 
-          	      &INIMES, &INBARP, &INBARI, CLNOMF_len, CLSTTO_len);
+    als->cb->lfiouv (als->data, &IREP, &INUMER, &LLNOMM, CLNOMF, CLSTTO, &LLERFA, &LLIMST, 
+          	     &INIMES, &INBARP, &INBARI, CLNOMF_len, CLSTTO_len);
 
-    lfinaf_mt64_ (LFI, &IREP, &INUMER, &INALDO, &INTROU, &INARES, &INAMAX);
+    als->cb->lfinaf (als->data, &IREP, &INUMER, &INALDO, &INTROU, &INARES, &INAMAX);
   
-    lfipos_mt64_ (LFI, &IREP, &INUMER);
+    als->cb->lfipos (als->data, &IREP, &INUMER);
   
     TRY (sqlite3_exec (ctx->db, "BEGIN", 0, 0, 0));
   
@@ -473,7 +478,7 @@ int new_LFI_PURE (const char * url, const char * file, lfinetw_ctx_t * ctx,
       {
         integer64 ILONGD, IPOSEX; 
         logical LLAVAN = fort_TRUE;
-        lficas_mt64_ (LFI, &IREP, &INUMER, CLNOMA, &ILONGD, &IPOSEX, &LLAVAN, CLNOMA_len);
+        als->cb->lficas (als->data, &IREP, &INUMER, CLNOMA, &ILONGD, &IPOSEX, &LLAVAN, CLNOMA_len);
         CLNOMA[CLNOMA_len] = '\0';
         TRY (sqlite3_bind_int  (ins, 1, IRANK));
         TRY (sqlite3_bind_text (ins, 2, CLNOMA, strlen (CLNOMA), NULL));
@@ -489,7 +494,7 @@ int new_LFI_PURE (const char * url, const char * file, lfinetw_ctx_t * ctx,
     TRY (sqlite3_exec (ctx->db, "COMMIT", 0, 0, 0));
   
   
-    lfifer_mt64_ (LFI, &IREP, &INUMER, CLSTTC, CLSTTC_len);
+    als->cb->lfifer (als->data, &IREP, &INUMER, CLSTTC, CLSTTC_len);
   }
 
 end:
@@ -518,7 +523,7 @@ end:
 
 
 // Remove a LFI PURE file from the database
-int purge_LFI_PURE (lfinetw_ctx_t * ctx, int IRANK, int intr)
+static int purge_LFI_PURE (lfi_netw_ctx_t * ctx, int IRANK, int intr)
 {
   int rc = SQLITE_OK;
   sqlite3_stmt * del = NULL;
@@ -556,7 +561,7 @@ end:
   return ctx->status;
 }
 
-int purge_LFI_MULT (lfinetw_ctx_t * ctx, int IRANK)
+static int purge_LFI_MULT (lfi_netw_ctx_t * ctx, int IRANK)
 {
   int rc = SQLITE_OK;
   sqlite3_stmt * del = NULL, * sel = NULL;
@@ -607,7 +612,8 @@ end:
   return ctx->status;
 }
 
-int check_url_validity (const char * url, time_t ft, lfinetw_ctx_t * ctx, int * pIRANK, int * pIKIND)
+static int check_url_validity (const char * url, time_t ft, lfi_netw_ctx_t * ctx,  
+                               int * pIRANK, int * pIKIND)
 {
   int IRANK = -1;
   int rc = SQLITE_OK;
@@ -670,13 +676,13 @@ end:
 
   *pIRANK = IRANK;
 
-  return ctx->status;
+  return ctx->status;;
 }
 
-int lfilec_netw (const char *, const char *, lfinetw_ctx_t *, char *, integer64 *);
+static int lfilec_netw_FILE (const char *, const char *, lfi_netw_ctx_t *, char *, integer64 *);
 
-int lfilec_netw_MULT (lfinetw_ctx_t * ctx, const char * url, const char * name, 
-                      int IRANK, char * pDATA, integer64 * pSIZE)
+static int lfilec_netw_MULT (lfi_netw_ctx_t * ctx, const char * url, const char * name, 
+                             int IRANK, char * pDATA, integer64 * pSIZE)
 {
   int rc = SQLITE_OK;
 
@@ -708,7 +714,7 @@ int lfilec_netw_MULT (lfinetw_ctx_t * ctx, const char * url, const char * name,
       strncpy (CLNOMG, clnomg, CLNOMG_len);
       CLNOMB[CLNOMB_len] = '\0';
       CLNOMG[CLNOMG_len] = '\0';
-      if (lfilec_netw (CLNOMG, CLNOMB, ctx, pDATA, pSIZE) < 0)
+      if (lfilec_netw_FILE (CLNOMG, CLNOMB, ctx, pDATA, pSIZE) < 0)
         goto end;
     }
   else if (rc == SQLITE_DONE)
@@ -737,8 +743,8 @@ end:
 }
 
 // Get an article from a LFI PURE file, retrieve it from the remote host if necessary
-int lfilec_netw_PURE (lfinetw_ctx_t * ctx, const char * url, const char * name, 
-                      int IRANK, char * pDATA, integer64 * pSIZE)
+static int lfilec_netw_PURE (lfi_netw_ctx_t * ctx, const char * url, const char * name, 
+                             int IRANK, char * pDATA, integer64 * pSIZE)
 {
   int rc = SQLITE_OK;
   int ret = 0;
@@ -778,20 +784,20 @@ int lfilec_netw_PURE (lfinetw_ctx_t * ctx, const char * url, const char * name,
 
           sprintf (range, "%ld-%ld", offset, offset + length - 1);
 
-          ctx->hnd = get_curl (ctx->hnd);
+          ctx->ua = get_curl (ctx->ua);
 
-          curl_easy_setopt (ctx->hnd, CURLOPT_URL, url);
-          curl_easy_setopt (ctx->hnd, CURLOPT_RANGE, range);
-          curl_easy_setopt (ctx->hnd, CURLOPT_WRITEFUNCTION, write_dat);
-          curl_easy_setopt (ctx->hnd, CURLOPT_WRITEDATA, &dat);
+          curl_easy_setopt (ctx->ua, CURLOPT_URL, url);
+          curl_easy_setopt (ctx->ua, CURLOPT_RANGE, range);
+          curl_easy_setopt (ctx->ua, CURLOPT_WRITEFUNCTION, write_dat);
+          curl_easy_setopt (ctx->ua, CURLOPT_WRITEDATA, &dat);
 
           
-          ret = curl_easy_perform (ctx->hnd);
+          ret = curl_easy_perform (ctx->ua);
 
-          curl_easy_setopt (ctx->hnd, CURLOPT_URL, NULL);
-          curl_easy_setopt (ctx->hnd, CURLOPT_RANGE, NULL);
-          curl_easy_setopt (ctx->hnd, CURLOPT_WRITEFUNCTION, NULL);
-          curl_easy_setopt (ctx->hnd, CURLOPT_WRITEDATA, NULL);
+          curl_easy_setopt (ctx->ua, CURLOPT_URL, NULL);
+          curl_easy_setopt (ctx->ua, CURLOPT_RANGE, NULL);
+          curl_easy_setopt (ctx->ua, CURLOPT_WRITEFUNCTION, NULL);
+          curl_easy_setopt (ctx->ua, CURLOPT_WRITEDATA, NULL);
            
 
           if (ret != 0)
@@ -857,7 +863,12 @@ end:
   return ctx->status;
 }
 
-int lfilec_netw (const char * url, const char * name, lfinetw_ctx_t * ctx, char * pDATA, integer64 * pSIZE)
+
+// If name is NULL, only trigger index retrieval and storage
+// If pDATA is NULL, then only size is returned
+// If pSIZE is NULL, nothing happens
+static int lfilec_netw_FILE (const char * url, const char * name, lfi_netw_ctx_t * ctx, 
+                             char * pDATA, integer64 * pSIZE)
 {
   CURLcode ret = 0;
   int rc = SQLITE_OK;
@@ -873,7 +884,7 @@ int lfilec_netw (const char * url, const char * name, lfinetw_ctx_t * ctx, char 
                                   // a MULT file
     {
       // Create CURL handle
-      ctx->hnd = get_curl (ctx->hnd);
+      ctx->ua = get_curl (ctx->ua);
      
       // Get first 22*8 characters of remote file
       
@@ -902,19 +913,19 @@ int lfilec_netw (const char * url, const char * name, lfinetw_ctx_t * ctx, char 
           goto end;
         }
      
-      curl_easy_setopt (ctx->hnd, CURLOPT_URL, url);
-      curl_easy_setopt (ctx->hnd, CURLOPT_RANGE, "0-175");
-      curl_easy_setopt (ctx->hnd, CURLOPT_WRITEFUNCTION, write_hdr);
-      curl_easy_setopt (ctx->hnd, CURLOPT_WRITEDATA, &hdr);
+      curl_easy_setopt (ctx->ua, CURLOPT_URL, url);
+      curl_easy_setopt (ctx->ua, CURLOPT_RANGE, "0-175");
+      curl_easy_setopt (ctx->ua, CURLOPT_WRITEFUNCTION, write_hdr);
+      curl_easy_setopt (ctx->ua, CURLOPT_WRITEDATA, &hdr);
      
-      ret = curl_easy_perform (ctx->hnd);
+      ret = curl_easy_perform (ctx->ua);
      
       fclose (hdr.fp);
      
-      curl_easy_setopt (ctx->hnd, CURLOPT_URL, NULL);
-      curl_easy_setopt (ctx->hnd, CURLOPT_RANGE, NULL);
-      curl_easy_setopt (ctx->hnd, CURLOPT_WRITEFUNCTION, NULL);
-      curl_easy_setopt (ctx->hnd, CURLOPT_WRITEDATA, NULL);
+      curl_easy_setopt (ctx->ua, CURLOPT_URL, NULL);
+      curl_easy_setopt (ctx->ua, CURLOPT_RANGE, NULL);
+      curl_easy_setopt (ctx->ua, CURLOPT_WRITEFUNCTION, NULL);
+      curl_easy_setopt (ctx->ua, CURLOPT_WRITEDATA, NULL);
      
       if (ret != 0)
         goto end;
@@ -942,17 +953,18 @@ int lfilec_netw (const char * url, const char * name, lfinetw_ctx_t * ctx, char 
 
     }
 
-  switch (IKIND)
-    {
-      case +1:
-        if (lfilec_netw_PURE (ctx, url, name, IRANK, pDATA, pSIZE) < 0)
-          goto end;
-        break;
-      case +2:
-        if (lfilec_netw_MULT (ctx, url, name, IRANK, pDATA, pSIZE) < 0)
-          goto end;
-        break;
-    }
+  if (name != NULL)
+    switch (IKIND)
+      {
+        case +1:
+          if (lfilec_netw_PURE (ctx, url, name, IRANK, pDATA, pSIZE) < 0)
+            goto end;
+          break;
+        case +2:
+          if (lfilec_netw_MULT (ctx, url, name, IRANK, pDATA, pSIZE) < 0)
+            goto end;
+          break;
+      }
 
 end:
 
@@ -970,41 +982,322 @@ end:
   return ctx->status;
 }
 
-int lfinfo_netw (const char * url, const char * name, integer64 * IPOSEX, integer64 * ILONGD)
+static int lfinfo_netw_FILE (const char * url, const char * name, 
+                             integer64 * IPOSEX, integer64 * ILONGD)
 {
 
 }
+
 
 #undef TRY
 
-int main (int argc, char * argv[])
+/* Ancillary macros */
+
+#define ARTNLEN 16
+#define minARTN(x) ((x) > ARTNLEN ? ARTNLEN : (x))
+
+#define eqan(a,b) (strncmp ((a), (b), ARTNLEN) == 0)
+#define neqan(a,b) (!eqan(a,b))
+
+
+/* Open file descriptor */
+typedef struct lfi_netw_fh_t
 {
+  lfi_netw_ctx_t ctx;
+  integer64 inumer;                  /* Unit number                         */
+  char * cnomf;                      /* File name                           */
+  integer64 inimes;                  /* Message level                       */
+  logical llerfa;                    /* All errors are fatal                */
+  struct lfi_netw_fh_t * next;       /* Next file                           */
+} lfi_netw_fh_t;
 
-// ftp://giedi-prime//home/phi001/3d/glgrib/testdata/fasplit/ZFLD2.fa SFX.ZS
+/* LFI library data */
+typedef struct lfi_netw_t
+{
+  char cmagic[8];
+  lfi_netw_fh_t * fh;      /* File descriptor list                              */
+  int fmult;               /* Default for the "facteur multiplicatif"           */
+  lfi_fmul_t * fmult_list; /* Predefined units and "facteurs multiplicatifs"    */
+  int nerfag;              /* Erreurs fatales                                   */
+  int inivau;              /* Niveau global des messages                        */
+  int iulout;              /* Unite Fortran pour impression des messages        */
+} lfi_netw_t;
 
-  lfinetw_ctx_t _ctx, * ctx = &_ctx;
-  memset (ctx, 0, sizeof (*ctx));
-
-  if (sqlite3_open ("lfi.db", &ctx->db) != SQLITE_OK)
-    return 1;
-
-  integer64 ILONGD = 0;
-
-  if (lfilec_netw (argv[1], argv[2], ctx, NULL, &ILONGD))
-    {
-      printf ("%s\n", ctx->mess);
-    }
-
-  printf (" ILONGD = %lld\n", ILONGD);
-
-  if (ctx->db != NULL)
-    sqlite3_close (ctx->db);
-  ctx->db = NULL;
-  if (ctx->hnd != NULL)
-    curl_easy_cleanup (ctx->hnd);
-  ctx->hnd = NULL;
-
-  return -ctx->status;
+/* Cast void * to a lfi_netw_t pointer and make a check */
+static lfi_netw_t * lookup_net (void * LFI)
+{
+  lfi_netw_t * net = LFI; 
+  if (strncmp (net->cmagic, "lfi_netw", 8))  
+    lfi_abor ("Corrupted descriptor"); 
+  return net;
 }
 
+/* Search for open file by unit number (KNUMER) */
+static lfi_netw_fh_t * lookup_fh (lfi_netw_t * net, integer64 * KNUMER, int fatal)
+{
+  lfi_netw_fh_t * fh;
+  for (fh = net->fh; fh; fh = fh->next)
+    if (fh->inumer == *KNUMER)
+      return fh;
+  if (fatal)
+    lfi_abor ("File number `%lld' is not opened", *KNUMER);
+  return NULL;
+}
+
+#define NET_DECL \
+  lfi_netw_t * net = lookup_net (LFI);
+#define FH_DECL(fatal) \
+  lfi_netw_fh_t * fh = lookup_fh (net, KNUMER, fatal);  
+  
+static void lfiouv_netw (LFIOUV_ARGS_DECL)
+{
+  NET_DECL;
+  FH_DECL (0);
+  char * cnomf, * cstto;
+
+  DRHOOK_START ("lfiouv_netw");
+
+  if (fh != NULL)
+    {    
+      *KREP = -13; 
+     goto end; 
+    }    
+
+  if (! istrue (*LDNOMM))
+    lfi_abor ("LDNOMM has to be TRUE");
+
+  if (strncmp (CDSTTO, "OLD", CDSTTO_len) != 0)
+    lfi_abor ("CDSTTO has to be 'OLD'");
+
+  cnomf = lfi_fstrdup (CDNOMF, CDNOMF_len, NULL);
+
+  fh = (lfi_netw_fh_t *)malloc (sizeof (lfi_netw_fh_t));
+  memset (fh, 0, sizeof (*fh));
+
+  if (*KNUMER == 0)
+    {
+      /* Allocate a unit number for this file */
+      integer64 inumer = -1000000;
+      lfi_netw_fh_t * fh;
+again:
+      for (fh = net->fh; fh; fh = fh->next)
+        if (fh->inumer == inumer)
+          {
+            inumer--;
+            goto again;
+          }
+      *KNUMER = inumer;
+    }
+
+  fh->cnomf    = cnomf;
+  fh->inumer   = *KNUMER;
+  fh->inimes   = *KNIMES;
+  fh->llerfa   = *LDERFA;
+
+
+  fh->ctx.status = 0;
+  memset (&fh->ctx.mess, 0, sizeof (fh->ctx.mess));
+
+  if (lfilec_netw_FILE (cnomf, NULL, &fh->ctx, NULL, NULL) < 0)
+    {
+      lfi_mess_ (0, fh->ctx.mess, strlen (fh->ctx.mess));
+       *KREP = -32;
+      goto end;
+    }
+
+end:
+
+  DRHOOK_END (0);
+}
+
+static void lfifer_netw (LFIFER_ARGS_DECL)
+{
+  NET_DECL;
+  lfi_netw_fh_t * fh, * fg;
+  DRHOOK_START ("lfifer_netw");
+
+  *KREP = 0;
+
+  /* We search the file handle by hand, because we need to update the list of opened file handles */
+
+  for (fh = net->fh, fg = NULL; fh; fg = fh, fh = fh->next)
+    if (fh->inumer == *KNUMER)
+      break;
+
+  if (fh == net->fh)
+    net->fh = fh->next;
+  else
+    fg->next = fh->next;
+
+end:
+
+  free (fh->cnomf);
+
+  if (fh->ctx.db != NULL)
+    sqlite3_close (fh->ctx.db);
+  fh->ctx.db = NULL;
+  if (fh->ctx.ua != NULL)
+    curl_easy_cleanup (fh->ctx.ua);
+  fh->ctx.ua = NULL;
+
+  free (fh);
+
+  DRHOOK_END (0);
+
+}
+
+static void lfinfo_netw (LFINFO_ARGS_DECL)
+{
+  NET_DECL;
+  FH_DECL (1);
+  DRHOOK_START ("lfinfo_netw");
+
+  DRHOOK_END (0);
+}
+
+static void lfilec_netw (LFILEC_ARGS_DECL)
+{
+  NET_DECL;
+  FH_DECL (1);
+  char name[CDNOMA_len+1];
+  int rc;
+
+  DRHOOK_START ("lfilec_netw");
+
+  *KREP = 0;
+
+  if (*KLONG < 0)
+    {
+      *KREP = -14;
+      goto end;
+    }
+
+  strncpy (name, CDNOMA, CDNOMA_len);
+  name[CDNOMA_len] = '\0';
+
+  rc = lfilec_netw_FILE (fh->cnomf, name, &fh->ctx, (char *)KTAB, KLONG);
+  if (rc == -2)
+    {
+      *KREP = -20;
+      goto end;
+    }
+  else if (rc < 0)
+    {
+      lfi_mess_ (0, fh->ctx.mess, strlen (fh->ctx.mess));
+      *KREP = -32;
+    }
+  
+end:
+  DRHOOK_END (0);
+}
+
+#undef NET_DECL
+
+lficb_t lficb_netw = {
+  lfiouv_netw,        /*        Ouverture fichier                                        */
+  lfican_miss,        /* KNUMER Caracteristiques de l'article suivant                    */
+  lficas_miss,        /* KNUMER Caracteristiques de l'article suivant                    */
+  lfiecr_miss,        /* KNUMER Ecriture                                                 */
+  lfifer_netw,        /* KNUMER Fermeture                                                */
+  lfilec_netw,        /* KNUMER Lecture                                                  */
+  lfinfo_netw,        /* KNUMER Caracteristiques d'un article nomme                      */
+  lfinff_miss,        /* KNUMER Get real file & record name                              */
+  lfipos_miss,        /* KNUMER Remise a zero du pointeur de fichier                     */
+  lfiver_dumm,        /* KNUMER Verrouillage d'un fichier                                */
+  lfiofm_miss,        /* KNUMER Obtention du facteur multiplicatif                       */
+  lfineg_miss,        /*        Niveau global d'erreur                                   */
+  lfilaf_miss,        /* KNUMER Liste des articles                                       */
+  lfiosg_dumm,        /*        Obtention du niveau d'impression des statistiques        */
+  lfinum_miss,        /* KNUMER Rang de l'unite logique KNUMER                           */
+  lfisup_miss,        /* KNUMER Suppression d'un article                                 */
+  lfiopt_miss,        /* KNUMER Obtention des options d'ouverture d'un fichier           */
+  lfinmg_miss,        /*        Niveau global d'erreur                                   */
+  lficap_miss,        /* KNUMER Caracteristiques de l'article precedent                  */
+  lfifra_dumm,        /*        Messages en Francais                                     */
+  lficfg_dumm,        /*        Impression des parametres de base de LFI                 */
+  lfierf_miss,        /* KNUMER Erreur fatale                                            */
+  lfilas_miss,        /* KNUMER Lecture de l'article de donnees suivant                  */
+  lfiren_miss,        /* KNUMER Renommer un article                                      */
+  lfiini_dumm,        /*        Initialisation de LFI                                    */
+  lfipxf_miss,        /* KNUMER Export d'un fichier LFI                                  */
+  lfioeg_miss,        /*        Obtention du niveau global de traitement des erreurs     */
+  lfinaf_miss,        /* KNUMER Nombre d'articles divers                                 */
+  lfiofd_miss,        /*        Facteur multiplicatif courant                            */
+  lfiomf_dumm,        /* KNUMER Obtention du niveau de messagerie                        */
+  lfiafm_miss,        /* KNUMER Attribution d'un facteur multiplicatif a une unite       */
+  lfista_dumm,        /* KNUMER Impression des statistiques d'utilisation                */
+  lfiosf_miss,        /* KNUMER Obtention de l'option d'impression des statistiques      */
+  lfilap_miss,        /* KNUMER Lecture de l'article precedent                           */
+  lfioef_miss,        /* KNUMER Obtention de l'option courante de traitement des erreurs */
+  lfimst_dumm,        /* KNUMER Activation de l'option d'impression de statistiques      */
+  lfinim_miss,        /* KNUMER Ajustement du niveau de messagerie                       */
+  lfisfm_miss,        /* KNUMER Suppression d'un facteur multiplicatif                   */
+  lfinsg_dumm,        /*        Niveau global d'impression de statistiques               */
+  lfideb_dumm,        /*        Mode mise au point (debug)                               */
+  lfiomg_miss,        /*        Obtention du niveau global des messages LFI              */
+  lfifmd_miss,        /*        Facteur multiplicatif par defaut                         */
+};
+
+#define NET_DECL \
+  lfi_netw_t * net = lookup_net (lfi->data); 
+
+static void lfi_del_netw_hndl (lfi_hndl_t * lfi)
+{
+  NET_DECL;
+
+  if (net->fh)
+    lfi_abor ("Attempt to release lfi handler with opened files");
+
+  lfi_fmul_free (&net->fmult_list);
+
+  free (net);
+  free (lfi);
+}
+
+static int lfi_opn_netw_hndl (lfi_hndl_t * lfi, integer64 * KNUMER)
+{
+  NET_DECL;
+  FH_DECL (0);
+  return fh == NULL ? 0 : 1;
+}
+
+static int lfi_vrb_netw_hndl (lfi_hndl_t * lfi, integer64 * KNUMER)
+{
+  NET_DECL;
+  FH_DECL (1);
+  return fh->inimes == 2 ? 1 : 0;
+}
+
+static int lfi_fat_netw_hndl (lfi_hndl_t * lfi, integer64 * KNUMER)
+{
+  NET_DECL;
+  FH_DECL (1);
+  return (net->nerfag == 0) || ((net->nerfag == 1) && istrue (fh->llerfa));
+}
+
+#undef NET_DECL
+
+lfi_hndl_t * lfi_get_netw_hndl (void * data)
+{
+  lfi_hndl_t * lfi = (lfi_hndl_t *)malloc (sizeof (lfi_hndl_t));
+  lfi_netw_t * net = (lfi_netw_t *)malloc (sizeof (lfi_netw_t));
+
+  memset (net, 0, sizeof (lfi_netw_t));
+  memcpy (net->cmagic, "lfi_netw", 8); 
+  net->fmult      = 6;
+  net->fmult_list = NULL;
+  net->nerfag     = 1;
+  net->inivau     = 0;
+  net->iulout     = 0;
+
+  lfi->cb = &lficb_netw;
+  lfi->cb_verb = &lficb_verb;
+  lfi->data = net;
+  lfi->destroy = lfi_del_netw_hndl;
+  lfi->is_open = lfi_opn_netw_hndl;
+  lfi->is_verb = lfi_vrb_netw_hndl;
+  lfi->is_fatl = lfi_fat_netw_hndl;
+  lfi->next = NULL;
+  return lfi;
+}
 

@@ -151,6 +151,9 @@ void lfiouv_mt64_ (LFIOUV_ARGS_DECL)
             goto done;
           }
         break;
+      case LFI_NETW:
+        unum = 2;
+        break;
       case LFI_UNKN:
         *KREP = -10;
         lfi = NULL;

@@ -70,5 +70,6 @@ lficb_verb_t;
 extern lficb_verb_t lficb_verb;
 
 extern void lfi_verb (struct lfi_hndl_t * lfi, const char * func, ...);
+extern void lfi_mess_ (const integer64 *, character *, character_len);
 
 #endif

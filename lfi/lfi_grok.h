@@ -16,7 +16,8 @@ typedef enum
   LFI_NONE = 0,
   LFI_PURE = 1,
   LFI_ALTM = 2,
-  LFI_UNKN = 3
+  LFI_NETW = 3,
+  LFI_UNKN = 4
 }
 lfi_grok_t;
 

@@ -55,8 +55,8 @@ lfi_grok_t lfi_grok (const character * file, character_len file_len)
 
   if (fp == NULL)
     {
-      if ((strncmp (file, "ftp://", file_len) == 0) ||
-          (strncmp (file, "http://", file_len) == 0))
+      if ((strncmp (file, "ftp://", 6) == 0) ||
+          (strncmp (file, "http://", 7) == 0))
         goto lfi_netw;
       goto lfi_none;
     }

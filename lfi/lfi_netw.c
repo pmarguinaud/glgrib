@@ -60,6 +60,17 @@ typedef struct
   char mess[1024];
 } lfi_netw_ctx_t;
 
+
+void free_ctx (lfi_netw_ctx_t * ctx)
+{
+  if (ctx->db != NULL)
+    sqlite3_close (ctx->db);
+  ctx->db = NULL;
+  if (ctx->ua != NULL)
+    curl_easy_cleanup (ctx->ua);
+  ctx->ua = NULL;
+}
+
 static char * parse_protohost (const char * url, char * protohost, int protohost_len)
 {
   char * ph = protohost;
@@ -874,7 +885,7 @@ static int lfilec_netw_FILE (const char * url, const char * name, lfi_netw_ctx_t
   int rc = SQLITE_OK;
   time_t ft = filetime (url);
 
-  int IRANK, IKIND;
+  int IRANK = -1, IKIND = -1;
 
   if (check_url_validity (url, ft, ctx, &IRANK, &IKIND) < 0)
     goto end;
@@ -982,13 +993,6 @@ end:
   return ctx->status;
 }
 
-static int lfinfo_netw_FILE (const char * url, const char * name, 
-                             integer64 * IPOSEX, integer64 * ILONGD)
-{
-
-}
-
-
 #undef TRY
 
 /* Ancillary macros */
@@ -1057,6 +1061,8 @@ static void lfiouv_netw (LFIOUV_ARGS_DECL)
 
   DRHOOK_START ("lfiouv_netw");
 
+  *KREP = 0;
+
   if (fh != NULL)
     {    
       *KREP = -13; 
@@ -1094,18 +1100,35 @@ again:
   fh->inimes   = *KNIMES;
   fh->llerfa   = *LDERFA;
 
-
   fh->ctx.status = 0;
   memset (&fh->ctx.mess, 0, sizeof (fh->ctx.mess));
 
-  if (lfilec_netw_FILE (cnomf, NULL, &fh->ctx, NULL, NULL) < 0)
+  if (sqlite3_open ("lfi.db", &fh->ctx.db) != SQLITE_OK)
     {
-      lfi_mess_ (0, fh->ctx.mess, strlen (fh->ctx.mess));
-       *KREP = -32;
+      const char * mess = "Cannot open lfi.db";
+      lfi_mess_ (NULL, (character*)mess, strlen (mess));
+      *KREP = -32;
       goto end;
     }
 
+  if (lfilec_netw_FILE (cnomf, NULL, &fh->ctx, NULL, NULL) < 0)
+    {
+      lfi_mess_ (NULL, fh->ctx.mess, strlen (fh->ctx.mess));
+      *KREP = -9;
+      goto end;
+    }
+
+  fh->next = net->fh;
+  net->fh = fh;
+
 end:
+
+  if (*KREP != 0)
+    {
+      free (cnomf);
+      free_ctx (&fh->ctx);
+      free (fh);
+    }
 
   DRHOOK_END (0);
 }
@@ -1132,14 +1155,7 @@ static void lfifer_netw (LFIFER_ARGS_DECL)
 end:
 
   free (fh->cnomf);
-
-  if (fh->ctx.db != NULL)
-    sqlite3_close (fh->ctx.db);
-  fh->ctx.db = NULL;
-  if (fh->ctx.ua != NULL)
-    curl_easy_cleanup (fh->ctx.ua);
-  fh->ctx.ua = NULL;
-
+  free_ctx (&fh->ctx);
   free (fh);
 
   DRHOOK_END (0);
@@ -1148,10 +1164,29 @@ end:
 
 static void lfinfo_netw (LFINFO_ARGS_DECL)
 {
+  char name[CDNOMA_len+1];
   NET_DECL;
   FH_DECL (1);
+
   DRHOOK_START ("lfinfo_netw");
 
+  *KREP   = 0;
+  *KLONG  = 0;
+  *KPOSEX = 0;
+
+  strncpy (name, CDNOMA, CDNOMA_len);
+  name[CDNOMA_len] = '\0';
+
+  fh->ctx.status = 0;
+  fh->ctx.mess[0] = '\0';
+
+  if (lfilec_netw_FILE (fh->cnomf, name, &fh->ctx, NULL, KLONG) == -1)
+    {
+      lfi_mess_ (NULL, fh->ctx.mess, strlen (fh->ctx.mess));
+      goto end;
+    }
+
+end:
   DRHOOK_END (0);
 }
 
@@ -1183,11 +1218,20 @@ static void lfilec_netw (LFILEC_ARGS_DECL)
     }
   else if (rc < 0)
     {
-      lfi_mess_ (0, fh->ctx.mess, strlen (fh->ctx.mess));
+      lfi_mess_ (NULL, fh->ctx.mess, strlen (fh->ctx.mess));
       *KREP = -32;
     }
   
 end:
+  DRHOOK_END (0);
+}
+
+static void lfiomg_netw (LFIOMG_ARGS_DECL)
+{
+  NET_DECL;
+  DRHOOK_START ("lfiomg_netw");
+  *KNIVAU = net->inivau;
+  *KULOUT = net->iulout;
   DRHOOK_END (0);
 }
 
@@ -1234,7 +1278,7 @@ lficb_t lficb_netw = {
   lfisfm_miss,        /* KNUMER Suppression d'un facteur multiplicatif                   */
   lfinsg_dumm,        /*        Niveau global d'impression de statistiques               */
   lfideb_dumm,        /*        Mode mise au point (debug)                               */
-  lfiomg_miss,        /*        Obtention du niveau global des messages LFI              */
+  lfiomg_netw,        /*        Obtention du niveau global des messages LFI              */
   lfifmd_miss,        /*        Facteur multiplicatif par defaut                         */
 };
 

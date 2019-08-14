@@ -1107,7 +1107,26 @@ again:
     {
       const char * mess = "Cannot open lfi.db";
       lfi_mess_ (NULL, (character*)mess, strlen (mess));
-      *KREP = -32;
+      *KREP = -33;
+      goto end;
+    }
+
+
+  char * errmsg;
+  if (sqlite3_exec (fh->ctx.db, 
+"CREATE TABLE IF NOT EXISTS URL_TO_NUMER (CLURL VARCHAR (512) NOT NULL, "
+"ITIME BIGINT UNSIGNED NOT NULL, IRANK INTEGER PRIMARY KEY AUTOINCREMENT, "
+"IKIND INT NOT NULL, UNIQUE (CLURL));"
+"CREATE TABLE IF NOT EXISTS LFI_PURE (IRANK INTEGER NOT NULL, "
+"CLNOMA CHAR (16) NOT NULL, IPOSEX BIGINT NOT NULL, "
+"ILONGD BIGINT NOT NULL, KDATA BLOB, UNIQUE (IRANK, CLNOMA));"
+"CREATE TABLE IF NOT EXISTS LFI_MULT (IRANK INTEGER NOT NULL, "
+"CLNOMA CHAR (16) NOT NULL, CLNOMB CHAR (16) NOT NULL, "
+"JRANK INTEGER NOT NULL, UNIQUE (IRANK, CLNOMA));",
+NULL, NULL, &errmsg) != SQLITE_OK)
+    {
+      lfi_mess_ (NULL, (character*)errmsg, strlen (errmsg));
+      *KREP = -33;
       goto end;
     }
 
@@ -1219,7 +1238,7 @@ static void lfilec_netw (LFILEC_ARGS_DECL)
   else if (rc < 0)
     {
       lfi_mess_ (NULL, fh->ctx.mess, strlen (fh->ctx.mess));
-      *KREP = -32;
+      *KREP = -33;
     }
   
 end:

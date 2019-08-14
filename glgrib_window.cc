@@ -138,6 +138,7 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (CONTROL, F     , scale_palette_down       ());
       if_key (NONE,    J     , next_palette             ());
       if_key (NONE,    L     , toggle_light             ());
+      if_key (CONTROL, L     , toggleLocked             ());
       if_key (CONTROL, UP    , rotate_light_north       ());
       if_key (CONTROL, DOWN  , rotate_light_south       ());
       if_key (CONTROL, LEFT  , rotate_light_west        ());
@@ -834,6 +835,26 @@ void glgrib_window_set::run (glgrib_shell * shell)
 {
   while (! empty ())
     {
+      const glgrib_window * wl = NULL;
+      for (glgrib_window_set::iterator it = begin (); 
+           it != end (); it++)
+        {
+          glgrib_window * w = *it;
+	  if (w->isLocked ())
+            {
+              if (wl != NULL)
+                w->unsetLocked ();
+	      else
+                wl = w;
+	    }
+	}
+      if (wl != NULL)
+        for (glgrib_window_set::iterator it = begin (); 
+             it != end (); it++)
+          {
+            glgrib_window * w = *it;
+            w->scene.d.view.opts = wl->scene.d.view.opts;
+          }
       for (glgrib_window_set::iterator it = begin (); 
            it != end (); it++)
         {

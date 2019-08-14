@@ -97,10 +97,16 @@ public:
   void toggle_show_vector ();
   void toggle_show_norm ();
 
+  bool isLocked () const { return locked; }
+  void setLocked () { locked = true; }
+  void unsetLocked () { locked = false; }
+  void toggleLocked () { locked = ! locked; }
+
 protected:
   void createGFLWwindow (GLFWwindow * = NULL);
   bool closed = false;
   bool cloned = false;
+  bool locked = false;
 private:
   int id_;
   double t0;

@@ -65,6 +65,27 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
   gwindow->onkey (key, scancode, action, mods);
 }
 
+static void showHelpItem (const char * mm, const char * k, const char * desc, const char * action)
+{
+  char line[strlen (desc) + strlen (action) + 64];
+  char key[32];
+  key[0] = '\0';
+  if (strcmp (mm, "NONE") != 0)
+    {
+      strcpy (key, mm);
+      strcat (key, "-");
+    }
+  strcat (key, k);
+
+  sprintf (line, "%-32s %64s\n", key, strlen (desc) ? desc : action);
+
+  int len = strlen (line);
+  for (int i = 0; i < len; i++)
+    if (line[i] == ' ')
+      line[i] = '.';
+  printf ("%s", line);
+}
+
 void glgrib_window::onkey (int key, int scancode, int action, int mods, bool help)
 {
   enum
@@ -75,91 +96,87 @@ void glgrib_window::onkey (int key, int scancode, int action, int mods, bool hel
     ALT     = GLFW_MOD_ALT
   };
 
-#define if_key(mm, k, action) \
+#define if_key(mm, k, desc, action) \
 do { \
 if (help)                                       \
   {                                             \
-    const char * _mm = #mm "-";                 \
-    const char * _k  = #k;                      \
-    const char * _action = #action;             \
-    if (strcmp (_mm, "NONE-") == 0) _mm = "";   \
-    printf ("%s%s %s\n", _mm, _k, _action);     \
+    showHelpItem (#mm, #k, #desc, #action);     \
   }                                             \
 else if ((key == GLFW_KEY_##k) && (mm == mods)) \
-  {                                        \
-    action;                                \
-    return;                                \
-  }                                        \
+  {                                             \
+    action;                                     \
+    return;                                     \
+  }                                             \
 } while (0)
 
 
   if ((action == GLFW_PRESS || action == GLFW_REPEAT) || help)
     {
-      if_key (NONE,    T     , toggle_cursorpos_display ());
-      if_key (NONE,    TAB   , toggle_rotate            ());
-      if_key (CONTROL, TAB   , toggle_rotate_light      ());
-      if_key (NONE,    Y     , toggle_wireframe         ());
-      if_key (NONE,    D     , framebuffer              ());
-      if_key (NONE,    W     , widen_fov                ());
-      if_key (NONE,    S     , snapshot                 ());
-      if_key (NONE,    Q     , shrink_fov               ());
-      if_key (NONE,    P     , toggle_flat              ());
-      if_key (NONE,    6     , increase_radius          ());
-      if_key (NONE,    EQUAL , decrease_radius          ());
-      if_key (NONE,    SPACE , reset_view               ());
-      if_key (NONE,    UP    , rotate_north             ());
-      if_key (NONE,    DOWN  , rotate_south             ());
-      if_key (NONE,    LEFT  , rotate_west              ());
-      if_key (NONE,    RIGHT , rotate_east              ());
+      if_key (NONE,    T     ,  Hide/show location & field value at cursor position  , toggle_cursorpos_display ());
+      if_key (NONE,    TAB   ,  Enable/disable earth rotation                        , toggle_rotate            ());
+      if_key (CONTROL, TAB   ,  Enable/disable light rotation                        , toggle_rotate_light      ());
+      if_key (NONE,    Y     ,  Display landscape as wireframe                       , toggle_wireframe         ());
+      if_key (NONE,    D     ,  Use a framebuffer and generate a snapshot            , framebuffer              ());
+      if_key (NONE,    W     ,  Increase field of view                               , widen_fov                ());
+      if_key (NONE,    S     ,  Write a snapshot (PNG format)                        , snapshot                 ()); 
+      if_key (NONE,    Q     ,  Decrease field of view                               , shrink_fov               ());
+      if_key (NONE,    P     ,  Make earth flat/show orography                       , toggle_flat              ());
+      if_key (NONE,    6     ,  Increase size of current field                       , increase_radius          ());
+      if_key (NONE,    EQUAL ,  Decrease size of current field                       , decrease_radius          ());
+      if_key (NONE,    SPACE ,  Reset view                                           , reset_view               ());
+      if_key (NONE,    UP    ,  Move northwards                                      , rotate_north             ());
+      if_key (NONE,    DOWN  ,  Move southwards                                      , rotate_south             ());
+      if_key (NONE,    LEFT  ,  Move westwards                                       , rotate_west              ());
+      if_key (NONE,    RIGHT ,  Move eastwards                                       , rotate_east              ());
 
-      if_key (NONE,    F1    , select_field           ( 0));
-      if_key (NONE,    F2    , select_field           ( 1));
-      if_key (NONE,    F3    , select_field           ( 2));
-      if_key (NONE,    F4    , select_field           ( 3));
-      if_key (NONE,    F5    , select_field           ( 4));
-      if_key (NONE,    F6    , select_field           ( 5));
-      if_key (NONE,    F7    , select_field           ( 6));
-      if_key (NONE,    F8    , select_field           ( 7));
-      if_key (NONE,    F9    , select_field           ( 8));
-      if_key (NONE,    F10   , select_field           ( 9));
-      if_key (NONE,    F11   , select_field           (10));
-      if_key (NONE,    F12   , select_field           (11));
+      if_key (NONE,    F1    ,  Select field #1                                      , select_field           ( 0));
+      if_key (NONE,    F2    ,  Select field #2                                      , select_field           ( 1));
+      if_key (NONE,    F3    ,  Select field #3                                      , select_field           ( 2));
+      if_key (NONE,    F4    ,  Select field #4                                      , select_field           ( 3));
+      if_key (NONE,    F5    ,  Select field #5                                      , select_field           ( 4));
+      if_key (NONE,    F6    ,  Select field #6                                      , select_field           ( 5));
+      if_key (NONE,    F7    ,  Select field #7                                      , select_field           ( 6));
+      if_key (NONE,    F8    ,  Select field #8                                      , select_field           ( 7));
+      if_key (NONE,    F9    ,  Select field #9                                      , select_field           ( 8));
+      if_key (NONE,    F10   ,  Select field #10                                     , select_field           ( 9));
+      if_key (NONE,    F11   ,  Select field #11                                     , select_field           (10));
+      if_key (NONE,    F12   ,  Select field #12                                     , select_field           (11));
 
-      if_key (CONTROL, F1    , { hide_all_fields (); select_field ( 0); toggle_hide_field (); });
-      if_key (CONTROL, F2    , { hide_all_fields (); select_field ( 1); toggle_hide_field (); });
-      if_key (CONTROL, F3    , { hide_all_fields (); select_field ( 2); toggle_hide_field (); });
-      if_key (CONTROL, F4    , { hide_all_fields (); select_field ( 3); toggle_hide_field (); });
-      if_key (CONTROL, F5    , { hide_all_fields (); select_field ( 4); toggle_hide_field (); });
-      if_key (CONTROL, F6    , { hide_all_fields (); select_field ( 5); toggle_hide_field (); });
-      if_key (CONTROL, F7    , { hide_all_fields (); select_field ( 6); toggle_hide_field (); });
-      if_key (CONTROL, F8    , { hide_all_fields (); select_field ( 7); toggle_hide_field (); });
-      if_key (CONTROL, F9    , { hide_all_fields (); select_field ( 8); toggle_hide_field (); });
-      if_key (CONTROL, F10   , { hide_all_fields (); select_field ( 9); toggle_hide_field (); });
-      if_key (CONTROL, F11   , { hide_all_fields (); select_field (10); toggle_hide_field (); });
-      if_key (CONTROL, F12   , { hide_all_fields (); select_field (11); toggle_hide_field (); });
-      if_key (CONTROL, H     , show_all_fields          ());
-      if_key (ALT,     H     , showHelp                 ());
+      if_key (CONTROL, F1    ,  Show only field #1                                   , { hide_all_fields (); select_field ( 0); toggle_hide_field (); });
+      if_key (CONTROL, F2    ,  Show only field #2                                   , { hide_all_fields (); select_field ( 1); toggle_hide_field (); });
+      if_key (CONTROL, F3    ,  Show only field #3                                   , { hide_all_fields (); select_field ( 2); toggle_hide_field (); });
+      if_key (CONTROL, F4    ,  Show only field #4                                   , { hide_all_fields (); select_field ( 3); toggle_hide_field (); });
+      if_key (CONTROL, F5    ,  Show only field #5                                   , { hide_all_fields (); select_field ( 4); toggle_hide_field (); });
+      if_key (CONTROL, F6    ,  Show only field #6                                   , { hide_all_fields (); select_field ( 5); toggle_hide_field (); });
+      if_key (CONTROL, F7    ,  Show only field #7                                   , { hide_all_fields (); select_field ( 6); toggle_hide_field (); });
+      if_key (CONTROL, F8    ,  Show only field #8                                   , { hide_all_fields (); select_field ( 7); toggle_hide_field (); });
+      if_key (CONTROL, F9    ,  Show only field #9                                   , { hide_all_fields (); select_field ( 8); toggle_hide_field (); });
+      if_key (CONTROL, F10   ,  Show only field #10                                  , { hide_all_fields (); select_field ( 9); toggle_hide_field (); });
+      if_key (CONTROL, F11   ,  Show only field #11                                  , { hide_all_fields (); select_field (10); toggle_hide_field (); });
+      if_key (CONTROL, F12   ,  Show only field #12                                  , { hide_all_fields (); select_field (11); toggle_hide_field (); });
+      if_key (CONTROL, H     ,  Show all fields                                      , show_all_fields          ());
+      if_key (ALT,     H     ,  Show help                                            , showHelp                 ());
 
-      if_key (NONE,    H     , toggle_hide_field        ());
-      if_key (NONE,    G     , scale_field_up           ());
-      if_key (CONTROL, G     , scale_field_down         ());
-      if_key (NONE,    F     , scale_palette_up         ());
-      if_key (CONTROL, F     , scale_palette_down       ());
-      if_key (NONE,    J     , next_palette             ());
-      if_key (NONE,    L     , toggle_light             ());
-      if_key (CONTROL, L     , toggleMaster             ());
-      if_key (CONTROL, UP    , rotate_light_north       ());
-      if_key (CONTROL, DOWN  , rotate_light_south       ());
-      if_key (CONTROL, LEFT  , rotate_light_west        ());
-      if_key (CONTROL, RIGHT , rotate_light_east        ());
-      if_key (CONTROL, C,      duplicate                ());
-      if_key (ALT,     C,      toggleColorBar           ());
-      if_key (CONTROL, P,      next_projection          ());
-      if_key (SHIFT,   P,      toggle_transform_type    ());
-      if_key (CONTROL, S,      save_current_palette     ());
-      if_key (ALT,     S,      resample_current_field   ());
-      if_key (NONE,    V,      toggle_show_vector       ());
-      if_key (CONTROL, V,      toggle_show_norm         ());
+      if_key (NONE,    H     ,  Show/hide selected field                             , toggle_hide_field        ());
+      if_key (NONE,    G     ,  Increase size of current field                       , scale_field_up           ());
+      if_key (CONTROL, G     ,  Decrease size of current field                       , scale_field_down         ());
+      if_key (NONE,    F     ,  Increase palette range                               , scale_palette_up         ());
+      if_key (CONTROL, F     ,  Decrease palette range                               , scale_palette_down       ());
+      if_key (NONE,    J     ,  Try next palette                                     , next_palette             ());
+      if_key (NONE,    L     ,  Turn on/off the light                                , toggle_light             ());
+      if_key (CONTROL, L     ,  Make current window master window                    , toggleMaster             ());
+      if_key (CONTROL, UP    ,  Move light northwards                                , rotate_light_north       ());
+      if_key (CONTROL, DOWN  ,  Move light southwards                                , rotate_light_south       ());
+      if_key (CONTROL, LEFT  ,  Move light westwards                                 , rotate_light_west        ());
+      if_key (CONTROL, RIGHT ,  Move light eastwards                                 , rotate_light_east        ());
+      if_key (CONTROL, C     ,  Clone current window                                 , duplicate                ());
+      if_key (ALT,     C     ,  Show/hide colorbar                                   , toggleColorBar           ());
+      if_key (CONTROL, P     ,  Try next projection                                  , next_projection          ());
+      if_key (SHIFT,   P     ,  Try next transformation                              , toggle_transform_type    ());
+      if_key (CONTROL, S     ,  Save current palette                                 , save_current_palette     ());
+      if_key (ALT,     S     ,  Resample current field                               , resample_current_field   ());
+      if_key (NONE,    V     ,  Hide/show vector arrows                              , toggle_show_vector       ());
+      if_key (CONTROL, V     ,  Hide/show vector norm                                , toggle_show_norm         ());
 
 
     }
@@ -174,7 +191,6 @@ void glgrib_window::toggleColorBar ()
 
 void glgrib_window::showHelp () 
 {
-  std::cout << "showHelp" << std::endl;
   onkey (0, 0, 0, 0, true);
 }
 

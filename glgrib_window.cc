@@ -65,7 +65,7 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
   gwindow->onkey (key, scancode, action, mods);
 }
 
-void glgrib_window::onkey (int key, int scancode, int action, int mods)
+void glgrib_window::onkey (int key, int scancode, int action, int mods, bool help)
 {
   enum
   {
@@ -77,7 +77,15 @@ void glgrib_window::onkey (int key, int scancode, int action, int mods)
 
 #define if_key(mm, k, action) \
 do { \
-if ((key == GLFW_KEY_##k) && (mm == mods)) \
+if (help)                                       \
+  {                                             \
+    const char * _mm = #mm "-";                 \
+    const char * _k  = #k;                      \
+    const char * _action = #action;             \
+    if (strcmp (_mm, "NONE-") == 0) _mm = "";   \
+    printf ("%s%s %s\n", _mm, _k, _action);     \
+  }                                             \
+else if ((key == GLFW_KEY_##k) && (mm == mods)) \
   {                                        \
     action;                                \
     return;                                \
@@ -85,7 +93,7 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
 } while (0)
 
 
-  if (action == GLFW_PRESS || action == GLFW_REPEAT)
+  if ((action == GLFW_PRESS || action == GLFW_REPEAT) || help)
     {
       if_key (NONE,    T     , toggle_cursorpos_display ());
       if_key (NONE,    TAB   , toggle_rotate            ());
@@ -130,6 +138,7 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (CONTROL, F11   , { hide_all_fields (); select_field (10); toggle_hide_field (); });
       if_key (CONTROL, F12   , { hide_all_fields (); select_field (11); toggle_hide_field (); });
       if_key (CONTROL, H     , show_all_fields          ());
+      if_key (ALT,     H     , showHelp                 ());
 
       if_key (NONE,    H     , toggle_hide_field        ());
       if_key (NONE,    G     , scale_field_up           ());
@@ -138,7 +147,7 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (CONTROL, F     , scale_palette_down       ());
       if_key (NONE,    J     , next_palette             ());
       if_key (NONE,    L     , toggle_light             ());
-      if_key (CONTROL, L     , toggleLocked             ());
+      if_key (CONTROL, L     , toggleMaster             ());
       if_key (CONTROL, UP    , rotate_light_north       ());
       if_key (CONTROL, DOWN  , rotate_light_south       ());
       if_key (CONTROL, LEFT  , rotate_light_west        ());
@@ -155,6 +164,12 @@ if ((key == GLFW_KEY_##k) && (mm == mods)) \
     }
 
 #undef if_key
+}
+
+void glgrib_window::showHelp () 
+{
+  std::cout << "showHelp" << std::endl;
+  onkey (0, 0, 0, 0, true);
 }
 
 static glgrib_field_vector * get_vector (glgrib_scene & scene)
@@ -840,10 +855,10 @@ void glgrib_window_set::run (glgrib_shell * shell)
            it != end (); it++)
         {
           glgrib_window * w = *it;
-	  if (w->isLocked ())
+	  if (w->isMaster ())
             {
               if (wl != NULL)
-                w->unsetLocked ();
+                w->unsetMaster ();
 	      else
                 wl = w;
 	    }

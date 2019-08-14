@@ -56,7 +56,7 @@ public:
   void resize (int, int);
   void scroll (double, double);
   void onclick (int, int, int);
-  void onkey (int, int, int, int);
+  void onkey (int, int, int, int, bool = false);
   void display_cursor_position (double, double);
   int get_latlon_from_cursor (float *, float *);
   void centerViewAtCursorPos ();
@@ -96,17 +96,18 @@ public:
   void resample_current_field ();
   void toggle_show_vector ();
   void toggle_show_norm ();
+  void showHelp ();
 
-  bool isLocked () const { return locked; }
-  void setLocked () { locked = true; }
-  void unsetLocked () { locked = false; }
-  void toggleLocked () { locked = ! locked; }
+  bool isMaster () const { return master; }
+  void setMaster () { master = true; }
+  void unsetMaster () { master = false; }
+  void toggleMaster () { master = ! master; }
 
 protected:
   void createGFLWwindow (GLFWwindow * = NULL);
   bool closed = false;
   bool cloned = false;
-  bool locked = false;
+  bool master = false;
 private:
   int id_;
   double t0;

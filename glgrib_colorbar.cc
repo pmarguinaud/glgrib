@@ -42,9 +42,13 @@ void glgrib_colorbar::init (const glgrib_options_colorbar & o)
 
   std::vector<std::string> str;
   std::vector<float> x, y;
-  for (int i = 0; i < 11; i++)
+
+  char tmp[256];
+  sprintf (tmp, opts.format.c_str (), 0.0);
+
+  for (int i = 0; i < opts.levels; i++)
     {
-      str.push_back ("XXXXXX");
+      str.push_back (std::string (tmp));
       x.push_back (0.01f);
       y.push_back ((ymax - ymin) * i / 10.0f + ymin);
     }
@@ -91,10 +95,10 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
     {
       pref = p1;
       std::vector<std::string> str;
-      for (int i = 0; i < 11; i++)
+      for (int i = 0; i < opts.levels; i++)
         {
           char tmp[32];
-          sprintf (tmp, "%6.4g", pref.min + i * (pref.max - pref.min) / 10.0f);
+          sprintf (tmp, opts.format.c_str (), pref.min + i * (pref.max - pref.min) / 10.0f);
 	  std::string s (tmp);
 	  while (s.length () < 6)
 	    s += " ";

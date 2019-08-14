@@ -451,12 +451,13 @@ std::string glgrib_geometry_gaussian::md5 () const
 
 bool glgrib_geometry_gaussian::isEqual (const glgrib_geometry & geom) const
 {
+  const float epsilon = 1E-4;
   try
     {
       const glgrib_geometry_gaussian & g = dynamic_cast<const glgrib_geometry_gaussian &>(geom);
-      return (Nj == g.Nj) && (stretchingFactor == g.stretchingFactor) &&
-             (latitudeOfStretchingPoleInDegrees == g.latitudeOfStretchingPoleInDegrees) &&
-	     (longitudeOfStretchingPoleInDegrees == g.longitudeOfStretchingPoleInDegrees) &&
+      return (Nj == g.Nj) && (fabs (stretchingFactor - g.stretchingFactor) < epsilon) &&
+             (fabs (latitudeOfStretchingPoleInDegrees - g.latitudeOfStretchingPoleInDegrees) < epsilon) &&
+	     (fabs (longitudeOfStretchingPoleInDegrees - g.longitudeOfStretchingPoleInDegrees) < epsilon) &&
 	     (memcmp (pl, g.pl, sizeof (long int) * Nj) == 0);
     }
   catch (const std::bad_cast & e)

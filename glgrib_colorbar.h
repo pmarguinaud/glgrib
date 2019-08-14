@@ -18,12 +18,15 @@ public:
   ~glgrib_colorbar ();
   glgrib_colorbar & operator= (const glgrib_colorbar &);
   void render (const glm::mat4 &, const glgrib_palette &, float, float) const;
+  void toggleHidden () { hidden = ! hidden; }
+  bool getHidden () const { return hidden; }
 private:
   glgrib_options_colorbar opts;
   static glgrib_program program;
   GLuint VertexArrayID;
   GLuint elementbuffer;
   bool ready = false;
+  bool hidden = false;
   int nt;
   float xmin = 0.08;
   float xmax = 0.10; 

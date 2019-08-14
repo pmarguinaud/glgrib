@@ -721,9 +721,12 @@ public:
   {
     DESC (on, Activate colorbar);
     INCLUDE (font);
+    DESC (format, "Format (sprintf) use to display numbers");
   }
   bool on = false;
   glgrib_options_font font = glgrib_options_font ("fonts/16.bmp", 0.02f);
+  std::string format = "%6.4g";
+  int levels = 11;
 };
 
 class glgrib_options : public glgrib_options_base

@@ -6,6 +6,10 @@
 class glgrib_field_contour : public glgrib_field
 {
 public:
+  glgrib_field_kind getKind () const 
+  {
+    return glgrib_field::CONTOUR;
+  }
   glgrib_field_contour * clone () const;
   glgrib_field_contour & operator= (const glgrib_field_contour &);
   glgrib_field_contour () { }

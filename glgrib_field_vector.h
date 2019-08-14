@@ -7,6 +7,10 @@
 class glgrib_field_vector : public glgrib_field
 {
 public:
+  glgrib_field_kind getKind () const 
+  {
+    return glgrib_field::VECTOR;
+  }
   glgrib_field_vector * clone () const;
   glgrib_field_vector & operator= (const glgrib_field_vector &);
   glgrib_field_vector () { }

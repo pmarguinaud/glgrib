@@ -102,6 +102,7 @@ public:
   void setMaster () { master = true; }
   void unsetMaster () { master = false; }
   void toggleMaster () { master = ! master; }
+  void toggleColorBar ();
 
 protected:
   void createGFLWwindow (GLFWwindow * = NULL);

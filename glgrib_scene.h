@@ -98,6 +98,11 @@ public:
       friend class glgrib_scene;
   };
 
+  void toggleColorBar ()
+  {
+    d.colorbar.toggleHidden ();
+  }
+
   _data d;
 
   glgrib_loader ld;

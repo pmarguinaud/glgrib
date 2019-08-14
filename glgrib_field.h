@@ -25,6 +25,15 @@ public:
 class glgrib_field : public glgrib_world
 {
 public:
+  typedef enum
+  {
+    SCALAR=0,
+    CONTOUR=1,
+    VECTOR=2,
+  } glgrib_field_kind;
+
+  virtual glgrib_field_kind getKind () const = 0;
+
   virtual glgrib_field * clone () const  = 0;
   virtual void init (glgrib_loader *, const glgrib_options_field &, float = 0) = 0;
   virtual bool use_alpha () { return false; }

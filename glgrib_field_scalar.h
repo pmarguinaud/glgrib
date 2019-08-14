@@ -6,6 +6,10 @@
 class glgrib_field_scalar : public glgrib_field
 {
 public:
+  glgrib_field_kind getKind () const 
+  {
+    return glgrib_field::SCALAR;
+  }
   glgrib_field_scalar * clone () const;
   glgrib_field_scalar & operator= (const glgrib_field_scalar &);
   glgrib_field_scalar () { }

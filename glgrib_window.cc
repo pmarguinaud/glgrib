@@ -153,6 +153,7 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (CONTROL, LEFT  , rotate_light_west        ());
       if_key (CONTROL, RIGHT , rotate_light_east        ());
       if_key (CONTROL, C,      duplicate                ());
+      if_key (ALT,     C,      toggleColorBar           ());
       if_key (CONTROL, P,      next_projection          ());
       if_key (SHIFT,   P,      toggle_transform_type    ());
       if_key (CONTROL, S,      save_current_palette     ());
@@ -164,6 +165,11 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
     }
 
 #undef if_key
+}
+
+void glgrib_window::toggleColorBar ()
+{
+  scene.toggleColorBar ();
 }
 
 void glgrib_window::showHelp () 

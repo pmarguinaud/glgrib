@@ -61,11 +61,12 @@ void glgrib_scene::display () const
                            ? fieldlist[d.currentFieldRank] : NULL;
   d.image.render (d.MVP_L);
 
-  if (fld != NULL)
-    d.colorbar.render (d.MVP_L, 
-                       fld->dopts.palette, 
-                       fld->getNormedMinValue (), 
-                       fld->getNormedMaxValue ());
+  if ((fld != NULL) && (! d.colorbar.getHidden ()))
+    if (fld->getKind () == glgrib_field::SCALAR)
+      d.colorbar.render (d.MVP_L, 
+                         fld->dopts.palette, 
+                         fld->getNormedMinValue (), 
+                         fld->getNormedMaxValue ());
 
   d.strmess.render (d.MVP_R);
 

@@ -145,6 +145,7 @@ next:
          
 	}
 	break;
+      case LFI_NETW:
       case LFI_PURE:
       case LFI_ALTM:
         {

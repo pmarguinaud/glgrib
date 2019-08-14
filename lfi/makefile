@@ -1,6 +1,6 @@
 
 
-CFLAGS=-O0 -g
+CFLAGS=-O2 -g
 
 all: test.x
 

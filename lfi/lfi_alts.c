@@ -988,6 +988,30 @@ static void lfinfo_alts (LFINFO_ARGS_DECL)
   DRHOOK_END (0);
 }
 
+static void lfinff_alts (LFINFF_ARGS_DECL)
+{
+  ALS_DECL;
+  FH_DECL (1);
+  ART_DECL;
+  DRHOOK_START ("lfinff_alts");
+
+  if (iart < 0)
+    {
+      *KREP   = 0;
+      CDNOMA[0] = '\0';
+      if (CDNOMF_len > 0)
+        CDNOMF[0] = '\0';
+    }
+  else
+    {
+      fh->iart = iart;
+      *KREP   = 0;
+      strncpy (CDNOMF, fh->cnomf, CDNOMF_len);
+    }
+
+  DRHOOK_END (0);
+}
+
 static void lfilec_alts (LFILEC_ARGS_DECL)
 {
   ALS_DECL;
@@ -1110,6 +1134,36 @@ static void lfilap_alts (LFILAP_ARGS_DECL)
 
       fh->iart = iart;
     }
+
+end:
+  DRHOOK_END (0);
+}
+
+static void lfican_alts (LFICAN_ARGS_DECL)
+{
+  ALS_DECL;
+  FH_DECL (1);
+  int iart = seek_rc (fh, +1);
+  DRHOOK_START ("lfican_alts");
+
+  *KREP   = 0;
+  memset (CDNOMA, ' ', CDNOMA_len);
+
+  if (iart < 0)
+    {
+      goto end;
+    }
+ 
+  memcpy (CDNOMA, fh->idx[iart].name, minARTN (CDNOMA_len)); 
+
+  if (CDNOMA_len < lfi_fstrlen (fh->idx[iart].name, ARTNLEN))
+    {
+      *KREP = -24;
+      goto end;
+    }
+
+  if (istrue (*LDAVAN))
+    fh->iart = iart;
 
 end:
   DRHOOK_END (0);
@@ -1709,11 +1763,13 @@ static void lfinmg_alts (LFINMG_ARGS_DECL)
 
 lficb_t lficb_alts = {
   lfiouv_alts,        /*        Ouverture fichier                                        */
+  lfican_alts,        /* KNUMER Caracteristiques de l'article suivant                    */
   lficas_alts,        /* KNUMER Caracteristiques de l'article suivant                    */
   lfiecr_alts,        /* KNUMER Ecriture                                                 */
   lfifer_alts,        /* KNUMER Fermeture                                                */
   lfilec_alts,        /* KNUMER Lecture                                                  */
   lfinfo_alts,        /* KNUMER Caracteristiques d'un article nomme                      */
+  lfinff_alts,        /* KNUMER Get real file & record name                              */
   lfipos_alts,        /* KNUMER Remise a zero du pointeur de fichier                     */
   lfiver_dumm,        /* KNUMER Verrouillage d'un fichier                                */
   lfiofm_alts,        /* KNUMER Obtention du facteur multiplicatif                       */

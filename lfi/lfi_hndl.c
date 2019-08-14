@@ -13,6 +13,7 @@
 #include "lfi_fort.h"
 #include "lfi_alts.h"
 #include "lfi_altm.h"
+#include "lfi_netw.h"
 
 /* Build the list of possible LFI libraries */
 lfi_hndl_t * lfi_hndl_list (void * data)
@@ -26,9 +27,9 @@ lfi_hndl_t * lfi_hndl_list (void * data)
     {
       lfi_hndl_t * lfi_alts = lfi_get_alts_hndl (data);
       lfi_hndl_t * lfi_altm = lfi_get_altm_hndl (data);
-      
+      lfi_hndl_t * lfi_netw = lfi_get_netw_hndl (data);
+      lfi_altm->next = lfi_netw;
       lfi_alts->next = lfi_altm;
-
       lficom->lfihl = lfi_alts;
     }
 

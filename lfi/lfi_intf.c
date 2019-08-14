@@ -151,6 +151,9 @@ void lfiouv_mt64_ (LFIOUV_ARGS_DECL)
             goto done;
           }
         break;
+      case LFI_NETW:
+        unum = 2;
+        break;
       case LFI_UNKN:
         *KREP = -10;
         lfi = NULL;
@@ -193,6 +196,8 @@ done:
 
 }
 
+lfi_intf_knumer_krep (lfican, LFICAN)
+
 lfi_intf_knumer_krep (lficas, LFICAS)
 
 lfi_intf_knumer_krep (lfiecr, LFIECR)
@@ -202,6 +207,8 @@ lfi_intf_knumer_krep (lfifer, LFIFER)
 lfi_intf_knumer_krep (lfilec, LFILEC)
 
 lfi_intf_knumer_krep (lfinfo, LFINFO)
+
+lfi_intf_knumer_krep (lfinff, LFINFF)
 
 lfi_intf_knumer_krep (lfipos, LFIPOS)
 

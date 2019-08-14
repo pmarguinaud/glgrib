@@ -18,11 +18,13 @@
 #include "lfi_type.h"
 
 #define LFIOUV_ARGS_DECL void * LFI, integer64 * KREP, integer64 * KNUMER, logical * LDNOMM, character * CDNOMF, character * CDSTTO, logical * LDERFA, logical * LDIMST, integer64 * KNIMES, integer64 * KNBARP, integer64 * KNBARI, character_len CDNOMF_len, character_len CDSTTO_len
+#define LFICAN_ARGS_DECL void * LFI, integer64 * KREP, integer64 * KNUMER, character * CDNOMA, logical * LDAVAN, character_len CDNOMA_len
 #define LFICAS_ARGS_DECL void * LFI, integer64 * KREP, integer64 * KNUMER, character * CDNOMA, integer64 * KLONG, integer64 * KPOSEX, logical * LDAVAN, character_len CDNOMA_len
 #define LFIECR_ARGS_DECL void * LFI, integer64 * KREP, integer64 * KNUMER, character * CDNOMA, integer64 * KTAB, integer64 * KLONG, character_len CDNOMA_len
 #define LFIFER_ARGS_DECL void * LFI, integer64 * KREP, integer64 * KNUMER, character * CDSTTC, character_len CDSTTC_len
 #define LFILEC_ARGS_DECL void * LFI, integer64 * KREP, integer64 * KNUMER, character * CDNOMA, integer64 * KTAB, integer64 * KLONG, character_len CDNOMA_len
 #define LFINFO_ARGS_DECL void * LFI, integer64 * KREP, integer64 * KNUMER, character * CDNOMA, integer64 * KLONG, integer64 * KPOSEX, character_len CDNOMA_len
+#define LFINFF_ARGS_DECL void * LFI, integer64 * KREP, integer64 * KNUMER, character * CDNOMA, character * CDNOMF, character_len CDNOMA_len, character_len CDNOMF_len
 #define LFIPOS_ARGS_DECL void * LFI, integer64 * KREP, integer64 * KNUMER
 #define LFIVER_ARGS_DECL void * LFI, real64 * PVEROU, character * CDSENS, character_len CDSENS_len
 #define LFIOFM_ARGS_DECL void * LFI, integer64 * KREP, integer64 * KNUMER, integer64 * KFACTM, logical * LDOUVR
@@ -61,11 +63,13 @@
 
 
 #define LFIOUV_ARGS_LIST LFI, KREP, KNUMER, LDNOMM, CDNOMF, CDSTTO, LDERFA, LDIMST, KNIMES, KNBARP, KNBARI, CDNOMF_len, CDSTTO_len
+#define LFICAN_ARGS_LIST LFI, KREP, KNUMER, CDNOMA, LDAVAN, CDNOMA_len
 #define LFICAS_ARGS_LIST LFI, KREP, KNUMER, CDNOMA, KLONG, KPOSEX, LDAVAN, CDNOMA_len
 #define LFIECR_ARGS_LIST LFI, KREP, KNUMER, CDNOMA, KTAB, KLONG, CDNOMA_len
 #define LFIFER_ARGS_LIST LFI, KREP, KNUMER, CDSTTC, CDSTTC_len
 #define LFILEC_ARGS_LIST LFI, KREP, KNUMER, CDNOMA, KTAB, KLONG, CDNOMA_len
 #define LFINFO_ARGS_LIST LFI, KREP, KNUMER, CDNOMA, KLONG, KPOSEX, CDNOMA_len
+#define LFINFF_ARGS_LIST LFI, KREP, KNUMER, CDNOMA, CDNOMF, CDNOMA_len, CDNOMF_len
 #define LFIPOS_ARGS_LIST LFI, KREP, KNUMER
 #define LFIVER_ARGS_LIST LFI, PVEROU, CDSENS, CDSENS_len
 #define LFIOFM_ARGS_LIST LFI, KREP, KNUMER, KFACTM, LDOUVR

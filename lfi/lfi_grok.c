@@ -54,7 +54,12 @@ lfi_grok_t lfi_grok (const character * file, character_len file_len)
   fp = fopen (f, "r");
 
   if (fp == NULL)
-    goto lfi_none;
+    {
+      if ((strncmp (file, "ftp://", 6) == 0) ||
+          (strncmp (file, "http://", 7) == 0))
+        goto lfi_netw;
+      goto lfi_none;
+    }
 
   nr = fread (isect1, sizeof (integer64), 22, fp);
 
@@ -103,6 +108,10 @@ lfi_unkn:
   
   lg = LFI_UNKN;
   goto done;
+
+lfi_netw:
+
+  lg = LFI_NETW;
 
 done:
 

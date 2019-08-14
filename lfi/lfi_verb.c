@@ -57,6 +57,7 @@ static const char * mess[] =
   "NOT ENOUGH SPACE WITHIN TABLES TO STORE THE MULTIPLY FACTOR TO BE ASSOCIATED TO LOGICAL UNIT",
   "LOGICAL UNIT NUMBER INVALID FOR FORTRAN",
   "LOGICAL UNIT HAS NO MULTIPLY FACTOR PREDEFINED",
+  "UNKNOWN ERROR"
 };
 
 void lfi_mess_ (const integer64 * KUNIT, character * CDMESS, character_len CDMESS_len)
@@ -185,6 +186,15 @@ static void lfiouv_verb (int st, struct lfi_hndl_t * lfi, LFIOUV_ARGS_DECL)
 }
 
 
+static void lfican_verb (int st, struct lfi_hndl_t * lfi, LFICAN_ARGS_DECL)
+{
+  if (st)
+    lfi_verb (lfi, "LFICAN", "KREP", KREP, "CDNOMA", CDNOMA, CDNOMA_len, NULL);
+  else
+    lfi_verb (lfi, "LFICAN", "KNUMER", KNUMER, "LDAVAN", LDAVAN, NULL);
+}
+
+
 static void lficas_verb (int st, struct lfi_hndl_t * lfi, LFICAS_ARGS_DECL)
 {
   if (st)
@@ -227,6 +237,15 @@ static void lfinfo_verb (int st, struct lfi_hndl_t * lfi, LFINFO_ARGS_DECL)
     lfi_verb (lfi, "LFINFO", "KREP", KREP, "KLONG", KLONG, "KPOSEX", KPOSEX, NULL);
   else
     lfi_verb (lfi, "LFINFO", "KNUMER", KNUMER, "CDNOMA", CDNOMA, CDNOMA_len, NULL);
+}
+
+
+static void lfinff_verb (int st, struct lfi_hndl_t * lfi, LFINFF_ARGS_DECL)
+{
+  if (st)
+    lfi_verb (lfi, "LFINFF", "KREP", KREP, "CDNOMA", CDNOMA, CDNOMA_len, "CDNOMF", CDNOMF, CDNOMF_len, NULL);
+  else
+    lfi_verb (lfi, "LFINFF", "KNUMER", KNUMER, "CDNOMA", CDNOMA, CDNOMA_len, NULL);
 }
 
 
@@ -537,11 +556,13 @@ static void lfifmd_verb (int st, struct lfi_hndl_t * lfi, LFIFMD_ARGS_DECL)
 lficb_verb_t lficb_verb = 
 {
   lfiouv_verb,
+  lfican_verb,
   lficas_verb,
   lfiecr_verb,
   lfifer_verb,
   lfilec_verb,
   lfinfo_verb,
+  lfinff_verb,
   lfipos_verb,
   lfiver_verb,
   lfiofm_verb,

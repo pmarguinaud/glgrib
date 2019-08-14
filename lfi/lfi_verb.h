@@ -23,11 +23,13 @@ struct lfi_hndl_t;
 typedef struct lficb_verb_t
 {
   void (*lfiouv) (int, struct lfi_hndl_t *, LFIOUV_ARGS_DECL);
+  void (*lfican) (int, struct lfi_hndl_t *, LFICAN_ARGS_DECL);
   void (*lficas) (int, struct lfi_hndl_t *, LFICAS_ARGS_DECL);
   void (*lfiecr) (int, struct lfi_hndl_t *, LFIECR_ARGS_DECL);
   void (*lfifer) (int, struct lfi_hndl_t *, LFIFER_ARGS_DECL);
   void (*lfilec) (int, struct lfi_hndl_t *, LFILEC_ARGS_DECL);
   void (*lfinfo) (int, struct lfi_hndl_t *, LFINFO_ARGS_DECL);
+  void (*lfinff) (int, struct lfi_hndl_t *, LFINFF_ARGS_DECL);
   void (*lfipos) (int, struct lfi_hndl_t *, LFIPOS_ARGS_DECL);
   void (*lfiver) (int, struct lfi_hndl_t *, LFIVER_ARGS_DECL);
   void (*lfiofm) (int, struct lfi_hndl_t *, LFIOFM_ARGS_DECL);
@@ -68,5 +70,6 @@ lficb_verb_t;
 extern lficb_verb_t lficb_verb;
 
 extern void lfi_verb (struct lfi_hndl_t * lfi, const char * func, ...);
+extern void lfi_mess_ (const integer64 *, character *, character_len);
 
 #endif

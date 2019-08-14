@@ -27,11 +27,13 @@ void lfixxx##_dumm (LFIXXX##_ARGS_DECL) \
 
 
 lfi_dumm_krep (lfiouv, LFIOUV)
+lfi_dumm_krep (lfican, LFICAN)
 lfi_dumm_krep (lficas, LFICAS)
 lfi_dumm_krep (lfiecr, LFIECR)
 lfi_dumm_krep (lfifer, LFIFER)
 lfi_dumm_krep (lfilec, LFILEC)
 lfi_dumm_krep (lfinfo, LFINFO)
+lfi_dumm_krep (lfinff, LFINFF)
 lfi_dumm_krep (lfipos, LFIPOS)
 lfi_dumm (lfiver, LFIVER)
 lfi_dumm_krep (lfiofm, LFIOFM)

@@ -15,11 +15,13 @@
 #include "lfi_call.h"
 
 extern void lfiouv_dumm (LFIOUV_ARGS_DECL);
+extern void lfican_dumm (LFICAN_ARGS_DECL);
 extern void lficas_dumm (LFICAS_ARGS_DECL);
 extern void lfiecr_dumm (LFIECR_ARGS_DECL);
 extern void lfifer_dumm (LFIFER_ARGS_DECL);
 extern void lfilec_dumm (LFILEC_ARGS_DECL);
 extern void lfinfo_dumm (LFINFO_ARGS_DECL);
+extern void lfinff_dumm (LFINFF_ARGS_DECL);
 extern void lfipos_dumm (LFIPOS_ARGS_DECL);
 extern void lfiver_dumm (LFIVER_ARGS_DECL);
 extern void lfiofm_dumm (LFIOFM_ARGS_DECL);

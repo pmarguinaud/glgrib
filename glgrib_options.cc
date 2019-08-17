@@ -176,28 +176,58 @@ bool glgrib_options_parser::parse (int argc, char * argv[])
   try
     {
       option_base * opt = NULL;
+
       for (int iarg = 1; iarg < argc; iarg++)
         {
           std::string arg (argv[iarg]);
-          if (name2option.find (arg) != name2option.end ())
+
+          if (arg == std::string ("}-"))
             {
-              opt = name2option[arg];
-              if (! opt->has_arg ())
-                opt->set (NULL);
-            }
-          else if (arg == "--help")
-            {
-              show_help ();
-              return false;
+              ctx.pop_back ();
             }
           else if (arg.substr (0, 2) == std::string ("--"))
             {
-              throw std::runtime_error (std::string ("Unknown option ") + arg);
+              int len = arg.length ();
+              if (arg.substr (len-2, 2) == std::string ("-{"))
+                {
+                  ctx.push_back (arg.substr (2, len-4));
+                }
+              else
+                {
+
+                  if (ctx.size () > 0)
+                    {
+                      std::string a = arg.substr (2);
+                      arg = "";
+                      for (int i = 0; i < ctx.size (); i++)
+                        if (i == 0)
+                          arg = ctx[i];
+                        else
+                          arg = arg + "." + ctx[i];
+                      arg = "--" + arg + "." + a;
+                    }
+                  if (name2option.find (arg) != name2option.end ())
+                    {
+                      opt = name2option[arg];
+                      if (! opt->has_arg ())
+                        opt->set (NULL);
+                    }
+                  else if (arg == "--help")
+                    {
+                      show_help ();
+                      return false;
+                    }
+                  else
+                    {
+                      throw std::runtime_error (std::string ("Unknown option ") + arg);
+                    }
+                }
             }
           else
             {
               opt->set (argv[iarg]);
             }
+
         }
     }
   catch (const std::exception & e)

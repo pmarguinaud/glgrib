@@ -66,6 +66,8 @@ public:
 
 private:
 
+  std::vector<std::string> ctx;
+
   class option_base
   {
   public:

@@ -257,6 +257,8 @@ void glgrib_scene::init (const glgrib_options & o)
 {
   d.opts = o;
 
+  setViewport (d.opts.window.width, d.opts.window.height);
+
   if (d.opts.scene.light.on)
     setLight ();
 

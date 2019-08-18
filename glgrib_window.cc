@@ -820,7 +820,6 @@ void glgrib_window::createGFLWwindow (GLFWwindow * context)
   glfwSetMouseButtonCallback (window, mouse_button_callback);
   glfwSetFramebufferSizeCallback (window, resize_callback);  
 
-  scene.setViewport (opts.width, opts.height);
 
 }
 

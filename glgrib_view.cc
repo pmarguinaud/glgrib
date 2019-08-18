@@ -142,7 +142,7 @@ float glgrib_view::pixel_to_dist_at_nadir (float pixels) const
 
 void glgrib_view::init (const glgrib_options & o)
 {
-  opts = o.camera;
+  opts = o.view;
   glgrib_projection::type pt = glgrib_projection::typeFromString (o.scene.projection);
   ps.setType (pt);
   transtype = glgrib_view::typeFromString (o.scene.transformation);

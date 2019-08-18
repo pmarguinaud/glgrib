@@ -37,7 +37,7 @@ public:
   }
   void reset_view ()
   {
-    glgrib_options_camera o;
+    glgrib_options_view o;
     scene.d.view.opts = o;
     scene.resize ();
   }

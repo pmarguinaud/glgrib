@@ -690,7 +690,7 @@ public:
   glgrib_options_image image;
 };
 
-class glgrib_options_camera : public glgrib_options_base
+class glgrib_options_view : public glgrib_options_base
 {
 public:
   DEFINE
@@ -756,7 +756,7 @@ public:
     INCLUDE (landscape);
     INCLUDE (grid);
     INCLUDE (scene);
-    INCLUDE (camera);
+    INCLUDE (view);
     INCLUDE (colorbar);
     INCLUDE (font);
     DESC (shell, Run command line);
@@ -771,7 +771,7 @@ public:
   glgrib_options_landscape landscape;
   glgrib_options_grid grid;
   glgrib_options_scene scene;
-  glgrib_options_camera camera;
+  glgrib_options_view view;
   glgrib_options_font font;
   bool shell = false;
   virtual bool parse (int, const char * []);

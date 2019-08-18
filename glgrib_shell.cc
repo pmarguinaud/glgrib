@@ -127,16 +127,18 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
       for (int i = 0; i < args.size (); i++)
         argv[1+i] = args[i].c_str ();
       
-      glgrib_options opts;
+      glgrib_options opts = gwindow->scene.d.opts;
+      opts.view = gwindow->scene.d.view.opts;
       
       glgrib_options_parser p;
       opts.traverse ("", &p);
       
       if (p.parse (argc, argv))
         {
-          if (p.seenOption ("--camera"))
+          if (p.seenOption ("--view"))
             {
-              std::cout << "seen camera" << std::endl;
+              std::cout << "seen view" << std::endl;
+              gwindow->scene.setViewOpts (opts.view);
             }
         }
   

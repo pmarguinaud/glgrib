@@ -21,7 +21,7 @@ public:
 
   static transform_type typeFromString (std::string);
 
-  glgrib_options_camera opts;
+  glgrib_options_view opts;
   void setMVP (glgrib_program *) const;
   void calcMVP () const;
   void setViewport (int, int);

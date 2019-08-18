@@ -41,9 +41,9 @@ int main (int argc, const char * argv[])
     gwindow = new glgrib_window_offscreen (opts);
   else
     gwindow = new glgrib_window (opts);
-  
-  gwindow->scene.init (opts);
 
+  gwindow->scene.init (opts);
+  
   glgrib_window_set wset;
   wset.insert (gwindow);
 

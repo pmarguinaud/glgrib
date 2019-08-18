@@ -105,6 +105,11 @@ public:
 
   glgrib_loader ld;
 
+  void setViewOpts (const glgrib_options_view & o)
+  {
+    d.view.opts = o;
+  }
+
 
 };
 

@@ -94,16 +94,16 @@ test_missingvalue: ./glgrib.x
 	$(GDB) ./glgrib.x --field[0].path testdata/t49/SFX.CLAY.grb --coastlines.on --grid.on
 
 test_aro: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].path testdata/aro2.5/SURFIND.TERREMER.grb --field[0].palette cold_hot --field[0].scale 1.00 --camera.lat 46.2 --camera.lon 2.0 --camera.fov 5 --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --field[0].path testdata/aro2.5/SURFIND.TERREMER.grb --field[0].palette cold_hot --field[0].scale 1.00 --view.lat 46.2 --view.lon 2.0 --view.fov 5 --coastlines.on --grid.on
 
 test_guyane: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.on --field\[0\].path testdata/aro_guyane/SURFTEMPERATURE.grb --field\[0\].palette cold_hot_temp --field\[0\].scale 1.01 --camera.lat 5 --camera.lon -51 --camera.fov 3 --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --landscape.on --field\[0\].path testdata/aro_guyane/SURFTEMPERATURE.grb --field\[0\].palette cold_hot_temp --field\[0\].scale 1.01 --view.lat 5 --view.lon -51 --view.fov 3 --coastlines.on --grid.on
 
 test_vector: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path testdata/aro2.5/S090WIND.U.PHYS.grb  testdata/aro2.5/S090WIND.V.PHYS.grb --field\[0\].scale 1.00 --field\[0\].vector.color green --camera.lat 46.2 --camera.lon 2.0 --camera.fov 5  --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path testdata/aro2.5/S090WIND.U.PHYS.grb  testdata/aro2.5/S090WIND.V.PHYS.grb --field\[0\].scale 1.00 --field\[0\].vector.color green --view.lat 46.2 --view.lon 2.0 --view.fov 5  --coastlines.on --grid.on
 
 test_small_aro: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path testdata/aro_small/S041WIND.U.PHYS.grb testdata/aro_small/S041WIND.V.PHYS.grb  --field\[0\].scale 1.00 --camera.lon 26.64 --camera.lat 67.36 --camera.fov 0.5 --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path testdata/aro_small/S041WIND.U.PHYS.grb testdata/aro_small/S041WIND.V.PHYS.grb  --field\[0\].scale 1.00 --view.lon 26.64 --view.lat 67.36 --view.fov 0.5 --coastlines.on --grid.on
 
 test_wind_arp: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t31c2.4/Z.grb --field[0].vector.on --field\[0\].path testdata/t31c2.4/S015WIND.U.PHYS.grb testdata/t31c2.4/S015WIND.V.PHYS.grb   --field[0].scale 1.01 --coastlines.on --grid.on
@@ -148,25 +148,25 @@ test_contour_aro1: ./glgrib.x
 	$(GDB) ./glgrib.x \
                --field\[0\].path testdata/aro_small/S041WIND.U.PHYS.grb --field\[0\].scale 1.00 --field[0].palette cold_hot \
                --field\[1\].path testdata/aro_small/S041WIND.U.PHYS.grb --field\[1\].scale 1.03 --field[1].contour.on       \
-               --camera.lon 26.64 --camera.lat 67.36 --camera.fov 0.5 --coastlines.on --grid.on
+               --view.lon 26.64 --view.lat 67.36 --view.fov 0.5 --coastlines.on --grid.on
 
 test_contour_aro2: ./glgrib.x
 	$(GDB) ./glgrib.x \
                --field\[0\].path testdata/aro2.5/S090WIND.U.PHYS.grb --field\[0\].scale 1.00 --field[0].palette cold_hot \
                --field\[1\].path testdata/aro2.5/S090WIND.U.PHYS.grb --field\[1\].scale 1.03 --field[1].contour.on       \
-               --camera.lat 46.2 --camera.lon 2.0 --camera.fov 5 --coastlines.on --grid.on
+               --view.lat 46.2 --view.lon 2.0 --view.fov 5 --coastlines.on --grid.on
 
 test_fill: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 --field[0].palette RGBW   --colorbar.on --window.width 1200
 
 test_dashed1: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.on --landscape.orography 0 --landscape.wireframe --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.00 --field\[0\].contour.on --field[0].contour.lengths 100  --field[0].contour.patterns X- --camera.fov 5
+	$(GDB) ./glgrib.x --landscape.on --landscape.orography 0 --landscape.wireframe --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.00 --field\[0\].contour.on --field[0].contour.lengths 100  --field[0].contour.patterns X- --view.fov 5
 
 test_dashed2: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.on --landscape.orography 0 --landscape.wireframe --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.01 --field\[0\].contour.on --field\[0\].contour.lengths 100 --field\[0\].contour.patterns XXXXXXXXX-X- --camera.fov 5  --field\[0\].contour.widths 5
+	$(GDB) ./glgrib.x --landscape.on --landscape.orography 0 --landscape.wireframe --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.01 --field\[0\].contour.on --field\[0\].contour.lengths 100 --field\[0\].contour.patterns XXXXXXXXX-X- --view.fov 5  --field\[0\].contour.widths 5
 
 test_dashed3: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.on --landscape.orography 0 --landscape.wireframe --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.01 --field\[0\].contour.on --field\[0\].contour.lengths 100 --field\[0\].contour.patterns XXXXXXXXX-X- --camera.fov 5  --field\[0\].contour.widths 5 --field\[0\].contour.colors red green blue
+	$(GDB) ./glgrib.x --landscape.on --landscape.orography 0 --landscape.wireframe --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.01 --field\[0\].contour.on --field\[0\].contour.lengths 100 --field\[0\].contour.patterns XXXXXXXXX-X- --view.fov 5  --field\[0\].contour.widths 5 --field\[0\].contour.colors red green blue
 
 test_travelling: ./glgrib.x
 	$(GDB) ./glgrib.x --scene.travelling.on --scene.travelling.pos1.lon 0 --scene.travelling.pos1.lat 0 --scene.travelling.pos1.fov 30 --scene.travelling.pos2.lon 90 --scene.travelling.pos2.lat 45 --scene.travelling.pos2.fov 10 --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 
@@ -178,7 +178,7 @@ test_strxyz: ./glgrib.x
 
 test_interpolation: ./glgrib.x
 	$(GDB) ./glgrib.x --field\[0\].path testdata/interp/01.grb testdata/interp/36.grb  --field\[0\].scale 1.03 --field\[0\].palette cold_hot_temp  \
-		--camera.lon 2 --camera.lat 46.7 --camera.fov 5 --scene.interpolation.on --scene.interpolation.frames 200 --window.width 1000 --window.height 1000 \
+		--view.lon 2 --view.lat 46.7 --view.fov 5 --scene.interpolation.on --scene.interpolation.frames 200 --window.width 1000 --window.height 1000 \
                 --font.scale 0.03 --font.color.foreground red --scene.display_date --coastlines.on --grid.on
 
 test_background: ./glgrib.x
@@ -195,7 +195,7 @@ test_select_grib: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb%'parameterCategory=6,year=2019' --field\[0\].scale 1.03 
 
 test_scalar_diff: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].diff --field\[0\].path testdata/interp/01.grb testdata/interp/36.grb --field\[0\].scale 1.01  --camera.lon 2 --camera.lat 46.7 --camera.fov 5 
+	$(GDB) ./glgrib.x --field[0].diff --field\[0\].path testdata/interp/01.grb testdata/interp/36.grb --field\[0\].scale 1.01  --view.lon 2 --view.lat 46.7 --view.fov 5 
 
 test_contour_diff: ./glgrib.x
 	$(GDB) ./glgrib.x --field[0].diff --field[0].contour.on --field\[0\].path testdata/glob01/lfpw_0_3_1_sfc_0_prmsl+0000.grib2 testdata/glob01/lfpw_0_3_1_sfc_0_prmsl+0102.grib2 \

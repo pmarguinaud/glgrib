@@ -181,21 +181,21 @@ bool glgrib_options_parser::parse (int argc, char * argv[])
         {
           std::string arg (argv[iarg]);
 
-          if (arg == std::string ("}-"))
+          if (arg == std::string ("}-")) // Close option group
             {
               ctx.pop_back ();
             }
           else if (arg.substr (0, 2) == std::string ("--"))
             {
               int len = arg.length ();
-              if (arg.substr (len-2, 2) == std::string ("-{"))
+              if (arg.substr (len-2, 2) == std::string ("-{")) // Start option group
                 {
                   ctx.push_back (arg.substr (2, len-4));
                 }
               else
                 {
 
-                  if (ctx.size () > 0)
+                  if (ctx.size () > 0) // We have an active option group; prepend its name to the option being processed
                     {
                       std::string a = arg.substr (2);
                       arg = "";
@@ -206,18 +206,36 @@ bool glgrib_options_parser::parse (int argc, char * argv[])
                           arg = arg + "." + ctx[i];
                       arg = "--" + arg + "." + a;
                     }
-                  if (name2option.find (arg) != name2option.end ())
-                    {
-                      opt = name2option[arg];
-                      if (! opt->has_arg ())
-                        opt->set (NULL);
-                    }
-                  else if (arg == "--help")
+                  if (arg == "--help")
                     {
                       show_help ();
                       return false;
                     }
-                  else
+
+                  bool found = name2option.find (arg) != name2option.end ();
+
+                  if (found) // Set option
+                    {
+                      seen.insert (arg);
+                      opt = name2option[arg];
+                      opt->clear (); // Clear option; this means that if options appears several times, then the last setting is taken into account
+                      if (! opt->has_arg ())
+                        opt->set (NULL);
+                    }
+                  else if (arg.substr (arg.length () - 4, 4) == ".off")
+                    {
+                      std::string a = arg;
+                      a.replace (a.length () - 4, 4, ".on"); 
+                      found = name2option.find (a) != name2option.end ();
+                      if (found) // Unset option
+                        {
+                          seen.insert (a);
+                          opt = name2option[a];
+                          opt->clear (); // Set boolean option to false
+                        }
+                    }
+
+                  if (! found)
                     {
                       throw std::runtime_error (std::string ("Unknown option ") + arg);
                     }
@@ -236,7 +254,19 @@ bool glgrib_options_parser::parse (int argc, char * argv[])
       show_help ();
       return false;
     }
+
   return true;
+}
+
+bool glgrib_options_parser::seenOption (const std::string & name) const
+{
+  for (std::set<std::string>::const_iterator it = seen.begin (); it != seen.end (); it++)
+    {
+      const std::string & n = *it;
+      if (n.substr (0, name.length ()) == name)
+        return true;
+    }
+  return false;
 }
 
 void glgrib_options_parser::show_help ()

@@ -2,6 +2,7 @@
 #define _GLGRIB_OPTIONS_H
 
 #include <map>
+#include <set>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -63,10 +64,13 @@ public:
          it != name2option.end (); it++)
       delete it->second;
   }
+  
+  bool seenOption (const std::string &) const;
 
 private:
 
   std::vector<std::string> ctx;
+  std::set<std::string> seen;
 
   class option_base
   {
@@ -78,6 +82,7 @@ private:
     std::string desc;
     virtual std::string type () { return std::string ("UNKNOWN"); }
     virtual std::string asString () { return std::string (""); }
+    virtual void clear () {}
   };
   class option_float : public option_base
   {
@@ -94,7 +99,7 @@ private:
             throw std::runtime_error (std::string ("Option ") + name + std::string (" expects real values"));
           }
       }   
-    float * value;
+    float * value = NULL;
     virtual std::string type () { return std::string ("FLOAT"); }
     virtual std::string asString () { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
   };
@@ -113,7 +118,7 @@ private:
             throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values"));
           }
       }   
-    std::vector<int> * value;
+    std::vector<int> * value = NULL;
     virtual std::string type () { return std::string ("LIST OF INTEGERS"); }
     virtual std::string asString ()
       {
@@ -122,6 +127,7 @@ private:
           ss << (*it) << " ";
         return std::string (ss.str ());
       }
+    virtual void clear () { if (value) value->clear (); }
   };
   class option_float_list : public option_base
   {
@@ -138,7 +144,7 @@ private:
             throw std::runtime_error (std::string ("Option ") + name + std::string (" expects real values"));
           }
       }   
-    std::vector<float> * value;
+    std::vector<float> * value = NULL;
     virtual std::string type () { return std::string ("LIST OF FLOATS"); }
     virtual std::string asString ()
       {
@@ -147,6 +153,7 @@ private:
           ss << (*it) << " ";
         return std::string (ss.str ());
       }
+    virtual void clear () { if (value) value->clear (); }
   };
   class option_date : public option_base
   {
@@ -173,7 +180,7 @@ private:
             throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values"));
           }
       }   
-    glgrib_option_date * value;
+    glgrib_option_date * value = NULL;
     virtual std::string type () { return std::string ("DATE YEAR MONTH DAY HOUR MINUTE SECOND"); }
     virtual std::string asString ()
       {
@@ -181,6 +188,7 @@ private:
         ss << value->year << " " << value->month << " " << value->day << " " << value->hour << " " << value->minute << " " << value->second;
         return std::string (ss.str ());
       }
+    virtual void clear () { count = 0; }
   private:
     int count = 0;
   };
@@ -199,7 +207,7 @@ private:
             throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values or color names, or hexadecimal codes"));
           }
       }   
-    glgrib_option_color * value;
+    glgrib_option_color * value = NULL;
     virtual std::string type () { return std::string ("COLOR R G B"); }
     virtual std::string asString ()
       {
@@ -207,6 +215,7 @@ private:
         ss << value->r << " " << value->g << " " << value->b;
         return std::string (ss.str ());
       }
+    virtual void clear () { count = 0; }
   private:
     int count = 0;
   };
@@ -215,7 +224,7 @@ private:
   public:
     option_string (const std::string & n, const std::string & d, std::string * v) : option_base (n, d), value (v)  {}
     virtual void set (const char * v) { *value = std::string (v); }
-    std::string * value;
+    std::string * value = NULL;
     virtual std::string type () { return std::string ("STRING"); }
     virtual std::string asString () { return std::string ('"' + *value + '"') ; }
   };
@@ -240,7 +249,7 @@ private:
             throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values"));
           }
       }
-    std::vector<glgrib_option_color> * value;
+    std::vector<glgrib_option_color> * value = NULL;
     virtual std::string type () { return std::string ("LIST OF COLORS R G B"); }
     virtual std::string asString ()
       {
@@ -249,6 +258,7 @@ private:
           ss << it->r << " " << it->g << " " << it->b;
         return std::string (ss.str ());
       }
+    virtual void clear () { if (value) value->clear (); count = 0; }
   private:
     int count = 0;
   };
@@ -257,7 +267,7 @@ private:
   public:
     option_string_list (const std::string & n, const std::string & d, std::vector<std::string> * v) : option_base (n, d), value (v)  {}
     virtual void set (const char * v) { value->push_back (std::string (v)); }
-    std::vector<std::string> * value;
+    std::vector<std::string> * value = NULL;
     virtual std::string type () { return std::string ("LIST OF STRINGS"); }
     virtual std::string asString ()
       {
@@ -266,6 +276,7 @@ private:
           ss << '"' + (*it) + '"' << " ";
         return std::string (ss.str ());
       }
+    virtual void clear () { if (value) value->clear (); }
   };
   class option_bool : public option_base
   {
@@ -280,9 +291,10 @@ private:
           }
         *value = true;
       }
-    bool * value;
+    bool * value = NULL;
     virtual std::string type () { return std::string ("BOOLEAN"); }
     virtual std::string asString () { return std::string (""); }
+    virtual void clear () { if (value != NULL) *value = false; }
   };
   class option_int : public option_base
   {
@@ -299,7 +311,7 @@ private:
             throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values"));
           }
        }
-    int * value;
+    int * value = NULL;
     virtual std::string type () { return std::string ("INTEGER"); }
     virtual std::string asString () { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
   };

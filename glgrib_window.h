@@ -38,6 +38,8 @@ public:
   void reset_view ()
   {
     glgrib_options_view o;
+    o.projection     = scene.d.view.opts.projection;
+    o.transformation = scene.d.view.opts.transformation;
     scene.d.view.opts = o;
     scene.resize ();
   }

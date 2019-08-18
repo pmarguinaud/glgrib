@@ -661,8 +661,6 @@ public:
   {
     DESC (lon_at_hour,         Set longitude at solar time);
     DESC (rotate_earth,        Make earth rotate);
-    DESC (projection,          Mercator XYZ latlon polar_north polar_south);
-    DESC (transformation,      Perspective or orthographic);
     INCLUDE (light);
     INCLUDE (travelling);
     DESC (test_strxyz,         Test XYZ string);
@@ -676,8 +674,6 @@ public:
   }
   bool    rotate_earth  = false;
   float   lon_at_hour = -1.0f;
-  string  projection  = "XYZ";
-  string  transformation  = "PERSPECTIVE";
   glgrib_options_light light;  
   glgrib_options_travelling travelling;
   bool    test_strxyz = false;
@@ -695,11 +691,15 @@ class glgrib_options_view : public glgrib_options_base
 public:
   DEFINE
   {
+    DESC (projection,         Mercator XYZ latlon polar_north polar_south);
+    DESC (transformation,     Perspective or orthographic);
     DESC (lon,                Camera longitude);
     DESC (lat,                Camera latitude);
     DESC (fov,                Camera field of view);
     DESC (distance,           Camera distance);
   }
+  string  projection  = "XYZ";
+  string  transformation  = "PERSPECTIVE";
   float  distance  = 6.0; 
   float  lat       = 0.0; 
   float  lon       = 0.0; 

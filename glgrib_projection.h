@@ -102,6 +102,19 @@ public:
   {
     current_ = type;
   }
+  virtual std::string currentName () const
+  {
+ #define if_type(x) case glgrib_projection::x: return #x
+     switch (current_)
+       {
+         if_type (XYZ);
+         if_type (POLAR_NORTH);
+         if_type (POLAR_SOUTH);
+         if_type (MERCATOR);
+         if_type (LATLON);
+       }
+#undef if_type
+  }
 private:
   int current_ = glgrib_projection::XYZ;
   void init ()

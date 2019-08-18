@@ -42,24 +42,23 @@ public:
   int get_xyz_from_screen_coords (float, float, glm::vec3 *) const;
   float pixel_to_dist_at_nadir (float) const;
 
-  void nextProjection () { ps.next (); calcMVP (); }
+  void nextProjection () { ps.next (); opts.projection = ps.currentName (); calcMVP (); }
   glgrib_projection * getProjection () const { return ps.current (); }
 
   int getWidth () const { return width; }
   int getHeight () const { return height; }
 
-  void toggleTransformType () { transtype = transtype == PERSPECTIVE ? ORTHOGRAPHIC : PERSPECTIVE; calcMVP (); }
+  void toggleTransformType ();
 
-  void init (const glgrib_options &);
+  void init (const glgrib_options_view &);
 
   const glm::mat4 & getMVP () const { return MVP; }
 
 private:
-  glgrib_projection_set ps;
   int width, height;
+  mutable glgrib_projection_set ps;
   mutable glm::mat4 Model, View, Projection, MVP;
   mutable glm::vec4 Viewport;
-  transform_type transtype = PERSPECTIVE;
 };
 
 #endif

@@ -20,6 +20,9 @@ void glgrib_view::setMVP (glgrib_program * program) const
 
 void glgrib_view::calcMVP () const
 {
+  glgrib_projection::type pt = glgrib_projection::typeFromString (opts.projection);
+  ps.setType (pt);
+
   glm::vec3 pos
     (opts.distance * glm::cos (glm::radians (opts.lon)) * glm::cos (glm::radians (opts.lat)), 
      opts.distance * glm::sin (glm::radians (opts.lon)) * glm::cos (glm::radians (opts.lat)),
@@ -36,7 +39,7 @@ void glgrib_view::calcMVP () const
        
   glm::mat4 p;
 
-  switch (transtype)
+  switch (typeFromString (opts.transformation))
     {
       case PERSPECTIVE:
         p = glm::perspective (glm::radians (opts.fov), ratio, 0.1f, 100.0f);
@@ -140,12 +143,9 @@ float glgrib_view::pixel_to_dist_at_nadir (float pixels) const
     }
 }
 
-void glgrib_view::init (const glgrib_options & o)
+void glgrib_view::init (const glgrib_options_view & o)
 {
-  opts = o.view;
-  glgrib_projection::type pt = glgrib_projection::typeFromString (o.scene.projection);
-  ps.setType (pt);
-  transtype = glgrib_view::typeFromString (o.scene.transformation);
+  opts = o;
 }
 
 glgrib_view::transform_type glgrib_view::typeFromString (std::string str)
@@ -157,6 +157,15 @@ glgrib_view::transform_type glgrib_view::typeFromString (std::string str)
     if_type (ORTHOGRAPHIC);
 #undef if_type
   return PERSPECTIVE;
+}
+
+void glgrib_view::toggleTransformType () 
+{ 
+  if (opts.transformation == "PERSPECTIVE")
+    opts.transformation = "ORTHOGRAPHIC";
+  if (opts.transformation == "ORTHOGRAPHIC")
+    opts.transformation = "PERSPECTIVE";
+  calcMVP (); 
 }
 
 

@@ -293,7 +293,7 @@ void glgrib_scene::init (const glgrib_options & o)
   if (d.opts.coastlines.on)
     d.coastlines.init (d.opts.coastlines);
 
-  d.view.init (d.opts);
+  d.view.init (d.opts.view);
 
 
   bool seen_date = false;

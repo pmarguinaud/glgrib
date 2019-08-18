@@ -41,8 +41,8 @@ public:
     scene.d.view.opts = o;
     scene.resize ();
   }
-  void toggle_rotate       () { scene.d.rotate_earth       = ! scene.d.rotate_earth;       }
-  void toggle_rotate_light () { scene.d.light.rotate = ! scene.d.light.rotate; }
+  void toggle_rotate       () { scene.d.opts.scene.rotate_earth       = ! scene.d.opts.scene.rotate_earth;       }
+  void toggle_rotate_light () { scene.d.opts.scene.light.rotate = ! scene.d.opts.scene.light.rotate; }
   void toggle_wireframe    () { scene.d.landscape.toggle_wireframe (); }
   void widen_fov           () { scene.d.view.opts.fov += 1.; }
   void shrink_fov          () { scene.d.view.opts.fov -= 1.; }

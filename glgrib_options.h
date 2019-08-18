@@ -56,7 +56,7 @@ public:
 class glgrib_options_parser : public glgrib_options_callback
 {
 public:
-  bool parse (int, char * []);
+  bool parse (int, const char * []);
   void show_help ();
   ~glgrib_options_parser ()
   {
@@ -393,7 +393,7 @@ public:
   typedef std::vector<float> float_list;
   typedef std::string string;
   virtual void traverse (const std::string &, glgrib_options_callback *) {}
-  virtual bool parse (int argc, char * argv[])
+  virtual bool parse (int argc, const char * argv[])
   {
     glgrib_options_parser p;
     traverse ("", &p);
@@ -774,7 +774,7 @@ public:
   glgrib_options_camera camera;
   glgrib_options_font font;
   bool shell = false;
-  virtual bool parse (int, char * []);
+  virtual bool parse (int, const char * []);
 };
 
 #endif

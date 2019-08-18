@@ -171,7 +171,7 @@ end:
   return color;
 }
 
-bool glgrib_options_parser::parse (int argc, char * argv[])
+bool glgrib_options_parser::parse (int argc, const char * argv[])
 {
   try
     {
@@ -292,7 +292,7 @@ void glgrib_options_parser::show_help ()
     }   
 }
 
-bool glgrib_options::parse (int argc, char * argv[])
+bool glgrib_options::parse (int argc, const char * argv[])
 {
   bool v = glgrib_options_base::parse (argc, argv);
   return v;

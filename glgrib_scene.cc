@@ -41,7 +41,7 @@ void glgrib_scene::display_obj (const glgrib_object * obj) const
     return;
   if (! obj->visible ())
     return;
-  obj->render (d.view, d.light);
+  obj->render (d.view, d.opts.scene.light);
 }
 
 void glgrib_scene::display () const
@@ -99,15 +99,15 @@ const glgrib_option_date * glgrib_scene::get_date ()
 
 void glgrib_scene::update_light ()
 {
-  if (d.light.rotate)
-    d.light.lon -= 1.;
+  if (d.opts.scene.light.rotate)
+    d.opts.scene.light.lon -= 1.;
 
   const glgrib_option_date * date = NULL;
 
-  if (d.light.date_from_grib)
+  if (d.opts.scene.light.date_from_grib)
     date = get_date ();
-  else if (d.light.date.year != 0)
-    date = &d.light.date;
+  else if (d.opts.scene.light.date.year != 0)
+    date = &d.opts.scene.light.date;
 
   if (date != NULL)
     {
@@ -119,8 +119,8 @@ void glgrib_scene::update_light ()
       float time = (date->hour * 60.0f + date->minute) * 60.0f + date->second;
       for (int m = 0; m < date->month-1; m++)
         cday += nday[m];
-      d.light.lat = dtrop * sin (2.0f * M_PI * (cday - eday) / 365.0f);
-      d.light.lon = 360.0f * ((12.0f * 3600.0f - time) / (24.0f * 3600.0f));
+      d.opts.scene.light.lat = dtrop * sin (2.0f * M_PI * (cday - eday) / 365.0f);
+      d.opts.scene.light.lon = 360.0f * ((12.0f * 3600.0f - time) / (24.0f * 3600.0f));
     }
 }
 
@@ -135,7 +135,7 @@ static float ffmod (float x, float y)
 
 void glgrib_scene::update_view ()
 {
-  if (d.rotate_earth)
+  if (d.opts.scene.rotate_earth)
     d.view.opts.lon += 1.;
   if (d.opts.scene.travelling.on)
     {
@@ -257,6 +257,10 @@ void glgrib_scene::init (const glgrib_options & o)
 {
   d.opts = o;
 
+  if (d.opts.scene.light.on)
+    setLight ();
+
+
   if (d.opts.scene.image.on) 
     d.image.init (d.opts.scene.image);
 
@@ -286,8 +290,6 @@ void glgrib_scene::init (const glgrib_options & o)
 
   if (d.opts.coastlines.on)
     d.coastlines.init (d.opts.coastlines);
-
-  d.light = d.opts.scene.light;
 
   d.view.init (d.opts);
 

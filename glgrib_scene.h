@@ -45,20 +45,20 @@ public:
 
   void getLightPos (float * lon, float * lat) const
     {
-      *lon = d.light.lon;
-      *lat = d.light.lat;
+      *lon = d.opts.scene.light.lon;
+      *lat = d.opts.scene.light.lat;
     }
   void setLightPos (float lon, float lat) 
     { 
-      d.light.lon = lon;
-      d.light.lat = lat;
+      d.opts.scene.light.lon = lon;
+      d.opts.scene.light.lat = lat;
     }
   void setLight ()
     {
-      d.light.on = true;
+      d.opts.scene.light.on = true;
     }
-  void unsetLight () { d.light.on = false; }
-  bool hasLight () const { return d.light.on; }
+  void unsetLight () { d.opts.scene.light.on = false; }
+  bool hasLight () const { return d.opts.scene.light.on; }
   void update ();
   void update_light ();
   void update_interpolation ();
@@ -78,13 +78,11 @@ public:
   class _data
   {
     public:
-      glgrib_options_light light;
       glgrib_options opts;
       glgrib_view view;
       glgrib_landscape landscape;
       glgrib_coastlines coastlines;
       glgrib_grid grid;
-      bool rotate_earth = false;
     private:
       glgrib_image image;
       glgrib_colorbar colorbar;

@@ -768,11 +768,6 @@ void glgrib_window::create (const glgrib_options & o)
   else
     title = opts.title;
 
-  scene.d.light.rotate = o.scene.light.rotate;
-  scene.d.rotate_earth = o.scene.rotate_earth;
-  if (o.scene.light.on)
-    scene.setLight ();
-
 
   createGFLWwindow (NULL);
 

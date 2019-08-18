@@ -7,69 +7,71 @@
 #include <readline/history.h>
 
 
-#define C(name,code,...) \
-  glgrib_command ([] (glgrib_window * gwindow, \
-                      glgrib_shell * shell,    \
-		      glgrib_command_arghash & args) \
-		      {code}, #name, __VA_ARGS__)
-#define A(...) glgrib_command_arg (__VA_ARGS__)
-#define def(name) \
-static void command_##name (glgrib_window * gwindow, class glgrib_shell * shell, \
-                            glgrib_command_arghash & args)
+glgrib_shell Shell;
 
-#define F(x) std::stof (args.at (#x).value)
-#define I(x) std::stoi (args.at (#x).value)
-#define S(x)           (args.at (#x).value)
-
-glgrib_shell Shell 
-(
-  C (close,     { shell->close = 1; },                            ""),
-  C (fov,       { gwindow->scene.d.view.opts.fov += F (dfov);  }, "", A ("dfov", "+1.")),
-  C (rotate,    { gwindow->scene.d.rotate_earth = ! gwindow->scene.d.rotate_earth; }, ""),
-  C (wireframe, { gwindow->toggle_wireframe (); }, ""),
-  C (flat,      { gwindow->toggle_flat (); }, ""),
-  C (select,    { shell->windowid = I (id); }, "", A ("id", "1")),
-  C (remove,    { gwindow->remove_field (I (rank)); }, "", A ("rank", "0")),
-  C (load,      
-	  { 
-            glgrib_options_field opts; 
-	    std::cout << S (path) << std::endl;
-            opts.path.push_back (S (path)); 
-            opts.scale = F (scale);
-            opts.palette = S (palette);
-            gwindow->load_field (opts, I (rank)); 
-	  }, "", 
-     A ("palette", ""), A ("scale", "1.02"), A ("path", ""), A ("rank", "0")),
-  C (palette,    
-	  {
-            gwindow->set_field_palette (S (name));
-	  }, "",
-     A ("name", "")),
-  C (palette_min,    
-	  {
-            gwindow->set_field_palette_min (F (min));
-	  }, "",
-     A ("min", "-1.")),
-  C (palette_max,    
-	  {
-            gwindow->set_field_palette_max (F (max));
-	  }, "",
-     A ("max", "+1."))
-);
-
-#undef C
-#undef A
-
-static std::string next_token (std::string & line)
+static std::string next_token (std::string * line)
 {
-  while (line.length () && line[0] == ' ')
-    line = line.substr (1);
-  size_t pos = line.find (" ");
-  std::string token = line.substr (0, pos);
-  if (pos == std::string::npos)
-    line = "";
-  else
-    line = line.substr (pos+1);
+  while (line->length () && (*line)[0] == ' ')
+    *line = line->substr (1);
+
+  std::string token = std::string ("");
+
+  int q = 0, qq = 0;
+
+  while (line->length ())
+    {
+      char c = (*line)[0];
+      *line = line->substr (1);
+
+
+      if ((qq == 0) && (q == 0))
+        {
+          if (c == ' ')
+            break;
+          if (c == '"')
+            {
+              qq = 1;
+              goto cont;
+            }
+          if (c == '\'')
+            {
+              q = 1;
+              goto cont;
+            }
+        }
+      else
+        {
+          if ((c == '"') && (qq == 1))
+            {
+              qq = 0;
+              goto cont;
+            }
+          if ((c == '\'') && (q == 1))
+            {
+              q = 0;
+              goto cont;
+            }
+        }
+
+      if (c == '\\')
+        {
+          if (line->length ())
+            {
+              c = (*line)[0];
+              *line = line->substr (1);
+            }
+          else
+            throw std::runtime_error (std::string ("Stray '\\'"));
+        }
+      token.push_back (c);
+
+cont:
+      continue;
+    }
+
+  if (qq || q)
+    throw std::runtime_error (std::string ("Unterminated character string"));
+
   return token;
 }
 
@@ -80,40 +82,77 @@ static void help ()
 
 void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
 {
+  std::string cmd;
+  std::vector<std::string> args;
+  
+
   std::string line = _line;
 
-  std::string cmd = next_token (line);
+  try 
+    {
+      cmd = next_token (&line);
 
-  if (cmd == "")
-    return;
+      if (cmd == "")
+        return;
+     
+      std::cout << cmd << std::endl;
+     
+      while (1)
+        {
+          std::string arg = next_token (&line);
+          if (arg == "") 
+            break;
+          args.push_back (arg);
+        }
+    }
+  catch (const std::runtime_error & e)
+    {
+      std::cout << "Malformed command " << _line << std::endl;
+      std::cout << e.what () << std::endl;
+      return;
+    }
 
-  if (cmds.count (cmd) == 0)
-    return help ();
+
+  if ((cmd == "exit") || (cmd == "quit"))
+    {
+      close = 1;
+    }
+  else if (cmd == "set")
+    {
+
+      int argc = 1 + args.size ();
+      const char * argv[argc];
+      argv[0] = "glgrib";
+      
+      for (int i = 0; i < args.size (); i++)
+        argv[1+i] = args[i].c_str ();
+      
+      glgrib_options opts;
+      
+      glgrib_options_parser p;
+      opts.traverse ("", &p);
+      
+      if (p.parse (argc, argv))
+        {
+          if (p.seenOption ("--camera"))
+            {
+              std::cout << "seen camera" << std::endl;
+            }
+        }
   
-  const glgrib_command & Cmd = cmds.at (cmd);
-  const glgrib_command_arglist & Args = Cmd.args;
-  glgrib_command_arghash h;
-
-  for (glgrib_command_arglist::const_iterator it = Args.begin ();
-       it != Args.end (); it++)
+    }
+  else if ((cmd == "window") && (args.size () == 1))
     {
-      glgrib_command_arg arg = *it;
-      std::string token = next_token (line);
-      if (token != "")
-        arg.value = token;
-      h.insert (std::pair<std::string,glgrib_command_arg>(arg.name, arg));
+      try
+        {
+          windowid = std::stoi (args[0]);
+        }
+      catch (...)
+        {
+          std::cout << "window command expects an integer value" << std::endl;
+        }
     }
 
-  try
-    {
-      Cmd.func (gwindow, this, h);
-    }
-  catch (std::exception & e)
-    {
-      std::cout << "An error occurred " << std::endl;
-      std::cout << e.what() << std::endl;
-      std::cout << Cmd.help () << std::endl;
-    }
 }
 
 static 
@@ -139,12 +178,17 @@ void glgrib_shell::run ()
   while (wset->size () > 0)
     {
       char * line = readline ("glgrib> ");
+
+      lock ();
+
       if (line == NULL)
-        break;
+        {
+          close = 1;
+          break;
+        }
       if (strlen (line) > 0) 
         add_history (line);
  
-      lock ();
       {
         if (wset->size ())
           {

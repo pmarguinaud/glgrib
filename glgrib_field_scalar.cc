@@ -70,12 +70,13 @@ void glgrib_field_scalar::init (glgrib_loader * ld, const glgrib_options_field &
   glgrib_field_float_buffer_ptr data = ld->load (opts.path, slot, &meta1, 1, 0, opts.diff);
   meta.push_back (meta1);
 
-  dopts.scale = opts.scale;
-
-  if (opts.palette == "default")
-    dopts.palette = get_palette_by_meta (meta1);
+  if (opts.palette.name == "default")
+    palette = get_palette_by_meta (meta1);
   else
-    dopts.palette = get_palette_by_name (opts.palette);
+    palette = get_palette_by_name (opts.palette.name);
+
+  setPaletteMinMax ();
+  recordPaletteOpts ();
 
   geometry = glgrib_geometry_load (ld, opts.path[0]);
 
@@ -112,8 +113,8 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
 {
   glgrib_program * program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
   program->use ();
-  float scale0[3] = {dopts.scale, dopts.scale, dopts.scale};
-  const glgrib_palette & p = dopts.palette;
+  float scale0[3] = {opts.scale, opts.scale, opts.scale};
+  const glgrib_palette & p = palette;
 
   view.setMVP (program);
   program->setLight (light);

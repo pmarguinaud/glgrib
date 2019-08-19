@@ -64,7 +64,7 @@ void glgrib_scene::display () const
   if ((fld != NULL) && (! d.colorbar.getHidden ()))
     if (fld->getKind () == glgrib_field::SCALAR)
       d.colorbar.render (d.MVP_L, 
-                         fld->dopts.palette, 
+                         fld->palette, 
                          fld->getNormedMinValue (), 
                          fld->getNormedMaxValue ());
 
@@ -262,7 +262,6 @@ void glgrib_scene::init (const glgrib_options & o)
   if (d.opts.scene.light.on)
     setLight ();
 
-
   if (d.opts.scene.image.on) 
     d.image.init (d.opts.scene.image);
 
@@ -295,35 +294,23 @@ void glgrib_scene::init (const glgrib_options & o)
 
   d.view.init (d.opts.view);
 
+  for (int i = 0; i < d.opts.field.size (); i++)
+    fieldlist.push_back ((glgrib_field *)NULL);
+
+  for (int i = 0; i < d.opts.field.size (); i++)
+    setFieldOpts (i, d.opts.field[i]);
 
   bool seen_date = false;
   for (int i = 0; i < d.opts.field.size (); i++)
     {
-      glgrib_field * fld = NULL;
-      bool defined = d.opts.field[i].path.size () != 0;
-
-      if (defined)
-        {
-          if (d.opts.field[i].vector.on)
-            fld = new glgrib_field_vector ();
-          else if (d.opts.field[i].contour.on)
-            fld = new glgrib_field_contour ();
-          else
-            fld = new glgrib_field_scalar ();
-          fld->init (&ld, d.opts.field[i]);
-        }
-
-      fieldlist.push_back (fld);
-
-      if (defined)
-        setCurrentFieldRank (i);
-
-      if (defined && (! seen_date) && d.opts.scene.display_date)
+      glgrib_field * fld = fieldlist[i];
+      if ((fld != NULL) && (! seen_date) && d.opts.scene.display_date)
         {
           seen_date = true;
     
           glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
-          d.strdate.init2D (font, std::string (20, 'X'), 1.0f, 0.0f, d.opts.font.scale, glgrib_string::SE);
+          d.strdate.init2D (font, std::string (20, 'X'), 1.0f, 0.0f, 
+                            d.opts.font.scale, glgrib_string::SE);
 
           d.strdate.setForegroundColor (d.opts.font.color.foreground);
           d.strdate.setBackgroundColor (d.opts.font.color.background);
@@ -331,7 +318,6 @@ void glgrib_scene::init (const glgrib_options & o)
           const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
           d.strdate.update (meta[0].term.asString ());
         }
-
     }
 
 
@@ -400,5 +386,73 @@ void glgrib_scene::resize ()
     if (fieldlist[i])
       fieldlist[i]->resize (d.view);
 }
+
+glgrib_options glgrib_scene::getOptions () const
+{
+  glgrib_options o = d.opts;
+  o.view       = d.view.opts;
+  o.landscape  = d.landscape.opts;
+  o.grid       = d.grid.opts;
+  o.coastlines = d.coastlines.opts;
+
+  for (int i = 0; i < fieldlist.size (); i++)
+    if (fieldlist[i] != NULL)
+      o.field[i] = fieldlist[i]->opts;
+
+  return o;
+}
+
+void glgrib_scene::setViewOpts (const glgrib_options_view & o)
+{
+  d.view.opts = o;
+}
+
+void glgrib_scene::setLandscapeOpts (const glgrib_options_landscape & o)
+{
+  glgrib_landscape landscape;
+  if (o.on)
+    landscape.init (&ld, o);
+  d.landscape = landscape;
+}
+
+void glgrib_scene::setGridOpts (const glgrib_options_grid & o)
+{
+  glgrib_grid grid;
+  if (o.on)
+    grid.init (o);
+  d.grid = grid;
+}
+
+void glgrib_scene::setCoastlinesOpts (const glgrib_options_coastlines & o)
+{
+  glgrib_coastlines coastlines;
+  if (o.on)
+    coastlines.init (o);
+  d.coastlines = coastlines;
+}
+
+void glgrib_scene::setFieldOpts (int j, const glgrib_options_field & o)
+{
+  if (fieldlist[j] != NULL)
+    delete fieldlist[j];
+  fieldlist[j] = NULL; 
+
+  bool defined = o.path.size () != 0;
+
+  if (defined)
+    {
+      glgrib_field * fld = NULL;
+      if (o.vector.on)
+        fld = new glgrib_field_vector ();
+      else if (o.contour.on)
+        fld = new glgrib_field_contour ();
+      else
+        fld = new glgrib_field_scalar ();
+      fld->init (&ld, o);
+      fieldlist[j] = fld;
+    }
+
+}
+
 
 

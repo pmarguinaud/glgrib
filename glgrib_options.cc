@@ -236,10 +236,12 @@ bool glgrib_options_parser::parse (int argc, const char * argv[])
                     }
 
                   if (! found)
-                    {
-                      throw std::runtime_error (std::string ("Unknown option ") + arg);
-                    }
+                    throw std::runtime_error (std::string ("Unknown option ") + arg);
                 }
+            }
+          else if (opt == NULL)
+            {
+              throw std::runtime_error (std::string ("Error parsing options: no valid option for `") + arg + std::string ("'"));
             }
           else
             {

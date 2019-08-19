@@ -44,13 +44,13 @@ test_3l_t1198: glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb \
                --field[0].path testdata/t1198c2.2/SURFNEBUL.BASSE.grb --field[1].path testdata/t1198c2.2/SURFNEBUL.MOYENN.grb --field[2].path testdata/t1198c2.2/SURFNEBUL.HAUTE.grb \
                --field[0].scale                         1.03 --field[1].scale                          1.04 --field[2].scale                         1.05 \
-               --field[0].palette                      cloud --field[1].palette                       cloud --field[2].palette                      cloud 
+               --field[0].palette.name                 cloud --field[1].palette.name                  cloud --field[2].palette.name                 cloud 
 
 test_3l_t1798: glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1798/Z.grb \
                 --field[0].path testdata/t1798/SURFNEBUL.BASSE.grb --field[1].path testdata/t1798/SURFNEBUL.MOYENN.grb --field[2].path testdata/t1798/SURFNEBUL.HAUTE.grb \
                 --field[0].scale                     1.03 --field[1].scale                      1.04 --field[2].scale                     1.05 \
-                --field[0].palette                  cloud --field[1].palette                   cloud --field[2].palette                  cloud
+                --field[0].palette.name             cloud --field[1].palette.name              cloud --field[2].palette.name             cloud
 
 
 test_offscreen: glgrib.x
@@ -59,19 +59,19 @@ test_offscreen: glgrib.x
 		--window.offscreen.frames 10 --scene.light.rotate --scene.light.on     \
 		--field[0].path testdata/t1198c2.2/SURFNEBUL.BASSE.grb testdata/t1198c2.2/SURFNEBUL.MOYENN.grb  testdata/t1198c2.2/SURFNEBUL.HAUTE.grb \
 		--field[0].scale                         1.03                           1.03                           1.03 \
-		--field[0].palette                 cloud_auto                     cloud_auto                     cloud_auto 
+		--field[0].palette.name            cloud_auto                     cloud_auto                     cloud_auto 
 
 test_eurat01: glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb \
                --field[0].path testdata/t1198c2.2/N.grb  --field[1].path testdata/eurat01/lfpw_0_0_0_pl_1000_t.grib2 \
                --field[0].scale           1.02  --field[1].scale                              1.03 \
-               --field[0].palette   cloud_auto  --field[1].palette                        cold_hot 
+               --field[0].palette.name   cloud_auto  --field[1].palette.name                   cold_hot 
 
 test_landscape_eurat01: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry  testdata/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --landscape.orography 0 --coastlines.on --grid.on
 
 test_glob01: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].path testdata/glob01/lfpw_0_0_0_sfc_0_t.grib2 --field[0].scale 1.00  --field[0].palette cold_hot_temp --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --field[0].path testdata/glob01/lfpw_0_0_0_sfc_0_t.grib2 --field[0].scale 1.00  --field[0].palette.name cold_hot_temp --coastlines.on --grid.on
 
 
 test_small: ./glgrib.x
@@ -82,22 +82,22 @@ test_shell: ./glgrib.x
 
 test_novalue: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1798/Z.grb \
-		--field[0].path testdata/t1798/SURFNEBUL.BASSE.grb --field[0].scale 1.03 --field[0].palette cloud_auto --field[0].no_value_pointer
+		--field[0].path testdata/t1798/SURFNEBUL.BASSE.grb --field[0].scale 1.03 --field[0].palette.name cloud_auto --field[0].no_value_pointer
 
 test_t8000_noorog: ./glgrib.x
 	$(GDB) ./glgrib.x  --window.width 2000  --window.height 2000 --landscape.on --landscape.geometry testdata/t479/Z.grb \
 		--landscape.orography 0 \
-		--window.offscreen.on    --field[0].path testdata/t8000/SURFNEBUL.TOTALE.grb --field[0].scale 1.03 --field[0].palette cloud_auto  --field[0].no_value_pointer  \
+		--window.offscreen.on    --field[0].path testdata/t8000/SURFNEBUL.TOTALE.grb --field[0].scale 1.03 --field[0].palette.name cloud_auto  --field[0].no_value_pointer  \
 		--scene.light.on --scene.light.lon -25 --scene.light.lat 30.
 
 test_missingvalue: ./glgrib.x
 	$(GDB) ./glgrib.x --field[0].path testdata/t49/SFX.CLAY.grb --coastlines.on --grid.on
 
 test_aro: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].path testdata/aro2.5/SURFIND.TERREMER.grb --field[0].palette cold_hot --field[0].scale 1.00 --view.lat 46.2 --view.lon 2.0 --view.fov 5 --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --field[0].path testdata/aro2.5/SURFIND.TERREMER.grb --field[0].palette.name cold_hot --field[0].scale 1.00 --view.lat 46.2 --view.lon 2.0 --view.fov 5 --coastlines.on --grid.on
 
 test_guyane: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.on --field\[0\].path testdata/aro_guyane/SURFTEMPERATURE.grb --field\[0\].palette cold_hot_temp --field\[0\].scale 1.01 --view.lat 5 --view.lon -51 --view.fov 3 --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --landscape.on --field\[0\].path testdata/aro_guyane/SURFTEMPERATURE.grb --field\[0\].palette.name cold_hot_temp --field\[0\].scale 1.01 --view.lat 5 --view.lon -51 --view.fov 3 --coastlines.on --grid.on
 
 test_vector: ./glgrib.x
 	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path testdata/aro2.5/S090WIND.U.PHYS.grb  testdata/aro2.5/S090WIND.V.PHYS.grb --field\[0\].scale 1.00 --field\[0\].vector.color green --view.lat 46.2 --view.lon 2.0 --view.fov 5  --coastlines.on --grid.on
@@ -142,22 +142,22 @@ test_contour_latlon3: ./glgrib.x
 	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.on --landscape.path landscape/black.bmp  --field\[0\].path testdata/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --field\[0\].scale 1.03 --field\[0\].contour.on
 
 test_contour_latlon4: ./glgrib.x
-	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --field\[0\].path testdata/glob025/lfpw_0_0_0_pl_1000_t.grib2 --field\[1\].path testdata/glob025/lfpw_0_0_0_pl_1000_t.grib2 --field\[1\].palette cold_hot --field\[1\].contour.on
+	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --field\[0\].path testdata/glob025/lfpw_0_0_0_pl_1000_t.grib2 --field\[1\].path testdata/glob025/lfpw_0_0_0_pl_1000_t.grib2 --field\[1\].palette.name cold_hot --field\[1\].contour.on
 
 test_contour_aro1: ./glgrib.x
 	$(GDB) ./glgrib.x \
-               --field\[0\].path testdata/aro_small/S041WIND.U.PHYS.grb --field\[0\].scale 1.00 --field[0].palette cold_hot \
+               --field\[0\].path testdata/aro_small/S041WIND.U.PHYS.grb --field\[0\].scale 1.00 --field[0].palette.name cold_hot \
                --field\[1\].path testdata/aro_small/S041WIND.U.PHYS.grb --field\[1\].scale 1.03 --field[1].contour.on       \
                --view.lon 26.64 --view.lat 67.36 --view.fov 0.5 --coastlines.on --grid.on
 
 test_contour_aro2: ./glgrib.x
 	$(GDB) ./glgrib.x \
-               --field\[0\].path testdata/aro2.5/S090WIND.U.PHYS.grb --field\[0\].scale 1.00 --field[0].palette cold_hot \
+               --field\[0\].path testdata/aro2.5/S090WIND.U.PHYS.grb --field\[0\].scale 1.00 --field[0].palette.name cold_hot \
                --field\[1\].path testdata/aro2.5/S090WIND.U.PHYS.grb --field\[1\].scale 1.03 --field[1].contour.on       \
                --view.lat 46.2 --view.lon 2.0 --view.fov 5 --coastlines.on --grid.on
 
 test_fill: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.on --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 --field[0].palette RGBW   --colorbar.on --window.width 1200
+	$(GDB) ./glgrib.x --landscape.on --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 --field[0].palette.name RGBW   --colorbar.on --window.width 1200
 
 test_dashed1: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.orography 0 --landscape.wireframe --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.00 --field\[0\].contour.on --field[0].contour.lengths 100  --field[0].contour.patterns X- --view.fov 5
@@ -177,7 +177,7 @@ test_strxyz: ./glgrib.x
 		--scene.projection XYZ --scene.test_strxyz
 
 test_interpolation: ./glgrib.x
-	$(GDB) ./glgrib.x --field\[0\].path testdata/interp/01.grb testdata/interp/36.grb  --field\[0\].scale 1.03 --field\[0\].palette cold_hot_temp  \
+	$(GDB) ./glgrib.x --field\[0\].path testdata/interp/01.grb testdata/interp/36.grb  --field\[0\].scale 1.03 --field\[0\].palette.name cold_hot_temp  \
 		--view.lon 2 --view.lat 46.7 --view.fov 5 --scene.interpolation.on --scene.interpolation.frames 200 --window.width 1000 --window.height 1000 \
                 --font.scale 0.03 --font.color.foreground red --scene.display_date --coastlines.on --grid.on
 

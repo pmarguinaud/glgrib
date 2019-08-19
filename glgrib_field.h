@@ -13,15 +13,6 @@
 #include <vector>
 
 
-
-class glgrib_field_display_options
-{
-public:
-  float scale = 1.0;
-  glgrib_palette palette;
-  glgrib_field_display_options ();
-};
-
 class glgrib_field : public glgrib_world
 {
 public:
@@ -37,9 +28,13 @@ public:
   virtual glgrib_field * clone () const  = 0;
   virtual void init (glgrib_loader *, const glgrib_options_field &, float = 0) = 0;
   virtual bool use_alpha () { return false; }
-  void setPalette (const std::string & p) { dopts.palette = get_palette_by_name (p); }
+  void setPalette (const glgrib_palette &);
+  void setNextPalette ();
+  void recordPaletteOpts ();
+  void setPaletteMinMax ();
+  void scalePaletteUp (float = 0.025);
+  void scalePaletteDown (float = 0.025);
   virtual ~glgrib_field () {}
-  glgrib_field_display_options dopts;
   virtual std::vector<float> getValue (int index) const 
   { 
     std::vector<float> val;
@@ -50,7 +45,7 @@ public:
   virtual void saveSettings () const 
   { 
     for (int i = 0; i < meta.size (); i++)
-      dopts.palette.save (meta[i]); 
+      palette.save (meta[i]); 
   }
   virtual std::vector<float> getMaxValue () const 
   { 
@@ -90,8 +85,9 @@ public:
   {
     return meta;
   }
-protected:
   glgrib_options_field opts;
+  glgrib_palette palette = palette_cold_hot;
+protected:
   std::vector<glgrib_field_metadata> meta;
   std::vector<glgrib_field_float_buffer_ptr> values;
 };

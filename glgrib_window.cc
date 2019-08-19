@@ -263,30 +263,6 @@ void glgrib_window::save_current_palette ()
   f->saveSettings ();
 }
 
-void glgrib_window::set_field_palette_min (const float min)
-{
-  glgrib_field * f = scene.getCurrentField ();
-  if (f == NULL)
-    return;
-  f->dopts.palette.min = min;
-}
-
-void glgrib_window::set_field_palette_max (const float max)
-{
-  glgrib_field * f = scene.getCurrentField ();
-  if (f == NULL)
-    return;
-  f->dopts.palette.max = max;
-}
-
-void glgrib_window::set_field_palette (const std::string & p)
-{
-  glgrib_field * f = scene.getCurrentField ();
-  if (f == NULL)
-    return;
-  f->setPalette (p);
-}
-
 void glgrib_window::remove_field (int rank)
 {
   glgrib_field * f = NULL;
@@ -372,9 +348,9 @@ void glgrib_window::toggle_light ()
 
 void glgrib_window::next_palette ()
 {
-  glgrib_field_display_options * fopt = scene.getCurrentFieldOpts ();
-  if (fopt)
-    fopt->palette = get_next_palette (fopt->palette);
+  glgrib_field * f = scene.getCurrentField ();
+  if (f != NULL)
+    f->setNextPalette ();
 }
 
 void glgrib_window::scale_palette_up ()
@@ -382,18 +358,7 @@ void glgrib_window::scale_palette_up ()
   glgrib_field * fld  = scene.getCurrentField ();
   if (fld == NULL)
     return;
-  glgrib_field_display_options * fopt = scene.getCurrentFieldOpts ();
-  if (! fopt->palette.hasMin ()) 
-    {
-      fopt->palette.min = fld->getNormedMinValue ();
-    }
-  if (! fopt->palette.hasMax ()) 
-    {
-      fopt->palette.max = fld->getNormedMaxValue ();
-    }
-  float d = fopt->palette.max - fopt->palette.min;
-  fopt->palette.min -= d * 0.025;
-  fopt->palette.max += d * 0.025;
+  fld->scalePaletteUp ();
 }
 
 void glgrib_window::scale_palette_down ()
@@ -401,18 +366,7 @@ void glgrib_window::scale_palette_down ()
   glgrib_field * fld  = scene.getCurrentField ();
   if (fld == NULL)
     return;
-  glgrib_field_display_options * fopt = scene.getCurrentFieldOpts ();
-  if (! fopt->palette.hasMin ()) 
-    {
-      fopt->palette.min = fld->getNormedMinValue ();
-    }
-  if (! fopt->palette.hasMax ()) 
-    {
-      fopt->palette.max = fld->getNormedMaxValue ();
-    }
-  float d = fopt->palette.max - fopt->palette.min;
-  fopt->palette.min += d * 0.025;
-  fopt->palette.max -= d * 0.025;
+  fld->scalePaletteDown ();
 }
 
 void glgrib_window::select_field (int ifield)
@@ -422,16 +376,16 @@ void glgrib_window::select_field (int ifield)
 
 void glgrib_window::scale_field_down ()
 {
-  glgrib_field_display_options * fopt = scene.getCurrentFieldOpts ();
-  if (fopt)
-    fopt->scale -= 0.01;
+  glgrib_field * f = scene.getCurrentField ();
+  if (f != NULL)
+    f->opts.scale -= 0.01;
 }
 
 void glgrib_window::scale_field_up ()
 {
-  glgrib_field_display_options * fopt = scene.getCurrentFieldOpts ();
-  if (fopt)
-    fopt->scale += 0.01;
+  glgrib_field * f = scene.getCurrentField ();
+  if (f != NULL)
+    f->opts.scale += 0.01;
 }
 
 void glgrib_window::toggle_hide_field ()

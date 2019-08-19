@@ -35,13 +35,6 @@ public:
     { 
       return d.currentFieldRank < fieldlist.size () ? fieldlist[d.currentFieldRank] : NULL; 
     }
-  glgrib_field_display_options * getCurrentFieldOpts () 
-    { 
-      if (d.currentFieldRank < fieldlist.size ())
-        if (fieldlist[d.currentFieldRank] != NULL)
-          return &fieldlist[d.currentFieldRank]->dopts;
-      return NULL;
-    }
 
   void getLightPos (float * lon, float * lat) const
     {
@@ -105,25 +98,13 @@ public:
 
   glgrib_loader ld;
 
-  void setViewOpts (const glgrib_options_view & o)
-  {
-    d.view.opts = o;
-  }
-  void setLandscapeOpts (const glgrib_options_landscape & o)
-  {
-    glgrib_landscape landscape;
-    if (o.on)
-      landscape.init (&ld, o);
-    d.landscape = landscape;
-  }
-  void setGridOpts (const glgrib_options_grid & o)
-  {
-    glgrib_grid grid;
-    if (o.on)
-      grid.init (o);
-    d.grid = grid;
-  }
+  void setViewOpts (const glgrib_options_view &);
+  void setLandscapeOpts (const glgrib_options_landscape &);
+  void setGridOpts (const glgrib_options_grid &);
+  void setCoastlinesOpts (const glgrib_options_coastlines &);
+  void setFieldOpts (int j, const glgrib_options_field &);
 
+  glgrib_options getOptions () const;
 
 };
 

@@ -114,12 +114,13 @@ void glgrib_field_vector::init (glgrib_loader * ld, const glgrib_options_field &
   glgrib_field_float_buffer_ptr data_u = ld->load (opts.path, slot, &meta_u, 2, 0);
   glgrib_field_float_buffer_ptr data_v = ld->load (opts.path, slot, &meta_v, 2, 1);
 
-  dopts.scale = opts.scale;
-
-  if (opts.palette == "default")
-    dopts.palette = get_palette_by_meta (meta_u);
+  if (opts.palette.name == "default")
+    palette = get_palette_by_meta (meta_u);
   else
-    dopts.palette = get_palette_by_name (opts.palette);
+    palette = get_palette_by_name (opts.palette.name);
+
+  setPaletteMinMax ();
+  recordPaletteOpts ();
 
   geometry = glgrib_geometry_load (ld, opts.path[0]);
 
@@ -225,7 +226,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 {
   glgrib_program * program;
   
-  float scale0[3] = {dopts.scale, dopts.scale, dopts.scale};
+  float scale0[3] = {opts.scale, opts.scale, opts.scale};
 
   std::vector<float> valmax = getMaxValue ();
   std::vector<float> valmin = getMinValue ();
@@ -265,7 +266,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       view.setMVP (program);
       program->setLight (light);
 
-      const glgrib_palette & p = dopts.palette;
+      const glgrib_palette & p = palette;
       p.setRGBA255 (program->programID);
 
       for (int i = 0; i < 3; i++)

@@ -96,8 +96,6 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
       if (cmd == "")
         return;
      
-      std::cout << cmd << std::endl;
-     
       while (1)
         {
           std::string arg = next_token (&line);
@@ -128,10 +126,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
       for (int i = 0; i < args.size (); i++)
         argv[1+i] = args[i].c_str ();
       
-      glgrib_options opts = gwindow->scene.d.opts;
-      opts.view = gwindow->scene.d.view.opts;
-      opts.landscape = gwindow->scene.d.landscape.opts;
-      opts.grid = gwindow->scene.d.grid.opts;
+      glgrib_options opts = gwindow->scene.getOptions ();
       
       glgrib_options_parser p;
       opts.traverse ("", &p);
@@ -144,9 +139,27 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
             gwindow->scene.setLandscapeOpts (opts.landscape);
           if (p.seenOption ("--grid"))
             gwindow->scene.setGridOpts (opts.grid);
+          if (p.seenOption ("--coastlines"))
+            gwindow->scene.setCoastlinesOpts (opts.coastlines);
+
+#define SFO(j) \
+do {                                                           \
+          if (p.seenOption ("--field[" #j "]"))                \
+            gwindow->scene.setFieldOpts (j, opts.field[j]);    \
+} while (0)
+          SFO  (0); SFO  (1); SFO  (2); SFO  (3);
+          SFO  (4); SFO  (5); SFO  (6); SFO  (7);
+          SFO  (8); SFO  (9); SFO (10); SFO (11);
+#undef SFO
           
         }
   
+    }
+  else if ((cmd == "window") && (args.size () == 0))
+    {
+      std::cout << "Window list:" << std::endl;
+      for (glgrib_window_set::const_iterator it = wset->begin (); it != wset->end (); it++)
+        std::cout << (*it)->id () << std::endl;
     }
   else if ((cmd == "window") && (args.size () == 1))
     {

@@ -457,14 +457,21 @@ public:
   {
     DESC (path,             List of GRIB files);                    
     DESC (scale,            Scales to be applied to fields);        
-    DESC (palette,          Palettes);                              
+    DESC (palette.name,     Palette name);                              
+    DESC (palette.min,      Palette min value);                              
+    DESC (palette.max,      Palette max value);                              
     DESC (no_value_pointer, Do not keep field values in memory);    
     DESC (diff,             Show field difference);
     INCLUDE (vector);
     INCLUDE (contour);
   }
   string_list  path;
-  string       palette = "default";
+  struct
+  {
+    string       name = "default";
+    float min = std::numeric_limits<float>::max(); 
+    float max = std::numeric_limits<float>::min();
+  } palette;
   float        scale   = 1.0f;
   bool         no_value_pointer = false;
   bool         diff = false;

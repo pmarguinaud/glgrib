@@ -85,6 +85,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
   std::string cmd;
   std::vector<std::string> args;
   
+  gwindow->makeCurrent ();
 
   std::string line = _line;
 
@@ -129,6 +130,8 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
       
       glgrib_options opts = gwindow->scene.d.opts;
       opts.view = gwindow->scene.d.view.opts;
+      opts.landscape = gwindow->scene.d.landscape.opts;
+      opts.grid = gwindow->scene.d.grid.opts;
       
       glgrib_options_parser p;
       opts.traverse ("", &p);
@@ -136,10 +139,12 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
       if (p.parse (argc, argv))
         {
           if (p.seenOption ("--view"))
-            {
-              std::cout << "seen view" << std::endl;
-              gwindow->scene.setViewOpts (opts.view);
-            }
+            gwindow->scene.setViewOpts (opts.view);
+          if (p.seenOption ("--landscape"))
+            gwindow->scene.setLandscapeOpts (opts.landscape);
+          if (p.seenOption ("--grid"))
+            gwindow->scene.setGridOpts (opts.grid);
+          
         }
   
     }

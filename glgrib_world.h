@@ -12,14 +12,12 @@ public:
   virtual void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual bool use_alpha () { return true; }
   virtual ~glgrib_world () { cleanup (); }
-  void toggle_wireframe () { wireframe = ! wireframe; }
   const_glgrib_geometry_ptr getGeometry () const { return geometry; }
 protected:
   glgrib_opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer;
   const_glgrib_geometry_ptr geometry;
   int numberOfPoints;
   virtual void cleanup ();
-  bool wireframe = false;
   unsigned int numberOfColors, numberOfTriangles;
   GLuint VertexArrayID = 0;
 };

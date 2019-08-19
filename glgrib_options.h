@@ -505,18 +505,26 @@ public:
   DEFINE
   {
     DESC (on,                  Enable landscape);
+    DESC (flat.on,             Make Earth flat);
     DESC (orography,           Factor to apply to orography);
     DESC (path,                Path to landscape image in BMP format);
     DESC (geometry,            GRIB files to take geometry from);
     DESC (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
-    DESC (wireframe,           Draw landscape in wireframe mode);
+    DESC (wireframe.on,        Draw landscape in wireframe mode);
   }
   string  path  = "landscape/Whole_world_-_land_and_oceans_8000.bmp";
   float  orography  = 0.05;
   string  geometry  = "";
   int  number_of_latitudes  = 500;
-  bool wireframe = false;
+  struct
+  {
+    bool on = false;
+  } wireframe;
   bool on = false;
+  struct
+  {
+    bool on = true;
+  } flat;
 };
 
 class glgrib_options_coastlines : public glgrib_options_base

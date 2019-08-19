@@ -109,6 +109,20 @@ public:
   {
     d.view.opts = o;
   }
+  void setLandscapeOpts (const glgrib_options_landscape & o)
+  {
+    glgrib_landscape landscape;
+    if (o.on)
+      landscape.init (&ld, o);
+    d.landscape = landscape;
+  }
+  void setGridOpts (const glgrib_options_grid & o)
+  {
+    glgrib_grid grid;
+    if (o.on)
+      grid.init (o);
+    d.grid = grid;
+  }
 
 
 };

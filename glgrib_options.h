@@ -58,6 +58,7 @@ class glgrib_options_parser : public glgrib_options_callback
 public:
   bool parse (int, const char * []);
   void show_help ();
+  void display (const std::string &);
   ~glgrib_options_parser ()
   {
     for (name2option_t::iterator it = name2option.begin (); 
@@ -293,7 +294,7 @@ private:
       }
     bool * value = NULL;
     virtual std::string type () { return std::string ("BOOLEAN"); }
-    virtual std::string asString () { return std::string (""); }
+    virtual std::string asString () { return *value ? std::string ("TRUE") : std::string ("FALSE"); }
     virtual void clear () { if (value != NULL) *value = false; }
   };
   class option_int : public option_base

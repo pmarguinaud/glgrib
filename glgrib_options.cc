@@ -274,24 +274,33 @@ bool glgrib_options_parser::seenOption (const std::string & name) const
 void glgrib_options_parser::show_help ()
 {
   printf ("Usage:\n");
+  display (std::string ("--"));
+}
+
+void glgrib_options_parser::display (const std::string & prefix)
+{
   size_t name_size = 0, type_size = 0;
+  int len = prefix.size ();
+
   for (name2option_t::iterator it = name2option.begin (); 
        it != name2option.end (); it++)
-    {   
-      name_size = std::max (it->first.length (), name_size);
-      type_size = std::max (it->second->type ().length (), type_size);
-    }   
+    if (it->first.substr (0, len) == prefix)
+      {   
+        name_size = std::max (it->first.length (), name_size);
+        type_size = std::max (it->second->type ().length (), type_size);
+      }   
   char format[64];
   sprintf (format, " %%-%lds : %%-%lds :", name_size, type_size);
   for (name2option_t::iterator it = name2option.begin (); 
        it != name2option.end (); it++)
-    {   
-      option_base * opt = it->second;
-      printf (format, it->first.c_str (), opt->type ().c_str ());
-      printf ("      %s\n", opt->asString ().c_str ());
-      printf ("      %s\n", opt->desc.c_str ());
-      printf ("\n");
-    }   
+    if (it->first.substr (0, len) == prefix)
+      {   
+        option_base * opt = it->second;
+        printf (format, it->first.c_str (), opt->type ().c_str ());
+        printf ("      %s\n", opt->asString ().c_str ());
+        printf ("      %s\n", opt->desc.c_str ());
+        printf ("\n");
+      }   
 }
 
 bool glgrib_options::parse (int argc, const char * argv[])

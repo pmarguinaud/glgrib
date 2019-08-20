@@ -161,6 +161,10 @@ do {                                                           \
           SFO  (8); SFO  (9); SFO (10); SFO (11);
 #undef SFO
           
+ 
+          if (p.seenOption ("--colorbar"))
+            gwindow->scene.setColorBarOpts (opts.colorbar);
+
         }
   
     }

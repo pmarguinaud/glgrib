@@ -103,6 +103,7 @@ public:
   void setGridOpts (const glgrib_options_grid &);
   void setCoastlinesOpts (const glgrib_options_coastlines &);
   void setFieldOpts (int j, const glgrib_options_field &);
+  void setColorBarOpts (const glgrib_options_colorbar &);
 
   glgrib_options getOptions () const;
 

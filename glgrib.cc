@@ -54,7 +54,9 @@ int main (int argc, const char * argv[])
       Shell.wait ();
     }
   else
-    wset.run ();
+    {
+      wset.run ();
+    }
    
 
   glfwTerminate ();

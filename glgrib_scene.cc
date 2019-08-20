@@ -342,13 +342,8 @@ void glgrib_scene::init (const glgrib_options & o)
     }
 
 
-  if (d.opts.colorbar.on)
-    {
-      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
-      d.strmess.init2D (font, std::string (30, ' '), 1.0f, 1.0f, d.opts.font.scale, glgrib_string::NE);
-      d.strmess.setForegroundColor (d.opts.font.color.foreground);
-      d.colorbar.init (d.opts.colorbar);
-    }
+  setColorBarOpts (d.opts.colorbar);
+
   if (d.opts.scene.test_strxyz)
     {
       glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
@@ -453,6 +448,24 @@ void glgrib_scene::setFieldOpts (int j, const glgrib_options_field & o)
     }
 
 }
+
+void glgrib_scene::setColorBarOpts (const glgrib_options_colorbar & o)
+{
+  d.opts.colorbar = o;
+  d.strmess.cleanup ();
+  d.colorbar.cleanup ();
+
+  if (d.opts.colorbar.on)
+    {
+      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
+      d.strmess.init2D (font, std::string (30, ' '), 1.0f, 1.0f, 
+                        d.opts.font.scale, glgrib_string::NE);
+      d.strmess.setForegroundColor (d.opts.font.color.foreground);
+      d.colorbar.init (d.opts.colorbar);
+    }
+
+}
+
 
 
 

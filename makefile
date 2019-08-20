@@ -160,13 +160,13 @@ test_fill: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 --field[0].palette.name RGBW   --colorbar.on --window.width 1200
 
 test_dashed1: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.on --landscape.orography 0 --landscape.wireframe --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.00 --field\[0\].contour.on --field[0].contour.lengths 100  --field[0].contour.patterns X- --view.fov 5
+	$(GDB) ./glgrib.x --landscape.on --landscape.orography 0 --landscape.wireframe.on --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.00 --field\[0\].contour.on --field[0].contour.lengths 100  --field[0].contour.patterns X- --view.fov 5
 
 test_dashed2: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.on --landscape.orography 0 --landscape.wireframe --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.01 --field\[0\].contour.on --field\[0\].contour.lengths 100 --field\[0\].contour.patterns XXXXXXXXX-X- --view.fov 5  --field\[0\].contour.widths 5
+	$(GDB) ./glgrib.x --landscape.on --landscape.orography 0 --landscape.wireframe.on --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.01 --field\[0\].contour.on --field\[0\].contour.lengths 100 --field\[0\].contour.patterns XXXXXXXXX-X- --view.fov 5  --field\[0\].contour.widths 5
 
 test_dashed3: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.on --landscape.orography 0 --landscape.wireframe --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.01 --field\[0\].contour.on --field\[0\].contour.lengths 100 --field\[0\].contour.patterns XXXXXXXXX-X- --view.fov 5  --field\[0\].contour.widths 5 --field\[0\].contour.colors red green blue
+	$(GDB) ./glgrib.x --landscape.on --landscape.orography 0 --landscape.wireframe.on --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field\[0\].path testdata/contour/t0479.grb --field\[0\].scale 1.01 --field\[0\].contour.on --field\[0\].contour.lengths 100 --field\[0\].contour.patterns XXXXXXXXX-X- --view.fov 5  --field\[0\].contour.widths 5 --field\[0\].contour.colors red green blue
 
 test_travelling: ./glgrib.x
 	$(GDB) ./glgrib.x --scene.travelling.on --scene.travelling.pos1.lon 0 --scene.travelling.pos1.lat 0 --scene.travelling.pos1.fov 30 --scene.travelling.pos2.lon 90 --scene.travelling.pos2.lat 45 --scene.travelling.pos2.fov 10 --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 
@@ -186,7 +186,7 @@ test_background: ./glgrib.x
 
 test_text: ./glgrib.x
 	$(GDB) ./glgrib.x  --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 \
-		--scene.text "coucou" --scene.text_x 0.0 --scene.text_y 1.0 --scene.text_a NW  --font.scale 0.03 --font.color.foreground black --font.color.background white
+		--scene.text.on --scene.text.s "coucou" --scene.text.x 0.0 --scene.text.y 1.0 --scene.text.a NW  --font.scale 0.03 --font.color.foreground black --font.color.background white
 
 test_fa: ./glgrib.x
 	$(GDB) ./glgrib.x --field\[0\].path testdata/fa/PGD.t479.fa%SFX.FRAC_SEA  --field\[0\].scale 1.03 

@@ -670,6 +670,24 @@ public:
   std::string align;
 };
 
+class glgrib_options_text : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on,             Enable text);
+    DESC (s,              Strings to be displayed);
+    DESC (x,              Coordinates of strings);
+    DESC (y,              Coordinates of strings);
+    DESC (a,              Text alignment);
+  }
+  bool on = false;
+  std::vector<std::string> s;
+  std::vector<float> x;
+  std::vector<float> y;
+  std::vector<std::string> a;
+};
+
 class glgrib_options_scene : public glgrib_options_base
 {
 public:
@@ -682,10 +700,7 @@ public:
     DESC (test_strxyz,         Test XYZ string);
     INCLUDE (interpolation);
     DESC (display_date,        Display date);
-    DESC (text,                Strings to be displayed);
-    DESC (text_x,              Coordinates of strings);
-    DESC (text_y,              Coordinates of strings);
-    DESC (text_a,              Text alignment);
+    INCLUDE (text);
     INCLUDE (image);
   }
   bool    rotate_earth  = false;
@@ -695,10 +710,7 @@ public:
   bool    test_strxyz = false;
   glgrib_options_interpolation interpolation;
   bool    display_date = false;
-  std::vector<std::string> text;
-  std::vector<float> text_x;
-  std::vector<float> text_y;
-  std::vector<std::string> text_a;
+  glgrib_options_text text;
   glgrib_options_image image;
 };
 

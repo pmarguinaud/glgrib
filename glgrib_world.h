@@ -13,11 +13,11 @@ public:
   virtual bool use_alpha () { return true; }
   virtual ~glgrib_world () { cleanup (); }
   const_glgrib_geometry_ptr getGeometry () const { return geometry; }
+  virtual void cleanup ();
 protected:
   glgrib_opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer;
   const_glgrib_geometry_ptr geometry;
   int numberOfPoints;
-  virtual void cleanup ();
   unsigned int numberOfColors, numberOfTriangles;
   GLuint VertexArrayID = 0;
 };

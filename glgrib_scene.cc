@@ -262,8 +262,7 @@ void glgrib_scene::init (const glgrib_options & o)
   if (d.opts.scene.light.on)
     setLight ();
 
-  if (d.opts.scene.image.on) 
-    d.image.init (d.opts.scene.image);
+  setImageOpts (d.opts.scene.image);
 
   if (d.opts.scene.interpolation.on)
     {
@@ -283,16 +282,10 @@ void glgrib_scene::init (const glgrib_options & o)
       ld.setSize (size);
     }
 
-  if (d.opts.landscape.on)
-    d.landscape.init (&ld, d.opts.landscape);
-
-  if (d.opts.grid.on)
-    d.grid.init (d.opts.grid);
-
-  if (d.opts.coastlines.on)
-    d.coastlines.init (d.opts.coastlines);
-
-  d.view.init (d.opts.view);
+  setLandscapeOpts (d.opts.landscape);
+  setGridOpts (d.opts.grid);
+  setCoastlinesOpts (d.opts.coastlines);
+  setViewOpts (d.opts.view);
 
   for (int i = 0; i < d.opts.field.size (); i++)
     fieldlist.push_back ((glgrib_field *)NULL);
@@ -300,48 +293,29 @@ void glgrib_scene::init (const glgrib_options & o)
   for (int i = 0; i < d.opts.field.size (); i++)
     setFieldOpts (i, d.opts.field[i]);
 
-  bool seen_date = false;
-  for (int i = 0; i < d.opts.field.size (); i++)
+  if (d.opts.scene.display_date)
     {
-      glgrib_field * fld = fieldlist[i];
-      if ((fld != NULL) && (! seen_date) && d.opts.scene.display_date)
+      for (int i = 0; i < d.opts.field.size (); i++)
         {
-          seen_date = true;
-    
-          glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
-          d.strdate.init2D (font, std::string (20, 'X'), 1.0f, 0.0f, 
-                            d.opts.font.scale, glgrib_string::SE);
-
-          d.strdate.setForegroundColor (d.opts.font.color.foreground);
-          d.strdate.setBackgroundColor (d.opts.font.color.background);
-
-          const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
-          d.strdate.update (meta[0].term.asString ());
+          glgrib_field * fld = fieldlist[i];
+          if (fld != NULL)
+            {
+              glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
+              d.strdate.init2D (font, std::string (20, 'X'), 1.0f, 0.0f, 
+                                d.opts.font.scale, glgrib_string::SE);
+     
+              d.strdate.setForegroundColor (d.opts.font.color.foreground);
+              d.strdate.setBackgroundColor (d.opts.font.color.background);
+     
+              const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
+              d.strdate.update (meta[0].term.asString ());
+              break;
+            }
         }
     }
 
 
-  for (int i = 0; i < d.opts.scene.text.size (); i++)
-    {
-      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
-      glgrib_string str;
-      d.str.push_back (str);
-
-      if (i >= d.opts.scene.text_x.size ())
-        break;
-      if (i >= d.opts.scene.text_y.size ())
-        break;
-
-      glgrib_string::align_t a = i < d.opts.scene.text_a.size () ? 
-        glgrib_string::str2align (d.opts.scene.text_a[i]) : glgrib_string::C;
-
-      d.str[i].init2D (font, d.opts.scene.text[i], d.opts.scene.text_x[i], d.opts.scene.text_y[i], d.opts.font.scale, a);
-      d.str[i].setForegroundColor (d.opts.font.color.foreground);
-      d.str[i].setBackgroundColor (d.opts.font.color.background);
-
-    }
-
-
+  setTextOpts (d.opts.scene.text);
   setColorBarOpts (d.opts.colorbar);
 
   if (d.opts.scene.test_strxyz)
@@ -399,31 +373,28 @@ glgrib_options glgrib_scene::getOptions () const
 
 void glgrib_scene::setViewOpts (const glgrib_options_view & o)
 {
-  d.view.opts = o;
+  d.view.init (o);
 }
 
 void glgrib_scene::setLandscapeOpts (const glgrib_options_landscape & o)
 {
-  glgrib_landscape landscape;
+  d.landscape.cleanup ();
   if (o.on)
-    landscape.init (&ld, o);
-  d.landscape = landscape;
+    d.landscape.init (&ld, o);
 }
 
 void glgrib_scene::setGridOpts (const glgrib_options_grid & o)
 {
-  glgrib_grid grid;
+  d.grid.cleanup ();
   if (o.on)
-    grid.init (o);
-  d.grid = grid;
+    d.grid.init (o);
 }
 
 void glgrib_scene::setCoastlinesOpts (const glgrib_options_coastlines & o)
 {
-  glgrib_coastlines coastlines;
+  d.coastlines.cleanup ();
   if (o.on)
-    coastlines.init (o);
-  d.coastlines = coastlines;
+    d.coastlines.init (o);
 }
 
 void glgrib_scene::setFieldOpts (int j, const glgrib_options_field & o)
@@ -466,6 +437,41 @@ void glgrib_scene::setColorBarOpts (const glgrib_options_colorbar & o)
 
 }
 
+void glgrib_scene::setImageOpts (const glgrib_options_image & o)
+{
+  d.opts.scene.image = o;
+  d.image.cleanup ();
+  if (d.opts.scene.image.on)
+    d.image.init (d.opts.scene.image);
+}
+
+void glgrib_scene::setTextOpts (const glgrib_options_text & o)
+{
+  d.opts.scene.text = o;
+  d.str.clear ();
+  if (d.opts.scene.text.on)
+    {
+      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
+      for (int i = 0; i < d.opts.scene.text.s.size (); i++)
+        {
+          glgrib_string str;
+          d.str.push_back (str);
+
+          if (i >= d.opts.scene.text.x.size ())
+            break;
+          if (i >= d.opts.scene.text.y.size ())
+            break;
+
+          glgrib_string::align_t a = i < d.opts.scene.text.a.size () ? 
+            glgrib_string::str2align (d.opts.scene.text.a[i]) : glgrib_string::C;
+
+          d.str[i].init2D (font, d.opts.scene.text.s[i], d.opts.scene.text.x[i], 
+                           d.opts.scene.text.y[i], d.opts.font.scale, a);
+          d.str[i].setForegroundColor (d.opts.font.color.foreground);
+          d.str[i].setBackgroundColor (d.opts.font.color.background);
+        }
+    }
+}
 
 
 

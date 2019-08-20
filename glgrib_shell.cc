@@ -165,6 +165,12 @@ do {                                                           \
           if (p.seenOption ("--colorbar"))
             gwindow->scene.setColorBarOpts (opts.colorbar);
 
+          if (p.seenOption ("--scene.image"))
+            gwindow->scene.setImageOpts (opts.scene.image);
+
+          if (p.seenOption ("--scene.text"))
+            gwindow->scene.setTextOpts (opts.scene.text);
+
         }
   
     }
@@ -172,7 +178,10 @@ do {                                                           \
     {
       std::cout << "Window list:" << std::endl;
       for (glgrib_window_set::const_iterator it = wset->begin (); it != wset->end (); it++)
-        std::cout << (*it)->id () << std::endl;
+        {
+          int id = (*it)->id ();
+          std::cout << (windowid == id ? " > " : "   ") << id << std::endl;
+        }
     }
   else if ((cmd == "window") && (args.size () == 1))
     {

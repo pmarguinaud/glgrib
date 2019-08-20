@@ -104,6 +104,8 @@ public:
   void setCoastlinesOpts (const glgrib_options_coastlines &);
   void setFieldOpts (int j, const glgrib_options_field &);
   void setColorBarOpts (const glgrib_options_colorbar &);
+  void setImageOpts (const glgrib_options_image &);
+  void setTextOpts (const glgrib_options_text &);
 
   glgrib_options getOptions () const;
 

@@ -2,12 +2,58 @@
 
 #include <iostream>
 #include <exception>
+#include <algorithm>
+#include <functional>
+#include <vector>
+
+#include <stdlib.h>
+#include <string.h>
 
 #include <readline/readline.h>
 #include <readline/history.h>
 
 
 glgrib_shell Shell;
+
+char * glgrib_shell::option_generator (const char * text, int state)
+{
+
+  if (! state) 
+    {
+      og.list_index = 0;
+      og.text_len = strlen (text);
+    }
+
+  std::string tt = text;
+
+  for (; og.list_index < getsetoptions.size (); og.list_index++)
+    if (getsetoptions[og.list_index].substr (0, og.text_len) == tt)
+      return strdup (getsetoptions[og.list_index++].c_str ());  // Note the ++
+
+  return NULL;
+}
+
+char * shell_option_generator (const char * text, int state)
+{
+  return Shell.option_generator (text, state);
+}
+
+char ** shell_completion (const char * text, int start, int end)
+{
+  char * line = rl_line_buffer;
+  if ((strncmp (line, "set ", 4) == 0) || (strncmp (line, "get ", 4) == 0))
+    return rl_completion_matches (text, shell_option_generator);
+  return NULL;
+}
+
+glgrib_shell::glgrib_shell ()
+{
+  glgrib_options opts;
+  glgrib_options_parser p;
+  opts.traverse ("", &p);
+  p.getOptions (&getsetoptions);
+  rl_attempted_completion_function = shell_completion;
+}
 
 static std::string next_token (std::string * line)
 {
@@ -142,19 +188,36 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
       
       if (p.parse (argc, argv))
         {
-          if (p.seenOption ("--view"))
-            gwindow->scene.setViewOpts (opts.view);
-          if (p.seenOption ("--landscape"))
-            gwindow->scene.setLandscapeOpts (opts.landscape);
-          if (p.seenOption ("--grid"))
-            gwindow->scene.setGridOpts (opts.grid);
-          if (p.seenOption ("--coastlines"))
-            gwindow->scene.setCoastlinesOpts (opts.coastlines);
+
+
+          typedef std::function<void ()> sof_t;
+          class hof_t : public std::map<std::string,sof_t>
+          {
+          public:
+            void add (const std::string & name, sof_t func)
+            {
+              insert (std::pair<std::string,sof_t>(name, func));
+            }
+            sof_t get (const std::string & name)
+            {
+              hof_t::iterator it = find (name);
+              return it->second;
+            }
+          };
+
+          hof_t hof;
+
+          hof.add ("--view"              , [&opts,gwindow]() { gwindow->scene.setViewOpts       (opts.view        ); });
+          hof.add ("--landscape"         , [&opts,gwindow]() { gwindow->scene.setLandscapeOpts  (opts.landscape   ); });
+          hof.add ("--grid"              , [&opts,gwindow]() { gwindow->scene.setGridOpts       (opts.grid        ); });
+          hof.add ("--coastlines"        , [&opts,gwindow]() { gwindow->scene.setCoastlinesOpts (opts.coastlines  ); });
+          hof.add ("--colorbar"          , [&opts,gwindow]() { gwindow->scene.setColorBarOpts   (opts.colorbar    ); });
+          hof.add ("--scene.image"       , [&opts,gwindow]() { gwindow->scene.setImageOpts      (opts.scene.image ); });
+          hof.add ("--scene.text"        , [&opts,gwindow]() { gwindow->scene.setTextOpts       (opts.scene.text  ); });
 
 #define SFO(j) \
-do {                                                           \
-          if (p.seenOption ("--field[" #j "]"))                \
-            gwindow->scene.setFieldOpts (j, opts.field[j]);    \
+do { \
+          hof.add ("--field[" #j "]"     , [&opts,gwindow]() { gwindow->scene.setFieldOpts      (j, opts.field[j]);  });  \
 } while (0)
           SFO  (0); SFO  (1); SFO  (2); SFO  (3);
           SFO  (4); SFO  (5); SFO  (6); SFO  (7);
@@ -162,14 +225,14 @@ do {                                                           \
 #undef SFO
           
  
-          if (p.seenOption ("--colorbar"))
-            gwindow->scene.setColorBarOpts (opts.colorbar);
+          for (hof_t::iterator it = hof.begin (); it != hof.end (); it++)
+            {
+              const std::string & name = it->first;
+              const sof_t & sof = it->second;
+              if (p.seenOption (name))
+                sof ();
+            }
 
-          if (p.seenOption ("--scene.image"))
-            gwindow->scene.setImageOpts (opts.scene.image);
-
-          if (p.seenOption ("--scene.text"))
-            gwindow->scene.setTextOpts (opts.scene.text);
 
         }
   

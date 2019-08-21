@@ -5,13 +5,14 @@
 
 #include <pthread.h>
 #include <string>
+#include <vector>
 #include <map>
 #include <list>
 
 class glgrib_shell
 {
 public:
-  glgrib_shell () { }
+  glgrib_shell ();
   void execute (const std::string &, class glgrib_window *);
   int close = 0;
   bool closed () { return close; }
@@ -22,10 +23,16 @@ public:
   void unlock () { pthread_mutex_unlock (&mutex); }
   void wait () { pthread_join (thread, NULL); }
   bool started () { return wset != NULL; }
+  char * option_generator (const char *, int);
 private:
   glgrib_window_set * wset = NULL;
   pthread_t thread;
   pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+  std::vector<std::string> getsetoptions;
+  struct
+  {
+    int list_index, text_len;
+  } og;
 };
 
 extern glgrib_shell Shell;

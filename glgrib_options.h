@@ -22,6 +22,12 @@ public:
   glgrib_option_color () {}
   glgrib_option_color (int _r, int _g, int _b, int _a = 255) : r (_r), g (_g), b (_b), a (_a) {}
   int r = 255, g = 255, b = 255, a = 255;
+  std::string asString () const 
+  {
+    char str[32]; 
+    sprintf (str, "#%2.2x%2.2x%2.2x%2.2x", r, g, b, a); 
+    return std::string (str); 
+  }
 };
 
 class glgrib_option_date
@@ -67,6 +73,12 @@ public:
   }
   
   bool seenOption (const std::string &) const;
+  void getOptions (std::vector<std::string> * vs)
+  {
+    for (name2option_t::iterator it = name2option.begin (); 
+         it != name2option.end (); it++)
+      vs->push_back (it->first);
+  }
 
 private:
 
@@ -82,7 +94,7 @@ private:
     std::string name;
     std::string desc;
     virtual std::string type () { return std::string ("UNKNOWN"); }
-    virtual std::string asString () { return std::string (""); }
+    virtual std::string asString () const { return std::string (""); }
     virtual void clear () {}
   };
   class option_float : public option_base
@@ -102,7 +114,7 @@ private:
       }   
     float * value = NULL;
     virtual std::string type () { return std::string ("FLOAT"); }
-    virtual std::string asString () { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
+    virtual std::string asString () const { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
   };
   class option_int_list : public option_base
   {
@@ -121,7 +133,7 @@ private:
       }   
     std::vector<int> * value = NULL;
     virtual std::string type () { return std::string ("LIST OF INTEGERS"); }
-    virtual std::string asString ()
+    virtual std::string asString () const
       {
         std::ostringstream ss;
         for (std::vector<int>::iterator it = value->begin(); it != value->end (); it++)
@@ -147,7 +159,7 @@ private:
       }   
     std::vector<float> * value = NULL;
     virtual std::string type () { return std::string ("LIST OF FLOATS"); }
-    virtual std::string asString ()
+    virtual std::string asString () const
       {
         std::ostringstream ss;
         for (std::vector<float>::iterator it = value->begin(); it != value->end (); it++)
@@ -183,7 +195,7 @@ private:
       }   
     glgrib_option_date * value = NULL;
     virtual std::string type () { return std::string ("DATE YEAR MONTH DAY HOUR MINUTE SECOND"); }
-    virtual std::string asString ()
+    virtual std::string asString () const
       {
         std::ostringstream ss;
         ss << value->year << " " << value->month << " " << value->day << " " << value->hour << " " << value->minute << " " << value->second;
@@ -210,11 +222,9 @@ private:
       }   
     glgrib_option_color * value = NULL;
     virtual std::string type () { return std::string ("COLOR R G B"); }
-    virtual std::string asString ()
+    virtual std::string asString () const
       {
-        std::ostringstream ss;
-        ss << value->r << " " << value->g << " " << value->b;
-        return std::string (ss.str ());
+        return value->asString ();
       }
     virtual void clear () { count = 0; }
   private:
@@ -227,7 +237,7 @@ private:
     virtual void set (const char * v) { *value = std::string (v); }
     std::string * value = NULL;
     virtual std::string type () { return std::string ("STRING"); }
-    virtual std::string asString () { return std::string ('"' + *value + '"') ; }
+    virtual std::string asString () const { return std::string ('"' + *value + '"') ; }
   };
   class option_color_list : public option_base
   {
@@ -252,7 +262,7 @@ private:
       }
     std::vector<glgrib_option_color> * value = NULL;
     virtual std::string type () { return std::string ("LIST OF COLORS R G B"); }
-    virtual std::string asString ()
+    virtual std::string asString () const
       {
         std::ostringstream ss;
         for (std::vector<glgrib_option_color>::iterator it = value->begin(); it != value->end (); it++)
@@ -270,7 +280,7 @@ private:
     virtual void set (const char * v) { value->push_back (std::string (v)); }
     std::vector<std::string> * value = NULL;
     virtual std::string type () { return std::string ("LIST OF STRINGS"); }
-    virtual std::string asString ()
+    virtual std::string asString () const
       {
         std::ostringstream ss;
         for (std::vector<std::string>::iterator it = value->begin(); it != value->end (); it++)
@@ -294,7 +304,7 @@ private:
       }
     bool * value = NULL;
     virtual std::string type () { return std::string ("BOOLEAN"); }
-    virtual std::string asString () { return *value ? std::string ("TRUE") : std::string ("FALSE"); }
+    virtual std::string asString () const { return *value ? std::string ("TRUE") : std::string ("FALSE"); }
     virtual void clear () { if (value != NULL) *value = false; }
   };
   class option_int : public option_base
@@ -314,7 +324,7 @@ private:
        }
     int * value = NULL;
     virtual std::string type () { return std::string ("INTEGER"); }
-    virtual std::string asString () { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
+    virtual std::string asString () const { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
   };
 
   class name2option_t : public std::map<std::string,option_base*> 

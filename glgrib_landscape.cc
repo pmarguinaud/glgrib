@@ -15,7 +15,7 @@ glgrib_landscape & glgrib_landscape::operator= (const glgrib_landscape & landsca
     {
       glgrib_world::operator= (landscape);
       texture = landscape.texture;
-      flat    = landscape.flat;
+      opts    = landscape.opts;
       setupVertexAttributes ();
       setReady ();
    }
@@ -37,12 +37,12 @@ void glgrib_landscape::setupVertexAttributes ()
   glBindVertexArray (0); 
 }
 
-void glgrib_landscape::init (glgrib_loader * ld, const glgrib_options_landscape & opts)
+void glgrib_landscape::init (glgrib_loader * ld, const glgrib_options_landscape & o)
 {
+  opts = o;
+
   unsigned char * rgb;
   int w, h;
-
-  wireframe = opts.wireframe;
 
   geometry = glgrib_geometry_load (ld, opts.geometry, opts.orography, opts.number_of_latitudes);
 
@@ -64,14 +64,21 @@ void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_li
 
   view.setMVP (program);
   program->setLight (light);
-  program->set1i ("isflat", flat);
+  program->set1i ("isflat", opts.flat.on);
 
   // the texture selection process is a bit obscure
   glActiveTexture (GL_TEXTURE0); 
   glBindTexture (GL_TEXTURE_2D, texture->id ());
   program->set1i ("texture", 0);
 
-  glgrib_world::render (view, light);
+  glBindVertexArray (VertexArrayID);
+  if (opts.wireframe.on)
+    glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+  glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
+  glBindVertexArray (0);
+  if (opts.wireframe.on)
+    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+
 }
 
 glgrib_landscape::~glgrib_landscape ()

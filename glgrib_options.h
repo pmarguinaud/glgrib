@@ -2,6 +2,7 @@
 #define _GLGRIB_OPTIONS_H
 
 #include <map>
+#include <set>
 #include <vector>
 #include <string>
 #include <iostream>
@@ -16,16 +17,32 @@ class glgrib_option_color
 public:
   static glgrib_option_color color_by_name (const char *);
   static glgrib_option_color color_by_hexa (const char *);
-  static void parse (int *, glgrib_option_color *, const char *);
+  static void parse (glgrib_option_color *, const char *);
 
   glgrib_option_color () {}
   glgrib_option_color (int _r, int _g, int _b, int _a = 255) : r (_r), g (_g), b (_b), a (_a) {}
   int r = 255, g = 255, b = 255, a = 255;
+  std::string asString () const 
+  {
+    char str[32]; 
+    sprintf (str, "#%2.2x%2.2x%2.2x%2.2x", r, g, b, a); 
+    return std::string (str); 
+  }
+  friend std::ostream & operator << (std::ostream &, const glgrib_option_color &);
+  friend std::istream & operator >> (std::istream &, glgrib_option_color &);
+  friend bool operator== (glgrib_option_color const & col1, glgrib_option_color const & col2)
+  {
+    return (col1.r == col2.r)
+        && (col1.g == col2.g)
+        && (col1.b == col2.b)
+        && (col1.a == col2.a);
+  }
 };
 
 class glgrib_option_date
 {
 public:
+  static void parse (glgrib_option_date *, const char *);
   glgrib_option_date () {}
   glgrib_option_date (int _year, int _month, int _day, int _hour, int _minute, int _second) : 
     year (_year), month (_month), day (_day), hour (_hour), minute (_minute), second (_second) {}
@@ -34,341 +51,230 @@ public:
   static glgrib_option_date date_from_t (time_t);
   static time_t t_from_date (const glgrib_option_date &);
   std::string asString () const;
+  friend std::ostream & operator << (std::ostream &, const glgrib_option_date &);
+  friend std::istream & operator >> (std::istream &, glgrib_option_date &);
+  friend bool operator== (glgrib_option_date const & d1, glgrib_option_date const & d2)
+  {
+    return (d1.year   == d2.year  )
+        && (d1.month  == d2.month )
+        && (d1.day    == d2.day   )
+        && (d1.hour   == d2.hour  )
+        && (d1.minute == d2.minute)
+        && (d1.second == d2.second);
+  }
 };
 
+
+
+namespace glgrib_parser_ns 
+{
+
+  class option_base
+  {
+  public:
+    option_base (const std::string & n, const std::string & d) : name (n), desc (d) {}
+    virtual int has_arg () const { return 1; }
+    virtual void set (const char *) = 0;
+    std::string name;
+    std::string desc;
+    virtual std::string type ()  = 0;
+    virtual std::string asString () const = 0;
+    virtual void clear () = 0;
+    virtual bool isEqual (const option_base *) const = 0;
+  };
+
+  template <class T>
+  class option_tmpl : public option_base
+  {
+  public:
+    option_tmpl (const std::string & n, const std::string & d, T * v = NULL) : option_base (n, d), value (v) {}
+    T * value = NULL;
+    std::string asString () const { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
+    void set (const char * v)  
+    {   
+      try 
+        {
+          std::stringstream in (v);
+          in >> *value;
+        }
+      catch (...)
+        {
+          throw std::runtime_error (std::string ("Parsing option ") + name 
+                + std::string (" failed"));
+        }
+    }   
+    std::string type () { return std::string ("UNKNOWN"); }
+    void clear () {}
+    int has_arg () const { return 1; }
+    bool isEqual (const option_base * _o) const
+    {
+      const option_tmpl<T> * o = NULL;
+      try
+        {
+          o = dynamic_cast<const option_tmpl<T>*>(_o);
+	}
+      catch (...)
+        {
+          return false;
+        }
+      return *(o->value) == *value;
+    }
+  };
+
+  template <class T>
+  class option_tmpl_list : public option_base
+  {
+  public:
+    option_tmpl_list (const std::string & n, const std::string & d, std::vector<T> * v = NULL) : option_base (n, d), value (v) {}
+    std::vector<T> * value = NULL;
+    std::string asString () const
+    {
+      std::ostringstream ss;
+      for (typename std::vector<T>::iterator it = value->begin(); it != value->end (); it++)
+        ss << (*it) << " ";
+      return std::string (ss.str ());
+    }
+    void set (const char * v)  
+    {   
+      try 
+        {
+          std::stringstream in (v);
+          T val;
+	  in >> val;
+          value->push_back (val);
+        }
+      catch (...)
+        {
+          throw std::runtime_error (std::string ("Parsing option ") + name 
+                + std::string (" failed"));
+        }
+    }   
+    void clear () { if (value) value->clear (); }
+    std::string type () { return std::string ("UNKNOWN"); }
+    bool isEqual (const option_base * _o) const 
+    {
+      const option_tmpl_list<T> * o = NULL;
+      try
+        {
+          o = dynamic_cast<const option_tmpl_list<T>*>(_o);
+	}
+      catch (...)
+        {
+          return false;
+        }
+      return *(o->value) == *value;
+    }
+  };
+
+  template <> std::string option_tmpl     <int>                ::type ();
+  template <> std::string option_tmpl     <float>              ::type ();
+  template <> std::string option_tmpl_list<int>                ::type ();
+  template <> std::string option_tmpl_list<float>              ::type ();
+  template <> std::string option_tmpl     <glgrib_option_date> ::type ();
+  template <> std::string option_tmpl     <glgrib_option_color>::type ();
+  template <> std::string option_tmpl     <std::string>        ::type ();
+  template <> std::string option_tmpl     <std::string>        ::asString () const;
+  template <> std::string option_tmpl_list<glgrib_option_color>::type ();
+  template <> std::string option_tmpl_list<std::string>        ::type ();
+  template <> std::string option_tmpl_list<std::string>        ::asString () const;
+  template <> std::string option_tmpl     <bool>               ::type ();
+  template <> void option_tmpl<bool>::set (const char *);
+  template <> void option_tmpl<bool>::clear ();
+  template <> std::string option_tmpl<bool>::asString () const;
+  template <> int option_tmpl<bool>::has_arg () const;
+
+};
 
 class glgrib_options_callback
 {
 public:
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, float * data) {}
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, bool * data) {}
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, int * data) {}
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<std::string> * data) {}
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::string * data) {}
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<float> * data) {}
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<int> * data) {}
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_color * data) {}
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<glgrib_option_color> * data) {}
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_date * data) {}
+#define DEF_APPLY(T) \
+  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, T * data) {}
+  DEF_APPLY (float);
+  DEF_APPLY (bool);
+  DEF_APPLY (int);
+  DEF_APPLY (std::vector<std::string>);
+  DEF_APPLY (std::string);
+  DEF_APPLY (std::vector<float>);
+  DEF_APPLY (std::vector<int>);
+  DEF_APPLY (glgrib_option_color);
+  DEF_APPLY (std::vector<glgrib_option_color>);
+  DEF_APPLY (glgrib_option_date);
+#undef DEF_APPLY
 };
+
 
 class glgrib_options_parser : public glgrib_options_callback
 {
 public:
-  bool parse (int, char * []);
+  bool parse (int, const char * []);
   void show_help ();
+  void display (const std::string &);
   ~glgrib_options_parser ()
   {
     for (name2option_t::iterator it = name2option.begin (); 
          it != name2option.end (); it++)
       delete it->second;
   }
+  
+  bool seenOption (const std::string &) const;
+  void getOptions (std::vector<std::string> * vs)
+  {
+    for (name2option_t::iterator it = name2option.begin (); 
+         it != name2option.end (); it++)
+      vs->push_back (it->first);
+  }
+
+  const glgrib_parser_ns::option_base * getOption (const std::string & name)
+  {
+    name2option_t::iterator it = name2option.find (name);
+    if (it != name2option.end ())
+      return it->second;
+    return NULL;
+  }
 
 private:
 
-  class option_base
-  {
-  public:
-    option_base (const std::string & n, const std::string & d) : name (n), desc (d) {}
-    virtual int has_arg () { return 1; }
-    virtual void set (const char *) = 0;
-    std::string name;
-    std::string desc;
-    virtual std::string type () { return std::string ("UNKNOWN"); }
-    virtual std::string asString () { return std::string (""); }
-  };
-  class option_float : public option_base
-  {
-  public:
-    option_float (const std::string & n, const std::string & d, float * v) : option_base (n, d), value (v)  {}  
-    virtual void set (const char * v)  
-      {   
-        try 
-          {
-            *value = std::stof (v); 
-          }
-        catch (...)
-          {
-            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects real values"));
-          }
-      }   
-    float * value;
-    virtual std::string type () { return std::string ("FLOAT"); }
-    virtual std::string asString () { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
-  };
-  class option_int_list : public option_base
-  {
-  public:
-    option_int_list (const std::string & n, const std::string & d, std::vector<int> * v) : option_base (n, d), value (v)  {}  
-    virtual void set (const char * v)  
-      {   
-        try 
-          {
-            value->push_back (std::stoi (v));
-          }
-        catch (...)
-          {
-            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values"));
-          }
-      }   
-    std::vector<int> * value;
-    virtual std::string type () { return std::string ("LIST OF INTEGERS"); }
-    virtual std::string asString ()
-      {
-        std::ostringstream ss;
-        for (std::vector<int>::iterator it = value->begin(); it != value->end (); it++)
-          ss << (*it) << " ";
-        return std::string (ss.str ());
-      }
-  };
-  class option_float_list : public option_base
-  {
-  public:
-    option_float_list (const std::string & n, const std::string & d, std::vector<float> * v) : option_base (n, d), value (v)  {}  
-    virtual void set (const char * v)  
-      {   
-        try 
-          {
-            value->push_back (std::stof (v));
-          }
-        catch (...)
-          {
-            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects real values"));
-          }
-      }   
-    std::vector<float> * value;
-    virtual std::string type () { return std::string ("LIST OF FLOATS"); }
-    virtual std::string asString ()
-      {
-        std::ostringstream ss;
-        for (std::vector<float>::iterator it = value->begin(); it != value->end (); it++)
-          ss << (*it) << " ";
-        return std::string (ss.str ());
-      }
-  };
-  class option_date : public option_base
-  {
-  public:
-    option_date (const std::string & n, const std::string & d, glgrib_option_date * v) : option_base (n, d), value (v)  {}  
-    virtual void set (const char * v)  
-      {   
-        try 
-          {
-            int c = std::stoi (v);
-            switch (count)
-              {
-                case 0: value->year   = c; break;
-                case 1: value->month  = c; break;
-                case 2: value->day    = c; break;
-                case 3: value->hour   = c; break;
-                case 4: value->minute = c; break;
-                case 5: value->second = c; break;
-              }
-            count++;
-          }
-        catch (...)
-          {
-            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values"));
-          }
-      }   
-    glgrib_option_date * value;
-    virtual std::string type () { return std::string ("DATE YEAR MONTH DAY HOUR MINUTE SECOND"); }
-    virtual std::string asString ()
-      {
-        std::ostringstream ss;
-        ss << value->year << " " << value->month << " " << value->day << " " << value->hour << " " << value->minute << " " << value->second;
-        return std::string (ss.str ());
-      }
-  private:
-    int count = 0;
-  };
-  class option_color : public option_base
-  {
-  public:
-    option_color (const std::string & n, const std::string & d, glgrib_option_color * v) : option_base (n, d), value (v)  {}  
-    virtual void set (const char * v)  
-      {   
-        try 
-          {
-            glgrib_option_color::parse (&count, value, v);
-          }
-        catch (...)
-          {
-            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values or color names, or hexadecimal codes"));
-          }
-      }   
-    glgrib_option_color * value;
-    virtual std::string type () { return std::string ("COLOR R G B"); }
-    virtual std::string asString ()
-      {
-        std::ostringstream ss;
-        ss << value->r << " " << value->g << " " << value->b;
-        return std::string (ss.str ());
-      }
-  private:
-    int count = 0;
-  };
-  class option_string : public option_base
-  {
-  public:
-    option_string (const std::string & n, const std::string & d, std::string * v) : option_base (n, d), value (v)  {}
-    virtual void set (const char * v) { *value = std::string (v); }
-    std::string * value;
-    virtual std::string type () { return std::string ("STRING"); }
-    virtual std::string asString () { return std::string ('"' + *value + '"') ; }
-  };
-  class option_color_list : public option_base
-  {
-  public:
-    option_color_list (const std::string & n, const std::string & d, std::vector<glgrib_option_color> * v) : option_base (n, d), value (v)  {}
-    virtual void set (const char * v) 
-      { 
-        try 
-          {
-            if (count == 0)
-              value->push_back (glgrib_option_color ());
-            int last = value->size () - 1;
+  std::vector<std::string> ctx;
+  std::set<std::string> seen;
 
-            glgrib_option_color::parse (&count, &(*value)[last], v);
-            
-            count = count % 3;
-          }
-        catch (...)
-          {
-            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values"));
-          }
-      }
-    std::vector<glgrib_option_color> * value;
-    virtual std::string type () { return std::string ("LIST OF COLORS R G B"); }
-    virtual std::string asString ()
-      {
-        std::ostringstream ss;
-        for (std::vector<glgrib_option_color>::iterator it = value->begin(); it != value->end (); it++)
-          ss << it->r << " " << it->g << " " << it->b;
-        return std::string (ss.str ());
-      }
-  private:
-    int count = 0;
-  };
-  class option_string_list : public option_base
+  class name2option_t : public std::map<std::string,glgrib_parser_ns::option_base*> 
   {
   public:
-    option_string_list (const std::string & n, const std::string & d, std::vector<std::string> * v) : option_base (n, d), value (v)  {}
-    virtual void set (const char * v) { value->push_back (std::string (v)); }
-    std::vector<std::string> * value;
-    virtual std::string type () { return std::string ("LIST OF STRINGS"); }
-    virtual std::string asString ()
-      {
-        std::ostringstream ss;
-        for (std::vector<std::string>::iterator it = value->begin(); it != value->end (); it++)
-          ss << '"' + (*it) + '"' << " ";
-        return std::string (ss.str ());
-      }
-  };
-  class option_bool : public option_base
-  {
-  public:
-    option_bool (const std::string & n, const std::string & d, bool * v) : option_base (n, d), value (v)  {}
-    virtual int has_arg () { return 0; }
-    virtual void set (const char * v)
-      {
-        if (v != NULL)
-          {
-            throw std::runtime_error (std::string ("Option ") + name + std::string (" does not take any value"));
-          }
-        *value = true;
-      }
-    bool * value;
-    virtual std::string type () { return std::string ("BOOLEAN"); }
-    virtual std::string asString () { return std::string (""); }
-  };
-  class option_int : public option_base
-  {
-  public:
-    option_int (const std::string & n, const std::string & d, int * v) : option_base (n, d), value (v)  {}
-    virtual void set (const char * v)
-      {
-        try
-          {
-            *value = std::stoi (v);
-          }
-        catch (...)
-          {
-            throw std::runtime_error (std::string ("Option ") + name + std::string (" expects integer values"));
-          }
-       }
-    int * value;
-    virtual std::string type () { return std::string ("INTEGER"); }
-    virtual std::string asString () { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
-  };
-
-  class name2option_t : public std::map<std::string,option_base*> 
-  {
-  public:
-    void insert (const std::string name, option_base * opt)
+    void insert (const std::string name, glgrib_parser_ns::option_base * opt)
     {
-      std::map<std::string,option_base*>::insert (std::pair<std::string,option_base *>(name, opt));
+      std::map<std::string,glgrib_parser_ns::option_base*>::insert 
+        (std::pair<std::string,glgrib_parser_ns::option_base *>(name, opt));
     }
   };
 
   name2option_t name2option;
 
-
   std::string get_opt_name (const std::string & path, const std::string & name)
   {
     return "--" + path + (path == "" ? "" : ".") + name;
   }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, float * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_float (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, bool * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_bool (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, int * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_int (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<std::string> * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_string_list (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::string * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_string (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<float> * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_float_list (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<int> * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_int_list (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_color * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_color (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<glgrib_option_color> * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_color_list (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_date * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_date (opt_name, desc, data));
+
+#define DEF_APPLY(T,C) \
+  void apply (const std::string & path, const std::string & name,            \
+              const std::string & desc, T * data)                            \
+  {                                                                          \
+    std::string opt_name = get_opt_name (path, name);                        \
+    name2option.insert (opt_name, new C (opt_name, desc, data));             \
   }
 
+  DEF_APPLY (float                             , glgrib_parser_ns::option_tmpl<float> );
+  DEF_APPLY (bool                              , glgrib_parser_ns::option_tmpl<bool>);
+  DEF_APPLY (int                               , glgrib_parser_ns::option_tmpl<int>);
+  DEF_APPLY (std::vector<std::string>          , glgrib_parser_ns::option_tmpl_list<std::string>);
+  DEF_APPLY (std::string                       , glgrib_parser_ns::option_tmpl<std::string>);
+  DEF_APPLY (std::vector<float>                , glgrib_parser_ns::option_tmpl_list<float>);
+  DEF_APPLY (std::vector<int>                  , glgrib_parser_ns::option_tmpl_list<int>);
+  DEF_APPLY (glgrib_option_color               , glgrib_parser_ns::option_tmpl<glgrib_option_color>);
+  DEF_APPLY (std::vector<glgrib_option_color>  , glgrib_parser_ns::option_tmpl_list<glgrib_option_color>);
+  DEF_APPLY (glgrib_option_date                , glgrib_parser_ns::option_tmpl<glgrib_option_date>);
+
+#undef DEF_APPLY
 
 };
 
@@ -379,7 +285,7 @@ public:
   typedef std::vector<float> float_list;
   typedef std::string string;
   virtual void traverse (const std::string &, glgrib_options_callback *) {}
-  virtual bool parse (int argc, char * argv[])
+  virtual bool parse (int argc, const char * argv[])
   {
     glgrib_options_parser p;
     traverse ("", &p);
@@ -419,17 +325,23 @@ class glgrib_options_vector : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (on,          Field is a vector);          
-    DESC (hide_arrow,  Hide arrows);                
-    DESC (hide_norm,   Hide norm field);            
-    DESC (color,       Color for arrows);
-    DESC (density,     Vector density);
-    DESC (scale,       Vector scale);
-    DESC (head_size,   Vector head size);
+    DESC (on,             Field is a vector);          
+    DESC (hide_arrow.on,  Hide arrows);                
+    DESC (hide_norm.on,   Hide norm field);            
+    DESC (color,          Color for arrows);
+    DESC (density,        Vector density);
+    DESC (scale,          Vector scale);
+    DESC (head_size,      Vector head size);
   }
   bool  on         = false;
-  bool  hide_arrow = false;
-  bool  hide_norm  = false;
+  struct
+  {
+    bool on = false;
+  } hide_arrow;
+  struct
+  {
+    bool on = false;
+  } hide_norm;
   glgrib_option_color color;
   float density = 50.0f;
   float scale = 1.0f;
@@ -441,19 +353,32 @@ class glgrib_options_field : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (path,             List of GRIB files);                    
-    DESC (scale,            Scales to be applied to fields);        
-    DESC (palette,          Palettes);                              
-    DESC (no_value_pointer, Do not keep field values in memory);    
-    DESC (diff,             Show field difference);
+    DESC (path,                List of GRIB files);                    
+    DESC (scale,               Scales to be applied to fields);        
+    DESC (palette.name,        Palette name);                              
+    DESC (palette.min,         Palette min value);                              
+    DESC (palette.max,         Palette max value);                              
+    DESC (no_value_pointer.on, Do not keep field values in memory);    
+    DESC (diff.on,             Show field difference);
     INCLUDE (vector);
     INCLUDE (contour);
   }
   string_list  path;
-  string       palette = "default";
+  struct
+  {
+    string       name = "default";
+    float min = std::numeric_limits<float>::max(); 
+    float max = std::numeric_limits<float>::min();
+  } palette;
   float        scale   = 1.0f;
-  bool         no_value_pointer = false;
-  bool         diff = false;
+  struct
+  {
+    bool on = false;
+  } no_value_pointer;
+  struct
+  {
+    bool on = false;
+  } diff;
   glgrib_options_vector vector;
   glgrib_options_contour contour;
 };
@@ -491,18 +416,26 @@ public:
   DEFINE
   {
     DESC (on,                  Enable landscape);
+    DESC (flat.on,             Make Earth flat);
     DESC (orography,           Factor to apply to orography);
     DESC (path,                Path to landscape image in BMP format);
     DESC (geometry,            GRIB files to take geometry from);
     DESC (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
-    DESC (wireframe,           Draw landscape in wireframe mode);
+    DESC (wireframe.on,        Draw landscape in wireframe mode);
   }
   string  path  = "landscape/Whole_world_-_land_and_oceans_8000.bmp";
   float  orography  = 0.05;
   string  geometry  = "";
   int  number_of_latitudes  = 500;
-  bool wireframe = false;
+  struct
+  {
+    bool on = false;
+  } wireframe;
   bool on = false;
+  struct
+  {
+    bool on = true;
+  } flat;
 };
 
 class glgrib_options_coastlines : public glgrib_options_base
@@ -544,18 +477,24 @@ public:
   {
     DESC (width,              Window width);
     DESC (height,             Window height);
-    DESC (statistics,         Issue statistics when window is closed);
+    DESC (statistics.on,      Issue statistics when window is closed);
     DESC (title,              Window title);
-    DESC (debug,              Enable OpenGL debugging);
+    DESC (debug.on,           Enable OpenGL debugging);
     DESC (version_major,      GLFW_CONTEXT_VERSION_MAJOR);
     DESC (version_minor,      GLFW_CONTEXT_VERSION_MINOR);
     INCLUDE (offscreen);
   }
   int     width  = 800;
   int     height  = 800;
-  bool    statistics  = false;
+  struct
+  {
+    bool on = false;
+  } statistics;
   string  title  = "";
-  bool    debug  = false;
+  struct
+  {
+    bool on = false;
+  } debug;
   int     version_major = 4;
   int     version_minor = 3;
   glgrib_options_offscreen offscreen;
@@ -566,17 +505,23 @@ class glgrib_options_light : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (date_from_grib, Calculate light position from GRIB date);
-    DESC (on,             Enable light);
-    DESC (lon,            Light longitude);
-    DESC (lat,            Light latitude);
-    DESC (rotate,         Make sunlight move);
-    DESC (date,           Date for sunlight position);
+    DESC (date_from_grib.on, Calculate light position from GRIB date);
+    DESC (on,                Enable light);
+    DESC (lon,               Light longitude);
+    DESC (lat,               Light latitude);
+    DESC (rotate.on,         Make sunlight move);
+    DESC (date,              Date for sunlight position);
   }
   glgrib_option_date date;
-  bool   date_from_grib = false;
   bool   on  = false;
-  bool   rotate  = false;
+  struct
+  {
+    bool on = false;
+  } date_from_grib;
+  struct
+  {
+    bool on = false;
+  } rotate;
   float  lon  = 0.0f;
   float  lat  = 0.0f;
 };
@@ -642,52 +587,73 @@ public:
   std::string align;
 };
 
+class glgrib_options_text : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on,             Enable text);
+    DESC (s,              Strings to be displayed);
+    DESC (x,              Coordinates of strings);
+    DESC (y,              Coordinates of strings);
+    DESC (a,              Text alignment);
+  }
+  bool on = false;
+  std::vector<std::string> s;
+  std::vector<float> x;
+  std::vector<float> y;
+  std::vector<std::string> a;
+};
+
 class glgrib_options_scene : public glgrib_options_base
 {
 public:
   DEFINE
   {
     DESC (lon_at_hour,         Set longitude at solar time);
-    DESC (rotate_earth,        Make earth rotate);
-    DESC (projection,          Mercator XYZ latlon polar_north polar_south);
-    DESC (transformation,      Perspective or orthographic);
+    DESC (rotate_earth.on,     Make earth rotate);
     INCLUDE (light);
     INCLUDE (travelling);
-    DESC (test_strxyz,         Test XYZ string);
+    DESC (test_strxyz.on,      Test XYZ string);
     INCLUDE (interpolation);
-    DESC (display_date,        Display date);
-    DESC (text,                Strings to be displayed);
-    DESC (text_x,              Coordinates of strings);
-    DESC (text_y,              Coordinates of strings);
-    DESC (text_a,              Text alignment);
+    DESC (display_date.on,     Display date);
+    INCLUDE (text);
     INCLUDE (image);
   }
-  bool    rotate_earth  = false;
+  struct
+  {
+    bool on  = false;
+  } rotate_earth;
   float   lon_at_hour = -1.0f;
-  string  projection  = "XYZ";
-  string  transformation  = "PERSPECTIVE";
   glgrib_options_light light;  
   glgrib_options_travelling travelling;
-  bool    test_strxyz = false;
+  struct
+  {
+    bool on = false;
+  } test_strxyz;
   glgrib_options_interpolation interpolation;
-  bool    display_date = false;
-  std::vector<std::string> text;
-  std::vector<float> text_x;
-  std::vector<float> text_y;
-  std::vector<std::string> text_a;
+  struct
+  {
+    bool on = false;
+  } display_date;
+  glgrib_options_text text;
   glgrib_options_image image;
 };
 
-class glgrib_options_camera : public glgrib_options_base
+class glgrib_options_view : public glgrib_options_base
 {
 public:
   DEFINE
   {
+    DESC (projection,         Mercator XYZ latlon polar_north polar_south);
+    DESC (transformation,     Perspective or orthographic);
     DESC (lon,                Camera longitude);
     DESC (lat,                Camera latitude);
     DESC (fov,                Camera field of view);
     DESC (distance,           Camera distance);
   }
+  string  projection  = "XYZ";
+  string  transformation  = "PERSPECTIVE";
   float  distance  = 6.0; 
   float  lat       = 0.0; 
   float  lon       = 0.0; 
@@ -744,10 +710,10 @@ public:
     INCLUDE (landscape);
     INCLUDE (grid);
     INCLUDE (scene);
-    INCLUDE (camera);
+    INCLUDE (view);
     INCLUDE (colorbar);
     INCLUDE (font);
-    DESC (shell, Run command line);
+    DESC (shell.on, Run command line);
   }
   std::vector<glgrib_options_field> field =
     {glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), 
@@ -759,11 +725,18 @@ public:
   glgrib_options_landscape landscape;
   glgrib_options_grid grid;
   glgrib_options_scene scene;
-  glgrib_options_camera camera;
+  glgrib_options_view view;
   glgrib_options_font font;
-  bool shell = false;
-  virtual bool parse (int, char * []);
+  struct
+  {
+    bool on = false;
+  } shell;
+  virtual bool parse (int, const char * []);
 };
+
+
+extern void glgrib_options_set_print (glgrib_options &);
+
 
 #endif
 

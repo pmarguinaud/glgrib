@@ -42,12 +42,12 @@ void glgrib_image::setupVertexAttributes ()
 
 }
 
-void glgrib_image::init (const glgrib_options_image & _opts)
+void glgrib_image::init (const glgrib_options_image & o)
 {
   unsigned char * rgb;
   int w, h;
 
-  opts = _opts;
+  opts = o;
 
   glgrib_bitmap (opts.path, &rgb, &w, &h);
 

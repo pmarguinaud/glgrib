@@ -98,10 +98,8 @@ void glgrib_field_contour::init (glgrib_loader * ld, const glgrib_options_field 
   opts = o;
 
   glgrib_field_metadata meta1;
-  glgrib_field_float_buffer_ptr data = ld->load (opts.path, slot, &meta1, 1, 0, opts.diff);
+  glgrib_field_float_buffer_ptr data = ld->load (opts.path, slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
-
-  dopts.scale = opts.scale;
 
   geometry = glgrib_geometry_load (ld, opts.path[0]);
 
@@ -176,7 +174,7 @@ void glgrib_field_contour::init (glgrib_loader * ld, const glgrib_options_field 
 
   setupVertexAttributes ();
 
-  if (opts.no_value_pointer)
+  if (opts.no_value_pointer.on)
     {
       values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
     }
@@ -317,8 +315,8 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
 {
   glgrib_program * program = glgrib_program_load (glgrib_program::CONTOUR);
   program->use ();
-  float scale0[3] = {dopts.scale, dopts.scale, dopts.scale};
-  const glgrib_palette & p = dopts.palette;
+  float scale0[3] = {opts.scale, opts.scale, opts.scale};
+  const glgrib_palette & p = palette;
 
   view.setMVP (program);
   program->set3fv ("scale0", scale0);

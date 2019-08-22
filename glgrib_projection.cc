@@ -181,5 +181,3 @@ glgrib_projection::type glgrib_projection::typeFromString (std::string str)
   return XYZ;
 }
 
-
-

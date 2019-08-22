@@ -35,30 +35,23 @@ public:
     { 
       return d.currentFieldRank < fieldlist.size () ? fieldlist[d.currentFieldRank] : NULL; 
     }
-  glgrib_field_display_options * getCurrentFieldOpts () 
-    { 
-      if (d.currentFieldRank < fieldlist.size ())
-        if (fieldlist[d.currentFieldRank] != NULL)
-          return &fieldlist[d.currentFieldRank]->dopts;
-      return NULL;
-    }
 
   void getLightPos (float * lon, float * lat) const
     {
-      *lon = d.light.lon;
-      *lat = d.light.lat;
+      *lon = d.opts.scene.light.lon;
+      *lat = d.opts.scene.light.lat;
     }
   void setLightPos (float lon, float lat) 
     { 
-      d.light.lon = lon;
-      d.light.lat = lat;
+      d.opts.scene.light.lon = lon;
+      d.opts.scene.light.lat = lat;
     }
   void setLight ()
     {
-      d.light.on = true;
+      d.opts.scene.light.on = true;
     }
-  void unsetLight () { d.light.on = false; }
-  bool hasLight () const { return d.light.on; }
+  void unsetLight () { d.opts.scene.light.on = false; }
+  bool hasLight () const { return d.opts.scene.light.on; }
   void update ();
   void update_light ();
   void update_interpolation ();
@@ -78,13 +71,11 @@ public:
   class _data
   {
     public:
-      glgrib_options_light light;
       glgrib_options opts;
       glgrib_view view;
       glgrib_landscape landscape;
       glgrib_coastlines coastlines;
       glgrib_grid grid;
-      bool rotate_earth = false;
     private:
       glgrib_image image;
       glgrib_colorbar colorbar;
@@ -107,6 +98,16 @@ public:
 
   glgrib_loader ld;
 
+  void setViewOpts (const glgrib_options_view &);
+  void setLandscapeOpts (const glgrib_options_landscape &);
+  void setGridOpts (const glgrib_options_grid &);
+  void setCoastlinesOpts (const glgrib_options_coastlines &);
+  void setFieldOpts (int j, const glgrib_options_field &);
+  void setColorBarOpts (const glgrib_options_colorbar &);
+  void setImageOpts (const glgrib_options_image &);
+  void setTextOpts (const glgrib_options_text &);
+
+  glgrib_options getOptions () const;
 
 };
 

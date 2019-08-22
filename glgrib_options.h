@@ -447,13 +447,11 @@ public:
     DESC (path,               Path to coastlines file);
     DESC (color,              Coastlines color);
     DESC (scale,              Coastlines scale);
-    DESC (count, );
   }
-  string_list path; //  = {"coastlines/gshhs(3).rim"};
+  string path = "coastlines/gshhs(3).rim";
   glgrib_option_color color;
   bool on = false;
   float scale = 1.005;
-  int count = 0;
 };
 
 class glgrib_options_offscreen : public glgrib_options_base
@@ -734,8 +732,10 @@ public:
   virtual bool parse (int, const char * []);
 };
 
-
-extern void glgrib_options_set_print (glgrib_options &);
+namespace glgrib_parser_ns
+{
+extern void set_print (glgrib_options &);
+}
 
 
 #endif

@@ -165,7 +165,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
   else if (cmd == "show")
     {
       glgrib_options opts = gwindow->scene.getOptions ();
-      glgrib_options_set_print (opts);
+      glgrib_parser_ns::set_print (opts);
     }
   else if (cmd == "get")
     {

@@ -67,6 +67,106 @@ public:
 #undef DEF_APPLY
 };
 
+
+namespace toto {
+
+  class option_base
+  {
+  public:
+    option_base (const std::string & n, const std::string & d) : name (n), desc (d) {}
+    virtual int has_arg () { return 1; }
+    virtual void set (const char *) = 0;
+    std::string name;
+    std::string desc;
+    virtual std::string type () { return std::string ("UNKNOWN"); }
+    virtual std::string asString () const { return std::string (""); }
+    virtual void clear () {}
+  };
+
+  template <class T>
+  class option_tmpl : public option_base
+  {
+  public:
+    option_tmpl (const std::string & n, const std::string & d, T * v = NULL) : option_base (n, d), value (v) {}
+    T * value = NULL;
+    std::string asString () const { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
+    void set (const char * v)  
+    {   
+      try 
+        {
+          std::stringstream in (v);
+          in >> *value;
+        }
+      catch (...)
+        {
+          throw std::runtime_error (std::string ("Parsing option ") + name 
+                + std::string (" failed"));
+        }
+    }   
+    std::string type () { return std::string ("UNKNOWN"); }
+    void clear () {}
+    int has_arg () { return 1; }
+  };
+
+  template <class T>
+  class option_tmpl_list : public option_base
+  {
+  public:
+    option_tmpl_list (const std::string & n, const std::string & d, std::vector<T> * v = NULL) : option_base (n, d), value (v) {}
+    std::vector<T> * value = NULL;
+    std::string asString () const
+    {
+      std::ostringstream ss;
+      for (typename std::vector<T>::iterator it = value->begin(); it != value->end (); it++)
+        ss << (*it) << " ";
+      return std::string (ss.str ());
+    }
+    void set (const char * v)  
+    {   
+      try 
+        {
+          std::stringstream in (v);
+          T val;
+	  in >> val;
+          value->push_back (val);
+        }
+      catch (...)
+        {
+          throw std::runtime_error (std::string ("Parsing option ") + name 
+                + std::string (" failed"));
+        }
+    }   
+    void clear () { if (value) value->clear (); }
+    std::string type () { return std::string ("UNKNOWN"); }
+  };
+
+  typedef option_tmpl     <int>                 option_int;
+  typedef option_tmpl     <float>               option_float;
+  typedef option_tmpl_list<int>                 option_int_list;
+  typedef option_tmpl_list<float>               option_float_list;
+  typedef option_tmpl     <glgrib_option_date>  option_date;
+  typedef option_tmpl     <glgrib_option_color> option_color;
+  typedef option_tmpl     <std::string>         option_string;
+  typedef option_tmpl_list<glgrib_option_color> option_color_list;
+  typedef option_tmpl_list<std::string>         option_string_list;
+  typedef option_tmpl     <bool>                option_bool;
+  template <> std::string option_tmpl     <int>                ::type ();
+  template <> std::string option_tmpl     <float>              ::type ();
+  template <> std::string option_tmpl_list<int>                ::type ();
+  template <> std::string option_tmpl_list<float>              ::type ();
+  template <> std::string option_tmpl     <glgrib_option_date> ::type ();
+  template <> std::string option_tmpl     <glgrib_option_color>::type ();
+  template <> std::string option_tmpl     <std::string>        ::type ();
+  template <> std::string option_tmpl_list<glgrib_option_color>::type ();
+  template <> std::string option_tmpl_list<std::string>        ::type ();
+  template <> std::string option_tmpl     <bool>                ::type ();
+  template <> void option_tmpl<bool>::set (const char *);
+  template <> void option_tmpl<bool>::clear ();
+  template <> std::string option_tmpl<bool>::asString () const;
+  template <> int option_tmpl<bool>::has_arg ();
+
+};
+
 class glgrib_options_parser : public glgrib_options_callback
 {
 public:
@@ -90,152 +190,21 @@ public:
 
 private:
 
+  typedef toto::option_base        option_base         ;
+  typedef toto::option_float       option_float        ;
+  typedef toto::option_int_list    option_int_list     ;
+  typedef toto::option_float_list  option_float_list   ;
+  typedef toto::option_date        option_date         ;
+  typedef toto::option_color       option_color        ;
+  typedef toto::option_string      option_string       ;
+  typedef toto::option_color_list  option_color_list   ;
+  typedef toto::option_string_list option_string_list  ;
+  typedef toto::option_bool        option_bool         ;
+  typedef toto::option_int         option_int          ;
+
+
   std::vector<std::string> ctx;
   std::set<std::string> seen;
-
-  class option_base
-  {
-  public:
-    option_base (const std::string & n, const std::string & d) : name (n), desc (d) {}
-    virtual int has_arg () { return 1; }
-    virtual void set (const char *) = 0;
-    std::string name;
-    std::string desc;
-    virtual std::string type () { return std::string ("UNKNOWN"); }
-    virtual std::string asString () const { return std::string (""); }
-    virtual void clear () {}
-  };
-
-  template <class T>
-  class option_tmpl : public option_base
-  {
-  public:
-    option_tmpl (const std::string & n, const std::string & d, T * v = NULL) : option_base (n, d), value (v) {}
-    T * value = NULL;
-    virtual std::string asString () const { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
-    virtual void set (const char * v)  
-    {   
-      try 
-        {
-          std::stringstream in (v);
-          in >> *value;
-        }
-      catch (...)
-        {
-          throw std::runtime_error (std::string ("Parsing option ") + name 
-                + std::string (" failed"));
-        }
-    }   
-  };
-
-  template <class T>
-  class option_list_tmpl : public option_base
-  {
-  public:
-    option_list_tmpl (const std::string & n, const std::string & d, std::vector<T> * v = NULL) : option_base (n, d), value (v) {}
-    std::vector<T> * value = NULL;
-    virtual std::string asString () const
-    {
-      std::ostringstream ss;
-      for (typename std::vector<T>::iterator it = value->begin(); it != value->end (); it++)
-        ss << (*it) << " ";
-      return std::string (ss.str ());
-    }
-    virtual void set (const char * v)  
-    {   
-      try 
-        {
-          std::stringstream in (v);
-          T val;
-	  in >> val;
-          value->push_back (val);
-        }
-      catch (...)
-        {
-          throw std::runtime_error (std::string ("Parsing option ") + name 
-                + std::string (" failed"));
-        }
-    }   
-    virtual void clear () { if (value) value->clear (); }
-  };
-
-  class option_float : public option_tmpl<float>
-  {
-  public:
-    using option_tmpl<float>::option_tmpl;
-    virtual std::string type () { return std::string ("FLOAT"); }
-  };
-
-  class option_int_list : public option_list_tmpl<int>
-  {
-  public:
-    using option_list_tmpl<int>::option_list_tmpl;
-    virtual std::string type () { return std::string ("LIST OF INTEGERS"); }
-  };
-
-  class option_float_list : public option_list_tmpl<float>
-  {
-  public:
-    using option_list_tmpl<float>::option_list_tmpl;
-    virtual std::string type () { return std::string ("LIST OF FLOATS"); }
-  };
-  class option_date : public option_tmpl<glgrib_option_date>
-  {
-  public:
-    using option_tmpl<glgrib_option_date>::option_tmpl;
-    virtual std::string type () { return std::string ("YYYY/MM/DD_hh:mm:ss"); }
-  private:
-  };
-  class option_color : public option_tmpl<glgrib_option_color>
-  {
-  public:
-    using option_tmpl<glgrib_option_color>::option_tmpl;
-    virtual std::string type () { return std::string ("COLOR #rrggbb(aa)"); }
-  };
-  class option_string : public option_tmpl<std::string>
-  {
-  public:
-    using option_tmpl<std::string>::option_tmpl;
-    virtual void set (const char * v) { *value = std::string (v); }
-    virtual std::string type () { return std::string ("STRING"); }
-    virtual std::string asString () const { return std::string ('"' + *value + '"') ; }
-  };
-  class option_color_list : public option_list_tmpl<glgrib_option_color>
-  {
-  public:
-    using option_list_tmpl<glgrib_option_color>::option_list_tmpl;
-    virtual std::string type () { return std::string ("LIST OF COLORS R G B"); }
-  };
-  class option_string_list : public option_list_tmpl<std::string>
-  {
-  public:
-    using option_list_tmpl<std::string>::option_list_tmpl;
-    virtual void set (const char * v) { value->push_back (std::string (v)); }
-    virtual std::string type () { return std::string ("LIST OF STRINGS"); }
-  };
-  class option_bool : public option_tmpl<bool>
-  {
-  public:
-    using option_tmpl<bool>::option_tmpl;
-    virtual int has_arg () { return 0; }
-    virtual void set (const char * v)
-      {
-        if (v != NULL)
-          {
-            throw std::runtime_error (std::string ("Option ") + name + std::string (" does not take any value"));
-          }
-        *value = true;
-      }
-    virtual std::string type () { return std::string ("BOOLEAN"); }
-    virtual std::string asString () const { return *value ? std::string ("TRUE") : std::string ("FALSE"); }
-    virtual void clear () { if (value != NULL) *value = false; }
-  };
-  class option_int : public option_tmpl<int>
-  {
-  public:
-    using option_tmpl<int>::option_tmpl;
-    virtual std::string type () { return std::string ("INTEGER"); }
-  };
 
   class name2option_t : public std::map<std::string,option_base*> 
   {
@@ -253,57 +222,27 @@ private:
   {
     return "--" + path + (path == "" ? "" : ".") + name;
   }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, float * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_float (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, bool * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_bool (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, int * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_int (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<std::string> * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_string_list (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::string * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_string (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<float> * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_float_list (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<int> * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_int_list (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_color * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_color (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, std::vector<glgrib_option_color> * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_color_list (opt_name, desc, data));
-  }
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, glgrib_option_date * data) 
-  {
-    std::string opt_name = get_opt_name (path, name);
-    name2option.insert (opt_name, new option_date (opt_name, desc, data));
+
+#define DEF_APPLY(T,C) \
+  void apply (const std::string & path, const std::string & name,            \
+              const std::string & desc, T * data)                            \
+  {                                                                          \
+    std::string opt_name = get_opt_name (path, name);                        \
+    name2option.insert (opt_name, new C (opt_name, desc, data));             \
   }
 
+  DEF_APPLY (float                             , option_float       );
+  DEF_APPLY (bool                              , option_bool        );
+  DEF_APPLY (int                               , option_int         );
+  DEF_APPLY (std::vector<std::string>          , option_string_list );
+  DEF_APPLY (std::string                       , option_string      );
+  DEF_APPLY (std::vector<float>                , option_float_list  );
+  DEF_APPLY (std::vector<int>                  , option_int_list    );
+  DEF_APPLY (glgrib_option_color               , option_color       );
+  DEF_APPLY (std::vector<glgrib_option_color>  , option_color_list  );
+  DEF_APPLY (glgrib_option_date                , option_date        );
+
+#undef DEF_APPLY
 
 };
 

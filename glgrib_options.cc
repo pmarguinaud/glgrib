@@ -8,6 +8,45 @@
 #include <map>
 
 
+namespace toto
+{
+
+template <> std::string option_tmpl     <int>                ::type () { return std::string ("INTEGER"); }
+template <> std::string option_tmpl     <float>              ::type () { return std::string ("FLOAT"); }
+template <> std::string option_tmpl_list<int>                ::type () { return std::string ("LIST OF INTEGERS"); }
+template <> std::string option_tmpl_list<float>              ::type () { return std::string ("LIST OF FLOATS"); }
+template <> std::string option_tmpl     <glgrib_option_date> ::type () { return std::string ("YYYY/MM/DD_hh:mm:ss"); }
+template <> std::string option_tmpl     <glgrib_option_color>::type () { return std::string ("COLOR #rrggbb(aa)"); }
+template <> std::string option_tmpl     <std::string>        ::type () { return std::string ("STRING"); }
+template <> std::string option_tmpl_list<glgrib_option_color>::type () { return std::string ("LIST OF COLORS #rrggbb(aa)"); }
+template <> std::string option_tmpl_list<std::string>        ::type () { return std::string ("LIST OF STRINGS"); }
+template <> std::string option_tmpl     <bool>               ::type () { return std::string ("BOOLEAN"); }
+
+template <> void option_tmpl<bool>::set (const char * v)
+{
+  if (v != NULL)
+    throw std::runtime_error (std::string ("Option ") + name + std::string (" does not take any value"));
+  *value = true;
+}
+
+template <> void option_tmpl<bool>::clear ()
+{
+  if (value != NULL) 
+    *value = false; 
+}
+
+template <> std::string option_tmpl<bool>::asString () const
+{
+  return *value ? std::string ("TRUE") : std::string ("FALSE");
+}
+
+template <> int option_tmpl<bool>::has_arg ()
+{
+  return 0;
+}
+
+};
+
 std::ostream & operator << (std::ostream & out, const glgrib_option_date & date)
 {
   return out << date.asString ();

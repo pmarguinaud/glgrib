@@ -76,7 +76,7 @@ std::ostream & operator << (std::ostream & out, const glgrib_option_color & colo
   return out << color.asString ();
 }
 
-std::istream & operator << (std::istream & in, glgrib_option_color & color)
+std::istream & operator >> (std::istream & in, glgrib_option_color & color)
 {
   std::string str;
   in >> str;

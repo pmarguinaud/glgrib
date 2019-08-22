@@ -695,6 +695,18 @@ public:
   int levels = 11;
 };
 
+class glgrib_options_border : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on, Display borders);
+    INCLUDE (lines);
+  }
+  bool on = false;
+  glgrib_options_lines lines = glgrib_options_lines ("coastlines/wdb_borders_f.b");
+};
+
 class glgrib_options_coast : public glgrib_options_base
 {
 public:
@@ -716,6 +728,7 @@ public:
     INCLUDE (field[5]); INCLUDE (field[6]); INCLUDE (field[7]); INCLUDE (field[8]); INCLUDE (field[9]); 
     INCLUDE (palette);
     INCLUDE (coast);
+    INCLUDE (border);
     INCLUDE (window);
     INCLUDE (landscape);
     INCLUDE (grid);
@@ -730,6 +743,7 @@ public:
      glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field ()};
   glgrib_options_palette palette;
   glgrib_options_coast coast;
+  glgrib_options_border border;
   glgrib_options_colorbar colorbar;
   glgrib_options_window window;
   glgrib_options_landscape landscape;

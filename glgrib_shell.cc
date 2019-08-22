@@ -216,6 +216,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
           hof.add ("--landscape"         , [&opts,gwindow]() { gwindow->scene.setLandscapeOpts  (opts.landscape   ); });
           hof.add ("--grid"              , [&opts,gwindow]() { gwindow->scene.setGridOpts       (opts.grid        ); });
           hof.add ("--coast"             , [&opts,gwindow]() { gwindow->scene.setCoastOpts      (opts.coast       ); });
+          hof.add ("--border"            , [&opts,gwindow]() { gwindow->scene.setBorderOpts     (opts.border      ); });
           hof.add ("--colorbar"          , [&opts,gwindow]() { gwindow->scene.setColorBarOpts   (opts.colorbar    ); });
           hof.add ("--scene.image"       , [&opts,gwindow]() { gwindow->scene.setImageOpts      (opts.scene.image ); });
           hof.add ("--scene.text"        , [&opts,gwindow]() { gwindow->scene.setTextOpts       (opts.scene.text  ); });

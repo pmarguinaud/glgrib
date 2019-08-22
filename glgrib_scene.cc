@@ -52,6 +52,7 @@ void glgrib_scene::display () const
   
   display_obj (&d.landscape);
   display_obj (&d.coast);
+  display_obj (&d.border);
   display_obj (&d.grid);
 
   for (int i = 0; i < fieldlist.size (); i++)
@@ -285,6 +286,7 @@ void glgrib_scene::init (const glgrib_options & o)
   setLandscapeOpts (d.opts.landscape);
   setGridOpts (d.opts.grid);
   setCoastOpts (d.opts.coast);
+  setBorderOpts (d.opts.border);
   setViewOpts (d.opts.view);
 
   for (int i = 0; i < d.opts.field.size (); i++)
@@ -350,6 +352,7 @@ void glgrib_scene::resize ()
 {
   d.landscape.resize (d.view);
   d.coast.resize (d.view);
+  d.border.resize (d.view);
   d.grid.resize (d.view);
   for (int i = 0; i < fieldlist.size (); i++)
     if (fieldlist[i])
@@ -363,6 +366,7 @@ glgrib_options glgrib_scene::getOptions () const
   o.landscape  = d.landscape.opts;
   o.grid       = d.grid.opts;
   o.coast      = d.coast.opts;
+  o.border     = d.border.opts;
 
   for (int i = 0; i < fieldlist.size (); i++)
     if (fieldlist[i] != NULL)
@@ -395,6 +399,13 @@ void glgrib_scene::setCoastOpts (const glgrib_options_coast & o)
   d.coast.cleanup ();
   if (o.on)
     d.coast.init (o);
+}
+
+void glgrib_scene::setBorderOpts (const glgrib_options_border & o)
+{
+  d.border.cleanup ();
+  if (o.on)
+    d.border.init (o);
 }
 
 void glgrib_scene::setFieldOpts (int j, const glgrib_options_field & o)

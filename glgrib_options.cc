@@ -8,10 +8,29 @@
 #include <map>
 
 
+std::ostream & operator << (std::ostream & out, const glgrib_option_date & date)
+{
+  return out << date.asString ();
+}
+
+std::istream & operator >> (std::istream & in, glgrib_option_date & date)
+{
+  std::string str;
+  in >> str;
+  glgrib_option_date::parse (&date, str.c_str ());
+  return in;
+}
+
+void glgrib_option_date::parse (glgrib_option_date * date, const char * v)
+{
+  sscanf (v, "%4ld/%2ld/%2ld_%2ld:%2ld:%2ld", &date->year, 
+          &date->month, &date->day, &date->hour, &date->minute, &date->second);
+}
+
 std::string glgrib_option_date::asString () const 
 {
   char tmp[128];
-  sprintf (tmp, "%4.4ld/%2.2ld/%2.2ld %2.2ld:%2.2ld:%2.2ld", year, month, day, hour, minute, second);
+  sprintf (tmp, "%4.4ld/%2.2ld/%2.2ld_%2.2ld:%2.2ld:%2.2ld", year, month, day, hour, minute, second);
   return std::string (tmp);
 }
 
@@ -52,26 +71,28 @@ glgrib_option_date glgrib_option_date::interpolate
   return date_from_t (round ((double)alpha * t_from_date (d1) + (1.0 - (double)alpha) * t_from_date (d2)));
 }
 
-void glgrib_option_color::parse (int * count, glgrib_option_color * value, const char * v)
+std::ostream & operator << (std::ostream & out, const glgrib_option_color & color)
 {
-  if ((*count == 0) && (v[0] == '#') && (strlen (v) == 7 || strlen (v) == 9))
+  return out << color.asString ();
+}
+
+std::istream & operator << (std::istream & in, glgrib_option_color & color)
+{
+  std::string str;
+  in >> str;
+  glgrib_option_color::parse (&color, str.c_str ());
+  return in;
+}
+
+void glgrib_option_color::parse (glgrib_option_color * value, const char * v)
+{
+  if ((v[0] == '#') && (strlen (v) == 7 || strlen (v) == 9))
     {
       *value = color_by_hexa (v);
     }
-  else if ((*count == 0) && (! isdigit (v[0])))
+  else 
     {
       *value = color_by_name (v);
-    }
-  else
-    {
-      int c = std::stoi (v);
-      switch (*count)
-        {
-          case 0: value->r = c; break;
-          case 1: value->g = c; break;
-          case 2: value->b = c; break;
-        }
-      (*count)++;
     }
 }
 

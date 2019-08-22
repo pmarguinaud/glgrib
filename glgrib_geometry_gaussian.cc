@@ -277,7 +277,7 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (glgrib_handle_ptr ghp)
 
 void glgrib_geometry_gaussian::init (glgrib_handle_ptr ghp, const float orography)
 {
-  codes_handle * h = ghp->getCodesHandle ();
+  codes_handle * h = ghp ? ghp->getCodesHandle () : NULL;
   float * xyz = NULL;
   const int nstripe = 8;
   int indoff[nstripe];

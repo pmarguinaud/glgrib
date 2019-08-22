@@ -67,6 +67,7 @@ void glgrib_colorbar::cleanup ()
       glDeleteBuffers (1, &elementbuffer);
       glDeleteVertexArrays (1, &VertexArrayID);
     }
+  pref = glgrib_palette ();
   ready = false;
 }
 

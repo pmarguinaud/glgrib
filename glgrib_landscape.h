@@ -12,17 +12,18 @@
 class glgrib_landscape : public glgrib_world
 {
 public:
+  glgrib_options_landscape opts;
   glgrib_landscape & operator=(const glgrib_landscape &);
   virtual void init (glgrib_loader *, const glgrib_options_landscape &);
   void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual ~glgrib_landscape ();
   virtual bool use_alpha () { return false; }
-  void set_flat (bool f) { flat = f; }
-  void toggle_flat () { flat = ! flat; }
+  void set_flat (bool f) { opts.flat.on = f; }
+  void toggle_flat () { opts.flat.on = ! opts.flat.on; }
   void setupVertexAttributes ();
   virtual void resize (const glgrib_view &) {}
+  void toggle_wireframe () { opts.wireframe.on = ! opts.wireframe.on; }
 private:
-  bool flat = false;
   glgrib_opengl_texture_ptr texture;
 };
 

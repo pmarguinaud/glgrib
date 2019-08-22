@@ -114,12 +114,13 @@ void glgrib_field_vector::init (glgrib_loader * ld, const glgrib_options_field &
   glgrib_field_float_buffer_ptr data_u = ld->load (opts.path, slot, &meta_u, 2, 0);
   glgrib_field_float_buffer_ptr data_v = ld->load (opts.path, slot, &meta_v, 2, 1);
 
-  dopts.scale = opts.scale;
-
-  if (opts.palette == "default")
-    dopts.palette = get_palette_by_meta (meta_u);
+  if (opts.palette.name == "default")
+    palette = get_palette_by_meta (meta_u);
   else
-    dopts.palette = get_palette_by_name (opts.palette);
+    palette = get_palette_by_name (opts.palette.name);
+
+  setPaletteMinMax ();
+  recordPaletteOpts ();
 
   geometry = glgrib_geometry_load (ld, opts.path[0]);
 
@@ -205,7 +206,7 @@ void glgrib_field_vector::init (glgrib_loader * ld, const glgrib_options_field &
 
   setupVertexAttributes ();
 
-  if (opts.no_value_pointer)
+  if (opts.no_value_pointer.on)
     {
       values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
       values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
@@ -225,14 +226,14 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 {
   glgrib_program * program;
   
-  float scale0[3] = {dopts.scale, dopts.scale, dopts.scale};
+  float scale0[3] = {opts.scale, opts.scale, opts.scale};
 
   std::vector<float> valmax = getMaxValue ();
   std::vector<float> valmin = getMinValue ();
 
 // Display vectors
 
-  if (! opts.vector.hide_arrow)
+  if (! opts.vector.hide_arrow.on)
     {
       program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_VECTOR);
       program->use ();
@@ -258,14 +259,14 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 
 // Display vector norm
 
-  if (! opts.vector.hide_norm)
+  if (! opts.vector.hide_norm.on)
     {
       program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
       program->use ();
       view.setMVP (program);
       program->setLight (light);
 
-      const glgrib_palette & p = dopts.palette;
+      const glgrib_palette & p = palette;
       p.setRGBA255 (program->programID);
 
       for (int i = 0; i < 3; i++)

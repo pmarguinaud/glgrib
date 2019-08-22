@@ -37,12 +37,14 @@ public:
   }
   void reset_view ()
   {
-    glgrib_options_camera o;
+    glgrib_options_view o;
+    o.projection     = scene.d.view.opts.projection;
+    o.transformation = scene.d.view.opts.transformation;
     scene.d.view.opts = o;
     scene.resize ();
   }
-  void toggle_rotate       () { scene.d.rotate_earth       = ! scene.d.rotate_earth;       }
-  void toggle_rotate_light () { scene.d.light.rotate = ! scene.d.light.rotate; }
+  void toggle_rotate       () { scene.d.opts.scene.rotate_earth.on = ! scene.d.opts.scene.rotate_earth.on; }
+  void toggle_rotate_light () { scene.d.opts.scene.light.rotate.on = ! scene.d.opts.scene.light.rotate.on; }
   void toggle_wireframe    () { scene.d.landscape.toggle_wireframe (); }
   void widen_fov           () { scene.d.view.opts.fov += 1.; }
   void shrink_fov          () { scene.d.view.opts.fov -= 1.; }
@@ -89,9 +91,6 @@ public:
   void toggle_transform_type ();
   void load_field (const glgrib_options_field &, int = 0);
   void remove_field (int);
-  void set_field_palette (const std::string &);
-  void set_field_palette_min (const float);
-  void set_field_palette_max (const float);
   void save_current_palette ();
   void resample_current_field ();
   void toggle_show_vector ();

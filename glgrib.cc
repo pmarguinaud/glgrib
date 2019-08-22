@@ -19,7 +19,7 @@ static void error_callback (int c, const char * desc)
   abort ();
 }
 
-int main (int argc, char * argv[])
+int main (int argc, const char * argv[])
 {
   glgrib_options opts;
   if (! opts.parse (argc, argv))
@@ -41,20 +41,22 @@ int main (int argc, char * argv[])
     gwindow = new glgrib_window_offscreen (opts);
   else
     gwindow = new glgrib_window (opts);
-  
-  gwindow->scene.init (opts);
 
+  gwindow->scene.init (opts);
+  
   glgrib_window_set wset;
   wset.insert (gwindow);
 
-  if (opts.shell)
+  if (opts.shell.on)
     {
       Shell.start (&wset);
       wset.run (&Shell);
       Shell.wait ();
     }
   else
-    wset.run ();
+    {
+      wset.run ();
+    }
    
 
   glfwTerminate ();

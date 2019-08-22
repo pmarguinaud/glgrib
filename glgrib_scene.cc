@@ -41,7 +41,7 @@ void glgrib_scene::display_obj (const glgrib_object * obj) const
     return;
   if (! obj->visible ())
     return;
-  obj->render (d.view, d.light);
+  obj->render (d.view, d.opts.scene.light);
 }
 
 void glgrib_scene::display () const
@@ -64,16 +64,16 @@ void glgrib_scene::display () const
   if ((fld != NULL) && (! d.colorbar.getHidden ()))
     if (fld->getKind () == glgrib_field::SCALAR)
       d.colorbar.render (d.MVP_L, 
-                         fld->dopts.palette, 
+                         fld->palette, 
                          fld->getNormedMinValue (), 
                          fld->getNormedMaxValue ());
 
   d.strmess.render (d.MVP_R);
 
-  if (d.opts.scene.display_date)
+  if (d.opts.scene.display_date.on)
     d.strdate.render (d.MVP_R);
 
-  if (d.opts.scene.test_strxyz)
+  if (d.opts.scene.test_strxyz.on)
     d.strxyz.render (d.view);
 
   for (std::vector<glgrib_string>::const_iterator it = d.str.begin ();
@@ -99,15 +99,15 @@ const glgrib_option_date * glgrib_scene::get_date ()
 
 void glgrib_scene::update_light ()
 {
-  if (d.light.rotate)
-    d.light.lon -= 1.;
+  if (d.opts.scene.light.rotate.on)
+    d.opts.scene.light.lon -= 1.;
 
   const glgrib_option_date * date = NULL;
 
-  if (d.light.date_from_grib)
+  if (d.opts.scene.light.date_from_grib.on)
     date = get_date ();
-  else if (d.light.date.year != 0)
-    date = &d.light.date;
+  else if (d.opts.scene.light.date.year != 0)
+    date = &d.opts.scene.light.date;
 
   if (date != NULL)
     {
@@ -119,8 +119,8 @@ void glgrib_scene::update_light ()
       float time = (date->hour * 60.0f + date->minute) * 60.0f + date->second;
       for (int m = 0; m < date->month-1; m++)
         cday += nday[m];
-      d.light.lat = dtrop * sin (2.0f * M_PI * (cday - eday) / 365.0f);
-      d.light.lon = 360.0f * ((12.0f * 3600.0f - time) / (24.0f * 3600.0f));
+      d.opts.scene.light.lat = dtrop * sin (2.0f * M_PI * (cday - eday) / 365.0f);
+      d.opts.scene.light.lon = 360.0f * ((12.0f * 3600.0f - time) / (24.0f * 3600.0f));
     }
 }
 
@@ -135,7 +135,7 @@ static float ffmod (float x, float y)
 
 void glgrib_scene::update_view ()
 {
-  if (d.rotate_earth)
+  if (d.opts.scene.rotate_earth.on)
     d.view.opts.lon += 1.;
   if (d.opts.scene.travelling.on)
     {
@@ -231,7 +231,7 @@ void glgrib_scene::update_interpolation ()
               fld->init (&ld, d.opts.field[i], slot);
 	      fieldlist[i] = fld;
 
-              if ((! seen_date) && (d.opts.scene.display_date))
+              if ((! seen_date) && (d.opts.scene.display_date.on))
                 {
                   const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
                   d.strdate.update (meta[0].term.asString ());
@@ -257,8 +257,12 @@ void glgrib_scene::init (const glgrib_options & o)
 {
   d.opts = o;
 
-  if (d.opts.scene.image.on) 
-    d.image.init (d.opts.scene.image);
+  setViewport (d.opts.window.width, d.opts.window.height);
+
+  if (d.opts.scene.light.on)
+    setLight ();
+
+  setImageOpts (d.opts.scene.image);
 
   if (d.opts.scene.interpolation.on)
     {
@@ -278,88 +282,43 @@ void glgrib_scene::init (const glgrib_options & o)
       ld.setSize (size);
     }
 
-  if (d.opts.landscape.on)
-    d.landscape.init (&ld, d.opts.landscape);
+  setLandscapeOpts (d.opts.landscape);
+  setGridOpts (d.opts.grid);
+  setCoastlinesOpts (d.opts.coastlines);
+  setViewOpts (d.opts.view);
 
-  if (d.opts.grid.on)
-    d.grid.init (d.opts.grid);
-
-  if (d.opts.coastlines.on)
-    d.coastlines.init (d.opts.coastlines);
-
-  d.light = d.opts.scene.light;
-
-  d.view.init (d.opts);
-
-
-  bool seen_date = false;
   for (int i = 0; i < d.opts.field.size (); i++)
-    {
-      glgrib_field * fld = NULL;
-      bool defined = d.opts.field[i].path.size () != 0;
+    fieldlist.push_back ((glgrib_field *)NULL);
 
-      if (defined)
+  for (int i = 0; i < d.opts.field.size (); i++)
+    setFieldOpts (i, d.opts.field[i]);
+
+  if (d.opts.scene.display_date.on)
+    {
+      for (int i = 0; i < d.opts.field.size (); i++)
         {
-          if (d.opts.field[i].vector.on)
-            fld = new glgrib_field_vector ();
-          else if (d.opts.field[i].contour.on)
-            fld = new glgrib_field_contour ();
-          else
-            fld = new glgrib_field_scalar ();
-          fld->init (&ld, d.opts.field[i]);
+          glgrib_field * fld = fieldlist[i];
+          if (fld != NULL)
+            {
+              glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
+              d.strdate.init2D (font, std::string (20, 'X'), 1.0f, 0.0f, 
+                                d.opts.font.scale, glgrib_string::SE);
+     
+              d.strdate.setForegroundColor (d.opts.font.color.foreground);
+              d.strdate.setBackgroundColor (d.opts.font.color.background);
+     
+              const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
+              d.strdate.update (meta[0].term.asString ());
+              break;
+            }
         }
-
-      fieldlist.push_back (fld);
-
-      if (defined)
-        setCurrentFieldRank (i);
-
-      if (defined && (! seen_date) && d.opts.scene.display_date)
-        {
-          seen_date = true;
-    
-          glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
-          d.strdate.init2D (font, std::string (20, 'X'), 1.0f, 0.0f, d.opts.font.scale, glgrib_string::SE);
-
-          d.strdate.setForegroundColor (d.opts.font.color.foreground);
-          d.strdate.setBackgroundColor (d.opts.font.color.background);
-
-          const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
-          d.strdate.update (meta[0].term.asString ());
-        }
-
     }
 
 
-  for (int i = 0; i < d.opts.scene.text.size (); i++)
-    {
-      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
-      glgrib_string str;
-      d.str.push_back (str);
+  setTextOpts (d.opts.scene.text);
+  setColorBarOpts (d.opts.colorbar);
 
-      if (i >= d.opts.scene.text_x.size ())
-        break;
-      if (i >= d.opts.scene.text_y.size ())
-        break;
-
-      glgrib_string::align_t a = i < d.opts.scene.text_a.size () ? 
-        glgrib_string::str2align (d.opts.scene.text_a[i]) : glgrib_string::C;
-
-      d.str[i].init2D (font, d.opts.scene.text[i], d.opts.scene.text_x[i], d.opts.scene.text_y[i], d.opts.font.scale, a);
-      d.str[i].setForegroundColor (d.opts.font.color.foreground);
-      d.str[i].setBackgroundColor (d.opts.font.color.background);
-
-    }
-
-
-  if (d.opts.colorbar.on)
-    {
-      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
-      d.strmess.init2D (font, std::string (30, ' '), 1.0f, 1.0f, d.opts.font.scale, glgrib_string::NE);
-      d.strmess.setForegroundColor (d.opts.font.color.foreground);
-      d.colorbar.init (d.opts.colorbar);
-    }
-  if (d.opts.scene.test_strxyz)
+  if (d.opts.scene.test_strxyz.on)
     {
       glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
       d.strxyz.init3D (font, std::vector<std::string>{"ABCD","EFGH","IJKL","MNOP"},
@@ -396,5 +355,123 @@ void glgrib_scene::resize ()
     if (fieldlist[i])
       fieldlist[i]->resize (d.view);
 }
+
+glgrib_options glgrib_scene::getOptions () const
+{
+  glgrib_options o = d.opts;
+  o.view       = d.view.opts;
+  o.landscape  = d.landscape.opts;
+  o.grid       = d.grid.opts;
+  o.coastlines = d.coastlines.opts;
+
+  for (int i = 0; i < fieldlist.size (); i++)
+    if (fieldlist[i] != NULL)
+      o.field[i] = fieldlist[i]->opts;
+
+  return o;
+}
+
+void glgrib_scene::setViewOpts (const glgrib_options_view & o)
+{
+  d.view.init (o);
+}
+
+void glgrib_scene::setLandscapeOpts (const glgrib_options_landscape & o)
+{
+  d.landscape.cleanup ();
+  if (o.on)
+    d.landscape.init (&ld, o);
+}
+
+void glgrib_scene::setGridOpts (const glgrib_options_grid & o)
+{
+  d.grid.cleanup ();
+  if (o.on)
+    d.grid.init (o);
+}
+
+void glgrib_scene::setCoastlinesOpts (const glgrib_options_coastlines & o)
+{
+  d.coastlines.cleanup ();
+  if (o.on)
+    d.coastlines.init (o);
+}
+
+void glgrib_scene::setFieldOpts (int j, const glgrib_options_field & o)
+{
+  if (fieldlist[j] != NULL)
+    delete fieldlist[j];
+  fieldlist[j] = NULL; 
+
+  bool defined = o.path.size () != 0;
+
+  if (defined)
+    {
+      glgrib_field * fld = NULL;
+      if (o.vector.on)
+        fld = new glgrib_field_vector ();
+      else if (o.contour.on)
+        fld = new glgrib_field_contour ();
+      else
+        fld = new glgrib_field_scalar ();
+      fld->init (&ld, o);
+      fieldlist[j] = fld;
+    }
+
+}
+
+void glgrib_scene::setColorBarOpts (const glgrib_options_colorbar & o)
+{
+  d.opts.colorbar = o;
+  d.strmess.cleanup ();
+  d.colorbar.cleanup ();
+
+  if (d.opts.colorbar.on)
+    {
+      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
+      d.strmess.init2D (font, std::string (30, ' '), 1.0f, 1.0f, 
+                        d.opts.font.scale, glgrib_string::NE);
+      d.strmess.setForegroundColor (d.opts.font.color.foreground);
+      d.colorbar.init (d.opts.colorbar);
+    }
+
+}
+
+void glgrib_scene::setImageOpts (const glgrib_options_image & o)
+{
+  d.opts.scene.image = o;
+  d.image.cleanup ();
+  if (d.opts.scene.image.on)
+    d.image.init (d.opts.scene.image);
+}
+
+void glgrib_scene::setTextOpts (const glgrib_options_text & o)
+{
+  d.opts.scene.text = o;
+  d.str.clear ();
+  if (d.opts.scene.text.on)
+    {
+      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
+      for (int i = 0; i < d.opts.scene.text.s.size (); i++)
+        {
+          glgrib_string str;
+          d.str.push_back (str);
+
+          if (i >= d.opts.scene.text.x.size ())
+            break;
+          if (i >= d.opts.scene.text.y.size ())
+            break;
+
+          glgrib_string::align_t a = i < d.opts.scene.text.a.size () ? 
+            glgrib_string::str2align (d.opts.scene.text.a[i]) : glgrib_string::C;
+
+          d.str[i].init2D (font, d.opts.scene.text.s[i], d.opts.scene.text.x[i], 
+                           d.opts.scene.text.y[i], d.opts.font.scale, a);
+          d.str[i].setForegroundColor (d.opts.font.color.foreground);
+          d.str[i].setBackgroundColor (d.opts.font.color.background);
+        }
+    }
+}
+
 
 

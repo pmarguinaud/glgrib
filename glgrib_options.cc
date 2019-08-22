@@ -8,7 +8,7 @@
 #include <map>
 
 
-namespace toto
+namespace glgrib_parser_ns
 {
 
 template <> std::string option_tmpl     <int>                ::type () { return std::string ("INTEGER"); }
@@ -18,8 +18,16 @@ template <> std::string option_tmpl_list<float>              ::type () { return 
 template <> std::string option_tmpl     <glgrib_option_date> ::type () { return std::string ("YYYY/MM/DD_hh:mm:ss"); }
 template <> std::string option_tmpl     <glgrib_option_color>::type () { return std::string ("COLOR #rrggbb(aa)"); }
 template <> std::string option_tmpl     <std::string>        ::type () { return std::string ("STRING"); }
+template <> std::string option_tmpl     <std::string>        ::asString () const { return '"' + *value + '"'; }
 template <> std::string option_tmpl_list<glgrib_option_color>::type () { return std::string ("LIST OF COLORS #rrggbb(aa)"); }
 template <> std::string option_tmpl_list<std::string>        ::type () { return std::string ("LIST OF STRINGS"); }
+template <> std::string option_tmpl_list<std::string>        ::asString () const 
+{ 
+  std::string str; 
+  for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); it++)
+    str = str + " " + '"' + *it + '"';
+  return str;
+}
 template <> std::string option_tmpl     <bool>               ::type () { return std::string ("BOOLEAN"); }
 
 template <> void option_tmpl<bool>::set (const char * v)
@@ -40,7 +48,7 @@ template <> std::string option_tmpl<bool>::asString () const
   return *value ? std::string ("TRUE") : std::string ("FALSE");
 }
 
-template <> int option_tmpl<bool>::has_arg ()
+template <> int option_tmpl<bool>::has_arg () const
 {
   return 0;
 }
@@ -235,7 +243,7 @@ bool glgrib_options_parser::parse (int argc, const char * argv[])
 {
   try
     {
-      option_base * opt = NULL;
+      glgrib_parser_ns::option_base * opt = NULL;
 
       for (int iarg = 1; iarg < argc; iarg++)
         {
@@ -355,7 +363,7 @@ void glgrib_options_parser::display (const std::string & prefix)
        it != name2option.end (); it++)
     if (it->first.substr (0, len) == prefix)
       {   
-        option_base * opt = it->second;
+	glgrib_parser_ns::option_base * opt = it->second;
         printf (format, it->first.c_str (), opt->type ().c_str ());
         printf ("      %s\n", opt->asString ().c_str ());
         printf ("      %s\n", opt->desc.c_str ());
@@ -368,4 +376,33 @@ bool glgrib_options::parse (int argc, const char * argv[])
   bool v = glgrib_options_base::parse (argc, argv);
   return v;
 }
+
+void glgrib_options_set_print (glgrib_options & opts1)
+{
+  glgrib_options_parser p1, p2;
+  glgrib_options opts2;
+
+  opts1.traverse ("", &p1);
+  opts2.traverse ("", &p2);
+
+  std::vector<std::string> options_list;
+  p1.getOptions (&options_list);
+
+
+  for (int i = 0; i < options_list.size (); i++)
+    {
+      const std::string & name = options_list[i];
+      const glgrib_parser_ns::option_base * o1 = p1.getOption (name);
+      const glgrib_parser_ns::option_base * o2 = p2.getOption (name);
+      if (o1->isEqual (o2))
+        continue;
+      std::cout << "  " << name;
+      if (o1->has_arg ())
+        std::cout << " " << o1->asString ();
+      std::cout << std::endl;
+    }
+
+
+}
+
 

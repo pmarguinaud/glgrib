@@ -30,6 +30,13 @@ public:
   }
   friend std::ostream & operator << (std::ostream &, const glgrib_option_color &);
   friend std::istream & operator >> (std::istream &, glgrib_option_color &);
+  friend bool operator== (glgrib_option_color const & col1, glgrib_option_color const & col2)
+  {
+    return (col1.r == col2.r)
+        && (col1.g == col2.g)
+        && (col1.b == col2.b)
+        && (col1.a == col2.a);
+  }
 };
 
 class glgrib_option_date
@@ -46,41 +53,34 @@ public:
   std::string asString () const;
   friend std::ostream & operator << (std::ostream &, const glgrib_option_date &);
   friend std::istream & operator >> (std::istream &, glgrib_option_date &);
+  friend bool operator== (glgrib_option_date const & d1, glgrib_option_date const & d2)
+  {
+    return (d1.year   == d2.year  )
+        && (d1.month  == d2.month )
+        && (d1.day    == d2.day   )
+        && (d1.hour   == d2.hour  )
+        && (d1.minute == d2.minute)
+        && (d1.second == d2.second);
+  }
 };
 
 
-class glgrib_options_callback
+
+namespace glgrib_parser_ns 
 {
-public:
-#define DEF_APPLY(T) \
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, T * data) {}
-  DEF_APPLY (float);
-  DEF_APPLY (bool);
-  DEF_APPLY (int);
-  DEF_APPLY (std::vector<std::string>);
-  DEF_APPLY (std::string);
-  DEF_APPLY (std::vector<float>);
-  DEF_APPLY (std::vector<int>);
-  DEF_APPLY (glgrib_option_color);
-  DEF_APPLY (std::vector<glgrib_option_color>);
-  DEF_APPLY (glgrib_option_date);
-#undef DEF_APPLY
-};
-
-
-namespace toto {
 
   class option_base
   {
   public:
     option_base (const std::string & n, const std::string & d) : name (n), desc (d) {}
-    virtual int has_arg () { return 1; }
+    virtual int has_arg () const { return 1; }
     virtual void set (const char *) = 0;
     std::string name;
     std::string desc;
-    virtual std::string type () { return std::string ("UNKNOWN"); }
-    virtual std::string asString () const { return std::string (""); }
-    virtual void clear () {}
+    virtual std::string type ()  = 0;
+    virtual std::string asString () const = 0;
+    virtual void clear () = 0;
+    virtual bool isEqual (const option_base *) const = 0;
   };
 
   template <class T>
@@ -105,7 +105,20 @@ namespace toto {
     }   
     std::string type () { return std::string ("UNKNOWN"); }
     void clear () {}
-    int has_arg () { return 1; }
+    int has_arg () const { return 1; }
+    bool isEqual (const option_base * _o) const
+    {
+      const option_tmpl<T> * o = NULL;
+      try
+        {
+          o = dynamic_cast<const option_tmpl<T>*>(_o);
+	}
+      catch (...)
+        {
+          return false;
+        }
+      return *(o->value) == *value;
+    }
   };
 
   template <class T>
@@ -138,18 +151,21 @@ namespace toto {
     }   
     void clear () { if (value) value->clear (); }
     std::string type () { return std::string ("UNKNOWN"); }
+    bool isEqual (const option_base * _o) const 
+    {
+      const option_tmpl_list<T> * o = NULL;
+      try
+        {
+          o = dynamic_cast<const option_tmpl_list<T>*>(_o);
+	}
+      catch (...)
+        {
+          return false;
+        }
+      return *(o->value) == *value;
+    }
   };
 
-  typedef option_tmpl     <int>                 option_int;
-  typedef option_tmpl     <float>               option_float;
-  typedef option_tmpl_list<int>                 option_int_list;
-  typedef option_tmpl_list<float>               option_float_list;
-  typedef option_tmpl     <glgrib_option_date>  option_date;
-  typedef option_tmpl     <glgrib_option_color> option_color;
-  typedef option_tmpl     <std::string>         option_string;
-  typedef option_tmpl_list<glgrib_option_color> option_color_list;
-  typedef option_tmpl_list<std::string>         option_string_list;
-  typedef option_tmpl     <bool>                option_bool;
   template <> std::string option_tmpl     <int>                ::type ();
   template <> std::string option_tmpl     <float>              ::type ();
   template <> std::string option_tmpl_list<int>                ::type ();
@@ -157,15 +173,36 @@ namespace toto {
   template <> std::string option_tmpl     <glgrib_option_date> ::type ();
   template <> std::string option_tmpl     <glgrib_option_color>::type ();
   template <> std::string option_tmpl     <std::string>        ::type ();
+  template <> std::string option_tmpl     <std::string>        ::asString () const;
   template <> std::string option_tmpl_list<glgrib_option_color>::type ();
   template <> std::string option_tmpl_list<std::string>        ::type ();
-  template <> std::string option_tmpl     <bool>                ::type ();
+  template <> std::string option_tmpl_list<std::string>        ::asString () const;
+  template <> std::string option_tmpl     <bool>               ::type ();
   template <> void option_tmpl<bool>::set (const char *);
   template <> void option_tmpl<bool>::clear ();
   template <> std::string option_tmpl<bool>::asString () const;
-  template <> int option_tmpl<bool>::has_arg ();
+  template <> int option_tmpl<bool>::has_arg () const;
 
 };
+
+class glgrib_options_callback
+{
+public:
+#define DEF_APPLY(T) \
+  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, T * data) {}
+  DEF_APPLY (float);
+  DEF_APPLY (bool);
+  DEF_APPLY (int);
+  DEF_APPLY (std::vector<std::string>);
+  DEF_APPLY (std::string);
+  DEF_APPLY (std::vector<float>);
+  DEF_APPLY (std::vector<int>);
+  DEF_APPLY (glgrib_option_color);
+  DEF_APPLY (std::vector<glgrib_option_color>);
+  DEF_APPLY (glgrib_option_date);
+#undef DEF_APPLY
+};
+
 
 class glgrib_options_parser : public glgrib_options_callback
 {
@@ -188,35 +225,30 @@ public:
       vs->push_back (it->first);
   }
 
+  const glgrib_parser_ns::option_base * getOption (const std::string & name)
+  {
+    name2option_t::iterator it = name2option.find (name);
+    if (it != name2option.end ())
+      return it->second;
+    return NULL;
+  }
+
 private:
-
-  typedef toto::option_base        option_base         ;
-  typedef toto::option_float       option_float        ;
-  typedef toto::option_int_list    option_int_list     ;
-  typedef toto::option_float_list  option_float_list   ;
-  typedef toto::option_date        option_date         ;
-  typedef toto::option_color       option_color        ;
-  typedef toto::option_string      option_string       ;
-  typedef toto::option_color_list  option_color_list   ;
-  typedef toto::option_string_list option_string_list  ;
-  typedef toto::option_bool        option_bool         ;
-  typedef toto::option_int         option_int          ;
-
 
   std::vector<std::string> ctx;
   std::set<std::string> seen;
 
-  class name2option_t : public std::map<std::string,option_base*> 
+  class name2option_t : public std::map<std::string,glgrib_parser_ns::option_base*> 
   {
   public:
-    void insert (const std::string name, option_base * opt)
+    void insert (const std::string name, glgrib_parser_ns::option_base * opt)
     {
-      std::map<std::string,option_base*>::insert (std::pair<std::string,option_base *>(name, opt));
+      std::map<std::string,glgrib_parser_ns::option_base*>::insert 
+        (std::pair<std::string,glgrib_parser_ns::option_base *>(name, opt));
     }
   };
 
   name2option_t name2option;
-
 
   std::string get_opt_name (const std::string & path, const std::string & name)
   {
@@ -231,16 +263,16 @@ private:
     name2option.insert (opt_name, new C (opt_name, desc, data));             \
   }
 
-  DEF_APPLY (float                             , option_float       );
-  DEF_APPLY (bool                              , option_bool        );
-  DEF_APPLY (int                               , option_int         );
-  DEF_APPLY (std::vector<std::string>          , option_string_list );
-  DEF_APPLY (std::string                       , option_string      );
-  DEF_APPLY (std::vector<float>                , option_float_list  );
-  DEF_APPLY (std::vector<int>                  , option_int_list    );
-  DEF_APPLY (glgrib_option_color               , option_color       );
-  DEF_APPLY (std::vector<glgrib_option_color>  , option_color_list  );
-  DEF_APPLY (glgrib_option_date                , option_date        );
+  DEF_APPLY (float                             , glgrib_parser_ns::option_tmpl<float> );
+  DEF_APPLY (bool                              , glgrib_parser_ns::option_tmpl<bool>);
+  DEF_APPLY (int                               , glgrib_parser_ns::option_tmpl<int>);
+  DEF_APPLY (std::vector<std::string>          , glgrib_parser_ns::option_tmpl_list<std::string>);
+  DEF_APPLY (std::string                       , glgrib_parser_ns::option_tmpl<std::string>);
+  DEF_APPLY (std::vector<float>                , glgrib_parser_ns::option_tmpl_list<float>);
+  DEF_APPLY (std::vector<int>                  , glgrib_parser_ns::option_tmpl_list<int>);
+  DEF_APPLY (glgrib_option_color               , glgrib_parser_ns::option_tmpl<glgrib_option_color>);
+  DEF_APPLY (std::vector<glgrib_option_color>  , glgrib_parser_ns::option_tmpl_list<glgrib_option_color>);
+  DEF_APPLY (glgrib_option_date                , glgrib_parser_ns::option_tmpl<glgrib_option_date>);
 
 #undef DEF_APPLY
 
@@ -293,17 +325,23 @@ class glgrib_options_vector : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (on,          Field is a vector);          
-    DESC (hide_arrow,  Hide arrows);                
-    DESC (hide_norm,   Hide norm field);            
-    DESC (color,       Color for arrows);
-    DESC (density,     Vector density);
-    DESC (scale,       Vector scale);
-    DESC (head_size,   Vector head size);
+    DESC (on,             Field is a vector);          
+    DESC (hide_arrow.on,  Hide arrows);                
+    DESC (hide_norm.on,   Hide norm field);            
+    DESC (color,          Color for arrows);
+    DESC (density,        Vector density);
+    DESC (scale,          Vector scale);
+    DESC (head_size,      Vector head size);
   }
   bool  on         = false;
-  bool  hide_arrow = false;
-  bool  hide_norm  = false;
+  struct
+  {
+    bool on = false;
+  } hide_arrow;
+  struct
+  {
+    bool on = false;
+  } hide_norm;
   glgrib_option_color color;
   float density = 50.0f;
   float scale = 1.0f;
@@ -315,13 +353,13 @@ class glgrib_options_field : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (path,             List of GRIB files);                    
-    DESC (scale,            Scales to be applied to fields);        
-    DESC (palette.name,     Palette name);                              
-    DESC (palette.min,      Palette min value);                              
-    DESC (palette.max,      Palette max value);                              
-    DESC (no_value_pointer, Do not keep field values in memory);    
-    DESC (diff,             Show field difference);
+    DESC (path,                List of GRIB files);                    
+    DESC (scale,               Scales to be applied to fields);        
+    DESC (palette.name,        Palette name);                              
+    DESC (palette.min,         Palette min value);                              
+    DESC (palette.max,         Palette max value);                              
+    DESC (no_value_pointer.on, Do not keep field values in memory);    
+    DESC (diff.on,             Show field difference);
     INCLUDE (vector);
     INCLUDE (contour);
   }
@@ -333,8 +371,14 @@ public:
     float max = std::numeric_limits<float>::min();
   } palette;
   float        scale   = 1.0f;
-  bool         no_value_pointer = false;
-  bool         diff = false;
+  struct
+  {
+    bool on = false;
+  } no_value_pointer;
+  struct
+  {
+    bool on = false;
+  } diff;
   glgrib_options_vector vector;
   glgrib_options_contour contour;
 };
@@ -431,18 +475,24 @@ public:
   {
     DESC (width,              Window width);
     DESC (height,             Window height);
-    DESC (statistics,         Issue statistics when window is closed);
+    DESC (statistics.on,      Issue statistics when window is closed);
     DESC (title,              Window title);
-    DESC (debug,              Enable OpenGL debugging);
+    DESC (debug.on,           Enable OpenGL debugging);
     DESC (version_major,      GLFW_CONTEXT_VERSION_MAJOR);
     DESC (version_minor,      GLFW_CONTEXT_VERSION_MINOR);
     INCLUDE (offscreen);
   }
   int     width  = 800;
   int     height  = 800;
-  bool    statistics  = false;
+  struct
+  {
+    bool on = false;
+  } statistics;
   string  title  = "";
-  bool    debug  = false;
+  struct
+  {
+    bool on = false;
+  } debug;
   int     version_major = 4;
   int     version_minor = 3;
   glgrib_options_offscreen offscreen;
@@ -453,17 +503,23 @@ class glgrib_options_light : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (date_from_grib, Calculate light position from GRIB date);
-    DESC (on,             Enable light);
-    DESC (lon,            Light longitude);
-    DESC (lat,            Light latitude);
-    DESC (rotate,         Make sunlight move);
-    DESC (date,           Date for sunlight position);
+    DESC (date_from_grib.on, Calculate light position from GRIB date);
+    DESC (on,                Enable light);
+    DESC (lon,               Light longitude);
+    DESC (lat,               Light latitude);
+    DESC (rotate.on,         Make sunlight move);
+    DESC (date,              Date for sunlight position);
   }
   glgrib_option_date date;
-  bool   date_from_grib = false;
   bool   on  = false;
-  bool   rotate  = false;
+  struct
+  {
+    bool on = false;
+  } date_from_grib;
+  struct
+  {
+    bool on = false;
+  } rotate;
   float  lon  = 0.0f;
   float  lat  = 0.0f;
 };
@@ -553,22 +609,31 @@ public:
   DEFINE
   {
     DESC (lon_at_hour,         Set longitude at solar time);
-    DESC (rotate_earth,        Make earth rotate);
+    DESC (rotate_earth.on,     Make earth rotate);
     INCLUDE (light);
     INCLUDE (travelling);
-    DESC (test_strxyz,         Test XYZ string);
+    DESC (test_strxyz.on,      Test XYZ string);
     INCLUDE (interpolation);
-    DESC (display_date,        Display date);
+    DESC (display_date.on,     Display date);
     INCLUDE (text);
     INCLUDE (image);
   }
-  bool    rotate_earth  = false;
+  struct
+  {
+    bool on  = false;
+  } rotate_earth;
   float   lon_at_hour = -1.0f;
   glgrib_options_light light;  
   glgrib_options_travelling travelling;
-  bool    test_strxyz = false;
+  struct
+  {
+    bool on = false;
+  } test_strxyz;
   glgrib_options_interpolation interpolation;
-  bool    display_date = false;
+  struct
+  {
+    bool on = false;
+  } display_date;
   glgrib_options_text text;
   glgrib_options_image image;
 };
@@ -646,7 +711,7 @@ public:
     INCLUDE (view);
     INCLUDE (colorbar);
     INCLUDE (font);
-    DESC (shell, Run command line);
+    DESC (shell.on, Run command line);
   }
   std::vector<glgrib_options_field> field =
     {glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), 
@@ -660,9 +725,16 @@ public:
   glgrib_options_scene scene;
   glgrib_options_view view;
   glgrib_options_font font;
-  bool shell = false;
+  struct
+  {
+    bool on = false;
+  } shell;
   virtual bool parse (int, const char * []);
 };
+
+
+extern void glgrib_options_set_print (glgrib_options &);
+
 
 #endif
 

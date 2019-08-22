@@ -70,10 +70,10 @@ void glgrib_scene::display () const
 
   d.strmess.render (d.MVP_R);
 
-  if (d.opts.scene.display_date)
+  if (d.opts.scene.display_date.on)
     d.strdate.render (d.MVP_R);
 
-  if (d.opts.scene.test_strxyz)
+  if (d.opts.scene.test_strxyz.on)
     d.strxyz.render (d.view);
 
   for (std::vector<glgrib_string>::const_iterator it = d.str.begin ();
@@ -99,12 +99,12 @@ const glgrib_option_date * glgrib_scene::get_date ()
 
 void glgrib_scene::update_light ()
 {
-  if (d.opts.scene.light.rotate)
+  if (d.opts.scene.light.rotate.on)
     d.opts.scene.light.lon -= 1.;
 
   const glgrib_option_date * date = NULL;
 
-  if (d.opts.scene.light.date_from_grib)
+  if (d.opts.scene.light.date_from_grib.on)
     date = get_date ();
   else if (d.opts.scene.light.date.year != 0)
     date = &d.opts.scene.light.date;
@@ -135,7 +135,7 @@ static float ffmod (float x, float y)
 
 void glgrib_scene::update_view ()
 {
-  if (d.opts.scene.rotate_earth)
+  if (d.opts.scene.rotate_earth.on)
     d.view.opts.lon += 1.;
   if (d.opts.scene.travelling.on)
     {
@@ -231,7 +231,7 @@ void glgrib_scene::update_interpolation ()
               fld->init (&ld, d.opts.field[i], slot);
 	      fieldlist[i] = fld;
 
-              if ((! seen_date) && (d.opts.scene.display_date))
+              if ((! seen_date) && (d.opts.scene.display_date.on))
                 {
                   const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
                   d.strdate.update (meta[0].term.asString ());
@@ -293,7 +293,7 @@ void glgrib_scene::init (const glgrib_options & o)
   for (int i = 0; i < d.opts.field.size (); i++)
     setFieldOpts (i, d.opts.field[i]);
 
-  if (d.opts.scene.display_date)
+  if (d.opts.scene.display_date.on)
     {
       for (int i = 0; i < d.opts.field.size (); i++)
         {
@@ -318,7 +318,7 @@ void glgrib_scene::init (const glgrib_options & o)
   setTextOpts (d.opts.scene.text);
   setColorBarOpts (d.opts.colorbar);
 
-  if (d.opts.scene.test_strxyz)
+  if (d.opts.scene.test_strxyz.on)
     {
       glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
       d.strxyz.init3D (font, std::vector<std::string>{"ABCD","EFGH","IJKL","MNOP"},

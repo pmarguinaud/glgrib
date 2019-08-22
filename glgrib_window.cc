@@ -694,7 +694,7 @@ void glgrib_window::setHints ()
   glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); 
   glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  if (opts.debug)
+  if (opts.debug.on)
     glfwWindowHint (GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
 }
@@ -755,7 +755,7 @@ void glgrib_window::createGFLWwindow (GLFWwindow * context)
       return;
     }
   
-  if (opts.debug)
+  if (opts.debug.on)
    {
      GLint flags; 
      glGetIntegerv (GL_CONTEXT_FLAGS, &flags);
@@ -782,7 +782,7 @@ glgrib_window::~glgrib_window ()
 {
   if (window)
     glfwDestroyWindow (window);
-  if (opts.statistics)
+  if (opts.statistics.on)
     {
       double t1 = current_time ();
       printf ("Window #%d rendered %f frames/sec\n", id_, nframes/(t1 - t0));

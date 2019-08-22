@@ -206,7 +206,7 @@ void glgrib_field_vector::init (glgrib_loader * ld, const glgrib_options_field &
 
   setupVertexAttributes ();
 
-  if (opts.no_value_pointer)
+  if (opts.no_value_pointer.on)
     {
       values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
       values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
@@ -233,7 +233,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 
 // Display vectors
 
-  if (! opts.vector.hide_arrow)
+  if (! opts.vector.hide_arrow.on)
     {
       program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_VECTOR);
       program->use ();
@@ -259,7 +259,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 
 // Display vector norm
 
-  if (! opts.vector.hide_norm)
+  if (! opts.vector.hide_norm.on)
     {
       program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
       program->use ();

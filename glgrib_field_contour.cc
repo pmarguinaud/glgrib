@@ -98,7 +98,7 @@ void glgrib_field_contour::init (glgrib_loader * ld, const glgrib_options_field 
   opts = o;
 
   glgrib_field_metadata meta1;
-  glgrib_field_float_buffer_ptr data = ld->load (opts.path, slot, &meta1, 1, 0, opts.diff);
+  glgrib_field_float_buffer_ptr data = ld->load (opts.path, slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
 
   geometry = glgrib_geometry_load (ld, opts.path[0]);
@@ -174,7 +174,7 @@ void glgrib_field_contour::init (glgrib_loader * ld, const glgrib_options_field 
 
   setupVertexAttributes ();
 
-  if (opts.no_value_pointer)
+  if (opts.no_value_pointer.on)
     {
       values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
     }

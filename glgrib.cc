@@ -47,7 +47,7 @@ int main (int argc, const char * argv[])
   glgrib_window_set wset;
   wset.insert (gwindow);
 
-  if (opts.shell)
+  if (opts.shell.on)
     {
       Shell.start (&wset);
       wset.run (&Shell);

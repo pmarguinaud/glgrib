@@ -162,6 +162,11 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
     {
       close = 1;
     }
+  else if (cmd == "show")
+    {
+      glgrib_options opts = gwindow->scene.getOptions ();
+      glgrib_options_set_print (opts);
+    }
   else if (cmd == "get")
     {
       glgrib_options opts = gwindow->scene.getOptions ();

@@ -12,8 +12,8 @@ set.x: set.c
 	cc -I$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/include -L$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib -Wl,-rpath,$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib -g -o set.x set.c -leccodes
 
 
-glgrib.x: glgrib_gshhg.o glgrib_image.o glgrib_resolve.o glgrib_field_float_buffer.o glgrib_field_contour.o glgrib_field_vector.o glgrib_field_scalar.o glgrib_geometry_lambert.o glgrib_projection.o glgrib_colorbar.o glgrib_font.o glgrib_string.o glgrib_geometry_latlon.o glgrib_window_offscreen.o glgrib_geometry.o glgrib_geometry_gaussian.o glgrib_window.o glgrib_options.o glgrib_shell.o glgrib_bitmap.o glgrib_landscape.o glgrib_palette.o glgrib_field.o glgrib_loader.o glgrib_polygon.o glgrib_program.o glgrib_view.o glgrib_world.o glgrib.o glgrib_opengl.o glgrib_png.o glgrib_scene.o glgrib_coastlines.o glgrib_grid.o glgrib_shader.o 
-	g++  $(CXXFLAGS) -o glgrib.x glgrib_gshhg.o glgrib_image.o glgrib_resolve.o glgrib_field_float_buffer.o glgrib_field_contour.o glgrib_field_vector.o glgrib_field_scalar.o glgrib_geometry_lambert.o glgrib_projection.o glgrib_colorbar.o glgrib_font.o glgrib_string.o glgrib_geometry_latlon.o glgrib_window_offscreen.o glgrib_geometry.o glgrib_geometry_gaussian.o glgrib_window.o glgrib_options.o glgrib_shell.o glgrib_bitmap.o glgrib_landscape.o glgrib_palette.o glgrib_field.o glgrib_loader.o glgrib_polygon.o glgrib_view.o glgrib_program.o glgrib_world.o glgrib.o glgrib_opengl.o glgrib_png.o glgrib_scene.o glgrib_coastlines.o glgrib_grid.o glgrib_shader.o $(LDFLAGS) -Llfi -llfi -lcurl
+glgrib.x: glgrib_lines.o glgrib_gshhg.o glgrib_image.o glgrib_resolve.o glgrib_field_float_buffer.o glgrib_field_contour.o glgrib_field_vector.o glgrib_field_scalar.o glgrib_geometry_lambert.o glgrib_projection.o glgrib_colorbar.o glgrib_font.o glgrib_string.o glgrib_geometry_latlon.o glgrib_window_offscreen.o glgrib_geometry.o glgrib_geometry_gaussian.o glgrib_window.o glgrib_options.o glgrib_shell.o glgrib_bitmap.o glgrib_landscape.o glgrib_palette.o glgrib_field.o glgrib_loader.o glgrib_polygon.o glgrib_program.o glgrib_view.o glgrib_world.o glgrib.o glgrib_opengl.o glgrib_png.o glgrib_scene.o glgrib_coast.o glgrib_grid.o glgrib_shader.o 
+	g++  $(CXXFLAGS) -o glgrib.x glgrib_lines.o glgrib_gshhg.o glgrib_image.o glgrib_resolve.o glgrib_field_float_buffer.o glgrib_field_contour.o glgrib_field_vector.o glgrib_field_scalar.o glgrib_geometry_lambert.o glgrib_projection.o glgrib_colorbar.o glgrib_font.o glgrib_string.o glgrib_geometry_latlon.o glgrib_window_offscreen.o glgrib_geometry.o glgrib_geometry_gaussian.o glgrib_window.o glgrib_options.o glgrib_shell.o glgrib_bitmap.o glgrib_landscape.o glgrib_palette.o glgrib_field.o glgrib_loader.o glgrib_polygon.o glgrib_view.o glgrib_program.o glgrib_world.o glgrib.o glgrib_opengl.o glgrib_png.o glgrib_scene.o glgrib_coast.o glgrib_grid.o glgrib_shader.o $(LDFLAGS) -Llfi -llfi -lcurl
 
 %.o: %.cc
 	g++ $(CXXFLAGS) -o $@ -c $<
@@ -68,17 +68,17 @@ test_eurat01: glgrib.x
                --field[0].palette.name   cloud_auto  --field[1].palette.name                   cold_hot 
 
 test_landscape_eurat01: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.on --landscape.geometry  testdata/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --landscape.orography 0 --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --landscape.on --landscape.geometry  testdata/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --landscape.orography 0 --coast.on --grid.on
 
 test_glob01: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].path testdata/glob01/lfpw_0_0_0_sfc_0_t.grib2 --field[0].scale 1.00  --field[0].palette.name cold_hot_temp --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --field[0].path testdata/glob01/lfpw_0_0_0_sfc_0_t.grib2 --field[0].scale 1.00  --field[0].palette.name cold_hot_temp --coast.on --grid.on
 
 
 test_small: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.on --landscape.geometry  testdata/t49/Z.grb  --field[0].scale 1.01  --field[0].path testdata/t49/SFX.CLAY.grb --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --landscape.on --landscape.geometry  testdata/t49/Z.grb  --field[0].scale 1.01  --field[0].path testdata/t49/SFX.CLAY.grb --coast.on --grid.on
 
 test_shell: ./glgrib.x
-	./glgrib.x --shell.on --landscape.on --landscape.geometry  testdata/t49/Z.grb  --field[0].scale 1.01  --field[0].path testdata/t49/SFX.CLAY.grb --coastlines.on --grid.on
+	./glgrib.x --shell.on --landscape.on --landscape.geometry  testdata/t49/Z.grb  --field[0].scale 1.01  --field[0].path testdata/t49/SFX.CLAY.grb --coast.on --grid.on
 
 test_novalue: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1798/Z.grb \
@@ -91,38 +91,38 @@ test_t8000_noorog: ./glgrib.x
 		--scene.light.on --scene.light.lon -25 --scene.light.lat 30.
 
 test_missingvalue: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].path testdata/t49/SFX.CLAY.grb --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --field[0].path testdata/t49/SFX.CLAY.grb --coast.on --grid.on
 
 test_aro: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].path testdata/aro2.5/SURFIND.TERREMER.grb --field[0].palette.name cold_hot --field[0].scale 1.00 --view.lat 46.2 --view.lon 2.0 --view.fov 5 --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --field[0].path testdata/aro2.5/SURFIND.TERREMER.grb --field[0].palette.name cold_hot --field[0].scale 1.00 --view.lat 46.2 --view.lon 2.0 --view.fov 5 --coast.on --grid.on
 
 test_guyane: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.on --field\[0\].path testdata/aro_guyane/SURFTEMPERATURE.grb --field\[0\].palette.name cold_hot_temp --field\[0\].scale 1.01 --view.lat 5 --view.lon -51 --view.fov 3 --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --landscape.on --field\[0\].path testdata/aro_guyane/SURFTEMPERATURE.grb --field\[0\].palette.name cold_hot_temp --field\[0\].scale 1.01 --view.lat 5 --view.lon -51 --view.fov 3 --coast.on --grid.on
 
 test_vector: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path testdata/aro2.5/S090WIND.U.PHYS.grb  testdata/aro2.5/S090WIND.V.PHYS.grb --field\[0\].scale 1.00 --field\[0\].vector.color green --view.lat 46.2 --view.lon 2.0 --view.fov 5  --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path testdata/aro2.5/S090WIND.U.PHYS.grb  testdata/aro2.5/S090WIND.V.PHYS.grb --field\[0\].scale 1.00 --field\[0\].vector.color green --view.lat 46.2 --view.lon 2.0 --view.fov 5  --coast.on --grid.on
 
 test_small_aro: ./glgrib.x
-	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path testdata/aro_small/S041WIND.U.PHYS.grb testdata/aro_small/S041WIND.V.PHYS.grb  --field\[0\].scale 1.00 --view.lon 26.64 --view.lat 67.36 --view.fov 0.5 --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --field[0].vector.on --field\[0\].path testdata/aro_small/S041WIND.U.PHYS.grb testdata/aro_small/S041WIND.V.PHYS.grb  --field\[0\].scale 1.00 --view.lon 26.64 --view.lat 67.36 --view.fov 0.5 --coast.on --grid.on
 
 test_wind_arp: ./glgrib.x
-	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t31c2.4/Z.grb --field[0].vector.on --field\[0\].path testdata/t31c2.4/S015WIND.U.PHYS.grb testdata/t31c2.4/S015WIND.V.PHYS.grb   --field[0].scale 1.01 --coastlines.on --grid.on
+	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t31c2.4/Z.grb --field[0].vector.on --field\[0\].path testdata/t31c2.4/S015WIND.U.PHYS.grb testdata/t31c2.4/S015WIND.V.PHYS.grb   --field[0].scale 1.01 --coast.on --grid.on
 
 test_vector_glob25: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector.on \
-		--field\[0\].path testdata/arpt1798_wind/glob25_+1.grb testdata/arpt1798_wind/glob25_+1.grb  --field[0].scale 1.01 --coastlines.on --grid.on
+		--field\[0\].path testdata/arpt1798_wind/glob25_+1.grb testdata/arpt1798_wind/glob25_+1.grb  --field[0].scale 1.01 --coast.on --grid.on
 
 test_wind_glob25: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 0  --field[0].vector.on \
-		--field\[0\].path testdata/arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 testdata/arpt1798_wind/lfpw_0_2_3_sfc_20_v.grib2  --field[0].scale 1.01 --coastlines.on --grid.on
+		--field\[0\].path testdata/arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 testdata/arpt1798_wind/lfpw_0_2_3_sfc_20_v.grib2  --field[0].scale 1.01 --coast.on --grid.on
 
 test_wind_t1798: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/arpt1798_wind/S105WIND.U.PHYS.grb --landscape.orography 0  --field[0].vector.on \
-		--field\[0\].path testdata/arpt1798_wind/S105WIND.U.PHYS.grb testdata/arpt1798_wind/S105WIND.V.PHYS.grb  --field[0].scale 1.01 --coastlines.on --grid.on
+		--field\[0\].path testdata/arpt1798_wind/S105WIND.U.PHYS.grb testdata/arpt1798_wind/S105WIND.V.PHYS.grb  --field[0].scale 1.01 --coast.on --grid.on
 
 test_vector_t1798: ./glgrib.x
 	$(GDB) ./glgrib.x  --landscape.on --landscape.geometry testdata/arpt1798_wind/+1.grb --landscape.orography 0 --field[0].vector.on \
-		--field\[0\].path testdata/arpt1798_wind/+1.grb testdata/arpt1798_wind/+1.grb  --field[0].scale 1.01 --coastlines.on --grid.on
+		--field\[0\].path testdata/arpt1798_wind/+1.grb testdata/arpt1798_wind/+1.grb  --field[0].scale 1.01 --coast.on --grid.on
 
 test_contour1: ./glgrib.x
 	$(GDB) ./glgrib.x --window.width 1024 --window.height 1024 --landscape.on --landscape.path landscape/black.bmp  --field\[0\].path testdata/contour/t0049.grb --field\[0\].scale 1.03 --field\[0\].contour.on
@@ -152,13 +152,13 @@ test_contour_aro1: ./glgrib.x
 	$(GDB) ./glgrib.x \
                --field\[0\].path testdata/aro_small/S041WIND.U.PHYS.grb --field\[0\].scale 1.00 --field[0].palette.name cold_hot \
                --field\[1\].path testdata/aro_small/S041WIND.U.PHYS.grb --field\[1\].scale 1.03 --field[1].contour.on       \
-               --view.lon 26.64 --view.lat 67.36 --view.fov 0.5 --coastlines.on --grid.on
+               --view.lon 26.64 --view.lat 67.36 --view.fov 0.5 --coast.on --grid.on
 
 test_contour_aro2: ./glgrib.x
 	$(GDB) ./glgrib.x \
                --field\[0\].path testdata/aro2.5/S090WIND.U.PHYS.grb --field\[0\].scale 1.00 --field[0].palette.name cold_hot \
                --field\[1\].path testdata/aro2.5/S090WIND.U.PHYS.grb --field\[1\].scale 1.03 --field[1].contour.on       \
-               --view.lat 46.2 --view.lon 2.0 --view.fov 5 --coastlines.on --grid.on
+               --view.lat 46.2 --view.lon 2.0 --view.fov 5 --coast.on --grid.on
 
 test_fill: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 --field[0].palette.name RGBW   --colorbar.on --window.width 1200
@@ -187,7 +187,7 @@ test_strxyz: ./glgrib.x
 test_interpolation: ./glgrib.x
 	$(GDB) ./glgrib.x --field\[0\].path testdata/interp/01.grb testdata/interp/36.grb  --field\[0\].scale 1.03 --field\[0\].palette.name cold_hot_temp  \
 		--view.lon 2 --view.lat 46.7 --view.fov 5 --scene.interpolation.on --scene.interpolation.frames 200 --window.width 1000 --window.height 1000 \
-                --font.scale 0.03 --font.color.foreground red --scene.display_date.on --coastlines.on --grid.on
+                --font.scale 0.03 --font.color.foreground red --scene.display_date.on --coast.on --grid.on
 
 test_background: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 \

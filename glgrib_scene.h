@@ -13,7 +13,7 @@
 #include "glgrib_landscape.h"
 #include "glgrib_grid.h"
 #include "glgrib_field.h"
-#include "glgrib_coastlines.h"
+#include "glgrib_coast.h"
 #include "glgrib_colorbar.h"
 #include "glgrib_loader.h"
 
@@ -74,7 +74,7 @@ public:
       glgrib_options opts;
       glgrib_view view;
       glgrib_landscape landscape;
-      glgrib_coastlines coastlines;
+      glgrib_coast coast;
       glgrib_grid grid;
     private:
       glgrib_image image;
@@ -101,7 +101,7 @@ public:
   void setViewOpts (const glgrib_options_view &);
   void setLandscapeOpts (const glgrib_options_landscape &);
   void setGridOpts (const glgrib_options_grid &);
-  void setCoastlinesOpts (const glgrib_options_coastlines &);
+  void setCoastOpts (const glgrib_options_coast &);
   void setFieldOpts (int j, const glgrib_options_field &);
   void setColorBarOpts (const glgrib_options_colorbar &);
   void setImageOpts (const glgrib_options_image &);

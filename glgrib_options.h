@@ -438,19 +438,19 @@ public:
   } flat;
 };
 
-class glgrib_options_coastlines : public glgrib_options_base
+class glgrib_options_lines : public glgrib_options_base
 {
 public:
+  glgrib_options_lines () {}
+  glgrib_options_lines (const std::string & p) : path (p) {}
   DEFINE
   {
-    DESC (on,                 Display coastlines);
-    DESC (path,               Path to coastlines file);
+    DESC (path,               Path to lines file);
     DESC (color,              Coastlines color);
     DESC (scale,              Coastlines scale);
   }
-  string path = "coastlines/gshhs(3).rim";
+  string path;
   glgrib_option_color color;
-  bool on = false;
   float scale = 1.005;
 };
 
@@ -695,6 +695,18 @@ public:
   int levels = 11;
 };
 
+class glgrib_options_coast : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on, Display coastlines);
+    INCLUDE (lines);
+  }
+  bool on = false;
+  glgrib_options_lines lines = glgrib_options_lines ("coastlines/gshhs_h.b");
+};
+
 class glgrib_options : public glgrib_options_base
 {
 public:
@@ -703,7 +715,7 @@ public:
     INCLUDE (field[0]); INCLUDE (field[1]); INCLUDE (field[2]); INCLUDE (field[3]); INCLUDE (field[4]); 
     INCLUDE (field[5]); INCLUDE (field[6]); INCLUDE (field[7]); INCLUDE (field[8]); INCLUDE (field[9]); 
     INCLUDE (palette);
-    INCLUDE (coastlines);
+    INCLUDE (coast);
     INCLUDE (window);
     INCLUDE (landscape);
     INCLUDE (grid);
@@ -717,7 +729,7 @@ public:
     {glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), 
      glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field ()};
   glgrib_options_palette palette;
-  glgrib_options_coastlines coastlines;
+  glgrib_options_coast coast;
   glgrib_options_colorbar colorbar;
   glgrib_options_window window;
   glgrib_options_landscape landscape;

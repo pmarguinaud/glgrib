@@ -1,4 +1,4 @@
-#include "glgrib_coastlines.h"
+#include "glgrib_lines.h"
 #include "glgrib_program.h"
 #include "glgrib_resolve.h"
 #include "glgrib_gshhg.h"
@@ -9,7 +9,7 @@
 #include <iostream>
 #include <stdexcept>
 
-glgrib_coastlines & glgrib_coastlines::operator= (const glgrib_coastlines & other)
+glgrib_lines & glgrib_lines::operator= (const glgrib_lines & other)
 {
   cleanup ();
   if ((this != &other) && other.isReady ())
@@ -21,7 +21,7 @@ glgrib_coastlines & glgrib_coastlines::operator= (const glgrib_coastlines & othe
     }
 }
 
-void glgrib_coastlines::init (const glgrib_options_coastlines & o)
+void glgrib_lines::init (const glgrib_options_lines & o)
 {
 
   opts = o;
@@ -42,7 +42,7 @@ void glgrib_coastlines::init (const glgrib_options_coastlines & o)
   setReady ();
 }
 
-void glgrib_coastlines::render (const glgrib_view & view, const glgrib_options_light & light) const
+void glgrib_lines::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
   glgrib_program * program = glgrib_program_load (glgrib_program::MONO);
   program->use ();

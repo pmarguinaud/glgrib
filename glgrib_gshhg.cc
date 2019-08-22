@@ -81,7 +81,9 @@ static int read_GSHHG_POINT_list (std::vector<GSHHG_POINT_t> * gpl, int n, FILE 
 
 void glgrib_gshhg::read (const std::string & path, int * numberOfPoints, 
 		         unsigned int * numberOfLines, std::vector<float> * xyz,
-			 std::vector<unsigned int> * ind)
+			 std::vector<unsigned int> * ind, 
+                         const std::vector<unsigned int> & mask, 
+                         const std::vector<unsigned int> & code)
 {
 
   GSHHG_t h;
@@ -112,12 +114,12 @@ void glgrib_gshhg::read (const std::string & path, int * numberOfPoints,
           if (! read_GSHHG_POINT_list (&gpl, h.n, fp))
             break;
 
-// flag & 0x000000ff :Borders : 1 = states, 2 = substates, 3 = sea
-// flag & 0xff000000 :USA
+          bool ok = false;
 
-//        if ((h.flag & 0xff) == 4)
-//        if (h.flag & 0xff000000)
-
+          for (int i = 0; i < mask.size (); i++)
+            ok = ok || ((h.flag & mask[i]) == code[i]);
+          
+          if (ok)
             {
               if (pass == 0)
                 {

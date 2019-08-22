@@ -713,9 +713,24 @@ public:
   DEFINE
   {
     DESC (on, Display borders);
+    DESC (countries.on, Display countries);
+    DESC (regions.on, Display regions);
+    DESC (sea.on, Display sea borders);
     INCLUDE (lines);
   }
   bool on = false;
+  struct
+  {
+    bool on = true;
+  } countries;
+  struct
+  {
+    bool on = false;
+  } regions;
+  struct
+  {
+    bool on = false;
+  } sea;
   glgrib_options_lines lines = glgrib_options_lines ("coastlines/wdb_borders_f.b");
 };
 
@@ -726,8 +741,13 @@ public:
   {
     DESC (on, Display coastlines);
     INCLUDE (lines);
+    DESC (lakes.on, Display lakes coastlines);
   }
   bool on = false;
+  struct
+  {
+    bool on = false;
+  } lakes;
   glgrib_options_lines lines = glgrib_options_lines ("coastlines/gshhs_h.b");
 };
 

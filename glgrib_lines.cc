@@ -21,7 +21,9 @@ glgrib_lines & glgrib_lines::operator= (const glgrib_lines & other)
     }
 }
 
-void glgrib_lines::init (const glgrib_options_lines & o)
+void glgrib_lines::init (const glgrib_options_lines & o, 
+                         const std::vector<unsigned int> & mask, 
+                         const std::vector<unsigned int> & code)
 {
 
   opts = o;
@@ -31,7 +33,8 @@ void glgrib_lines::init (const glgrib_options_lines & o)
   std::vector <float> xyz;
   std::vector <unsigned int> ind;
 
-  glgrib_gshhg::read (glgrib_resolve (opts.path), &numberOfPoints, &numberOfLines, &xyz, &ind);
+  glgrib_gshhg::read (glgrib_resolve (opts.path), &numberOfPoints, 
+                      &numberOfLines, &xyz, &ind, mask, code);
 
 
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz.data ());

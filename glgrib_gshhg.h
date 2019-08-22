@@ -8,7 +8,9 @@
 namespace glgrib_gshhg
 {
 extern void read (const std::string &, int *, unsigned int *, 
-		  std::vector<float> *, std::vector<unsigned int> *);
+		  std::vector<float> *, std::vector<unsigned int> *, 
+                  const std::vector<unsigned int> & = {0x00000000}, 
+                  const std::vector<unsigned int> & = {0x00000000});
 };
 
 #endif

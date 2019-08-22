@@ -695,6 +695,18 @@ public:
   int levels = 11;
 };
 
+class glgrib_options_rivers : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on, Display rivers);
+    INCLUDE (lines);
+  }
+  bool on = false;
+  glgrib_options_lines lines = glgrib_options_lines ("coastlines/wdb_rivers_f.b");
+};
+
 class glgrib_options_border : public glgrib_options_base
 {
 public:
@@ -729,6 +741,7 @@ public:
     INCLUDE (palette);
     INCLUDE (coast);
     INCLUDE (border);
+    INCLUDE (rivers);
     INCLUDE (window);
     INCLUDE (landscape);
     INCLUDE (grid);
@@ -744,6 +757,7 @@ public:
   glgrib_options_palette palette;
   glgrib_options_coast coast;
   glgrib_options_border border;
+  glgrib_options_rivers rivers;
   glgrib_options_colorbar colorbar;
   glgrib_options_window window;
   glgrib_options_landscape landscape;

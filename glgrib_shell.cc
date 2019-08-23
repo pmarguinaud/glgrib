@@ -267,7 +267,6 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
                 {
                   hof_t::iterator it_hof = find (*it);
                   const sof_t & sof = it_hof->second;
-                  std::cout << *it << std::endl;
                   sof ();
                 }
               

@@ -511,8 +511,7 @@ void glgrib_scene::setFieldPaletteOpts (int j, const glgrib_options_palette & op
   if (fld == NULL)
     return;
   fld->opts.palette = opts;
-  glgrib_palette p = glgrib_palette::by_name (opts.name);
-  fld->setPalette (p);
+  fld->setPalette (glgrib_palette::by_name (opts.name));
 }
 
 

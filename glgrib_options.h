@@ -207,6 +207,7 @@ public:
 class glgrib_options_parser : public glgrib_options_callback
 {
 public:
+  static void print (class glgrib_options &);
   bool parse (int, const char * []);
   void show_help ();
   void display (const std::string &);
@@ -792,10 +793,6 @@ public:
   virtual bool parse (int, const char * []);
 };
 
-namespace glgrib_parser_ns
-{
-extern void set_print (glgrib_options &);
-}
 
 
 #endif

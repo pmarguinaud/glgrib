@@ -377,7 +377,7 @@ bool glgrib_options::parse (int argc, const char * argv[])
   return v;
 }
 
-void glgrib_parser_ns::set_print (glgrib_options & opts1)
+void glgrib_options_parser::print (glgrib_options & opts1)
 {
   glgrib_options_parser p1, p2;
   glgrib_options opts2;

@@ -105,10 +105,13 @@ public:
   void setViewOpts (const glgrib_options_view &);
   void setLandscapeOpts (const glgrib_options_landscape &);
   void setGridOpts (const glgrib_options_grid &);
+  void setGridColorOpts (const glgrib_option_color &);
+  void setGridScaleOpts (float);
   void setCoastOpts (const glgrib_options_coast &);
   void setBorderOpts (const glgrib_options_border &);
   void setRiversOpts (const glgrib_options_rivers &);
-  void setFieldOpts (int j, const glgrib_options_field &);
+  void setFieldOpts (int, const glgrib_options_field &);
+  void setFieldPaletteOpts (int, const glgrib_options_palette &);
   void setColorBarOpts (const glgrib_options_colorbar &);
   void setImageOpts (const glgrib_options_image &);
   void setTextOpts (const glgrib_options_text &);

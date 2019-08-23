@@ -226,7 +226,7 @@ public:
       vs->push_back (it->first);
   }
 
-  std::set<std::string> getSeenOptions ()
+  std::set<std::string> getSeenOptions () const
   {
     return seen;
   }
@@ -354,6 +354,20 @@ public:
   float head_size = 0.1f;
 };
 
+class glgrib_options_palette : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (name,        Palette name);                              
+    DESC (min,         Palette min value);                              
+    DESC (max,         Palette max value);                              
+  }
+  string name = "default";
+  float min = std::numeric_limits<float>::max(); 
+  float max = std::numeric_limits<float>::min();
+};
+
 class glgrib_options_field : public glgrib_options_base
 {
 public:
@@ -361,22 +375,14 @@ public:
   {
     DESC (path,                List of GRIB files);                    
     DESC (scale,               Scales to be applied to fields);        
-    DESC (palette.name,        Palette name);                              
-    DESC (palette.min,         Palette min value);                              
-    DESC (palette.max,         Palette max value);                              
     DESC (no_value_pointer.on, Do not keep field values in memory);    
     DESC (diff.on,             Show field difference);
+    INCLUDE (palette);
     INCLUDE (vector);
     INCLUDE (contour);
   }
   string_list  path;
-  struct
-  {
-    string       name = "default";
-    float min = std::numeric_limits<float>::max(); 
-    float max = std::numeric_limits<float>::min();
-  } palette;
-  float        scale   = 1.0f;
+  float scale   = 1.0f;
   struct
   {
     bool on = false;
@@ -385,20 +391,11 @@ public:
   {
     bool on = false;
   } diff;
+  glgrib_options_palette palette;
   glgrib_options_vector vector;
   glgrib_options_contour contour;
 };
 
-
-class glgrib_options_palette : public glgrib_options_base
-{
-public:
-  DEFINE
-  {
-    DESC (directory,        Directory where palettes are stored);    
-  }
-  string  directory  = "palettes";
-};
 
 class glgrib_options_grid : public glgrib_options_base
 {
@@ -764,7 +761,6 @@ public:
   {
     INCLUDE (field[0]); INCLUDE (field[1]); INCLUDE (field[2]); INCLUDE (field[3]); INCLUDE (field[4]); 
     INCLUDE (field[5]); INCLUDE (field[6]); INCLUDE (field[7]); INCLUDE (field[8]); INCLUDE (field[9]); 
-    INCLUDE (palette);
     INCLUDE (coast);
     INCLUDE (border);
     INCLUDE (rivers);
@@ -780,7 +776,6 @@ public:
   std::vector<glgrib_options_field> field =
     {glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), 
      glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field ()};
-  glgrib_options_palette palette;
   glgrib_options_coast coast;
   glgrib_options_border border;
   glgrib_options_rivers rivers;

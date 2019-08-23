@@ -115,9 +115,9 @@ void glgrib_field_vector::init (glgrib_loader * ld, const glgrib_options_field &
   glgrib_field_float_buffer_ptr data_v = ld->load (opts.path, slot, &meta_v, 2, 1);
 
   if (opts.palette.name == "default")
-    palette = get_palette_by_meta (meta_u);
+    palette = glgrib_palette::get_by_meta (meta_u);
   else
-    palette = get_palette_by_name (opts.palette.name);
+    palette = glgrib_palette::get_by_name (opts.palette.name);
 
   setPaletteMinMax ();
   recordPaletteOpts ();

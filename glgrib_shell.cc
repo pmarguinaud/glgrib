@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <functional>
 #include <vector>
+#include <set>
 
 #include <stdlib.h>
 #include <string.h>
@@ -196,9 +197,13 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
 
 
           typedef std::function<void ()> sof_t;
+
           class hof_t : public std::map<std::string,sof_t>
           {
           public:
+
+            typedef std::set<std::string>::iterator opts_set_it;
+
             void add (const std::string & name, sof_t func)
             {
               insert (std::pair<std::string,sof_t>(name, func));
@@ -208,38 +213,108 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
               hof_t::iterator it = find (name);
               return it->second;
             }
+            void set (const std::string & opt_name)
+            {
+              // Choose longest (most specialized) option available
+              std::string specialized;
+              for (hof_t::const_iterator it = begin (); it != end (); it++) 
+                {
+                  const std::string & name = it->first;
+                  if ((name == opt_name.substr (0, name.size ())) && (name.size () > specialized.size ()))
+                    specialized = name;
+                }
+              if (specialized != "")
+                opts_set.insert (specialized);
+              else
+                opts_not.insert (opt_name);
+            }
+            void run ()
+            {
+
+              // Remove options which already exist in a less specialized (shorter) form
+              while (1)
+                {
+                  int tt;
+
+                again:
+
+                  tt = 0;
+
+                  for (opts_set_it it1 = opts_set.begin (); it1 != opts_set.end (); it1++)
+                  for (opts_set_it it2 = opts_set.begin (); it2 != opts_set.end (); it2++)
+                    {
+                      const std::string & n1 = *it1, & n2 = *it2;
+                      if (n1 == n2)
+                        continue;
+                      if (n1.substr (0, n2.size ()) == n2) // n2 shorter than n1: remove n1
+                        {
+                          opts_set.erase (n1);
+                          tt++;
+                        }
+                      if (n2.substr (0, n1.size ()) == n1) // n1 shorter than n2: remove n2
+                        {
+                          opts_set.erase (n2);
+                          tt++;
+                        }
+                      if (tt > 0)
+                        goto again;
+                    }
+                  if (tt == 0)
+                    break;
+                }
+
+              for (opts_set_it it = opts_set.begin (); it != opts_set.end (); it++)
+                {
+                  hof_t::iterator it_hof = find (*it);
+                  const sof_t & sof = it_hof->second;
+                  std::cout << *it << std::endl;
+                  sof ();
+                }
+              
+
+              if (opts_not.size () > 0)
+                {
+                  std::cout << "Warning: the following options where not applied : " << std::endl;
+                  for (opts_set_it it = opts_not.begin (); it != opts_not.end (); it++)
+                    std::cout << "   " << *it << std::endl;
+                }
+
+            }
+
+            std::set<std::string> opts_set;
+            std::set<std::string> opts_not;
           };
 
           hof_t hof;
 
-          hof.add ("--view"              , [&opts,gwindow]() { gwindow->scene.setViewOpts       (opts.view        ); });
-          hof.add ("--landscape"         , [&opts,gwindow]() { gwindow->scene.setLandscapeOpts  (opts.landscape   ); });
-          hof.add ("--grid"              , [&opts,gwindow]() { gwindow->scene.setGridOpts       (opts.grid        ); });
-          hof.add ("--coast"             , [&opts,gwindow]() { gwindow->scene.setCoastOpts      (opts.coast       ); });
-          hof.add ("--border"            , [&opts,gwindow]() { gwindow->scene.setBorderOpts     (opts.border      ); });
-          hof.add ("--rivers"            , [&opts,gwindow]() { gwindow->scene.setRiversOpts     (opts.rivers      ); });
-          hof.add ("--colorbar"          , [&opts,gwindow]() { gwindow->scene.setColorBarOpts   (opts.colorbar    ); });
-          hof.add ("--scene.image"       , [&opts,gwindow]() { gwindow->scene.setImageOpts      (opts.scene.image ); });
-          hof.add ("--scene.text"        , [&opts,gwindow]() { gwindow->scene.setTextOpts       (opts.scene.text  ); });
+          hof.add ("--view"                      , [&opts,gwindow]() { gwindow->scene.setViewOpts              (opts.view               );  });
+          hof.add ("--landscape"                 , [&opts,gwindow]() { gwindow->scene.setLandscapeOpts         (opts.landscape          );  });
+          hof.add ("--grid"                      , [&opts,gwindow]() { gwindow->scene.setGridOpts              (opts.grid               );  });
+          hof.add ("--grid.color"                , [&opts,gwindow]() { gwindow->scene.setGridColorOpts         (opts.grid.color         );  });
+          hof.add ("--grid.scale"                , [&opts,gwindow]() { gwindow->scene.setGridScaleOpts         (opts.grid.scale         );  });
+          hof.add ("--coast"                     , [&opts,gwindow]() { gwindow->scene.setCoastOpts             (opts.coast              );  });
+          hof.add ("--border"                    , [&opts,gwindow]() { gwindow->scene.setBorderOpts            (opts.border             );  });
+          hof.add ("--rivers"                    , [&opts,gwindow]() { gwindow->scene.setRiversOpts            (opts.rivers             );  });
+          hof.add ("--colorbar"                  , [&opts,gwindow]() { gwindow->scene.setColorBarOpts          (opts.colorbar           );  });
+          hof.add ("--scene.image"               , [&opts,gwindow]() { gwindow->scene.setImageOpts             (opts.scene.image        );  });
+          hof.add ("--scene.text"                , [&opts,gwindow]() { gwindow->scene.setTextOpts              (opts.scene.text         );  });
 
 #define SFO(j) \
 do { \
-          hof.add ("--field[" #j "]"     , [&opts,gwindow]() { gwindow->scene.setFieldOpts      (j, opts.field[j]);  });  \
+          hof.add ("--field[" #j "]"             , [&opts,gwindow]() { gwindow->scene.setFieldOpts             (j, opts.field[j]        );  });  \
+          hof.add ("--field[" #j "].palette"     , [&opts,gwindow]() { gwindow->scene.setFieldPaletteOpts      (j, opts.field[j].palette);  });  \
 } while (0)
           SFO  (0); SFO  (1); SFO  (2); SFO  (3);
           SFO  (4); SFO  (5); SFO  (6); SFO  (7);
           SFO  (8); SFO  (9); SFO (10); SFO (11);
 #undef SFO
           
- 
-          for (hof_t::iterator it = hof.begin (); it != hof.end (); it++)
-            {
-              const std::string & name = it->first;
-              const sof_t & sof = it->second;
-              if (p.seenOption (name))
-                sof ();
-            }
+          std::set<std::string> seen = p.getSeenOptions ();
 
+          for (std::set<std::string>::iterator it = seen.begin (); it != seen.end (); it++)
+            hof.set (*it);
+ 
+          hof.run ();
 
         }
   

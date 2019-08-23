@@ -495,5 +495,26 @@ void glgrib_scene::setTextOpts (const glgrib_options_text & o)
     }
 }
 
+void glgrib_scene::setGridColorOpts (const glgrib_option_color & color)
+{
+  d.grid.opts.color = color;
+}
+
+void glgrib_scene::setGridScaleOpts (float scale)
+{
+  d.grid.opts.scale = scale;
+}
+
+void glgrib_scene::setFieldPaletteOpts (int j, const glgrib_options_palette & opts)
+{
+  glgrib_field * fld = fieldlist[j];
+  if (fld == NULL)
+    return;
+  fld->opts.palette = opts;
+  glgrib_palette p = glgrib_palette::get_by_name (opts.name);
+  fld->setPalette (p);
+}
+
+
 
 

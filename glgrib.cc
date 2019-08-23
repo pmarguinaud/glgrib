@@ -33,8 +33,6 @@ int main (int argc, const char * argv[])
       exit (EXIT_FAILURE);
     }
 
-  palette_directory = opts.palette.directory;
-
   glgrib_window * gwindow;
 
   if (opts.window.offscreen.on)

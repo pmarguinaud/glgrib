@@ -71,9 +71,9 @@ void glgrib_field_scalar::init (glgrib_loader * ld, const glgrib_options_field &
   meta.push_back (meta1);
 
   if (opts.palette.name == "default")
-    palette = get_palette_by_meta (meta1);
+    palette = glgrib_palette::get_by_meta (meta1);
   else
-    palette = get_palette_by_name (opts.palette.name);
+    palette = glgrib_palette::get_by_name (opts.palette.name);
 
   setPaletteMinMax ();
   recordPaletteOpts ();

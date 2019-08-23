@@ -30,7 +30,7 @@ void glgrib_field::setPalette (const glgrib_palette & p)
 
 void glgrib_field::setNextPalette ()
 {
-  palette = get_next_palette (palette);
+  palette = glgrib_palette::get_next (palette);
   setPaletteMinMax ();
   recordPaletteOpts ();
 }

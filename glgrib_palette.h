@@ -37,6 +37,9 @@ public:
 class glgrib_palette
 {
 public:
+  static glgrib_palette & get_by_name (const std::string &);
+  static glgrib_palette & get_next (const glgrib_palette &);
+  static glgrib_palette get_by_meta (const glgrib_field_metadata &);
   void save (const glgrib_field_metadata &) const;
   glgrib_rgba rgba_mis;
   std::vector<glgrib_rgba> rgba;
@@ -90,11 +93,7 @@ private:
 extern glgrib_palette palette_cold_hot;
 extern glgrib_palette palette_cloud;
 extern glgrib_palette palette_cloud_auto;
-extern std::string palette_directory;
 
-extern glgrib_palette & get_palette_by_name (const std::string &);
-extern glgrib_palette & get_next_palette (const glgrib_palette &);
-extern glgrib_palette get_palette_by_meta (const glgrib_field_metadata &);
 
 
 

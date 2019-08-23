@@ -366,6 +366,8 @@ public:
   string name = "default";
   float min = std::numeric_limits<float>::max(); 
   float max = std::numeric_limits<float>::min();
+  float nomin = std::numeric_limits<float>::max(); 
+  float nomax = std::numeric_limits<float>::min();
 };
 
 class glgrib_options_field : public glgrib_options_base

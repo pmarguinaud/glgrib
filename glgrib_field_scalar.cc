@@ -71,9 +71,9 @@ void glgrib_field_scalar::init (glgrib_loader * ld, const glgrib_options_field &
   meta.push_back (meta1);
 
   if (opts.palette.name == "default")
-    palette = glgrib_palette::get_by_meta (meta1);
+    palette = glgrib_palette::by_meta (meta1);
   else
-    palette = glgrib_palette::get_by_name (opts.palette.name);
+    palette = glgrib_palette::by_name (opts.palette.name);
 
   setPaletteMinMax ();
   recordPaletteOpts ();
@@ -114,27 +114,16 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   glgrib_program * program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
   program->use ();
   float scale0[3] = {opts.scale, opts.scale, opts.scale};
-  const glgrib_palette & p = palette;
 
   view.setMVP (program);
   program->setLight (light);
-  p.setRGBA255 (program->programID);
+  palette.setRGBA255 (program->programID);
 
   program->set3fv ("scale0", scale0);
   program->set1f ("valmin", getNormedMinValue ());
   program->set1f ("valmax", getNormedMaxValue ());
-
-  float palmax = p.hasMax () ? p.getMax () : getNormedMaxValue ();
-  float palmin = p.hasMin () ? p.getMin () : getNormedMinValue ();
-
-  if (palmax == palmin)
-    {
-      palmin = meta[0].valmin;
-      palmax = meta[0].valmax;
-    }
-
-  program->set1f ("palmin", palmin);
-  program->set1f ("palmax", palmax);
+  program->set1f ("palmin", palette.getMin ());
+  program->set1f ("palmax", palette.getMax ());
 
   glgrib_field::render (view, light);
 }

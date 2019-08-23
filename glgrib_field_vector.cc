@@ -115,9 +115,9 @@ void glgrib_field_vector::init (glgrib_loader * ld, const glgrib_options_field &
   glgrib_field_float_buffer_ptr data_v = ld->load (opts.path, slot, &meta_v, 2, 1);
 
   if (opts.palette.name == "default")
-    palette = glgrib_palette::get_by_meta (meta_u);
+    palette = glgrib_palette::by_meta (meta_u);
   else
-    palette = glgrib_palette::get_by_name (opts.palette.name);
+    palette = glgrib_palette::by_name (opts.palette.name);
 
   setPaletteMinMax ();
   recordPaletteOpts ();
@@ -266,20 +266,16 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       view.setMVP (program);
       program->setLight (light);
 
-      const glgrib_palette & p = palette;
-      p.setRGBA255 (program->programID);
+      palette.setRGBA255 (program->programID);
 
       for (int i = 0; i < 3; i++)
         scale0[i] *= 0.99;
 
-      float palmax = p.hasMax () ? p.getMax () : valmax[0];
-      float palmin = p.hasMin () ? p.getMin () : valmin[0];
-
       program->set3fv ("scale0", scale0);
       program->set1f ("valmin", valmin[0]);
       program->set1f ("valmax", valmax[0]);
-      program->set1f ("palmin", palmin);
-      program->set1f ("palmax", palmax);
+      program->set1f ("palmin", palette.getMin ());
+      program->set1f ("palmax", palette.getMax ());
 
       glBindVertexArray (VertexArrayID);
       glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);

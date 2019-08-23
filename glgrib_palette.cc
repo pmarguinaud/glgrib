@@ -28,7 +28,7 @@ glgrib_palette palette_white_black
     255, 255, 255, 255
   );
 
-glgrib_palette & glgrib_palette::get_by_name (const std::string & name)
+glgrib_palette & glgrib_palette::by_name (const std::string & name)
 {
   name2palette_t::iterator it = name2palette.find (name);
 
@@ -103,7 +103,7 @@ glgrib_palette::glgrib_palette (std::ifstream & fh)
     rgba.push_back (glgrib_rgba ((byte)r, (byte)g, (byte)b, (byte)a));
 }
 
-glgrib_palette & glgrib_palette::get_next (const glgrib_palette & p)
+glgrib_palette & glgrib_palette::next (const glgrib_palette & p)
 {
   name2palette_t::iterator it = name2palette.find (p.name);
   if (it != name2palette.end ())
@@ -218,7 +218,7 @@ bool operator!= (const glgrib_palette & p1, const glgrib_palette & p2)
   return ! (p1 == p2);
 }
  
-glgrib_palette glgrib_palette::get_by_meta (const glgrib_field_metadata  & meta)
+glgrib_palette glgrib_palette::by_meta (const glgrib_field_metadata  & meta)
 {
   sqlite3 * db = NULL;
   sqlite3_stmt * req = NULL;
@@ -284,7 +284,7 @@ end:
 
 
 
-  glgrib_palette p = glgrib_palette::get_by_name (pname);
+  glgrib_palette p = glgrib_palette::by_name (pname);
   p.min = pmin;
   p.max = pmax;
   return p;

@@ -226,6 +226,11 @@ public:
       vs->push_back (it->first);
   }
 
+  std::set<std::string> getSeenOptions ()
+  {
+    return seen;
+  }
+
   const glgrib_parser_ns::option_base * getOption (const std::string & name)
   {
     name2option_t::iterator it = name2option.find (name);

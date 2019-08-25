@@ -84,6 +84,8 @@ public:
   class glgrib_window * clone ();
   bool isClosed () { return closed; }
   bool isCloned () { return cloned; }
+  void setCloned () { cloned = true; }
+  void shouldClose () { glfwSetWindowShouldClose (window, 1); }
   
   int id () const { return id_; }
 
@@ -128,6 +130,7 @@ public:
       else
         return NULL;
     }
+  void close ();
 };
 
 #endif

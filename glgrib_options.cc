@@ -8,7 +8,7 @@
 #include <map>
 
 
-namespace glgrib_parser_ns
+namespace glgrib_options_parser_detail
 {
 
 template <> std::string option_tmpl     <int>                ::type () { return std::string ("INTEGER"); }
@@ -243,7 +243,7 @@ bool glgrib_options_parser::parse (int argc, const char * argv[])
 {
   try
     {
-      glgrib_parser_ns::option_base * opt = NULL;
+      glgrib_options_parser_detail::option_base * opt = NULL;
 
       for (int iarg = 1; iarg < argc; iarg++)
         {
@@ -345,7 +345,7 @@ void glgrib_options_parser::show_help ()
   display (std::string ("--"));
 }
 
-void glgrib_options_parser::display (const std::string & prefix)
+void glgrib_options_parser::display (const std::string & prefix, bool show_hidden)
 {
   size_t name_size = 0, type_size = 0;
   int len = prefix.size ();
@@ -363,7 +363,9 @@ void glgrib_options_parser::display (const std::string & prefix)
        it != name2option.end (); it++)
     if (it->first.substr (0, len) == prefix)
       {   
-	glgrib_parser_ns::option_base * opt = it->second;
+	glgrib_options_parser_detail::option_base * opt = it->second;
+        if ((! show_hidden) && (opt->hidden))
+          continue;
         printf (format, it->first.c_str (), opt->type ().c_str ());
         printf ("      %s\n", opt->asString ().c_str ());
         printf ("      %s\n", opt->desc.c_str ());
@@ -392,8 +394,8 @@ void glgrib_options_parser::print (glgrib_options & opts1)
   for (int i = 0; i < options_list.size (); i++)
     {
       const std::string & name = options_list[i];
-      const glgrib_parser_ns::option_base * o1 = p1.getOption (name);
-      const glgrib_parser_ns::option_base * o2 = p2.getOption (name);
+      const glgrib_options_parser_detail::option_base * o1 = p1.getOption (name);
+      const glgrib_options_parser_detail::option_base * o2 = p2.getOption (name);
       if (o1->isEqual (o2))
         continue;
       std::cout << "  " << name;

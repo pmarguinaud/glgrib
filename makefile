@@ -32,7 +32,7 @@ glwhat.x: glwhat.cc
 
 test_colorbar: glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field[0].path testdata/t1198c2.2/N.grb  --field[0].scale 1.03   \
-		--colorbar.on --colorbar.font.color.foreground green --window.width 1000 --font.color.foreground green
+		--colorbar.on --colorbar.font.color.foreground green --window.width 1000 
 
 test_bw: glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field[0].path testdata/t1198c2.2/N.grb  --field[0].scale 1.03  
@@ -76,9 +76,6 @@ test_glob01: ./glgrib.x
 
 test_small: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry  testdata/t49/Z.grb  --field[0].scale 1.01  --field[0].path testdata/t49/SFX.CLAY.grb --coast.on --grid.on
-
-test_shell: ./glgrib.x
-	./glgrib.x --shell.on --landscape.on --landscape.geometry  testdata/t49/Z.grb  --field[0].scale 1.01  --field[0].path testdata/t49/SFX.CLAY.grb --coast.on --grid.on
 
 test_novalue: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1798/Z.grb \
@@ -181,21 +178,21 @@ test_travelling: ./glgrib.x
 
 test_strxyz: ./glgrib.x
 	$(GDB) ./glgrib.x --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 0.99 \
-		--colorbar.on --colorbar.font.color.foreground green --window.width 1000 --font.color.foreground green \
+		--colorbar.on --colorbar.font.color.foreground green --window.width 1000 --scene.test_strxyz.font.color.foreground green \
 		--scene.projection XYZ --scene.test_strxyz.on
 
 test_interpolation: ./glgrib.x
 	$(GDB) ./glgrib.x --field\[0\].path testdata/interp/01.grb testdata/interp/36.grb  --field\[0\].scale 1.03 --field\[0\].palette.name cold_hot_temp  \
 		--view.lon 2 --view.lat 46.7 --view.fov 5 --scene.interpolation.on --scene.interpolation.frames 200 --window.width 1000 --window.height 1000 \
-                --font.scale 0.03 --font.color.foreground red --scene.display_date.on --coast.on --grid.on
+                --scene.date.font.scale 0.03 --scene.date.font.color.foreground red --scene.date.on --coast.on --grid.on
 
 test_background: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 \
-		--scene.display_date.on  --font.scale 0.03 --font.color.foreground red --font.color.background white
+		--scene.date.on  --scene.date.font.scale 0.03 --scene.date.font.color.foreground red --scene.date.font.color.background white
 
 test_text: ./glgrib.x
 	$(GDB) ./glgrib.x  --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 \
-		--scene.text.on --scene.text.s "coucou" --scene.text.x 0.0 --scene.text.y 1.0 --scene.text.a NW  --font.scale 0.03 --font.color.foreground black --font.color.background white
+		--scene.text.on --scene.text.s "coucou" --scene.text.x 0.0 --scene.text.y 1.0 --scene.text.a NW  --scene.text.font.scale 0.03 --scene.text.font.color.foreground black --scene.text.font.color.background white
 
 test_fa: ./glgrib.x
 	$(GDB) ./glgrib.x --field\[0\].path testdata/fa/PGD.t479.fa%SFX.FRAC_SEA  --field\[0\].scale 1.03 
@@ -214,6 +211,6 @@ test_image: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 \
 		--scene.image.on --scene.image.path testdata/image/B.bmp --scene.image.x0 0. --scene.image.y0 0.  --scene.image.x1 0.1 --scene.image.y1 0.1
 
-test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_shell test_novalue test_t8000_noorog test_missingvalue test_aro test_guyane
-
+test_shell: ./glgrib.x
+	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 --shell.on 
 

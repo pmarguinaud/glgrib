@@ -34,7 +34,7 @@ void glgrib_view::calcMVP () const
 
   glm::mat4 Trans = glm::mat4 (1.0f);
 
-  if (ratio > 1.0f)
+  if ((! opts.center.on) && (ratio > 1.0f))
     Trans = glm::translate (Trans, glm::vec3 ((ratio - 1.0f) / 2.0f, 0.0f, 0.0f));
        
   glm::mat4 p;

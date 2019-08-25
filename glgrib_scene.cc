@@ -10,20 +10,23 @@
 
 glgrib_scene & glgrib_scene::operator= (const glgrib_scene & other)
 {
-  d = other.d;
 
-  for (int i = 0; i < fieldlist.size (); i++)
-    if (fieldlist[i] != NULL)
-      delete fieldlist[i];
-
-  fieldlist.clear ();
-
-  for (int i = 0; i < other.fieldlist.size (); i++)
-    if (other.fieldlist[i] == NULL)
-      fieldlist.push_back (NULL);
-    else
-      fieldlist.push_back (other.fieldlist[i]->clone ());
-
+  if (this != &other)
+    {
+      d = other.d;
+     
+      for (int i = 0; i < fieldlist.size (); i++)
+        if (fieldlist[i] != NULL)
+          delete fieldlist[i];
+     
+      fieldlist.clear ();
+     
+      for (int i = 0; i < other.fieldlist.size (); i++)
+        if (other.fieldlist[i] == NULL)
+          fieldlist.push_back (NULL);
+        else
+          fieldlist.push_back (other.fieldlist[i]->clone ());
+   }
 }
 
 glgrib_scene::~glgrib_scene () 
@@ -72,7 +75,7 @@ void glgrib_scene::display () const
 
   d.strmess.render (d.MVP_R);
 
-  if (d.opts.scene.display_date.on)
+  if (d.opts.scene.date.on)
     d.strdate.render (d.MVP_R);
 
   if (d.opts.scene.test_strxyz.on)
@@ -212,35 +215,24 @@ void glgrib_scene::update_interpolation ()
       float slot = (float)d.nupdate / (float)d.opts.scene.interpolation.frames;
       if (slot > slotmax)
         slot = slotmax;
+    }
+}
 
-      bool seen_date = false;
-      for (int i = 0; i < fieldlist.size (); i++)
+
+void glgrib_scene::update_date ()
+{
+  if (d.opts.scene.date.on)
+    {
+      glgrib_field * fld = getCurrentField ();
+      if (fld != NULL)
         {
-	  if (fieldlist[i] != NULL)
+          const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
+          if (strdate != meta[0].term.asString ())
             {
-              delete fieldlist[i];
-	      fieldlist[i] = NULL;
-
-              glgrib_field * fld = NULL;
-
-              if (d.opts.field[i].vector.on)
-                fld = new glgrib_field_vector ();
-              else if (d.opts.field[i].contour.on)
-                fld = new glgrib_field_contour ();
-              else
-                fld = new glgrib_field_scalar ();
-
-              fld->init (&ld, d.opts.field[i], slot);
-	      fieldlist[i] = fld;
-
-              if ((! seen_date) && (d.opts.scene.display_date.on))
-                {
-                  const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
-                  d.strdate.update (meta[0].term.asString ());
-                  seen_date = true;
-                }
-	    }
-	}
+              strdate = meta[0].term.asString ();
+              d.strdate.update (strdate);
+            }
+        }
     }
 }
 
@@ -250,6 +242,7 @@ void glgrib_scene::update ()
   update_view ();
   update_light ();
   update_interpolation ();
+  update_date ();
 
   d.nupdate++;
 
@@ -260,10 +253,7 @@ void glgrib_scene::init (const glgrib_options & o)
   d.opts = o;
 
   setViewport (d.opts.window.width, d.opts.window.height);
-
-  if (d.opts.scene.light.on)
-    setLight ();
-
+  setLightOpts (d.opts.scene.light);
   setImageOpts (d.opts.scene.image);
 
   if (d.opts.scene.interpolation.on)
@@ -297,41 +287,20 @@ void glgrib_scene::init (const glgrib_options & o)
   for (int i = 0; i < d.opts.field.size (); i++)
     setFieldOpts (i, d.opts.field[i]);
 
-  if (d.opts.scene.display_date.on)
-    {
-      for (int i = 0; i < d.opts.field.size (); i++)
-        {
-          glgrib_field * fld = fieldlist[i];
-          if (fld != NULL)
-            {
-              glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
-              d.strdate.init2D (font, std::string (20, 'X'), 1.0f, 0.0f, 
-                                d.opts.font.scale, glgrib_string::SE);
-     
-              d.strdate.setForegroundColor (d.opts.font.color.foreground);
-              d.strdate.setBackgroundColor (d.opts.font.color.background);
-     
-              const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
-              d.strdate.update (meta[0].term.asString ());
-              break;
-            }
-        }
-    }
-
-
+  setDateOpts (d.opts.scene.date);
   setTextOpts (d.opts.scene.text);
   setColorBarOpts (d.opts.colorbar);
 
   if (d.opts.scene.test_strxyz.on)
     {
-      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
+      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.scene.date.font);
       d.strxyz.init3D (font, std::vector<std::string>{"ABCD","EFGH","IJKL","MNOP"},
                        std::vector<float>{+1.01f,-1.01f,+0.00f,+0.707*1.010f},
                        std::vector<float>{+0.00f,+0.00f,+1.01f,+0.707*0.000f},
                        std::vector<float>{+0.00f,+0.00f,+0.00f,+0.707*1.010f},
                        std::vector<float>{+0.0f,+0.0f,+90.0f,+0.0f},
-                       d.opts.font.scale, glgrib_string::C);
-      d.strxyz.setForegroundColor (d.opts.font.color.foreground);
+                       d.opts.scene.date.font.scale, glgrib_string::C);
+      d.strxyz.setForegroundColor (d.opts.scene.date.font.color.foreground);
     }
 
   resize ();
@@ -450,10 +419,10 @@ void glgrib_scene::setColorBarOpts (const glgrib_options_colorbar & o)
 
   if (d.opts.colorbar.on)
     {
-      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
+      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.colorbar.font);
       d.strmess.init2D (font, std::string (30, ' '), 1.0f, 1.0f, 
-                        d.opts.font.scale, glgrib_string::NE);
-      d.strmess.setForegroundColor (d.opts.font.color.foreground);
+                        d.opts.colorbar.font.scale, glgrib_string::NE);
+      d.strmess.setForegroundColor (d.opts.colorbar.font.color.foreground);
       d.colorbar.init (d.opts.colorbar);
     }
 
@@ -473,7 +442,7 @@ void glgrib_scene::setTextOpts (const glgrib_options_text & o)
   d.str.clear ();
   if (d.opts.scene.text.on)
     {
-      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.font);
+      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.scene.text.font);
       for (int i = 0; i < d.opts.scene.text.s.size (); i++)
         {
           glgrib_string str;
@@ -488,9 +457,9 @@ void glgrib_scene::setTextOpts (const glgrib_options_text & o)
             glgrib_string::str2align (d.opts.scene.text.a[i]) : glgrib_string::C;
 
           d.str[i].init2D (font, d.opts.scene.text.s[i], d.opts.scene.text.x[i], 
-                           d.opts.scene.text.y[i], d.opts.font.scale, a);
-          d.str[i].setForegroundColor (d.opts.font.color.foreground);
-          d.str[i].setBackgroundColor (d.opts.font.color.background);
+                           d.opts.scene.text.y[i], d.opts.scene.text.font.scale, a);
+          d.str[i].setForegroundColor (d.opts.scene.text.font.color.foreground);
+          d.str[i].setBackgroundColor (d.opts.scene.text.font.color.background);
         }
     }
 }
@@ -514,6 +483,23 @@ void glgrib_scene::setFieldPaletteOpts (int j, const glgrib_options_palette & op
   fld->setPalette (glgrib_palette::by_name (opts.name));
 }
 
+void glgrib_scene::setDateOpts (const glgrib_options_date & o)
+{
+  strdate = "";
+  d.opts.scene.date = o;
+  d.strdate.cleanup ();
+  if (d.opts.scene.date.on)
+    {
+      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.scene.date.font);
+      d.strdate.init2D (font, std::string (20, ' '), 1.0f, 0.0f, 
+                        d.opts.scene.date.font.scale, glgrib_string::SE);
+      d.strdate.setForegroundColor (d.opts.scene.date.font.color.foreground);
+      d.strdate.setBackgroundColor (d.opts.scene.date.font.color.background);
+    }
+}
 
-
+void glgrib_scene::setLightOpts (const glgrib_options_light & o)
+{
+  d.opts.scene.light = o;
+}
 

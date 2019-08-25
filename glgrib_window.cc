@@ -659,10 +659,11 @@ void glgrib_window::renderFrame ()
   makeCurrent ();
   scene.display (); 
   
+  glfwSwapBuffers (window);
+
   if (Shell.started ())
     Shell.unlock ();
 
-  glfwSwapBuffers (window);
 }
 
 void glgrib_window::run (glgrib_shell * shell)
@@ -873,6 +874,15 @@ glgrib_window * glgrib_window_set::getWindowById (int id)
   return NULL;
 }
 
+void glgrib_window_set::close ()
+{
+  for (glgrib_window_set::iterator it = begin (); it != end (); it++)
+    {
+      glgrib_window * win = *it;
+      win->shouldClose ();
+    }
+}
+
 #define GLMESS(x) case GL_DEBUG_SOURCE_##x: return #x
 static const char * debug_source (unsigned int source)
 {
@@ -919,4 +929,5 @@ void glgrib_window::debug (unsigned int source, unsigned int type, GLuint id,
   printf ("%-20s | %-20s | %-30s | %10d | %s\n", debug_source (source), 
           debug_severity (severity), debug_type (type), id, message);
 }
+
 

@@ -58,6 +58,7 @@ public:
   void update_light ();
   void update_interpolation ();
   void update_view ();
+  void update_date ();
 
   void setCurrentFieldRank (int r) { d.currentFieldRank = r; }
 
@@ -92,6 +93,7 @@ public:
       glm::mat4 MVP_R, MVP_L;
       friend class glgrib_scene;
   };
+  std::string strdate = "";
 
   void toggleColorBar ()
   {
@@ -115,6 +117,8 @@ public:
   void setColorBarOpts (const glgrib_options_colorbar &);
   void setImageOpts (const glgrib_options_image &);
   void setTextOpts (const glgrib_options_text &);
+  void setDateOpts (const glgrib_options_date &);
+  void setLightOpts (const glgrib_options_light &);
 
   glgrib_options getOptions () const;
 

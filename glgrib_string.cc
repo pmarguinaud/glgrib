@@ -6,6 +6,8 @@ glgrib_string & glgrib_string::operator= (const glgrib_string & str)
 {
   if (this != &str)
     {
+
+
       cleanup ();
       if (str.ready)
         {
@@ -274,8 +276,9 @@ void glgrib_string::update (const std::vector<std::string> & str)
       data[i][j] = ' ';
 
   glBindBuffer (GL_ARRAY_BUFFER, letterbuffer);
+
   float * let = (float *)glMapBufferRange (GL_ARRAY_BUFFER, 0, len * sizeof (float), 
-  	                                   GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
+  	                                   GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
 
   for (int j = 0, ii = 0; j < data.size (); j++)
     for (int i = 0; i < data[j].size (); i++, ii++) 

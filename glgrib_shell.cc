@@ -159,9 +159,13 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
     }
 
 
-  if ((cmd == "exit") || (cmd == "quit"))
+  if (cmd == "close")
     {
-      close = 1;
+      gwindow->shouldClose ();
+    }
+  else if (cmd == "clone")
+    {
+      gwindow->setCloned ();
     }
   else if (cmd == "show")
     {
@@ -175,7 +179,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
       opts.traverse ("", &p);
  
       for (int i = 0; i < args.size (); i++)
-        p.display (args[i]);      
+        p.display (args[i], true);      
 
     }
   else if (cmd == "set")
@@ -297,6 +301,8 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
           hof.add ("--colorbar"                  , [&opts,gwindow]() { gwindow->scene.setColorBarOpts          (opts.colorbar           );  });
           hof.add ("--scene.image"               , [&opts,gwindow]() { gwindow->scene.setImageOpts             (opts.scene.image        );  });
           hof.add ("--scene.text"                , [&opts,gwindow]() { gwindow->scene.setTextOpts              (opts.scene.text         );  });
+          hof.add ("--scene.date"                , [&opts,gwindow]() { gwindow->scene.setDateOpts              (opts.scene.date         );  });
+          hof.add ("--scene.light"               , [&opts,gwindow]() { gwindow->scene.setLightOpts             (opts.scene.light        );  });
 
 #define SFO(j) \
 do { \
@@ -365,16 +371,18 @@ void glgrib_shell::run ()
     {
       char * line = readline ("glgrib> ");
 
-      lock ();
-
       if (line == NULL)
         {
-          close = 1;
+          lock ();
+          wset->close ();
+          unlock ();
           break;
         }
+
       if (strlen (line) > 0) 
         add_history (line);
  
+      lock ();
       {
         if (wset->size ())
           {

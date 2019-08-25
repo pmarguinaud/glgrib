@@ -66,7 +66,7 @@ public:
 
 
 
-namespace glgrib_parser_ns 
+namespace glgrib_options_parser_detail 
 {
 
   class option_base
@@ -81,6 +81,7 @@ namespace glgrib_parser_ns
     virtual std::string asString () const = 0;
     virtual void clear () = 0;
     virtual bool isEqual (const option_base *) const = 0;
+    bool hidden = false;
   };
 
   template <class T>
@@ -188,8 +189,15 @@ namespace glgrib_parser_ns
 class glgrib_options_callback
 {
 public:
+
+  class opt
+  {
+  public:
+  virtual void _dummy_ () {}
+  };
+
 #define DEF_APPLY(T) \
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, T * data) {}
+  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, T * data, const opt * = NULL) {}
   DEF_APPLY (float);
   DEF_APPLY (bool);
   DEF_APPLY (int);
@@ -210,7 +218,7 @@ public:
   static void print (class glgrib_options &);
   bool parse (int, const char * []);
   void show_help ();
-  void display (const std::string &);
+  void display (const std::string &, bool = false);
   ~glgrib_options_parser ()
   {
     for (name2option_t::iterator it = name2option.begin (); 
@@ -231,7 +239,7 @@ public:
     return seen;
   }
 
-  const glgrib_parser_ns::option_base * getOption (const std::string & name)
+  const glgrib_options_parser_detail::option_base * getOption (const std::string & name)
   {
     name2option_t::iterator it = name2option.find (name);
     if (it != name2option.end ())
@@ -239,18 +247,24 @@ public:
     return NULL;
   }
 
+  class opt : public glgrib_options_callback::opt
+  {
+  public:
+    bool hidden = false;
+  };
+
 private:
 
   std::vector<std::string> ctx;
   std::set<std::string> seen;
 
-  class name2option_t : public std::map<std::string,glgrib_parser_ns::option_base*> 
+  class name2option_t : public std::map<std::string,glgrib_options_parser_detail::option_base*> 
   {
   public:
-    void insert (const std::string name, glgrib_parser_ns::option_base * opt)
+    void insert (const std::string name, glgrib_options_parser_detail::option_base * opt)
     {
-      std::map<std::string,glgrib_parser_ns::option_base*>::insert 
-        (std::pair<std::string,glgrib_parser_ns::option_base *>(name, opt));
+      std::map<std::string,glgrib_options_parser_detail::option_base*>::insert 
+        (std::pair<std::string,glgrib_options_parser_detail::option_base *>(name, opt));
     }
   };
 
@@ -261,24 +275,35 @@ private:
     return "--" + path + (path == "" ? "" : ".") + name;
   }
 
-#define DEF_APPLY(T,C) \
-  void apply (const std::string & path, const std::string & name,            \
-              const std::string & desc, T * data)                            \
-  {                                                                          \
-    std::string opt_name = get_opt_name (path, name);                        \
-    name2option.insert (opt_name, new C (opt_name, desc, data));             \
+  void createOption (const std::string & opt_name, 
+                     glgrib_options_parser_detail::option_base * option, 
+                     const glgrib_options_callback::opt * _o)
+  {
+    const opt * o = dynamic_cast<const opt*>(_o);
+    if (o != NULL)
+      option->hidden = o->hidden;
+    name2option.insert (opt_name, option);
   }
 
-  DEF_APPLY (float                             , glgrib_parser_ns::option_tmpl<float> );
-  DEF_APPLY (bool                              , glgrib_parser_ns::option_tmpl<bool>);
-  DEF_APPLY (int                               , glgrib_parser_ns::option_tmpl<int>);
-  DEF_APPLY (std::vector<std::string>          , glgrib_parser_ns::option_tmpl_list<std::string>);
-  DEF_APPLY (std::string                       , glgrib_parser_ns::option_tmpl<std::string>);
-  DEF_APPLY (std::vector<float>                , glgrib_parser_ns::option_tmpl_list<float>);
-  DEF_APPLY (std::vector<int>                  , glgrib_parser_ns::option_tmpl_list<int>);
-  DEF_APPLY (glgrib_option_color               , glgrib_parser_ns::option_tmpl<glgrib_option_color>);
-  DEF_APPLY (std::vector<glgrib_option_color>  , glgrib_parser_ns::option_tmpl_list<glgrib_option_color>);
-  DEF_APPLY (glgrib_option_date                , glgrib_parser_ns::option_tmpl<glgrib_option_date>);
+#define DEF_APPLY(T,C) \
+  void apply (const std::string & path, const std::string & name,                      \
+              const std::string & desc, T * data,                                      \
+              const glgrib_options_callback::opt * o = NULL)                           \
+  {                                                                                    \
+    std::string opt_name = get_opt_name (path, name);                                  \
+    createOption (opt_name, new C (opt_name, desc, data), o);                          \
+  }
+
+  DEF_APPLY (float                             , glgrib_options_parser_detail::option_tmpl<float> );
+  DEF_APPLY (bool                              , glgrib_options_parser_detail::option_tmpl<bool>);
+  DEF_APPLY (int                               , glgrib_options_parser_detail::option_tmpl<int>);
+  DEF_APPLY (std::vector<std::string>          , glgrib_options_parser_detail::option_tmpl_list<std::string>);
+  DEF_APPLY (std::string                       , glgrib_options_parser_detail::option_tmpl<std::string>);
+  DEF_APPLY (std::vector<float>                , glgrib_options_parser_detail::option_tmpl_list<float>);
+  DEF_APPLY (std::vector<int>                  , glgrib_options_parser_detail::option_tmpl_list<int>);
+  DEF_APPLY (glgrib_option_color               , glgrib_options_parser_detail::option_tmpl<glgrib_option_color>);
+  DEF_APPLY (std::vector<glgrib_option_color>  , glgrib_options_parser_detail::option_tmpl_list<glgrib_option_color>);
+  DEF_APPLY (glgrib_option_date                , glgrib_options_parser_detail::option_tmpl<glgrib_option_date>);
 
 #undef DEF_APPLY
 
@@ -290,7 +315,8 @@ public:
   typedef std::vector<std::string> string_list;
   typedef std::vector<float> float_list;
   typedef std::string string;
-  virtual void traverse (const std::string &, glgrib_options_callback *) {}
+  virtual void traverse (const std::string &, glgrib_options_callback *, 
+                         const glgrib_options_callback::opt * = NULL) {}
   virtual bool parse (int argc, const char * argv[])
   {
     glgrib_options_parser p;
@@ -300,9 +326,16 @@ public:
 };
 
 
-#define DESC(name, desc) do { cb->apply (p, #name, #desc, &name); } while (0)
-#define INCLUDE(name) do { name.traverse (p + ( p == "" ? "" : ".") + #name, cb); } while (0)
-#define DEFINE virtual void traverse (const std::string & p, glgrib_options_callback * cb)
+#define DESC(name, desc) do { cb->apply (p, #name, #desc, &name, o); } while (0)
+
+#define INCLUDE(name) do { name.traverse (p + ( p == "" ? "" : ".") + #name, cb, o); } while (0)
+
+#define INCLUDE_H(name) \
+  do { glgrib_options_parser::opt o; o.hidden = true; \
+       name.traverse (p + ( p == "" ? "" : ".") + #name, cb, &o); } while (0)
+
+#define DEFINE virtual void traverse (const std::string & p, glgrib_options_callback * cb, \
+                                      const glgrib_options_callback::opt * o = NULL)
 
 class glgrib_options_contour : public glgrib_options_base
 {
@@ -590,79 +623,6 @@ public:
   std::string align;
 };
 
-class glgrib_options_text : public glgrib_options_base
-{
-public:
-  DEFINE
-  {
-    DESC (on,             Enable text);
-    DESC (s,              Strings to be displayed);
-    DESC (x,              Coordinates of strings);
-    DESC (y,              Coordinates of strings);
-    DESC (a,              Text alignment);
-  }
-  bool on = false;
-  std::vector<std::string> s;
-  std::vector<float> x;
-  std::vector<float> y;
-  std::vector<std::string> a;
-};
-
-class glgrib_options_scene : public glgrib_options_base
-{
-public:
-  DEFINE
-  {
-    DESC (lon_at_hour,         Set longitude at solar time);
-    DESC (rotate_earth.on,     Make earth rotate);
-    INCLUDE (light);
-    INCLUDE (travelling);
-    DESC (test_strxyz.on,      Test XYZ string);
-    INCLUDE (interpolation);
-    DESC (display_date.on,     Display date);
-    INCLUDE (text);
-    INCLUDE (image);
-  }
-  struct
-  {
-    bool on  = false;
-  } rotate_earth;
-  float   lon_at_hour = -1.0f;
-  glgrib_options_light light;  
-  glgrib_options_travelling travelling;
-  struct
-  {
-    bool on = false;
-  } test_strxyz;
-  glgrib_options_interpolation interpolation;
-  struct
-  {
-    bool on = false;
-  } display_date;
-  glgrib_options_text text;
-  glgrib_options_image image;
-};
-
-class glgrib_options_view : public glgrib_options_base
-{
-public:
-  DEFINE
-  {
-    DESC (projection,         Mercator XYZ latlon polar_north polar_south);
-    DESC (transformation,     Perspective or orthographic);
-    DESC (lon,                Camera longitude);
-    DESC (lat,                Camera latitude);
-    DESC (fov,                Camera field of view);
-    DESC (distance,           Camera distance);
-  }
-  string  projection  = "XYZ";
-  string  transformation  = "PERSPECTIVE";
-  float  distance  = 6.0; 
-  float  lat       = 0.0; 
-  float  lon       = 0.0; 
-  float  fov       = 20.;
-};
-
 class glgrib_options_font : public glgrib_options_base
 {
 public:
@@ -682,6 +642,95 @@ public:
     glgrib_option_color foreground = glgrib_option_color (255, 255, 255, 255);
     glgrib_option_color background = glgrib_option_color (  0,   0,   0,   0);
   } color;
+};
+
+class glgrib_options_text : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on,             Enable text);
+    DESC (s,              Strings to be displayed);
+    DESC (x,              Coordinates of strings);
+    DESC (y,              Coordinates of strings);
+    DESC (a,              Text alignment);
+    INCLUDE (font);
+  }
+  bool on = false;
+  std::vector<std::string> s;
+  std::vector<float> x;
+  std::vector<float> y;
+  std::vector<std::string> a;
+  glgrib_options_font font;
+};
+
+class glgrib_options_date : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on, Display date);
+    INCLUDE (font);
+  }
+  bool on = false;
+  glgrib_options_font font;
+};
+
+class glgrib_options_scene : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (lon_at_hour,         Set longitude at solar time);
+    DESC (rotate_earth.on,     Make earth rotate);
+    INCLUDE (light);
+    INCLUDE (travelling);
+    DESC (test_strxyz.on,      Test XYZ string);
+    INCLUDE (interpolation);
+    INCLUDE (text);
+    INCLUDE (image);
+    INCLUDE (date);
+  }
+  struct
+  {
+    bool on  = false;
+  } rotate_earth;
+  float   lon_at_hour = -1.0f;
+  glgrib_options_light light;  
+  glgrib_options_travelling travelling;
+  struct
+  {
+    bool on = false;
+  } test_strxyz;
+  glgrib_options_interpolation interpolation;
+  glgrib_options_date date;
+  glgrib_options_text text;
+  glgrib_options_image image;
+};
+
+class glgrib_options_view : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (projection,         Mercator XYZ latlon polar_north polar_south);
+    DESC (transformation,     Perspective or orthographic);
+    DESC (lon,                Camera longitude);
+    DESC (lat,                Camera latitude);
+    DESC (fov,                Camera field of view);
+    DESC (distance,           Camera distance);
+    DESC (center.on,          Center view);
+  }
+  string  projection  = "XYZ";
+  string  transformation  = "PERSPECTIVE";
+  float  distance  = 6.0; 
+  float  lat       = 0.0; 
+  float  lon       = 0.0; 
+  float  fov       = 20.;
+  struct
+  {
+    bool on = true;
+  } center;
 };
 
 
@@ -761,8 +810,11 @@ class glgrib_options : public glgrib_options_base
 public:
   DEFINE
   {
-    INCLUDE (field[0]); INCLUDE (field[1]); INCLUDE (field[2]); INCLUDE (field[3]); INCLUDE (field[4]); 
-    INCLUDE (field[5]); INCLUDE (field[6]); INCLUDE (field[7]); INCLUDE (field[8]); INCLUDE (field[9]); 
+    INCLUDE   (field[0]); INCLUDE_H (field[1]); 
+    INCLUDE_H (field[2]); INCLUDE_H (field[3]); 
+    INCLUDE_H (field[4]); INCLUDE_H (field[5]); 
+    INCLUDE_H (field[6]); INCLUDE_H (field[7]); 
+    INCLUDE_H (field[8]); INCLUDE_H (field[9]); 
     INCLUDE (coast);
     INCLUDE (border);
     INCLUDE (rivers);
@@ -772,12 +824,14 @@ public:
     INCLUDE (scene);
     INCLUDE (view);
     INCLUDE (colorbar);
-    INCLUDE (font);
     DESC (shell.on, Run command line);
   }
   std::vector<glgrib_options_field> field =
-    {glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), 
-     glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field (), glgrib_options_field ()};
+    {glgrib_options_field (), glgrib_options_field (), 
+     glgrib_options_field (), glgrib_options_field (), 
+     glgrib_options_field (), glgrib_options_field (), 
+     glgrib_options_field (), glgrib_options_field (), 
+     glgrib_options_field (), glgrib_options_field ()};
   glgrib_options_coast coast;
   glgrib_options_border border;
   glgrib_options_rivers rivers;

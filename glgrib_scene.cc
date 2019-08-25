@@ -503,3 +503,8 @@ void glgrib_scene::setLightOpts (const glgrib_options_light & o)
   d.opts.scene.light = o;
 }
 
+void glgrib_scene::setMiscOpts (const glgrib_options_scene & o)
+{
+  d.opts.scene.rotate_earth = o.rotate_earth;
+  d.opts.scene.lon_at_hour  = o.lon_at_hour;
+}

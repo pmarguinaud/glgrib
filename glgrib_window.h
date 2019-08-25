@@ -104,6 +104,8 @@ public:
   void unsetMaster () { master = false; }
   void toggleMaster () { master = ! master; }
   void toggleColorBar ();
+  void setOpts (const glgrib_options_window &);
+  glgrib_options_window getOptions () { return opts; }
 
 protected:
   void createGFLWwindow (GLFWwindow * = NULL);

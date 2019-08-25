@@ -930,4 +930,17 @@ void glgrib_window::debug (unsigned int source, unsigned int type, GLuint id,
           debug_severity (severity), debug_type (type), id, message);
 }
 
+void glgrib_window::setOpts (const glgrib_options_window & o)
+{
+  if ((o.width != opts.width) || (o.height != opts.height))
+    glfwSetWindowSize(window, o.width, o.height);
+  if (o.title != opts.title)
+    {
+      opts.title = o.title;
+      glfwSetWindowTitle (window, opts.title.c_str ());
+    }
+}
+
+
+
 

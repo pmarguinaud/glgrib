@@ -119,6 +119,7 @@ public:
   void setTextOpts (const glgrib_options_text &);
   void setDateOpts (const glgrib_options_date &);
   void setLightOpts (const glgrib_options_light &);
+  void setMiscOpts (const glgrib_options_scene &);
 
   glgrib_options getOptions () const;
 

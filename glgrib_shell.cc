@@ -193,6 +193,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
         argv[1+i] = args[i].c_str ();
       
       glgrib_options opts = gwindow->scene.getOptions ();
+      opts.window = gwindow->getOptions ();
       glgrib_options_parser p;
       opts.traverse ("", &p);
       
@@ -290,6 +291,9 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
 
           hof_t hof;
 
+          hof.add ("--window.height"             , [&opts,gwindow]() { gwindow->setOpts                        (opts.window             );  });
+          hof.add ("--window.width"              , [&opts,gwindow]() { gwindow->setOpts                        (opts.window             );  });
+          hof.add ("--window.title"              , [&opts,gwindow]() { gwindow->setOpts                        (opts.window             );  });
           hof.add ("--view"                      , [&opts,gwindow]() { gwindow->scene.setViewOpts              (opts.view               );  });
           hof.add ("--landscape"                 , [&opts,gwindow]() { gwindow->scene.setLandscapeOpts         (opts.landscape          );  });
           hof.add ("--grid"                      , [&opts,gwindow]() { gwindow->scene.setGridOpts              (opts.grid               );  });
@@ -303,6 +307,8 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
           hof.add ("--scene.text"                , [&opts,gwindow]() { gwindow->scene.setTextOpts              (opts.scene.text         );  });
           hof.add ("--scene.date"                , [&opts,gwindow]() { gwindow->scene.setDateOpts              (opts.scene.date         );  });
           hof.add ("--scene.light"               , [&opts,gwindow]() { gwindow->scene.setLightOpts             (opts.scene.light        );  });
+          hof.add ("--scene.lon_at_hour"         , [&opts,gwindow]() { gwindow->scene.setMiscOpts              (opts.scene              );  });
+          hof.add ("--scene.rotate_earth"        , [&opts,gwindow]() { gwindow->scene.setMiscOpts              (opts.scene              );  });
 
 #define SFO(j) \
 do { \

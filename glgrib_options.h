@@ -547,6 +547,7 @@ public:
     DESC (lat,               Light latitude);
     DESC (rotate.on,         Make sunlight move);
     DESC (date,              Date for sunlight position);
+    DESC (frac,              Fraction of light during for night);
   }
   glgrib_option_date date;
   bool   on  = false;
@@ -560,6 +561,7 @@ public:
   } rotate;
   float  lon  = 0.0f;
   float  lat  = 0.0f;
+  float  frac = 0.1f;
 };
 
 class glgrib_options_position : public glgrib_options_base

@@ -128,6 +128,7 @@ uniform float palmin, palmax;
 uniform vec3 lightDir = vec3 (0., 1., 0.);
 uniform vec3 lightCol = vec3 (1., 1., 1.);
 uniform bool light = false;
+uniform float frac = 0.1;
 
 vec4 enlightFragment (vec3 fragmentPos, float fragmentVal, float missingFlag)
 {
@@ -140,7 +141,7 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal, float missingFlag)
 
   if (light)
     {
-      total = 0.1 + 0.9 * max (dot (fragmentPos, lightDir), 0.0);
+      total = frac + (1.0 - frac) * max (dot (fragmentPos, lightDir), 0.0);
     }
 
   float val = valmin + (valmax - valmin) * (255.0 * fragmentVal - 1.0) / 254.0;
@@ -443,6 +444,7 @@ uniform sampler2D texture;
 uniform vec3 lightDir = vec3 (0., 1., 0.);
 uniform vec3 lightCol = vec3 (1., 1., 1.);
 uniform bool light = false;
+uniform float frac = 0.1;
 
 const float pi = 3.1415926;
 
@@ -457,7 +459,7 @@ void main ()
 
   if (light)
     {
-      total = 0.1 + 0.9 * max (dot (fragmentPos, lightDir), 0.0);
+      total = frac + (1.0 - frac) * max (dot (fragmentPos, lightDir), 0.0);
     }
 
   color.r = total * col.r;
@@ -1002,6 +1004,7 @@ void glgrib_program::setLight (const glgrib_options_light & light)
           float sinlat = sin (deg2rad * light.lat);
           glm::vec3 lightDir = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
           glUniform3fv (glGetUniformLocation (programID, "lightDir"), 1, &lightDir[0]);
+          glUniform1f (glGetUniformLocation (programID, "frac"), light.frac);
         }
     }
 }

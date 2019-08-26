@@ -497,7 +497,7 @@ void glgrib_window::snapshot (const std::string & format)
       filename = fmt;
     }
 
-  glgrib_png (filename, opts.width, opts.height, rgb);
+  glgrib_write_png (filename, opts.width, opts.height, rgb);
 
   delete [] rgb;
 }

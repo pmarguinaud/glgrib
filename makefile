@@ -214,3 +214,5 @@ test_image: ./glgrib.x
 test_shell: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03 --shell.on 
 
+test_largebmp: ./glgrib.x
+	gdb --args ./glgrib.x --landscape.on --landscape.path landscape/Whole_world_-_land_and_oceans_24000.bmp

@@ -1,11 +1,15 @@
 #include "glgrib_landscape.h"
 #include "glgrib_program.h"
 #include "glgrib_bitmap.h"
+#include "glgrib_png.h"
 #include "glgrib_resolve.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+#include <algorithm>
+#include <exception>
+
 #include <math.h>
 
 glgrib_landscape & glgrib_landscape::operator= (const glgrib_landscape & landscape)
@@ -37,6 +41,13 @@ void glgrib_landscape::setupVertexAttributes ()
   glBindVertexArray (0); 
 }
 
+static bool endsWith (const std::string & str, const std::string & end)
+{
+  int i0 = std::max (str.length () - end.length (), (size_t)0);
+  int i1 = end.length ();
+  return end == str.substr (i0, i1);
+}
+
 void glgrib_landscape::init (glgrib_loader * ld, const glgrib_options_landscape & o)
 {
   opts = o;
@@ -46,7 +57,18 @@ void glgrib_landscape::init (glgrib_loader * ld, const glgrib_options_landscape 
 
   geometry = glgrib_geometry_load (ld, opts.geometry, opts.orography, opts.number_of_latitudes);
 
-  glgrib_bitmap (glgrib_resolve (opts.path), &rgb, &w, &h);
+  if (endsWith (opts.path, ".png"))
+    glgrib_read_png (glgrib_resolve (opts.path), &w, &h, &rgb);
+  else if (endsWith (opts.path, ".bmp"))
+    glgrib_bitmap (glgrib_resolve (opts.path), &rgb, &w, &h);
+  else
+    throw std::runtime_error (std::string ("Unknown image format :") + opts.path);
+
+  GLint sizemax;
+  glGetIntegerv (GL_MAX_TEXTURE_SIZE, &sizemax);
+  if ((sizemax < w) || (sizemax < h))
+    throw std::runtime_error (std::string ("Image is too large to be used as a texture :") + opts.path);
+
 
   texture = new_glgrib_opengl_texture_ptr (w, h, rgb);
 

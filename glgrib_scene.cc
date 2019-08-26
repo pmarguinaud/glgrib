@@ -215,6 +215,11 @@ void glgrib_scene::update_interpolation ()
       float slot = (float)d.nupdate / (float)d.opts.scene.interpolation.frames;
       if (slot > slotmax)
         slot = slotmax;
+
+
+      for (int j = 0; j < fieldlist.size (); j++)
+        setFieldOpts (j, d.opts.field[j], slot);
+
     }
 }
 
@@ -388,7 +393,7 @@ void glgrib_scene::setRiversOpts (const glgrib_options_rivers & o)
     d.rivers.init (o);
 }
 
-void glgrib_scene::setFieldOpts (int j, const glgrib_options_field & o)
+void glgrib_scene::setFieldOpts (int j, const glgrib_options_field & o, float slot)
 {
   if (fieldlist[j] != NULL)
     delete fieldlist[j];
@@ -405,7 +410,7 @@ void glgrib_scene::setFieldOpts (int j, const glgrib_options_field & o)
         fld = new glgrib_field_contour ();
       else
         fld = new glgrib_field_scalar ();
-      fld->init (&ld, o);
+      fld->init (&ld, o, slot);
       fieldlist[j] = fld;
     }
 

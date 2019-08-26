@@ -23,6 +23,16 @@ public:
   void toggleShowVector () { opts.vector.hide_arrow.on = ! opts.vector.hide_arrow.on; }
   void toggleShowNorm () { opts.vector.hide_norm.on = ! opts.vector.hide_norm.on; }
   virtual void resize (const glgrib_view &);
+  virtual float getNormedMinValue () const
+  {
+    std::vector<float> val = getMinValue ();
+    return val[0];
+  }
+  virtual float getNormedMaxValue () const
+  {
+    std::vector<float> val = getMaxValue ();
+    return val[0];
+  }
 private:
   GLuint VertexArrayIDvector = 0;
   struct

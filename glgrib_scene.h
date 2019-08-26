@@ -112,7 +112,7 @@ public:
   void setCoastOpts (const glgrib_options_coast &);
   void setBorderOpts (const glgrib_options_border &);
   void setRiversOpts (const glgrib_options_rivers &);
-  void setFieldOpts (int, const glgrib_options_field &);
+  void setFieldOpts (int, const glgrib_options_field &, float = 0);
   void setFieldPaletteOpts (int, const glgrib_options_palette &);
   void setColorBarOpts (const glgrib_options_colorbar &);
   void setImageOpts (const glgrib_options_image &);

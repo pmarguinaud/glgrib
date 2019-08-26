@@ -16,10 +16,16 @@ void glgrib_field::recordPaletteOpts ()
 void glgrib_field::setPaletteMinMax ()
 {
   // First take command line options if possible
-  if (opts.palette.max != opts.palette.nomax)
+  if (opts.palette.max != glgrib_palette::defaultMax)
     palette.max = opts.palette.max;
-  if (opts.palette.min != opts.palette.nomin)
+  if (opts.palette.min != glgrib_palette::defaultMin)
     palette.min = opts.palette.min;
+  // Reset values when not sensible
+  if (palette.min >= palette.max)
+    {
+      palette.min = glgrib_palette::defaultMin;
+      palette.max = glgrib_palette::defaultMax;
+    }
   // Or, if no min/max were choosen from metadata, min/max of the field
   if (! palette.hasMax ())
     palette.max = getNormedMaxValue ();

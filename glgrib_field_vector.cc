@@ -119,9 +119,6 @@ void glgrib_field_vector::init (glgrib_loader * ld, const glgrib_options_field &
   else
     palette = glgrib_palette::by_name (opts.palette.name);
 
-  setPaletteMinMax ();
-  recordPaletteOpts ();
-
   geometry = glgrib_geometry_load (ld, opts.path[0]);
 
   glgrib_field_float_buffer_ptr data_n = new_glgrib_field_float_buffer_ptr (geometry->numberOfPoints);
@@ -132,7 +129,7 @@ void glgrib_field_vector::init (glgrib_loader * ld, const glgrib_options_field &
   meta_n = meta_u; // TODO : handle this differently
   meta_d = meta_u;
   
-  meta_n.valmin = std::numeric_limits<float>::max();
+  meta_n.valmin = glgrib_palette::defaultMin;
   meta_n.valmax = 0.0f;
   meta_d.valmin = -180.0f;
   meta_d.valmax = +180.0f;
@@ -219,6 +216,9 @@ void glgrib_field_vector::init (glgrib_loader * ld, const glgrib_options_field &
 
   d.vscale = opts.vector.scale * (M_PI / npts) / (meta_n.valmax || 1.0f);
 
+  setPaletteMinMax ();
+  recordPaletteOpts ();
+
   setReady ();
 }
 
@@ -265,6 +265,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       program->use ();
       view.setMVP (program);
       program->setLight (light);
+
 
       palette.setRGBA255 (program->programID);
 

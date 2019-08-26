@@ -390,6 +390,8 @@ public:
 class glgrib_options_palette : public glgrib_options_base
 {
 public:
+  static float defaultMin;
+  static float defaultMax;
   DEFINE
   {
     DESC (name,        Palette name);                              
@@ -397,10 +399,8 @@ public:
     DESC (max,         Palette max value);                              
   }
   string name = "default";
-  float min = std::numeric_limits<float>::max(); 
-  float max = std::numeric_limits<float>::min();
-  float nomin = std::numeric_limits<float>::max(); 
-  float nomax = std::numeric_limits<float>::min();
+  float min = defaultMin;
+  float max = defaultMax;
 };
 
 class glgrib_options_field : public glgrib_options_base

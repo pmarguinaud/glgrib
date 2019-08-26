@@ -37,6 +37,9 @@ public:
 class glgrib_palette
 {
 public:
+  static const float defaultMin;
+  static const float defaultMax;
+
   static glgrib_palette & by_name (const std::string &);
   static glgrib_palette & next (const glgrib_palette &);
   static glgrib_palette by_meta (const glgrib_field_metadata &);
@@ -44,11 +47,11 @@ public:
   glgrib_rgba rgba_mis;
   std::vector<glgrib_rgba> rgba;
   std::string name;
-  float min = std::numeric_limits<float>::max(), max = std::numeric_limits<float>::min();
+  float min = defaultMin, max = defaultMax;
   float getMin () const { return min; }
   float getMax () const { return max; }
-  bool hasMin () const { return min != std::numeric_limits<float>::max(); }
-  bool hasMax () const { return max != std::numeric_limits<float>::min(); }
+  bool hasMin () const { return min != defaultMin; }
+  bool hasMax () const { return max != defaultMax; }
   glgrib_palette (std::ifstream &);
   glgrib_palette () {}
   glgrib_palette (const std::string & n, bool) : name (n)

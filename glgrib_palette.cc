@@ -8,6 +8,8 @@
 #include <string.h>
 #include <sqlite3.h>
 
+const float glgrib_palette::defaultMin = std::numeric_limits<float>::max();
+const float glgrib_palette::defaultMax = std::numeric_limits<float>::min();
 
 typedef std::map<std::string,glgrib_palette> name2palette_t;
 static name2palette_t name2palette;

@@ -1,5 +1,6 @@
 #include "glgrib_options.h"
 #include "glgrib_resolve.h"
+#include "glgrib_palette.h"
 #include <sqlite3.h>
 #include <string.h>
 #include <stdio.h>
@@ -7,6 +8,8 @@
 #include <math.h>
 #include <map>
 
+float glgrib_options_palette::defaultMin = glgrib_palette::defaultMin;
+float glgrib_options_palette::defaultMax = glgrib_palette::defaultMax;
 
 namespace glgrib_options_parser_detail
 {

@@ -465,7 +465,7 @@ public:
     DESC (position.lat1,       First latitude);
     DESC (position.lat2,       Last latitude);
   }
-  string  path  = "landscape/Whole_world_-_land_and_oceans_8000.bmp";
+  string  path  = "landscape/Whole_world_-_land_and_oceans_08000.bmp";
   float  orography  = 0.05;
   string  geometry  = "";
   int  number_of_latitudes  = 500;

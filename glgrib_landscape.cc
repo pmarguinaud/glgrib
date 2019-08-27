@@ -81,6 +81,8 @@ void glgrib_landscape::init (glgrib_loader * ld, const glgrib_options_landscape 
 
 void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
+  const float deg2rad = M_PI / 180.0;
+
   glgrib_program * program = glgrib_program_load (glgrib_program::FLAT_TEX);
   program->use ();
 
@@ -92,6 +94,10 @@ void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_li
   glActiveTexture (GL_TEXTURE0); 
   glBindTexture (GL_TEXTURE_2D, texture->id ());
   program->set1i ("texture", 0);
+  program->set1f ("lonA", opts.position.lon1 * deg2rad);
+  program->set1f ("lonB", opts.position.lon2 * deg2rad);
+  program->set1f ("latA", opts.position.lat1 * deg2rad);
+  program->set1f ("latB", opts.position.lat2 * deg2rad);
 
   glBindVertexArray (VertexArrayID);
   if (opts.wireframe.on)

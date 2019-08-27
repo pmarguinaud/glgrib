@@ -81,12 +81,6 @@ test_novalue: ./glgrib.x
 	$(GDB) ./glgrib.x --landscape.on --landscape.geometry testdata/t1798/Z.grb \
 		--field[0].path testdata/t1798/SURFNEBUL.BASSE.grb --field[0].scale 1.03 --field[0].palette.name cloud_auto --field[0].no_value_pointer.on
 
-test_t8000_noorog: ./glgrib.x
-	$(GDB) ./glgrib.x  --window.width 2000  --window.height 2000 --landscape.on --landscape.geometry testdata/t479/Z.grb \
-		--landscape.orography 0 \
-		--window.offscreen.on    --field[0].path testdata/t8000/SURFNEBUL.TOTALE.grb --field[0].scale 1.03 --field[0].palette.name cloud_auto  --field[0].no_value_pointer.on  \
-		--scene.light.on --scene.light.lon -25 --scene.light.lat 30.
-
 test_missingvalue: ./glgrib.x
 	$(GDB) ./glgrib.x --field[0].path testdata/t49/SFX.CLAY.grb --coast.on --grid.on
 

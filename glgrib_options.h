@@ -460,6 +460,10 @@ public:
     DESC (geometry,            GRIB files to take geometry from);
     DESC (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
     DESC (wireframe.on,        Draw landscape in wireframe mode);
+    DESC (position.lon1,       First longitude);
+    DESC (position.lon2,       Last longitude);
+    DESC (position.lat1,       First latitude);
+    DESC (position.lat2,       Last latitude);
   }
   string  path  = "landscape/Whole_world_-_land_and_oceans_8000.bmp";
   float  orography  = 0.05;
@@ -474,6 +478,10 @@ public:
   {
     bool on = true;
   } flat;
+  struct
+  {
+    float lon1 = -180.0f, lon2 = +180.0f, lat1 = -90.0f, lat2 = +90.0f;
+  } position;
 };
 
 class glgrib_options_lines : public glgrib_options_base

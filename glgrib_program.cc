@@ -445,15 +445,34 @@ uniform vec3 lightDir = vec3 (0., 1., 0.);
 uniform vec3 lightCol = vec3 (1., 1., 1.);
 uniform bool light = false;
 uniform float frac = 0.1;
+uniform float lonA = -180.0, lonB = +180.0, latA = -90, latB = +90;
 
 const float pi = 3.1415926;
 
 void main ()
 {
-  float lon = (atan (fragmentPos.y, fragmentPos.x) / pi + 1.0) * 0.5;
-  float lat = asin (fragmentPos.z) / pi + 0.5;
+  // All lat/lon in radians
+  float llonA = lonA, llonB = lonB; 
+  float llatA = latA, llatB = latB;
+  float llon = atan (fragmentPos.y, fragmentPos.x);  
+  float llat = asin (fragmentPos.z);
 
-  vec4 col = texture2D (texture, vec2 (lon, lat));
+  if (llonB < llonA)
+    {
+      llonB = llonB + 2 * pi;
+      if (llon < llonA)
+        llon = llon + 2 * pi;
+    }
+
+  float s = (llon - llonA) / (llonB - llonA);
+  float t = (llat - llatA) / (llatB - llatA);
+
+  if ((s < 0.0) || (1.0 < s))
+    discard;
+  if ((t < 0.0) || (1.0 < t))
+    discard;
+
+  vec4 col = texture2D (texture, vec2 (s, t));
 
   float total = 1.;
 

@@ -327,6 +327,9 @@ public:
 
 
 #define DESC(name, desc) do { cb->apply (p, #name, #desc, &name, o); } while (0)
+#define DESC_H(name, desc) \
+  do { glgrib_options_parser::opt o; o.hidden = true; \
+       cb->apply (p, #name, #desc, &name, &o); } while (0)
 
 #define INCLUDE(name) do { name.traverse (p + ( p == "" ? "" : ".") + #name, cb, o); } while (0)
 
@@ -460,10 +463,10 @@ public:
     DESC (geometry,            GRIB files to take geometry from);
     DESC (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
     DESC (wireframe.on,        Draw landscape in wireframe mode);
-    DESC (position.lon1,       First longitude);
-    DESC (position.lon2,       Last longitude);
-    DESC (position.lat1,       First latitude);
-    DESC (position.lat2,       Last latitude);
+    DESC (position.lon1,       First longitude of display);
+    DESC (position.lon2,       Last longitude of display);
+    DESC (position.lat1,       First latitude of display);
+    DESC (position.lat2,       Last latitude of display);
   }
   string  path  = "landscape/Whole_world_-_land_and_oceans_08000.bmp";
   float  orography  = 0.05;
@@ -527,6 +530,7 @@ public:
     DESC (version_major,      GLFW_CONTEXT_VERSION_MAJOR);
     DESC (version_minor,      GLFW_CONTEXT_VERSION_MINOR);
     INCLUDE (offscreen);
+    DESC_H (fix_landscape.on, Fix landscape position);
   }
   int     width  = 800;
   int     height  = 800;
@@ -542,6 +546,10 @@ public:
   int     version_major = 4;
   int     version_minor = 3;
   glgrib_options_offscreen offscreen;
+  struct
+  {
+    bool on = false;
+  } fix_landscape;
 };
 
 class glgrib_options_light : public glgrib_options_base

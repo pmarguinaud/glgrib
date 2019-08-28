@@ -59,6 +59,8 @@ void glgrib_view::calcMVP () const
   Model      = glm::mat4 (1.0f);
   MVP = Projection * View * Model; 
 
+  float lon0 = opts.lon + 180.0f;
+  ps.current ()->setLon0 (lon0);
 }
 
 void glgrib_view::setViewport (int w, int h)

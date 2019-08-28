@@ -140,6 +140,8 @@ static float ffmod (float x, float y)
 
 void glgrib_scene::update_view ()
 {
+  d.view.calcMVP ();  
+
   if (d.opts.scene.rotate_earth.on)
     d.view.opts.lon += 1.;
   if (d.opts.scene.travelling.on)

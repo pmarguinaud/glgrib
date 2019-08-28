@@ -107,6 +107,8 @@ public:
   void setOpts (const glgrib_options_window &);
   glgrib_options_window getOptions () { return opts; }
 
+  void fix_landscape (float, float, float, float);
+
 protected:
   void createGFLWwindow (GLFWwindow * = NULL);
   bool closed = false;

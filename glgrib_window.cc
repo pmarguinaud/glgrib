@@ -165,10 +165,26 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (NONE,    J     ,  Try next palette                                     , next_palette             ());
       if_key (NONE,    L     ,  Turn on/off the light                                , toggle_light             ());
       if_key (CONTROL, L     ,  Make current window master window                    , toggleMaster             ());
+
+      if (opts.fix_landscape.on)
+      {
+      if_key (CONTROL, UP    ,                                                       , fix_landscape (+1,  0,  0,  0));
+      if_key (CONTROL, DOWN  ,                                                       , fix_landscape (-1,  0,  0,  0));
+      if_key (CONTROL, LEFT  ,                                                       , fix_landscape ( 0, -1,  0,  0));
+      if_key (CONTROL, RIGHT ,                                                       , fix_landscape ( 0, +1,  0,  0));
+      if_key (ALT,     UP    ,                                                       , fix_landscape ( 0,  0, +1,  0));
+      if_key (ALT,     DOWN  ,                                                       , fix_landscape ( 0,  0, -1,  0));
+      if_key (ALT,     LEFT  ,                                                       , fix_landscape ( 0,  0,  0, -1));
+      if_key (ALT,     RIGHT ,                                                       , fix_landscape ( 0,  0,  0, +1));
+      }
+      else
+      {
       if_key (CONTROL, UP    ,  Move light northwards                                , rotate_light_north       ());
       if_key (CONTROL, DOWN  ,  Move light southwards                                , rotate_light_south       ());
       if_key (CONTROL, LEFT  ,  Move light westwards                                 , rotate_light_west        ());
       if_key (CONTROL, RIGHT ,  Move light eastwards                                 , rotate_light_east        ());
+      }
+
       if_key (CONTROL, C     ,  Clone current window                                 , duplicate                ());
       if_key (ALT,     C     ,  Show/hide colorbar                                   , toggleColorBar           ());
       if_key (CONTROL, P     ,  Try next projection                                  , next_projection          ());
@@ -182,6 +198,30 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
     }
 
 #undef if_key
+}
+
+void glgrib_window::fix_landscape (float dy, float dx, float sy, float sx)
+{
+  glgrib_options_landscape * o = &scene.d.landscape.opts;
+
+  float dlat = o->position.lat2 - o->position.lat1;
+  float dlon = o->position.lon2 - o->position.lon1;
+
+  o->position.lat1 += dy * 0.01;
+  o->position.lat2 += dy * 0.01;
+  o->position.lon1 += dx * 0.01;
+  o->position.lon2 += dx * 0.01;
+
+  o->position.lat1 -= sy * 0.01;
+  o->position.lat2 += sy * 0.01;
+  o->position.lon1 -= sx * 0.01;
+  o->position.lon2 += sx * 0.01;
+
+  if (o->position.lon1 > 180.0f)
+    o->position.lon1 -= 360.0f;
+  if (o->position.lon2 > 180.0f)
+    o->position.lon2 -= 360.0f;
+
 }
 
 void glgrib_window::toggleColorBar ()
@@ -557,16 +597,16 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
                   title_ = title_ + std::string (tmp);
                 }
 	    }
-	  else
-            {
-              char tmp[128];
-              sprintf (tmp, "%6.2f %6.2f", lat, lon);
-              title_ = std::string (tmp);
-	    }
-	  scene.setMessage (title_);
-          glfwSetWindowTitle (window, title_.c_str ());
-	  return;
         }
+      if (title_ == "")
+        {
+          char tmp[128];
+          sprintf (tmp, "%6.2f %6.2f", lat, lon);
+          title_ = std::string (tmp);
+        }
+      scene.setMessage (title_);
+      glfwSetWindowTitle (window, title_.c_str ());
+      return;
     }
   glfwSetWindowTitle (window, title.c_str ());
 }
@@ -658,7 +698,7 @@ void glgrib_window::renderFrame ()
 
   makeCurrent ();
   scene.display (); 
-  
+
   glfwSwapBuffers (window);
 
   if (Shell.started ())

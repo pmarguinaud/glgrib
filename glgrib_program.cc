@@ -16,8 +16,8 @@ const int MERCATOR=3;
 const int LATLON=4;
 uniform int proj = 0;
 uniform bool isflat = true;
-const float pi = 3.1415926;
 uniform float lon0 = 180.0; // Latitude of right handside
+const float pi = 3.1415926;
 
 vec3 compNormedPos (vec3 vertexPos)
 {

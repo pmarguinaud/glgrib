@@ -22,6 +22,7 @@ static void error_callback (int c, const char * desc)
 int main (int argc, const char * argv[])
 {
   glgrib_options opts;
+
   if (! opts.parse (argc, argv))
     return 0;
 

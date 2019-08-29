@@ -40,6 +40,16 @@ template <> void option_tmpl<bool>::set (const char * v)
   *value = true;
 }
 
+template <> void option_tmpl<std::string>::set (const char * v)
+{
+  *value = std::string (v);
+}
+
+template <> void option_tmpl_list<std::string>::set (const char * v)
+{
+  value->push_back (std::string (v));
+}
+
 template <> void option_tmpl<bool>::clear ()
 {
   if (value != NULL) 

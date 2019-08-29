@@ -179,7 +179,9 @@ namespace glgrib_options_parser_detail
   template <> std::string option_tmpl_list<std::string>        ::type ();
   template <> std::string option_tmpl_list<std::string>        ::asString () const;
   template <> std::string option_tmpl     <bool>               ::type ();
-  template <> void option_tmpl<bool>::set (const char *);
+  template <> void option_tmpl     <bool>::set        (const char *);
+  template <> void option_tmpl_list<std::string>::set (const char *);
+  template <> void option_tmpl     <std::string>::set (const char *);
   template <> void option_tmpl<bool>::clear ();
   template <> std::string option_tmpl<bool>::asString () const;
   template <> int option_tmpl<bool>::has_arg () const;

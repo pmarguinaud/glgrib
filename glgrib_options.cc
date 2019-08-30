@@ -334,7 +334,6 @@ bool glgrib_options_parser::parse (int argc, const char * argv[])
   catch (const std::exception & e)
     {
       std::cout << "Failed to parse options : " << e.what () << std::endl;
-      show_help ();
       return false;
     }
 

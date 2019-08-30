@@ -767,6 +767,16 @@ void glgrib_window::create (const glgrib_options & o)
   createGFLWwindow (NULL);
 
   t0 = current_time ();
+
+  if (opts.info.on)
+    {
+#define PR(x) \
+  printf (" %-32s = %s\n", #x, glGetString (x))
+      PR (GL_VENDOR);
+      PR (GL_RENDERER);
+      PR (GL_VERSION);
+      PR (GL_EXTENSIONS);
+    }
 }
 
 void glgrib_window::createGFLWwindow (GLFWwindow * context)

@@ -1023,7 +1023,7 @@ void glgrib_program::setLight (const glgrib_options_light & light)
           float sinlat = sin (deg2rad * light.lat);
           glm::vec3 lightDir = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
           glUniform3fv (glGetUniformLocation (programID, "lightDir"), 1, &lightDir[0]);
-          glUniform1f (glGetUniformLocation (programID, "frac"), light.frac);
+          glUniform1f (glGetUniformLocation (programID, "frac"), light.night);
         }
     }
 }

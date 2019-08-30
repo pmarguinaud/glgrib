@@ -17,6 +17,7 @@
 #include "glgrib_border.h"
 #include "glgrib_rivers.h"
 #include "glgrib_colorbar.h"
+#include "glgrib_mapscale.h"
 #include "glgrib_loader.h"
 
 #include <set>
@@ -84,6 +85,7 @@ public:
     private:
       glgrib_image image;
       glgrib_colorbar colorbar;
+      glgrib_mapscale mapscale;
       glgrib_string strmess;
       glgrib_string strdate;
       glgrib_string strxyz;
@@ -115,6 +117,7 @@ public:
   void setFieldOpts (int, const glgrib_options_field &, float = 0);
   void setFieldPaletteOpts (int, const glgrib_options_palette &);
   void setColorBarOpts (const glgrib_options_colorbar &);
+  void setMapScaleOpts (const glgrib_options_mapscale &);
   void setImageOpts (const glgrib_options_image &);
   void setTextOpts (const glgrib_options_text &);
   void setDateOpts (const glgrib_options_date &);

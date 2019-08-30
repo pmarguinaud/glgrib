@@ -767,11 +767,49 @@ public:
     DESC (on, Activate colorbar);
     INCLUDE (font);
     DESC (format, "Format (sprintf) use to display numbers");
+    DESC (position.xmin, Colorbar position);
+    DESC (position.xmax, Colorbar position); 
+    DESC (position.ymin, Colorbar position); 
+    DESC (position.ymax, Colorbar position);
   }
   bool on = false;
   glgrib_options_font font = glgrib_options_font ("fonts/16.bmp", 0.02f);
   std::string format = "%6.4g";
   int levels = 11;
+  struct position
+  {
+    float xmin = 0.08;
+    float xmax = 0.10; 
+    float ymin = 0.05; 
+    float ymax = 0.95;
+  } position;
+};
+
+class glgrib_options_mapscale : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on, Activate mapscale);
+    INCLUDE (font);
+    DESC (position.xmin, Mapscale position);
+    DESC (position.xmax, Mapscale position); 
+    DESC (position.ymin, Mapscale position); 
+    DESC (position.ymax, Mapscale position);
+    DESC (color1, First color);
+    DESC (color2, Second color);
+  }
+  bool on = false;
+  glgrib_options_font font = glgrib_options_font ("fonts/16.bmp", 0.02f);
+  glgrib_option_color color1 = glgrib_option_color (255, 255, 255);
+  glgrib_option_color color2 = glgrib_option_color ( 80,  80,  80);
+  struct position
+  {
+    float xmin = 0.10;
+    float xmax = 0.20; 
+    float ymin = 0.10; 
+    float ymax = 0.12;
+  } position;
 };
 
 class glgrib_options_rivers : public glgrib_options_base
@@ -849,6 +887,7 @@ public:
     INCLUDE (scene);
     INCLUDE (view);
     INCLUDE (colorbar);
+    INCLUDE (mapscale);
     DESC (shell.on, Run command line);
   }
   std::vector<glgrib_options_field> field =
@@ -861,6 +900,7 @@ public:
   glgrib_options_border border;
   glgrib_options_rivers rivers;
   glgrib_options_colorbar colorbar;
+  glgrib_options_mapscale mapscale;
   glgrib_options_window window;
   glgrib_options_landscape landscape;
   glgrib_options_grid grid;

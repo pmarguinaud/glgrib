@@ -73,6 +73,8 @@ void glgrib_scene::display () const
                          fld->getNormedMinValue (), 
                          fld->getNormedMaxValue ());
 
+  d.mapscale.render (d.MVP_L);
+
   d.strmess.render (d.MVP_R);
 
   if (d.opts.scene.date.on)
@@ -297,6 +299,7 @@ void glgrib_scene::init (const glgrib_options & o)
   setDateOpts (d.opts.scene.date);
   setTextOpts (d.opts.scene.text);
   setColorBarOpts (d.opts.colorbar);
+  setMapScaleOpts (d.opts.mapscale);
 
   if (d.opts.scene.test_strxyz.on)
     {
@@ -432,6 +435,16 @@ void glgrib_scene::setColorBarOpts (const glgrib_options_colorbar & o)
       d.strmess.setForegroundColor (d.opts.colorbar.font.color.foreground);
       d.colorbar.init (d.opts.colorbar);
     }
+
+}
+
+void glgrib_scene::setMapScaleOpts (const glgrib_options_mapscale & o)
+{
+  d.opts.mapscale = o;
+  d.mapscale.cleanup ();
+
+  if (d.opts.mapscale.on)
+    d.mapscale.init (d.opts.mapscale);
 
 }
 

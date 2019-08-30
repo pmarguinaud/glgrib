@@ -50,7 +50,7 @@ void glgrib_colorbar::init (const glgrib_options_colorbar & o)
     {
       str.push_back (std::string (tmp));
       x.push_back (0.01f);
-      y.push_back ((ymax - ymin) * i / 10.0f + ymin);
+      y.push_back ((opts.position.ymax - opts.position.ymin) * i / 10.0f + opts.position.ymin);
     }
   label.init2D (font, str, x, y, opts.font.scale, glgrib_string::SW);
   label.setForegroundColor (opts.font.color.foreground.r / 255.0f, 
@@ -111,6 +111,10 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
     }
 
   program.setMatrix4fv ("MVP", &MVP[0][0]);
+  program.set1f ("xmin", opts.position.xmin);
+  program.set1f ("xmax", opts.position.xmax);
+  program.set1f ("ymin", opts.position.ymin);
+  program.set1f ("ymax", opts.position.ymax);
 
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);

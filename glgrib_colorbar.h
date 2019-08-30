@@ -28,10 +28,6 @@ private:
   bool ready = false;
   bool hidden = false;
   int nt;
-  float xmin = 0.08;
-  float xmax = 0.10; 
-  float ymin = 0.05; 
-  float ymax = 0.95;
   mutable glgrib_string label;
   mutable glgrib_palette pref;
 };

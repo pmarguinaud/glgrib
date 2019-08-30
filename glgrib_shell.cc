@@ -303,6 +303,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
           hof.add ("--border"                    , [&opts,gwindow]() { gwindow->scene.setBorderOpts            (opts.border             );  });
           hof.add ("--rivers"                    , [&opts,gwindow]() { gwindow->scene.setRiversOpts            (opts.rivers             );  });
           hof.add ("--colorbar"                  , [&opts,gwindow]() { gwindow->scene.setColorBarOpts          (opts.colorbar           );  });
+          hof.add ("--mapscale"                  , [&opts,gwindow]() { gwindow->scene.setMapScaleOpts          (opts.mapscale           );  });
           hof.add ("--scene.image"               , [&opts,gwindow]() { gwindow->scene.setImageOpts             (opts.scene.image        );  });
           hof.add ("--scene.text"                , [&opts,gwindow]() { gwindow->scene.setTextOpts              (opts.scene.text         );  });
           hof.add ("--scene.date"                , [&opts,gwindow]() { gwindow->scene.setDateOpts              (opts.scene.date         );  });

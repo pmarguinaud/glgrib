@@ -2,6 +2,7 @@
 #define _GLGRIB_SHELL
 
 #include "glgrib_window.h"
+#include "glgrib_options.h"
 
 #include <pthread.h>
 #include <string>
@@ -13,11 +14,14 @@ class glgrib_shell
 {
 public:
   glgrib_shell ();
+  void init (const glgrib_options_shell &);
   void execute (const std::string &, class glgrib_window *);
   int close = 0;
   bool closed () { return close; }
   void start (class glgrib_window_set *);
   void run ();
+  void run_int ();
+  void run_off ();
   int windowid = 0;
   void lock () { pthread_mutex_lock (&mutex); }
   void unlock () { pthread_mutex_unlock (&mutex); }
@@ -25,6 +29,7 @@ public:
   bool started () { return wset != NULL; }
   char * option_generator (const char *, int);
 private:
+  glgrib_options_shell opts;
   glgrib_window_set * wset = NULL;
   pthread_t thread;
   pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;

@@ -9,6 +9,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -142,11 +143,15 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
 
       if (cmd == "")
         return;
+      if (cmd[0] == '#')
+        return;
      
       while (1)
         {
           std::string arg = next_token (&line);
           if (arg == "") 
+            break;
+          if (arg[0] == '#')
             break;
           args.push_back (arg);
         }
@@ -162,6 +167,12 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
   if (cmd == "close")
     {
       gwindow->shouldClose ();
+    }
+  else if (cmd == "sleep")
+    {
+      unlock ();
+      sleep (std::stoi (args[0]));
+      lock ();
     }
   else if (cmd == "clone")
     {
@@ -194,6 +205,8 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
       
       glgrib_options opts = gwindow->scene.getOptions ();
       opts.window = gwindow->getOptions ();
+      opts.shell = this->opts;
+
       glgrib_options_parser p;
       opts.traverse ("", &p);
       
@@ -310,6 +323,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
           hof.add ("--scene.light"               , [&opts,gwindow]() { gwindow->scene.setLightOpts             (opts.scene.light        );  });
           hof.add ("--scene.lon_at_hour"         , [&opts,gwindow]() { gwindow->scene.setMiscOpts              (opts.scene              );  });
           hof.add ("--scene.rotate_earth"        , [&opts,gwindow]() { gwindow->scene.setMiscOpts              (opts.scene              );  });
+          hof.add ("--shell.prompt.on"           , [&opts,this   ]() { this->opts.prompt.on =                   opts.shell.prompt.on;       });
 
 #define SFO(j) \
 do { \
@@ -370,7 +384,7 @@ void glgrib_shell::start (glgrib_window_set * ws)
 }
 
 
-void glgrib_shell::run ()
+void glgrib_shell::run_int ()
 {
   if (read_history (".glgrib_history") != 0)
     write_history (".glgrib_history");
@@ -396,7 +410,8 @@ void glgrib_shell::run ()
             glgrib_window * gwindow = wset->getWindowById (windowid);
 	    if (gwindow == NULL)
               gwindow = wset->getFirstWindow ();
-            execute (line, gwindow);
+            if (gwindow != NULL)
+              execute (line, gwindow);
 	  }
       }
       unlock ();
@@ -410,5 +425,56 @@ void glgrib_shell::run ()
 
     }
 }
+
+void glgrib_shell::run_off ()
+{
+  std::ifstream fp (opts.script);
+
+  if (fp)
+    {
+      std::string line; 
+      while (std::getline (fp, line)) 
+        {
+          if (wset->size () == 0)
+            break;
+          lock ();
+          glgrib_window * gwindow = wset->getWindowById (windowid);
+          if (gwindow == NULL)
+            gwindow = wset->getFirstWindow ();
+          if (gwindow != NULL)
+            execute (line, gwindow);
+          unlock ();
+        }
+      if (opts.prompt.on)
+        {
+         run_int ();
+        }
+      else
+        {
+          lock ();
+          wset->close ();
+          unlock ();
+        }
+    }
+  else
+    {
+      throw std::runtime_error (std::string ("Cannot open :") + opts.script);
+    }
+}
+
+void glgrib_shell::run ()
+{
+  if (opts.script != "")
+    run_off ();
+  else
+    run_int ();
+}
+
+void glgrib_shell::init (const glgrib_options_shell & o)
+{ 
+  opts = o;
+}
+
+
 
 

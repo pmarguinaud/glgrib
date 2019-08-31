@@ -10,6 +10,11 @@ my $comp = $ENV{COMP};
 
 my @args = @ARGV;
 
+if ($args[0] !~ m/^--/o)
+  {
+    $auto = 0;
+  }
+
 if ($auto)
   {
     my $off = grep { m/^--window.offscreen.on$/o } @args;

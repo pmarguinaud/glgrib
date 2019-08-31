@@ -23,7 +23,12 @@ int main (int argc, const char * argv[])
 {
   glgrib_options opts;
 
-  if (! opts.parse (argc, argv))
+  if ((argc == 2) && strncmp (argv[0], "--", 2))
+    {
+      opts.shell.on = true;
+      opts.shell.script = std::string (argv[1]);
+    }
+  else if (! opts.parse (argc, argv))
     return 0;
 
   glfwSetErrorCallback (error_callback);
@@ -48,6 +53,7 @@ int main (int argc, const char * argv[])
 
   if (opts.shell.on)
     {
+      Shell.init (opts.shell);
       Shell.start (&wset);
       wset.run (&Shell);
       Shell.wait ();

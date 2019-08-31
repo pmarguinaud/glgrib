@@ -868,6 +868,23 @@ public:
   glgrib_options_lines lines = glgrib_options_lines ("coastlines/gshhs_h.b");
 };
 
+class glgrib_options_shell : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on, Run command line);
+    DESC_H (script, Script to execute);
+    DESC (prompt.on, Start interactive session after batch script completion);
+  }
+  bool on = false; 
+  std::string script;
+  struct
+  {
+    bool on = false;
+  } prompt;
+};
+
 class glgrib_options : public glgrib_options_base
 {
 public:
@@ -888,7 +905,7 @@ public:
     INCLUDE (view);
     INCLUDE (colorbar);
     INCLUDE (mapscale);
-    DESC (shell.on, Run command line);
+    INCLUDE (shell);
   }
   std::vector<glgrib_options_field> field =
     {glgrib_options_field (), glgrib_options_field (), 
@@ -907,10 +924,7 @@ public:
   glgrib_options_scene scene;
   glgrib_options_view view;
   glgrib_options_font font;
-  struct
-  {
-    bool on = false;
-  } shell;
+  glgrib_options_shell shell;
   virtual bool parse (int, const char * []);
 };
 

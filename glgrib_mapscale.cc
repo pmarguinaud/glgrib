@@ -68,10 +68,6 @@ void glgrib_mapscale::render (const glm::mat4 & MVP, const glgrib_view & view) c
   if (! ready)
     return;
 
-  label.render (MVP);
-
-  program.use ();
-
   const double a = 6371229.0;
 
   const double frac0 = 0.05;
@@ -107,6 +103,9 @@ void glgrib_mapscale::render (const glm::mat4 & MVP, const glgrib_view & view) c
       label.update (str);
       label_str = str;
     }
+
+  label.render (MVP);
+  program.use ();
 
   program.setMatrix4fv ("MVP", &MVP[0][0]);
   program.set1f ("xmin", opts.position.xmin);

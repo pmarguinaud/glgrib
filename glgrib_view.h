@@ -41,6 +41,7 @@ public:
   int get_screen_coords_from_xyz (float *, float *, const glm::vec3 &) const;
   int get_xyz_from_screen_coords (float, float, glm::vec3 *) const;
   float pixel_to_dist_at_nadir (float) const;
+  float frac_to_dist_at_nadir (float) const;
 
   void nextProjection () { ps.next (); opts.projection = ps.currentName (); calcMVP (); }
   glgrib_projection * getProjection () const { return ps.current (); }

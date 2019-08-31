@@ -779,7 +779,7 @@ public:
   struct position
   {
     float xmin = 0.08;
-    float xmax = 0.10; 
+    float xmax = 0.18; 
     float ymin = 0.05; 
     float ymax = 0.95;
   } position;
@@ -805,10 +805,10 @@ public:
   glgrib_option_color color2 = glgrib_option_color ( 80,  80,  80);
   struct position
   {
-    float xmin = 0.10;
-    float xmax = 0.20; 
-    float ymin = 0.10; 
-    float ymax = 0.12;
+    float xmin = 0.05;
+    float xmax = 0.25; 
+    float ymin = 0.05; 
+    float ymax = 0.07;
   } position;
 };
 

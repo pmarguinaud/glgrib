@@ -49,13 +49,12 @@ void glgrib_colorbar::init (const glgrib_options_colorbar & o)
   for (int i = 0; i < opts.levels; i++)
     {
       str.push_back (std::string (tmp));
-      x.push_back (0.01f);
-      y.push_back ((opts.position.ymax - opts.position.ymin) * i / 10.0f + opts.position.ymin);
+      x.push_back (opts.position.xmin-0.07f);
+      y.push_back ((opts.position.ymax - opts.position.ymin) * i / (opts.levels - 1) + opts.position.ymin);
     }
   label.init2D (font, str, x, y, opts.font.scale, glgrib_string::SW);
-  label.setForegroundColor (opts.font.color.foreground.r / 255.0f, 
-                            opts.font.color.foreground.g / 255.0f, 
-                            opts.font.color.foreground.b / 255.0f);
+  label.setForegroundColor (opts.font.color.foreground);
+  label.setBackgroundColor (opts.font.color.background);
 
   ready = true;
 }
@@ -163,7 +162,7 @@ void main()
   int corn = int (mod (gl_VertexID, 4));
   int ix = int (mod (corn, 2));
   int iy = corn / 2;
-  float x = xmin + xmax * ix;
+  float x = xmin + (xmax - xmin) * ix;
   float y = ymin + (rank + iy) * (ymax - ymin) / 255.0;
   vec2 vertexPos = vec2 (x, y);
   gl_Position =  MVP * vec4 (0., vertexPos.x, vertexPos.y, 1.);

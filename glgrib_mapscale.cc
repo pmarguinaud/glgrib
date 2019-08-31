@@ -40,7 +40,7 @@ void glgrib_mapscale::init (const glgrib_options_mapscale & o)
 
   glgrib_font_ptr font = new_glgrib_font_ptr (opts.font);
 
-  label.init2D (font, std::string ("coucou"), opts.position.xmax, opts.position.ymax, opts.font.scale, glgrib_string::S);
+  label.init2D (font, std::string (15, ' '), opts.position.xmin, opts.position.ymax + 0.01, opts.font.scale, glgrib_string::SW);
   label.setForegroundColor (opts.font.color.foreground.r / 255.0f, 
                             opts.font.color.foreground.g / 255.0f, 
                             opts.font.color.foreground.b / 255.0f);
@@ -63,7 +63,7 @@ glgrib_mapscale::~glgrib_mapscale ()
   cleanup ();
 }
 
-void glgrib_mapscale::render (const glm::mat4 & MVP) const
+void glgrib_mapscale::render (const glm::mat4 & MVP, const glgrib_view & view) const
 {
   if (! ready)
     return;
@@ -72,18 +72,50 @@ void glgrib_mapscale::render (const glm::mat4 & MVP) const
 
   program.use ();
 
-// label.update (str);
+  const double a = 6371229.0;
+
+  const double frac0 = 0.05;
+  float dist0 = a * view.frac_to_dist_at_nadir (frac0);
+
+  double frac1 = opts.position.xmax - opts.position.xmin;
+  float dist1 = dist0 * frac1 / frac0;
+
+  int ndigits = 0;
+  float pow10 = 1;
+  while ((int)(dist1 / pow10))
+    {
+      ndigits++;
+      pow10 = pow10 * 10;
+    }
+  
+  ndigits--;
+  pow10 = pow10 / 10;
+
+  dist1 = pow10 * (int)(dist1 / pow10);
+  frac1 = frac0 * dist1 / dist0;
+
+  std::string str;
+  if (dist1 > 1000)
+    str = std::to_string ((int)(dist1/1000)) + " km";
+  else
+    str = std::to_string ((int)dist1) + " m";
+
+  str = str.substr (0, 15);
+  
+  if (label_str != str)
+    {
+      label.update (str);
+      label_str = str;
+    }
 
   program.setMatrix4fv ("MVP", &MVP[0][0]);
   program.set1f ("xmin", opts.position.xmin);
-  program.set1f ("xmax", opts.position.xmax);
+  program.set1f ("xmax", opts.position.xmin + frac1);
   program.set1f ("ymin", opts.position.ymin);
   program.set1f ("ymax", opts.position.ymax);
 
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
-//glDrawElements (GL_TRIANGLES, 3 * 3, GL_UNSIGNED_INT, NULL);
-
 
 }
 
@@ -164,7 +196,7 @@ void main()
         ix = ix + 1;
     }
 
-  x = xmin + ix * (xmax - xmin) / 2.0;
+  x = xmin + ix * (xmax - xmin) / 4.0;
   y = ymin + iy * (ymax - ymin) / 1.0;
   }
 

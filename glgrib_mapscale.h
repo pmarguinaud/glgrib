@@ -8,6 +8,7 @@
 #include "glgrib_string.h"
 #include "glgrib_options.h"
 #include "glgrib_program.h"
+#include "glgrib_view.h"
 
 class glgrib_mapscale
 {
@@ -16,7 +17,7 @@ public:
   void cleanup ();
   ~glgrib_mapscale ();
   glgrib_mapscale & operator= (const glgrib_mapscale &);
-  void render (const glm::mat4 &) const;
+  void render (const glm::mat4 &, const glgrib_view &) const;
   void toggleHidden () { hidden = ! hidden; }
   bool getHidden () const { return hidden; }
 private:
@@ -28,6 +29,7 @@ private:
   bool hidden = false;
   int nt;
   mutable glgrib_string label;
+  mutable std::string label_str;
 };
 
 #endif

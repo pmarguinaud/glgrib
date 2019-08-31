@@ -117,6 +117,11 @@ int glgrib_view::get_xyz_from_screen_coords (float xpos, float ypos, glm::vec3 *
   return 1;
 }
 
+float glgrib_view::frac_to_dist_at_nadir (float frac) const
+{
+  return pixel_to_dist_at_nadir (width * frac);
+}
+
 float glgrib_view::pixel_to_dist_at_nadir (float pixels) const
 {
   const double deg2rad = M_PI / 180.0;

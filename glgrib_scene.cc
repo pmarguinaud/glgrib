@@ -73,7 +73,7 @@ void glgrib_scene::display () const
                          fld->getNormedMinValue (), 
                          fld->getNormedMaxValue ());
 
-  d.mapscale.render (d.MVP_L);
+  d.mapscale.render (d.MVP_L, d.view);
 
   d.strmess.render (d.MVP_R);
 

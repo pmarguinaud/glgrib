@@ -2,6 +2,7 @@
 #include "glgrib_program.h"
 #include "glgrib_resolve.h"
 #include "glgrib_gshhg.h"
+#include "glgrib_shapelib.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -33,8 +34,13 @@ void glgrib_lines::init (const glgrib_options_lines & o,
   std::vector <float> xyz;
   std::vector <unsigned int> ind;
 
-  glgrib_gshhg::read (glgrib_resolve (opts.path), &numberOfPoints, 
-                      &numberOfLines, &xyz, &ind, mask, code);
+  if (opts.format == "gshhg")
+     glgrib_gshhg::read (glgrib_resolve (opts.path), &numberOfPoints, 
+                         &numberOfLines, &xyz, &ind, mask, code);
+  else
+     glgrib_shapelib::read (glgrib_resolve (opts.path), &numberOfPoints, 
+                            &numberOfLines, &xyz, &ind);
+
 
 
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz.data ());

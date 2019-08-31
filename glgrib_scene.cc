@@ -57,6 +57,7 @@ void glgrib_scene::display () const
   display_obj (&d.coast);
   display_obj (&d.border);
   display_obj (&d.rivers);
+  display_obj (&d.departements);
   display_obj (&d.grid);
 
   for (int i = 0; i < fieldlist.size (); i++)
@@ -288,6 +289,7 @@ void glgrib_scene::init (const glgrib_options & o)
   setCoastOpts (d.opts.coast);
   setBorderOpts (d.opts.border);
   setRiversOpts (d.opts.rivers);
+  setDepartementsOpts (d.opts.departements);
   setViewOpts (d.opts.view);
 
   for (int i = 0; i < d.opts.field.size (); i++)
@@ -335,6 +337,7 @@ void glgrib_scene::resize ()
   d.coast.resize (d.view);
   d.border.resize (d.view);
   d.rivers.resize (d.view);
+  d.departements.resize (d.view);
   d.grid.resize (d.view);
   for (int i = 0; i < fieldlist.size (); i++)
     if (fieldlist[i])
@@ -350,6 +353,7 @@ glgrib_options glgrib_scene::getOptions () const
   o.coast      = d.coast.opts;
   o.border     = d.border.opts;
   o.rivers     = d.rivers.opts;
+  o.departements= d.departements.opts;
 
   for (int i = 0; i < fieldlist.size (); i++)
     if (fieldlist[i] != NULL)
@@ -396,6 +400,13 @@ void glgrib_scene::setRiversOpts (const glgrib_options_rivers & o)
   d.rivers.cleanup ();
   if (o.on)
     d.rivers.init (o);
+}
+
+void glgrib_scene::setDepartementsOpts (const glgrib_options_departements & o)
+{
+  d.departements.cleanup ();
+  if (o.on)
+    d.departements.init (o);
 }
 
 void glgrib_scene::setFieldOpts (int j, const glgrib_options_field & o, float slot)

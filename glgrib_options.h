@@ -493,14 +493,16 @@ class glgrib_options_lines : public glgrib_options_base
 {
 public:
   glgrib_options_lines () {}
-  glgrib_options_lines (const std::string & p) : path (p) {}
+  glgrib_options_lines (const std::string & p, const string & f) : path (p), format (f) {}
   DEFINE
   {
     DESC (path,               Path to lines file);
     DESC (color,              Coastlines color);
     DESC (scale,              Coastlines scale);
+    DESC (format,             Input format);
   }
   string path;
+  string format = "gshhg";
   glgrib_option_color color;
   float scale = 1.005;
 };
@@ -821,7 +823,7 @@ public:
     INCLUDE (lines);
   }
   bool on = false;
-  glgrib_options_lines lines = glgrib_options_lines ("coastlines/wdb_rivers_f.b");
+  glgrib_options_lines lines = glgrib_options_lines ("coastlines/wdb_rivers_f.b", "gshhg");
 };
 
 class glgrib_options_border : public glgrib_options_base
@@ -848,7 +850,7 @@ public:
   {
     bool on = false;
   } sea;
-  glgrib_options_lines lines = glgrib_options_lines ("coastlines/wdb_borders_f.b");
+  glgrib_options_lines lines = glgrib_options_lines ("coastlines/wdb_borders_f.b", "gshhg");
 };
 
 class glgrib_options_coast : public glgrib_options_base
@@ -865,7 +867,19 @@ public:
   {
     bool on = false;
   } lakes;
-  glgrib_options_lines lines = glgrib_options_lines ("coastlines/gshhs_h.b");
+  glgrib_options_lines lines = glgrib_options_lines ("coastlines/gshhs_h.b", "gshhg");
+};
+
+class glgrib_options_departements : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on, Display departements);
+    INCLUDE (lines);
+  }
+  bool on = false;
+  glgrib_options_lines lines = glgrib_options_lines ("coastlines/departements-20180101", "shapeline");
 };
 
 class glgrib_options_shell : public glgrib_options_base
@@ -905,6 +919,7 @@ public:
     INCLUDE (view);
     INCLUDE (colorbar);
     INCLUDE (mapscale);
+    INCLUDE (departements);
     INCLUDE (shell);
   }
   std::vector<glgrib_options_field> field =
@@ -918,6 +933,7 @@ public:
   glgrib_options_rivers rivers;
   glgrib_options_colorbar colorbar;
   glgrib_options_mapscale mapscale;
+  glgrib_options_departements departements;
   glgrib_options_window window;
   glgrib_options_landscape landscape;
   glgrib_options_grid grid;

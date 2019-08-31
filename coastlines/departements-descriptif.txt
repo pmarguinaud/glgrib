@@ -1,0 +1,38 @@
+###Descriptif du contenu des fichiers "departements"
+
+**Origine**
+
+Les données proviennent de la base de données cartographiques OpenStreetMap.
+Celles-ci ont été constituées à partir du cadastre mis à disposition par la DGFiP sur cadastre.gouv.fr.
+En complément sur Mayotte où le cadastre n'est pas disponible sur cadastre.gouv.fr, le tracé des côtes a été fait à partir des images aériennes de Bing.
+
+Plus d'infos: http://openstreetmap.fr/36680-communes
+
+
+**Format**
+
+Ces fichiers sont proposés au format shapefile, en projection WGS84.
+
+
+**Contenu**
+
+Ces fichiers contiennent l'ensemble des départements français, y compris les DOM.
+
+Pour chaque région, les attributs suivants sont ajoutés:
+
+- code_insee: code INSEE à 2 caractères du département (ex: 01, 2A)
+- nom: nom du département (ex: Ain, Corse-du-Sud)
+- nuts3: code européen NUTS3 correspondant au département (ex: FR711, FR831)
+- wikipedia: entrée wikipédia (code langue suivi du nom de l'article)
+- wikidata: identifiant wikidata du département
+
+###Historique
+
+- 01-01-2018 : basé sur le découpage communal au 01-01-2018 (fusion de 84 communes en 33 communes nouvelles)
+  deux communes ont changé de département, sont donc impactés le 14/50 et 44/49.
+- 02-01-2017 : basé sur le découpage communal au 01-01-2017 (fusion de 566 communes en 178 communes nouvelles)
+
+Versions prédécentes disponibles sur: http://osm13.openstreetmap.fr/~cquest/openfla/export/
+
+
+Pour toute question concernant ces exports, vous pouvez contacter exports@openstreetmap.fr

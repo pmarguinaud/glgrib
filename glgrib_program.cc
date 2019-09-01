@@ -986,14 +986,18 @@ R"CODE(
 
 #version 330 core
 
+in vec3 pointLLS;
+
 uniform mat4 MVP;
 uniform float x0;
 uniform float y0;
 uniform float x1;
 uniform float y1;
+const float pi = 3.1415926;
 
 void main ()
 {
+if(false){
   vec2 pos2;
 
   if (gl_VertexID == 0)
@@ -1008,6 +1012,30 @@ void main ()
   pos2 = vec2 (x0, y0) + vec2 (x1 - x0, y1 - y0) * pos2;
 
   gl_Position =  MVP * vec4 (0., pos2.x, pos2.y, 1.);
+}else{
+
+
+  vec2 pos2;
+  if (gl_VertexID == 0)
+    pos2 = vec2 (-1.0f, -1.0f);
+  else if (gl_VertexID == 1)
+    pos2 = vec2 (+1.0f, -1.0f);
+  else if (gl_VertexID == 2)
+    pos2 = vec2 (+1.0f, +1.0f);
+  else if (gl_VertexID == 3)
+    pos2 = vec2 (-1.0f, +1.0f);
+
+  float lon = pointLLS.x + pos2.x * pi / 20;
+  float lat = pointLLS.y + pos2.y * pi / 20;
+  float siz = pointLLS.z;
+
+  float coslon = cos (lon), sinlon = sin (lon);
+  float coslat = cos (lat), sinlat = sin (lat);
+  vec3 pos3 = vec3 (coslon * coslat, sinlon * coslat, sinlat);
+
+  gl_Position =  MVP * vec4 (pos3, 1.);
+
+}
 
 }
 

@@ -24,7 +24,9 @@ public:
   void render (const glgrib_view &) const;
 private:
   bool ready = false;
+  int len;
   GLuint VertexArrayID = 0;
+  glgrib_opengl_buffer_ptr llsbuffer;
 };
 
 #endif

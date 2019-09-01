@@ -83,7 +83,6 @@ void glgrib_points::render (const glgrib_view & view) const
   glBindVertexArray (VertexArrayID);
 
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0};
-//glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind);
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, len);
 
   glBindVertexArray (0);

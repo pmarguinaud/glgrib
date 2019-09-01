@@ -104,7 +104,7 @@ void glgrib_gshhg::read (const std::string & path, int * numberOfPoints,
       FILE * fp = fopen (path.c_str (), "r");
 
       if (fp == NULL)
-        std::runtime_error (std::string ("Cannot open GSHHG data"));
+        throw std::runtime_error (std::string ("Cannot open GSHHG data"));
       
       while (1) 
         {   

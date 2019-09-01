@@ -23,7 +23,7 @@ int main (int argc, const char * argv[])
 {
   glgrib_options opts;
 
-  if ((argc == 2) && strncmp (argv[0], "--", 2))
+  if ((argc == 2) && strncmp (argv[1], "--", 2))
     {
       opts.shell.on = true;
       opts.shell.script = std::string (argv[1]);

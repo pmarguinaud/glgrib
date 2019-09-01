@@ -42,7 +42,6 @@ void glgrib_lines::init (const glgrib_options_lines & o,
                             &numberOfLines, &xyz, &ind);
 
 
-
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz.data ());
   elementbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfLines * sizeof (unsigned int), ind.data ());
 

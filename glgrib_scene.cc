@@ -88,6 +88,7 @@ void glgrib_scene::display () const
        it != d.str.end (); it++)
     it->render (d.MVP_R);
 
+  d.points.render (d.view);
 
 }
 
@@ -300,6 +301,7 @@ void glgrib_scene::init (const glgrib_options & o)
 
   setDateOpts (d.opts.scene.date);
   setTextOpts (d.opts.scene.text);
+  setPointsOpts ();
   setColorBarOpts (d.opts.colorbar);
   setMapScaleOpts (d.opts.mapscale);
 
@@ -493,6 +495,12 @@ void glgrib_scene::setTextOpts (const glgrib_options_text & o)
           d.str[i].setBackgroundColor (d.opts.scene.text.font.color.background);
         }
     }
+}
+
+void glgrib_scene::setPointsOpts ()
+{
+  d.points.cleanup ();
+  d.points.init ({0.}, {0.}, {10.});
 }
 
 void glgrib_scene::setGridColorOpts (const glgrib_option_color & color)

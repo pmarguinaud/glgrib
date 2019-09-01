@@ -164,14 +164,6 @@ void main()
 {
   float x, y;
   
-  if (false){
-  rank = gl_VertexID / 4;
-  int corn = int (mod (gl_VertexID, 4));
-  int ix = int (mod (corn, 2));
-  int iy = corn / 2;
-  x = xmin + xmax * ix;
-  y = ymin + iy * (ymax - ymin) / 4.0;
-  }else{
   rank = int (mod (gl_VertexID / 4, 2));
 
   int ix = int (gl_VertexID / 4);
@@ -197,7 +189,6 @@ void main()
 
   x = xmin + ix * (xmax - xmin) / 4.0;
   y = ymin + iy * (ymax - ymin) / 1.0;
-  }
 
   vec2 vertexPos = vec2 (x, y);
   gl_Position =  MVP * vec4 (0., vertexPos.x, vertexPos.y, 1.);

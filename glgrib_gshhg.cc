@@ -89,7 +89,7 @@ void glgrib_gshhg::read (const std::string & path, int * numberOfPoints,
   GSHHG_t h;
   std::vector<GSHHG_POINT_t> gpl;
 
-  int ip = 0, il = 0;
+  int ip = 0;
 
   *numberOfPoints = 0;
   *numberOfLines = 0;
@@ -99,93 +99,77 @@ void glgrib_gshhg::read (const std::string & path, int * numberOfPoints,
 
   const float millideg2rad = M_PI / (1000000. * 180.);
 
-  for (int pass = 0; pass < 2; pass++)
-    {
-      FILE * fp = fopen (path.c_str (), "r");
+  FILE * fp = fopen (path.c_str (), "r");
 
-      if (fp == NULL)
-        throw std::runtime_error (std::string ("Cannot open GSHHG data"));
+  if (fp == NULL)
+    throw std::runtime_error (std::string ("Cannot open GSHHG data"));
+  
+  while (1) 
+    {   
+      if (! h.read (fp))
+        break;
+
+      if (! read_GSHHG_POINT_list (&gpl, h.n, fp))
+        break;
+
+      bool ok = false;
+
+      for (int i = 0; i < mask.size (); i++)
+        ok = ok || ((h.flag & mask[i]) == code[i]);
       
-      while (1) 
-        {   
-          if (! h.read (fp))
-            break;
-
-          if (! read_GSHHG_POINT_list (&gpl, h.n, fp))
-            break;
-
-          bool ok = false;
-
-          for (int i = 0; i < mask.size (); i++)
-            ok = ok || ((h.flag & mask[i]) == code[i]);
-          
-          if (ok)
+      if (ok)
+        {
+          if (closed)
             {
-              if (pass == 0)
+              *numberOfPoints += h.n;
+              *numberOfLines += h.n;
+            }
+          else
+            {
+              *numberOfPoints += h.n;
+              *numberOfLines += (h.n - 1);
+            }
+
+          int ip0 = ip;
+          for (int i = 0; i < h.n; i++)
+            {
+              float lon = millideg2rad * gpl[i].x;
+    	      float lat = millideg2rad * gpl[i].y;
+              float coslon = cos (lon);
+              float sinlon = sin (lon);
+              float coslat = cos (lat);
+              float sinlat = sin (lat);
+              xyz->push_back (coslon * coslat);
+              xyz->push_back (sinlon * coslat);
+              xyz->push_back (         sinlat);
+
+              if (closed)
                 {
-                  if (closed)
-                    {
-                      *numberOfPoints += h.n;
-                      *numberOfLines += h.n;
-                    }
+                  ind->push_back (ip);
+                  if (i == h.n - 1)
+                    ind->push_back (ip0);
                   else
-                    {
-                      *numberOfPoints += h.n;
-                      *numberOfLines += (h.n - 1);
-                    }
+                    ind->push_back (ip + 1);
                 }
               else
                 {
-                  int ip0 = ip;
-                  for (int i = 0; i < h.n; i++)
+                  if (i != h.n - 1)
                     {
-                      float lon = millideg2rad * gpl[i].x;
-        	      float lat = millideg2rad * gpl[i].y;
-                      float coslon = cos (lon);
-                      float sinlon = sin (lon);
-                      float coslat = cos (lat);
-                      float sinlat = sin (lat);
-                      (*xyz)[ip*3+0] = coslon * coslat;
-                      (*xyz)[ip*3+1] = sinlon * coslat;
-                      (*xyz)[ip*3+2] =          sinlat;
-
-            	      if (closed)
-                        {
-                          (*ind)[il*2+0] = ip;
-                          if (i == h.n - 1)
-                            (*ind)[il*2+1] = ip0;
-                          else
-                            (*ind)[il*2+1] = ip + 1;
-                          il++;
-                        }
-            	      else
-            	        {
-                          if (i != h.n - 1)
-                            {
-                              (*ind)[il*2+0] = ip;
-                              (*ind)[il*2+1] = ip + 1;
-            	              il++;
-                            }
-            	        }
-            	      ip++;
+                      ind->push_back (ip);
+                      ind->push_back (ip + 1);
                     }
                 }
+               ip++;
             }
-
-          if (feof (fp))
-            break;
-
-        }   
-
-      fclose (fp);
-      fp = NULL;
-      
-      if (pass == 0)
-        {
-          xyz->resize (3 * *numberOfPoints);
-          ind->resize (2 * *numberOfLines);
         }
-    }
 
+      if (feof (fp))
+        break;
+
+    }   
+
+  fclose (fp);
+  fp = NULL;
+      
 }
 

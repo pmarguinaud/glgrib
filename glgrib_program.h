@@ -22,7 +22,8 @@ public:
     CONTOUR=8,
     FONT=9,
     IMAGE=10,
-    SIZE=11,
+    POINTS=11,
+    SIZE=12,
   } kind;
 
 

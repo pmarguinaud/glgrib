@@ -500,7 +500,7 @@ void glgrib_scene::setTextOpts (const glgrib_options_text & o)
 void glgrib_scene::setPointsOpts ()
 {
   d.points.cleanup ();
-  d.points.init ({0.,0.}, {0.,45.}, {10.,10.});
+  d.points.init ({0.,0.,10.}, {0.,45.,10.}, {10.,10.,10.});
 }
 
 void glgrib_scene::setGridColorOpts (const glgrib_option_color & color)

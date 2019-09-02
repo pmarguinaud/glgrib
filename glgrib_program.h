@@ -26,8 +26,6 @@ public:
     SIZE=12,
   } kind;
 
-  static const std::string emptyshader;
-
   void set1f (const std::string &, float);
   void set1fv (const std::string &, const float *, int = 1);
   void set1iv (const std::string &, const int *, int = 1);
@@ -39,8 +37,10 @@ public:
   void compile ();
 
   void setLight (const glgrib_options_light &);
-  glgrib_program (const std::string & fsc, const std::string & vsc, const std::string & gsc = emptyshader) 
+  glgrib_program (const std::string & fsc, const std::string & vsc, const std::string & gsc)
      : FragmentShaderCode (fsc), VertexShaderCode (vsc), GeometryShaderCode (gsc) { }
+  glgrib_program (const std::string & fsc, const std::string & vsc)
+     : FragmentShaderCode (fsc), VertexShaderCode (vsc), GeometryShaderCode ("") { }
   virtual ~glgrib_program ();
   void use () const;
   std::string FragmentShaderCode;

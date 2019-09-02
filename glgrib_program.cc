@@ -7,8 +7,6 @@
 #include <glm/glm.hpp>
 
 
-const std::string glgrib_program::emptyshader = "";
-
 static const std::string projShaderInclude = 
 R"CODE(
 const int XYZ=0;
@@ -973,56 +971,51 @@ void main ()
   glgrib_program (  // POINTS
 R"CODE(
 #version 330 core
-
 out vec4 color;
 
-void main ()
+void main()
 {
   color.r = 1.0;
-  color.g = 1.0;
-  color.b = 1.0;
+  color.g = 0.0;
+  color.b = 0.0;
   color.a = 1.0;
 }
 )CODE",
 R"CODE(
-
 #version 330 core
 
-in vec3 pointLLS;
+layout (location = 0) in vec3 aPos;
+
+const float pi = 3.1415926;
 
 uniform mat4 MVP;
-uniform float x0;
-uniform float y0;
-uniform float x1;
-uniform float y1;
-const float pi = 3.1415926;
+
+void main()
+{
+  float lon = aPos.x;
+  float lat = aPos.y;
+  float coslon = cos (lon), sinlon = sin (lon);
+  float coslat = cos (lat), sinlat = sin (lat);
+  vec3 posxyz = vec3 (coslon * coslat, sinlon * coslat, sinlat);
+  gl_Position = MVP * vec4 (posxyz, 1.0);
+}
+)CODE",
+R"CODE(
+#version 330 core
+layout (points) in;
+layout (points, max_vertices = 1) out;
 
 void main ()
 {
-  vec2 pos2;
-  if (gl_VertexID == 0)
-    pos2 = vec2 (-1.0f, -1.0f);
-  else if (gl_VertexID == 1)
-    pos2 = vec2 (+1.0f, -1.0f);
-  else if (gl_VertexID == 2)
-    pos2 = vec2 (+1.0f, +1.0f);
-  else if (gl_VertexID == 3)
-    pos2 = vec2 (-1.0f, +1.0f);
-
-  float lon = pointLLS.x + pos2.x * pi / 20;
-  float lat = pointLLS.y + pos2.y * pi / 20;
-  float siz = pointLLS.z;
-
-  float coslon = cos (lon), sinlon = sin (lon);
-  float coslat = cos (lat), sinlat = sin (lat);
-  vec3 pos3 = vec3 (coslon * coslat, sinlon * coslat, sinlat);
-
-  gl_Position =  MVP * vec4 (pos3, 1.);
-
+  vec4 position = gl_in[0].gl_Position;
+  gl_PointSize = 10; gl_Position = position; EmitVertex();
+  EndPrimitive();
 }
 
+)CODE"
 
-)CODE"),
+),
+
 };
 
 void glgrib_program::compile ()

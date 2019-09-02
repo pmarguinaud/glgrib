@@ -26,12 +26,7 @@ glgrib_string & glgrib_string::operator= (const glgrib_string & str)
 void glgrib_string::cleanup ()
 {
   if (ready)
-    {
-      glDeleteBuffers (1, &xyzbuffer);
-      glDeleteBuffers (1, &vertexbuffer);
-      glDeleteBuffers (1, &letterbuffer);
-      glDeleteVertexArrays (1, &VertexArrayID);
-    }
+    glDeleteVertexArrays (1, &VertexArrayID);
   ready = false;
 }
 
@@ -167,32 +162,37 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
     }
      
 
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (xy.size () * sizeof (float), xy.data ());
+  letterbuffer = new_glgrib_opengl_buffer_ptr (let.size () * sizeof (float), let.data ());
+  xyzbuffer = new_glgrib_opengl_buffer_ptr (xyz.size () * sizeof (float), xyz.data ());
+
+  setupVertexAttributes ();
+  
+  ready = true;
+
+}
+
+void glgrib_string::setupVertexAttributes ()
+{
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
   
-  glGenBuffers (1, &vertexbuffer);
-  glBindBuffer (GL_ARRAY_BUFFER, vertexbuffer);
-  glBufferData (GL_ARRAY_BUFFER, xy.size () * sizeof (float), xy.data (), GL_STATIC_DRAW);
+  vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 4, GL_FLOAT, GL_FALSE, 0, NULL); 
   glVertexAttribDivisor (0, 1);
   
-  glGenBuffers (1, &letterbuffer);
-  glBindBuffer (GL_ARRAY_BUFFER, letterbuffer);
-  glBufferData (GL_ARRAY_BUFFER, let.size () * sizeof (float), let.data (), GL_STATIC_DRAW);
+  letterbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, 1, GL_FLOAT, GL_FALSE, 0, NULL); 
   glVertexAttribDivisor (1, 1);
   
-  glGenBuffers (1, &xyzbuffer);
-  glBindBuffer (GL_ARRAY_BUFFER, xyzbuffer);
-  glBufferData (GL_ARRAY_BUFFER, xyz.size () * sizeof (float), xyz.data (), GL_STATIC_DRAW);
+  xyzbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (2); 
   glVertexAttribPointer (2, 4, GL_FLOAT, GL_FALSE, 0, NULL); 
   glVertexAttribDivisor (2, 1);
   glBindVertexArray (0);
   
-  ready = true;
 
 }
 
@@ -275,7 +275,7 @@ void glgrib_string::update (const std::vector<std::string> & str)
     for (int j = 0; j < data[i].size (); j++)
       data[i][j] = ' ';
 
-  glBindBuffer (GL_ARRAY_BUFFER, letterbuffer);
+  letterbuffer->bind (GL_ARRAY_BUFFER);
 
   float * let = (float *)glMapBufferRange (GL_ARRAY_BUFFER, 0, len * sizeof (float), 
   	                                   GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);

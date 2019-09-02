@@ -80,7 +80,12 @@ public:
   void update (const std::string &);
   void cleanup ();
   bool ready = false;
+
+  void setupVertexAttributes ();
+
 private:
+  bool persist = false;
+  bool keep = true;
   std::vector<std::string> data;
   std::vector<float> x, y;       // Position of letters vertices
   std::vector<float> X, Y, Z, A; // Position & angle of each letter on the sphere
@@ -90,7 +95,7 @@ private:
   float scale;
   int len;    // Total number of characters
   GLuint VertexArrayID;
-  GLuint xyzbuffer, vertexbuffer, letterbuffer;
+  glgrib_opengl_buffer_ptr xyzbuffer, vertexbuffer, letterbuffer;
   const_glgrib_font_ptr font = NULL; 
 };
 

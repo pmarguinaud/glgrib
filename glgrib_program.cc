@@ -926,10 +926,6 @@ uniform sampler2D texture;
 void main ()
 {
   color = texture2D (texture, fragmentTex);
-//color.r = 1.0;
-//color.g = 1.0;
-//color.b = 1.0;
-//color.a = 1.0;
 }
 )CODE",
 R"CODE(
@@ -971,10 +967,16 @@ void main ()
   glgrib_program (  // POINTS
 R"CODE(
 #version 330 core
+in float skip;
+flat in vec3 vertexPos;
+flat in float radius;
+in vec3 fragmentPos;
 out vec4 color;
 
 void main()
 {
+  if (skip > 0)
+    discard;
   color.r = 1.0;
   color.g = 0.0;
   color.b = 0.0;
@@ -986,36 +988,73 @@ R"CODE(
 
 layout (location = 0) in vec3 aPos;
 
-const float pi = 3.1415926;
-
 uniform mat4 MVP;
+
+)CODE"
++ projShaderInclude 
++ scalePositionInclude 
++ R"CODE(
+
+uniform float length10 = 0.01;
+uniform float pixels10 = 10;
+uniform float sizescale = 10.;
+uniform float sizethres = 10.;
+
+out float skip;
 
 void main()
 {
+  vec2 pos2; 
+
+  if (gl_VertexID == 0)
+    pos2 = vec2 (-1.0f, -1.0f);
+  else if (gl_VertexID == 1)
+    pos2 = vec2 (+1.0f, -1.0f);
+  else if (gl_VertexID == 2)
+    pos2 = vec2 (+1.0f, +1.0f);
+  else if (gl_VertexID == 3)
+    pos2 = vec2 (-1.0f, +1.0f);
+  
   float lon = aPos.x;
   float lat = aPos.y;
+  float siz = aPos.z / sizescale;
   float coslon = cos (lon), sinlon = sin (lon);
   float coslat = cos (lat), sinlat = sin (lat);
-  vec3 posxyz = vec3 (coslon * coslat, sinlon * coslat, sinlat);
-  gl_Position = MVP * vec4 (posxyz, 1.0);
+  
+  vec3 pos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
+
+  if (proj == XYZ)
+    {
+      vec3 northPos  = vec3 (0., 0., 1.);
+      vec3 vx = normalize (cross (northPos, pos));
+      vec3 vy = normalize (cross (pos, vx));
+      vec4 pos4 = MVP * vec4 (pos, 1.);
+      pos = pos + siz * length10 * (pos2.x * vx + pos2.y * vy);
+      gl_Position = MVP * vec4 (pos, 1.);
+    }
+  else
+    {
+      float scale00 = length (pos);
+      vec3 scale0 = vec3 (scale00, scale00, scale00);
+      vec3 vertexPos = pos;
+      vec3 normedPos = compNormedPos (vertexPos);
+      vec3 pos = compProjedPos (vertexPos, normedPos);
+      pos = scalePosition (pos, normedPos, scale0);
+
+      gl_Position =  MVP * vec4 (pos, 1.);
+      
+      gl_Position.x = gl_Position.x + siz * 0.1 * pos2.x;
+      gl_Position.y = gl_Position.y + siz * 0.1 * pos2.y;
+      gl_Position.z = 0.0f;
+    }
+
+  if (aPos.z < sizethres)
+    skip = 1.;
+  else
+    skip = 0.;
+
 }
-)CODE",
-R"CODE(
-#version 330 core
-layout (points) in;
-layout (line_strip, max_vertices = 2) out;
-
-void main ()
-{
-  vec4 position = gl_in[0].gl_Position;
-  gl_PointSize = 10; gl_Position = position; EmitVertex();
-  gl_PointSize = 10; gl_Position = vec4 (0., 0., 0., 1.); EmitVertex();
-  EndPrimitive();
-}
-
-)CODE"
-
-),
+)CODE"),
 
 };
 

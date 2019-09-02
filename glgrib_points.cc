@@ -39,7 +39,10 @@ void glgrib_points::setupVertexAttributes ()
   glBindVertexArray (VertexArrayID);
   llsbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), NULL);
+
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+  glVertexAttribDivisor (0, 1);
+
   glBindVertexArray (0);
 }
 
@@ -68,14 +71,17 @@ void glgrib_points::render (const glgrib_view & view) const
   if (! ready)
     return;
 
-  glEnable (GL_PROGRAM_POINT_SIZE);
+  float length = view.pixel_to_dist_at_nadir (10);
 
   glgrib_program * program = glgrib_program_load (glgrib_program::POINTS);
   program->use ();
 
+  program->set1f ("length10", length);
+
   view.setMVP (program);
   glBindVertexArray (VertexArrayID);
-  glDrawArrays (GL_POINTS, 0, len);
+  unsigned int ind[6] = {0, 1, 2, 2, 3, 0}; 
+  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, len);
   glBindVertexArray (0);
 
 }

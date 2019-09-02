@@ -1003,12 +1003,13 @@ void main()
 R"CODE(
 #version 330 core
 layout (points) in;
-layout (points, max_vertices = 1) out;
+layout (line_strip, max_vertices = 2) out;
 
 void main ()
 {
   vec4 position = gl_in[0].gl_Position;
   gl_PointSize = 10; gl_Position = position; EmitVertex();
+  gl_PointSize = 10; gl_Position = vec4 (0., 0., 0., 1.); EmitVertex();
   EndPrimitive();
 }
 

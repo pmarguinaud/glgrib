@@ -7,6 +7,8 @@
 #include <glm/glm.hpp>
 
 
+const std::string glgrib_program::emptyshader = "";
+
 static const std::string projShaderInclude = 
 R"CODE(
 const int XYZ=0;
@@ -997,24 +999,6 @@ const float pi = 3.1415926;
 
 void main ()
 {
-if(false){
-  vec2 pos2;
-
-  if (gl_VertexID == 0)
-    pos2 = vec2 (0.0f, 0.0f);
-  else if (gl_VertexID == 1)
-    pos2 = vec2 (1.0f, 0.0f);
-  else if (gl_VertexID == 2)
-    pos2 = vec2 (1.0f, 1.0f);
-  else if (gl_VertexID == 3)
-    pos2 = vec2 (0.0f, 1.0f);
-
-  pos2 = vec2 (x0, y0) + vec2 (x1 - x0, y1 - y0) * pos2;
-
-  gl_Position =  MVP * vec4 (0., pos2.x, pos2.y, 1.);
-}else{
-
-
   vec2 pos2;
   if (gl_VertexID == 0)
     pos2 = vec2 (-1.0f, -1.0f);
@@ -1037,8 +1021,6 @@ if(false){
 
 }
 
-}
-
 
 )CODE"),
 };
@@ -1047,7 +1029,7 @@ void glgrib_program::compile ()
 {
   if (loaded) 
     return;
-  programID = glgrib_load_shader (FragmentShaderCode, VertexShaderCode);
+  programID = glgrib_load_shader (FragmentShaderCode, VertexShaderCode, GeometryShaderCode);
   matrixID = glGetUniformLocation (programID, "MVP");
   loaded = true;
 }

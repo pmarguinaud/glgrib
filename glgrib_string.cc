@@ -1,22 +1,35 @@
 #include "glgrib_string.h"
 
 #include <iostream>
+#include <stdexcept>
 
 glgrib_string & glgrib_string::operator= (const glgrib_string & str)
 {
   if (this != &str)
     {
-
-
       cleanup ();
       if (str.ready)
         {
-          init (str.font, str.data, str.x, str.y, str.scale, 
-                str.align, str.X, str.Y, str.Z, str.A);
-          for (int i =0; i < 4; i++)
-            color0[i] = str.color0[i];
-          for (int i =0; i < 4; i++)
-            color1[i] = str.color1[i];
+          if (d.shared)
+            {
+              d = str.d;
+	      setupVertexAttributes ();
+	    }
+	  else if (d.change)
+            {
+              init (str.d.font, str.d.data, str.d.x, str.d.y, str.d.scale, 
+                    str.d.align, str.d.X, str.d.Y, str.d.Z, str.d.A);
+              for (int i =0; i < 4; i++)
+                d.color0[i] = str.d.color0[i];
+              for (int i =0; i < 4; i++)
+                d.color1[i] = str.d.color1[i];
+	      d.shared = str.d.shared;
+	      d.change = str.d.change;
+	    }
+	  else
+	    {
+              throw std::runtime_error (std::string ("Cannot copy string"));
+	    }
         }
     }
 }
@@ -67,56 +80,56 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
 			  const std::vector<float> & _X, const std::vector<float> & _Y,
 			  const std::vector<float> & _Z, const std::vector<float> & _A)
 {
-  data = str;
-  x = _x;
-  y = _y;
-  X = _X; Y = _Y;
-  Z = _Z; A = _A;
-  align = _align;
+  d.data = str;
+  d.x = _x;
+  d.y = _y;
+  d.X = _X; d.Y = _Y;
+  d.Z = _Z; d.A = _A;
+  d.align = _align;
   
-  len = 0; // Total number of letters
-  for (int i = 0; i < data.size (); i++)
-    len += data[i].size ();
+  d.len = 0; // Total number of letters
+  for (int i = 0; i < d.data.size (); i++)
+    d.len += d.data[i].size ();
 
   std::vector<float> xy, let, xyz;
-  xy.reserve (4 * len);
-  let.reserve (len);
-  xyz.reserve (3 * len);
+  xy.reserve (4 * d.len);
+  let.reserve (d.len);
+  xyz.reserve (3 * d.len);
   
   for (int i = 0; i < 4; i++)
-    color0[i] = 1.;
+    d.color0[i] = 1.;
   for (int i = 0; i < 4; i++)
-    color1[i] = 0.;
+    d.color1[i] = 0.;
 
-  font = ff;
-  scale = s;
+  d.font = ff;
+  d.scale = s;
      
 
-  float dx = scale * font->getAspect ();
-  float dy = scale;
+  float dx = d.scale * d.font->getAspect ();
+  float dy = d.scale;
      
-  float posb = dy * font->getPosBelow ();
-  float posu = dy * font->getPosAbove ();
+  float posb = dy * d.font->getPosBelow ();
+  float posu = dy * d.font->getPosAbove ();
   float dym  = dy - posu - posb;
 
   float x0, y0; // last coordinates used
 
   // For each string
-  for (int j = 0, ii = 0; j < data.size (); j++)
+  for (int j = 0, ii = 0; j < d.data.size (); j++)
     {
-      int len = data[j].size ();
+      int len = d.data[j].size ();
      
       float xx, yy; // Base position
 
       // Use coordinates if provided or compute position
-      if (j < x.size ())
-        xx = x[j];
+      if (j < d.x.size ())
+        xx = d.x[j];
       else
         xx = x0;
 
       // Use coordinates if provided or compute position
-      if (j < y.size ())
-        yy = y[j];
+      if (j < d.y.size ())
+        yy = d.y[j];
       else
         yy = y0 - dy;
 
@@ -125,14 +138,14 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
 
       yy = yy - posb;
      
-      if (align & CX)
+      if (d.align & CX)
         xx = xx - (len * dx / 2);
-      else if (align & EX)
+      else if (d.align & EX)
         xx = xx - len * dx;
      
-      if (align & CY)
+      if (d.align & CY)
         yy = yy - dym / 2;
-      else if (align & NY)
+      else if (d.align & NY)
         yy = yy - dym;
      
       const float deg2rad = M_PI / 180.0;
@@ -143,7 +156,7 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
 
       for (int i = 0; i < len; i++, ii++)
         {
-          int rank = font->map (data[j][i]);
+          int rank = d.font->map (d.data[j][i]);
      
 	  xy.push_back (xx);
 	  xy.push_back (yy);
@@ -162,14 +175,21 @@ void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::strin
     }
      
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (xy.size () * sizeof (float), xy.data ());
-  letterbuffer = new_glgrib_opengl_buffer_ptr (let.size () * sizeof (float), let.data ());
-  xyzbuffer = new_glgrib_opengl_buffer_ptr (xyz.size () * sizeof (float), xyz.data ());
+  d.vertexbuffer = new_glgrib_opengl_buffer_ptr (xy.size () * sizeof (float), xy.data ());
+  d.letterbuffer = new_glgrib_opengl_buffer_ptr (let.size () * sizeof (float), let.data ());
+  d.xyzbuffer = new_glgrib_opengl_buffer_ptr (xyz.size () * sizeof (float), xyz.data ());
 
   setupVertexAttributes ();
   
-  ready = true;
-
+  if (! d.change)
+    {
+      d.x.clear ();
+      d.y.clear ();
+      d.X.clear ();
+      d.Y.clear ();
+      d.Z.clear ();
+      d.A.clear ();
+    }
 }
 
 void glgrib_string::setupVertexAttributes ()
@@ -177,23 +197,24 @@ void glgrib_string::setupVertexAttributes ()
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
   
-  vertexbuffer->bind (GL_ARRAY_BUFFER);
+  d.vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 4, GL_FLOAT, GL_FALSE, 0, NULL); 
   glVertexAttribDivisor (0, 1);
   
-  letterbuffer->bind (GL_ARRAY_BUFFER);
+  d.letterbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, 1, GL_FLOAT, GL_FALSE, 0, NULL); 
   glVertexAttribDivisor (1, 1);
   
-  xyzbuffer->bind (GL_ARRAY_BUFFER);
+  d.xyzbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (2); 
   glVertexAttribPointer (2, 4, GL_FLOAT, GL_FALSE, 0, NULL); 
   glVertexAttribDivisor (2, 1);
   glBindVertexArray (0);
   
 
+  ready = true;
 }
 
 
@@ -211,24 +232,24 @@ void glgrib_string::render (const glgrib_view & view) const
   if (! ready)
     return;
 
-  font->select ();
+  d.font->select ();
 
-  glgrib_program * program = font->getProgram ();
+  glgrib_program * program = d.font->getProgram ();
   view.setMVP (program);
 
   float length = view.pixel_to_dist_at_nadir (10);
 
-  program->set1f ("scale", scale);
+  program->set1f ("scale", d.scale);
   program->set1i ("texture", 0);
   program->set1i ("l3d", 2);
-  program->set4fv ("color0", color0);
-  program->set4fv ("color1", color1);
+  program->set4fv ("color0", d.color0);
+  program->set4fv ("color1", d.color1);
   program->set1f ("length10", length);
 
 
   glBindVertexArray (VertexArrayID);
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0};
-  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, len);
+  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, d.len);
 }
 
 void glgrib_string::render (const glm::mat4 & MVP) const
@@ -236,19 +257,19 @@ void glgrib_string::render (const glm::mat4 & MVP) const
   if (! ready)
     return;
 
-  font->select ();
+  d.font->select ();
 
-  glgrib_program * program = font->getProgram ();
+  glgrib_program * program = d.font->getProgram ();
   program->setMatrix4fv ("MVP", &MVP[0][0]);
-  program->set1f ("scale", scale);
+  program->set1f ("scale", d.scale);
   program->set1i ("texture", 0);
   program->set1i ("l3d", 0);
-  program->set4fv ("color0", color0);
-  program->set4fv ("color1", color1);
+  program->set4fv ("color0", d.color0);
+  program->set4fv ("color1", d.color1);
 
   glBindVertexArray (VertexArrayID);
   unsigned int ind[12] = {0, 1, 2, 2, 3, 0};
-  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, len);
+  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, d.len);
 }
 
 void glgrib_string::update (const std::string & str)
@@ -258,37 +279,54 @@ void glgrib_string::update (const std::string & str)
 
 void glgrib_string::update (const std::vector<std::string> & str)
 {
-  if (str.size () > data.size ())
+  if (! ready)
+    throw std::runtime_error (std::string ("Cannot set update string"));
+  if (! d.change)
+    throw std::runtime_error (std::string ("Cannot set update string"));
+
+  if (str.size () > d.data.size ())
     return;
   for (int i = 0; i < str.size (); i++)
-    if (str[i].size () > data[i].size ())
+    if (str[i].size () > d.data[i].size ())
       return;
 
   for (int i = 0; i < str.size (); i++)
     {
       for (int j = 0; j < str[i].size (); j++)
-        data[i][j] = str[i][j];
-      for (int j = str[i].size (); j < data[i].size (); j++)
-        data[i][j] = ' ';
+        d.data[i][j] = str[i][j];
+      for (int j = str[i].size (); j < d.data[i].size (); j++)
+        d.data[i][j] = ' ';
     }
-  for (int i = str.size (); i < data.size (); i++)
-    for (int j = 0; j < data[i].size (); j++)
-      data[i][j] = ' ';
+  for (int i = str.size (); i < d.data.size (); i++)
+    for (int j = 0; j < d.data[i].size (); j++)
+      d.data[i][j] = ' ';
 
-  letterbuffer->bind (GL_ARRAY_BUFFER);
+  d.letterbuffer->bind (GL_ARRAY_BUFFER);
 
-  float * let = (float *)glMapBufferRange (GL_ARRAY_BUFFER, 0, len * sizeof (float), 
+  float * let = (float *)glMapBufferRange (GL_ARRAY_BUFFER, 0, d.len * sizeof (float), 
   	                                   GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
 
-  for (int j = 0, ii = 0; j < data.size (); j++)
-    for (int i = 0; i < data[j].size (); i++, ii++) 
+  for (int j = 0, ii = 0; j < d.data.size (); j++)
+    for (int i = 0; i < d.data[j].size (); i++, ii++) 
       {
-        int rank = font->map (data[j][i]);
+        int rank = d.font->map (d.data[j][i]);
         let[ii] = rank; 
       }
 
-  glFlushMappedBufferRange (GL_ARRAY_BUFFER, 0, len * sizeof (float));
+  glFlushMappedBufferRange (GL_ARRAY_BUFFER, 0, d.len * sizeof (float));
   glUnmapBuffer (GL_ARRAY_BUFFER);
+}
+
+void glgrib_string::setShared (bool p)
+{
+  d.shared = p;
+}
+
+void glgrib_string::setChange (bool u)
+{
+  if (ready && u)
+    throw std::runtime_error (std::string ("Cannot set attribute change"));
+  d.change = u;
 }
 
 

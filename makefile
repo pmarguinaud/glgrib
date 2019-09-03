@@ -162,8 +162,7 @@ test_travelling: ./glgrib.x
 
 test_strxyz: ./glgrib.x
 	$(RUNTEST) ./glgrib.x --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 0.99 \
-		--colorbar.on --colorbar.font.color.foreground green --window.width 1000 --scene.test_strxyz.font.color.foreground green \
-		--scene.projection XYZ --scene.test_strxyz.on
+		--colorbar.on --colorbar.font.color.foreground green --window.width 1000 --view.projection XYZ --scene.test_strxyz.on
 
 test_interpolation: ./glgrib.x
 	$(RUNTEST) ./glgrib.x --field\[0\].path testdata/interp/01.grb testdata/interp/36.grb  --field\[0\].scale 1.03 --field\[0\].palette.name cold_hot_temp  \

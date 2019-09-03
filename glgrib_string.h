@@ -59,22 +59,22 @@ public:
   void render (const glgrib_view &) const;
   void setForegroundColor (const glgrib_option_color & color)
   {
-    color0[0] = color.r / 255.0f; 
-    color0[1] = color.g / 255.0f; 
-    color0[2] = color.b / 255.0f;
-    color0[3] = color.a / 255.0f;
+    d.color0[0] = color.r / 255.0f; 
+    d.color0[1] = color.g / 255.0f; 
+    d.color0[2] = color.b / 255.0f;
+    d.color0[3] = color.a / 255.0f;
   }
   void setBackgroundColor (const glgrib_option_color & color)
   {
-    color1[0] = color.r / 255.0f; 
-    color1[1] = color.g / 255.0f; 
-    color1[2] = color.b / 255.0f;
-    color1[3] = color.a / 255.0f;
+    d.color1[0] = color.r / 255.0f; 
+    d.color1[1] = color.g / 255.0f; 
+    d.color1[2] = color.b / 255.0f;
+    d.color1[3] = color.a / 255.0f;
   }
   void setForegroundColor (float r, float g, float b, float a = 1.0f) 
-    { color0[0] = r; color0[1] = g; color0[2] = b; color0[3] = a; }
+    { d.color0[0] = r; d.color0[1] = g; d.color0[2] = b; d.color0[3] = a; }
   void setBackgroundColor (float r, float g, float b, float a = 1.0f) 
-    { color1[0] = r; color1[1] = g; color1[2] = b; color1[3] = a; }
+    { d.color1[0] = r; d.color1[1] = g; d.color1[2] = b; d.color1[3] = a; }
   ~glgrib_string ();
   void update (const std::vector<std::string> &);
   void update (const std::string &);
@@ -83,20 +83,26 @@ public:
 
   void setupVertexAttributes ();
 
+  void setShared (bool);
+  void setChange (bool);
+
 private:
-  bool persist = false;
-  bool keep = true;
-  std::vector<std::string> data;
-  std::vector<float> x, y;       // Position of letters vertices
-  std::vector<float> X, Y, Z, A; // Position & angle of each letter on the sphere
-  align_t align;
-  float color0[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-  float color1[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-  float scale;
-  int len;    // Total number of characters
   GLuint VertexArrayID;
-  glgrib_opengl_buffer_ptr xyzbuffer, vertexbuffer, letterbuffer;
-  const_glgrib_font_ptr font = NULL; 
+  struct 
+  {
+    bool shared = false;
+    bool change = true;
+    std::vector<std::string> data;
+    std::vector<float> x, y;       // Position of letters vertices
+    std::vector<float> X, Y, Z, A; // Position & angle of each letter on the sphere
+    align_t align;
+    float color0[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    float color1[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    float scale;
+    int len;    // Total number of characters
+    glgrib_opengl_buffer_ptr xyzbuffer, vertexbuffer, letterbuffer;
+    const_glgrib_font_ptr font = NULL; 
+  } d;
 };
 
 #endif

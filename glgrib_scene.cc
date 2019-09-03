@@ -308,6 +308,8 @@ void glgrib_scene::init (const glgrib_options & o)
   if (d.opts.scene.test_strxyz.on)
     {
       glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.scene.date.font);
+      d.strxyz.setShared (true);
+//    d.strxyz.setUpdatable (false);
       d.strxyz.init3D (font, std::vector<std::string>{"ABCD","EFGH","IJKL","MNOP"},
                        std::vector<float>{+1.01f,-1.01f,+0.00f,+0.707*1.010f},
                        std::vector<float>{+0.00f,+0.00f,+1.01f,+0.707*0.000f},

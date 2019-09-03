@@ -19,7 +19,7 @@
 #include "glgrib_departements.h"
 #include "glgrib_colorbar.h"
 #include "glgrib_mapscale.h"
-#include "glgrib_points.h"
+#include "glgrib_cities.h"
 #include "glgrib_loader.h"
 
 #include <set>
@@ -85,7 +85,7 @@ public:
       glgrib_rivers rivers;
       glgrib_grid grid;
       glgrib_departements departements;
-      glgrib_points points;
+      glgrib_cities cities;
     private:
       glgrib_image image;
       glgrib_colorbar colorbar;
@@ -128,7 +128,7 @@ public:
   void setDateOpts (const glgrib_options_date &);
   void setLightOpts (const glgrib_options_light &);
   void setMiscOpts (const glgrib_options_scene &);
-  void setPointsOpts ();
+  void setCitiesOpts (const glgrib_options_cities &);
 
   glgrib_options getOptions () const;
 

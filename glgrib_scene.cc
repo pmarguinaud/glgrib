@@ -88,7 +88,8 @@ void glgrib_scene::display () const
        it != d.str.end (); it++)
     it->render (d.MVP_R);
 
-  d.points.render (d.view);
+  if (d.opts.cities.on)
+    d.cities.render (d.view);
 
 }
 
@@ -301,7 +302,7 @@ void glgrib_scene::init (const glgrib_options & o)
 
   setDateOpts (d.opts.scene.date);
   setTextOpts (d.opts.scene.text);
-  setPointsOpts ();
+  setCitiesOpts (d.opts.cities);
   setColorBarOpts (d.opts.colorbar);
   setMapScaleOpts (d.opts.mapscale);
 
@@ -309,7 +310,7 @@ void glgrib_scene::init (const glgrib_options & o)
     {
       glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.scene.date.font);
       d.strxyz.setShared (true);
-//    d.strxyz.setUpdatable (false);
+      d.strxyz.setChange (false);
       d.strxyz.init3D (font, std::vector<std::string>{"ABCD","EFGH","IJKL","MNOP"},
                        std::vector<float>{+1.01f,-1.01f,+0.00f,+0.707*1.010f},
                        std::vector<float>{+0.00f,+0.00f,+1.01f,+0.707*0.000f},
@@ -499,10 +500,12 @@ void glgrib_scene::setTextOpts (const glgrib_options_text & o)
     }
 }
 
-void glgrib_scene::setPointsOpts ()
+void glgrib_scene::setCitiesOpts (const glgrib_options_cities & o)
 {
-  d.points.cleanup ();
-  d.points.init ({0.,0.,10.}, {0.,45.,0.}, {5.,10.,20.});
+  d.opts.cities = o;
+  d.cities.cleanup ();
+  if (d.opts.cities.on)
+    d.cities.init (o);
 }
 
 void glgrib_scene::setGridColorOpts (const glgrib_option_color & color)

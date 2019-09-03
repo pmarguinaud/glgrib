@@ -81,7 +81,7 @@ glgrib_palette & glgrib_palette::by_name (const std::string & name)
 end:
 
   if (rc != SQLITE_OK)
-    printf ("%s\n", sqlite3_errmsg (db));
+    throw std::runtime_error (std::string (sqlite3_errmsg (db)));
 
   if (req != NULL)
     sqlite3_finalize (req);
@@ -277,7 +277,7 @@ step:
 end:
 
   if (rc != SQLITE_OK)
-    printf ("%s\n", sqlite3_errmsg (db));
+    throw std::runtime_error (std::string (sqlite3_errmsg (db)));
 
   if (req != NULL)
     sqlite3_finalize (req);
@@ -314,10 +314,7 @@ void glgrib_palette::save (const glgrib_field_metadata & meta) const
       TRY (sqlite3_bind_text   (req, 6, name.c_str (), name.length (), NULL));
      
       if ((rc = sqlite3_step (req)) != SQLITE_DONE)
-        {
-          printf ("%s", sqlite3_errmsg (db));
-          goto end;
-        }
+        goto end;
 
       TRY (sqlite3_finalize (req));
       req = NULL;
@@ -340,7 +337,7 @@ void glgrib_palette::save (const glgrib_field_metadata & meta) const
 end:
 
   if (rc != SQLITE_OK)
-    printf ("%s\n", sqlite3_errmsg (db));
+    throw std::runtime_error (std::string (sqlite3_errmsg (db)));
 
   if (req != NULL)
     sqlite3_finalize (req);

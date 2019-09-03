@@ -853,6 +853,16 @@ public:
   glgrib_options_lines lines = glgrib_options_lines ("coastlines/wdb_borders_f.b", "gshhg");
 };
 
+class glgrib_options_cities : public glgrib_options_base
+{
+public:
+  DEFINE 
+  {
+    DESC (on, Display cities);
+  }
+  bool on = false;
+};
+
 class glgrib_options_coast : public glgrib_options_base
 {
 public:
@@ -910,6 +920,7 @@ public:
     INCLUDE_H (field[6]); INCLUDE_H (field[7]); 
     INCLUDE_H (field[8]); INCLUDE_H (field[9]); 
     INCLUDE (coast);
+    INCLUDE (cities);
     INCLUDE (border);
     INCLUDE (rivers);
     INCLUDE (window);
@@ -929,6 +940,7 @@ public:
      glgrib_options_field (), glgrib_options_field (), 
      glgrib_options_field (), glgrib_options_field ()};
   glgrib_options_coast coast;
+  glgrib_options_cities cities;
   glgrib_options_border border;
   glgrib_options_rivers rivers;
   glgrib_options_colorbar colorbar;

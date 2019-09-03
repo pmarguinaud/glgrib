@@ -998,7 +998,7 @@ uniform mat4 MVP;
 uniform float length10 = 0.01;
 uniform float pixels10 = 10;
 uniform float sizescale = 10.;
-uniform float sizethres = 10.;
+uniform float sizethres = 0.;
 
 out float skip;
 

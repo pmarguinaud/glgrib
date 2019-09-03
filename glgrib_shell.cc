@@ -313,6 +313,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
           hof.add ("--grid.color"                , [&opts,gwindow]() { gwindow->scene.setGridColorOpts         (opts.grid.color         );  });
           hof.add ("--grid.scale"                , [&opts,gwindow]() { gwindow->scene.setGridScaleOpts         (opts.grid.scale         );  });
           hof.add ("--coast"                     , [&opts,gwindow]() { gwindow->scene.setCoastOpts             (opts.coast              );  });
+          hof.add ("--cities"                    , [&opts,gwindow]() { gwindow->scene.setCitiesOpts            (opts.cities             );  });
           hof.add ("--border"                    , [&opts,gwindow]() { gwindow->scene.setBorderOpts            (opts.border             );  });
           hof.add ("--rivers"                    , [&opts,gwindow]() { gwindow->scene.setRiversOpts            (opts.rivers             );  });
           hof.add ("--colorbar"                  , [&opts,gwindow]() { gwindow->scene.setColorBarOpts          (opts.colorbar           );  });

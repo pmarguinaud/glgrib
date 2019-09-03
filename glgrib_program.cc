@@ -1017,6 +1017,7 @@ uniform float valmin;
 uniform float valmax;
 uniform float pointSiz;
 uniform bool lpointSiz;
+uniform bool lpointZoo = false;
 
 out float pointVal;
 
@@ -1053,7 +1054,10 @@ void main()
       vec3 vx = normalize (cross (northPos, pos));
       vec3 vy = normalize (cross (pos, vx));
       vec4 pos4 = MVP * vec4 (pos, 1.);
-      pos = pos + siz * length10 * (pos2.x * vx + pos2.y * vy);
+      if (lpointZoo)
+        pos = pos + siz * 0.02 * (pos2.x * vx + pos2.y * vy);
+      else
+        pos = pos + siz * length10 * (pos2.x * vx + pos2.y * vy);
       gl_Position = MVP * vec4 (pos, 1.);
     }
   else

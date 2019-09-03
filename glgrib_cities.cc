@@ -41,8 +41,7 @@ void glgrib_cities::init (const glgrib_options_cities & o)
               const char * name = (const char *)sqlite3_column_text (req, 0);
               lon.push_back (sqlite3_column_double (req, 1));
               lat.push_back (sqlite3_column_double (req, 2));
-//            siz.push_back ((float)sqlite3_column_int (req, 3) / 10000000.);
-              siz.push_back (1.);
+              siz.push_back (log ((float)sqlite3_column_int    (req, 3) / log (10.0)));
 	      break;
 	    }
 	  case SQLITE_DONE:
@@ -64,7 +63,7 @@ end:
   if (db != NULL)
     sqlite3_close (db);
 
-  glgrib_points::init (lon, lat, siz);
+  glgrib_points::init (opts.points, lon, lat, siz);
 
 }
 

@@ -352,13 +352,14 @@ void glgrib_scene::resize ()
 glgrib_options glgrib_scene::getOptions () const
 {
   glgrib_options o = d.opts;
-  o.view       = d.view.opts;
-  o.landscape  = d.landscape.opts;
-  o.grid       = d.grid.opts;
-  o.coast      = d.coast.opts;
-  o.border     = d.border.opts;
-  o.rivers     = d.rivers.opts;
-  o.departements= d.departements.opts;
+  o.view           = d.view.opts;
+  o.landscape      = d.landscape.opts;
+  o.grid           = d.grid.opts;
+  o.coast          = d.coast.opts;
+  o.border         = d.border.opts;
+  o.rivers         = d.rivers.opts;
+  o.departements   = d.departements.opts;
+  o.cities         = d.cities.opts;
 
   for (int i = 0; i < fieldlist.size (); i++)
     if (fieldlist[i] != NULL)

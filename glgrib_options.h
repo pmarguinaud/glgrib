@@ -397,6 +397,8 @@ class glgrib_options_palette : public glgrib_options_base
 public:
   static float defaultMin;
   static float defaultMax;
+  glgrib_options_palette () {}
+  glgrib_options_palette (const std::string & n) : name (n) {}
   DEFINE
   {
     DESC (name,        Palette name);                              
@@ -853,14 +855,40 @@ public:
   glgrib_options_lines lines = glgrib_options_lines ("coastlines/wdb_borders_f.b", "gshhg");
 };
 
+class glgrib_options_points : public glgrib_options_base
+{
+public:
+  DEFINE 
+  {
+    DESC (scale, Scale);
+    DESC (size.variable.on, Enable variable point size);
+    DESC (size.value, Point size);
+    INCLUDE (palette);
+    DESC (color, Point color);
+  }
+  glgrib_options_palette palette = glgrib_options_palette ("none");
+  glgrib_option_color color;
+  float scale = 1.0f;
+  struct
+  {
+    float value = 1.0f;
+    struct
+    {
+       bool on = false;
+    } variable;
+  } size;
+};
+
 class glgrib_options_cities : public glgrib_options_base
 {
 public:
   DEFINE 
   {
     DESC (on, Display cities);
+    INCLUDE (points);
   }
   bool on = false;
+  glgrib_options_points points;
 };
 
 class glgrib_options_coast : public glgrib_options_base

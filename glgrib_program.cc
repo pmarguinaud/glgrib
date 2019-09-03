@@ -967,20 +967,37 @@ void main ()
   glgrib_program (  // POINTS
 R"CODE(
 #version 330 core
-in float skip;
-flat in vec3 vertexPos;
-flat in float radius;
-in vec3 fragmentPos;
+in float pointVal;
 out vec4 color;
+
+uniform vec4 RGBA0[256];
+uniform vec4 color0;
+uniform float palmin;
+uniform float palmax;
+
+uniform bool lcolor0;
+
 
 void main()
 {
-  if (skip > 0)
+  if (lcolor0)
+    {
+      color.r = color0.r;
+      color.g = color0.g;
+      color.b = color0.b;
+      color.a = color0.a;
+    }
+  else
+    {
+      int pal = max (1, min (int (1 + 254 * (pointVal - palmin) / (palmax - palmin)), 255));
+      color.r = RGBA0[pal].r;
+      color.g = RGBA0[pal].g;
+      color.b = RGBA0[pal].b;
+      color.a = RGBA0[pal].a;
+    }
+  if (color.r == 0. && color.g == 0. 
+   && color.b == 0. && color.a == 0.)
     discard;
-  color.r = 1.0;
-  color.g = 0.0;
-  color.b = 0.0;
-  color.a = 1.0;
 }
 )CODE",
 R"CODE(
@@ -996,14 +1013,18 @@ uniform mat4 MVP;
 + R"CODE(
 
 uniform float length10 = 0.01;
-uniform float pixels10 = 10;
-uniform float sizescale = 10.;
-uniform float sizethres = 0.;
+uniform float valmin;
+uniform float valmax;
+uniform float pointSiz;
+uniform bool lpointSiz;
 
-out float skip;
+out float pointVal;
 
 void main()
 {
+
+  pointVal = aPos.z;
+
   vec2 pos2; 
 
   if (gl_VertexID == 0)
@@ -1017,11 +1038,14 @@ void main()
   
   float lon = aPos.x;
   float lat = aPos.y;
-  float siz = aPos.z / sizescale;
+  float siz = 0.5 * pointSiz;
+  if (lpointSiz)
+    siz = siz * pointVal / valmax;
   float coslon = cos (lon), sinlon = sin (lon);
   float coslat = cos (lat), sinlat = sin (lat);
   
   vec3 pos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
+  pos = pos * scale0;
 
   if (proj == XYZ)
     {
@@ -1047,11 +1071,6 @@ void main()
       gl_Position.y = gl_Position.y + siz * 0.1 * pos2.y;
       gl_Position.z = 0.0f;
     }
-
-  if (aPos.z < sizethres)
-    skip = 1.;
-  else
-    skip = 0.;
 
 }
 )CODE"),

@@ -207,4 +207,7 @@ test_mapscale: ./glgrib.x
 test_shell_batch: ./glgrib.x
 	$(RUNTEST) ./glgrib.x testdata/glgrib.in
 
+test_cities: ./glgrib.x
+	$(RUNTEST) ./glgrib.x --landscape.on --cities.on --cities.points.palette.name cold_hot --cities.points.scale 1.01 --cities.points.size 0.5
+
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_novalue test_missingvalue test_aro test_guyane test_vector test_small_aro test_wind_arp test_vector_glob25 test_wind_glob25 test_wind_t1798 test_vector_t1798 test_contour1 test_contour2 test_contour3 test_contour_stretched test_contour_latlon1 test_contour_latlon2 test_contour_latlon3 test_contour_latlon4 test_contour_aro1 test_contour_aro2 test_fill test_dashed1 test_dashed2 test_dashed3 test_travelling test_strxyz test_interpolation test_background test_text test_fa test_select_grib test_scalar_diff test_contour_diff test_image test_shell test_largebmp

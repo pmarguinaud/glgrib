@@ -968,6 +968,8 @@ void main ()
 R"CODE(
 #version 330 core
 in float pointVal;
+in vec3 centerVec;
+flat in float pointRad;
 out vec4 color;
 
 uniform vec4 RGBA0[256];
@@ -998,6 +1000,17 @@ void main()
   if (color.r == 0. && color.g == 0. 
    && color.b == 0. && color.a == 0.)
     discard;
+
+  if(false){
+  // Round shape
+  if (length (centerVec) > pointRad)
+    discard;
+  }else if(false){
+  // Diamond shape
+  if (abs (centerVec.x) + abs (centerVec.y) + abs (centerVec.z) > pointRad)
+    discard;
+  }
+
 }
 )CODE",
 R"CODE(
@@ -1020,6 +1033,8 @@ uniform bool lpointSiz;
 uniform bool lpointZoo = false;
 
 out float pointVal;
+out vec3 centerVec;
+flat out float pointRad;
 
 void main()
 {
@@ -1053,12 +1068,19 @@ void main()
       vec3 northPos  = vec3 (0., 0., 1.);
       vec3 vx = normalize (cross (northPos, pos));
       vec3 vy = normalize (cross (pos, vx));
-      vec4 pos4 = MVP * vec4 (pos, 1.);
+
+      vec4 cen4 = MVP * vec4 (pos, 1.);
+
       if (lpointZoo)
-        pos = pos + siz * 0.02 * (pos2.x * vx + pos2.y * vy);
+        pointRad = siz * 0.02;
       else
-        pos = pos + siz * length10 * (pos2.x * vx + pos2.y * vy);
+        pointRad = siz * length10;
+
+      centerVec = pointRad * (pos2.x * vx + pos2.y * vy); 
+      pos = pos + centerVec;
+
       gl_Position = MVP * vec4 (pos, 1.);
+
     }
   else
     {
@@ -1070,10 +1092,16 @@ void main()
       pos = scalePosition (pos, normedPos, scale0);
 
       gl_Position =  MVP * vec4 (pos, 1.);
-      
-      gl_Position.x = gl_Position.x + siz * 0.1 * pos2.x;
-      gl_Position.y = gl_Position.y + siz * 0.1 * pos2.y;
+
+      pointRad = siz * 0.1;
+      centerVec.xy = pointRad * pos2;
+      centerVec.z = 0.0f;
+
+      gl_Position.x = gl_Position.x + centerVec.x;
+      gl_Position.y = gl_Position.y + centerVec.y;
       gl_Position.z = 0.0f;
+
+
     }
 
 }

@@ -168,6 +168,10 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
     {
       gwindow->shouldClose ();
     }
+  else if (cmd == "snapshot")
+    {
+      gwindow->framebuffer ();
+    }
   else if (cmd == "sleep")
     {
       unlock ();

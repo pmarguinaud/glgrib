@@ -886,9 +886,16 @@ public:
   {
     DESC (on, Display cities);
     INCLUDE (points);
+    INCLUDE (labels.font);
+    DESC (labels.on, Enable city names display);
   }
   bool on = false;
   glgrib_options_points points;
+  struct
+  {
+    glgrib_options_font font;
+    bool on = false;
+  } labels;
 };
 
 class glgrib_options_coast : public glgrib_options_base

@@ -17,10 +17,11 @@ public:
   
   glgrib_points & operator= (const glgrib_points &);
   void setupVertexAttributes ();
-  void cleanup ();
+  virtual void cleanup ();
 
   void init (const glgrib_options_points &, const std::vector<float> &, const std::vector<float> &, const std::vector<float> &);
-  void render (const glgrib_view &) const;
+  virtual void render (const glgrib_view &) const;
+  bool isReady () const { return ready; }
 private:
   struct
   {

@@ -729,7 +729,8 @@ void glgrib_window::resize (int w, int h)
 
 void glgrib_window::setHints ()
 {
-  glfwWindowHint (GLFW_SAMPLES, 4);
+  if (opts.samples > 0)
+    glfwWindowHint (GLFW_SAMPLES, opts.samples);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, opts.version_major);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, opts.version_minor);
   glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); 

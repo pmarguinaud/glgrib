@@ -531,6 +531,7 @@ public:
     DESC (width,              Window width);
     DESC (height,             Window height);
     DESC (statistics.on,      Issue statistics when window is closed);
+    DESC (samples,            Samples for antialiasing);
     DESC (title,              Window title);
     DESC (debug.on,           Enable OpenGL debugging);
     DESC (version_major,      GLFW_CONTEXT_VERSION_MAJOR);
@@ -539,8 +540,9 @@ public:
     DESC (info.on,            Show hardware info);
     DESC_H (fix_landscape.on, Fix landscape position);
   }
-  int     width  = 800;
+  int     width   = 800;
   int     height  = 800;
+  int     samples = 4;
   struct
   {
     bool on = false;

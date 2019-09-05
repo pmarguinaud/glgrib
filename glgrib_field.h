@@ -85,10 +85,11 @@ public:
   {
     return meta;
   }
-  glgrib_palette palette = palette_cold_hot;
   const glgrib_options_field & getOptions () const { return opts; }
   void setScale (float s) { opts.scale = s; }
+  const glgrib_palette & getPalette () const;
 protected:
+  glgrib_palette palette = palette_cold_hot;
   glgrib_options_field opts;
   std::vector<glgrib_field_metadata> meta;
   std::vector<glgrib_field_float_buffer_ptr> values;

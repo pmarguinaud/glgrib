@@ -72,7 +72,7 @@ void glgrib_scene::display () const
   if ((fld != NULL) && (! d.colorbar.getHidden ()))
     if (fld->getKind () == glgrib_field::SCALAR)
       d.colorbar.render (d.MVP_L, 
-                         fld->palette, 
+                         fld->getPalette (), 
                          fld->getNormedMinValue (), 
                          fld->getNormedMaxValue ());
 

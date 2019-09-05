@@ -2,11 +2,13 @@
 #
 use strict;
 use File::Path;
+use Data::Dumper;
 
 my $auto = $ENV{AUTO};
 my $comp = $ENV{COMP};
 
-(my $test = shift) =~ s/^test_//o;
+(my $test = shift (@ARGV)) =~ s/^test_//o;
+my $exec = shift (@ARGV);
 
 my @args = @ARGV;
 
@@ -26,8 +28,9 @@ if ($auto)
       }
   }
 
+my @cmd = ('gdb', '-ex=set confirm on', '-ex=run', '-ex=quit', '--args', $exec, @args);
 
-system ('gdb', '-ex=set confirm on', '-ex=run', '-ex=quit', '--args', @args)
+system (@cmd)
   and die;
 
 if ($auto)
@@ -39,9 +42,12 @@ if ($auto)
         my $new = "test.run/$test/$png";
         rename ($png, $new);
 	my $ref = "test.ref/$test/$png";
+	my $dif = "test.run/$test/diff_$png";
         if ((-f $ref) && ($comp))
           {
-            system ('compare', '-metric', 'MAE', $ref, $new, '/dev/null');
+            my @cmd = ('compare', '-metric', 'MAE', $ref, $new, $dif);
+	    print "@cmd\n";
+	    system (@cmd);
 	    print "\n"
 	  }
       }

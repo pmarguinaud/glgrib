@@ -78,3 +78,8 @@ void glgrib_field::scalePaletteDown (float x)
   palette.max -= d * x;
   recordPaletteOptions ();
 }
+
+const glgrib_palette & glgrib_field::getPalette () const
+{
+  return palette;
+}

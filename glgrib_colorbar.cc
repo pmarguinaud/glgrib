@@ -81,9 +81,6 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
   if (! ready)
     return;
 
-  label.render (MVP);
-
-  program.use ();
 
   glgrib_palette p1 = p;
   if (! p1.hasMin ())
@@ -106,8 +103,13 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
         }
 
       label.update (str);
-      pref.setRGBA255 (program.programID);
     }
+
+  label.render (MVP);
+
+  program.use ();
+
+  pref.setRGBA255 (program.programID);
 
   program.setMatrix4fv ("MVP", &MVP[0][0]);
   program.set1f ("xmin", opts.position.xmin);

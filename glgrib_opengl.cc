@@ -11,6 +11,7 @@ void gl_init ()
   glFrontFace (GL_CCW);
   glEnable (GL_CULL_FACE);
   glDepthFunc (GL_LESS); 
+  glEnable (GL_MULTISAMPLE);
 }
   
 void glgrib_opengl_buffer::bind (GLenum target) const 

@@ -528,21 +528,26 @@ class glgrib_options_window : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (width,              Window width);
-    DESC (height,             Window height);
-    DESC (statistics.on,      Issue statistics when window is closed);
-    DESC (samples,            Samples for antialiasing);
-    DESC (title,              Window title);
-    DESC (debug.on,           Enable OpenGL debugging);
-    DESC (version_major,      GLFW_CONTEXT_VERSION_MAJOR);
-    DESC (version_minor,      GLFW_CONTEXT_VERSION_MINOR);
+    DESC (width,                 Window width);
+    DESC (height,                Window height);
+    DESC (statistics.on,         Issue statistics when window is closed);
+    DESC (antialiasing.on,       Enable antialiasing);
+    DESC (antialiasing.samples,  Samples for antialiasing);
+    DESC (title,                 Window title);
+    DESC (debug.on,              Enable OpenGL debugging);
+    DESC (version_major,         GLFW_CONTEXT_VERSION_MAJOR);
+    DESC (version_minor,         GLFW_CONTEXT_VERSION_MINOR);
     INCLUDE (offscreen);
-    DESC (info.on,            Show hardware info);
-    DESC_H (fix_landscape.on, Fix landscape position);
+    DESC (info.on,               Show hardware info);
+    DESC_H (fix_landscape.on,    Fix landscape position);
   }
   int     width   = 800;
   int     height  = 800;
-  int     samples = 4;
+  struct
+  {
+    bool on = true;
+    int samples = 4;
+  } antialiasing;
   struct
   {
     bool on = false;

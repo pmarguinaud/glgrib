@@ -20,6 +20,7 @@
 #include "glgrib_colorbar.h"
 #include "glgrib_mapscale.h"
 #include "glgrib_cities.h"
+#include "glgrib_test.h"
 #include "glgrib_loader.h"
 
 #include <set>
@@ -86,6 +87,7 @@ public:
       glgrib_grid grid;
       glgrib_departements departements;
       glgrib_cities cities;
+      glgrib_test test;
     private:
       glgrib_image image;
       glgrib_colorbar colorbar;

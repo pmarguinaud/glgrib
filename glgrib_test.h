@@ -1,0 +1,27 @@
+#ifndef _GLGRIB_TEST_H
+#define _GLGRIB_TEST_H
+
+#include "glgrib_object.h"
+#include "glgrib_opengl.h"
+#include "glgrib_view.h"
+#include "glgrib_geometry.h"
+
+class glgrib_test : public glgrib_object
+{
+public:
+  virtual void render (const glgrib_view &, const glgrib_options_light &) const;
+  virtual bool use_alpha () { return true; }
+  virtual ~glgrib_test () { cleanup (); }
+  const_glgrib_geometry_ptr getGeometry () const { return geometry; }
+  virtual void cleanup ();
+  virtual void init ();
+  virtual void resize (const glgrib_view &) {}
+protected:
+  glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
+  const_glgrib_geometry_ptr geometry;
+  int numberOfPoints;
+  unsigned int numberOfColors, numberOfTriangles;
+  GLuint VertexArrayID = 0;
+};
+
+#endif

@@ -53,7 +53,7 @@ void glgrib_scene::display () const
 
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  d.test.render (d.view, d.opts.scene.light);
+//d.test.render (d.view, d.opts.scene.light);
   
   display_obj (&d.landscape);
   display_obj (&d.coast);
@@ -266,7 +266,7 @@ void glgrib_scene::init (const glgrib_options & o)
 {
   d.opts = o;
 
-  d.test.init ();
+//d.test.init ();
 
   setViewport (d.opts.window.width, d.opts.window.height);
   setLightOpts (d.opts.scene.light);

@@ -12,7 +12,7 @@ int main (int argc, char * argv[])
 
   if (! glfwInit ()) 
     {   
-      fprintf (stderr, "Failed to initialize GLFW\n");
+      fprintf (stderr, "Failed to setupialize GLFW\n");
       getchar (); 
       return -1;
     }   
@@ -27,7 +27,7 @@ int main (int argc, char * argv[])
   glewExperimental = true; // Needed for core profile
   if (glewInit() != GLEW_OK)
     {
-      fprintf (stderr, "Failed to initialize GLEW\n");
+      fprintf (stderr, "Failed to setupialize GLEW\n");
       getchar ();
       glfwTerminate ();
       return -1;

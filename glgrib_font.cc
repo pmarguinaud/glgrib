@@ -21,7 +21,7 @@ glgrib_font_ptr new_glgrib_font_ptr (const glgrib_options_font & opts)
   else
     {
       font = std::make_shared<glgrib_font> ();
-      font->init (opts);
+      font->setup (opts);
       cache.insert (std::pair<std::string,glgrib_font_ptr> (opts.bitmap, font));
     }
   return font;
@@ -48,7 +48,7 @@ glgrib_font::~glgrib_font ()
     glDeleteTextures (1, &texture);
 }
 
-void glgrib_font::init (const glgrib_options_font & o)
+void glgrib_font::setup (const glgrib_options_font & o)
 {
   opts = o;
   unsigned char * rgb = NULL;

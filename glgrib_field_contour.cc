@@ -13,7 +13,7 @@ glgrib_field_contour::glgrib_field_contour (const glgrib_field_contour & field)
   if (field.isReady ())
     {
       // Cleanup already existing VAOs
-      cleanup ();
+      clear ();
       operator= (field);
     }
 }
@@ -31,7 +31,7 @@ glgrib_field_contour & glgrib_field_contour::operator= (const glgrib_field_conto
 {
   if (this != &field)
     {
-      cleanup ();
+      clear ();
       if (field.isReady ())
         {
           glgrib_field::operator= (field);
@@ -42,14 +42,14 @@ glgrib_field_contour & glgrib_field_contour::operator= (const glgrib_field_conto
     }
 }
 
-void glgrib_field_contour::cleanup ()
+void glgrib_field_contour::clear ()
 {
   if (isReady ()) 
     for (int i = 0; i < iso.size (); i++)
       {
         glDeleteVertexArrays (1, &iso[i].VertexArrayID);
       }
-  glgrib_field::cleanup ();
+  glgrib_field::clear ();
 }
 
 void glgrib_field_contour::setupVertexAttributes ()
@@ -93,7 +93,7 @@ void glgrib_field_contour::setupVertexAttributes ()
     }
 }
 
-void glgrib_field_contour::init (glgrib_loader * ld, const glgrib_options_field & o, float slot)
+void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field & o, float slot)
 {
   opts = o;
 

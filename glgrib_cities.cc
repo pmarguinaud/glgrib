@@ -7,7 +7,7 @@
 #include <sqlite3.h>
 
 
-void glgrib_cities::init (const glgrib_options_cities & o)
+void glgrib_cities::setup (const glgrib_options_cities & o)
 {
   const double deg2rad = M_PI / 180.0;
 
@@ -86,7 +86,7 @@ end:
   if (db != NULL)
     sqlite3_close (db);
 
-  glgrib_points::init (opts.points, lon, lat, siz);
+  glgrib_points::setup (opts.points, lon, lat, siz);
 
   d.labels.setShared (true);
   d.labels.setChange (false);
@@ -94,14 +94,14 @@ end:
   glgrib_font_ptr font = new_glgrib_font_ptr (opts.labels.font);
 
 #ifdef UNDEF
-  d.labels.init3D (font, std::vector<std::string>{"ABCD","EFGH","IJKL","MNOP"},
+  d.labels.setup3D (font, std::vector<std::string>{"ABCD","EFGH","IJKL","MNOP"},
                    std::vector<float>{+1.01f,-1.01f,+0.00f,+0.707*1.010f},
                    std::vector<float>{+0.00f,+0.00f,+1.01f,+0.707*0.000f},
                    std::vector<float>{+0.00f,+0.00f,+0.00f,+0.707*1.010f},
                    std::vector<float>{+0.0f,+0.0f,+90.0f,+0.0f},
                    opts.labels.font.scale, glgrib_string::C);
 #else
-  d.labels.init3D (font, Str, X, Y, Z, A,
+  d.labels.setup3D (font, Str, X, Y, Z, A,
                    opts.labels.font.scale, glgrib_string::C);
   d.labels.setForegroundColor (opts.labels.font.color.foreground);
   d.labels.setBackgroundColor (opts.labels.font.color.background);
@@ -114,7 +114,7 @@ glgrib_cities & glgrib_cities::operator= (const glgrib_cities & cities)
 {
   if (this != &cities)
     {
-      cleanup ();
+      clear ();
       glgrib_points::operator= (cities);
       if (cities.isReady ())
         {
@@ -124,10 +124,10 @@ glgrib_cities & glgrib_cities::operator= (const glgrib_cities & cities)
     }
 }
 
-void glgrib_cities::cleanup ()
+void glgrib_cities::clear ()
 {
-  glgrib_points::cleanup ();
-  d.labels.cleanup ();
+  glgrib_points::clear ();
+  d.labels.clear ();
 }
 
 void glgrib_cities::render (const glgrib_view & view) const

@@ -14,10 +14,11 @@ class glgrib_cities : public glgrib_points
 public:
   void render (const glgrib_view &) const;
   glgrib_cities & operator= (const glgrib_cities &);
-  void cleanup ();
-  void init (const glgrib_options_cities &);
-  glgrib_options_cities opts;
+  void clear ();
+  void setup (const glgrib_options_cities &);
+  const glgrib_options_cities & getOptions () const { return opts; }
 private:
+  glgrib_options_cities opts;
   struct
   {
     glgrib_string labels;

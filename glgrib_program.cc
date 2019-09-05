@@ -1107,6 +1107,34 @@ void main()
 }
 )CODE"),
 
+  glgrib_program (  // TEST
+R"CODE(
+#version 330 core
+
+out vec4 color;
+
+void main()
+{
+  color.r = 0.;
+  color.g = 1.;
+  color.b = 0.;
+  color.a = 1.;
+}
+)CODE",
+R"CODE(
+#version 330 core
+
+layout(location = 0) in vec3 vertexPos;
+
+uniform mat4 MVP;
+
+void main()
+{
+  gl_Position = MVP * vec4 (vertexPos, 1);
+}
+)CODE"),
+
+
 };
 
 void glgrib_program::compile ()

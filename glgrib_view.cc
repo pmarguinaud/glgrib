@@ -150,7 +150,7 @@ float glgrib_view::pixel_to_dist_at_nadir (float pixels) const
     }
 }
 
-void glgrib_view::init (const glgrib_options_view & o)
+void glgrib_view::setup (const glgrib_options_view & o)
 {
   opts = o;
 }

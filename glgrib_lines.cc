@@ -12,7 +12,7 @@
 
 glgrib_lines & glgrib_lines::operator= (const glgrib_lines & other)
 {
-  cleanup ();
+  clear ();
   if ((this != &other) && other.isReady ())
     {
       glgrib_polygon::operator= (other);
@@ -22,7 +22,7 @@ glgrib_lines & glgrib_lines::operator= (const glgrib_lines & other)
     }
 }
 
-void glgrib_lines::init (const glgrib_options_lines & o, 
+void glgrib_lines::setup (const glgrib_options_lines & o, 
                          const std::vector<unsigned int> & mask, 
                          const std::vector<unsigned int> & code)
 {

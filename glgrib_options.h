@@ -455,6 +455,19 @@ public:
   float scale = 1.005;
 };
 
+class glgrib_options_landscape_position : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (lon1,       First longitude of display);
+    DESC (lon2,       Last longitude of display);
+    DESC (lat1,       First latitude of display);
+    DESC (lat2,       Last latitude of display);
+  }
+  float lon1 = -180.0f, lon2 = +180.0f, lat1 = -90.0f, lat2 = +90.0f;
+};
+
 class glgrib_options_landscape : public glgrib_options_base
 {
 public:
@@ -467,15 +480,12 @@ public:
     DESC (geometry,            GRIB files to take geometry from);
     DESC (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
     DESC (wireframe.on,        Draw landscape in wireframe mode);
-    DESC (position.lon1,       First longitude of display);
-    DESC (position.lon2,       Last longitude of display);
-    DESC (position.lat1,       First latitude of display);
-    DESC (position.lat2,       Last latitude of display);
+    INCLUDE (position);
   }
   string  path  = "landscape/Whole_world_-_land_and_oceans_08000.bmp";
   float  orography  = 0.05;
   string  geometry  = "";
-  int  number_of_latitudes  = 500;
+  int number_of_latitudes  = 500;
   struct
   {
     bool on = false;
@@ -485,10 +495,7 @@ public:
   {
     bool on = true;
   } flat;
-  struct
-  {
-    float lon1 = -180.0f, lon2 = +180.0f, lat1 = -90.0f, lat2 = +90.0f;
-  } position;
+  glgrib_options_landscape_position position;
 };
 
 class glgrib_options_lines : public glgrib_options_base
@@ -528,19 +535,26 @@ class glgrib_options_window : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (width,              Window width);
-    DESC (height,             Window height);
-    DESC (statistics.on,      Issue statistics when window is closed);
-    DESC (title,              Window title);
-    DESC (debug.on,           Enable OpenGL debugging);
-    DESC (version_major,      GLFW_CONTEXT_VERSION_MAJOR);
-    DESC (version_minor,      GLFW_CONTEXT_VERSION_MINOR);
+    DESC (width,                 Window width);
+    DESC (height,                Window height);
+    DESC (statistics.on,         Issue statistics when window is closed);
+    DESC (antialiasing.on,       Enable antialiasing);
+    DESC (antialiasing.samples,  Samples for antialiasing);
+    DESC (title,                 Window title);
+    DESC (debug.on,              Enable OpenGL debugging);
+    DESC (version_major,         GLFW_CONTEXT_VERSION_MAJOR);
+    DESC (version_minor,         GLFW_CONTEXT_VERSION_MINOR);
     INCLUDE (offscreen);
-    DESC (info.on,            Show hardware info);
-    DESC_H (fix_landscape.on, Fix landscape position);
+    DESC (info.on,               Show hardware info);
+    DESC_H (fix_landscape.on,    Fix landscape position);
   }
-  int     width  = 800;
+  int     width   = 800;
   int     height  = 800;
+  struct
+  {
+    bool on = true;
+    int samples = 4;
+  } antialiasing;
   struct
   {
     bool on = false;

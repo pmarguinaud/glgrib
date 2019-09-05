@@ -11,7 +11,7 @@
 class glgrib_font
 {
 public:
-  void init (const glgrib_options_font &);
+  void setup (const glgrib_options_font &);
   ~glgrib_font ();
   int map (char c) const
   { 
@@ -26,6 +26,7 @@ public:
   float getAspect () const { return aspect; }
   float getPosBelow () const { return posb; }
   float getPosAbove () const { return posu; }
+  const glgrib_options_font & getOptions () const { return opts; }
 private:
   glgrib_options_font opts;
   std::vector<float> xoff, yoff;

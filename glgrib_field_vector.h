@@ -15,7 +15,7 @@ public:
   glgrib_field_vector & operator= (const glgrib_field_vector &);
   glgrib_field_vector () { }
   glgrib_field_vector (const glgrib_field_vector &);
-  virtual void init (glgrib_loader *, const glgrib_options_field &, float = 0);
+  virtual void setup (glgrib_loader *, const glgrib_options_field &, float = 0);
   virtual void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual ~glgrib_field_vector ();
   void setupVertexAttributes ();
@@ -41,7 +41,7 @@ private:
       float vscale;
     } d;
 protected:
-  virtual void cleanup ();
+  virtual void clear ();
 };
 
 #endif

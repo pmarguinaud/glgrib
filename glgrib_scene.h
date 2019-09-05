@@ -20,6 +20,7 @@
 #include "glgrib_colorbar.h"
 #include "glgrib_mapscale.h"
 #include "glgrib_cities.h"
+#include "glgrib_test.h"
 #include "glgrib_loader.h"
 
 #include <set>
@@ -32,7 +33,7 @@ public:
   glgrib_scene () {}
   glgrib_scene & operator= (const glgrib_scene & other);
   virtual ~glgrib_scene ();
-  void init (const glgrib_options &);
+  void setup (const glgrib_options &);
   void display () const;
   void display_obj (const glgrib_object *) const;
 
@@ -86,6 +87,7 @@ public:
       glgrib_grid grid;
       glgrib_departements departements;
       glgrib_cities cities;
+      glgrib_test test;
     private:
       glgrib_image image;
       glgrib_colorbar colorbar;
@@ -110,27 +112,28 @@ public:
 
   glgrib_loader ld;
 
-  void setViewOpts (const glgrib_options_view &);
-  void setLandscapeOpts (const glgrib_options_landscape &);
-  void setGridOpts (const glgrib_options_grid &);
-  void setGridColorOpts (const glgrib_option_color &);
-  void setGridScaleOpts (float);
-  void setCoastOpts (const glgrib_options_coast &);
-  void setBorderOpts (const glgrib_options_border &);
-  void setRiversOpts (const glgrib_options_rivers &);
-  void setDepartementsOpts (const glgrib_options_departements &);
-  void setFieldOpts (int, const glgrib_options_field &, float = 0);
-  void setFieldPaletteOpts (int, const glgrib_options_palette &);
-  void setColorBarOpts (const glgrib_options_colorbar &);
-  void setMapScaleOpts (const glgrib_options_mapscale &);
-  void setImageOpts (const glgrib_options_image &);
-  void setTextOpts (const glgrib_options_text &);
-  void setDateOpts (const glgrib_options_date &);
-  void setLightOpts (const glgrib_options_light &);
-  void setMiscOpts (const glgrib_options_scene &);
-  void setCitiesOpts (const glgrib_options_cities &);
+  void setViewOptions (const glgrib_options_view &);
+  void setLandscapeOptions (const glgrib_options_landscape &);
+  void setGridOptions (const glgrib_options_grid &);
+  void setGridColorOptions (const glgrib_option_color &);
+  void setGridScaleOptions (float);
+  void setCoastOptions (const glgrib_options_coast &);
+  void setBorderOptions (const glgrib_options_border &);
+  void setRiversOptions (const glgrib_options_rivers &);
+  void setDepartementsOptions (const glgrib_options_departements &);
+  void setFieldOptions (int, const glgrib_options_field &, float = 0);
+  void setFieldPaletteOptions (int, const glgrib_options_palette &);
+  void setColorBarOptions (const glgrib_options_colorbar &);
+  void setMapScaleOptions (const glgrib_options_mapscale &);
+  void setImageOptions (const glgrib_options_image &);
+  void setTextOptions (const glgrib_options_text &);
+  void setDateOptions (const glgrib_options_date &);
+  void setLightOptions (const glgrib_options_light &);
+  void setSceneOptions (const glgrib_options_scene &);
+  void setCitiesOptions (const glgrib_options_cities &);
 
   glgrib_options getOptions () const;
+  const glgrib_options_scene & getSceneOptions () const { return d.opts.scene; }
 
 };
 

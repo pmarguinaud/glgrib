@@ -94,7 +94,8 @@ static char * parse_protohost (const char * url, char * protohost, int protohost
       return NULL;
     }
 
-  for (int i = 0; ; i++)
+  int i;
+  for (i = 0; ; i++)
     if (url[i] == '\0')
       return NULL;
     else if (url[i] == '/')
@@ -263,7 +264,8 @@ static int new_LFI_MULT (const char * url, const char * file, lfi_netw_ctx_t * c
     CLNOMH[0] = '\0';
     int JRANK = -1;
 
-    for (int i = 0; i < INALDO; i++)
+    int i;
+    for (i = 0; i < INALDO; i++)
       {
         logical LLAVAN = fort_TRUE;
         character_len CLNOMG_len = 256;
@@ -284,9 +286,10 @@ static int new_LFI_MULT (const char * url, const char * file, lfi_netw_ctx_t * c
                          CLNOMB_len, CLNOMG_len - PROTOHOST_len);
         CLNOMA[CLNOMB_len] = '\0';
  
-        for (int i = CLNOMG_len-1; i >= 0; i--)
-          if (CLNOMG[i] == ' ')
-            CLNOMG[i] = '\0';
+	int j;
+        for (j = CLNOMG_len-1; j >= 0; j--)
+          if (CLNOMG[j] == ' ')
+            CLNOMG[j] = '\0';
           else
             break;
 
@@ -485,7 +488,8 @@ static int new_LFI_PURE (const char * url, const char * file, lfi_netw_ctx_t * c
     TRY (sqlite3_prepare_v2 (ctx->db, "INSERT INTO LFI_PURE (IRANK, CLNOMA, IPOSEX, ILONGD) "
                              "VALUES (?, ?, ?, ?);", -1, &ins, 0));
   
-    for (int i = 0; i < INALDO; i++)
+    int i;
+    for (i = 0; i < INALDO; i++)
       {
         integer64 ILONGD, IPOSEX; 
         logical LLAVAN = fort_TRUE;
@@ -704,7 +708,9 @@ static int lfilec_netw_MULT (lfi_netw_ctx_t * ctx, const char * url, const char 
 
   strncpy (CLNOMA, name, CLNOMA_len);
   CLNOMA[CLNOMA_len] = '\0';
-  for (int i = strlen (name); i < CLNOMA_len; i++)
+
+  int i;
+  for (i = strlen (name); i < CLNOMA_len; i++)
     CLNOMA[i] = ' ';
 
   TRY (sqlite3_prepare_v2 (ctx->db, "SELECT CLNOMB, URL_TO_NUMER.CLURL FROM LFI_MULT "
@@ -769,7 +775,9 @@ static int lfilec_netw_PURE (lfi_netw_ctx_t * ctx, const char * url, const char 
 
   memset (CLNOMA, 0, 17);
   strncpy (CLNOMA, name, 16);
-  for (int i = strlen (name); i < 16; i++)
+
+  int i;
+  for (i = strlen (name); i < 16; i++)
     CLNOMA[i] = ' ';
   
   TRY (sqlite3_bind_text (sel, 2, CLNOMA, strlen (CLNOMA), NULL));

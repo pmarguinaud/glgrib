@@ -12,7 +12,9 @@
 #include "glgrib_png.h"
 #include "glgrib_field_scalar.h"
 #include "glgrib_field_vector.h"
+
 #include <iostream>
+#include <stdexcept>
 
 static double current_time ()
 {
@@ -202,26 +204,27 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
 
 void glgrib_window::fix_landscape (float dy, float dx, float sy, float sx)
 {
-  glgrib_options_landscape * o = &scene.d.landscape.opts;
+  glgrib_options_landscape_position o = scene.d.landscape.getOptions ().position;
 
-  float dlat = o->position.lat2 - o->position.lat1;
-  float dlon = o->position.lon2 - o->position.lon1;
+  float dlat = o.lat2 - o.lat1;
+  float dlon = o.lon2 - o.lon1;
 
-  o->position.lat1 += dy * 0.01;
-  o->position.lat2 += dy * 0.01;
-  o->position.lon1 += dx * 0.01;
-  o->position.lon2 += dx * 0.01;
+  o.lat1 += dy * 0.01;
+  o.lat2 += dy * 0.01;
+  o.lon1 += dx * 0.01;
+  o.lon2 += dx * 0.01;
 
-  o->position.lat1 -= sy * 0.01;
-  o->position.lat2 += sy * 0.01;
-  o->position.lon1 -= sx * 0.01;
-  o->position.lon2 += sx * 0.01;
+  o.lat1 -= sy * 0.01;
+  o.lat2 += sy * 0.01;
+  o.lon1 -= sx * 0.01;
+  o.lon2 += sx * 0.01;
 
-  if (o->position.lon1 > 180.0f)
-    o->position.lon1 -= 360.0f;
-  if (o->position.lon2 > 180.0f)
-    o->position.lon2 -= 360.0f;
+  if (o.lon1 > 180.0f)
+    o.lon1 -= 360.0f;
+  if (o.lon2 > 180.0f)
+    o.lon2 -= 360.0f;
 
+  scene.d.landscape.setPositionOptions (o);
 }
 
 void glgrib_window::toggleColorBar ()
@@ -322,7 +325,7 @@ void glgrib_window::load_field (const glgrib_options_field & opts, int rank)
   makeCurrent ();
 
   glgrib_field * f = new glgrib_field_scalar ();
-  f->init (&scene.ld, opts);
+  f->setup (&scene.ld, opts);
 
   if (rank > scene.fieldlist.size () - 1)
     scene.fieldlist.push_back (f);
@@ -418,14 +421,20 @@ void glgrib_window::scale_field_down ()
 {
   glgrib_field * f = scene.getCurrentField ();
   if (f != NULL)
-    f->opts.scale -= 0.01;
+    {
+      const glgrib_options_field & o = f->getOptions ();
+      f->setScale (o.scale - 0.01);
+    }
 }
 
 void glgrib_window::scale_field_up ()
 {
   glgrib_field * f = scene.getCurrentField ();
   if (f != NULL)
-    f->opts.scale += 0.01;
+    {
+      const glgrib_options_field & o = f->getOptions ();
+      f->setScale (o.scale + 0.01);
+    }
 }
 
 void glgrib_window::toggle_hide_field ()
@@ -544,35 +553,115 @@ void glgrib_window::snapshot (const std::string & format)
 
 void glgrib_window::framebuffer (const std::string & format)
 {
-  unsigned int framebuffer;
-  glGenFramebuffers (1, &framebuffer);
-  glBindFramebuffer (GL_FRAMEBUFFER, framebuffer);
- 
+  if (opts.antialiasing.on)
+    {
+      unsigned int framebufferMMSA;
+      unsigned int texturebufferMMSA;
+      unsigned int renderbufferMMSA;
+      unsigned int framebufferPOST;
+      unsigned int texturebufferPOST;
 
-  unsigned int textureColorbuffer;
-  glGenTextures (1, &textureColorbuffer);
-  glBindTexture (GL_TEXTURE_2D, textureColorbuffer);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, opts.width, opts.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+      glGenFramebuffers (1, &framebufferMMSA);
+      glBindFramebuffer (GL_FRAMEBUFFER, framebufferMMSA);
 
-  unsigned int rbo;
-  glGenRenderbuffers (1, &rbo);
-  glBindRenderbuffer (GL_RENDERBUFFER, rbo);
+      glGenTextures (1, &texturebufferMMSA);
+      glBindTexture (GL_TEXTURE_2D_MULTISAMPLE, texturebufferMMSA);
+      glTexImage2DMultisample (GL_TEXTURE_2D_MULTISAMPLE, opts.antialiasing.samples, 
+		               GL_RGB, opts.width, opts.height, GL_TRUE);
+      glBindTexture (GL_TEXTURE_2D_MULTISAMPLE, 0);
+      glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
+                              GL_TEXTURE_2D_MULTISAMPLE, texturebufferMMSA, 0);
 
-  glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH32F_STENCIL8, opts.width, opts.height); 
-  glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); 
+      glGenRenderbuffers (1, &renderbufferMMSA);
+      glBindRenderbuffer (GL_RENDERBUFFER, renderbufferMMSA);
+      glRenderbufferStorageMultisample (GL_RENDERBUFFER, opts.antialiasing.samples, 
+		                        GL_DEPTH24_STENCIL8, opts.width, opts.height);
+      glBindRenderbuffer (GL_RENDERBUFFER, 0);
+      glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 
+                                 GL_RENDERBUFFER, renderbufferMMSA);
 
-  if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    printf ("!= GL_FRAMEBUFFER_COMPLETE\n");
+      glBindFramebuffer (GL_FRAMEBUFFER, 0);
 
-  scene.display ();
+      if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        throw std::runtime_error (std::string ("Framebuffer is not complete"));
 
-  snapshot (format);
+      glGenFramebuffers (1, &framebufferPOST);
+      glBindFramebuffer (GL_FRAMEBUFFER, framebufferPOST);
 
-  glDeleteFramebuffers (1, &framebuffer);
-  glBindFramebuffer (GL_FRAMEBUFFER, 0);
+      glGenTextures (1, &texturebufferPOST);
+      glBindTexture (GL_TEXTURE_2D, texturebufferPOST);
+      glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, opts.width, opts.height, 
+                    0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+      glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
+                              GL_TEXTURE_2D, texturebufferPOST, 0);	
+
+      if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        throw std::runtime_error (std::string ("Framebuffer is not complete"));
+
+      glBindFramebuffer (GL_FRAMEBUFFER, framebufferMMSA);
+   
+      scene.display ();
+
+      glBindFramebuffer (GL_READ_FRAMEBUFFER, framebufferMMSA);
+      glBindFramebuffer (GL_DRAW_FRAMEBUFFER, framebufferPOST);
+      glBlitFramebuffer (0, 0, opts.width, opts.height, 0, 0, opts.width, opts.height, 
+                         GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+      glBindFramebuffer (GL_FRAMEBUFFER, framebufferPOST);
+   
+      snapshot (format);
+
+      glDeleteTextures (1, &texturebufferPOST);
+      glDeleteFramebuffers (1, &framebufferPOST);
+      glDeleteRenderbuffers (1, &renderbufferMMSA);
+      glDeleteTextures (1, &texturebufferMMSA);
+      glDeleteFramebuffers (1, &framebufferMMSA);
+   
+      glBindFramebuffer (GL_FRAMEBUFFER, 0);
+    }
+  else
+    {
+      unsigned int framebuffer;
+      unsigned int renderbuffer;
+      unsigned int texturebuffer;
+   
+      glGenFramebuffers (1, &framebuffer);
+      glBindFramebuffer (GL_FRAMEBUFFER, framebuffer);
+     
+      glGenTextures (1, &texturebuffer);
+      glBindTexture (GL_TEXTURE_2D, texturebuffer);
+      glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, opts.width, 
+                    opts.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+     
+      glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
+                              GL_TEXTURE_2D, texturebuffer, 0);
+     
+      glGenRenderbuffers (1, &renderbuffer);
+      glBindRenderbuffer (GL_RENDERBUFFER, renderbuffer);
+     
+      glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH32F_STENCIL8, 
+                             opts.width, opts.height); 
+      glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 
+                                 GL_RENDERBUFFER, renderbuffer); 
+   
+      if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        throw std::runtime_error (std::string ("Framebuffer is not complete"));
+   
+      scene.display ();
+   
+      snapshot (format);
+   
+      glDeleteRenderbuffers (1, &renderbuffer); 
+      glDeleteTextures (1, &texturebuffer);
+      glDeleteFramebuffers (1, &framebuffer);
+
+      glBindFramebuffer (GL_FRAMEBUFFER, 0);
+    }
+
 }
 
 void glgrib_window::display_cursor_position (double xpos, double ypos)
@@ -657,33 +746,37 @@ void glgrib_window::centerLightAtCursorPos ()
 
 void glgrib_window::centerViewAtCursorPos ()
 {
-  if (get_latlon_from_cursor (&scene.d.view.opts.lat, &scene.d.view.opts.lon))
+  glgrib_options_view o = scene.d.view.getOptions ();
+  if (get_latlon_from_cursor (&o.lat, &o.lon))
     {
+      scene.d.view.setOptions (o);
       scene.d.view.calcMVP ();
       float xpos, ypos;
-      scene.d.view.get_screen_coords_from_latlon (&xpos, &ypos, scene.d.view.opts.lat, scene.d.view.opts.lon);
+      scene.d.view.get_screen_coords_from_latlon (&xpos, &ypos, o.lat, o.lon);
       glfwSetCursorPos (window, xpos, ypos);
     }
 }
 
 void glgrib_window::scroll (double xoffset, double yoffset)
 {
+  glgrib_options_view o = scene.d.view.getOptions ();
   if (yoffset > 0)
     {
-      if (scene.d.view.opts.fov < 1.0f)
-        scene.d.view.opts.fov += 0.1f;
+      if (o.fov < 1.0f)
+        o.fov += 0.1f;
       else
-        scene.d.view.opts.fov += 1.0f;
+        o.fov += 1.0f;
     }
   else 
     {
-      if (scene.d.view.opts.fov < 1.0f)
-        scene.d.view.opts.fov -= 0.1f;
+      if (o.fov < 1.0f)
+        o.fov -= 0.1f;
       else
-        scene.d.view.opts.fov -= 1.0f;
-      if (scene.d.view.opts.fov <= 0.0f)
-        scene.d.view.opts.fov = 0.1f;
+        o.fov -= 1.0f;
+      if (o.fov <= 0.0f)
+        o.fov = 0.1f;
     }
+  scene.d.view.setOptions (o);
   scene.resize ();
 }
 
@@ -729,7 +822,8 @@ void glgrib_window::resize (int w, int h)
 
 void glgrib_window::setHints ()
 {
-  glfwWindowHint (GLFW_SAMPLES, 4);
+  if (opts.antialiasing.on)
+    glfwWindowHint (GLFW_SAMPLES, opts.antialiasing.samples);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, opts.version_major);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, opts.version_minor);
   glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); 
@@ -801,7 +895,7 @@ void glgrib_window::createGFLWwindow (GLFWwindow * context)
   glewExperimental = true; // Needed for core profile
   if (glewInit () != GLEW_OK) 
     {
-      fprintf (stderr, "Failed to initialize GLEW\n");
+      fprintf (stderr, "Failed to setupialize GLEW\n");
       glfwTerminate ();
       return;
     }
@@ -889,7 +983,7 @@ void glgrib_window_set::run (glgrib_shell * shell)
              it != end (); it++)
           {
             glgrib_window * w = *it;
-            w->scene.d.view.opts = wl->scene.d.view.opts;
+            w->scene.d.view.setOptions (wl->scene.d.view.getOptions ());
           }
       for (glgrib_window_set::iterator it = begin (); 
            it != end (); it++)
@@ -980,7 +1074,7 @@ void glgrib_window::debug (unsigned int source, unsigned int type, GLuint id,
           debug_severity (severity), debug_type (type), id, message);
 }
 
-void glgrib_window::setOpts (const glgrib_options_window & o)
+void glgrib_window::setOptions (const glgrib_options_window & o)
 {
   if ((o.width != opts.width) || (o.height != opts.height))
     glfwSetWindowSize(window, o.width, o.height);

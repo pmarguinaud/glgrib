@@ -11,7 +11,7 @@ glgrib_field_vector::glgrib_field_vector (const glgrib_field_vector & field)
   if (field.isReady ())
     {
       // Cleanup already existing VAOs
-      cleanup ();
+      clear ();
       operator= (field);
     }
 }
@@ -29,7 +29,7 @@ glgrib_field_vector & glgrib_field_vector::operator= (const glgrib_field_vector 
 {
   if (this != &other)
     {
-      cleanup ();
+      clear ();
       if (other.isReady ())
         {
           glgrib_field::operator= (other);
@@ -104,7 +104,7 @@ void glgrib_field_vector::setupVertexAttributes ()
 
 }
 
-void glgrib_field_vector::init (glgrib_loader * ld, const glgrib_options_field & o, float slot)
+void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field & o, float slot)
 {
   opts = o;
 
@@ -217,7 +217,7 @@ void glgrib_field_vector::init (glgrib_loader * ld, const glgrib_options_field &
   d.vscale = opts.vector.scale * (M_PI / npts) / (meta_n.valmax || 1.0f);
 
   setPaletteMinMax ();
-  recordPaletteOpts ();
+  recordPaletteOptions ();
 
   setReady ();
 }
@@ -290,11 +290,11 @@ glgrib_field_vector::~glgrib_field_vector ()
 }
 
 
-void glgrib_field_vector::cleanup ()
+void glgrib_field_vector::clear ()
 {
   if (isReady ())
     glDeleteVertexArrays (1, &VertexArrayIDvector);
-  glgrib_field::cleanup ();
+  glgrib_field::clear ();
 }
 
 void glgrib_field_vector::reSample (const glgrib_view & view)
@@ -313,7 +313,9 @@ void glgrib_field_vector::reSample (const glgrib_view & view)
   const glgrib_field_metadata & meta_d = meta[1];
 
   const float deg2rad = M_PI / 180.0;
-  float w = view.opts.distance * deg2rad * view.opts.fov;
+
+  const glgrib_options_view & view_opts = view.getOptions ();
+  float w = view_opts.distance * deg2rad * view_opts.fov;
 
   const int npts = 2 * opts.vector.density / w;
 

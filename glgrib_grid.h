@@ -8,11 +8,21 @@ class glgrib_grid : public glgrib_polygon
 {
 public:
   glgrib_grid & operator=(const glgrib_grid &);
-  void init (const glgrib_options_grid &);
+  void setup (const glgrib_options_grid &);
   virtual bool use_alpha () { return false; }
   virtual void render (const glgrib_view &, const glgrib_options_light &) const;
-  glgrib_options_grid opts;
   virtual void resize (const glgrib_view &) {}
+  const glgrib_options_grid & getOptions () const { return opts; }
+  void setColorOptions (const glgrib_option_color & o)
+  {
+    opts.color = o;
+  }
+  void setScaleOptions (float s)
+  {
+    opts.scale = s;
+  }
+private:
+  glgrib_options_grid opts;
 };
 
 #endif

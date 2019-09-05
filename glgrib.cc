@@ -35,7 +35,7 @@ int main (int argc, const char * argv[])
 
   if (! glfwInit ())
     {
-      fprintf (stderr, "Failed to initialize GLFW\n");
+      fprintf (stderr, "Failed to setupialize GLFW\n");
       exit (EXIT_FAILURE);
     }
 
@@ -46,14 +46,14 @@ int main (int argc, const char * argv[])
   else
     gwindow = new glgrib_window (opts);
 
-  gwindow->scene.init (opts);
+  gwindow->scene.setup (opts);
   
   glgrib_window_set wset;
   wset.insert (gwindow);
 
   if (opts.shell.on)
     {
-      Shell.init (opts.shell);
+      Shell.setup (opts.shell);
       Shell.start (&wset);
       wset.run (&Shell);
       Shell.wait ();

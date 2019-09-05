@@ -26,11 +26,11 @@ public:
   virtual glgrib_field_kind getKind () const = 0;
 
   virtual glgrib_field * clone () const  = 0;
-  virtual void init (glgrib_loader *, const glgrib_options_field &, float = 0) = 0;
+  virtual void setup (glgrib_loader *, const glgrib_options_field &, float = 0) = 0;
   virtual bool use_alpha () { return false; }
-  void setPalette (const glgrib_palette &);
+  void setPaletteOptions (const glgrib_options_palette &);
   void setNextPalette ();
-  void recordPaletteOpts ();
+  void recordPaletteOptions ();
   void setPaletteMinMax ();
   void scalePaletteUp (float = 0.025);
   void scalePaletteDown (float = 0.025);
@@ -79,15 +79,18 @@ public:
       n += val[i] * val[i];
     return sqrt (n);
   }
-  virtual void cleanup ();
+  virtual void clear ();
   virtual void resize (const glgrib_view &) {}
   const std::vector<glgrib_field_metadata> & getMeta () const
   {
     return meta;
   }
-  glgrib_options_field opts;
-  glgrib_palette palette = palette_cold_hot;
+  const glgrib_options_field & getOptions () const { return opts; }
+  void setScale (float s) { opts.scale = s; }
+  const glgrib_palette & getPalette () const;
 protected:
+  glgrib_palette palette = palette_cold_hot;
+  glgrib_options_field opts;
   std::vector<glgrib_field_metadata> meta;
   std::vector<glgrib_field_float_buffer_ptr> values;
 };

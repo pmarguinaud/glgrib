@@ -8,6 +8,8 @@ class glgrib_border : public glgrib_lines
 {
 public:
   void setup (const glgrib_options_border &);
+  const glgrib_options_border & getOptions () const { return opts; }
+private:
   glgrib_options_border opts;
 };
 

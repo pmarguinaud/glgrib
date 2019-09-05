@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <iostream>
 
-void glgrib_field::recordPaletteOpts ()
+void glgrib_field::recordPaletteOptions ()
 {
   opts.palette.name = palette.name; 
   opts.palette.min  = palette.min;
@@ -33,18 +33,19 @@ void glgrib_field::setPaletteMinMax ()
     palette.min = getNormedMinValue ();
 }
 
-void glgrib_field::setPalette (const glgrib_palette & p) 
+void glgrib_field::setPaletteOptions (const glgrib_options_palette & o) 
 { 
-  palette = p; 
+  opts.palette = o;
+  palette = glgrib_palette::by_name (opts.palette.name);
   setPaletteMinMax ();
-  recordPaletteOpts ();
+  recordPaletteOptions ();
 }
 
 void glgrib_field::setNextPalette ()
 {
   palette = glgrib_palette::next (palette);
   setPaletteMinMax ();
-  recordPaletteOpts ();
+  recordPaletteOptions ();
 }
 
 void glgrib_field::clear ()
@@ -63,7 +64,7 @@ void glgrib_field::scalePaletteUp (float x)
   float d = palette.max - palette.min;
   palette.min -= d * x;
   palette.max += d * x;
-  recordPaletteOpts ();
+  recordPaletteOptions ();
 }
 
 void glgrib_field::scalePaletteDown (float x)
@@ -75,5 +76,5 @@ void glgrib_field::scalePaletteDown (float x)
   float d = palette.max - palette.min;
   palette.min += d * x;
   palette.max -= d * x;
-  recordPaletteOpts ();
+  recordPaletteOptions ();
 }

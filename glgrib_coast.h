@@ -8,6 +8,8 @@ class glgrib_coast : public glgrib_lines
 {
 public:
   void setup (const glgrib_options_coast &);
+  const glgrib_options_coast & getOptions () const { return opts; }
+private:
   glgrib_options_coast opts;
 };
 

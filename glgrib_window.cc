@@ -204,26 +204,27 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
 
 void glgrib_window::fix_landscape (float dy, float dx, float sy, float sx)
 {
-  glgrib_options_landscape * o = &scene.d.landscape.opts;
+  glgrib_options_landscape_position o = scene.d.landscape.getOptions ().position;
 
-  float dlat = o->position.lat2 - o->position.lat1;
-  float dlon = o->position.lon2 - o->position.lon1;
+  float dlat = o.lat2 - o.lat1;
+  float dlon = o.lon2 - o.lon1;
 
-  o->position.lat1 += dy * 0.01;
-  o->position.lat2 += dy * 0.01;
-  o->position.lon1 += dx * 0.01;
-  o->position.lon2 += dx * 0.01;
+  o.lat1 += dy * 0.01;
+  o.lat2 += dy * 0.01;
+  o.lon1 += dx * 0.01;
+  o.lon2 += dx * 0.01;
 
-  o->position.lat1 -= sy * 0.01;
-  o->position.lat2 += sy * 0.01;
-  o->position.lon1 -= sx * 0.01;
-  o->position.lon2 += sx * 0.01;
+  o.lat1 -= sy * 0.01;
+  o.lat2 += sy * 0.01;
+  o.lon1 -= sx * 0.01;
+  o.lon2 += sx * 0.01;
 
-  if (o->position.lon1 > 180.0f)
-    o->position.lon1 -= 360.0f;
-  if (o->position.lon2 > 180.0f)
-    o->position.lon2 -= 360.0f;
+  if (o.lon1 > 180.0f)
+    o.lon1 -= 360.0f;
+  if (o.lon2 > 180.0f)
+    o.lon2 -= 360.0f;
 
+  scene.d.landscape.setPositionOptions (o);
 }
 
 void glgrib_window::toggleColorBar ()
@@ -420,14 +421,20 @@ void glgrib_window::scale_field_down ()
 {
   glgrib_field * f = scene.getCurrentField ();
   if (f != NULL)
-    f->opts.scale -= 0.01;
+    {
+      const glgrib_options_field & o = f->getOptions ();
+      f->setScale (o.scale - 0.01);
+    }
 }
 
 void glgrib_window::scale_field_up ()
 {
   glgrib_field * f = scene.getCurrentField ();
   if (f != NULL)
-    f->opts.scale += 0.01;
+    {
+      const glgrib_options_field & o = f->getOptions ();
+      f->setScale (o.scale + 0.01);
+    }
 }
 
 void glgrib_window::toggle_hide_field ()
@@ -739,33 +746,37 @@ void glgrib_window::centerLightAtCursorPos ()
 
 void glgrib_window::centerViewAtCursorPos ()
 {
-  if (get_latlon_from_cursor (&scene.d.view.opts.lat, &scene.d.view.opts.lon))
+  glgrib_options_view o = scene.d.view.getOptions ();
+  if (get_latlon_from_cursor (&o.lat, &o.lon))
     {
+      scene.d.view.setOptions (o);
       scene.d.view.calcMVP ();
       float xpos, ypos;
-      scene.d.view.get_screen_coords_from_latlon (&xpos, &ypos, scene.d.view.opts.lat, scene.d.view.opts.lon);
+      scene.d.view.get_screen_coords_from_latlon (&xpos, &ypos, o.lat, o.lon);
       glfwSetCursorPos (window, xpos, ypos);
     }
 }
 
 void glgrib_window::scroll (double xoffset, double yoffset)
 {
+  glgrib_options_view o = scene.d.view.getOptions ();
   if (yoffset > 0)
     {
-      if (scene.d.view.opts.fov < 1.0f)
-        scene.d.view.opts.fov += 0.1f;
+      if (o.fov < 1.0f)
+        o.fov += 0.1f;
       else
-        scene.d.view.opts.fov += 1.0f;
+        o.fov += 1.0f;
     }
   else 
     {
-      if (scene.d.view.opts.fov < 1.0f)
-        scene.d.view.opts.fov -= 0.1f;
+      if (o.fov < 1.0f)
+        o.fov -= 0.1f;
       else
-        scene.d.view.opts.fov -= 1.0f;
-      if (scene.d.view.opts.fov <= 0.0f)
-        scene.d.view.opts.fov = 0.1f;
+        o.fov -= 1.0f;
+      if (o.fov <= 0.0f)
+        o.fov = 0.1f;
     }
+  scene.d.view.setOptions (o);
   scene.resize ();
 }
 
@@ -972,7 +983,7 @@ void glgrib_window_set::run (glgrib_shell * shell)
              it != end (); it++)
           {
             glgrib_window * w = *it;
-            w->scene.d.view.opts = wl->scene.d.view.opts;
+            w->scene.d.view.setOptions (wl->scene.d.view.getOptions ());
           }
       for (glgrib_window_set::iterator it = begin (); 
            it != end (); it++)
@@ -1063,7 +1074,7 @@ void glgrib_window::debug (unsigned int source, unsigned int type, GLuint id,
           debug_severity (severity), debug_type (type), id, message);
 }
 
-void glgrib_window::setOpts (const glgrib_options_window & o)
+void glgrib_window::setOptions (const glgrib_options_window & o)
 {
   if ((o.width != opts.width) || (o.height != opts.height))
     glfwSetWindowSize(window, o.width, o.height);

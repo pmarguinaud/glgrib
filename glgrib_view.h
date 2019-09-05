@@ -21,7 +21,6 @@ public:
 
   static transform_type typeFromString (std::string);
 
-  glgrib_options_view opts;
   void setMVP (glgrib_program *) const;
   void calcMVP () const;
   void setViewport (int, int);
@@ -55,7 +54,10 @@ public:
 
   const glm::mat4 & getMVP () const { return MVP; }
 
+  const glgrib_options_view & getOptions () const { return opts; }
+  void setOptions (const glgrib_options_view & o) { opts = o; }
 private:
+  glgrib_options_view opts;
   int width, height;
   mutable glgrib_projection_set ps;
   mutable glm::mat4 Model, View, Projection, MVP;

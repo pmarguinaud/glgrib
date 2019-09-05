@@ -147,10 +147,11 @@ static float ffmod (float x, float y)
 
 void glgrib_scene::update_view ()
 {
+  glgrib_options_view o = d.view.getOptions ();
   d.view.calcMVP ();  
 
   if (d.opts.scene.rotate_earth.on)
-    d.view.opts.lon += 1.;
+    o.lon += 1.;
   if (d.opts.scene.travelling.on)
     {
       float frames = d.opts.scene.travelling.frames;
@@ -173,9 +174,9 @@ void glgrib_scene::update_view ()
           float fov2 = d.opts.scene.travelling.pos2.fov;
           float dfov = fov2 - fov1;
 
-          d.view.opts.lon = lon1 + dlon * a;
-          d.view.opts.lat = lat1 + dlat * a;
-          d.view.opts.fov = fov1 + dfov * a;
+          o.lon = lon1 + dlon * a;
+          o.lat = lat1 + dlat * a;
+          o.fov = fov1 + dfov * a;
 
 	  resize ();
         }
@@ -196,9 +197,10 @@ void glgrib_scene::update_view ()
             lon += 360.0f;
 	  else if (lon > 360.0f)
             lon -= 360.0f;
-          d.view.opts.lon = lon;
+          o.lon = lon;
         }
     }
+  d.view.setOptions (o);
 }
 
 void glgrib_scene::update_interpolation ()
@@ -227,7 +229,7 @@ void glgrib_scene::update_interpolation ()
 
 
       for (int j = 0; j < fieldlist.size (); j++)
-        setFieldOpts (j, d.opts.field[j], slot);
+        setFieldOptions (j, d.opts.field[j], slot);
 
     }
 }
@@ -269,8 +271,8 @@ void glgrib_scene::setup (const glgrib_options & o)
 //d.test.setup ();
 
   setViewport (d.opts.window.width, d.opts.window.height);
-  setLightOpts (d.opts.scene.light);
-  setImageOpts (d.opts.scene.image);
+  setLightOptions (d.opts.scene.light);
+  setImageOptions (d.opts.scene.image);
 
   if (d.opts.scene.interpolation.on)
     {
@@ -290,25 +292,25 @@ void glgrib_scene::setup (const glgrib_options & o)
       ld.setSize (size);
     }
 
-  setLandscapeOpts (d.opts.landscape);
-  setGridOpts (d.opts.grid);
-  setCoastOpts (d.opts.coast);
-  setBorderOpts (d.opts.border);
-  setRiversOpts (d.opts.rivers);
-  setDepartementsOpts (d.opts.departements);
-  setViewOpts (d.opts.view);
+  setLandscapeOptions (d.opts.landscape);
+  setGridOptions (d.opts.grid);
+  setCoastOptions (d.opts.coast);
+  setBorderOptions (d.opts.border);
+  setRiversOptions (d.opts.rivers);
+  setDepartementsOptions (d.opts.departements);
+  setViewOptions (d.opts.view);
 
   for (int i = 0; i < d.opts.field.size (); i++)
     fieldlist.push_back ((glgrib_field *)NULL);
 
   for (int i = 0; i < d.opts.field.size (); i++)
-    setFieldOpts (i, d.opts.field[i]);
+    setFieldOptions (i, d.opts.field[i]);
 
-  setDateOpts (d.opts.scene.date);
-  setTextOpts (d.opts.scene.text);
-  setCitiesOpts (d.opts.cities);
-  setColorBarOpts (d.opts.colorbar);
-  setMapScaleOpts (d.opts.mapscale);
+  setDateOptions (d.opts.scene.date);
+  setTextOptions (d.opts.scene.text);
+  setCitiesOptions (d.opts.cities);
+  setColorBarOptions (d.opts.colorbar);
+  setMapScaleOptions (d.opts.mapscale);
 
   if (d.opts.scene.test_strxyz.on)
     {
@@ -356,70 +358,72 @@ void glgrib_scene::resize ()
 glgrib_options glgrib_scene::getOptions () const
 {
   glgrib_options o = d.opts;
-  o.view           = d.view.opts;
-  o.landscape      = d.landscape.opts;
-  o.grid           = d.grid.opts;
-  o.coast          = d.coast.opts;
-  o.border         = d.border.opts;
-  o.rivers         = d.rivers.opts;
-  o.departements   = d.departements.opts;
-  o.cities         = d.cities.opts;
+
+  o.view           = d.view.getOptions ();
+  o.landscape      = d.landscape.getOptions ();
+  o.grid           = d.grid.getOptions ();
+  o.coast          = d.coast.getOptions ();
+  o.border         = d.border.getOptions ();
+  o.rivers         = d.rivers.getOptions ();
+  o.departements   = d.departements.getOptions ();
+  o.cities         = d.cities.getOptions ();
+  o.mapscale       = d.mapscale.getOptions ();
 
   for (int i = 0; i < fieldlist.size (); i++)
     if (fieldlist[i] != NULL)
-      o.field[i] = fieldlist[i]->opts;
+      o.field[i] = fieldlist[i]->getOptions ();
 
   return o;
 }
 
-void glgrib_scene::setViewOpts (const glgrib_options_view & o)
+void glgrib_scene::setViewOptions (const glgrib_options_view & o)
 {
   d.view.setup (o);
 }
 
-void glgrib_scene::setLandscapeOpts (const glgrib_options_landscape & o)
+void glgrib_scene::setLandscapeOptions (const glgrib_options_landscape & o)
 {
   d.landscape.clear ();
   if (o.on)
     d.landscape.setup (&ld, o);
 }
 
-void glgrib_scene::setGridOpts (const glgrib_options_grid & o)
+void glgrib_scene::setGridOptions (const glgrib_options_grid & o)
 {
   d.grid.clear ();
   if (o.on)
     d.grid.setup (o);
 }
 
-void glgrib_scene::setCoastOpts (const glgrib_options_coast & o)
+void glgrib_scene::setCoastOptions (const glgrib_options_coast & o)
 {
   d.coast.clear ();
   if (o.on)
     d.coast.setup (o);
 }
 
-void glgrib_scene::setBorderOpts (const glgrib_options_border & o)
+void glgrib_scene::setBorderOptions (const glgrib_options_border & o)
 {
   d.border.clear ();
   if (o.on)
     d.border.setup (o);
 }
 
-void glgrib_scene::setRiversOpts (const glgrib_options_rivers & o)
+void glgrib_scene::setRiversOptions (const glgrib_options_rivers & o)
 {
   d.rivers.clear ();
   if (o.on)
     d.rivers.setup (o);
 }
 
-void glgrib_scene::setDepartementsOpts (const glgrib_options_departements & o)
+void glgrib_scene::setDepartementsOptions (const glgrib_options_departements & o)
 {
   d.departements.clear ();
   if (o.on)
     d.departements.setup (o);
 }
 
-void glgrib_scene::setFieldOpts (int j, const glgrib_options_field & o, float slot)
+void glgrib_scene::setFieldOptions (int j, const glgrib_options_field & o, float slot)
 {
   if (fieldlist[j] != NULL)
     delete fieldlist[j];
@@ -442,7 +446,7 @@ void glgrib_scene::setFieldOpts (int j, const glgrib_options_field & o, float sl
 
 }
 
-void glgrib_scene::setColorBarOpts (const glgrib_options_colorbar & o)
+void glgrib_scene::setColorBarOptions (const glgrib_options_colorbar & o)
 {
   d.opts.colorbar = o;
   d.strmess.clear ();
@@ -459,7 +463,7 @@ void glgrib_scene::setColorBarOpts (const glgrib_options_colorbar & o)
 
 }
 
-void glgrib_scene::setMapScaleOpts (const glgrib_options_mapscale & o)
+void glgrib_scene::setMapScaleOptions (const glgrib_options_mapscale & o)
 {
   d.opts.mapscale = o;
   d.mapscale.clear ();
@@ -469,7 +473,7 @@ void glgrib_scene::setMapScaleOpts (const glgrib_options_mapscale & o)
 
 }
 
-void glgrib_scene::setImageOpts (const glgrib_options_image & o)
+void glgrib_scene::setImageOptions (const glgrib_options_image & o)
 {
   d.opts.scene.image = o;
   d.image.clear ();
@@ -477,7 +481,7 @@ void glgrib_scene::setImageOpts (const glgrib_options_image & o)
     d.image.setup (d.opts.scene.image);
 }
 
-void glgrib_scene::setTextOpts (const glgrib_options_text & o)
+void glgrib_scene::setTextOptions (const glgrib_options_text & o)
 {
   d.opts.scene.text = o;
   d.str.clear ();
@@ -505,7 +509,7 @@ void glgrib_scene::setTextOpts (const glgrib_options_text & o)
     }
 }
 
-void glgrib_scene::setCitiesOpts (const glgrib_options_cities & o)
+void glgrib_scene::setCitiesOptions (const glgrib_options_cities & o)
 {
   d.opts.cities = o;
   d.cities.clear ();
@@ -513,26 +517,25 @@ void glgrib_scene::setCitiesOpts (const glgrib_options_cities & o)
     d.cities.setup (o);
 }
 
-void glgrib_scene::setGridColorOpts (const glgrib_option_color & color)
+void glgrib_scene::setGridColorOptions (const glgrib_option_color & color)
 {
-  d.grid.opts.color = color;
+  d.grid.setColorOptions (color);
 }
 
-void glgrib_scene::setGridScaleOpts (float scale)
+void glgrib_scene::setGridScaleOptions (float scale)
 {
-  d.grid.opts.scale = scale;
+  d.grid.setScaleOptions (scale);
 }
 
-void glgrib_scene::setFieldPaletteOpts (int j, const glgrib_options_palette & opts)
+void glgrib_scene::setFieldPaletteOptions (int j, const glgrib_options_palette & opts)
 {
   glgrib_field * fld = fieldlist[j];
   if (fld == NULL)
     return;
-  fld->opts.palette = opts;
-  fld->setPalette (glgrib_palette::by_name (opts.name));
+  fld->setPaletteOptions (opts);
 }
 
-void glgrib_scene::setDateOpts (const glgrib_options_date & o)
+void glgrib_scene::setDateOptions (const glgrib_options_date & o)
 {
   strdate = "";
   d.opts.scene.date = o;
@@ -547,12 +550,12 @@ void glgrib_scene::setDateOpts (const glgrib_options_date & o)
     }
 }
 
-void glgrib_scene::setLightOpts (const glgrib_options_light & o)
+void glgrib_scene::setLightOptions (const glgrib_options_light & o)
 {
   d.opts.scene.light = o;
 }
 
-void glgrib_scene::setMiscOpts (const glgrib_options_scene & o)
+void glgrib_scene::setSceneOptions (const glgrib_options_scene & o)
 {
   d.opts.scene.rotate_earth = o.rotate_earth;
   d.opts.scene.lon_at_hour  = o.lon_at_hour;

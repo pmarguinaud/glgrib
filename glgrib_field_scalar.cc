@@ -76,7 +76,7 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
     palette = glgrib_palette::by_name (opts.palette.name);
 
   setPaletteMinMax ();
-  recordPaletteOpts ();
+  recordPaletteOptions ();
 
   geometry = glgrib_geometry_load (ld, opts.path[0]);
 

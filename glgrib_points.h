@@ -22,6 +22,7 @@ public:
   void setup (const glgrib_options_points &, const std::vector<float> &, const std::vector<float> &, const std::vector<float> &);
   virtual void render (const glgrib_view &) const;
   bool isReady () const { return ready; }
+  const glgrib_options_points & getOptions () const { return d.opts; }
 private:
   struct
   {

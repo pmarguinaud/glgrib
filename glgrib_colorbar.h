@@ -20,6 +20,7 @@ public:
   void render (const glm::mat4 &, const glgrib_palette &, float, float) const;
   void toggleHidden () { hidden = ! hidden; }
   bool getHidden () const { return hidden; }
+  const glgrib_options_colorbar & getOptions () const { return opts; }
 private:
   glgrib_options_colorbar opts;
   static glgrib_program program;

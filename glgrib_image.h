@@ -45,10 +45,11 @@ public:
 
   void setup (const glgrib_options_image &);
   void render (const glm::mat4 &) const;
+  const glgrib_options_image & getOptions () const { return opts; }
 private:
+  glgrib_options_image opts;
   bool ready = false;
   glgrib_opengl_texture_ptr texture;
-  glgrib_options_image opts;
   GLuint VertexArrayID = 0;
 };
 

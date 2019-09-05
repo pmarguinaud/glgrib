@@ -12,7 +12,6 @@
 class glgrib_landscape : public glgrib_world
 {
 public:
-  glgrib_options_landscape opts;
   glgrib_landscape & operator=(const glgrib_landscape &);
   virtual void setup (glgrib_loader *, const glgrib_options_landscape &);
   void render (const glgrib_view &, const glgrib_options_light &) const;
@@ -23,7 +22,10 @@ public:
   void setupVertexAttributes ();
   virtual void resize (const glgrib_view &) {}
   void toggle_wireframe () { opts.wireframe.on = ! opts.wireframe.on; }
+  const glgrib_options_landscape & getOptions () const { return opts; }
+  void setPositionOptions (const glgrib_options_landscape_position & o) { opts.position = o; }
 private:
+  glgrib_options_landscape opts;
   glgrib_opengl_texture_ptr texture;
 };
 

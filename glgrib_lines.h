@@ -14,8 +14,10 @@ public:
              const std::vector<unsigned int> & = {0x00000000});
   virtual bool use_alpha () { return false; }
   virtual void render (const glgrib_view &, const glgrib_options_light &) const;
-  glgrib_options_lines opts;
   virtual void resize (const glgrib_view &) {}
+  const glgrib_options_lines & getOptions () const { return opts; }
+private:
+  glgrib_options_lines opts;
 };
 
 #endif

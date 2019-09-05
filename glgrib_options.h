@@ -455,6 +455,19 @@ public:
   float scale = 1.005;
 };
 
+class glgrib_options_landscape_position : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (lon1,       First longitude of display);
+    DESC (lon2,       Last longitude of display);
+    DESC (lat1,       First latitude of display);
+    DESC (lat2,       Last latitude of display);
+  }
+  float lon1 = -180.0f, lon2 = +180.0f, lat1 = -90.0f, lat2 = +90.0f;
+};
+
 class glgrib_options_landscape : public glgrib_options_base
 {
 public:
@@ -467,15 +480,12 @@ public:
     DESC (geometry,            GRIB files to take geometry from);
     DESC (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
     DESC (wireframe.on,        Draw landscape in wireframe mode);
-    DESC (position.lon1,       First longitude of display);
-    DESC (position.lon2,       Last longitude of display);
-    DESC (position.lat1,       First latitude of display);
-    DESC (position.lat2,       Last latitude of display);
+    INCLUDE (position);
   }
   string  path  = "landscape/Whole_world_-_land_and_oceans_08000.bmp";
   float  orography  = 0.05;
   string  geometry  = "";
-  int  number_of_latitudes  = 500;
+  int number_of_latitudes  = 500;
   struct
   {
     bool on = false;
@@ -485,10 +495,7 @@ public:
   {
     bool on = true;
   } flat;
-  struct
-  {
-    float lon1 = -180.0f, lon2 = +180.0f, lat1 = -90.0f, lat2 = +90.0f;
-  } position;
+  glgrib_options_landscape_position position;
 };
 
 class glgrib_options_lines : public glgrib_options_base

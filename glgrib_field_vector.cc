@@ -217,7 +217,7 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
   d.vscale = opts.vector.scale * (M_PI / npts) / (meta_n.valmax || 1.0f);
 
   setPaletteMinMax ();
-  recordPaletteOpts ();
+  recordPaletteOptions ();
 
   setReady ();
 }
@@ -313,7 +313,9 @@ void glgrib_field_vector::reSample (const glgrib_view & view)
   const glgrib_field_metadata & meta_d = meta[1];
 
   const float deg2rad = M_PI / 180.0;
-  float w = view.opts.distance * deg2rad * view.opts.fov;
+
+  const glgrib_options_view & view_opts = view.getOptions ();
+  float w = view_opts.distance * deg2rad * view_opts.fov;
 
   const int npts = 2 * opts.vector.density / w;
 

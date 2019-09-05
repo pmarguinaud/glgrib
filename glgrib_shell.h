@@ -28,6 +28,7 @@ public:
   void wait () { pthread_join (thread, NULL); }
   bool started () { return wset != NULL; }
   char * option_generator (const char *, int);
+  const glgrib_options_shell & getOptions () const { return opts; }
 private:
   glgrib_options_shell opts;
   glgrib_window_set * wset = NULL;

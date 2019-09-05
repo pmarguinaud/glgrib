@@ -304,32 +304,32 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
 
           hof_t hof;
 
-          hof.add ("--window.height"             , [&opts,gwindow]() { gwindow->setOpts                        (opts.window             );  });
-          hof.add ("--window.width"              , [&opts,gwindow]() { gwindow->setOpts                        (opts.window             );  });
-          hof.add ("--window.title"              , [&opts,gwindow]() { gwindow->setOpts                        (opts.window             );  });
-          hof.add ("--view"                      , [&opts,gwindow]() { gwindow->scene.setViewOpts              (opts.view               );  });
-          hof.add ("--landscape"                 , [&opts,gwindow]() { gwindow->scene.setLandscapeOpts         (opts.landscape          );  });
-          hof.add ("--grid"                      , [&opts,gwindow]() { gwindow->scene.setGridOpts              (opts.grid               );  });
-          hof.add ("--grid.color"                , [&opts,gwindow]() { gwindow->scene.setGridColorOpts         (opts.grid.color         );  });
-          hof.add ("--grid.scale"                , [&opts,gwindow]() { gwindow->scene.setGridScaleOpts         (opts.grid.scale         );  });
-          hof.add ("--coast"                     , [&opts,gwindow]() { gwindow->scene.setCoastOpts             (opts.coast              );  });
-          hof.add ("--cities"                    , [&opts,gwindow]() { gwindow->scene.setCitiesOpts            (opts.cities             );  });
-          hof.add ("--border"                    , [&opts,gwindow]() { gwindow->scene.setBorderOpts            (opts.border             );  });
-          hof.add ("--rivers"                    , [&opts,gwindow]() { gwindow->scene.setRiversOpts            (opts.rivers             );  });
-          hof.add ("--colorbar"                  , [&opts,gwindow]() { gwindow->scene.setColorBarOpts          (opts.colorbar           );  });
-          hof.add ("--mapscale"                  , [&opts,gwindow]() { gwindow->scene.setMapScaleOpts          (opts.mapscale           );  });
-          hof.add ("--scene.image"               , [&opts,gwindow]() { gwindow->scene.setImageOpts             (opts.scene.image        );  });
-          hof.add ("--scene.text"                , [&opts,gwindow]() { gwindow->scene.setTextOpts              (opts.scene.text         );  });
-          hof.add ("--scene.date"                , [&opts,gwindow]() { gwindow->scene.setDateOpts              (opts.scene.date         );  });
-          hof.add ("--scene.light"               , [&opts,gwindow]() { gwindow->scene.setLightOpts             (opts.scene.light        );  });
-          hof.add ("--scene.lon_at_hour"         , [&opts,gwindow]() { gwindow->scene.setMiscOpts              (opts.scene              );  });
-          hof.add ("--scene.rotate_earth"        , [&opts,gwindow]() { gwindow->scene.setMiscOpts              (opts.scene              );  });
+          hof.add ("--window.height"             , [&opts,gwindow]() { gwindow->setOptions                     (opts.window             );  });
+          hof.add ("--window.width"              , [&opts,gwindow]() { gwindow->setOptions                     (opts.window             );  });
+          hof.add ("--window.title"              , [&opts,gwindow]() { gwindow->setOptions                     (opts.window             );  });
+          hof.add ("--view"                      , [&opts,gwindow]() { gwindow->scene.setViewOptions           (opts.view               );  });
+          hof.add ("--landscape"                 , [&opts,gwindow]() { gwindow->scene.setLandscapeOptions      (opts.landscape          );  });
+          hof.add ("--grid"                      , [&opts,gwindow]() { gwindow->scene.setGridOptions           (opts.grid               );  });
+          hof.add ("--grid.color"                , [&opts,gwindow]() { gwindow->scene.setGridColorOptions      (opts.grid.color         );  });
+          hof.add ("--grid.scale"                , [&opts,gwindow]() { gwindow->scene.setGridScaleOptions      (opts.grid.scale         );  });
+          hof.add ("--coast"                     , [&opts,gwindow]() { gwindow->scene.setCoastOptions          (opts.coast              );  });
+          hof.add ("--cities"                    , [&opts,gwindow]() { gwindow->scene.setCitiesOptions         (opts.cities             );  });
+          hof.add ("--border"                    , [&opts,gwindow]() { gwindow->scene.setBorderOptions         (opts.border             );  });
+          hof.add ("--rivers"                    , [&opts,gwindow]() { gwindow->scene.setRiversOptions         (opts.rivers             );  });
+          hof.add ("--colorbar"                  , [&opts,gwindow]() { gwindow->scene.setColorBarOptions       (opts.colorbar           );  });
+          hof.add ("--mapscale"                  , [&opts,gwindow]() { gwindow->scene.setMapScaleOptions       (opts.mapscale           );  });
+          hof.add ("--scene.image"               , [&opts,gwindow]() { gwindow->scene.setImageOptions          (opts.scene.image        );  });
+          hof.add ("--scene.text"                , [&opts,gwindow]() { gwindow->scene.setTextOptions           (opts.scene.text         );  });
+          hof.add ("--scene.date"                , [&opts,gwindow]() { gwindow->scene.setDateOptions           (opts.scene.date         );  });
+          hof.add ("--scene.light"               , [&opts,gwindow]() { gwindow->scene.setLightOptions          (opts.scene.light        );  });
+          hof.add ("--scene.lon_at_hour"         , [&opts,gwindow]() { gwindow->scene.setSceneOptions          (opts.scene              );  });
+          hof.add ("--scene.rotate_earth"        , [&opts,gwindow]() { gwindow->scene.setSceneOptions          (opts.scene              );  });
           hof.add ("--shell.prompt.on"           , [&opts,this   ]() { this->opts.prompt.on =                   opts.shell.prompt.on;       });
 
 #define SFO(j) \
 do { \
-          hof.add ("--field[" #j "]"             , [&opts,gwindow]() { gwindow->scene.setFieldOpts             (j, opts.field[j]        );  });  \
-          hof.add ("--field[" #j "].palette"     , [&opts,gwindow]() { gwindow->scene.setFieldPaletteOpts      (j, opts.field[j].palette);  });  \
+          hof.add ("--field[" #j "]"             , [&opts,gwindow]() { gwindow->scene.setFieldOptions          (j, opts.field[j]        );  });  \
+          hof.add ("--field[" #j "].palette"     , [&opts,gwindow]() { gwindow->scene.setFieldPaletteOptions   (j, opts.field[j].palette);  });  \
 } while (0)
           SFO  (0); SFO  (1); SFO  (2); SFO  (3);
           SFO  (4); SFO  (5); SFO  (6); SFO  (7);

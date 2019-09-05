@@ -16,8 +16,9 @@ public:
   glgrib_cities & operator= (const glgrib_cities &);
   void clear ();
   void setup (const glgrib_options_cities &);
-  glgrib_options_cities opts;
+  const glgrib_options_cities & getOptions () const { return opts; }
 private:
+  glgrib_options_cities opts;
   struct
   {
     glgrib_string labels;

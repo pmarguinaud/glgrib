@@ -65,7 +65,7 @@ glgrib_geometry_ptr glgrib_geometry_load (glgrib_loader * ld, const std::string 
 	}
     }
 
-  geom->init (ghp, orography);
+  geom->setup (ghp, orography);
   cache.insert (std::pair<std::string,glgrib_geometry_ptr> (geom->md5 (), geom));
 
 found:

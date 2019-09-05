@@ -41,9 +41,9 @@ public:
   
   glgrib_image & operator= (const glgrib_image &);
   void setupVertexAttributes ();
-  void cleanup ();
+  void clear ();
 
-  void init (const glgrib_options_image &);
+  void setup (const glgrib_options_image &);
   void render (const glm::mat4 &) const;
 private:
   bool ready = false;

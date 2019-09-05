@@ -7,7 +7,7 @@
 class glgrib_rivers : public glgrib_lines
 {
 public:
-  void init (const glgrib_options_rivers &);
+  void setup (const glgrib_options_rivers &);
   glgrib_options_rivers opts;
 };
 

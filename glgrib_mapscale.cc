@@ -6,13 +6,13 @@ glgrib_mapscale & glgrib_mapscale::operator= (const glgrib_mapscale & mapscale)
 {
   if (this != &mapscale)
     {
-      cleanup ();
+      clear ();
       if (mapscale.ready)
-        init (mapscale.opts);
+        setup (mapscale.opts);
     }
 }
 
-void glgrib_mapscale::init (const glgrib_options_mapscale & o)
+void glgrib_mapscale::setup (const glgrib_options_mapscale & o)
 {
   opts = o;
 
@@ -40,7 +40,7 @@ void glgrib_mapscale::init (const glgrib_options_mapscale & o)
 
   glgrib_font_ptr font = new_glgrib_font_ptr (opts.font);
 
-  label.init2D (font, std::string (15, ' '), opts.position.xmin, opts.position.ymax + 0.01, opts.font.scale, glgrib_string::SW);
+  label.setup2D (font, std::string (15, ' '), opts.position.xmin, opts.position.ymax + 0.01, opts.font.scale, glgrib_string::SW);
   label.setForegroundColor (opts.font.color.foreground.r / 255.0f, 
                             opts.font.color.foreground.g / 255.0f, 
                             opts.font.color.foreground.b / 255.0f);
@@ -48,7 +48,7 @@ void glgrib_mapscale::init (const glgrib_options_mapscale & o)
   ready = true;
 }
 
-void glgrib_mapscale::cleanup ()
+void glgrib_mapscale::clear ()
 {
   if (ready)
     {
@@ -60,7 +60,7 @@ void glgrib_mapscale::cleanup ()
 
 glgrib_mapscale::~glgrib_mapscale ()
 {
-  cleanup ();
+  clear ();
 }
 
 void glgrib_mapscale::render (const glm::mat4 & MVP, const glgrib_view & view) const

@@ -33,7 +33,7 @@ public:
   glgrib_scene () {}
   glgrib_scene & operator= (const glgrib_scene & other);
   virtual ~glgrib_scene ();
-  void init (const glgrib_options &);
+  void setup (const glgrib_options &);
   void display () const;
   void display_obj (const glgrib_object *) const;
 

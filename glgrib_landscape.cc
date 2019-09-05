@@ -14,7 +14,7 @@
 
 glgrib_landscape & glgrib_landscape::operator= (const glgrib_landscape & landscape)
 {
-  cleanup ();
+  clear ();
   if ((this != &landscape) && landscape.isReady ())
     {
       glgrib_world::operator= (landscape);
@@ -48,7 +48,7 @@ static bool endsWith (const std::string & str, const std::string & end)
   return end == str.substr (i0, i1);
 }
 
-void glgrib_landscape::init (glgrib_loader * ld, const glgrib_options_landscape & o)
+void glgrib_landscape::setup (glgrib_loader * ld, const glgrib_options_landscape & o)
 {
   opts = o;
 

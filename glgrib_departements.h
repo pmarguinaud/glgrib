@@ -7,7 +7,7 @@
 class glgrib_departements : public glgrib_lines
 {
 public:
-  void init (const glgrib_options_departements &);
+  void setup (const glgrib_options_departements &);
   glgrib_options_departements opts;
 };
 

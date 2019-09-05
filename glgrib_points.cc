@@ -8,10 +8,10 @@
 
 glgrib_points::~glgrib_points ()
 {
-  cleanup ();
+  clear ();
 }
 
-void glgrib_points::cleanup ()
+void glgrib_points::clear ()
 {
   if (ready)
     {
@@ -23,7 +23,7 @@ glgrib_points & glgrib_points::operator= (const glgrib_points & points)
 {
   if (this != &points)
     {   
-      cleanup (); 
+      clear (); 
       if (points.ready)
         {
           d = points.d;
@@ -46,7 +46,7 @@ void glgrib_points::setupVertexAttributes ()
   glBindVertexArray (0);
 }
 
-void glgrib_points::init (const glgrib_options_points & o, 
+void glgrib_points::setup (const glgrib_options_points & o, 
 		          const std::vector<float> & lon, 
                           const std::vector<float> & lat, 
                           const std::vector<float> & val)

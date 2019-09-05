@@ -13,8 +13,8 @@
 class glgrib_colorbar
 {
 public:
-  void init (const glgrib_options_colorbar &);
-  void cleanup ();
+  void setup (const glgrib_options_colorbar &);
+  void clear ();
   ~glgrib_colorbar ();
   glgrib_colorbar & operator= (const glgrib_colorbar &);
   void render (const glm::mat4 &, const glgrib_palette &, float, float) const;

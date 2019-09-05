@@ -13,8 +13,8 @@
 class glgrib_mapscale
 {
 public:
-  void init (const glgrib_options_mapscale &);
-  void cleanup ();
+  void setup (const glgrib_options_mapscale &);
+  void clear ();
   ~glgrib_mapscale ();
   glgrib_mapscale & operator= (const glgrib_mapscale &);
   void render (const glm::mat4 &, const glgrib_view &) const;

@@ -471,7 +471,7 @@ void glgrib_shell::run ()
     run_int ();
 }
 
-void glgrib_shell::init (const glgrib_options_shell & o)
+void glgrib_shell::setup (const glgrib_options_shell & o)
 { 
   opts = o;
 }

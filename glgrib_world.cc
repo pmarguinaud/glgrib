@@ -13,10 +13,10 @@ void glgrib_world::render (const glgrib_view & view, const glgrib_options_light 
   glBindVertexArray (0);
 }
 
-void glgrib_world::cleanup ()
+void glgrib_world::clear ()
 {
   if (isReady ())
     glDeleteVertexArrays (1, &VertexArrayID);
-  glgrib_object::cleanup ();
+  glgrib_object::clear ();
 }
 

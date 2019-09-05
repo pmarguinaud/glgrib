@@ -26,7 +26,7 @@ public:
   virtual glgrib_field_kind getKind () const = 0;
 
   virtual glgrib_field * clone () const  = 0;
-  virtual void init (glgrib_loader *, const glgrib_options_field &, float = 0) = 0;
+  virtual void setup (glgrib_loader *, const glgrib_options_field &, float = 0) = 0;
   virtual bool use_alpha () { return false; }
   void setPalette (const glgrib_palette &);
   void setNextPalette ();
@@ -79,7 +79,7 @@ public:
       n += val[i] * val[i];
     return sqrt (n);
   }
-  virtual void cleanup ();
+  virtual void clear ();
   virtual void resize (const glgrib_view &) {}
   const std::vector<glgrib_field_metadata> & getMeta () const
   {

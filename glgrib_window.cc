@@ -324,7 +324,7 @@ void glgrib_window::load_field (const glgrib_options_field & opts, int rank)
   makeCurrent ();
 
   glgrib_field * f = new glgrib_field_scalar ();
-  f->init (&scene.ld, opts);
+  f->setup (&scene.ld, opts);
 
   if (rank > scene.fieldlist.size () - 1)
     scene.fieldlist.push_back (f);
@@ -884,7 +884,7 @@ void glgrib_window::createGFLWwindow (GLFWwindow * context)
   glewExperimental = true; // Needed for core profile
   if (glewInit () != GLEW_OK) 
     {
-      fprintf (stderr, "Failed to initialize GLEW\n");
+      fprintf (stderr, "Failed to setupialize GLEW\n");
       glfwTerminate ();
       return;
     }

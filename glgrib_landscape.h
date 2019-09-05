@@ -14,7 +14,7 @@ class glgrib_landscape : public glgrib_world
 public:
   glgrib_options_landscape opts;
   glgrib_landscape & operator=(const glgrib_landscape &);
-  virtual void init (glgrib_loader *, const glgrib_options_landscape &);
+  virtual void setup (glgrib_loader *, const glgrib_options_landscape &);
   void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual ~glgrib_landscape ();
   virtual bool use_alpha () { return false; }

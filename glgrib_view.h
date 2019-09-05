@@ -51,7 +51,7 @@ public:
 
   void toggleTransformType ();
 
-  void init (const glgrib_options_view &);
+  void setup (const glgrib_options_view &);
 
   const glm::mat4 & getMVP () const { return MVP; }
 

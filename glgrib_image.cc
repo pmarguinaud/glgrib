@@ -7,10 +7,10 @@
 
 glgrib_image::~glgrib_image ()
 {
-  cleanup ();
+  clear ();
 }
 
-void glgrib_image::cleanup ()
+void glgrib_image::clear ()
 {
   if (ready)
     glDeleteVertexArrays (1, &VertexArrayID);
@@ -20,7 +20,7 @@ glgrib_image & glgrib_image::operator= (const glgrib_image & img)
 {
   if (this != &img)
     {   
-      cleanup (); 
+      clear (); 
       if (img.ready)
         {
           opts = img.opts;
@@ -42,7 +42,7 @@ void glgrib_image::setupVertexAttributes ()
 
 }
 
-void glgrib_image::init (const glgrib_options_image & o)
+void glgrib_image::setup (const glgrib_options_image & o)
 {
   unsigned char * rgb;
   int w, h;

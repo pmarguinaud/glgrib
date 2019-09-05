@@ -16,7 +16,7 @@ public:
   void hide () { hidden = true; }
   void show () { hidden = false; }
   bool visible () const { return ! hidden; }
-  void cleanup () { ready_ = false; }
+  void clear () { ready_ = false; }
   virtual void resize (const glgrib_view &) = 0;
 private:
   bool ready_ = false;

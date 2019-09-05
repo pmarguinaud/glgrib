@@ -7,7 +7,7 @@
 class glgrib_coast : public glgrib_lines
 {
 public:
-  void init (const glgrib_options_coast &);
+  void setup (const glgrib_options_coast &);
   glgrib_options_coast opts;
 };
 

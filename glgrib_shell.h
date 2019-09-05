@@ -14,7 +14,7 @@ class glgrib_shell
 {
 public:
   glgrib_shell ();
-  void init (const glgrib_options_shell &);
+  void setup (const glgrib_options_shell &);
   void execute (const std::string &, class glgrib_window *);
   int close = 0;
   bool closed () { return close; }

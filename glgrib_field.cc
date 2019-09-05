@@ -47,11 +47,11 @@ void glgrib_field::setNextPalette ()
   recordPaletteOpts ();
 }
 
-void glgrib_field::cleanup ()
+void glgrib_field::clear ()
 {
   values.clear ();
   meta.clear ();
-  glgrib_world::cleanup ();
+  glgrib_world::clear ();
 }
 
 void glgrib_field::scalePaletteUp (float x)

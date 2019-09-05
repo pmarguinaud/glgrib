@@ -11,7 +11,7 @@ glgrib_field_scalar::glgrib_field_scalar (const glgrib_field_scalar & field)
   if (field.isReady ())
     {
       // Cleanup already existing VAOs
-      cleanup ();
+      clear ();
       operator= (field);
     }
 }
@@ -29,7 +29,7 @@ glgrib_field_scalar & glgrib_field_scalar::operator= (const glgrib_field_scalar 
 {
   if (this != &field)
     {
-      cleanup ();
+      clear ();
       if (field.isReady ())
         {
           glgrib_field::operator= (field);
@@ -59,7 +59,7 @@ void glgrib_field_scalar::setupVertexAttributes ()
   glBindVertexArray (0); 
 }
 
-void glgrib_field_scalar::init (glgrib_loader * ld, const glgrib_options_field & o, float slot)
+void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field & o, float slot)
 {
   opts = o;
 

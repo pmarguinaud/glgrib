@@ -18,7 +18,7 @@ public:
   {
     return isEqual (geom);
   }
-  virtual void init (glgrib_handle_ptr, const float = 0.0f) = 0;
+  virtual void setup (glgrib_handle_ptr, const float = 0.0f) = 0;
   virtual void genlatlon (float *, float *) const = 0;
   virtual void gencoords (float *, float *) const = 0;
   virtual int size () const = 0;

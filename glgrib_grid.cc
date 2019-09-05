@@ -8,7 +8,7 @@
 
 glgrib_grid & glgrib_grid::operator= (const glgrib_grid & other)
 {
-  cleanup ();
+  clear ();
   if ((this != &other) && other.isReady ())
     {
       glgrib_polygon::operator= (other);
@@ -18,7 +18,7 @@ glgrib_grid & glgrib_grid::operator= (const glgrib_grid & other)
     }
 }
 
-void glgrib_grid::init (const glgrib_options_grid & o)
+void glgrib_grid::setup (const glgrib_options_grid & o)
 {
   opts = o;
 

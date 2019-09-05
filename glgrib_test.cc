@@ -18,14 +18,14 @@ void glgrib_test::render (const glgrib_view & view, const glgrib_options_light &
   glBindVertexArray (0);
 }
 
-void glgrib_test::cleanup ()
+void glgrib_test::clear ()
 {
   if (isReady ())
     glDeleteVertexArrays (1, &VertexArrayID);
-  glgrib_object::cleanup ();
+  glgrib_object::clear ();
 }
 
-void glgrib_test::init ()
+void glgrib_test::setup ()
 {
   numberOfTriangles = 1;
   numberOfPoints = 3;

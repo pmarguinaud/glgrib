@@ -7,7 +7,7 @@
 class glgrib_border : public glgrib_lines
 {
 public:
-  void init (const glgrib_options_border &);
+  void setup (const glgrib_options_border &);
   glgrib_options_border opts;
 };
 

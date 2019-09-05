@@ -6,13 +6,13 @@ glgrib_colorbar & glgrib_colorbar::operator= (const glgrib_colorbar & colorbar)
 {
   if (this != &colorbar)
     {
-      cleanup ();
+      clear ();
       if (colorbar.ready)
-        init (colorbar.opts);
+        setup (colorbar.opts);
     }
 }
 
-void glgrib_colorbar::init (const glgrib_options_colorbar & o)
+void glgrib_colorbar::setup (const glgrib_options_colorbar & o)
 {
   opts = o;
 
@@ -52,14 +52,14 @@ void glgrib_colorbar::init (const glgrib_options_colorbar & o)
       x.push_back (opts.position.xmin-0.07f);
       y.push_back ((opts.position.ymax - opts.position.ymin) * i / (opts.levels - 1) + opts.position.ymin);
     }
-  label.init2D (font, str, x, y, opts.font.scale, glgrib_string::SW);
+  label.setup2D (font, str, x, y, opts.font.scale, glgrib_string::SW);
   label.setForegroundColor (opts.font.color.foreground);
   label.setBackgroundColor (opts.font.color.background);
 
   ready = true;
 }
 
-void glgrib_colorbar::cleanup ()
+void glgrib_colorbar::clear ()
 {
   if (ready)
     {
@@ -72,7 +72,7 @@ void glgrib_colorbar::cleanup ()
 
 glgrib_colorbar::~glgrib_colorbar ()
 {
-  cleanup ();
+  clear ();
 }
 
 void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,

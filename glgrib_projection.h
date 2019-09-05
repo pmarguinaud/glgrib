@@ -83,11 +83,11 @@ class glgrib_projection_set
 public:
   glgrib_projection_set () 
   {
-    init ();
+    setup ();
   }
   glgrib_projection_set & operator= (const glgrib_projection_set & ps)
   {
-    init ();
+    setup ();
     current_ = ps.current_;
   }
   glgrib_projection * current () const
@@ -117,7 +117,7 @@ public:
   }
 private:
   int current_ = glgrib_projection::XYZ;
-  void init ()
+  void setup ()
   { 
      proj[0] = &proj_xyz;
      proj[1] = &proj_polar_north;

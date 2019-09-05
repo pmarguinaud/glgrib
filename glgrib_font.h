@@ -11,7 +11,7 @@
 class glgrib_font
 {
 public:
-  void init (const glgrib_options_font &);
+  void setup (const glgrib_options_font &);
   ~glgrib_font ();
   int map (char c) const
   { 

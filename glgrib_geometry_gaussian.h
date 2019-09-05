@@ -17,7 +17,7 @@ public:
   virtual int latlon2index (float, float) const;
   glgrib_geometry_gaussian (glgrib_handle_ptr);
   glgrib_geometry_gaussian (int);
-  virtual void init (glgrib_handle_ptr, const float = 0.0f);
+  virtual void setup (glgrib_handle_ptr, const float = 0.0f);
   virtual void genlatlon (float *, float *) const;
   virtual void gencoords (float *, float *) const;
   virtual int size () const;

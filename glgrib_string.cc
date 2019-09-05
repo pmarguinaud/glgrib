@@ -7,7 +7,7 @@ glgrib_string & glgrib_string::operator= (const glgrib_string & str)
 {
   if (this != &str)
     {
-      cleanup ();
+      clear ();
       if (str.ready)
         {
           if (d.shared)
@@ -17,7 +17,7 @@ glgrib_string & glgrib_string::operator= (const glgrib_string & str)
 	    }
 	  else if (d.change)
             {
-              init (str.d.font, str.d.data, str.d.x, str.d.y, str.d.scale, 
+              setup (str.d.font, str.d.data, str.d.x, str.d.y, str.d.scale, 
                     str.d.align, str.d.X, str.d.Y, str.d.Z, str.d.A);
               for (int i =0; i < 4; i++)
                 d.color0[i] = str.d.color0[i];
@@ -36,7 +36,7 @@ glgrib_string & glgrib_string::operator= (const glgrib_string & str)
 
 
 
-void glgrib_string::cleanup ()
+void glgrib_string::clear ()
 {
   if (ready)
     glDeleteVertexArrays (1, &VertexArrayID);
@@ -45,10 +45,10 @@ void glgrib_string::cleanup ()
 
 glgrib_string::~glgrib_string ()
 {
-  cleanup ();
+  clear ();
 }
 
-void glgrib_string::init3D (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
+void glgrib_string::setup3D (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
 	                    const std::vector<float> & _X, const std::vector<float> & _Y,
 	                    const std::vector<float> & _Z, const std::vector<float> & _A,
 	                    float s, align_t _align)
@@ -59,22 +59,22 @@ void glgrib_string::init3D (const_glgrib_font_ptr ff, const std::vector<std::str
       _x.push_back (0.0f);
       _y.push_back (0.0f);
     }
-  init (ff, str, _x, _y, s, _align, _X, _Y, _Z, _A);
+  setup (ff, str, _x, _y, s, _align, _X, _Y, _Z, _A);
 }
 
-void glgrib_string::init2D (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
+void glgrib_string::setup2D (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
                             float x, float y, float s, align_t align)
 {
-  init (ff, str, std::vector<float>{x}, std::vector<float>{y}, s, align);
+  setup (ff, str, std::vector<float>{x}, std::vector<float>{y}, s, align);
 }
 
-void glgrib_string::init2D (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
+void glgrib_string::setup2D (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
                             const std::vector<float> & x, const std::vector<float> & y, float s, align_t align)
 {
-  init (ff, str, x, y, s, align);
+  setup (ff, str, x, y, s, align);
 }
 
-void glgrib_string::init (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
+void glgrib_string::setup (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
                           const std::vector<float> & _x, const std::vector<float> & _y, 
                           float s, align_t _align,
 			  const std::vector<float> & _X, const std::vector<float> & _Y,
@@ -218,13 +218,13 @@ void glgrib_string::setupVertexAttributes ()
 }
 
 
-void glgrib_string::init2D (const_glgrib_font_ptr ff, const std::string & str, 
+void glgrib_string::setup2D (const_glgrib_font_ptr ff, const std::string & str, 
                             float x, float y, float s, align_t align)
 {
   std::vector<std::string> _str = {str};
   std::vector<float>       _x   = {x};
   std::vector<float>       _y   = {y};
-  init (ff, _str, _x, _y, s, align);
+  setup (ff, _str, _x, _y, s, align);
 }
 
 void glgrib_string::render (const glgrib_view & view) const

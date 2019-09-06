@@ -784,6 +784,7 @@ public:
   {
     DESC (on, Activate colorbar);
     INCLUDE (font);
+    DESC (levels, Colorbar levels);
     DESC (format, "Format (sprintf) use to display numbers");
     DESC (position.xmin, Colorbar position);
     DESC (position.xmax, Colorbar position); 

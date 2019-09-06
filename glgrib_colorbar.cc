@@ -38,24 +38,6 @@ void glgrib_colorbar::setup (const glgrib_options_colorbar & o)
 
   program.compile ();
 
-  glgrib_font_ptr font = new_glgrib_font_ptr (opts.font);
-
-  std::vector<std::string> str;
-  std::vector<float> x, y;
-
-  char tmp[256];
-  sprintf (tmp, opts.format.c_str (), 0.0);
-
-  for (int i = 0; i < opts.levels; i++)
-    {
-      str.push_back (std::string (tmp));
-      x.push_back (opts.position.xmin-0.07f);
-      y.push_back ((opts.position.ymax - opts.position.ymin) * i / (opts.levels - 1) + opts.position.ymin);
-    }
-  label.setup2D (font, str, x, y, opts.font.scale, glgrib_string::SW);
-  label.setForegroundColor (opts.font.color.foreground);
-  label.setBackgroundColor (opts.font.color.background);
-
   ready = true;
 }
 
@@ -65,6 +47,7 @@ void glgrib_colorbar::clear ()
     {
       glDeleteBuffers (1, &elementbuffer);
       glDeleteVertexArrays (1, &VertexArrayID);
+      label.clear ();
     }
   pref = glgrib_palette ();
   ready = false;
@@ -90,17 +73,35 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
 
   if (p1 != pref)
     {
+      label.clear ();
+
       pref = p1;
+
+      float min = pref.min, max = pref.max;
+      int n = opts.levels;
+
+      float d = (max - min) / (n - 1);
+
+      glgrib_font_ptr font = new_glgrib_font_ptr (opts.font);
+     
       std::vector<std::string> str;
-      for (int i = 0; i < opts.levels; i++)
+      std::vector<float> x, y;
+     
+      for (int i = 0; i < n; i++)
         {
+          float val = min + d * i;
           char tmp[32];
-          sprintf (tmp, opts.format.c_str (), pref.min + i * (pref.max - pref.min) / 10.0f);
-	  std::string s (tmp);
+          sprintf (tmp, opts.format.c_str (), val);
+	  std::string s = std::string (tmp);
 	  while (s.length () < 6)
 	    s += " ";
           str.push_back (s);
+          x.push_back (opts.position.xmin-0.07f);
+          y.push_back ((opts.position.ymax - opts.position.ymin) * (val - pref.min) / (pref.max - pref.min) + opts.position.ymin);
         }
+      label.setup2D (font, str, x, y, opts.font.scale, glgrib_string::SW);
+      label.setForegroundColor (opts.font.color.foreground);
+      label.setBackgroundColor (opts.font.color.background);
 
       label.update (str);
     }
@@ -144,6 +145,9 @@ void main ()
   }else{
   color = RGBA0[rank];
   }
+  if(false)
+  if(rank == 0)
+    color = vec4 (1., 1., 1., 1.);
 }
 )CODE",
 R"CODE(

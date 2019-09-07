@@ -114,11 +114,6 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
   glgrib_field_float_buffer_ptr data_u = ld->load (opts.path, slot, &meta_u, 2, 0);
   glgrib_field_float_buffer_ptr data_v = ld->load (opts.path, slot, &meta_v, 2, 1);
 
-  if (opts.palette.name == "default")
-    palette = glgrib_palette::by_meta (meta_u);
-  else
-    palette = glgrib_palette::by_name (opts.palette.name);
-
   geometry = glgrib_geometry_load (ld, opts.path[0]);
 
   glgrib_field_float_buffer_ptr data_n = new_glgrib_field_float_buffer_ptr (geometry->numberOfPoints);
@@ -216,9 +211,8 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
 
   d.vscale = opts.vector.scale * (M_PI / npts) / (meta_n.valmax || 1.0f);
 
-  setPaletteMinMax ();
-  recordPaletteOptions ();
-
+  palette = glgrib_palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue (), meta_u);
+  
   setReady ();
 }
 

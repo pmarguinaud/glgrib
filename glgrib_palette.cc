@@ -16,8 +16,8 @@ static name2palette_t name2palette;
 
 glgrib_palette & glgrib_palette::register_ (const glgrib_palette & p)
 {
-  name2palette.insert (std::pair<std::string, glgrib_palette>(name, p));
-  name2palette_t::iterator it = name2palette.find (name);
+  name2palette.insert (std::pair<std::string, glgrib_palette>(opts.name, p));
+  name2palette_t::iterator it = name2palette.find (opts.name);
   return it->second;
 }
 
@@ -30,7 +30,32 @@ glgrib_palette palette_white_black
     255, 255, 255, 255
   );
 
-glgrib_palette & glgrib_palette::by_name (const std::string & name)
+glgrib_palette glgrib_palette::create 
+        (const glgrib_options_palette & o,  
+         float min, float max,
+         const glgrib_field_metadata & meta)
+{
+  glgrib_palette p;
+
+  if (o.name == "default")
+    {
+      p = create_by_meta (meta);
+    }
+  else
+    {
+      p = create_by_name (o.name);
+      p.opts = o;
+    }
+
+  if (p.opts.min == defaultMin)
+    p.opts.min = min;
+  if (p.opts.max == defaultMax)
+    p.opts.max = max;
+
+  return p;
+}
+
+glgrib_palette & glgrib_palette::create_by_name (const std::string & name)
 {
   name2palette_t::iterator it = name2palette.find (name);
 
@@ -68,7 +93,7 @@ glgrib_palette & glgrib_palette::by_name (const std::string & name)
       rc = SQLITE_OK;
       found = true;
 
-      p.name = name;
+      p.opts.name = name;
     }
   else
     {
@@ -105,16 +130,21 @@ glgrib_palette::glgrib_palette (std::ifstream & fh)
     rgba.push_back (glgrib_rgba ((byte)r, (byte)g, (byte)b, (byte)a));
 }
 
-glgrib_palette & glgrib_palette::next (const glgrib_palette & p)
+glgrib_palette glgrib_palette::next (const glgrib_palette & p, float min, float max)
 {
-  name2palette_t::iterator it = name2palette.find (p.name);
+  name2palette_t::iterator it = name2palette.find (p.opts.name);
   if (it != name2palette.end ())
     it++;
 
   if (it == name2palette.end ())
     it = name2palette.begin ();
   
-  return it->second;
+  glgrib_palette p1 = it->second;
+
+  p1.opts.min = min;
+  p1.opts.max = max;
+
+  return p1;
 }
 
 glgrib_palette palette_zsdiff_big
@@ -206,9 +236,9 @@ bool operator== (const glgrib_palette & p1, const glgrib_palette & p2)
 {
   if (p1.rgba_mis != p2.rgba_mis)
     return false;
-  if (p1.min != p2.min)
+  if (p1.opts.min != p2.opts.min)
     return false;
-  if (p1.max != p2.max)
+  if (p1.opts.max != p2.opts.max)
     return false;
   if (p1.rgba != p2.rgba)
     return false;
@@ -220,7 +250,7 @@ bool operator!= (const glgrib_palette & p1, const glgrib_palette & p2)
   return ! (p1 == p2);
 }
  
-glgrib_palette glgrib_palette::by_meta (const glgrib_field_metadata  & meta)
+glgrib_palette glgrib_palette::create_by_meta (const glgrib_field_metadata  & meta)
 {
   sqlite3 * db = NULL;
   sqlite3_stmt * req = NULL;
@@ -286,9 +316,9 @@ end:
 
 
 
-  glgrib_palette p = glgrib_palette::by_name (pname);
-  p.min = pmin;
-  p.max = pmax;
+  glgrib_palette p = glgrib_palette::create_by_name (pname);
+  p.opts.min = pmin;
+  p.opts.max = pmax;
   return p;
 }
 
@@ -309,9 +339,9 @@ void glgrib_palette::save (const glgrib_field_metadata & meta) const
       TRY (sqlite3_bind_int    (req, 1, meta.discipline));
       TRY (sqlite3_bind_int    (req, 2, meta.parameterCategory));
       TRY (sqlite3_bind_int    (req, 3, meta.parameterNumber));
-      TRY (sqlite3_bind_double (req, 4, min));
-      TRY (sqlite3_bind_double (req, 5, max));
-      TRY (sqlite3_bind_text   (req, 6, name.c_str (), name.length (), NULL));
+      TRY (sqlite3_bind_double (req, 4, opts.min));
+      TRY (sqlite3_bind_double (req, 5, opts.max));
+      TRY (sqlite3_bind_text   (req, 6, opts.name.c_str (), opts.name.length (), NULL));
      
       if ((rc = sqlite3_step (req)) != SQLITE_DONE)
         goto end;

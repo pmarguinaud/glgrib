@@ -30,8 +30,6 @@ public:
   virtual bool use_alpha () { return false; }
   void setPaletteOptions (const glgrib_options_palette &);
   void setNextPalette ();
-  void recordPaletteOptions ();
-  void setPaletteMinMax ();
   void scalePaletteUp (float = 0.025);
   void scalePaletteDown (float = 0.025);
   virtual ~glgrib_field () {}
@@ -85,12 +83,12 @@ public:
   {
     return meta;
   }
-  const glgrib_options_field & getOptions () const { return opts; }
+  const glgrib_options_field & getOptions () const;
   void setScale (float s) { opts.scale = s; }
   const glgrib_palette & getPalette () const;
 protected:
   glgrib_palette palette = palette_cold_hot;
-  glgrib_options_field opts;
+  mutable glgrib_options_field opts;
   std::vector<glgrib_field_metadata> meta;
   std::vector<glgrib_field_float_buffer_ptr> values;
 };

@@ -67,9 +67,9 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
 
   glgrib_palette p1 = p;
   if (! p1.hasMin ())
-    p1.min = valmin;
+    p1.setMin (valmin);
   if (! p1.hasMax ())
-    p1.max = valmax;
+    p1.setMax (valmax);
 
   if (p1 != pref)
     {
@@ -77,7 +77,7 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
 
       pref = p1;
 
-      float min = pref.min, max = pref.max;
+      float min = pref.getMin (), max = pref.getMax ();
       int n = opts.levels;
 
       float d = (max - min) / (n - 1);
@@ -97,7 +97,8 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
 	    s += " ";
           str.push_back (s);
           x.push_back (opts.position.xmin-0.07f);
-          y.push_back ((opts.position.ymax - opts.position.ymin) * (val - pref.min) / (pref.max - pref.min) + opts.position.ymin);
+          y.push_back ((opts.position.ymax - opts.position.ymin) * (val - pref.getMin ()) 
+                        / (pref.getMax () - pref.getMin ()) + opts.position.ymin);
         }
       label.setup2D (font, str, x, y, opts.font.scale, glgrib_string::SW);
       label.setForegroundColor (opts.font.color.foreground);

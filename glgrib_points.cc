@@ -104,7 +104,7 @@ void glgrib_points::render (const glgrib_view & view) const
 
   if (d.opts.palette.name != "none")
     {
-      glgrib_palette palette = glgrib_palette::by_name (d.opts.palette.name);
+      glgrib_palette palette = glgrib_palette::create (d.opts.palette);
       palette.setRGBA255 (program->programID);
       program->set1f ("lcolor0", 0);
     }

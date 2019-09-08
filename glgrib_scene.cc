@@ -83,6 +83,9 @@ void glgrib_scene::display () const
   if (d.opts.scene.date.on)
     d.strdate.render (d.MVP_R);
 
+  if (d.opts.scene.title.on)
+    d.strtitle.render (d.MVP_L);
+
   if (d.opts.scene.test_strxyz.on)
     d.strxyz.render (d.view);
 
@@ -252,6 +255,25 @@ void glgrib_scene::update_date ()
     }
 }
 
+void glgrib_scene::update_title ()
+{
+  if (d.opts.scene.title.on)
+    {
+      glgrib_field * fld = getCurrentField ();
+      if (fld != NULL)
+        {
+          const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
+          if (strtitle != meta[0].term.asString ())
+            {
+              strtitle = d.opts.scene.title.text != "" 
+                       ? d.opts.scene.title.text
+                       : meta[0].getName ();
+              d.strtitle.update (strtitle);
+            }
+        }
+    }
+}
+
 void glgrib_scene::update ()
 {
 
@@ -259,6 +281,7 @@ void glgrib_scene::update ()
   update_light ();
   update_interpolation ();
   update_date ();
+  update_title ();
 
   d.nupdate++;
 
@@ -307,6 +330,7 @@ void glgrib_scene::setup (const glgrib_options & o)
     setFieldOptions (i, d.opts.field[i]);
 
   setDateOptions (d.opts.scene.date);
+  setTitleOptions (d.opts.scene.title);
   setTextOptions (d.opts.scene.text);
   setCitiesOptions (d.opts.cities);
   setColorBarOptions (d.opts.colorbar);
@@ -547,6 +571,22 @@ void glgrib_scene::setDateOptions (const glgrib_options_date & o)
                         d.opts.scene.date.font.scale, glgrib_string::SE);
       d.strdate.setForegroundColor (d.opts.scene.date.font.color.foreground);
       d.strdate.setBackgroundColor (d.opts.scene.date.font.color.background);
+    }
+}
+
+void glgrib_scene::setTitleOptions (const glgrib_options_title & o)
+{
+  strtitle = "";
+  d.opts.scene.title = o;
+  d.strtitle.clear ();
+  if (d.opts.scene.title.on)
+    {
+      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.scene.title.font);
+      d.strtitle.setup2D (font, std::string (20, ' '), d.opts.scene.title.x, 
+                          d.opts.scene.title.y, d.opts.scene.title.font.scale, 
+                          glgrib_string::str2align (d.opts.scene.title.a));
+      d.strtitle.setForegroundColor (d.opts.scene.title.font.color.foreground);
+      d.strtitle.setBackgroundColor (d.opts.scene.title.font.color.background);
     }
 }
 

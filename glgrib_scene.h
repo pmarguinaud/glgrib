@@ -63,6 +63,7 @@ public:
   void update_interpolation ();
   void update_view ();
   void update_date ();
+  void update_title ();
 
   void setCurrentFieldRank (int r) { d.currentFieldRank = r; }
 
@@ -95,7 +96,7 @@ public:
       glgrib_string strmess;
       glgrib_string strdate;
       glgrib_string strxyz;
-      glgrib_string title;
+      glgrib_string strtitle;
       std::vector<glgrib_string> str;
       int nupdate = 0;
       int currentFieldRank = 0;
@@ -103,6 +104,7 @@ public:
       friend class glgrib_scene;
   };
   std::string strdate = "";
+  std::string strtitle = "";
 
   void toggleColorBar ()
   {
@@ -132,6 +134,7 @@ public:
   void setLightOptions (const glgrib_options_light &);
   void setSceneOptions (const glgrib_options_scene &);
   void setCitiesOptions (const glgrib_options_cities &);
+  void setTitleOptions (const glgrib_options_title &);
 
   glgrib_options getOptions () const;
   const glgrib_options_scene & getSceneOptions () const { return d.opts.scene; }

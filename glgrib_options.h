@@ -734,6 +734,26 @@ public:
   glgrib_options_font font;
 };
 
+class glgrib_options_title : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on, "Enable title");
+    DESC (x,  "Coordinates");
+    DESC (y,  "Coordinates");
+    DESC (a,  "Alignment");
+    INCLUDE (font);
+    DESC (text, "Title");
+  }
+  bool on = false;
+  float x = 0.;
+  float y = 1.;
+  std::string a = "NW";
+  std::string text = "";
+  glgrib_options_font font;
+};
+
 class glgrib_options_scene : public glgrib_options_base
 {
 public:
@@ -748,6 +768,7 @@ public:
     INCLUDE (text);
     INCLUDE (image);
     INCLUDE (date);
+    INCLUDE (title);
   }
   struct
   {
@@ -764,6 +785,7 @@ public:
   glgrib_options_date date;
   glgrib_options_text text;
   glgrib_options_image image;
+  glgrib_options_title title;
 };
 
 class glgrib_options_view : public glgrib_options_base

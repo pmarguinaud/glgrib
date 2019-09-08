@@ -259,6 +259,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
           hof.add ("--scene.image"               , [&opts,gwindow]() { gwindow->scene.setImageOptions          (opts.scene.image        );  });
           hof.add ("--scene.text"                , [&opts,gwindow]() { gwindow->scene.setTextOptions           (opts.scene.text         );  });
           hof.add ("--scene.date"                , [&opts,gwindow]() { gwindow->scene.setDateOptions           (opts.scene.date         );  });
+          hof.add ("--scene.title"               , [&opts,gwindow]() { gwindow->scene.setTitleOptions          (opts.scene.title        );  });
           hof.add ("--scene.light"               , [&opts,gwindow]() { gwindow->scene.setLightOptions          (opts.scene.light        );  });
           hof.add ("--scene.lon_at_hour"         , [&opts,gwindow]() { gwindow->scene.setSceneOptions          (opts.scene              );  });
           hof.add ("--scene.rotate_earth"        , [&opts,gwindow]() { gwindow->scene.setSceneOptions          (opts.scene              );  });

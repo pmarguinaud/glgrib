@@ -12,29 +12,6 @@
 #include <map>
 #include <limits>
 
-typedef unsigned char byte;
-
-class glgrib_rgba
-{
-public:
-  glgrib_rgba () {}
-  glgrib_rgba (byte _r, byte _g, byte _b, byte _a) 
-   : r (_r), g (_g), b (_b), a (_a) {}
-  byte r = 255, g = 255, b = 255, a = 255;
-  friend std::ostream & operator << (std::ostream &out, const glgrib_rgba & p)
-  {
-    out << "{" << (int)p.r << ", " << (int)p.g << ", " << (int)p.b << ", " << (int)p.a << "}";
-  }
-  friend bool operator== (const glgrib_rgba & rgba1, const glgrib_rgba & rgba2)
-  {
-    return (rgba1.r == rgba2.r) && (rgba1.g == rgba2.g) && (rgba1.b == rgba2.b) && (rgba1.a == rgba2.a);
-  }
-  friend bool operator!= (const glgrib_rgba & rgba1, const glgrib_rgba & rgba2)
-  {
-    return ! (rgba1 == rgba2);
-  }
-};
-
 class glgrib_palette
 {
 public:
@@ -50,8 +27,8 @@ public:
   const std::string & getName () { return opts.name; }
 
   void save (const glgrib_field_metadata &) const;
-  glgrib_rgba rgba_mis;
-  std::vector<glgrib_rgba> rgba;
+  glgrib_option_color rgba_mis;
+  std::vector<glgrib_option_color> rgba;
   float getMin () const { return opts.min; }
   float getMax () const { return opts.max; }
   bool hasMin () const { return opts.min != defaultMin; }
@@ -66,7 +43,7 @@ public:
   glgrib_palette (const std::string & n, int r, int g, int b, int a,Types... vars)
   {
     glgrib_palette p = glgrib_palette (n, true, vars...);
-    p.rgba_mis = glgrib_rgba (r, g, b, a);
+    p.rgba_mis = glgrib_option_color (r, g, b, a);
     *this = p;
     register_ (p);
   }
@@ -75,7 +52,7 @@ public:
 		  int r, int g, int b, int a, Types... vars)
   {
     glgrib_palette p = glgrib_palette (n, true, vars...);
-    p.rgba_mis = glgrib_rgba (r, g, b, a);
+    p.rgba_mis = glgrib_option_color (r, g, b, a);
     p.opts.min = min_;
     p.opts.max = max_;
     *this = p;
@@ -94,6 +71,8 @@ public:
   void setMin (float min) { opts.min = min; }
   void setMax (float max) { opts.max = max; }
 
+  const std::vector<float> & getValues () const { return opts.values; }
+
 private:
   static glgrib_palette create_by_meta (const glgrib_field_metadata &);
   static glgrib_palette & create_by_name (const std::string &);
@@ -101,9 +80,9 @@ private:
   template <typename T, typename... Types> 
   glgrib_palette (const std::string & n, bool record, T r, T g, T b, T a, Types... vars)
   {
-    rgba.push_back (glgrib_rgba (r, g, b, a));
+    rgba.push_back (glgrib_option_color (r, g, b, a));
     glgrib_palette p = glgrib_palette (n, false, vars...);
-    for (std::vector<glgrib_rgba>::iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
+    for (std::vector<glgrib_option_color>::iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
       rgba.push_back (*it);
     opts.name = n;
   }

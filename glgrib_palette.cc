@@ -39,7 +39,45 @@ glgrib_palette glgrib_palette::create
 
   if (o.name == "default")
     {
-      p = create_by_meta (meta);
+      if (o.colors.size () == 0)
+        {
+          p = create_by_meta (meta);
+        }
+      else
+        {
+          p.opts = o;
+
+          if (p.opts.values.size () == 0)
+            {
+              if (p.opts.min == defaultMin)
+                p.opts.min = min;
+              if (p.opts.max == defaultMax)
+                p.opts.max = max;
+              int n = p.opts.colors.size () + 1;
+              for (int i = 0; i < n; i++)
+                p.opts.values.push_back (p.opts.min + ((p.opts.max - p.opts.min) * i) / (n-1));
+            }
+
+          if (p.opts.min == defaultMin)
+            p.opts.min = o.values.front ();
+          if (p.opts.max == defaultMax)
+            p.opts.max = o.values.back ();
+          p.rgba_mis = glgrib_option_color (0, 0, 0, 0);
+          for (int i = 1, j = 0; i < 256; i++)
+            {
+              float val = (i-1) * (p.opts.max - p.opts.min) / 255 + p.opts.min;
+              while (j < p.opts.values.size ())
+                {
+                  if (val < p.opts.values[j])
+                    break;
+                  j++;
+                }
+              if (j >= p.opts.values.size ())
+                p.rgba.push_back (p.opts.colors.back ());
+              else
+                p.rgba.push_back (p.opts.colors[j-1]);
+            }
+        }
     }
   else
     {
@@ -85,9 +123,9 @@ glgrib_palette & glgrib_palette::create_by_name (const std::string & name)
           if (sscanf (&hexa[8*i], "%2x%2x%2x%2x", &r, &g, &b, &a) != 4)
             throw std::runtime_error ("Cannot parse hexa color");
           if (i == 0)
-            p.rgba_mis = glgrib_rgba ((byte)r, (byte)g, (byte)b, (byte)a);
+            p.rgba_mis = glgrib_option_color (r, g, b, a);
           else
-            p.rgba.push_back (glgrib_rgba ((byte)r, (byte)g, (byte)b, (byte)a));
+            p.rgba.push_back (glgrib_option_color (r, g, b, a));
         }
  
       rc = SQLITE_OK;
@@ -125,9 +163,9 @@ glgrib_palette::glgrib_palette (std::ifstream & fh)
     }
   int r, g, b, a;
   fh >> r >> g >> b >> a;
-  rgba_mis = glgrib_rgba ((byte)r, (byte)g, (byte)b, (byte)a);
+  rgba_mis = glgrib_option_color (r, g, b, a);
   while (fh >> r >> g >> b >> a)
-    rgba.push_back (glgrib_rgba ((byte)r, (byte)g, (byte)b, (byte)a));
+    rgba.push_back (glgrib_option_color (r, g, b, a));
 }
 
 glgrib_palette glgrib_palette::next (const glgrib_palette & p, float min, float max)
@@ -199,7 +237,7 @@ std::ostream & operator << (std::ostream &out, const glgrib_palette & p)
 {
   out << p.rgba_mis << std::endl;
   out << "[";
-  for (std::vector<glgrib_rgba>::const_iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
+  for (std::vector<glgrib_option_color>::const_iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
     out << *it << ",";
   out << "]" << std::endl;
 }
@@ -375,6 +413,10 @@ end:
     sqlite3_close (db);
 
 }
+
+
+
+
 
 
 

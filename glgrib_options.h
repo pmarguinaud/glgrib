@@ -37,6 +37,10 @@ public:
         && (col1.b == col2.b)
         && (col1.a == col2.a);
   }
+  friend bool operator!= (glgrib_option_color const & col1, glgrib_option_color const & col2)
+  {
+    return ! (col1 == col2);
+  } 
 };
 
 class glgrib_option_date
@@ -795,7 +799,8 @@ public:
   {
     DESC (on, Activate colorbar);
     INCLUDE (font);
-    DESC (levels, Colorbar levels);
+    DESC (levels.number, Colorbar number of levels);
+    DESC (levels.values, Colorbar level values);
     DESC (format, "Format (sprintf) use to display numbers");
     DESC (position.xmin, Colorbar position);
     DESC (position.xmax, Colorbar position); 
@@ -805,7 +810,11 @@ public:
   bool on = false;
   glgrib_options_font font = glgrib_options_font ("fonts/16.bmp", 0.02f);
   std::string format = "%6.4g";
-  int levels = 11;
+  struct
+  {
+    int number = 11;
+    std::vector<float> values;
+  } levels;
   struct position
   {
     float xmin = 0.08;

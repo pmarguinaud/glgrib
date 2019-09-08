@@ -7,6 +7,9 @@ use Data::Dumper;
 my $auto = $ENV{AUTO};
 my $comp = $ENV{COMP};
 
+system ('make', 'glgrib.x')
+  && die;
+
 (my $test = shift (@ARGV)) =~ s/^test_//o;
 my $exec = shift (@ARGV);
 

@@ -78,18 +78,38 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
       pref = p1;
 
       float min = pref.getMin (), max = pref.getMax ();
-      int n = opts.levels;
-
-      float d = (max - min) / (n - 1);
 
       glgrib_font_ptr font = new_glgrib_font_ptr (opts.font);
      
       std::vector<std::string> str;
       std::vector<float> x, y;
-     
-      for (int i = 0; i < n; i++)
+
+      std::vector<float> values;
+
+      const std::vector<float> & values_pal = pref.getValues ();
+
+      if (opts.levels.values.size () > 0)
         {
-          float val = min + d * i;
+          for (int i = 0; i < opts.levels.values.size (); i++)
+            if ((min <= opts.levels.values[i]) && (opts.levels.values[i] <= max))
+              values.push_back (opts.levels.values[i]);
+        }
+      else if (values_pal.size () > 0)
+        {
+          for (int i = 0; i < values_pal.size (); i++)
+            if ((min <= values_pal[i]) && (values_pal[i] <= max))
+              values.push_back (values_pal[i]);
+        }
+      else
+        {
+          float d = (max - min) / (opts.levels.number - 1);
+          for (int i = 0; i < opts.levels.number; i++)
+            values.push_back (min + d * i);
+        }
+     
+      for (int i = 0; i < values.size (); i++)
+        {
+          float val = values[i];
           char tmp[32];
           sprintf (tmp, opts.format.c_str (), val);
 	  std::string s = std::string (tmp);

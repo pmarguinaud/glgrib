@@ -57,72 +57,6 @@ glgrib_shell::glgrib_shell ()
   rl_attempted_completion_function = shell_completion;
 }
 
-static std::string next_token (std::string * line)
-{
-  while (line->length () && (*line)[0] == ' ')
-    *line = line->substr (1);
-
-  std::string token = std::string ("");
-
-  int q = 0, qq = 0;
-
-  while (line->length ())
-    {
-      char c = (*line)[0];
-      *line = line->substr (1);
-
-
-      if ((qq == 0) && (q == 0))
-        {
-          if (c == ' ')
-            break;
-          if (c == '"')
-            {
-              qq = 1;
-              goto cont;
-            }
-          if (c == '\'')
-            {
-              q = 1;
-              goto cont;
-            }
-        }
-      else
-        {
-          if ((c == '"') && (qq == 1))
-            {
-              qq = 0;
-              goto cont;
-            }
-          if ((c == '\'') && (q == 1))
-            {
-              q = 0;
-              goto cont;
-            }
-        }
-
-      if (c == '\\')
-        {
-          if (line->length ())
-            {
-              c = (*line)[0];
-              *line = line->substr (1);
-            }
-          else
-            throw std::runtime_error (std::string ("Stray '\\'"));
-        }
-      token.push_back (c);
-
-cont:
-      continue;
-    }
-
-  if (qq || q)
-    throw std::runtime_error (std::string ("Unterminated character string"));
-
-  return token;
-}
-
 static void help ()
 {
   std::cout << "Unknown command" << std::endl;
@@ -139,7 +73,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
 
   try 
     {
-      cmd = next_token (&line);
+      cmd = glgrib_options_parser::next_token (&line);
 
       if (cmd == "")
         return;
@@ -148,7 +82,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
      
       while (1)
         {
-          std::string arg = next_token (&line);
+          std::string arg = glgrib_options_parser::next_token (&line);
           if (arg == "") 
             break;
           if (arg[0] == '#')

@@ -7,6 +7,7 @@
 #include <time.h>
 #include <math.h>
 #include <map>
+#include <list>
 
 float glgrib_options_palette::defaultMin = glgrib_palette::defaultMin;
 float glgrib_options_palette::defaultMax = glgrib_palette::defaultMax;
@@ -33,19 +34,17 @@ template <> std::string option_tmpl_list<std::string>        ::asString () const
 }
 template <> std::string option_tmpl     <bool>               ::type () { return std::string ("BOOLEAN"); }
 
-template <> void option_tmpl<bool>::set (const char * v)
+template <> void option_tmpl<bool>::set ()
 {
-  if (v != NULL)
-    throw std::runtime_error (std::string ("Option ") + name + std::string (" does not take any value"));
   *value = true;
 }
 
-template <> void option_tmpl<std::string>::set (const char * v)
+template <> void option_tmpl<std::string>::set (const std::string & v)
 {
   *value = std::string (v);
 }
 
-template <> void option_tmpl_list<std::string>::set (const char * v)
+template <> void option_tmpl_list<std::string>::set (const std::string & v)
 {
   value->push_back (std::string (v));
 }
@@ -81,9 +80,9 @@ std::istream & operator >> (std::istream & in, glgrib_option_date & date)
   return in;
 }
 
-void glgrib_option_date::parse (glgrib_option_date * date, const char * v)
+void glgrib_option_date::parse (glgrib_option_date * date, const std::string & v)
 {
-  sscanf (v, "%4ld/%2ld/%2ld_%2ld:%2ld:%2ld", &date->year, 
+  sscanf (v.c_str (), "%4ld/%2ld/%2ld_%2ld:%2ld:%2ld", &date->year, 
           &date->month, &date->day, &date->hour, &date->minute, &date->second);
 }
 
@@ -144,9 +143,9 @@ std::istream & operator >> (std::istream & in, glgrib_option_color & color)
   return in;
 }
 
-void glgrib_option_color::parse (glgrib_option_color * value, const char * v)
+void glgrib_option_color::parse (glgrib_option_color * value, const std::string & v)
 {
-  if ((v[0] == '#') && (strlen (v) == 7 || strlen (v) == 9))
+  if ((v[0] == '#') && (v.length () == 7 || v.length () == 9))
     {
       *value = color_by_hexa (v);
     }
@@ -156,17 +155,17 @@ void glgrib_option_color::parse (glgrib_option_color * value, const char * v)
     }
 }
 
-glgrib_option_color glgrib_option_color::color_by_hexa (const char * name)
+glgrib_option_color glgrib_option_color::color_by_hexa (const std::string & name)
 {
   glgrib_option_color color;
-  if (strlen (name) == 7)
+  if (name.length () == 7)
     {
-      if (sscanf (name, "#%2x%2x%2x", &color.r, &color.g, &color.b) != 3)
+      if (sscanf (name.c_str (), "#%2x%2x%2x", &color.r, &color.g, &color.b) != 3)
         goto error;
     }
-  else if (strlen (name) == 9)
+  else if (name.length () == 9)
     {
-      if (sscanf (name, "#%2x%2x%2x%2x", &color.r, &color.g, &color.b, &color.a) != 4)
+      if (sscanf (name.c_str (), "#%2x%2x%2x%2x", &color.r, &color.g, &color.b, &color.a) != 4)
         goto error;
     }
   else
@@ -189,22 +188,21 @@ static name2hexa_t name2hexa =
    {"black", "#000000"}
 };
 
-glgrib_option_color glgrib_option_color::color_by_name (const char * n)
+glgrib_option_color glgrib_option_color::color_by_name (const std::string & n)
 {
   glgrib_option_color color;
 
-  int len = strlen (n);
-  char name[len+1];
+  int len = n.length ();
+  std::string name;
 
   if ((len > 3) && (n[len-3] == '#') && isalpha (n[len-2]) && isalpha (n[len-1]))
     {
-      strncpy (name, n, len-3);
-      name[len-3] = '\0';
-      sscanf (name+len-2, "%2x", &color.a);
+      name = n.substr (0, len-3);
+      sscanf (name.substr (len-2).c_str (), "%2x", &color.a);
     }
   else
     {
-      strcpy (name, n);
+      name = n;
     }
 
 
@@ -220,7 +218,7 @@ glgrib_option_color glgrib_option_color::color_by_name (const char * n)
 #define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
   TRY (sqlite3_open (glgrib_resolve ("glgrib.db").c_str (), &db));
   TRY (sqlite3_prepare_v2 (db, "SELECT hexa FROM COLORS WHERE name = ?;", -1, &req, 0));
-  TRY (sqlite3_bind_text (req, 1, name, strlen (name), NULL));
+  TRY (sqlite3_bind_text (req, 1, name.c_str (), name.length (), NULL));
 
   if ((rc = sqlite3_step (req)) == SQLITE_ROW)
     {
@@ -252,17 +250,118 @@ end:
   return color;
 }
 
-bool glgrib_options_parser::parse (int argc, const char * argv[])
+std::string glgrib_options_parser::next_token (std::string * line)
 {
+  while (line->length () && (*line)[0] == ' ')
+    *line = line->substr (1);
+
+  std::string token = std::string ("");
+
+  int q = 0, qq = 0;
+
+  while (line->length ())
+    {
+      char c = (*line)[0];
+      *line = line->substr (1);
+
+
+      if ((qq == 0) && (q == 0))
+        {
+          if (c == ' ')
+            break;
+          if (c == '"')
+            {
+              qq = 1;
+              goto cont;
+            }
+          if (c == '\'')
+            {
+              q = 1;
+              goto cont;
+            }
+        }
+      else
+        {
+          if ((c == '"') && (qq == 1))
+            {
+              qq = 0;
+              goto cont;
+            }
+          if ((c == '\'') && (q == 1))
+            {
+              q = 0;
+              goto cont;
+            }
+        }
+
+      if (c == '\\')
+        {
+          if (line->length ())
+            {
+              c = (*line)[0];
+              *line = line->substr (1);
+            }
+          else
+            throw std::runtime_error (std::string ("Stray '\\'"));
+        }
+      token.push_back (c);
+
+cont:
+      continue;
+    }
+
+  if (qq || q)
+    throw std::runtime_error (std::string ("Unterminated character string"));
+
+  return token;
+}
+
+bool glgrib_options_parser::parse (int _argc, const char * _argv[])
+{
+  int argc = _argc;
+  std::list<std::string> argv;
+  for (int i = 1; i < argc; i++)
+    argv.push_back (_argv[i]);
   try
     {
       glgrib_options_parser_detail::option_base * opt = NULL;
 
-      for (int iarg = 1; iarg < argc; iarg++)
+      while (argv.size () > 0)
         {
-          std::string arg (argv[iarg]);
+          std::list<std::string>::iterator it = argv.begin ();
+          std::string arg = *it;
+          argv.pop_front ();
+          int len = arg.length ();
 
-          if (arg == std::string ("}-")) // Close option group
+          // Options read from file
+          if ((len > 4) && (arg.substr (0, 3) == "--{") && (arg[len-1] == '}'))
+            {
+              const std::string include = arg.substr (3, len-4);
+              std::list<std::string> ll;
+              std::ifstream fp (include);
+              if (! fp)
+                throw std::runtime_error (std::string ("Cannot open file `") 
+                      + include + std::string ("' for reading"));
+              std::string line;
+              while (std::getline (fp, line))
+                {
+                  while (1)
+                    {
+                      std::string token = next_token (&line);
+                      if (token == "")
+                        break;
+                      ll.push_back (token);
+                    }
+                }
+              while (ll.size ())
+                {
+                  argv.push_front (ll.back ());
+                  ll.pop_back ();
+                }
+
+              continue;
+            }
+          else if (arg == std::string ("}-")) // Close option group
             {
               ctx.pop_back ();
             }
@@ -301,7 +400,7 @@ bool glgrib_options_parser::parse (int argc, const char * argv[])
                       opt = name2option[arg];
                       opt->clear (); // Clear option; this means that if options appears several times, then the last setting is taken into account
                       if (! opt->has_arg ())
-                        opt->set (NULL);
+                        opt->set ();
                     }
                   else if (arg.substr (arg.length () - 4, 4) == ".off")
                     {
@@ -326,7 +425,7 @@ bool glgrib_options_parser::parse (int argc, const char * argv[])
             }
           else
             {
-              opt->set (argv[iarg]);
+              opt->set (arg);
             }
 
         }

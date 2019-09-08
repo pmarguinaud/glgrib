@@ -15,9 +15,9 @@
 class glgrib_option_color
 {
 public:
-  static glgrib_option_color color_by_name (const char *);
-  static glgrib_option_color color_by_hexa (const char *);
-  static void parse (glgrib_option_color *, const char *);
+  static glgrib_option_color color_by_name (const std::string &);
+  static glgrib_option_color color_by_hexa (const std::string &);
+  static void parse (glgrib_option_color *, const std::string &);
 
   glgrib_option_color () {}
   glgrib_option_color (int _r, int _g, int _b, int _a = 255) : r (_r), g (_g), b (_b), a (_a) {}
@@ -42,7 +42,7 @@ public:
 class glgrib_option_date
 {
 public:
-  static void parse (glgrib_option_date *, const char *);
+  static void parse (glgrib_option_date *, const std::string &);
   glgrib_option_date () {}
   glgrib_option_date (int _year, int _month, int _day, int _hour, int _minute, int _second) : 
     year (_year), month (_month), day (_day), hour (_hour), minute (_minute), second (_second) {}
@@ -74,7 +74,10 @@ namespace glgrib_options_parser_detail
   public:
     option_base (const std::string & n, const std::string & d) : name (n), desc (d) {}
     virtual int has_arg () const { return 1; }
-    virtual void set (const char *) = 0;
+    virtual void set (const std::string &) 
+    { throw std::runtime_error (std::string ("Set method is not defined")); }
+    virtual void set () 
+    { throw std::runtime_error (std::string ("Set method is not defined")); }
     std::string name;
     std::string desc;
     virtual std::string type ()  = 0;
@@ -91,7 +94,10 @@ namespace glgrib_options_parser_detail
     option_tmpl (const std::string & n, const std::string & d, T * v = NULL) : option_base (n, d), value (v) {}
     T * value = NULL;
     std::string asString () const { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
-    void set (const char * v)  
+    void set ()
+    {
+    }
+    void set (const std::string & v)  
     {   
       try 
         {
@@ -135,7 +141,7 @@ namespace glgrib_options_parser_detail
         ss << (*it) << " ";
       return std::string (ss.str ());
     }
-    void set (const char * v)  
+    void set (const std::string & v)  
     {   
       try 
         {
@@ -179,9 +185,9 @@ namespace glgrib_options_parser_detail
   template <> std::string option_tmpl_list<std::string>        ::type ();
   template <> std::string option_tmpl_list<std::string>        ::asString () const;
   template <> std::string option_tmpl     <bool>               ::type ();
-  template <> void option_tmpl     <bool>::set        (const char *);
-  template <> void option_tmpl_list<std::string>::set (const char *);
-  template <> void option_tmpl     <std::string>::set (const char *);
+  template <> void option_tmpl     <bool>::set        ();
+  template <> void option_tmpl_list<std::string>::set (const std::string &);
+  template <> void option_tmpl     <std::string>::set (const std::string &);
   template <> void option_tmpl<bool>::clear ();
   template <> std::string option_tmpl<bool>::asString () const;
   template <> int option_tmpl<bool>::has_arg () const;
@@ -217,6 +223,7 @@ public:
 class glgrib_options_parser : public glgrib_options_callback
 {
 public:
+  static std::string next_token (std::string *);
   static void print (class glgrib_options &);
   bool parse (int, const char * []);
   void show_help ();
@@ -404,10 +411,14 @@ public:
     DESC (name,        Palette name);                              
     DESC (min,         Palette min value);                              
     DESC (max,         Palette max value);                              
+    DESC (values,      Palette values);
+    DESC (colors,      Palette colors);
   }
   string name = "default";
   float min = defaultMin;
   float max = defaultMax;
+  std::vector<float> values;
+  std::vector<glgrib_option_color> colors;
 };
 
 class glgrib_options_field : public glgrib_options_base

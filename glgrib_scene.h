@@ -95,6 +95,7 @@ public:
       glgrib_string strmess;
       glgrib_string strdate;
       glgrib_string strxyz;
+      glgrib_string title;
       std::vector<glgrib_string> str;
       int nupdate = 0;
       int currentFieldRank = 0;

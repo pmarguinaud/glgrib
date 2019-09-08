@@ -62,21 +62,58 @@ glgrib_palette glgrib_palette::create
             p.opts.min = o.values.front ();
           if (p.opts.max == defaultMax)
             p.opts.max = o.values.back ();
+
           p.rgba_mis = glgrib_option_color (0, 0, 0, 0);
-          for (int i = 1, j = 0; i < 256; i++)
+
+
+          if (p.opts.values.size () == p.opts.colors.size ())
             {
-              float val = (i-1) * (p.opts.max - p.opts.min) / 255 + p.opts.min;
-              while (j < p.opts.values.size ())
+              for (int i = 1, j = 0; i < 256; i++)
                 {
-                  if (val < p.opts.values[j])
-                    break;
-                  j++;
+                  float val = (i-1) * (p.opts.max - p.opts.min) / 255 + p.opts.min;
+                  while (j < p.opts.values.size ())
+                    {
+                      if (val < p.opts.values[j])
+                        break;
+                      j++;
+                    }
+                  if (j >= p.opts.values.size ())
+                    p.rgba.push_back (p.opts.colors.back ());
+                  else if (j == 0)
+                    p.rgba.push_back (p.opts.colors.front ());
+                  else
+                    {
+                      glgrib_option_color c;
+                      int ia = j-1, ib = j+0;
+                      float vala = p.opts.values[ia], valb = p.opts.values[ib];
+                      float b = (val - vala) / (valb - vala), a = 1.0 - b;
+                      c.r = a * p.opts.colors[ia].r + b * p.opts.colors[ib].r;
+                      c.g = a * p.opts.colors[ia].g + b * p.opts.colors[ib].g;
+                      c.b = a * p.opts.colors[ia].b + b * p.opts.colors[ib].b;
+                      c.a = a * p.opts.colors[ia].a + b * p.opts.colors[ib].a;
+                      p.rgba.push_back (c);
+                    }
                 }
-              if (j >= p.opts.values.size ())
-                p.rgba.push_back (p.opts.colors.back ());
-              else
-                p.rgba.push_back (p.opts.colors[j-1]);
             }
+          else
+            {
+              for (int i = 1, j = 0; i < 256; i++)
+                {
+                  float val = (i-1) * (p.opts.max - p.opts.min) / 255 + p.opts.min;
+                  while (j < p.opts.values.size ())
+                    {
+                      if (val < p.opts.values[j])
+                        break;
+                      j++;
+                    }
+                  if (j >= p.opts.values.size ())
+                    p.rgba.push_back (p.opts.colors.back ());
+                  else
+                    p.rgba.push_back (p.opts.colors[j-1]);
+                }
+             }
+
+
         }
     }
   else

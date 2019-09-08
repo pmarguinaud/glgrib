@@ -215,6 +215,9 @@ test_optionsfile:
 	$(RUNTEST) --{testdata/options.list}
 
 test_palette_values:
-	$(RUNTEST) --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03  --field[0].palette-{ --colors '#00000000' '#008bff' '#01f8e9' '#05cf66' '#34c00c' '#b6e904' '#ffe600' '#ffb500' '#ff6900' '#ff0f00' '#b3003e' '#570088' --values 0 2 6 10 14 18 22 26 30 34 38 42   }- --colorbar.on --window.width 1200
+	$(RUNTEST) --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03  --field[0].palette-{ --colors '#00000000' '#008bff' '#01f8e9' '#05cf66' '#34c00c' '#b6e904' '#ffe600' '#ffb500' '#ff6900' '#ff0f00' '#b3003e' '#570088' --values 0 2 6 10 14 18 22 26 30 34 38 42 46 }- --colorbar.on --window.width 1200
+
+test_palette_values_grad:
+	$(RUNTEST) --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03  --field[0].palette-{ --colors '#00000000' '#008bff' '#01f8e9' '#05cf66' '#34c00c' '#b6e904' '#ffe600' '#ffb500' '#ff6900' '#ff0f00' '#b3003e' '#570088' --values 0 2 6 10 14 18 22 26 30 34 38 42 }- --colorbar.on --window.width 1200
 
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_novalue test_missingvalue test_aro test_guyane test_vector test_small_aro test_wind_arp test_vector_glob25 test_wind_glob25 test_wind_t1798 test_vector_t1798 test_contour1 test_contour2 test_contour3 test_contour_stretched test_contour_latlon1 test_contour_latlon2 test_contour_latlon3 test_contour_latlon4 test_contour_aro1 test_contour_aro2 test_fill test_dashed1 test_dashed2 test_dashed3 test_travelling test_strxyz test_interpolation test_background test_text test_fa test_select_grib test_scalar_diff test_contour_diff test_mercator test_image test_shell test_mapscale test_shell_batch test_cities

@@ -259,17 +259,22 @@ void glgrib_scene::update_title ()
 {
   if (d.opts.scene.title.on)
     {
+      std::string title = d.opts.scene.title.text;
       glgrib_field * fld = getCurrentField ();
-      if (fld != NULL)
+      if ((fld != NULL) && (title == ""))
         {
           const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
-          if (strtitle != meta[0].term.asString ())
-            {
-              strtitle = d.opts.scene.title.text != "" 
-                       ? d.opts.scene.title.text
-                       : meta[0].getName ();
-              d.strtitle.update (strtitle);
-            }
+          title = meta[0].getName ();
+	}
+      if (strtitle != title)
+        {
+          d.strtitle.clear ();
+          glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.scene.title.font);
+          d.strtitle.setup2D (font, title, d.opts.scene.title.x, 
+                              d.opts.scene.title.y, d.opts.scene.title.font.scale, 
+                              glgrib_string::str2align (d.opts.scene.title.a));
+          d.strtitle.setForegroundColor (d.opts.scene.title.font.color.foreground);
+          d.strtitle.setBackgroundColor (d.opts.scene.title.font.color.background);
         }
     }
 }
@@ -581,12 +586,6 @@ void glgrib_scene::setTitleOptions (const glgrib_options_title & o)
   d.strtitle.clear ();
   if (d.opts.scene.title.on)
     {
-      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.scene.title.font);
-      d.strtitle.setup2D (font, std::string (20, ' '), d.opts.scene.title.x, 
-                          d.opts.scene.title.y, d.opts.scene.title.font.scale, 
-                          glgrib_string::str2align (d.opts.scene.title.a));
-      d.strtitle.setForegroundColor (d.opts.scene.title.font.color.foreground);
-      d.strtitle.setBackgroundColor (d.opts.scene.title.font.color.background);
     }
 }
 

@@ -39,7 +39,7 @@ void glgrib_lines::setup (const glgrib_options_lines & o,
                          &numberOfLines, &xyz, &ind, mask, code);
   else
      glgrib_shapelib::read (glgrib_resolve (opts.path), &numberOfPoints, 
-                            &numberOfLines, &xyz, &ind);
+                            &numberOfLines, &xyz, &ind, opts.hash);
 
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz.data ());
   elementbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfLines * sizeof (unsigned int), ind.data ());

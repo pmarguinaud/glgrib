@@ -524,7 +524,9 @@ public:
     DESC (color,              Coastlines color);
     DESC (scale,              Coastlines scale);
     DESC (format,             Input format);
+    DESC (hash,               Key/values to match in dBase file when present);
   }
+  std::vector<std::string> hash;
   string path;
   string format = "gshhg";
   glgrib_option_color color;

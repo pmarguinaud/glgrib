@@ -1,4 +1,0 @@
-coastlines/france/paot_ctxt_cours_deau.shp filter=lfs diff=lfs merge=lfs -text
-coastlines/france/paot_ctxt_cours_deau.shx filter=lfs diff=lfs merge=lfs -text
-coastlines/france/paot_ctxt_cours_deau.dbf filter=lfs diff=lfs merge=lfs -text
-coastlines/france/paot_ctxt_cours_deau.prj filter=lfs diff=lfs merge=lfs -text

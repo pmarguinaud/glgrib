@@ -1,6 +1,14 @@
 #ifndef _GLGRIB_DBASE
 #define _GLGRIB_DBASE
 
+#include <map>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <stdexcept>
+
 class glgrib_dbase
 {
 public:
@@ -45,12 +53,12 @@ public:
     
      void read (FILE * fp)
      {
-       _read(name,       11, fp);
-       _read(&type,       1, fp);
-       _read(&data_ptr,   4, fp);
-       _read(&length,     1, fp);
-       _read(&dec_point,  1, fp);
-       _read(padding,    14, fp);
+       _read (name,       11, fp);
+       _read (&type,       1, fp);
+       _read (&data_ptr,   4, fp);
+       _read (&length,     1, fp);
+       _read (&dec_point,  1, fp);
+       _read (padding,    14, fp);
      }
   };
 
@@ -72,69 +80,25 @@ public:
     }
   private:
     map_t * map = NULL;
-    friend class dbase;
+    friend class glgrib_dbase;
   };
 
-  static std::string trim (const std::string & str)
+  void convert2sqlite (const std::string &);
+
+  bool open (const std::string &);
+
+  bool read (record_t *);
+
+  ~glgrib_dbase ()
   {
-    int i, j;
-    for (i = 0; i < str.length (); i++)
-      if (str[i] != ' ')
-        break;
-    for (j = str.length ()-1; j >= 0; j--)
-      if (str[j] != ' ')
-        break;
-    if (i > j)
-      return std::string ("");
-    return str.substr (i, j-i+1);
+    close ();
   }
 
-  bool open (const std::string & path)
-  {
-    fp = fopen ((path + ".dbf").c_str (), "r");
-    if (fp == NULL)
-      return false;
-    header.read (fp);
-    int n = (header.length - 1)/32 - 1;
-
-    fields.resize (n);
-
-    for (int i = 0; i < n; i++)
-      {
-        fields[i].read (fp);
-        std::string name = std::string ((char *)fields[i].name);
-        map.add (trim (name), i);
-      }
-
-    fseek (fp, header.length, SEEK_SET);
-
-    return true;
-  }
-
-  bool read (record_t * record)
-  {
-    record->clear ();
-    if (count >= header.count)
-      return false;
-
-    count++;
-    record->map = &map;
-
-    char tmp[header.record_length], * ptr = &tmp[0];
-    _read (tmp, header.record_length, fp);
-    for (int i = 0; i < fields.size (); i++)
-      {
-        std::string str (ptr, fields[i].length);
-        record->push_back (trim (str));
-        ptr += fields[i].length;
-      }
-    return true;
-  }
-
-  ~dbase ()
+  void close ()
   {
     if (fp != NULL)
       fclose (fp);
+    count = 0;
     fp = NULL;
   }
 

@@ -524,9 +524,9 @@ public:
     DESC (color,              Coastlines color);
     DESC (scale,              Coastlines scale);
     DESC (format,             Input format);
-    DESC (hash,               Key/values to match in dBase file when present);
+    DESC (selector,           Selector);
   }
-  std::vector<std::string> hash;
+  std::string selector;
   string path;
   string format = "gshhg";
   glgrib_option_color color;
@@ -983,7 +983,7 @@ public:
     INCLUDE (lines);
   }
   bool on = false;
-  glgrib_options_lines lines = glgrib_options_lines ("coastlines/departements-20180101", "shapeline");
+  glgrib_options_lines lines = glgrib_options_lines ("coastlines/departements-20180101.shp", "shapeline");
 };
 
 class glgrib_options_shell : public glgrib_options_base

@@ -9,7 +9,7 @@ namespace glgrib_shapelib
 {
 extern void read (const std::string &, int *, unsigned int *, 
                   std::vector<float> *, std::vector<unsigned int> *,
-                  const std::vector<std::string> &);
+                  const std::string &);
 };
 
 #endif

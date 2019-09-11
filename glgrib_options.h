@@ -771,6 +771,7 @@ public:
     INCLUDE (image);
     INCLUDE (date);
     INCLUDE (title);
+    DESC (select.field, Rank of field to select);
   }
   struct
   {
@@ -788,6 +789,10 @@ public:
   glgrib_options_text text;
   glgrib_options_image image;
   glgrib_options_title title;
+  struct
+  {
+    int field = 0;
+  } select;
 };
 
 class glgrib_options_view : public glgrib_options_base

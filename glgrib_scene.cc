@@ -355,6 +355,8 @@ void glgrib_scene::setup (const glgrib_options & o)
       d.strxyz.setForegroundColor (d.opts.scene.date.font.color.foreground);
     }
 
+  d.currentFieldRank = d.opts.scene.select.field;
+
   resize ();
 }
 

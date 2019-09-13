@@ -434,6 +434,7 @@ public:
     DESC (scale,               Scales to be applied to fields);        
     DESC (no_value_pointer.on, Do not keep field values in memory);    
     DESC (diff.on,             Show field difference);
+    DESC (wireframe.on,        Display field as wireframe);
     INCLUDE (palette);
     INCLUDE (vector);
     INCLUDE (contour);
@@ -444,6 +445,10 @@ public:
   {
     bool on = false;
   } no_value_pointer;
+  struct 
+  {
+    bool on = false;
+  } wireframe;
   struct
   {
     bool on = false;

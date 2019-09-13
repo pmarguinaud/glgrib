@@ -85,6 +85,7 @@ public:
 
   void setShared (bool);
   void setChange (bool);
+  bool isReady () const { return ready; }
 
 private:
   GLuint VertexArrayID;

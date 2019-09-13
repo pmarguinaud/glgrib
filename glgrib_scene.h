@@ -69,7 +69,7 @@ public:
 
   void setViewport (int, int);
 
-  void setMessage (const std::string & mess) { d.strmess.update (mess); }
+  void setMessage (const std::string & mess) { if (d.strmess.isReady ()) d.strmess.update (mess); }
   void resize ();
   const glgrib_option_date * get_date ();
 

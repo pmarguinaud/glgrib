@@ -119,7 +119,14 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   program->set1f ("palmin", palette.getMin ());
   program->set1f ("palmax", palette.getMax ());
 
+  if (opts.wireframe.on)
+    glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+
   glgrib_field::render (view, light);
+
+  if (opts.wireframe.on)
+    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+
 }
 
 glgrib_field_scalar::~glgrib_field_scalar ()

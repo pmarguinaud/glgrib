@@ -119,7 +119,7 @@ int glgrib_view::get_xyz_from_screen_coords (float xpos, float ypos, glm::vec3 *
 
 float glgrib_view::frac_to_dist_at_nadir (float frac) const
 {
-  return pixel_to_dist_at_nadir (width * frac);
+  return pixel_to_dist_at_nadir (height * frac);
 }
 
 float glgrib_view::pixel_to_dist_at_nadir (float pixels) const

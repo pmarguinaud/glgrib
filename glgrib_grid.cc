@@ -98,12 +98,6 @@ void glgrib_grid::render (const glgrib_view & view, const glgrib_options_light &
   program->set1i ("do_alpha", 0);
   program->set1f ("scale", opts.scale);
 
-  glBindVertexArray (VertexArrayID);
-  glEnable (GL_PRIMITIVE_RESTART);
-  glPrimitiveRestartIndex (0xffffffff);
-  glDrawElements (GL_LINE_STRIP, numberOfLines, GL_UNSIGNED_INT, NULL);
-  glDisable (GL_PRIMITIVE_RESTART);
-  glBindVertexArray (0);
-
+  glgrib_polygon::render (view, light);
 }
 

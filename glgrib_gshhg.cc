@@ -91,12 +91,6 @@ void glgrib_gshhg::read (const std::string & path, int * numberOfPoints,
 
   int ip = 0;
 
-  *numberOfPoints = 0;
-  *numberOfLines = 0;
-
-
-  bool closed = false;
-
   const float millideg2rad = M_PI / (1000000. * 180.);
 
   FILE * fp = fopen (path.c_str (), "r");
@@ -119,18 +113,6 @@ void glgrib_gshhg::read (const std::string & path, int * numberOfPoints,
       
       if (ok)
         {
-          if (closed)
-            {
-              *numberOfPoints += h.n;
-              *numberOfLines += h.n;
-            }
-          else
-            {
-              *numberOfPoints += h.n;
-              *numberOfLines += (h.n - 1);
-            }
-
-          int ip0 = ip;
           for (int i = 0; i < h.n; i++)
             {
               float lon = millideg2rad * gpl[i].x;
@@ -142,31 +124,19 @@ void glgrib_gshhg::read (const std::string & path, int * numberOfPoints,
               xyz->push_back (coslon * coslat);
               xyz->push_back (sinlon * coslat);
               xyz->push_back (         sinlat);
-
-              if (closed)
-                {
-                  ind->push_back (ip);
-                  if (i == h.n - 1)
-                    ind->push_back (ip0);
-                  else
-                    ind->push_back (ip + 1);
-                }
-              else
-                {
-                  if (i != h.n - 1)
-                    {
-                      ind->push_back (ip);
-                      ind->push_back (ip + 1);
-                    }
-                }
-               ip++;
+              ind->push_back (ip);
+              ip++;
             }
+          ind->push_back (0xffffffff);
         }
 
       if (feof (fp))
         break;
 
     }   
+
+  *numberOfPoints = xyz->size () / 3;
+  *numberOfLines = ind->size ();
 
   fclose (fp);
   fp = NULL;

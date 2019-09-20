@@ -37,9 +37,6 @@ void glgrib_shapelib::read (const std::string & path, int * numberOfPoints,
   int ntype, nentities;
   SHPGetInfo (fp, &nentities, &ntype, minb, maxb);
 
-  *numberOfLines = 0;
-  *numberOfPoints = 0;
-
   std::vector<int> list;
 
   if (selector != "")
@@ -83,7 +80,7 @@ end:
         list.push_back (i);
     }
 
-  int count = -1;
+  int count = 0;
   for (int k = 0; k < list.size (); k++)
     {
       int i = list[k];
@@ -113,6 +110,8 @@ end:
               newpart = true;
             }
 
+          if (newpart)
+            ind->push_back (0xffffffff);
 
           float lon = shape->padfX[j] * deg2rad; 
           float lat = shape->padfY[j] * deg2rad;
@@ -125,20 +124,9 @@ end:
           xyz->push_back (coslon * coslat);
           xyz->push_back (sinlon * coslat);
           xyz->push_back (         sinlat);
+          ind->push_back (count);
 
-          (*numberOfPoints)++;
-
-          if (newpart)
-            {
-              count++;
-            }
-          else
-            {
-              ind->push_back (count); count++;
-              ind->push_back (count);
-              (*numberOfLines)++;
-            }
-
+          count++;
 
         }
     
@@ -149,6 +137,9 @@ end:
     }
 
   SHPClose (fp);
+
+  *numberOfPoints = xyz->size () / 3;
+  *numberOfLines  = ind->size ();
 
 
 }

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+#include <vector>
 
 glgrib_grid & glgrib_grid::operator= (const glgrib_grid & other)
 {
@@ -24,8 +25,8 @@ void glgrib_grid::setup (const glgrib_options_grid & o)
 
   numberOfColors = use_alpha () ? 4 : 3;
 
-  float * xyz = NULL;
-  unsigned int * ind = NULL;
+  std::vector<float> xyz;
+  std::vector<unsigned int> ind;
 
   int ip = 0, il = 0;
   numberOfPoints = 0;
@@ -49,13 +50,13 @@ void glgrib_grid::setup (const glgrib_options_grid & o)
               float sinlat = sin (zlat);
               if (pass == 1)
                 {
-                  xyz[ip*3+0] = coslon * coslat;
-                  xyz[ip*3+1] = sinlon * coslat;
-                  xyz[ip*3+2] =          sinlat;
+                  xyz.push_back (coslon * coslat);
+                  xyz.push_back (sinlon * coslat);
+                  xyz.push_back (         sinlat);
                   if (jlat < nlatv)
                     {
-                      ind[il*2+0] = ip;
-                      ind[il*2+1] = ip + 1;
+                      ind.push_back (ip + 0);
+                      ind.push_back (ip + 1);
                       il++;
                     }
                   ip++;
@@ -83,14 +84,14 @@ void glgrib_grid::setup (const glgrib_options_grid & o)
 
               if (pass == 1) 
                 {
-                  xyz[ip*3+0] = coslon * coslat;
-                  xyz[ip*3+1] = sinlon * coslat;
-                  xyz[ip*3+2] =          sinlat;
-                  ind[il*2+0] = ip;
+                  xyz.push_back (coslon * coslat);
+                  xyz.push_back (sinlon * coslat);
+                  xyz.push_back (         sinlat);
+                  ind.push_back (ip + 0);
                   if (jlon < nloen-1)
-                    ind[il*2+1] = ip + 1;
+                    ind.push_back (ip + 1);
                   else
-                    ind[il*2+1] = ip0;
+                    ind.push_back (ip0);
                   ip++;
                   il++;
                 }
@@ -103,21 +104,12 @@ void glgrib_grid::setup (const glgrib_options_grid & o)
             }
         }
 
-      if (pass == 0)
-        {
-          xyz = (float *)malloc (3 * numberOfPoints * sizeof (float));
-          ind = (unsigned int *)malloc (numberOfLines * 2 * sizeof (unsigned int));
-	}
-
     }
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
-  elementbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfLines * sizeof (unsigned int), ind);
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz.data ());
+  elementbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfLines * sizeof (unsigned int), ind.data ());
 
   setupVertexAttributes ();
-
-  free (ind);
-  free (xyz);
 
   setReady ();
 }

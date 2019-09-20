@@ -28,7 +28,7 @@ void glgrib_grid::setup (const glgrib_options_grid & o)
   std::vector<float> xyz;
   std::vector<unsigned int> ind;
 
-  int ip = 0, il = 0;
+  int ip = 0;
 
   const int nlatv = 200, nlonv = 2 * opts.resolution;
   const int nlath = opts.resolution, nlonh = 400;
@@ -46,14 +46,10 @@ void glgrib_grid::setup (const glgrib_options_grid & o)
           xyz.push_back (coslon * coslat);
           xyz.push_back (sinlon * coslat);
           xyz.push_back (         sinlat);
-          if (jlat < nlatv)
-            {
-              ind.push_back (ip + 0);
-              ind.push_back (ip + 1);
-              il++;
-            }
+          ind.push_back (ip);
           ip++;
         }
+      ind.push_back (0xffffffff);
     }
   for (int jlat = 1; jlat < nlath; jlat++)   
     {
@@ -71,21 +67,18 @@ void glgrib_grid::setup (const glgrib_options_grid & o)
           xyz.push_back (coslon * coslat);
           xyz.push_back (sinlon * coslat);
           xyz.push_back (         sinlat);
-          ind.push_back (ip + 0);
-          if (jlon < nloen-1)
-            ind.push_back (ip + 1);
-          else
-            ind.push_back (ip0);
+          ind.push_back (ip);
           ip++;
-          il++;
         }
+      ind.push_back (ip0);
+      ind.push_back (0xffffffff);
     }
 
-  numberOfLines = il;
-  numberOfPoints = ip;
+  numberOfLines = ind.size ();
+  numberOfPoints = xyz.size () / 3;
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz.data ());
-  elementbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfLines * sizeof (unsigned int), ind.data ());
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (xyz.size () * sizeof (float), xyz.data ());
+  elementbuffer = new_glgrib_opengl_buffer_ptr (ind.size () * sizeof (unsigned int), ind.data ());
 
   setupVertexAttributes ();
 
@@ -96,12 +89,21 @@ void glgrib_grid::render (const glgrib_view & view, const glgrib_options_light &
 {
   glgrib_program * program = glgrib_program_load (glgrib_program::MONO);
   program->use ();
-  float color[3] = {(float)opts.color.r / 255.0f, (float)opts.color.g / 255.0f, (float)opts.color.b / 255.0f};
+  float color[3] = {(float)opts.color.r / 255.0f, 
+                    (float)opts.color.g / 255.0f, 
+                    (float)opts.color.b / 255.0f};
 
   view.setMVP (program);
   program->set3fv ("color0", color);
   program->set1i ("do_alpha", 0);
   program->set1f ("scale", opts.scale);
-  glgrib_polygon::render (view, light);
+
+  glBindVertexArray (VertexArrayID);
+  glEnable (GL_PRIMITIVE_RESTART);
+  glPrimitiveRestartIndex (0xffffffff);
+  glDrawElements (GL_LINE_STRIP, numberOfLines, GL_UNSIGNED_INT, NULL);
+  glDisable (GL_PRIMITIVE_RESTART);
+  glBindVertexArray (0);
+
 }
 

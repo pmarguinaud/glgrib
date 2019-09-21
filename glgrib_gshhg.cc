@@ -1,4 +1,5 @@
 #include "glgrib_gshhg.h"
+#include "glgrib_resolve.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -79,25 +80,37 @@ static int read_GSHHG_POINT_list (std::vector<GSHHG_POINT_t> * gpl, int n, FILE 
 }
 
 
-void glgrib_gshhg::read (const std::string & path, int * numberOfPoints, 
+void glgrib_gshhg::read (const glgrib_options_lines & opts, int * numberOfPoints, 
 		         unsigned int * numberOfLines, std::vector<float> * xyz,
 			 std::vector<unsigned int> * ind, 
                          const std::vector<unsigned int> & mask, 
                          const std::vector<unsigned int> & code)
 {
+  std::string path = glgrib_resolve (opts.path);
 
   GSHHG_t h;
   std::vector<GSHHG_POINT_t> gpl;
+  bool lonlatsel = (opts.lonmin != 0.0f) 
+                || (opts.lonmax != 0.0f)
+                || (opts.latmax != 0.0f)
+                || (opts.latmax != 0.0f);
 
   int ip = 0;
 
-  const float millideg2rad = M_PI / (1000000. * 180.);
+  const float microdeg2rad = M_PI / (1000000. * 180.);
 
   FILE * fp = fopen (path.c_str (), "r");
 
   if (fp == NULL)
     throw std::runtime_error (std::string ("Cannot open GSHHG data"));
   
+  auto restart = [ind] 
+  { 
+    int n = ind->size (); 
+    if ((n > 0) && ((*ind)[n-1] != 0xffffffff))
+      ind->push_back (0xffffffff);
+  };
+
   while (1) 
     {   
       if (! h.read (fp))
@@ -115,17 +128,45 @@ void glgrib_gshhg::read (const std::string & path, int * numberOfPoints,
         {
           for (int i = 0; i < h.n; i++)
             {
-              float lon = millideg2rad * gpl[i].x;
-    	      float lat = millideg2rad * gpl[i].y;
-              float coslon = cos (lon);
-              float sinlon = sin (lon);
-              float coslat = cos (lat);
-              float sinlat = sin (lat);
-              xyz->push_back (coslon * coslat);
-              xyz->push_back (sinlon * coslat);
-              xyz->push_back (         sinlat);
-              ind->push_back (ip);
-              ip++;
+              bool add = true;
+
+              if (lonlatsel)
+                {
+                  float lon = gpl[i].x / 1000000.0f;
+                  float lat = gpl[i].y / 1000000.0f;
+                  bool inlat = (opts.latmin <= lat) && (lat <= opts.latmax);
+                  bool inlon = false;
+                  if (inlat)
+                    {
+                      for (int i = -1; i <= 1; i++)
+                        {
+                          inlon = inlon || ((opts.lonmin <= (lon + i * 360.0f)) 
+                                        && ((lon + i * 360.0f) <= opts.lonmax));
+                        }
+                    }
+                  add = inlat && inlon;
+                }
+
+              if (add)
+                {
+                  float lon = microdeg2rad * gpl[i].x;
+    	          float lat = microdeg2rad * gpl[i].y;
+                  float coslon = cos (lon);
+                  float sinlon = sin (lon);
+                  float coslat = cos (lat);
+                  float sinlat = sin (lat);
+
+                  xyz->push_back (coslon * coslat);
+                  xyz->push_back (sinlon * coslat);
+                  xyz->push_back (         sinlat);
+                  ind->push_back (ip);
+                  ip++;
+                }
+              else
+                {
+                  restart ();
+                }
+
             }
           ind->push_back (0xffffffff);
         }

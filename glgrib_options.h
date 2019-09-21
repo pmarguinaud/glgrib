@@ -530,12 +530,17 @@ public:
     DESC (scale,              Coastlines scale);
     DESC (format,             Input format);
     DESC (selector,           Selector);
+    DESC (latmin,             Minimum latitude);
+    DESC (latmax,             Maximum latitude);
+    DESC (lonmin,             Minimum longitude);
+    DESC (lonmax,             Maximum longitude);
   }
   std::string selector;
   string path;
   string format = "gshhg";
   glgrib_option_color color;
   float scale = 1.005;
+  float latmin = 0.0f, latmax = 0.0f, lonmin = 0.0f, lonmax = 0.0f;
 };
 
 class glgrib_options_offscreen : public glgrib_options_base

@@ -18,17 +18,25 @@ if (@ARGV != 5)
 my ($width, $lon1, $lat1, $lon2, $lat2) = @ARGV;
 
 my $key = 'an7nvfzojv5wa96dsga5nk8w';
+#y $map = 'ORTHOIMAGERY.ORTHOPHOTOS';
+#y $map = 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD';
+#y $map = 'GEOGRAPHICALGRIDSYSTEMS.PLANIGN';
+#y $map = 'GEOGRAPHICALGRIDSYSTEMS.FRANCERASTER';
+#y $map = 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.NIVEAUXGRIS';
+my $map = 'GEOGRAPHICALGRIDSYSTEMS.MAPS';
 
 
 my ($db, %webmercator);
 
-if (-f 'webmercator.db')
+my $dbf = "webmercator.$map.db";
+
+if (-f $dbf)
   {
-    $db = tie (%webmercator, 'DB_File', 'webmercator.db', O_RDWR, 0644, $DB_BTREE);
+    $db = tie (%webmercator, 'DB_File', $dbf, O_RDWR, 0644, $DB_BTREE);
   }
 else
   {
-    $db = tie (%webmercator, 'DB_File', 'webmercator.db', O_RDWR | O_CREAT, 0644, $DB_BTREE);
+    $db = tie (%webmercator, 'DB_File', $dbf, O_RDWR | O_CREAT, 0644, $DB_BTREE);
   }
 
 my $deg2rad = pi / 180.;
@@ -116,7 +124,7 @@ for my $row ($rowA .. $rowB)
     for my $col ($colA .. $colB)
       {
         my $c = $col % $colN;
-        my $url = "https://wxs.ign.fr/$key/geoportail/wmts?layer=ORTHOIMAGERY.ORTHOPHOTOS&"
+        my $url = "https://wxs.ign.fr/$key/geoportail/wmts?layer=$map&"
                 . 'style=normal&tilematrixset=PM&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image%2Fjpeg&'
         	. "TileMatrix=$lev&TileCol=$c&TileRow=$r";
         
@@ -157,7 +165,7 @@ for my $row ($rowA .. $rowB)
 
   }
 
-my $imgA = sprintf ('WebMercator_%5.5d_%5.5d_%5.5d_%5.5d_%5.5d.png', $lev, $rowA, $colA, $rowB, $colB);
+my $imgA = sprintf ('WebMercator_%5.5d_%5.5d_%5.5d_%5.5d_%5.5d.%s.png', $lev, $rowA, $colA, $rowB, $colB, $map);
 
 
 my $n = scalar (@imgY);

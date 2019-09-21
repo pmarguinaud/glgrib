@@ -494,15 +494,17 @@ public:
   DEFINE
   {
     DESC (on,                  Enable landscape);
+    DESC (projection,          Projection : LONLAT or WEBMERCATOR);
     DESC (flat.on,             Make Earth flat);
     DESC (orography,           Factor to apply to orography);
     DESC (path,                Path to landscape image in BMP format);
     DESC (geometry,            GRIB files to take geometry from);
     DESC (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
     DESC (wireframe.on,        Draw landscape in wireframe mode);
-    INCLUDE (position);
+    INCLUDE (lonlat.position);
   }
-  string  path  = "landscape/Whole_world_-_land_and_oceans_08000.bmp";
+  string projection = "LONLAT";
+  string path  = "landscape/Whole_world_-_land_and_oceans_08000.bmp";
   float  orography  = 0.05;
   string  geometry  = "";
   int number_of_latitudes  = 500;
@@ -515,7 +517,10 @@ public:
   {
     bool on = true;
   } flat;
-  glgrib_options_landscape_position position;
+  struct
+  {
+    glgrib_options_landscape_position position;
+  } lonlat;
 };
 
 class glgrib_options_lines : public glgrib_options_base

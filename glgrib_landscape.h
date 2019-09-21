@@ -23,7 +23,7 @@ public:
   virtual void resize (const glgrib_view &) {}
   void toggle_wireframe () { opts.wireframe.on = ! opts.wireframe.on; }
   const glgrib_options_landscape & getOptions () const { return opts; }
-  void setPositionOptions (const glgrib_options_landscape_position & o) { opts.position = o; }
+  void setPositionOptions (const glgrib_options_landscape_position & o) { opts.lonlat.position = o; }
 private:
   glgrib_options_landscape opts;
   glgrib_opengl_texture_ptr texture;

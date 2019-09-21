@@ -94,10 +94,41 @@ void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_li
   glActiveTexture (GL_TEXTURE0); 
   glBindTexture (GL_TEXTURE_2D, texture->id ());
   program->set1i ("texture", 0);
-  program->set1f ("lonA", opts.position.lon1 * deg2rad);
-  program->set1f ("lonB", opts.position.lon2 * deg2rad);
-  program->set1f ("latA", opts.position.lat1 * deg2rad);
-  program->set1f ("latB", opts.position.lat2 * deg2rad);
+
+  
+  if (opts.projection == "LONLAT")
+    {
+      program->set1i ("texproj", 0);
+      program->set1f ("lonA", opts.lonlat.position.lon1 * deg2rad);
+      program->set1f ("lonB", opts.lonlat.position.lon2 * deg2rad);
+      program->set1f ("latA", opts.lonlat.position.lat1 * deg2rad);
+      program->set1f ("latB", opts.lonlat.position.lat2 * deg2rad);
+    }
+  else if (opts.projection == "WEBMERCATOR")
+    {
+      const float a = 6378137;
+      int L, IY0, IX0, IY1, IX1;
+
+      std::string path = opts.path;
+
+      int i = path.find_last_of ("/");
+      if (i != std::string::npos)
+        path = path.substr (i + 1);
+
+      sscanf (path.c_str (), "WebMercator_%5d_%5d_%5d_%5d_%5d", &L, &IY0, &IX0, &IY1, &IX1);
+
+      int N = 1;
+      float F = 2 * M_PI * a / 256;
+      for (int i = 0; i < L; i++)
+        N = N * 2;
+      program->set1i ("texproj", 1);
+      program->set1f ("F", F);
+      program->set1i ("N", N);
+      program->set1i ("IX0", IX0);
+      program->set1i ("IY0", IY0);
+      program->set1i ("IX1", IX1);
+      program->set1i ("IY1", IY1);
+    }
 
   glBindVertexArray (VertexArrayID);
   if (opts.wireframe.on)

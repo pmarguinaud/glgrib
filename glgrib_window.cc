@@ -204,7 +204,7 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
 
 void glgrib_window::fix_landscape (float dy, float dx, float sy, float sx)
 {
-  glgrib_options_landscape_position o = scene.d.landscape.getOptions ().position;
+  glgrib_options_landscape_position o = scene.d.landscape.getOptions ().lonlat.position;
 
   float dlat = o.lat2 - o.lat1;
   float dlon = o.lon2 - o.lon1;

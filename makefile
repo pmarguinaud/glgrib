@@ -230,7 +230,7 @@ test_departements:
 	$(RUNTEST) --departements.on --departements.lines.color blue --departements.lines.selector "code_insee = 23 or code_insee = 19 or code_insee = 87" --view.lon 2 --view.lat 46.7 --view.fov 5 --coast.on
 
 test_webmercator:
-	$(RUNTEST) --landscape-{ --on --path ./landscape/WebMercator_00006_00021_00028_00037_00035.png --projection WEBMERCATOR }- --grid.on
+	$(RUNTEST) --landscape-{ --on --path ./landscape/WebMercator_00006_00021_00028_00037_00035.ORTHOIMAGERY.ORTHOPHOTOS.bmp --projection WEBMERCATOR }- --grid.on
 
 
 test_all: test_colorbar test_bw test_bw_debug test_3l_t1198 test_3l_t1798 test_offscreen test_eurat01 test_landscape_eurat01 test_glob01 test_small test_novalue test_missingvalue test_aro test_guyane test_vector test_small_aro test_wind_arp test_vector_glob25 test_wind_glob25 test_wind_t1798 test_vector_t1798 test_contour1 test_contour2 test_contour3 test_contour_stretched test_contour_latlon1 test_contour_latlon2 test_contour_latlon3 test_contour_latlon4 test_contour_aro1 test_contour_aro2 test_fill test_dashed1 test_dashed2 test_dashed3 test_travelling test_strxyz test_interpolation test_background test_text test_fa test_select_grib test_scalar_diff test_contour_diff test_mercator test_image test_shell test_mapscale test_shell_batch test_cities

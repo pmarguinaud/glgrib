@@ -62,17 +62,13 @@ void glgrib_grid::render (const glgrib_view & view, const glgrib_options_light &
 
   glBindVertexArray (VertexArrayID);
 
-  if(1){
   program->set1i ("do_lat", 0);
   program->set1i ("frag_do_lat", 0);
   glDrawArrays (GL_LINE_STRIP, 0, (opts.resolution - 1) * (nn + 1));
-  }
 
-  if(1){
   program->set1i ("do_lat", 1);
   program->set1i ("frag_do_lat", 1);
   glDrawArrays (GL_LINE_STRIP, 0, 2 * opts.resolution * (nn / 2 + 1));
-  }
 
   glBindVertexArray (0);
 

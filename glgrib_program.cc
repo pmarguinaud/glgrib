@@ -1172,7 +1172,7 @@ void main()
 R"CODE(
 #version 330 core
 
-in float alpha;
+in float dashed;
 in vec3 vertexPos;
 
 out vec4 color;
@@ -1181,7 +1181,6 @@ uniform vec3 color0;
 uniform int frag_resolution = 10;
 uniform int frag_nn = 100;
 uniform int frag_do_lat = 0;
-
 uniform float dash_length = 4;
 
 const float pi = 3.1415926;
@@ -1198,30 +1197,36 @@ void main()
     {
       if ((k + 1) % (frag_nn + 1) == 0)
         discard;
-      if (mod (cos (lat) * lon * rad2deg, dash_length) < dash_length / 2.0)
-        discard;
+      if (dashed > 0.0f)
+        {
+          if (mod (cos (lat) * lon * rad2deg, dash_length) < dash_length / 2.0)
+            discard;
+        }
     }
   else
     {
       if ((k + 1) % (frag_nn / 2 + 1) == 0)
         discard;
-      if (mod (lat * rad2deg, dash_length) < dash_length / 2.0)
-        discard;
+      if (dashed > 0.0f)
+        {
+          if (mod (lat * rad2deg, dash_length) < dash_length / 2.0)
+            discard;
+        }
     }
+
 
   color.r = color0.r;
   color.g = color0.g;
   color.b = color0.b;
-  color.a = alpha;
+  color.a = 1.0f;
 
 }
 )CODE",
 R"CODE(
 #version 330 core
 
-out float alpha;
+out float dashed;
 out vec3 vertexPos;
-
 
 uniform mat4 MVP;
 uniform bool do_alpha = false;
@@ -1230,6 +1235,8 @@ uniform float scale = 1.005;
 uniform int resolution = 10;
 uniform int nn = 100;
 uniform int do_lat = 0;
+uniform int interval = 4;
+
 
 )CODE" + projShaderInclude + R"CODE(
 
@@ -1237,15 +1244,19 @@ void main()
 {
   vec3 pos;
 
-  alpha = 1.0;
-
-  float nlon, nlat, ilon, ilat;
+  int ilat, ilon, nlat, nlon;
   if (do_lat == 0)
     {
       nlat = resolution;
       nlon = nn;
       ilat = gl_VertexID / (nn + 1) + 1;
       ilon = gl_VertexID % (nn + 1);
+
+      int jlat = nlat / 2;
+      if ((2 * (nlat / 2) != nlat) && (ilat > nlat / 2))
+        jlat = jlat + 1;
+
+      dashed = (abs (ilat - jlat) % interval) != 0 ? 1.0f : 0.0f;
     }
   else
     {
@@ -1253,7 +1264,10 @@ void main()
       nlat = nn / 2;
       ilon = gl_VertexID / (nn / 2 + 1);
       ilat = gl_VertexID % (nn / 2 + 1);
+      dashed = (ilon % interval) != 0 ? 1.0f : 0.0f;
     }
+
+
   float lon = 2.0f * pi * float (ilon) / float (nlon);
   float lat = 0.5f * pi * float (ilat) / float (nlat / 2.0f) - 0.5 * pi;
   float coslon = cos (lon), sinlon = sin (lon);
@@ -1274,12 +1288,7 @@ void main()
       if ((pos.y < -posmax) || (+posmax < pos.y))
         {
           pos.x = -0.1;
-          if (do_alpha)
-            alpha = 0.0;
 	}
-      if (proj == LATLON)
-      if ((pos.z > +0.49) || (pos.z < -0.49))
-        alpha = 0.0;
 
       if (proj == POLAR_SOUTH)
         pos.x = pos.x - 0.005;

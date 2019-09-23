@@ -23,8 +23,9 @@ public:
     FONT=9,
     IMAGE=10,
     POINTS=11,
-    TEST=12,
-    SIZE=13,
+    GRID=12,
+    TEST=13,
+    SIZE=14,
   } kind;
 
   void set1f (const std::string &, float);

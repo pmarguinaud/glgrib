@@ -1168,6 +1168,90 @@ void main()
 }
 )CODE"),
 
+  glgrib_program ( // GRID
+R"CODE(
+#version 330 core
+
+in float alpha;
+
+out vec4 color;
+
+uniform vec3 color0; 
+
+void main()
+{
+  color.r = color0.r;
+  color.g = color0.g;
+  color.b = color0.b;
+  color.a = alpha;
+
+}
+)CODE",
+R"CODE(
+#version 330 core
+
+out float alpha;
+
+
+uniform mat4 MVP;
+uniform bool do_alpha = false;
+uniform float posmax = 0.97;
+uniform float scale = 1.005;
+uniform int resolution = 10;
+uniform int nn = 100;
+
+)CODE" + projShaderInclude + R"CODE(
+
+void main()
+{
+  vec3 pos;
+
+  alpha = 1.0;
+
+  int nlat = resolution;
+  int nlon = nn;
+  int ilat = gl_VertexID / (nn + 1);
+  int ilon = gl_VertexID % (nn + 1);
+
+  float lon = 2.0f * pi * float (ilon) / float (nlon);
+  float lat = 0.5f * pi * float (ilat + 1) / float ((nlat + 1) / 2.0f) - 0.5 * pi;
+
+  float coslon = cos (lon), sinlon = sin (lon);
+  float coslat = cos (lat), sinlat = sin (lat);
+  vec3 vertexPos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
+
+  if (proj == XYZ)
+    {
+      pos = scale * vertexPos;
+    }
+  else
+    {
+      vec3 normedPos = compNormedPos (vertexPos);
+      pos = compProjedPos (vertexPos, normedPos);
+
+      if ((proj == LATLON) || (proj == MERCATOR))
+      if ((pos.y < -posmax) || (+posmax < pos.y))
+        {
+          pos.x = -0.1;
+          if (do_alpha)
+            alpha = 0.0;
+	}
+      if (proj == LATLON)
+      if ((pos.z > +0.49) || (pos.z < -0.49))
+        alpha = 0.0;
+
+      if (proj == POLAR_SOUTH)
+        pos.x = pos.x - 0.005;
+      else
+        pos.x = pos.x + 0.005;
+    }
+
+  gl_Position =  MVP * vec4 (pos, 1.);
+
+
+}
+)CODE"),
+
   glgrib_program (  // TEST
 R"CODE(
 #version 330 core

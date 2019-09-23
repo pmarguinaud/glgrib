@@ -1,10 +1,10 @@
 #ifndef _GLGRIB_GRID_H
 #define _GLGRIB_GRID_H
 
-#include "glgrib_polygon.h"
+#include "glgrib_object.h"
 #include "glgrib_options.h"
 
-class glgrib_grid : public glgrib_polygon
+class glgrib_grid : public glgrib_object
 {
 public:
   glgrib_grid & operator=(const glgrib_grid &);
@@ -21,8 +21,12 @@ public:
   {
     opts.scale = s;
   }
+  void clear ();
+  ~glgrib_grid ();
 private:
   glgrib_options_grid opts;
+  GLuint VertexArrayID;
+  int numberOfPoints;
 };
 
 #endif

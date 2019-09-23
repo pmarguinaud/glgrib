@@ -1182,7 +1182,7 @@ uniform int frag_resolution = 10;
 uniform int frag_nn = 100;
 uniform int frag_do_lat = 0;
 
-uniform float tick_length = 4;
+uniform float dash_length = 4;
 
 const float pi = 3.1415926;
 const float rad2deg = 180.0 / pi;
@@ -1198,14 +1198,14 @@ void main()
     {
       if ((k + 1) % (frag_nn + 1) == 0)
         discard;
-      if (mod (cos (lat) * lon * rad2deg, tick_length) < tick_length / 2.0)
+      if (mod (cos (lat) * lon * rad2deg, dash_length) < dash_length / 2.0)
         discard;
     }
   else
     {
       if ((k + 1) % (frag_nn / 2 + 1) == 0)
         discard;
-      if (mod (lat * rad2deg, tick_length) < tick_length / 2.0)
+      if (mod (lat * rad2deg, dash_length) < dash_length / 2.0)
         discard;
     }
 

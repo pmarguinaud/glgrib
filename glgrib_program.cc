@@ -1173,13 +1173,42 @@ R"CODE(
 #version 330 core
 
 in float alpha;
+in vec3 vertexPos;
 
 out vec4 color;
 
 uniform vec3 color0; 
+uniform int frag_resolution = 10;
+uniform int frag_nn = 100;
+uniform int frag_do_lat = 0;
+
+uniform float tick_length = 4;
+
+const float pi = 3.1415926;
+const float rad2deg = 180.0 / pi;
 
 void main()
 {
+  int k = gl_PrimitiveID;
+
+  float lat = asin (vertexPos.z);
+  float lon = mod (atan (vertexPos.y, vertexPos.x), 2 * pi);
+
+  if (frag_do_lat == 0)
+    {
+      if ((k + 1) % (frag_nn + 1) == 0)
+        discard;
+      if (mod (cos (lat) * lon * rad2deg, tick_length) < tick_length / 2.0)
+        discard;
+    }
+  else
+    {
+      if ((k + 1) % (frag_nn / 2 + 1) == 0)
+        discard;
+      if (mod (lat * rad2deg, tick_length) < tick_length / 2.0)
+        discard;
+    }
+
   color.r = color0.r;
   color.g = color0.g;
   color.b = color0.b;
@@ -1191,6 +1220,7 @@ R"CODE(
 #version 330 core
 
 out float alpha;
+out vec3 vertexPos;
 
 
 uniform mat4 MVP;
@@ -1199,6 +1229,7 @@ uniform float posmax = 0.97;
 uniform float scale = 1.005;
 uniform int resolution = 10;
 uniform int nn = 100;
+uniform int do_lat = 0;
 
 )CODE" + projShaderInclude + R"CODE(
 
@@ -1208,17 +1239,27 @@ void main()
 
   alpha = 1.0;
 
-  int nlat = resolution;
-  int nlon = nn;
-  int ilat = gl_VertexID / (nn + 1);
-  int ilon = gl_VertexID % (nn + 1);
-
+  float nlon, nlat, ilon, ilat;
+  if (do_lat == 0)
+    {
+      nlat = resolution;
+      nlon = nn;
+      ilat = gl_VertexID / (nn + 1) + 1;
+      ilon = gl_VertexID % (nn + 1);
+    }
+  else
+    {
+      nlon = resolution * 2;
+      nlat = nn / 2;
+      ilon = gl_VertexID / (nn / 2 + 1);
+      ilat = gl_VertexID % (nn / 2 + 1);
+    }
   float lon = 2.0f * pi * float (ilon) / float (nlon);
-  float lat = 0.5f * pi * float (ilat + 1) / float ((nlat + 1) / 2.0f) - 0.5 * pi;
-
+  float lat = 0.5f * pi * float (ilat) / float (nlat / 2.0f) - 0.5 * pi;
   float coslon = cos (lon), sinlon = sin (lon);
   float coslat = cos (lat), sinlat = sin (lat);
-  vec3 vertexPos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
+
+  vertexPos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
 
   if (proj == XYZ)
     {

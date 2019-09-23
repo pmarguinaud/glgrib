@@ -466,13 +466,20 @@ public:
   {
     DESC (on,                Display grid);
     DESC (resolution,        Grid resolution);
+    DESC (interval,          Interval between non dashed lines);
+    DESC (dash_length,       Dash length in degrees);
+    DESC (points,            Number of points along a parallel);
     DESC (color,             Grid color);
     DESC (scale,             Grid scale);
   }
   int resolution = 9;
+  int points = 200;
+  int interval = 2;
+  float dash_length = 4.0f;
   glgrib_option_color color = glgrib_option_color (0, 255, 0);
   bool on = false;
   float scale = 1.005;
+  
 };
 
 class glgrib_options_landscape_position : public glgrib_options_base

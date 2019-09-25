@@ -1337,7 +1337,8 @@ static void lfinff_altm (LFINFF_ARGS_DECL)
 {
   ALM_DECL;
   FH_DECL (1);
-  ART_DECL;
+  int iart = lookup_rc (fh, CDNOMA, CDNOMA_len);
+  integer64 ifh = iart < 0 ? -1 : fh->aidx[iart].ifh;
   DRHOOK_START ("lfinff_altm");
 
   if (iart < 0)

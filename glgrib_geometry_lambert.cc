@@ -13,16 +13,6 @@ const double glgrib_geometry_lambert::rad2deg = 180.0 / M_PI;
 const double glgrib_geometry_lambert::deg2rad = M_PI / 180.0;
 const double glgrib_geometry_lambert::a = 6371229.0;
 
-void glgrib_geometry_lambert::gencoords (float * px, float * py) const
-{
-  throw std::runtime_error (std::string ("glgrib_geometry_lambert::gencoords not implemented"));
-}
-
-void glgrib_geometry_lambert::genlatlon (float * plat, float * plon) const
-{
-  throw std::runtime_error (std::string ("glgrib_geometry_lambert::genlatlon not implemented"));
-}
-
 int glgrib_geometry_lambert::size () const
 {
   return Nx * Ny;

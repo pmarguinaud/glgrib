@@ -6,6 +6,7 @@
 #include "glgrib_handle.h"
 
 #include <glm/glm.hpp>
+#include <vector>
 
 class glgrib_geometry_gaussian : public glgrib_geometry
 {
@@ -18,8 +19,6 @@ public:
   glgrib_geometry_gaussian (glgrib_handle_ptr);
   glgrib_geometry_gaussian (int);
   virtual void setup (glgrib_handle_ptr, const float = 0.0f);
-  virtual void genlatlon (float *, float *) const;
-  virtual void gencoords (float *, float *) const;
   virtual int size () const;
   virtual ~glgrib_geometry_gaussian ();
   virtual void applyNormScale (float *) const;
@@ -65,10 +64,11 @@ private:
  
     return glm::vec3 (XYZ.x, XYZ.y, XYZ.z);
   }
-
-  long int * pl = NULL;
+private:
+  std::vector<double> gausslat;
+  std::vector<long int> pl;
   long int Nj;
-  int * jglooff = NULL;
+  std::vector<int> jglooff;
   double stretchingFactor = 1.0f;
   double latitudeOfStretchingPoleInDegrees = 90.0f;
   double longitudeOfStretchingPoleInDegrees = 0.0f;
@@ -76,7 +76,7 @@ private:
   float opc2 = 2.0f;
   glm::mat4 rot = glm::mat4 (1.0f);
   bool rotated = false;
-  friend class sampler;
+  // Keep the following as pointers for performance
   unsigned int * ind = NULL;
   int * triu = NULL;          // Rank of triangle above
   int * trid = NULL;          // Rank of triangle below

@@ -12,16 +12,6 @@
 const double glgrib_geometry_latlon::rad2deg = 180.0 / M_PI;
 const double glgrib_geometry_latlon::deg2rad = M_PI / 180.0;
 
-void glgrib_geometry_latlon::gencoords (float * px, float * py) const
-{
-  throw std::runtime_error (std::string ("glgrib_geometry_latlon::gencoords not implemented"));
-}
-
-void glgrib_geometry_latlon::genlatlon (float * plat, float * plon) const
-{
-  throw std::runtime_error (std::string ("glgrib_geometry_latlon::genlatlon not implemented"));
-}
-
 int glgrib_geometry_latlon::size () const
 {
   return Ni * Nj;

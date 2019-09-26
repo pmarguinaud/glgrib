@@ -564,7 +564,7 @@ void glgrib_geometry_gaussian::applyUVangle (float * angle) const
 #pragma omp parallel for 
       for (int jlat = 0; jlat < Nj; jlat++)
         {
-          float coordy = M_PI * (0.5 - (float)(jlat + 1) / (float)(Nj + 1));
+          float coordy = latgauss[jlat];
           float sincoordy = sin (coordy);
           float lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
           float coslat = cos (lat); float sinlat = sin (lat);
@@ -716,7 +716,7 @@ void glgrib_geometry_gaussian::applyNormScale (float * data) const
 #pragma omp parallel for 
   for (int jlat = 0; jlat < Nj; jlat++)
     {
-      float coordy = M_PI * (0.5 - (float)(jlat + 1) / (float)(Nj + 1));
+      float coordy = latgauss[jlat];
       float sincoordy = sin (coordy);
       float N = 1.0f / sqrt ((opc2 + sincoordy * omc2) * (opc2 + sincoordy * omc2) 
                            / (opc2 * opc2 - omc2 * omc2));

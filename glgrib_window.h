@@ -55,7 +55,6 @@ public:
     o.light.rotate.on = ! o.light.rotate.on; 
     scene.setSceneOptions (o);
   }
-  void toggle_wireframe    () { scene.d.landscape.toggle_wireframe (); }
   void widen_fov           () 
   { 
     glgrib_options_view o = scene.d.view.getOptions ();
@@ -104,6 +103,7 @@ public:
     o.lon = o.lon + 5.; 
     scene.d.view.setOptions (o);
   }
+  void toggle_wireframe ();
 
   void resize (int, int);
   void scroll (double, double);

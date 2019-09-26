@@ -117,7 +117,7 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (NONE,    T     ,  Hide/show location & field value at cursor position  , toggle_cursorpos_display ());
       if_key (NONE,    TAB   ,  Enable/disable earth rotation                        , toggle_rotate            ());
       if_key (CONTROL, TAB   ,  Enable/disable light rotation                        , toggle_rotate_light      ());
-      if_key (NONE,    Y     ,  Display landscape as wireframe                       , toggle_wireframe         ());
+      if_key (NONE,    Y     ,  Display landscape or current field as wireframe      , toggle_wireframe         ());
       if_key (NONE,    D     ,  Use a framebuffer and generate a snapshot            , framebuffer              ());
       if_key (NONE,    W     ,  Increase field of view                               , widen_fov                ());
       if_key (NONE,    S     ,  Write a snapshot (PNG format)                        , snapshot                 ()); 
@@ -200,6 +200,20 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
     }
 
 #undef if_key
+}
+
+void glgrib_window::toggle_wireframe () 
+{ 
+  glgrib_field * f = scene.getCurrentField ();
+
+  if (f == NULL)
+    {
+      scene.d.landscape.toggle_wireframe (); 
+      return;
+    }
+
+  f->toggle_wireframe ();
+
 }
 
 void glgrib_window::fix_landscape (float dy, float dx, float sy, float sx)

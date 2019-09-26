@@ -86,6 +86,10 @@ public:
   const glgrib_options_field & getOptions () const;
   void setScale (float s) { opts.scale = s; }
   const glgrib_palette & getPalette () const;
+  void toggle_wireframe () 
+  {
+    opts.wireframe.on = ! opts.wireframe.on;
+  }
 protected:
   glgrib_palette palette = palette_cold_hot;
   mutable glgrib_options_field opts;

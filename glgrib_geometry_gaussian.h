@@ -65,7 +65,6 @@ private:
     return glm::vec3 (XYZ.x, XYZ.y, XYZ.z);
   }
 private:
-  std::vector<double> gausslat;
   std::vector<long int> pl;
   long int Nj;
   std::vector<int> jglooff;
@@ -80,6 +79,7 @@ private:
   unsigned int * ind = NULL;
   int * triu = NULL;          // Rank of triangle above
   int * trid = NULL;          // Rank of triangle below
+  double * latgauss = NULL;
 };
 
 #endif

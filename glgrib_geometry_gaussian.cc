@@ -8,12 +8,116 @@
 #include <openssl/md5.h>
 
 #include <iostream>
+#include <limits>
+#include <algorithm>
 
+static
+void compute_latgauss (int kn, double * latgauss)
+{
+  const double pi = M_PI;
+  const int itemax = 20;
+  const double zeps = std::numeric_limits <double>::epsilon ();
+  
+  double * zfn = (double *)malloc (sizeof (double) * (kn+1)*(kn+1));
+  double * zfnlat = (double *)malloc (sizeof (double) * (kn/2+2));
+  double * zmod = (double *)malloc (sizeof (double) * kn);
 
+  //     ------------------------------------------------------------------
+  //        1. initialization.
+  //           ---------------
+  // 
+  //        1.1 calculation of zfnlat.
+  //            (fourier coefficients of series expansion for
+  //            the ordinary legendre polynomials).
+  // belousov, swarztrauber use zfn(0,0)=sqrt(2._jprb)
+  // ifs normalisation chosen to be 0.5*integral(pnm**2) = 1 
 
+  zfn[0] = 2.;
+#pragma omp parallel for
+  for (int jn = 1; jn <= kn; jn++)
+    {
+      double zfnn = zfn[0];
+      for (int jgl = 1; jgl <= jn; jgl++)
+        zfnn = zfnn * sqrt (1. - 0.25 / (jgl * jgl));
+      int iodd = jn % 2;
+      zfn[jn*(kn+1)+jn] = zfnn;
+      for (int jgl = 2; jgl <= jn-iodd; jgl += 2)
+        zfn[jn*(kn+1)+jn-jgl] = zfn[jn*(kn+1)+jn-jgl+2] 
+         * (double)((jgl-1)*(2*jn-jgl+2)) / (double)(jgl*(2*jn-jgl+1));
+    }
+  
+  int iodd = kn % 2;
+  int ins2 = kn / 2 + kn % 2;
 
+#pragma omp parallel for
+  for (int jgl = iodd; jgl <= kn; jgl += 2)
+    {
+      int ik = iodd + (jgl - iodd) / 2;
+      zfnlat[ik] = zfn[kn*(kn+1)+jgl];
+    }
+  
+#pragma omp parallel for
+  for (int jgl = ins2; jgl >= 1; jgl--)
+    {
+      // find first approximation of the roots of the
+      // legendre polynomial of degree kn. 
+      double z = (4 * jgl - 1) * pi / (4 * kn + 2);
+      double zdlx = z + 1.0 / (tan (z) * 8 * (kn * kn));
+      double zxn;
+      int iflag = 0;
+  
+      // newton iteration.
+      for (int jter = 1; jter <= itemax+1; jter++)
+        {
+          // newton iteration step.
+          double zdlk = 0.0;
+          double zzdlxn = 0.0;
+          double zdlldn = 0.0;
+          int ik = 1;
 
+          if (iodd == 0) 
+            zdlk = 0.5 * zfnlat[0];
+  
+          if (iflag == 0)
+            {
+              for (int jn = 2 - iodd; jn <= kn; jn += 2)
+                {
+                  // normalised ordinary legendre polynomial == \overbar{p_n}^0 
+                  zdlk = zdlk + zfnlat[ik] * cos (jn * zdlx);
+                  // normalised derivative == d/d\theta(\overbar{p_n}^0) 
+                  zdlldn = zdlldn - zfnlat[ik] * jn * sin (jn * zdlx);
+                  ik = ik + 1;
+                }
+              // newton method
+              double zdlmod = -zdlk / zdlldn;
+              zzdlxn = zdlx + zdlmod;
+              zxn = zzdlxn;
+              zmod[jgl-1] = zdlmod;
+            }
+  
+          zdlx = zzdlxn;
+  
+          if (iflag == 1) 
+            break;
 
+          if (abs (zmod[jgl-1]) <= zeps * 1000.) 
+            iflag = 1;
+        }
+  
+      // convert to latitude (radians)
+      latgauss[jgl-1] = asin (cos (zxn));
+
+      if (jgl <= kn/2)
+        {
+          int isym = kn-jgl+1;
+          latgauss[isym-1] = -latgauss[jgl-1];
+        }
+    }
+  
+  free (zmod);
+  free (zfnlat);
+  free (zfn);
+}
 
 const double glgrib_geometry_gaussian::rad2deg = 180.0 / M_PI;
 const double glgrib_geometry_gaussian::deg2rad = M_PI / 180.0;
@@ -29,8 +133,8 @@ const double glgrib_geometry_gaussian::deg2rad = M_PI / 180.0;
   } while (0)
 
 static 
-void trigauss (const long int Nj, const std::vector<long int> pl, unsigned int * ind, 
-               const int nstripe, const int * indcnt, int * triu, int * trid)
+void compute_trigauss (const long int Nj, const std::vector<long int> pl, unsigned int * ind, 
+                       const int nstripe, const int * indcnt, int * triu, int * trid)
 {
   int iglooff[Nj];
   int indcntoff[nstripe];
@@ -278,8 +382,12 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
   ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
   triu = (int *)malloc (numberOfPoints * sizeof (int));
   trid = (int *)malloc (numberOfPoints * sizeof (int));
-  // OpenMP generation of triangles
-  trigauss (Nj, pl, ind, nstripe, indoff, triu, trid);
+  // Generation of triangles
+  compute_trigauss (Nj, pl, ind, nstripe, indoff, triu, trid);
+
+  latgauss = (double *)malloc (Nj * sizeof (double));
+  // Compute Gaussian latitudes
+  compute_latgauss (Nj, latgauss);
       
   xyz.resize (3 * numberOfPoints);
 
@@ -292,7 +400,7 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
 #pragma omp parallel for 
   for (int jlat = 1; jlat <= Nj; jlat++)
     {
-      float coordy = M_PI * (0.5 - (float)jlat / (float)(Nj + 1));
+      float coordy = latgauss[jlat-1];
       float sincoordy = sin (coordy);
       float lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
       float coslat = cos (lat); float sinlat = sin (lat);
@@ -343,9 +451,12 @@ glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()
     free (triu);
   if (trid)
     free (trid);
+  if (latgauss)
+    free (latgauss);
   ind = NULL;
   triu = NULL;
   trid = NULL;
+  latgauss = NULL;
 }
 
 int glgrib_geometry_gaussian::latlon2index (float lat, float lon) const
@@ -373,9 +484,31 @@ int glgrib_geometry_gaussian::latlon2index (float lat, float lon) const
   sinlat = sin (lat);
   float coordy = asin ((-omc2 + sinlat * opc2) / (opc2 - sinlat * omc2));
 
-  int jlat = round ((0.5 - coordy / M_PI) * (Nj + 1));
-  if (jlat > Nj)
-    jlat = Nj;
+  int jlat = round ((0.5 - coordy / M_PI) * (Nj + 1)); // First approximation
+  jlat = std::max (1, std::min (jlat, (int)Nj));
+
+  float dlat = fabs (latgauss[jlat-1] - coordy);
+
+  while (1)
+    {
+      bool u = false;
+      auto lookat = [&u,&jlat,&dlat,coordy,this] (int jlat1)
+      {
+        float dlat1 = fabs (this->latgauss[jlat1-1] - coordy);
+	if (dlat1 < dlat)
+          {
+            dlat = dlat1; jlat = jlat1; u = true; 
+	  }
+	return;
+      };
+      if (1 < jlat)
+        lookat (jlat-1);
+      if (jlat < Nj)
+	lookat (jlat+1);
+      if (! u)
+        break;
+    }
+
   int jlon = round (pl[jlat-1] * (coordx / (2. * M_PI)));
   if (jlon < 0)
     jlon += pl[jlat-1];

@@ -480,15 +480,21 @@ void main ()
       float llonA = lonA, llonB = lonB; 
       float llatA = latA, llatB = latB;
      
-      if (llonB < llonA)
+      while (llonB < llonA)
         {
           llonB = llonB + 2 * PI;
-          if (llon < llonA)
-            llon = llon + 2 * PI;
         }
      
-      float s = (llon - llonA) / (llonB - llonA);
-      float t = (llat - llatA) / (llatB - llatA);
+      float s   = (llon - llonA)          / (llonB - llonA);
+      float sp1 = (llon - llonA + 2 * PI) / (llonB - llonA);
+      float sm1 = (llon - llonA - 2 * PI) / (llonB - llonA);
+      float t   = (llat - llatA)          / (llatB - llatA);
+
+      if ((0 <= sp1) && (sp1 <= 1))
+        s = sp1;
+     
+      if ((0 <= sm1) && (sm1 <= 1))
+        s = sm1;
      
       if ((s < 0.0) || (1.0 < s))
         discard;

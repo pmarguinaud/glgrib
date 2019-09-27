@@ -101,6 +101,7 @@ void glgrib_scene::display () const
 const glgrib_option_date * glgrib_scene::get_date ()
 {
   for (int i = 0; i < fieldlist.size (); i++)
+    {
     if (fieldlist[i])
       if (fieldlist[i]->isReady ())
         {
@@ -108,6 +109,7 @@ const glgrib_option_date * glgrib_scene::get_date ()
           const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
           return &meta[0].term;
         }
+    }
   return NULL;
 }
 
@@ -242,16 +244,27 @@ void glgrib_scene::update_date ()
 {
   if (d.opts.scene.date.on)
     {
+      const glgrib_option_date * date = NULL;
+
       glgrib_field * fld = getCurrentField ();
       if (fld != NULL)
         {
           const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
-          if (strdate != meta[0].term.asString ())
+          date = &meta[0].term;
+	}
+      else
+        {
+          date = get_date ();
+	}
+
+      if (date != NULL)
+        {
+          if (strdate != date->asString ())
             {
-              strdate = meta[0].term.asString ();
+              strdate = date->asString ();
               d.strdate.update (strdate);
             }
-        }
+	}
     }
 }
 

@@ -49,7 +49,7 @@ my $g = sprintf ('Landscape_%010.4f_%010.4f_%010.4f_%010.4f', $lon1b, $lat1b, $l
 $p->Write ("$g.png");
 
 'FileHandle'->new (">$g.opt")->print (<< "EOF");
---landscape.position-{ --lat1 $lat1b --lon1 $lon1b --lat2 $lat2b --lon2 $lon2b }- --landscape.path landscape/$g.png 
+--landscape.lonlat.position-{ --lat1 $lat1b --lon1 $lon1b --lat2 $lat2b --lon2 $lon2b }- --landscape.path landscape/$g.png 
 EOF
 
 

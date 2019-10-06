@@ -3,6 +3,7 @@
 use strict;
 use File::Path;
 use Data::Dumper;
+use Text::ParseWords;
 
 
 
@@ -43,7 +44,7 @@ my @test =
   "Display contour field using Mercator projection                  " ,  mercator            => '--field[0].diff.on --field[0].contour.on --field[0].path testdata/glob01/lfpw_0_3_1_sfc_0_prmsl+0000.grib2 testdata/glob01/lfpw_0_3_1_sfc_0_prmsl+0102.grib2 --field[0].scale 1.01 --view.projection MERCATOR --landscape.on',
   "Display field with missing values                                " ,  missingvalue        => '--field[0].path testdata/t49/SFX.CLAY.grb --coast.on --grid.on',
   "Display field with keeping field values in RAM                   " ,  novalue             => '--landscape.on --landscape.geometry testdata/t1798/Z.grb --field[0].path testdata/t1798/SURFNEBUL.BASSE.grb --field[0].scale 1.03 --field[0].palette.name cloud_auto --field[0].no_value_pointer.on',
-  "Display field in offscreen mode                                  " ,  offscreen           => 'rm -f snapshot*.png $(RUNTEST) --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --window.offscreen.on --window.offscreen.frames 10 --scene.light.rotate.on --scene.light.on --field[0].path testdata/t1198c2.2/SURFNEBUL.BASSE.grb testdata/t1198c2.2/SURFNEBUL.MOYENN.grb testdata/t1198c2.2/SURFNEBUL.HAUTE.grb --field[0].scale 1.03 1.03 1.03 --field[0].palette.name cloud_auto cloud_auto cloud_auto',
+  "Display field in offscreen mode                                  " ,  offscreen           => '--landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --window.offscreen.on --window.offscreen.frames 10 --scene.light.rotate.on --scene.light.on --field[0].path testdata/t1198c2.2/SURFNEBUL.BASSE.grb testdata/t1198c2.2/SURFNEBUL.MOYENN.grb testdata/t1198c2.2/SURFNEBUL.HAUTE.grb --field[0].scale 1.03 1.03 1.03 --field[0].palette.name cloud_auto cloud_auto cloud_auto',
   "Display field with options in file                               " ,  optionsfile         => '--{testdata/options.list}',
   "Display field with palette gradient color                        " ,  palette_values_grad => '--landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field[0].path testdata/t1198c2.2/N.grb --field[0].scale 1.03 --field[0].palette-{ --colors "#00000000" "#008bff" "#01f8e9" "#05cf66" "#34c00c" "#b6e904" "#ffe600" "#ffb500" "#ff6900" "#ff0f00" "#b3003e" "#570088" --values 0 2 6 10 14 18 22 26 30 34 38 42 }- --colorbar.on --window.width 1200',
   "Display field with discrete palette                              " ,  palette_values      => '--landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field[0].path testdata/t1198c2.2/N.grb --field[0].scale 1.03 --field[0].palette-{ --colors "#00000000" "#008bff" "#01f8e9" "#05cf66" "#34c00c" "#b6e904" "#ffe600" "#ffb500" "#ff6900" "#ff0f00" "#b3003e" "#570088" --values 0 2 6 10 14 18 22 26 30 34 38 42 46 }- --colorbar.on --window.width 1200',
@@ -66,58 +67,76 @@ my @test =
   "Wind on stretched/rotated gaussian geometry                      " ,  wind_t1798          => '--landscape.on --landscape.geometry testdata/arpt1798_wind/S105WIND.U.PHYS.grb --landscape.orography 0 --field[0].vector.on --field[0].path testdata/arpt1798_wind/S105WIND.U.PHYS.grb testdata/arpt1798_wind/S105WIND.V.PHYS.grb --field[0].scale 1.01 --coast.on --grid.on',
 );
 
-my $auto = $ENV{AUTO};
-my $comp = $ENV{COMP};
+my %test;
 
-system ('make', 'glgrib.x')
-  && die;
-
-(my $test = shift (@ARGV)) =~ s/^test_//o;
-my $exec = shift (@ARGV);
-
-my @args = @ARGV;
-
-if ($args[0] !~ m/^--/o)
+while (my ($desc, $name, $opts) = splice (@test, 0, 3))
   {
-    $auto = 0;
+    $desc =~ s/\s*$//o;
+    $test{$name} = [$desc, [&quotewords ('\s+', 0, $opts)]];
   }
 
-if ($auto)
+
+my $name = $ENV{NAME} || '';
+
+my @name = $name eq 'all' ? sort keys (%test) : ($name);
+
+for my $name (@name)
   {
-    my $off = grep { m/^--window.offscreen.on$/o } @args;
-    push (@args, '--window.offscreen.on') unless ($off);
-    push (@args, '--window.offscreen.format', 'TEST_%N.png');
-    for (<TEST*.png>)
-      {
-        unlink ($_);
-      }
-  }
 
-my @cmd = ('gdb', '-ex=set confirm on', '-ex=run', '-ex=quit', '--args', $exec, @args);
-
-system (@cmd)
-  and die;
-
-if ($auto)
-  {
-    &mkpath ("test.run/$test");
+    my $auto = $ENV{AUTO};
+    my $comp = $ENV{COMP};
     
-    for my $png (<TEST*.png>)
+    (my $test = $test{$name}) or die ("Unknown test `$name'\n");
+    
+    system ('make', 'glgrib.x')
+      && die;
+    
+    my $exec = "./glgrib.x";
+    
+    my @args = @{ $test->[1] };
+    
+    if ($args[0] !~ m/^--/o)
       {
-        my $new = "test.run/$test/$png";
-        rename ($png, $new);
-	my $ref = "test.ref/$test/$png";
-	my $dif = "test.run/$test/diff_$png";
-        if ((-f $ref) && ($comp))
+        $auto = 0;
+      }
+    
+    if ($auto)
+      {
+        my $off = grep { m/^--window.offscreen.on$/o } @args;
+        push (@args, '--window.offscreen.on') unless ($off);
+        push (@args, '--window.offscreen.format', 'TEST_%N.png');
+        for (<TEST*.png>)
           {
-            my @cmd = ('compare', '-metric', 'MAE', $ref, $new, $dif);
-	    print "@cmd\n";
-	    system (@cmd);
-	    print "\n"
-	  }
+            unlink ($_);
+          }
+        @args = grep { $_ ne '--shell.on' } @args;
       }
-
+    
+    my @cmd = ('gdb', '-ex=set confirm on', '-ex=run', '-ex=quit', '--args', $exec, @args);
+    
+    system (@cmd)
+      and die;
+    
+    if ($auto)
+      {
+        &mkpath ("test.run/$name");
+        
+        for my $png (<TEST*.png>)
+          {
+            my $new = "test.run/$name/$png";
+            rename ($png, $new);
+    	my $ref = "test.ref/$name/$png";
+    	my $dif = "test.run/$name/diff_$png";
+            if ((-f $ref) && ($comp))
+              {
+                my @cmd = ('compare', '-metric', 'MAE', $ref, $new, $dif);
+    	    print "@cmd\n";
+    	    system (@cmd);
+    	    print "\n"
+    	  }
+          }
+    
+      }
+        
   }
-    
-    
-    
+        

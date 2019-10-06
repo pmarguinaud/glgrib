@@ -394,6 +394,13 @@ end:
   glgrib_palette p = glgrib_palette::create_by_name (pname);
   p.opts.min = pmin;
   p.opts.max = pmax;
+
+  if (p.opts.min == p.opts.max)
+    {
+      p.opts.min = defaultMin;
+      p.opts.max = defaultMax;
+    }
+
   return p;
 }
 

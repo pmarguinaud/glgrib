@@ -1,7 +1,6 @@
 # glgrib
 Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, gaussian grid.
 
-
 ## Clouds, 3 layers, t1198c2.2                                       -- t1198_3l
 ![](test.ref/t1198_3l/TEST_0000.png)
 
@@ -121,9 +120,6 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
 
 ## Select field from GRIB file                                       -- select_grib
 ![](test.ref/select_grib/TEST_0000.png)
-
-## Read commands from a file                                         -- shell_batch
-![](test.ref/shell_batch/TEST_0000.png)
 
 ## Test interactive shell                                            -- shell
 ![](test.ref/shell/TEST_0000.png)

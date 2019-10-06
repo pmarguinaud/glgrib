@@ -36,7 +36,7 @@ sub readme
   my @t = @test;
   while (my ($desc, $name, $opts) = splice (@t, 0, 3))
     {
-
+      next unless ($opts =~ m/^--/o);
       print "## $desc -- $name\n";
       print "![](test.ref/$name/TEST_0000.png)\n";
       print "\n";

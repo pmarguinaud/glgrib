@@ -6,9 +6,46 @@ use Data::Dumper;
 use Text::ParseWords;
 
 
+my (%test, @test);
+
+sub help
+{
+  my @t = @test;
+  while (my ($desc, $name, $opts) = splice (@t, 0, 3))
+    {
+      print "* $name\n";
+      print "   $desc\n";
+      my @o = @{ $test{$name}[1] };
+      my @l = ('');
+      while (my $o = shift (@o))
+        {
+          push @l, '' if (length ($l[-1]) + length ($o) > 70);
+          $l[-1] .= "$o ";
+        }
+      for (@l)
+        {
+          print "    $_\n";
+        }
+      print "\n";
+    }
+  die ("\n");
+}
+
+sub readme
+{
+  my @t = @test;
+  while (my ($desc, $name, $opts) = splice (@t, 0, 3))
+    {
+
+      print "## $desc -- $name\n";
+      print "![](test.ref/$name/TEST_0000.png)\n";
+      print "\n";
+    }
+  die ("\n");
+}
 
 
-my @test =
+@test =
 (
   "Clouds, 3 layers, t1198c2.2                                      " ,  t1198_3l            => '--landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb --field[0].path testdata/t1198c2.2/SURFNEBUL.BASSE.grb --field[1].path testdata/t1198c2.2/SURFNEBUL.MOYENN.grb --field[2].path testdata/t1198c2.2/SURFNEBUL.HAUTE.grb --field[0].scale 1.03 --field[1].scale 1.04 --field[2].scale 1.05 --field[0].palette.name cloud --field[1].palette.name cloud --field[2].palette.name cloud',
   "Clouds, 3 layers, t1798c2.2                                      " ,  t1798_3l            => '--landscape.on --landscape.geometry testdata/t1798/Z.grb --field[0].path testdata/t1798/SURFNEBUL.BASSE.grb --field[1].path testdata/t1798/SURFNEBUL.MOYENN.grb --field[2].path testdata/t1798/SURFNEBUL.HAUTE.grb --field[0].scale 1.03 --field[1].scale 1.04 --field[2].scale 1.05 --field[0].palette.name cloud --field[1].palette.name cloud --field[2].palette.name cloud',
@@ -67,12 +104,27 @@ my @test =
   "Wind on stretched/rotated gaussian geometry                      " ,  wind_t1798          => '--landscape.on --landscape.geometry testdata/arpt1798_wind/S105WIND.U.PHYS.grb --landscape.orography 0 --field[0].vector.on --field[0].path testdata/arpt1798_wind/S105WIND.U.PHYS.grb testdata/arpt1798_wind/S105WIND.V.PHYS.grb --field[0].scale 1.01 --coast.on --grid.on',
 );
 
-my %test;
 
-while (my ($desc, $name, $opts) = splice (@test, 0, 3))
+my @t = @test;
+while (my ($desc, $name, $opts) = splice (@t, 0, 3))
   {
     $desc =~ s/\s*$//o;
     $test{$name} = [$desc, [&quotewords ('\s+', 0, $opts)]];
+  }
+
+
+my $help = $ENV{HELP};
+
+if ($help)
+  {
+    &help ();
+  }
+
+my $readme = $ENV{README};
+
+if ($readme)
+  {
+    &readme ();
   }
 
 
@@ -125,15 +177,15 @@ for my $name (@name)
           {
             my $new = "test.run/$name/$png";
             rename ($png, $new);
-    	my $ref = "test.ref/$name/$png";
-    	my $dif = "test.run/$name/diff_$png";
+            my $ref = "test.ref/$name/$png";
+            my $dif = "test.run/$name/diff_$png";
             if ((-f $ref) && ($comp))
               {
                 my @cmd = ('compare', '-metric', 'MAE', $ref, $new, $dif);
-    	    print "@cmd\n";
-    	    system (@cmd);
-    	    print "\n"
-    	  }
+                print "@cmd\n";
+                system (@cmd);
+                print "\n"
+    	      }
           }
     
       }

@@ -38,7 +38,7 @@ sub readme
     {
       next unless ($opts =~ m/^--/o);
       print "## $desc -- $name\n";
-      print "![](test.ref/$name/TEST_0000.png)\n";
+      print "![](test.ref/$name/thumb_TEST_0000.png)\n";
       print "\n";
     }
   die ("\n");
@@ -176,7 +176,9 @@ for my $name (@name)
         for my $png (<TEST*.png>)
           {
             my $new = "test.run/$name/$png";
+            my $thumb = "test.run/$name/thumb_$png";
             rename ($png, $new);
+            system ('convert', -geometry => 300, $new, $thumb);
             my $ref = "test.ref/$name/$png";
             my $dif = "test.run/$name/diff_$png";
             if ((-f $ref) && ($comp))

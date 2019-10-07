@@ -118,13 +118,14 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   program->set1f ("valmax", getNormedMaxValue ());
   program->set1f ("palmin", palette.getMin ());
   program->set1f ("palmax", palette.getMax ());
+  program->set1i ("smoothed", opts.scalar.smooth.on);
 
-  if (opts.wireframe.on)
+  if (opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 
   glgrib_field::render (view, light);
 
-  if (opts.wireframe.on)
+  if (opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 
 }

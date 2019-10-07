@@ -434,21 +434,29 @@ public:
     DESC (scale,               Scales to be applied to fields);        
     DESC (no_value_pointer.on, Do not keep field values in memory);    
     DESC (diff.on,             Show field difference);
-    DESC (wireframe.on,        Display field as wireframe);
+    DESC (scalar.smooth.on,    Smooth scalar fields);
+    DESC (scalar.wireframe.on, Display field as wireframe);
     INCLUDE (palette);
     INCLUDE (vector);
     INCLUDE (contour);
   }
+  struct
+  {
+    struct 
+    {
+      bool on = false;
+    } smooth;
+    struct 
+    {
+      bool on = false;
+    } wireframe;
+  } scalar;
   string_list  path;
   float scale   = 1.0f;
   struct
   {
     bool on = false;
   } no_value_pointer;
-  struct 
-  {
-    bool on = false;
-  } wireframe;
   struct
   {
     bool on = false;

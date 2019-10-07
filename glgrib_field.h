@@ -88,7 +88,7 @@ public:
   const glgrib_palette & getPalette () const;
   void toggle_wireframe () 
   {
-    opts.wireframe.on = ! opts.wireframe.on;
+    opts.scalar.wireframe.on = ! opts.scalar.wireframe.on;
   }
 protected:
   glgrib_palette palette = palette_cold_hot;

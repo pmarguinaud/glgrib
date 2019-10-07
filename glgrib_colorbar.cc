@@ -116,11 +116,11 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
 	  while (s.length () < 6)
 	    s += " ";
           str.push_back (s);
-          x.push_back (opts.position.xmin-0.07f);
+          x.push_back (opts.position.xmin-0.01f);
           y.push_back ((opts.position.ymax - opts.position.ymin) * (val - pref.getMin ()) 
                         / (pref.getMax () - pref.getMin ()) + opts.position.ymin);
         }
-      label.setup2D (font, str, x, y, opts.font.scale, glgrib_string::SW);
+      label.setup2D (font, str, x, y, opts.font.scale, glgrib_string::SE);
       label.setForegroundColor (opts.font.color.foreground);
       label.setBackgroundColor (opts.font.color.background);
 

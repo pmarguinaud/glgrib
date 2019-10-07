@@ -3,8 +3,11 @@
 LDFLAGS=-fopenmp -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -ltinfo -lssl -lcrypto -lpthread -lsqlite3
 RUNTEST=./runtest.pl $@ ./glgrib.x
 
+ECCODES_PREFIX=$(HOME)/install/eccodes--2.13.0_FIXOMMCODES
+ECCODES_PREFIX=$(HOME)/install/eccodes-2.14.0
+
 CXXFLAGS=-O2 -fopenmp -std=c++11 -g -I$(HOME)/3d/usr/include -L$(HOME)/3d/usr/lib64 -Wl,-rpath,$(HOME)/3d/usr/lib64 -L$(HOME)/3d/usr/lib -Wl,-rpath,$(HOME)/3d/usr/lib -leccodes -lGLEW -lGL -lglfw -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto
-CXXFLAGS += -I$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/include -L$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib -Wl,-rpath,$(HOME)/install/eccodes--2.13.0_FIXOMMCODES/lib
+CXXFLAGS += -I$(ECCODES_PREFIX)/include -L$(ECCODES_PREFIX)lib -Wl,-rpath,$(ECCODES_PREFIX)/lib
 
 all: glgrib.x glgrib_dbase2sqlite.x
 

@@ -4,6 +4,7 @@ use strict;
 use File::Path;
 use Data::Dumper;
 use Text::ParseWords;
+use FileHandle;
 
 
 my (%test, @test);
@@ -169,6 +170,7 @@ for my $name (@name)
     system (@cmd)
       and die;
     
+
     if ($auto)
       {
         &mkpath ("test.run/$name");
@@ -183,10 +185,21 @@ for my $name (@name)
             my $dif = "test.run/$name/diff_$png";
             if ((-f $ref) && ($comp))
               {
+                'FileHandle'->new (">>test.run/test.log")->print ("$name\n");
                 my @cmd = ('compare', '-metric', 'MAE', $ref, $new, $dif);
                 print "@cmd\n";
-                system (@cmd);
-                print "\n"
+		if (my $pid = fork ())
+		  {
+                    waitpid ($pid, 0);
+		  }
+		else
+		  {
+                    open (STDOUT, ">>test.run/test.log");
+                    open (STDERR, ">>test.run/test.log");
+                    exec (@cmd);
+		  }
+                print "\n";
+                'FileHandle'->new (">>test.run/test.log")->print ("\n");
     	      }
           }
     

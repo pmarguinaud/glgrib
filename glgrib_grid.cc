@@ -13,6 +13,7 @@ glgrib_grid & glgrib_grid::operator= (const glgrib_grid & other)
   if ((this != &other) && other.isReady ())
     {
       glgrib_object::operator= (other);
+      opts = other.opts;
       setup (opts);
       setReady ();
     }

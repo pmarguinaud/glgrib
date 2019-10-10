@@ -434,9 +434,12 @@ void glgrib_palette::save (const glgrib_field_metadata & meta) const
 
   if (meta.CLNOMA != "")
     {
-      TRY (sqlite3_prepare_v2 (db, "INSERT OR REPLACE CLNOMA, palette, min, "
-                                   "max FROM CLNOMA2PALETTE;", -1, &req, 0));
+      TRY (sqlite3_prepare_v2 (db, "INSERT OR REPLACE INTO CLNOMA2PALETTE (CLNOMA, palette, min, "
+                                   "max) VALUES (?, ?, ?, ?);", -1, &req, 0));
       TRY (sqlite3_bind_text (req, 1, meta.CLNOMA.c_str (), meta.CLNOMA.length (), NULL));
+      TRY (sqlite3_bind_text (req, 2, opts.name.c_str (), opts.name.length (), NULL));
+      TRY (sqlite3_bind_double (req, 3, opts.min));
+      TRY (sqlite3_bind_double (req, 4, opts.max));
  
       if ((rc = sqlite3_step (req)) != SQLITE_DONE)
         goto end;

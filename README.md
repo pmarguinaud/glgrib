@@ -1,6 +1,3 @@
-# glgrib
-Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, gaussian grid.
-
 ## Clouds, 3 layers, t1198c2.2                                       -- t1198_3l
 ![](test.ref/t1198_3l/thumb_TEST_0000.png)
 
@@ -175,19 +172,33 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
 ![](test.ref/dashed1/thumb_TEST_0000.png)
 
 ```
-    --landscape.on --landscape.orography 
+    --landscape.on --landscape.orography 0 --landscape.wireframe.on 
+    --landscape.geometry testdata/contour/t0479.grb --window.width 1024 
+    --window.height 1024 --field[0].path testdata/contour/t0479.grb 
+    --field[0].scale 1.00 --field[0].contour.on --field[0].contour.lengths 
+    100 --field[0].contour.patterns X- --view.fov 5 
 ```
 ## Contour with dashed thick lines, gaussian geometry                -- dashed2
 ![](test.ref/dashed2/thumb_TEST_0000.png)
 
 ```
-    --landscape.on --landscape.orography 
+    --landscape.on --landscape.orography 0 --landscape.wireframe.on 
+    --landscape.geometry testdata/contour/t0479.grb --window.width 1024 
+    --window.height 1024 --field[0].path testdata/contour/t0479.grb 
+    --field[0].scale 1.01 --field[0].contour.on --field[0].contour.lengths 
+    100 --field[0].contour.patterns XXXXXXXXX-X- --view.fov 5 
+    --field[0].contour.widths 5 
 ```
 ## Contour with dashed thick colored lines, gaussian geometry        -- dashed3
 ![](test.ref/dashed3/thumb_TEST_0000.png)
 
 ```
-    --landscape.on --landscape.orography 
+    --landscape.on --landscape.orography 0 --landscape.wireframe.on 
+    --landscape.geometry testdata/contour/t0479.grb --window.width 1024 
+    --window.height 1024 --field[0].path testdata/contour/t0479.grb 
+    --field[0].scale 1.01 --field[0].contour.on --field[0].contour.lengths 
+    100 --field[0].contour.patterns XXXXXXXXX-X- --view.fov 5 
+    --field[0].contour.widths 5 --field[0].contour.colors red green blue 
 ```
 ## Display French departements                                       -- departements
 ![](test.ref/departements/thumb_TEST_0000.png)
@@ -257,7 +268,8 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
 
 ```
     --landscape.on --landscape.geometry 
-    testdata/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --landscape.orography 
+    testdata/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --landscape.orography 0 
+    --coast.on --grid.on 
 ```
 ## Display mapscale                                                  -- mapscale
 ![](test.ref/mapscale/thumb_TEST_0000.png)
@@ -314,7 +326,8 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].path testdata/t1198c2.2/N.grb --field[0].scale 1.03 
     --field[0].palette-{ --colors #00000000 #008bff #01f8e9 #05cf66 
     #34c00c #b6e904 #ffe600 #ffb500 #ff6900 #ff0f00 #b3003e #570088 
-    --values 
+    --values 0 2 6 10 14 18 22 26 30 34 38 42 }- --colorbar.on 
+    --window.width 1200 
 ```
 ## Display field with discrete palette                               -- palette_values
 ![](test.ref/palette_values/thumb_TEST_0000.png)
@@ -324,7 +337,8 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].path testdata/t1198c2.2/N.grb --field[0].scale 1.03 
     --field[0].palette-{ --colors #00000000 #008bff #01f8e9 #05cf66 
     #34c00c #b6e904 #ffe600 #ffb500 #ff6900 #ff0f00 #b3003e #570088 
-    --values 
+    --values 0 2 6 10 14 18 22 26 30 34 38 42 46 }- --colorbar.on 
+    --window.width 1200 
 ```
 ## Display field difference                                          -- scalar_diff
 ![](test.ref/scalar_diff/thumb_TEST_0000.png)
@@ -398,7 +412,12 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
 ![](test.ref/travelling/thumb_TEST_0000.png)
 
 ```
-    --scene.travelling.on --scene.travelling.pos1.lon 
+    --scene.travelling.on --scene.travelling.pos1.lon 0 
+    --scene.travelling.pos1.lat 0 --scene.travelling.pos1.fov 30 
+    --scene.travelling.pos2.lon 90 --scene.travelling.pos2.lat 45 
+    --scene.travelling.pos2.fov 10 --landscape.on --landscape.geometry 
+    testdata/t1198c2.2/Z.grb --field[0].path testdata/t1198c2.2/N.grb 
+    --field[0].scale 1.03 
 ```
 ## Display vector norm & arrow, Lambert geometry                     -- vector
 ![](test.ref/vector/thumb_TEST_0000.png)
@@ -416,13 +435,19 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
 ```
     --landscape.on --landscape.geometry 
     testdata/arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 
+    0 --field[0].vector.on --field[0].path 
+    testdata/arpt1798_wind/glob25_+1.grb 
+    testdata/arpt1798_wind/glob25_+1.grb --field[0].scale 1.01 --coast.on 
+    --grid.on 
 ```
 ## Vector arrow, stretched/rotated gaussian geometry                 -- vector_t1798
 ![](test.ref/vector_t1798/thumb_TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/arpt1798_wind/+1.grb 
-    --landscape.orography 
+    --landscape.orography 0 --field[0].vector.on --field[0].path 
+    testdata/arpt1798_wind/+1.grb testdata/arpt1798_wind/+1.grb 
+    --field[0].scale 1.01 --coast.on --grid.on 
 ```
 ## Display landscape in WebMercator projection                       -- webmercator
 ![](test.ref/webmercator/thumb_TEST_0000.png)
@@ -448,11 +473,19 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
 ```
     --landscape.on --landscape.geometry 
     testdata/arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 --landscape.orography 
+    0 --field[0].vector.on --field[0].path 
+    testdata/arpt1798_wind/lfpw_0_2_2_sfc_20_u.grib2 
+    testdata/arpt1798_wind/lfpw_0_2_3_sfc_20_v.grib2 --field[0].scale 1.01 
+    --coast.on --grid.on 
 ```
 ## Wind on stretched/rotated gaussian geometry                       -- wind_t1798
 ![](test.ref/wind_t1798/thumb_TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry 
-    testdata/arpt1798_wind/S105WIND.U.PHYS.grb --landscape.orography 
+    testdata/arpt1798_wind/S105WIND.U.PHYS.grb --landscape.orography 0 
+    --field[0].vector.on --field[0].path 
+    testdata/arpt1798_wind/S105WIND.U.PHYS.grb 
+    testdata/arpt1798_wind/S105WIND.V.PHYS.grb --field[0].scale 1.01 
+    --coast.on --grid.on 
 ```

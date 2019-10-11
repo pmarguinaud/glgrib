@@ -43,8 +43,9 @@ sub readme
       print "\n";
 
       my @o = @{ $test{$name}[1] };
+
       my @l = ('');
-      while (my $o = shift (@o))
+      while (defined (my $o = shift (@o)))
         {
           push @l, '' if (length ($l[-1]) + length ($o) > 70);
           $l[-1] .= "$o ";

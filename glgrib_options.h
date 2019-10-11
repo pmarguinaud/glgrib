@@ -919,7 +919,7 @@ public:
     INCLUDE (lines);
   }
   bool on = false;
-  glgrib_options_lines lines = glgrib_options_lines ("coastlines/wdb_rivers_f.b", "gshhg");
+  glgrib_options_lines lines = glgrib_options_lines ("coastlines/gshhg/WDBII_bin/wdb_rivers_f.b", "gshhg");
 };
 
 class glgrib_options_border : public glgrib_options_base
@@ -946,7 +946,7 @@ public:
   {
     bool on = false;
   } sea;
-  glgrib_options_lines lines = glgrib_options_lines ("coastlines/wdb_borders_f.b", "gshhg");
+  glgrib_options_lines lines = glgrib_options_lines ("coastlines/gshhg/WDBII_bin/wdb_borders_f.b", "gshhg");
 };
 
 class glgrib_options_points : public glgrib_options_base
@@ -1006,7 +1006,7 @@ public:
   {
     bool on = false;
   } lakes;
-  glgrib_options_lines lines = glgrib_options_lines ("coastlines/gshhs_h.b", "gshhg");
+  glgrib_options_lines lines = glgrib_options_lines ("coastlines/gshhg/GSHHS_bin/gshhs_h.b", "gshhg");
 };
 
 class glgrib_options_departements : public glgrib_options_base
@@ -1018,7 +1018,7 @@ public:
     INCLUDE (lines);
   }
   bool on = false;
-  glgrib_options_lines lines = glgrib_options_lines ("coastlines/departements-20180101.shp", "shapeline");
+  glgrib_options_lines lines = glgrib_options_lines ("coastlines/departements/departements-20180101.shp", "shapeline");
 };
 
 class glgrib_options_shell : public glgrib_options_base

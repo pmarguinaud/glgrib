@@ -41,6 +41,22 @@ sub readme
       print "## $desc -- $name\n";
       print "![](test.ref/$name/thumb_TEST_0000.png)\n";
       print "\n";
+
+      my @o = @{ $test{$name}[1] };
+      my @l = ('');
+      while (my $o = shift (@o))
+        {
+          push @l, '' if (length ($l[-1]) + length ($o) > 70);
+          $l[-1] .= "$o ";
+        }
+
+      print "```\n";
+      for (@l)
+        {
+          print "    $_\n";
+        }
+      print "```\n";
+
     }
   die ("\n");
 }

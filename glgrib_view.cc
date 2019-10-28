@@ -142,10 +142,16 @@ float glgrib_view::pixel_to_dist_at_nadir (float pixels) const
 
   if (get_xyz_from_screen_coords (xpos1, ypos1, &pos1))
     {
-      return acos (glm::dot (pos0, pos1));
+      // Double precision required here
+      glm::dvec3 dpos0 = pos0;
+      glm::dvec3 dpos1 = pos1;
+      dpos0 = glm::normalize (dpos0);
+      dpos1 = glm::normalize (dpos1);
+      return acos (glm::dot (dpos0, dpos1));
     }
   else
     {
+std::cout << " M_PI" << std::endl;
       return M_PI;
     }
 }

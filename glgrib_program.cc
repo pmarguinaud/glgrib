@@ -779,9 +779,10 @@ void main ()
   vec3 t0 = normalize (vertexPos1 - vertexPos0);
   vec3 t1 = normalize (vertexPos2 - vertexPos1);
 
-  if ((gl_VertexID == 0) || (gl_VertexID == 2))
+
+  if ((gl_VertexID == 0) || (gl_VertexID == 2) || (gl_VertexID == 4))
     vertexPos = vertexPos0;
-  else if ((gl_VertexID == 1) || (gl_VertexID == 3))
+  else if ((gl_VertexID == 1) || (gl_VertexID == 3) || (gl_VertexID == 5))
     vertexPos = vertexPos1;  
 
   vec3 p = normalize (vertexPos);

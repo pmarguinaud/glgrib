@@ -142,10 +142,11 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
                      255.0f/255.0f};
   program->set3fv ("color0", color0);
 
-
-  if (stream.wide)
+  bool wide = false;
+  float Width = 0.1f;
+  if (wide)
     {
-      float width = view.pixel_to_dist_at_nadir (stream.width);
+      float width = view.pixel_to_dist_at_nadir (Width);
       program->set1f ("width", width);
       unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
       glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, stream.size);

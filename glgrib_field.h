@@ -21,6 +21,7 @@ public:
     SCALAR=0,
     CONTOUR=1,
     VECTOR=2,
+    STREAM=3,
   } glgrib_field_kind;
 
   virtual glgrib_field_kind getKind () const = 0;

@@ -1320,6 +1320,166 @@ void main()
 }
 )CODE"),
 
+  glgrib_program (  // STREAM
+R"CODE(
+#version 330 core
+
+in float alpha;
+in float dist;
+out vec4 color;
+
+uniform vec3 color0;
+uniform int N = 0;
+uniform bool pattern[256];
+uniform float length;
+uniform bool dash;
+
+void main ()
+{
+  if (alpha < 1.)
+    discard;
+  if(! dash)
+    {
+      color.r = color0.r;
+      color.g = color0.g;
+      color.b = color0.b;
+      color.a = 1.;
+    }
+  else
+    {
+      float r = mod (dist / length, 1.0f);
+      int k = int (N * r);
+
+      color.r = color0.r;
+      color.g = color0.g;
+      color.b = color0.b;
+
+      if (pattern[k])
+        color.a = 1.;
+      else
+        color.a = 0.;
+
+if(false){
+      if (r > 0.5f)
+        {
+          color.r = 1.;
+          color.g = 0.;
+          color.b = 0.;
+        }
+      else
+        {
+          color.r = 0.;
+          color.g = 1.;
+          color.b = 0.;
+        }
+      color.a = 1.;
+}
+      
+  }
+}
+
+)CODE",
+R"CODE(
+#version 330 core
+
+layout(location = 0) in vec3 vertexPos0;
+layout(location = 1) in vec3 vertexPos1;
+layout(location = 2) in vec3 vertexPos2;
+layout(location = 3) in float norm0;
+layout(location = 4) in float norm1;
+layout(location = 5) in float dist0;
+layout(location = 6) in float dist1;
+
+
+out float alpha;
+out float dist;
+
+
+uniform mat4 MVP;
+
+)CODE"
++ projShaderInclude
++ scalePositionInclude
++ R"CODE(
+
+uniform bool do_alpha = false;
+uniform float posmax = 0.97;
+uniform float width = 0.005;
+
+void main ()
+{
+  vec3 vertexPos;
+  vec3 t0 = normalize (vertexPos1 - vertexPos0);
+  vec3 t1 = normalize (vertexPos2 - vertexPos1);
+
+
+  if ((gl_VertexID == 0) || (gl_VertexID == 2))
+    vertexPos = vertexPos0;
+  else if ((gl_VertexID == 1) || (gl_VertexID == 3) || (gl_VertexID == 5) || (gl_VertexID == 4))
+    vertexPos = vertexPos1;  
+
+  vec3 p = normalize (vertexPos);
+  vec3 n0 = cross (t0, p);
+  vec3 n1 = cross (t1, p);
+
+  float c = width / scalingFactor (p);
+
+  if ((gl_VertexID >= 4) && (dot (cross (n0, n1), vertexPos) < 0.))
+    c = 0.0;
+
+  if (gl_VertexID == 2)
+    vertexPos = vertexPos + c * n0;
+  if (gl_VertexID == 3)
+    vertexPos = vertexPos + c * n0;
+  if (gl_VertexID == 4)
+    vertexPos = vertexPos + c * normalize (n0 + n1);
+  if (gl_VertexID == 5)
+    vertexPos = vertexPos + c * n1;
+
+  vec3 normedPos = compNormedPos (vertexPos);
+  vec3 pos = compProjedPos (vertexPos, normedPos);
+
+  alpha = min (norm0, norm1);
+
+  if (proj == XYZ)
+    {
+      pos = scalePosition (pos, normedPos, scale0);
+    }
+  else
+    {
+      if ((proj == LATLON) || (proj == MERCATOR))
+      if ((pos.y < -posmax) || (+posmax < pos.y))
+        {
+          pos.x = -0.1;
+          if (do_alpha)
+            alpha = 0.0;
+	}
+      if (proj == LATLON)
+      if ((pos.z > +0.49) || (pos.z < -0.49))
+        alpha = 0.0;
+
+      if (proj == POLAR_SOUTH)
+        pos.x = pos.x - 0.005;
+      else
+        pos.x = pos.x + 0.005;
+    }
+
+  gl_Position =  MVP * vec4 (pos, 1);
+
+  if ((gl_VertexID == 0) || (gl_VertexID == 2))
+    {
+      dist = dist0;
+    }
+  else
+    {
+      dist = dist1;
+    }
+
+
+
+}
+)CODE"),
+
   glgrib_program (  // TEST
 R"CODE(
 #version 330 core

@@ -375,6 +375,16 @@ public:
   std::vector<float> lengths;
 };
 
+class glgrib_options_stream : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on,            Enable stream lines);          
+  }
+  bool on = false;
+};
+
 class glgrib_options_vector : public glgrib_options_base
 {
 public:
@@ -439,6 +449,7 @@ public:
     INCLUDE (palette);
     INCLUDE (vector);
     INCLUDE (contour);
+    INCLUDE (stream);
   }
   struct
   {
@@ -464,6 +475,7 @@ public:
   glgrib_options_palette palette;
   glgrib_options_vector vector;
   glgrib_options_contour contour;
+  glgrib_options_stream stream;
 };
 
 

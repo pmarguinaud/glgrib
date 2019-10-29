@@ -3,6 +3,7 @@
 #include "glgrib_field_scalar.h"
 #include "glgrib_field_vector.h"
 #include "glgrib_field_contour.h"
+#include "glgrib_field_stream.h"
 
 #include <stdio.h>
 #include <sys/time.h>
@@ -220,6 +221,8 @@ void glgrib_scene::update_interpolation ()
             {
               if (d.opts.field[i].vector.on)
                 slotmax = std::max (slotmax, (int)d.opts.field[i].path.size () / 2);
+              else if (d.opts.field[i].stream.on)
+                slotmax = std::max (slotmax, (int)d.opts.field[i].path.size () / 2);
               else if (d.opts.field[i].contour.on)
                 slotmax = std::max (slotmax, (int)d.opts.field[i].path.size ());
               else
@@ -324,6 +327,8 @@ void glgrib_scene::setup (const glgrib_options & o)
 	  if (! defined)
             continue;
           if (d.opts.field[i].vector.on)
+            size += 4;
+          else if (d.opts.field[i].stream.on)
             size += 4;
           else if (d.opts.field[i].contour.on)
             size += 2;
@@ -480,6 +485,8 @@ void glgrib_scene::setFieldOptions (int j, const glgrib_options_field & o, float
       glgrib_field * fld = NULL;
       if (o.vector.on)
         fld = new glgrib_field_vector ();
+      else if (o.stream.on)
+        fld = new glgrib_field_stream ();
       else if (o.contour.on)
         fld = new glgrib_field_contour ();
       else

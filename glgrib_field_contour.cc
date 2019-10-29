@@ -194,13 +194,7 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, bool *
   bool edge = false;
   int it = it0;
   int its[2];
-  static int II = 0;
-  bool dbg = false;
   int ind_start = iso->size ();
-  static FILE * fp = NULL;
-
-  if (dbg && (fp == NULL))
-    fp = fopen ("debug.txt", "w");
 
 
   while (cont)
@@ -226,11 +220,6 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, bool *
         break;
 
       geometry->getTriangleNeighbours (it, jglo, itri, xyz);
-
-
-      if (dbg)
-        fprintf (fp, " %4d : %4d %4d %4d : %4d %4d %4d : ", it, jglo[0], jglo[1], jglo[2],
-                itri[0], itri[1], itri[2]);
 
       if (count == 0) // First triangle; see if it is at the edge of the domain
         {
@@ -273,12 +262,6 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, bool *
 
               iso->push (X, Y, Z);
 
-              if (dbg)
-              fprintf (fp, " %6.2f %6.2f %6.2f | %6.2f %6.2f %6.2f | ", xyz[iA].x, xyz[iA].y, xyz[iA].z,
-                                                                        xyz[iB].x, xyz[iB].y, xyz[iB].z);
-              if (dbg)
-              fprintf (fp, " %4d %4d %6.2f %6.2f %6.2f %4d\n", count, it, X, Y, Z, itAB);
-
               if (count < 2)
                 its[count] = it;
 
@@ -301,11 +284,6 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, bool *
       if (! edge)
         iso->push (iso->xyz[3*(ind_start+1)+0], iso->xyz[3*(ind_start+1)+1], iso->xyz[3*(ind_start+1)+2], 0.);
       iso->push (0., 0., 0., 0.);
-      if (dbg)
-        fprintf (fp, "--------------------------------- %d\n", II);
-      if (dbg)
-        fflush (fp);
-      II++;
     }
 
   return;

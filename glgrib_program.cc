@@ -1336,8 +1336,14 @@ uniform bool dash;
 
 void main ()
 {
-  if (alpha < 1.)
+  if (alpha == 0.0f)
     discard;
+
+      color.r = 1.0f;
+      color.g = 0.0f;
+      color.b = 0.0f;
+      color.a = 1.;
+if(false){
   if(! dash)
     {
       color.r = color0.r;
@@ -1376,6 +1382,7 @@ if(false){
 }
       
   }
+}
 }
 
 )CODE",

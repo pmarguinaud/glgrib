@@ -26,7 +26,11 @@ private:
     std::vector<float> xyz; // Position
     std::vector<float> drw; // Flag (=0, hide, =1 show)
     std::vector<float> dis; // Distance 
-    double dis_last = 0.;
+
+    void push (const glm::vec3 & xyz, const float d = 1.0f)
+    {
+      push (xyz.x, xyz.y, xyz.z, d);
+    }
     void push (const float x, const float y, const float z, const float d = 1.) 
     {
       double D = 0.0f;
@@ -35,10 +39,16 @@ private:
           int sz = size (), last = sz - 1;
           if (sz > 0)
             {
-              float dx = x - xyz[3*last+0];
-              float dy = y - xyz[3*last+1];
-              float dz = z - xyz[3*last+2];
-              D = dis_last + sqrt (dx * dx + dy * dy + dz * dz);
+              float x0 = xyz[3*last+0];
+              float y0 = xyz[3*last+1];
+              float z0 = xyz[3*last+2];
+              if ((x0 != 0.0f) || (y0 != 0.0f) || (z0 != 0.0f))
+                {
+                  float dx = x - x0;
+                  float dy = y - y0;
+                  float dz = z - z0;
+                  D = dis[last] + sqrt (dx * dx + dy * dy + dz * dz);
+                }
             }
         }
       xyz.push_back (x);
@@ -46,7 +56,6 @@ private:
       xyz.push_back (z);
       drw.push_back (d);
       dis.push_back (D);
-      dis_last = D;
     }
     void pop ()
     {
@@ -76,7 +85,7 @@ private:
   };
 
   streamline_t stream;
-  void processTriangle (int, float *, float *, float, bool *, streamline_data_t *);
+  void processTriangle (int, float *, float *, bool *, streamline_data_t *);
 };
 
 #endif

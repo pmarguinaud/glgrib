@@ -44,7 +44,7 @@ private:
   {
     int jlat = jlonlat.jlat;
     int jlon = jlonlat.jlon;
-    float coordy = M_PI * (0.5 - (float)jlat / (float)(Nj + 1));
+    float coordy = latgauss[jlat-1];
     float sincoordy = sin (coordy);
     float lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
     float coslat = cos (lat); float sinlat = sin (lat);

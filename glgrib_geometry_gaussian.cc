@@ -14,6 +14,11 @@
 static
 void compute_latgauss (int kn, double * latgauss)
 {
+//for (int i = 0; i < kn; i++)
+//latgauss[i] = M_PI * (0.5 - (float)(i+1) / (float)(kn + 1));
+//return;
+
+
   const double pi = M_PI;
   const int itemax = 20;
   const double zeps = std::numeric_limits <double>::epsilon ();

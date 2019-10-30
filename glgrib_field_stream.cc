@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <algorithm>
+#include <bits/stdc++.h> 
 
 
 glgrib_field_stream::glgrib_field_stream (const glgrib_field_stream & field)
@@ -110,17 +111,305 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
   normmax = sqrt (normmax);
 
 
-  // TODO : SETUP
+  std::cout << " normmax = " << normmax << std::endl;
+  std::cout << " size = " << size << std::endl;
 
+  for (int i = 0; i < size; i++)
+    {
+      (*data_u)[i] = (*data_u)[i] / normmax;
+      (*data_v)[i] = (*data_v)[i] / normmax;
+    }
+
+  bool * seen = (bool *)malloc (sizeof (bool) * geometry->numberOfTriangles);
+  for (int i = 0; i < geometry->numberOfTriangles; i++)
+    seen[i] = false;
+
+
+  streamline_data_t stream_data;
+
+  int dit = 1;
+
+  for (int it = 0; it < geometry->numberOfTriangles; it += dit)
+    processTriangle (it, data_u->data (), data_v->data (), 
+                     seen, &stream_data);
+
+  std::cout << stream_data.size () << std::endl;
+
+  free (seen);
+
+
+  stream.vertexbuffer   = new_glgrib_opengl_buffer_ptr (stream_data.xyz.size () * sizeof (float), 
+                                                        stream_data.xyz.data ());
+  stream.normalbuffer   = new_glgrib_opengl_buffer_ptr (stream_data.drw.size () * sizeof (float), 
+                                                        stream_data.drw.data ());
+  stream.distancebuffer = new_glgrib_opengl_buffer_ptr (stream_data.dis.size () * sizeof (float), 
+                                                        stream_data.dis.data ());
+  stream.size = stream_data.size () - 1;
 
   setupVertexAttributes ();
 
   setReady ();
 }
 
-void glgrib_field_stream::processTriangle (int it0, float * rx, float * ry, float r0, bool * seen, streamline_data_t * stream)
+static glm::vec2 xyz2merc (const glm::vec3 & xyz)
 {
-  // TODO
+  float lon = atan2 (xyz.y, xyz.x);
+  float lat = asin (xyz.z);
+  return glm::vec2 (lon, log (tan (M_PI / 4.0f + lat / 2.0f)));
+}
+
+static glm::vec3 merc2xyz (const glm::vec2 & merc)
+{
+  float lon = merc.x;
+  float lat = 2.0f * atan (exp (merc.y)) - M_PI / 2.0f;
+  float coslon = cos (lon), sinlon = sin (lon);
+  float coslat = cos (lat), sinlat = sin (lat);
+
+  return glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
+}
+
+float lineLineIntersect (const glm::vec2 & P1, const glm::vec2 & V1,
+                         const glm::vec2 & P,  const glm::vec2 & Q)
+{
+  float b = V1.x * (P.y - Q.y ) - V1.y * (P.x - Q.x ); 
+  float a = V1.y * (Q.x - P1.x) - V1.x * (Q.y - P1.y);
+
+  if (fabsf (b) < 1e-6)
+    return std::numeric_limits<float>::infinity ();
+
+  return a / b;
+}
+
+void glgrib_field_stream::processTriangle (int it0, float * ru, float * rv, 
+                                           bool * seen, streamline_data_t * stream)
+{
+  std::vector<glm::vec3> listf, listb, * list = &listf;
+
+  int it = it0; 
+  std::valarray<float> w0 (3), w (3);
+  glm::vec2 M, V;   // Current values
+  glm::vec2 M0, V0; // Previous values
+  float V0MM00;
+
+  int count = 0;
+  
+  while (1)
+    {
+      if (seen[it])
+        goto last;
+
+      seen[it] = true;
+
+      //
+      {
+        int jglo[3], itri[3];
+        glm::vec3 xyz[3];
+
+        geometry->getTriangleNeighbours (it, jglo, itri, xyz);
+
+        glm::vec2 Mn;
+        glm::vec2 P[3];
+   
+        // Mercator projection
+        for (int i = 0; i < 3; i++)
+          P[i] = xyz2merc (xyz[i]);
+   
+        // First point of the list; see which segment to start with, initialize weights, V and M
+        if (listf.size () == 0)
+          {
+            int i0;
+            float s0 = std::numeric_limits<float>::max ();
+            for (int i = 0; i < 3; i++)
+              {
+                int j = (i + 1) % 3;
+                int k = (i + 2) % 3;
+                w[i] = w[j] = 0.5f; w[k] = 0.0f;
+                V = glm::vec2 (w[0] * ru[jglo[0]] + w[1] * ru[jglo[1]] + w[2] * ru[jglo[2]],
+                               w[0] * rv[jglo[0]] + w[1] * rv[jglo[1]] + w[2] * rv[jglo[2]]) / w.sum ();
+                V = glm::normalize (V);
+                glm::vec2 U = glm::normalize (P[j] - P[i]);
+                float s = fabsf (glm::dot (U, V));
+                if (s < s0)
+                  {
+                    s0 = s;
+                    i0 = i;
+                  }
+              }
+            
+            int j0 = (i0 + 1) % 3;
+            int k0 = (i0 + 2) % 3;
+     
+            w[i0] = w[j0] = 0.5f; w[k0] = 0.0f;
+   
+            M = (w[0] * P[0] + w[1] * P[1] + w[2] * P[2]) / w.sum ();
+   
+            w0 = w;
+
+            V = glm::vec2 (w[0] * ru[jglo[0]] + w[1] * ru[jglo[1]] + w[2] * ru[jglo[2]],
+                           w[0] * rv[jglo[0]] + w[1] * rv[jglo[1]] + w[2] * rv[jglo[2]]) / w.sum ();
+   
+            list->push_back (glm::vec3 (M.x, M.y, glm::length (V)));
+
+          }
+
+        if (list->size () >= 2)
+          {
+            float V0MM0 = glm::dot (V0, M-M0);
+
+            if ((list == &listf) && (list->size () == 2))
+              {
+                V0MM00 = V0MM0;
+              }
+            else if (list == &listf)
+              {
+                if (V0MM00 * V0MM0 < 0.0f)
+                  goto last;
+              }
+            else if (list == &listb)
+              {
+                if (V0MM00 * V0MM0 > 0.0f)
+                  goto last;
+              }
+          }
+   
+        // Fix periodicity issue
+        for (int i = 0; i < 3; i++)
+          {
+            if (M.x - P[i].x > M_PI)
+              P[i].x += 2.0f * M_PI;
+            else if (P[i].x - M.x > M_PI)
+              P[i].x -= 2.0f * M_PI;
+          }
+
+        M0 = M; V0 = V;
+
+        // Try all edges : intersection of vector line with triangle edges
+        for (int i = 0; i < 3; i++)
+          {
+            int j = (i + 1) % 3;
+            int k = (i + 2) % 3;
+
+            if ((w[i] != 0.0f) && (w[j] != 0.0f)) // Exit triangle through other edge
+              continue;
+
+            float lambda = lineLineIntersect (M, V, P[i], P[j]);
+
+            if ((lambda < 0.0f) || (1.0f < lambda)) // Cross edge line between P[i] and P[j]
+              continue;
+
+            M = P[i] * lambda + P[j] * (1.0f - lambda);
+
+            V = glm::vec2 (lambda * ru[jglo[i]] + (1.0f - lambda) * ru[jglo[j]],
+                           lambda * rv[jglo[i]] + (1.0f - lambda) * rv[jglo[j]]);
+
+            w[0] = w[1] = w[2] = 0.0f;
+ 
+            list->push_back (glm::vec3 (M.x, M.y, glm::length (V)));
+
+            int itn = itri[i], jglon[3];
+            
+            if (itn < 0)
+              {
+                list->pop_back ();
+                continue;
+              }
+
+            if (seen[itn])
+              {
+                list->pop_back ();
+                continue;
+              }
+            
+            glm::vec3 xyzn[3]; int itrin[3];
+            geometry->getTriangleNeighbours (itn, jglon, itrin, xyzn);
+
+            // Find weights for next triangle
+            for (int k = 0; k < 3; k++)
+              {
+                if (jglon[k] == jglo[i])
+                  w[k] = lambda;
+                if (jglon[k] == jglo[j])
+                  w[k] = 1.0f - lambda;
+              }
+
+            it = itn;
+
+            goto found;
+          }
+
+       }
+
+      goto last;
+
+found:
+  
+      count++;
+
+      continue;
+
+last:
+
+      if ((list == &listf) && (listf.size () > 0))
+        {
+          M = listf[0]; w = w0;
+          list = &listb;
+          int jglo[3], itri[3];
+          glm::vec3 xyz[3];
+
+          geometry->getTriangleNeighbours (it0, jglo, itri, xyz);
+
+          for (int i = 0; i < 3; i++)
+            {
+              int j = (i + 1) % 3;
+              if ((w[i] > 0.0f) && (w[j] > 0.0f))
+                {
+                  it = itri[i];
+                  break;
+                }
+            }
+
+          if (it == -1)
+            break;
+
+          continue;
+        }
+
+      break;
+
+    }
+
+
+  if (V0MM00 > 0.0f)
+    {
+      for (int i = listb.size () - 1; i >= 0; i--)
+        stream->push (merc2xyz (glm::vec2 (listb[i].x, listb[i].y)), listb[i].z);
+      for (int i = 0; i < listf.size (); i++)
+        stream->push (merc2xyz (glm::vec2 (listf[i].x, listf[i].y)), listf[i].z);
+    }
+  else
+    {
+      for (int i = listf.size () - 1; i >= 0; i--)
+        stream->push (merc2xyz (glm::vec2 (listf[i].x, listf[i].y)), listf[i].z);
+      for (int i = 0; i < listb.size (); i++)
+        stream->push (merc2xyz (glm::vec2 (listb[i].x, listb[i].y)), listb[i].z);
+    }
+
+  if (stream->dis[stream->size ()-1] < 0.1000f) // About 5 degrees
+    {
+      for (int i = 0; i < listf.size () + listb.size (); i++)
+        stream->pop ();
+    }
+  else
+    {
+      if (listf.size () + listb.size () > 0)
+        stream->push (0.0f, 0.0f, 0.0f, 0.0f);
+    }
+  
+
+
+
+
+
   return;
 }
 

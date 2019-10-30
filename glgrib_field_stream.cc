@@ -110,10 +110,6 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 
   normmax = sqrt (normmax);
 
-
-  std::cout << " normmax = " << normmax << std::endl;
-  std::cout << " size = " << size << std::endl;
-
   for (int i = 0; i < size; i++)
     {
       (*data_u)[i] = (*data_u)[i] / normmax;
@@ -132,8 +128,6 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
   for (int it = 0; it < geometry->numberOfTriangles; it += dit)
     processTriangle (it, data_u->data (), data_v->data (), 
                      seen, &stream_data);
-
-  std::cout << stream_data.size () << std::endl;
 
   free (seen);
 
@@ -431,7 +425,7 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
                      255.0f/255.0f};
   program->set3fv ("color0", color0);
 
-  bool wide = false;
+  bool wide = true;
   float Width = 0.1f;
   if (wide)
     {

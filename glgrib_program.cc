@@ -1411,7 +1411,7 @@ uniform mat4 MVP;
 
 uniform bool do_alpha = false;
 uniform float posmax = 0.97;
-uniform float width = 0.005;
+uniform float width = 0.015;
 
 void main ()
 {
@@ -1429,7 +1429,7 @@ void main ()
   vec3 n0 = cross (t0, p);
   vec3 n1 = cross (t1, p);
 
-  float c = width / scalingFactor (p);
+  float c = max (0.002, 0.015 * norm0) / scalingFactor (p);
 
   if ((gl_VertexID >= 4) && (dot (cross (n0, n1), vertexPos) < 0.))
     c = 0.0;

@@ -1326,6 +1326,7 @@ R"CODE(
 
 in float alpha;
 in float dist;
+in float norm;
 out vec4 color;
 
 uniform vec3 color0;
@@ -1339,50 +1340,12 @@ void main ()
   if (alpha == 0.0f)
     discard;
 
-      color.r = 1.0f;
-      color.g = 0.0f;
-      color.b = 0.0f;
-      color.a = 1.;
-if(false){
-  if(! dash)
-    {
-      color.r = color0.r;
-      color.g = color0.g;
-      color.b = color0.b;
-      color.a = 1.;
-    }
-  else
-    {
-      float r = mod (dist / length, 1.0f);
-      int k = int (N * r);
+  vec3 grey = vec3 (0.3f, 0.3f, 0.3f);
+  vec3 green= vec3 (0.0f, 1.0f, 0.0f);
 
-      color.r = color0.r;
-      color.g = color0.g;
-      color.b = color0.b;
+  color.rgb = norm * green + (1.0f - norm) * grey;
+  color.a = 1.;
 
-      if (pattern[k])
-        color.a = 1.;
-      else
-        color.a = 0.;
-
-if(false){
-      if (r > 0.5f)
-        {
-          color.r = 1.;
-          color.g = 0.;
-          color.b = 0.;
-        }
-      else
-        {
-          color.r = 0.;
-          color.g = 1.;
-          color.b = 0.;
-        }
-      color.a = 1.;
-}
-      
-  }
-}
 }
 
 )CODE",
@@ -1400,6 +1363,7 @@ layout(location = 6) in float dist1;
 
 out float alpha;
 out float dist;
+out float norm;
 
 
 uniform mat4 MVP;
@@ -1411,7 +1375,7 @@ uniform mat4 MVP;
 
 uniform bool do_alpha = false;
 uniform float posmax = 0.97;
-uniform float width = 0.015;
+uniform float width;
 
 void main ()
 {
@@ -1429,7 +1393,7 @@ void main ()
   vec3 n0 = cross (t0, p);
   vec3 n1 = cross (t1, p);
 
-  float c = max (0.002, 0.015 * norm0) / scalingFactor (p);
+  float c = width * max (0.5f, 2.0f * norm0) / scalingFactor (p);
 
   if ((gl_VertexID >= 4) && (dot (cross (n0, n1), vertexPos) < 0.))
     c = 0.0;
@@ -1446,7 +1410,7 @@ void main ()
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);
 
-  alpha = min (norm0, norm1);
+  norm = alpha = min (norm0, norm1);
 
   if (proj == XYZ)
     {

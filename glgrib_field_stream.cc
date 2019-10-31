@@ -8,6 +8,9 @@
 #include <algorithm>
 #include <bits/stdc++.h> 
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/string_cast.hpp>
+
 
 glgrib_field_stream::glgrib_field_stream (const glgrib_field_stream & field)
 {
@@ -125,6 +128,8 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 
   int dit = 1;
 
+  std::cout << " geometry->numberOfTriangles  = " << geometry->numberOfTriangles << std::endl;
+
   for (int it = 0; it < geometry->numberOfTriangles; it += dit)
     processTriangle (it, data_u->data (), data_v->data (), 
                      seen, &stream_data);
@@ -162,6 +167,13 @@ static glm::vec3 merc2xyz (const glm::vec2 & merc)
   return glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
 }
 
+static glm::vec2 merc2lonlat (const glm::vec2 & merc)
+{
+  float lon = merc.x;
+  float lat = 2.0f * atan (exp (merc.y)) - M_PI / 2.0f;
+  return glm::vec2 (glm::degrees (lon), glm::degrees (lat));
+}
+
 float lineLineIntersect (const glm::vec2 & P1, const glm::vec2 & V1,
                          const glm::vec2 & P,  const glm::vec2 & Q)
 {
@@ -185,12 +197,25 @@ void glgrib_field_stream::processTriangle (int it0, float * ru, float * rv,
   glm::vec2 M0, V0; // Previous values
   float V0MM00;
 
+  bool dbg = false;
+
   int count = 0;
   
   while (1)
     {
+
+dbg = (it0 == 92186);
+if (dbg)
+std::cout << " it = " << it << " " << seen[it] << std::endl;
+
+
       if (seen[it])
         goto last;
+
+
+if (dbg) dbg = (list == &listf) && (it == 92189);
+
+if (dbg) std::cout << __FILE__ << ":" << __LINE__ << std::endl;
 
       seen[it] = true;
 
@@ -201,6 +226,9 @@ void glgrib_field_stream::processTriangle (int it0, float * ru, float * rv,
 
         geometry->getTriangleNeighbours (it, jglo, itri, xyz);
 
+if (dbg) std::cout << __FILE__ << ":" << __LINE__ << " jglo = " << jglo[0] << " " << jglo[1] << " " << jglo[2] << std::endl;
+if (dbg) std::cout << __FILE__ << ":" << __LINE__ << " itri = " << itri[0] << " " << itri[1] << " " << itri[2] << std::endl;
+
         glm::vec2 Mn;
         glm::vec2 P[3];
    
@@ -209,9 +237,10 @@ void glgrib_field_stream::processTriangle (int it0, float * ru, float * rv,
           P[i] = xyz2merc (xyz[i]);
    
         // First point of the list; see which segment to start with, initialize weights, V and M
-        if (listf.size () == 0)
+        if (listf.size () == 0) 
           {
             int i0;
+
             float s0 = std::numeric_limits<float>::max ();
             for (int i = 0; i < 3; i++)
               {
@@ -246,8 +275,17 @@ void glgrib_field_stream::processTriangle (int it0, float * ru, float * rv,
 
           }
 
+if (dbg) std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+
+
         if (list->size () >= 2)
           {
+
+            if (M.x - M0.x > M_PI)
+              M0.x += 2.0f * M_PI;
+            else if (M0.x - M.x > M_PI)
+              M0.x -= 2.0f * M_PI;
+
             float V0MM0 = glm::dot (V0, M-M0);
 
             if ((list == &listf) && (list->size () == 2))
@@ -266,6 +304,8 @@ void glgrib_field_stream::processTriangle (int it0, float * ru, float * rv,
               }
           }
    
+if (dbg) std::cout << __FILE__ << ":" << __LINE__ << std::endl;
+
         // Fix periodicity issue
         for (int i = 0; i < 3; i++)
           {
@@ -277,6 +317,15 @@ void glgrib_field_stream::processTriangle (int it0, float * ru, float * rv,
 
         M0 = M; V0 = V;
 
+if (dbg)
+{
+  std::cout << " M = " << glm::to_string (merc2lonlat (glm::vec2 (M.x, M.y))) << std::endl;
+  std::cout << " V = " << glm::to_string (merc2lonlat (glm::vec2 (V.x, V.y))) << std::endl;
+}
+
+
+if (dbg) std::cout << __FILE__ << ":" << __LINE__ << " w " << w[0] << " " << w[1] << " " << w[2] << std::endl;
+
         // Try all edges : intersection of vector line with triangle edges
         for (int i = 0; i < 3; i++)
           {
@@ -286,7 +335,13 @@ void glgrib_field_stream::processTriangle (int it0, float * ru, float * rv,
             if ((w[i] != 0.0f) && (w[j] != 0.0f)) // Exit triangle through other edge
               continue;
 
+if (dbg) std::cout << __FILE__ << ":" << __LINE__ << " " << i << " " << j << " " << k << std::endl;
+if (dbg) std::cout << __FILE__ << ":" << __LINE__ << " w " << w[0] << " " << w[1] << " " << w[2] << std::endl;
+if (dbg) std::cout << __FILE__ << ":" << __LINE__ << " w[i], w[j] = " << w[i] << " " << w[j] << std::endl;
+
             float lambda = lineLineIntersect (M, V, P[i], P[j]);
+
+if (dbg) std::cout << __FILE__ << ":" << __LINE__ << " lambda = " << lambda << std::endl;
 
             if ((lambda < 0.0f) || (1.0f < lambda)) // Cross edge line between P[i] and P[j]
               continue;
@@ -296,17 +351,20 @@ void glgrib_field_stream::processTriangle (int it0, float * ru, float * rv,
             V = glm::vec2 (lambda * ru[jglo[i]] + (1.0f - lambda) * ru[jglo[j]],
                            lambda * rv[jglo[i]] + (1.0f - lambda) * rv[jglo[j]]);
 
-            w[0] = w[1] = w[2] = 0.0f;
  
             list->push_back (glm::vec3 (M.x, M.y, glm::length (V)));
 
             int itn = itri[i], jglon[3];
-            
+
+if (dbg) std::cout << __FILE__ << ":" << __LINE__ << " itn = " << itn << std::endl;
+
+
             if (itn < 0)
               {
-                list->pop_back ();
+//              list->pop_back ();
                 continue;
               }
+if (dbg) std::cout << __FILE__ << ":" << __LINE__ << " seen = " << seen[itn] << std::endl;
 
             if (seen[itn])
               {
@@ -316,6 +374,8 @@ void glgrib_field_stream::processTriangle (int it0, float * ru, float * rv,
             
             glm::vec3 xyzn[3]; int itrin[3];
             geometry->getTriangleNeighbours (itn, jglon, itrin, xyzn);
+
+            w[0] = w[1] = w[2] = 0.0f;
 
             // Find weights for next triangle
             for (int k = 0; k < 3; k++)
@@ -372,6 +432,25 @@ last:
 
     }
 
+if (dbg)
+  {
+    std::cout << " it0 = " << it0 << std::endl;
+    std::cout << " listb.size () = " << listb.size () << std::endl;
+
+    for (int i = 0; i < listb.size (); i++)
+      {
+        glm::vec2 latlon = merc2lonlat (glm::vec2 (listb[i].x, listb[i].y));
+        printf ("%12.5f %12.5f\n", latlon.x, latlon.y);
+      }
+
+    std::cout << " listf.size () = " << listf.size () << std::endl;
+
+    for (int i = 0; i < listf.size (); i++)
+      {
+        glm::vec2 latlon = merc2lonlat (glm::vec2 (listf[i].x, listf[i].y));
+        printf ("%12.5f %12.5f\n", latlon.x, latlon.y);
+      }
+  }
 
   if (V0MM00 > 0.0f)
     {
@@ -388,8 +467,9 @@ last:
         stream->push (merc2xyz (glm::vec2 (listb[i].x, listb[i].y)), listb[i].z);
     }
 
-  if (stream->dis[stream->size ()-1] < 0.1000f) // About 5 degrees
+  if (false && (stream->dis[stream->size ()-1] < 0.1000f)) // About 5 degrees
     {
+  std::cout << " POP ! " << std::endl;
       for (int i = 0; i < listf.size () + listb.size (); i++)
         stream->pop ();
     }
@@ -398,7 +478,6 @@ last:
       if (listf.size () + listb.size () > 0)
         stream->push (0.0f, 0.0f, 0.0f, 0.0f);
     }
-  
 
 
 
@@ -426,7 +505,7 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
   program->set3fv ("color0", color0);
 
   bool wide = true;
-  float Width = 0.1f;
+  float Width = 5.0f;
   if (wide)
     {
       float width = view.pixel_to_dist_at_nadir (Width);

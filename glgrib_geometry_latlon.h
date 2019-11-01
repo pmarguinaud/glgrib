@@ -20,6 +20,7 @@ public:
   virtual void applyNormScale (float *) const {}
   virtual void applyUVangle (float *) const {}
   virtual void sample (unsigned char *, const unsigned char, const int) const;
+  virtual void sampleTriangle (unsigned char *, const unsigned char, const int) const;
   virtual float resolution (int level = 0) const 
   { 
     if (level == 0)

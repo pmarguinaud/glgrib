@@ -293,3 +293,7 @@ bool glgrib_geometry_lambert::triangleIsEdge (int it) const
   return false;
 }
 
+void glgrib_geometry_lambert::sampleTriangle (unsigned char *, const unsigned char, const int) const
+{
+  throw std::runtime_error (std::string ("glgrib_geometry_lambert::sampleTriangle not implemented"));
+}

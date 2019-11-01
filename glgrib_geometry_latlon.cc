@@ -273,3 +273,8 @@ bool glgrib_geometry_latlon::triangleIsEdge (int it) const
 
   return false;
 }
+
+void glgrib_geometry_latlon::sampleTriangle (unsigned char *, const unsigned char, const int) const
+{
+  throw std::runtime_error (std::string ("glgrib_geometry_latlon::sampleTriangle not implemented"));
+}

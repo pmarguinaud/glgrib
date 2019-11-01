@@ -24,6 +24,7 @@ public:
   virtual void applyNormScale (float *) const;
   virtual void applyUVangle (float *) const;
   virtual void sample (unsigned char *, const unsigned char, const int) const;
+  virtual void sampleTriangle (unsigned char *, const unsigned char, const int) const;
   virtual float resolution (int level = 0) const { if (level == 0) level = Nj; return M_PI / level; }
   virtual void getTriangleVertices (int, int [3]) const;
   virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec3 xyz[3]) const;

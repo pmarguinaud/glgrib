@@ -10,6 +10,7 @@
 #include <iostream>
 #include <limits>
 #include <algorithm>
+#include <exception>
 
 static
 void compute_latgauss (int kn, double * latgauss)
@@ -728,6 +729,19 @@ void glgrib_geometry_gaussian::applyNormScale (float * data) const
     }
 
 
+}
+
+void glgrib_geometry_gaussian::sampleTriangle (unsigned char * s, const unsigned char s0, const int level) const
+{
+  int itrioff = 0;
+  for (int jlat = 1; jlat <= Nj-1; jlat++)
+    {
+      int ntri = pl[jlat-1] + pl[jlat-1];   // Triangles on this row
+      for (int jtri = 1; jtri <= ntri; jtri++)
+        if (((jlat - 1) % level == 0) && ((jtri - 1) % (2 * level) == 0))
+          s[itrioff+jtri-1] = s0;
+      itrioff += ntri;
+    }
 }
 
 

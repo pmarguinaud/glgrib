@@ -347,7 +347,10 @@ if (dbg)
           {
             int j = (i + 1) % 3;
             int k = (i + 2) % 3;
+            if ((w[i] != 0.0f) && (w[j] != 0.0f)) // Exit triangle through other edge
+              continue;
 
+            int itn = itri[i], jglon[3];
 
 if (dbg)
 {
@@ -355,26 +358,10 @@ std::cout << " i = " << i << std::endl;
 std::cout << " w = " << w[0] << " " << w[1] << " " << w[2] << std::endl;
 }
 
-            if ((w[i] != 0.0f) && (w[j] != 0.0f)) // Exit triangle through other edge
-              continue;
-
             float lambda = lineLineIntersect (M, V, P[i], P[j]);
-
 
             if ((lambda < 0.0f) || (1.0f < lambda)) // Cross edge line between P[i] and P[j]
               continue;
-
-            M = P[i] * lambda + P[j] * (1.0f - lambda);
-
-            V = glm::vec2 (lambda * ru[jglo[i]] + (1.0f - lambda) * ru[jglo[j]],
-                           lambda * rv[jglo[i]] + (1.0f - lambda) * rv[jglo[j]]);
-
- 
-            list->push_back (glm::vec3 (M.x, M.y, glm::length (V)));
-
-            int itn = itri[i], jglon[3];
-
-
 
             bool lpoint = (lambda == 0.0f) || (lambda == 1.0f);
              
@@ -382,7 +369,6 @@ if (dbg) std::cout << " itn = " << itn << std::endl;
 
             if (itn < 0)
               {
-                list->pop_back ();
                 if (lpoint)
                   continue;
                 else  
@@ -393,13 +379,41 @@ if (dbg) std::cout << " seen[itn] = " << itn << std::endl;
 
             if (seen_loc[itn])
               {
-                list->pop_back ();
                 if (lpoint)
                   continue;
                 else
                   goto last;
               }
             
+            M = P[i] * lambda + P[j] * (1.0f - lambda);
+
+            V = glm::vec2 (lambda * ru[jglo[i]] + (1.0f - lambda) * ru[jglo[j]],
+                           lambda * rv[jglo[i]] + (1.0f - lambda) * rv[jglo[j]]);
+ 
+            if (M.x - M0.x > M_PI)
+              M0.x += 2.0f * M_PI;
+            else if (M0.x - M.x > M_PI)
+              M0.x -= 2.0f * M_PI;
+
+            float V0MM0 = glm::dot (V0, M-M0);
+
+            if ((list == &listf) && (list->size () == 1))
+              {
+                V0MM00 = V0MM0;
+              }
+            else if (list == &listf)
+              {
+                if (V0MM00 * V0MM0 < 0.0f)
+                  goto last;
+              }
+            else if (list == &listb)
+              {
+                if (V0MM00 * V0MM0 > 0.0f)
+                  goto last;
+              }
+   
+            list->push_back (glm::vec3 (M.x, M.y, glm::length (V)));
+
             
             glm::vec3 xyzn[3]; int itrin[3];
             geometry->getTriangleNeighbours (itn, jglon, itrin, xyzn);

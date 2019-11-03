@@ -29,8 +29,13 @@ public:
   virtual void getTriangleVertices (int, int [3]) const;
   virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec3 xyz[3]) const;
   virtual bool triangleIsEdge (int) const;
+  virtual int getTriangle (float, float) const;
 
 private:
+
+  void latlon2coordxy (float, float, float &, float &) const;
+  int latlon2jlatjlon (float, float, int &, int &) const;
+
   class jlonlat_t
   {
   public:

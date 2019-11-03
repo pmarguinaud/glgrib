@@ -297,3 +297,8 @@ void glgrib_geometry_lambert::sampleTriangle (unsigned char *, const unsigned ch
 {
   throw std::runtime_error (std::string ("glgrib_geometry_lambert::sampleTriangle not implemented"));
 }
+
+int glgrib_geometry_lambert::getTriangle (float, float) const
+{
+  throw std::runtime_error (std::string ("glgrib_geometry_lambert::getTriangle not implemented"));
+}

@@ -748,6 +748,7 @@ if ((button == GLFW_MOUSE_BUTTON_##k) && (mm == mods)) \
     {
       if_click (NONE,    LEFT, centerViewAtCursorPos ());
       if_click (CONTROL, LEFT, centerLightAtCursorPos ());
+      if_click (ALT,     LEFT, debugTriangleNumber ());
     }
 }
 
@@ -768,6 +769,18 @@ void glgrib_window::centerViewAtCursorPos ()
       float xpos, ypos;
       scene.d.view.get_screen_coords_from_latlon (&xpos, &ypos, o.lat, o.lon);
       glfwSetCursorPos (window, xpos, ypos);
+    }
+}
+
+void glgrib_window::debugTriangleNumber ()
+{
+  std::cout << " glgrib_options_view::debugTriangleNumber " << std::endl;
+  glgrib_field * f = scene.getCurrentField ();
+  float lon, lat;
+  if (get_latlon_from_cursor (&lat, &lon) && (f != NULL))
+    {
+      const_glgrib_geometry_ptr geometry = f->getGeometry ();
+      std::cout << " getTriangle = " << geometry->getTriangle (lon, lat) << std::endl;
     }
 }
 

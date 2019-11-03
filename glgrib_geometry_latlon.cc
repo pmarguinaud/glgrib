@@ -278,3 +278,8 @@ void glgrib_geometry_latlon::sampleTriangle (unsigned char *, const unsigned cha
 {
   throw std::runtime_error (std::string ("glgrib_geometry_latlon::sampleTriangle not implemented"));
 }
+
+int glgrib_geometry_latlon::getTriangle (float, float) const
+{
+  throw std::runtime_error (std::string ("glgrib_geometry_latlon::getTriangle not implemented"));
+}

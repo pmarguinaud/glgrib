@@ -460,7 +460,8 @@ glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()
   latgauss = NULL;
 }
 
-int glgrib_geometry_gaussian::latlon2index (float lat, float lon) const
+void glgrib_geometry_gaussian::latlon2coordxy (float lat, float lon, 
+                                               float & coordx, float & coordy) const
 {
   lat = lat * deg2rad;
   lon = lon * deg2rad;
@@ -481,11 +482,21 @@ int glgrib_geometry_gaussian::latlon2index (float lat, float lon) const
   lon = atan2 (Y, X); 
   lat = asin (Z);
 
-  float coordx = lon;
+  coordx = lon;
   sinlat = sin (lat);
-  float coordy = asin ((-omc2 + sinlat * opc2) / (opc2 - sinlat * omc2));
+  coordy = asin ((-omc2 + sinlat * opc2) / (opc2 - sinlat * omc2));
+}
 
-  int jlat = round ((0.5 - coordy / M_PI) * (Nj + 1)); // First approximation
+int glgrib_geometry_gaussian::latlon2jlatjlon (float lat, float lon, int & jlat, int & jlon) const
+{
+  float coordx, coordy;
+
+  latlon2coordxy (lat, lon, coordx, coordy);
+
+  lat = lat * deg2rad;
+  lon = lon * deg2rad;
+
+  jlat = round ((0.5 - coordy / M_PI) * (Nj + 1)); // First approximation
   jlat = std::max (1, std::min (jlat, (int)Nj));
 
   float dlat = fabs (latgauss[jlat-1] - coordy);
@@ -510,12 +521,19 @@ int glgrib_geometry_gaussian::latlon2index (float lat, float lon) const
         break;
     }
 
-  int jlon = round (pl[jlat-1] * (coordx / (2. * M_PI)));
-  if (jlon < 0)
-    jlon += pl[jlat-1];
+  if (coordx < 0.0f)
+    coordx += 2.0f * M_PI;
+  jlon = round (pl[jlat-1] * (coordx / (2. * M_PI)));
 
+  jlat = jlat - 1; // Start at zero
 
-  return jglooff[jlat-1] + jlon;
+}
+
+int glgrib_geometry_gaussian::latlon2index (float lat, float lon) const
+{
+  int jlat, jlon;
+  latlon2jlatjlon (lat, lon, jlat, jlon);
+  return jglooff[jlat] + jlon;
 }
 
 std::string glgrib_geometry_gaussian::md5 () const
@@ -742,6 +760,77 @@ void glgrib_geometry_gaussian::sampleTriangle (unsigned char * s, const unsigned
           s[itrioff+jtri-1] = s0;
       itrioff += ntri;
     }
+}
+
+
+int glgrib_geometry_gaussian::getTriangle (float lon, float lat) const
+{
+  std::cout << " lon, lat = " << lon << ", " << lat << std::endl;
+
+  int jlat, jlon;
+
+  float coordx, coordy;
+
+  latlon2coordxy (lat, lon, coordx, coordy);
+
+  std::cout << " coordy = " << coordy << std::endl;
+  std::cout << " latgauss[0] = " << latgauss[0] << std::endl;
+  std::cout << " latgauss[Nj-1] = " << latgauss[Nj-1] << std::endl;
+
+  if ((coordy > latgauss[0]) || (latgauss[Nj-1] > coordy))
+    return -1;
+
+  lat = lat * deg2rad;
+  lon = lon * deg2rad;
+
+  jlat = round ((0.5 - coordy / M_PI) * (Nj + 1)); // First approximation
+  jlat = std::max (1, std::min (jlat, (int)Nj));
+
+  float dlat;
+
+  while ((dlat = coordy - latgauss[jlat-1]) > 0.0f)
+    {
+      jlat--;
+      if (jlat <= 0)
+        return -1;
+    }
+
+  while (1)
+    {
+      bool u = false;
+      auto lookat = [&u,&jlat,&dlat,coordy,this] (int jlat1)
+      {
+        float dlat1 = coordy - this->latgauss[jlat1-1];
+	if (fabs (dlat1) < fabs (dlat) && (dlat1 <= 0.0f))
+          {
+            dlat = dlat1; jlat = jlat1; u = true; 
+	  }
+	return;
+      };
+      if (1 < jlat)
+        lookat (jlat-1);
+      if (jlat < Nj)
+	lookat (jlat+1);
+      if (! u)
+        break;
+    }
+
+
+  jlat++;
+
+  std::cout << " coordx = " << coordx * rad2deg << std::endl;
+  std::cout << " coordy = " << coordy * rad2deg << std::endl;
+  std::cout << " latgauss[jlat-1] = " << latgauss[jlat-1] * rad2deg << std::endl;
+
+  if (coordx < 0.0f)
+    coordx += 2.0f * M_PI;
+  jlon = (int) (pl[jlat-1] * (coordx / (2. * M_PI)));
+
+  jlat = jlat - 1; // Start at zero
+
+  std::cout << " jlon, jlat = " << jlon << ", " << jlat << std::endl;
+
+  return 0;
 }
 
 

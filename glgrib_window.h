@@ -113,6 +113,7 @@ public:
   int get_latlon_from_cursor (float *, float *);
   void centerViewAtCursorPos ();
   void centerLightAtCursorPos ();
+  void debugTriangleNumber ();
 
   void select_field (int);
   void scale_field_up ();

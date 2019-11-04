@@ -2,6 +2,7 @@
 #define _GLGRIB_FIELD_STREAM_H
 
 #include "glgrib_field.h"
+#include <bits/stdc++.h> 
 
 class glgrib_field_stream : public glgrib_field
 {
@@ -85,7 +86,16 @@ private:
   };
 
   streamline_t stream;
-  void processTriangle (int, float *, float *, bool *, streamline_data_t *);
+
+  void getFirstPoint (int, const float *, const float *, 
+		      glm::vec2 &, glm::vec2 &, glm::vec2 &,
+		      std::valarray<float> &, std::valarray<float> &, 
+		      int &, int &);
+  void processTriangle (int, const float *, const float *, bool *, streamline_data_t *);
+  void processTriangle1 (int, const float *, const float *, 
+                         const glm::vec2 &, const glm::vec2 &,
+                         bool *, float, std::valarray<float>,
+                         std::vector<glm::vec3> &);
 };
 
 #endif

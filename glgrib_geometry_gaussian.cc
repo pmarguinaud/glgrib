@@ -765,17 +765,11 @@ void glgrib_geometry_gaussian::sampleTriangle (unsigned char * s, const unsigned
 
 int glgrib_geometry_gaussian::getTriangle (float lon, float lat) const
 {
-  std::cout << " lon, lat = " << lon << ", " << lat << std::endl;
-
   int jlat, jlon;
 
   float coordx, coordy;
 
   latlon2coordxy (lat, lon, coordx, coordy);
-
-  std::cout << " coordy = " << coordy << std::endl;
-  std::cout << " latgauss[0] = " << latgauss[0] << std::endl;
-  std::cout << " latgauss[Nj-1] = " << latgauss[Nj-1] << std::endl;
 
   if ((coordy > latgauss[0]) || (latgauss[Nj-1] > coordy))
     return -1;
@@ -818,10 +812,6 @@ int glgrib_geometry_gaussian::getTriangle (float lon, float lat) const
 
   jlat++;
 
-  std::cout << " coordx = " << coordx * rad2deg << std::endl;
-  std::cout << " coordy = " << coordy * rad2deg << std::endl;
-  std::cout << " latgauss[jlat-1] = " << latgauss[jlat-1] * rad2deg << std::endl;
-
   if (coordx < 0.0f)
     coordx += 2.0f * M_PI;
   jlon = (int) (pl[jlat-1] * (coordx / (2. * M_PI)));
@@ -829,6 +819,9 @@ int glgrib_geometry_gaussian::getTriangle (float lon, float lat) const
   jlat = jlat - 1; // Start at zero
 
   std::cout << " jlon, jlat = " << jlon << ", " << jlat << std::endl;
+
+  int jglo = jglooff[jlat] + jlon;
+  std::cout << " it = " << triu[jglo] << std::endl;
 
   return 0;
 }

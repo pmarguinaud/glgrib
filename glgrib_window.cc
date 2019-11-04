@@ -774,7 +774,6 @@ void glgrib_window::centerViewAtCursorPos ()
 
 void glgrib_window::debugTriangleNumber ()
 {
-  std::cout << " glgrib_options_view::debugTriangleNumber " << std::endl;
   glgrib_field * f = scene.getCurrentField ();
   float lon, lat;
   if (get_latlon_from_cursor (&lat, &lon) && (f != NULL))

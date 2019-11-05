@@ -10,7 +10,6 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
-
 glgrib_field_stream::glgrib_field_stream (const glgrib_field_stream & field)
 {
   if (field.isReady ())
@@ -48,7 +47,10 @@ glgrib_field_stream & glgrib_field_stream::operator= (const glgrib_field_stream 
 void glgrib_field_stream::clear ()
 {
   if (isReady ()) 
-    glDeleteVertexArrays (1, &stream.VertexArrayID);
+    {
+      for (int i = 0; i < stream.size (); i++)
+        glDeleteVertexArrays (1, &stream[i].VertexArrayID);
+    }
   glgrib_field::clear ();
 }
 
@@ -57,37 +59,40 @@ void glgrib_field_stream::setupVertexAttributes ()
   numberOfPoints = geometry->numberOfPoints;
   numberOfTriangles = geometry->numberOfTriangles;
 
-  glGenVertexArrays (1, &stream.VertexArrayID);
-  glBindVertexArray (stream.VertexArrayID);
-
-  stream.vertexbuffer->bind (GL_ARRAY_BUFFER);
-
-  for (int j = 0; j < 3; j++)
+  for (int i = 0; i < stream.size (); i++)
     {
-      glEnableVertexAttribArray (j);
-      glVertexAttribPointer (j, 3, GL_FLOAT, GL_FALSE, 0, (const void *)(j * 3 * sizeof (float)));
-      glVertexAttribDivisor (j, 1);
+      glGenVertexArrays (1, &stream[i].VertexArrayID);
+      glBindVertexArray (stream[i].VertexArrayID);
+     
+      stream[i].vertexbuffer->bind (GL_ARRAY_BUFFER);
+     
+      for (int j = 0; j < 3; j++)
+        {
+          glEnableVertexAttribArray (j);
+          glVertexAttribPointer (j, 3, GL_FLOAT, GL_FALSE, 0, (const void *)(j * 3 * sizeof (float)));
+          glVertexAttribDivisor (j, 1);
+        }
+     
+      stream[i].normalbuffer->bind (GL_ARRAY_BUFFER);
+     
+      for (int j = 0; j < 2; j++)
+        {
+          glEnableVertexAttribArray (3 + j);
+          glVertexAttribPointer (3 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float)));
+          glVertexAttribDivisor (3 + j, 1);
+        }
+     
+      stream[i].distancebuffer->bind (GL_ARRAY_BUFFER);
+     
+      for (int j = 0; j < 2; j++)
+        {
+          glEnableVertexAttribArray (5 + j); 
+          glVertexAttribPointer (5 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float))); 
+          glVertexAttribDivisor (5 + j, 1);
+        }
+     
+      glBindVertexArray (0); 
     }
-
-  stream.normalbuffer->bind (GL_ARRAY_BUFFER);
-
-  for (int j = 0; j < 2; j++)
-    {
-      glEnableVertexAttribArray (3 + j);
-      glVertexAttribPointer (3 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float)));
-      glVertexAttribDivisor (3 + j, 1);
-    }
-
-  stream.distancebuffer->bind (GL_ARRAY_BUFFER);
-
-  for (int j = 0; j < 2; j++)
-    {
-      glEnableVertexAttribArray (5 + j); 
-      glVertexAttribPointer (5 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float))); 
-      glVertexAttribDivisor (5 + j, 1);
-    }
-
-  glBindVertexArray (0); 
 }
 
 void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field & o, float slot)
@@ -120,66 +125,54 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 //    (*data_v)[i] = 1.0f;
     }
 
-  unsigned char * sample = new unsigned char[geometry->numberOfTriangles];
-  for (int i = 0; i < geometry->numberOfTriangles; i++)
-    sample[i] = 0;
-
-  geometry->sampleTriangle (sample, 1, 80);
-
   bool * seen = (bool *)malloc (sizeof (bool) * geometry->numberOfTriangles);
   for (int i = 0; i < geometry->numberOfTriangles; i++)
     seen[i] = false;
 
-  streamline_data_t stream_data;
+  std::vector<streamline_data_t> stream_data;
 
-  std::cout << " geometry->numberOfTriangles  = " << geometry->numberOfTriangles << std::endl;
+  int N = 16;
 
-  for (int it = 0; it < geometry->numberOfTriangles; it += 1)
+  stream_data.resize (N);
+  stream.resize (N);
+
+  std::vector<int> it;
+
+  unsigned char * sample = new unsigned char[geometry->numberOfTriangles];
+  for (int i = 0; i < geometry->numberOfTriangles; i++)
+    sample[i] = 0;
+
+  geometry->sampleTriangle (sample, 1, 50);
+
+  for (int i = 0; i < geometry->numberOfTriangles; i++)
+    if (sample[i])
+      it.push_back (i);
+  delete [] sample;
+
+#pragma omp parallel for
+  for (int j = 0; j < N; j++)
     {
-      if (sample[it])
-        processTriangle (it, data_u->data (), data_v->data (), 
-                         seen, &stream_data);
+      int i0 = ((j + 0) * it.size ()) / N;
+      int i1 = ((j + 1) * it.size ()) / N;
+      for (int i = i0; i < i1; i++)
+        processTriangle (it[i], data_u->data (), data_v->data (), 
+                         seen, &stream_data[j]);
     }
 
   free (seen);
 
-  delete [] sample;
 
-  stream.vertexbuffer   = new_glgrib_opengl_buffer_ptr (stream_data.xyz.size () * sizeof (float), 
-                                                        stream_data.xyz.data ());
-  stream.normalbuffer   = new_glgrib_opengl_buffer_ptr (stream_data.drw.size () * sizeof (float), 
-                                                        stream_data.drw.data ());
-  stream.distancebuffer = new_glgrib_opengl_buffer_ptr (stream_data.dis.size () * sizeof (float), 
-                                                        stream_data.dis.data ());
-  stream.size = stream_data.size () - 1;
+  for (int i = 0; i < N; i++)
+    {
+      stream[i].vertexbuffer   = new_glgrib_opengl_buffer_ptr (stream_data[i].xyz.size () * sizeof (float), stream_data[i].xyz.data ());
+      stream[i].normalbuffer   = new_glgrib_opengl_buffer_ptr (stream_data[i].drw.size () * sizeof (float), stream_data[i].drw.data ());
+      stream[i].distancebuffer = new_glgrib_opengl_buffer_ptr (stream_data[i].dis.size () * sizeof (float), stream_data[i].dis.data ());
+      stream[i].size = stream_data[i].size () - 1;
+    }
 
   setupVertexAttributes ();
 
   setReady ();
-}
-
-static glm::vec2 xyz2merc (const glm::vec3 & xyz)
-{
-  float lon = atan2 (xyz.y, xyz.x);
-  float lat = asin (xyz.z);
-  return glm::vec2 (lon, log (tan (M_PI / 4.0f + lat / 2.0f)));
-}
-
-static glm::vec3 merc2xyz (const glm::vec2 & merc)
-{
-  float lon = merc.x;
-  float lat = 2.0f * atan (exp (merc.y)) - M_PI / 2.0f;
-  float coslon = cos (lon), sinlon = sin (lon);
-  float coslat = cos (lat), sinlat = sin (lat);
-
-  return glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
-}
-
-static glm::vec2 merc2lonlat (const glm::vec2 & merc)
-{
-  float lon = merc.x;
-  float lat = 2.0f * atan (exp (merc.y)) - M_PI / 2.0f;
-  return glm::vec2 (glm::degrees (lon), glm::degrees (lat));
 }
 
 float lineLineIntersect (const glm::vec2 & P1, const glm::vec2 & V1,
@@ -211,17 +204,13 @@ void glgrib_field_stream::getFirstPoint (int it, const float * ru, const float *
 {
   // First point of the list; see which segment to start with, initialize weights, V and M
   int jglo[3], itri[3];
-  glm::vec3 xyz[3];
+
   std::valarray<float> w (3);
-
-  geometry->getTriangleNeighbours (it, jglo, itri, xyz);
-
   glm::vec2 P[3];
+
+  geometry->getTriangleNeighbours (it, jglo, itri, P);
+
   
-  // Mercator projection
-  for (int i = 0; i < 3; i++)
-    P[i] = xyz2merc (xyz[i]);
-   
   int i0;
 
   float s0 = std::numeric_limits<float>::max ();
@@ -295,15 +284,6 @@ void glgrib_field_stream::processTriangle1 (int it, const float * ru, const floa
   glm::vec2 V = V0, M = M0;
   bool again_flag = false;
 
-  bool dbg = false;
-
-  if (dbg){
-  std::cout << " w = " << w[0] << ", " << w[1] << ", " << w[2] << std::endl;
-  std::cout << " V0 = " << to_string (V0) << std::endl;
-  std::cout << " M0 = " << to_string (M0) << std::endl;
-  std::cout << " M0 = " << to_string (merc2lonlat (M0)) << std::endl;
-  }
-
   while (1)
     {
 
@@ -312,26 +292,11 @@ void glgrib_field_stream::processTriangle1 (int it, const float * ru, const floa
 
       seen[it] = true;
 
-      dbg = (it == 53606) || (it == 53607);
-
-      if (dbg)
-      std::cout << " it = " << it << " sign = " << sign << std::endl;
-
       int jglo[3], itri[3];
-      glm::vec3 xyz[3];
-     
-      geometry->getTriangleNeighbours (it, jglo, itri, xyz);
-     
-      glm::vec2 P[3];
-      
-      // Mercator projection
-      for (int i = 0; i < 3; i++)
-        P[i] = xyz2merc (xyz[i]);
 
-      if (dbg)
-      for (int i = 0; i < 3; i++)
-        std::cout << " P[" << i << "]= " << to_string (P[i]) << ", " << to_string (merc2lonlat (P[i])) << std::endl;
-     
+      glm::vec2 P[3];
+      geometry->getTriangleNeighbours (it, jglo, itri, P);
+
       // Fix periodicity issue
       for (int i = 0; i < 3; i++)
         {
@@ -341,11 +306,6 @@ void glgrib_field_stream::processTriangle1 (int it, const float * ru, const floa
           if (P[i].x - M.x > M_PI)
             P[i].x -= 2.0f * M_PI;
         }
-
-      if (dbg)
-      for (int i = 0; i < 3; i++)
-        std::cout << " P[" << i << "]= " << to_string (P[i]) << ", " << to_string (merc2lonlat (P[i])) << std::endl;
-     
 
       // Try all edges : intersection of vector line with triangle edges
       for (int i = 0; i < 3; i++)
@@ -357,9 +317,6 @@ void glgrib_field_stream::processTriangle1 (int it, const float * ru, const floa
             continue;
 
           float lambda = lineLineIntersect (M, sign * V, P[i], P[j]);
-
-          if (dbg)
-	  std::cout << " i, j, k, lambda = " << i << ", " << j << ", " << k << ", " << lambda << std::endl;
 
           if ((lambda < 0.0f) || (1.0f < lambda)) // Cross edge line between P[i] and P[j]
             continue;
@@ -391,19 +348,9 @@ void glgrib_field_stream::processTriangle1 (int it, const float * ru, const floa
  
           list.push_back (glm::vec3 (M.x, M.y, glm::length (V)));
 
-	  if (dbg)
-          std::cout << to_string (M) << std::endl;
-
           glm::vec2 v = glm::normalize (P[j] - P[i]);
 	  glm::vec2 u = P[k] - P[i];
 	  u = u - glm::dot (u, v) * v;
-
-	  if (dbg) { 
-          std::cout << " u = " << to_string (u) << std::endl;
-          std::cout << " v = " << to_string (v) << std::endl;
-          std::cout << " V = " << to_string (V) << std::endl;
-          std::cout << glm::dot (u, sign * V) << std::endl;
-	  }
 
           if ((! again_flag) && (glm::dot (u, sign * V) > 0.0f))
             {
@@ -456,7 +403,7 @@ void glgrib_field_stream::processTriangle (int it0, const float * ru, const floa
 
   bool * seen_loc = (bool *)malloc (sizeof (bool) * geometry->numberOfTriangles);
   for (int i = 0; i < geometry->numberOfTriangles; i++)
-    seen_loc[i] = seen[i];
+    seen_loc[i] = false;
   
   int itp, itm;
   std::valarray<float> wp (3), wm (3);
@@ -476,9 +423,9 @@ void glgrib_field_stream::processTriangle (int it0, const float * ru, const floa
 
   // Add points to stream
   for (int i = listb.size () - 1; i >= 0; i--)
-    stream->push (merc2xyz (glm::vec2 (listb[i].x, listb[i].y)), listb[i].z);
+    stream->push (geometry->conformal2xyz (glm::vec2 (listb[i].x, listb[i].y)), listb[i].z);
   for (int i = 0; i < listf.size (); i++)
-    stream->push (merc2xyz (glm::vec2 (listf[i].x, listf[i].y)), listf[i].z);
+    stream->push (geometry->conformal2xyz (glm::vec2 (listf[i].x, listf[i].y)), listf[i].z);
 
   if (listb.size () + listf.size () > 0)
     stream->push (0.0f, 0.0f, 0.0f, 0.0f);
@@ -502,25 +449,29 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
   program->set3fv ("scale0", scale0);
 
 
-  glBindVertexArray (stream.VertexArrayID);
 
   float color0[3] = {  0.0f/255.0f, 
                        0.0f/255.0f, 
                      255.0f/255.0f};
   program->set3fv ("color0", color0);
 
-  bool wide = false;
+  bool wide = true;
   float Width = 5.0f;
-  if (wide)
+
+  for (int i = 0; i < stream.size (); i++)
     {
-      float width = view.pixel_to_dist_at_nadir (Width);
-      program->set1f ("width", width);
-      unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
-      glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, stream.size);
-    }
-  else
-    {
-      glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, stream.size);
+      glBindVertexArray (stream[i].VertexArrayID);
+      if (wide)
+        {
+          float width = view.pixel_to_dist_at_nadir (Width);
+          program->set1f ("width", width);
+          unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
+          glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, stream[i].size);
+        }
+      else
+        {
+          glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, stream[i].size);
+        }
     }
 
   glBindVertexArray (0);

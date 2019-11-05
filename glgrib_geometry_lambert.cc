@@ -302,3 +302,21 @@ int glgrib_geometry_lambert::getTriangle (float, float) const
 {
   throw std::runtime_error (std::string ("glgrib_geometry_lambert::getTriangle not implemented"));
 }
+
+glm::vec2 glgrib_geometry_lambert::xyz2conformal (const glm::vec3 &) const
+{
+  throw std::runtime_error (std::string ("glgrib_geometry_lambert::xyz2conformal not implemented"));
+}
+
+glm::vec3 glgrib_geometry_lambert::conformal2xyz (const glm::vec2 &) const
+{
+  throw std::runtime_error (std::string ("glgrib_geometry_lambert::conformal2xyz not implemented"));
+}
+
+void glgrib_geometry_lambert::getTriangleNeighbours (int, int [3], int [3], glm::vec2 [3]) const
+{
+  throw std::runtime_error (std::string ("glgrib_geometry_lambert::getTriangleNeighbours not implemented"));
+}
+
+
+

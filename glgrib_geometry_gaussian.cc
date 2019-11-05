@@ -658,7 +658,7 @@ void glgrib_geometry_gaussian::getTriangleVertices (int it, int jglo[3]) const
   jglo[2] = ind[3*it+2];
 }
 
-void glgrib_geometry_gaussian::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
+void glgrib_geometry_gaussian::getTriangleNeighbours (int it, int jglo[3], int itri[3], jlonlat_t jlonlat_[3]) const
 {
   int jgloA = ind[3*it+0]; 
   int jgloB = ind[3*it+1]; 
@@ -704,12 +704,33 @@ void glgrib_geometry_gaussian::getTriangleNeighbours (int it, int jglo[3], int i
   jglo[0] = jglo0; jglo[1] = jglo1; jglo[2] = jglo2;
   itri[0] = itr01; itri[1] = itr12; itri[2] = itr20;
 
-  xyz[0] = jlonlat2xyz (jlonlat0);
-  xyz[1] = jlonlat2xyz (jlonlat1);
-  xyz[2] = jlonlat2xyz (jlonlat2);
-
-
+  jlonlat_[0] = jlonlat0;
+  jlonlat_[1] = jlonlat1;
+  jlonlat_[2] = jlonlat2;
 }
+
+void glgrib_geometry_gaussian::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
+{
+  jlonlat_t jlonlat[3];
+
+  getTriangleNeighbours (it, jglo, itri, jlonlat);
+
+  xyz[0] = jlonlat2xyz (jlonlat[0]);
+  xyz[1] = jlonlat2xyz (jlonlat[1]);
+  xyz[2] = jlonlat2xyz (jlonlat[2]);
+}
+
+void glgrib_geometry_gaussian::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec2 merc[3]) const
+{
+  jlonlat_t jlonlat[3];
+
+  getTriangleNeighbours (it, jglo, itri, jlonlat);
+
+  merc[0] = jlonlat2merc (jlonlat[0]);
+  merc[1] = jlonlat2merc (jlonlat[1]);
+  merc[2] = jlonlat2merc (jlonlat[2]);
+}
+
 
 bool glgrib_geometry_gaussian::triangleIsEdge (int it) const
 {
@@ -824,6 +845,38 @@ int glgrib_geometry_gaussian::getTriangle (float lon, float lat) const
   std::cout << " it = " << triu[jglo] << std::endl;
 
   return 0;
+}
+
+glm::vec2 glgrib_geometry_gaussian::xyz2conformal (const glm::vec3 & xyz) const
+{
+  float lon = atan2 (xyz.y, xyz.x);
+  float lat = asin (xyz.z);
+  return glm::vec2 (lon, log (tan (M_PI / 4.0f + lat / 2.0f)));
+}
+
+glm::vec3 glgrib_geometry_gaussian::conformal2xyz (const glm::vec2 & merc) const
+{
+  float coordx = merc.x;
+  float coordy = 2.0f * atan (exp (merc.y)) - M_PI / 2.0f;
+  float sincoordy = sin (coordy);
+
+  float lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
+  float lon = coordx;
+
+  float coslon = cos (lon), sinlon = sin (lon);
+  float coslat = cos (lat), sinlat = sin (lat);
+
+  float X = coslon * coslat;
+  float Y = sinlon * coslat;
+  float Z =          sinlat;
+
+  if (! rotated)
+    return glm::vec3 (X, Y, Z);
+  
+  glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
+  XYZ = rot * XYZ;
+ 
+  return glm::vec3 (XYZ.x, XYZ.y, XYZ.z);
 }
 
 

@@ -28,13 +28,13 @@ public:
   virtual float resolution (int level = 0) const { if (level == 0) level = Nj; return M_PI / level; }
   virtual void getTriangleVertices (int, int [3]) const;
   virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec3 xyz[3]) const;
+  virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec2 [3]) const;
   virtual bool triangleIsEdge (int) const;
   virtual int getTriangle (float, float) const;
+  virtual glm::vec2 xyz2conformal (const glm::vec3 &) const;
+  virtual glm::vec3 conformal2xyz (const glm::vec2 &) const;
 
 private:
-
-  void latlon2coordxy (float, float, float &, float &) const;
-  int latlon2jlatjlon (float, float, int &, int &) const;
 
   class jlonlat_t
   {
@@ -46,6 +46,14 @@ private:
   };
 
   jlonlat_t jlonlat (int) const;
+  glm::vec2 jlonlat2merc (const jlonlat_t & jlonlat) const
+  {
+    int jlat = jlonlat.jlat;
+    int jlon = jlonlat.jlon;
+    float coordy = latgauss[jlat-1];
+    float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
+    return glm::vec2 (coordx, log (tan (M_PI / 4.0f + coordy / 2.0f)));
+  }
   glm::vec3 jlonlat2xyz (const jlonlat_t & jlonlat) const
   {
     int jlat = jlonlat.jlat;
@@ -70,6 +78,11 @@ private:
  
     return glm::vec3 (XYZ.x, XYZ.y, XYZ.z);
   }
+
+  void getTriangleNeighbours (int, int [3], int [3], jlonlat_t [3]) const;
+  void latlon2coordxy (float, float, float &, float &) const;
+  int latlon2jlatjlon (float, float, int &, int &) const;
+
 private:
   std::vector<long int> pl;
   long int Nj;

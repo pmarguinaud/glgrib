@@ -283,3 +283,21 @@ int glgrib_geometry_latlon::getTriangle (float, float) const
 {
   throw std::runtime_error (std::string ("glgrib_geometry_latlon::getTriangle not implemented"));
 }
+
+glm::vec2 glgrib_geometry_latlon::xyz2conformal (const glm::vec3 &) const
+{
+  throw std::runtime_error (std::string ("glgrib_geometry_latlon::xyz2conformal not implemented"));
+}
+
+glm::vec3 glgrib_geometry_latlon::conformal2xyz (const glm::vec2 &) const
+{
+  throw std::runtime_error (std::string ("glgrib_geometry_latlon::conformal2xyz not implemented"));
+}
+
+void glgrib_geometry_latlon::getTriangleNeighbours (int, int [3], int [3], glm::vec2 [3]) const
+{
+  throw std::runtime_error (std::string ("glgrib_geometry_latlon::getTriangleNeighbours not implemented"));
+}
+
+
+

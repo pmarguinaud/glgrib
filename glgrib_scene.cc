@@ -108,7 +108,8 @@ const glgrib_option_date * glgrib_scene::get_date ()
         {
           glgrib_field * fld = fieldlist[i];
           const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
-          return &meta[0].term;
+	  if (meta.size () >= 1)
+            return &meta[0].term;
         }
     }
   return NULL;

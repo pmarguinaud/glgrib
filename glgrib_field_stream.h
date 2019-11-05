@@ -85,7 +85,7 @@ private:
     GLuint size;
   };
 
-  streamline_t stream;
+  std::vector<streamline_t> stream;
 
   void getFirstPoint (int, const float *, const float *, 
 		      glm::vec2 &, glm::vec2 &, glm::vec2 &,

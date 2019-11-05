@@ -29,8 +29,11 @@ public:
   }
   virtual void getTriangleVertices (int, int [3]) const;
   virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec3 [3]) const;
+  virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec2 [3]) const;
   virtual bool triangleIsEdge (int) const;
   virtual int getTriangle (float, float) const;
+  virtual glm::vec2 xyz2conformal (const glm::vec3 &) const;
+  virtual glm::vec3 conformal2xyz (const glm::vec2 &) const;
 private:
   long int Ni, Nj;
   double latitudeOfFirstGridPointInDegrees;

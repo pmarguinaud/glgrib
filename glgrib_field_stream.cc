@@ -430,9 +430,6 @@ void glgrib_field_stream::processTriangle (int it0, const float * ru, const floa
   if (listb.size () + listf.size () > 0)
     stream->push (0.0f, 0.0f, 0.0f, 0.0f);
 
-  for (int i = 0; i < geometry->numberOfTriangles; i++)
-    seen[i] = seen[i] || seen_loc[i];
-
   free (seen_loc);
 
   return;

@@ -116,49 +116,10 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
 
   geometry = glgrib_geometry_load (ld, opts.path[0]);
 
-  glgrib_field_float_buffer_ptr data_n = new_glgrib_field_float_buffer_ptr (geometry->numberOfPoints);
-  glgrib_field_float_buffer_ptr data_d = new_glgrib_field_float_buffer_ptr (geometry->numberOfPoints);
 
-  const double rad2deg = 180.0 / M_PI;
+  glgrib_field_float_buffer_ptr data_n, data_d;
 
-  meta_n = meta_u; // TODO : handle this differently
-  meta_d = meta_u;
-  
-  meta_n.valmin = glgrib_palette::defaultMin;
-  meta_n.valmax = 0.0f;
-  meta_d.valmin = -180.0f;
-  meta_d.valmax = +180.0f;
-
-
-  for (int i = 0; i < geometry->numberOfPoints; i++)
-    if ((*data_u)[i] == meta_u.valmis)
-      {
-        (*data_n)[i] = meta_u.valmis;
-        (*data_d)[i] = meta_u.valmis;
-      }
-    else if ((*data_v)[i] != meta_u.valmis)
-      {
-        (*data_n)[i] = sqrt ((*data_u)[i] * (*data_u)[i] + (*data_v)[i] * (*data_v)[i]);
-        (*data_d)[i] = rad2deg * atan2 ((*data_v)[i], (*data_u)[i]);
-      }
-    else
-      throw std::runtime_error ("Inconsistent domain definition for U/V");
-
-  
-  geometry->applyNormScale (data_n->data ());
-
-  for (int i = 0; i < geometry->numberOfPoints; i++)
-    if ((*data_u)[i] != meta_u.valmis)
-      {
-        if ((*data_n)[i] < meta_n.valmin)
-          meta_n.valmin = (*data_n)[i];
-        if ((*data_n)[i] > meta_n.valmax)
-          meta_n.valmax = (*data_n)[i];
-      }
-    else
-      {
-        (*data_n)[i] = meta_u.valmis;
-      }
+  glgrib_loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
   numberOfColors = 1;
 
@@ -167,7 +128,6 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
   unsigned char * col_d = (unsigned char *)malloc (numberOfColors 
                         * geometry->numberOfPoints * sizeof (unsigned char));
 
-  geometry->applyUVangle (data_d->data ());
 
   for (int i = 0; i < geometry->numberOfPoints; i++)
     {

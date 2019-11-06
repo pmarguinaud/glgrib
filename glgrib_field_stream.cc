@@ -115,12 +115,11 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
   geometry->applyNormScale (data_u->data ());
   geometry->applyNormScale (data_v->data ());
 
-  for (int i = 0; i < size; i++)
-    normmax = std::max (normmax, (*data_u)[i] * (*data_u)[i] + (*data_v)[i] * (*data_v)[i]);
+  glgrib_field_float_buffer_ptr data_n, data_d;
 
-  normmax = sqrt (normmax);
+  glgrib_loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
-  palette = glgrib_palette::create (opts.palette, 0.0f, normmax, meta_u);
+  palette = glgrib_palette::create (opts.palette, 0.0f, meta_n.valmax, meta_u);
 
   std::vector<streamline_data_t> stream_data;
 
@@ -166,6 +165,20 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
     }
 
   setupVertexAttributes ();
+
+  meta.push_back (meta_n);
+  meta.push_back (meta_d);
+
+  if (opts.no_value_pointer.on)
+    {
+      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
+      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
+    }
+  else
+    {
+      values.push_back (data_n);
+      values.push_back (data_d);
+    }
 
   setReady ();
 }
@@ -431,9 +444,12 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
 
   palette.setRGBA255 (program->programID);
 
-  program->set1f ("valmin", 0.0f);
-  program->set1f ("valmax", normmax);
-  program->set1f ("normmax", normmax);
+  std::vector<float> valmin = getMinValue ();
+  std::vector<float> valmax = getMaxValue ();
+
+  program->set1f ("valmin", valmin[0]);
+  program->set1f ("valmax", valmax[0]);
+  program->set1f ("normmax", valmax[0]);
 
   bool wide = opts.stream.width > 0.0f;
   float Width = 5.0f * opts.stream.width;

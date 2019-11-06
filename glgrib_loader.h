@@ -9,10 +9,21 @@
 #include "glgrib_field_metadata.h"
 #include "glgrib_field_float_buffer.h"
 #include "glgrib_handle.h"
+#include "glgrib_geometry.h"
 
 class glgrib_loader 
 {
 public:
+  static void uv2nd (const_glgrib_geometry_ptr,
+                     const glgrib_field_float_buffer_ptr, 
+                     const glgrib_field_float_buffer_ptr,
+                     glgrib_field_float_buffer_ptr &, 
+                     glgrib_field_float_buffer_ptr &,
+                     const glgrib_field_metadata &, 
+                     const glgrib_field_metadata &,
+                     glgrib_field_metadata &, 
+                     glgrib_field_metadata &);
+
   glgrib_handle_ptr handle_from_file (const std::string &);
   glgrib_field_float_buffer_ptr load (const std::vector<std::string> &, float, glgrib_field_metadata *, 
                                       int = 1, int = 0, bool diff = false);

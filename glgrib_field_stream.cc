@@ -147,13 +147,17 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 
   delete [] sample;
 
-#pragma omp parallel for
+//#pragma omp parallel for
   for (int j = 0; j < N; j++)
     {
       int i0 = ((j + 0) * it.size ()) / N;
       int i1 = ((j + 1) * it.size ()) / N;
+      if (j == 11)
       for (int i = i0; i < i1; i++)
+        {
         computeStreamLine (it[i], data_u->data (), data_v->data (), &stream_data[j]);
+        break;
+        }
     }
 
   for (int i = 0; i < N; i++)
@@ -221,8 +225,7 @@ void glgrib_field_stream::getFirstPoint (int it, const float * ru, const float *
   geometry->getTriangleNeighbours (it, jglo, itri, P);
 
   
-  int i0;
-
+  int i0 = std::numeric_limits<int>::max ();
   float s0 = std::numeric_limits<float>::max ();
   for (int i = 0; i < 3; i++)
     {
@@ -240,6 +243,7 @@ void glgrib_field_stream::getFirstPoint (int it, const float * ru, const float *
           i0 = i;
         }
     }
+
   
   int j0 = (i0 + 1) % 3;
   int k0 = (i0 + 2) % 3;
@@ -415,8 +419,6 @@ void glgrib_field_stream::computeStreamLine (int it0, const float * ru, const fl
   glm::vec2 Vp, Vm, M;
   getFirstPoint (it0, ru, rv, M, Vp, Vm, wp, wm, itp, itm);
 
-
-#ifdef UNDEF
   // Forward 
   listf.push_back (glm::vec3 (M.x, M.y, glm::length (Vp)));
 
@@ -436,7 +438,6 @@ void glgrib_field_stream::computeStreamLine (int it0, const float * ru, const fl
 
   if (listb.size () + listf.size () > 0)
     stream->push (0.0f, 0.0f, 0.0f, 0.0f);
-#endif
 
   return;
 }

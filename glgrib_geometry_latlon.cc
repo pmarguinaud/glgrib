@@ -188,12 +188,14 @@ void glgrib_geometry_latlon::sample (unsigned char * p, const unsigned char p0, 
   float lat0 = deg2rad * latitudeOfFirstGridPointInDegrees;
 
   int lat_stride = (Nj * M_PI) / (level * Dlat);
+  lat_stride = std::max (1, lat_stride);
 
   for (int jlat = 0; jlat < Nj; jlat++)
     {
       float lat = lat0 + dlat * (float)jlat;
       float coslat = cos (lat);
-      int lon_stride = 2 * (lat_stride * Dlat) / (Dlon * coslat);
+      int lon_stride = abs (2 * (lat_stride * Dlat) / (Dlon * coslat));
+      lon_stride = std::max (1, lon_stride);
       for (int jlon = 0; jlon < Ni; jlon++)
         if ((jlat % lat_stride != 0) || (jlon % lon_stride != 0))
           p[jlat*Ni+jlon] = p0;
@@ -271,6 +273,16 @@ void glgrib_geometry_latlon::getTriangleNeighbours (int it, int jglo[3], int itr
   float mlon1 = lon0 + dlon * (float)(i + 1);
   float xlat0 = lat0 - dlat * (float)(j + 0);
   float xlat1 = lat0 - dlat * (float)(j + 1);
+
+  if (fabsf (xlat0 - M_PI / 2.0f) < 1e-06)
+    xlat0 = xlat0 - fabsf (dlat) / 2.0f;
+  if (fabsf (xlat0 + M_PI / 2.0f) < 1e-06)
+    xlat0 = xlat0 + fabsf (dlat) / 2.0f;
+  if (fabsf (xlat1 - M_PI / 2.0f) < 1e-06)
+    xlat1 = xlat1 - fabsf (dlat) / 2.0f;
+  if (fabsf (xlat1 + M_PI / 2.0f) < 1e-06)
+    xlat1 = xlat1 + fabsf (dlat) / 2.0f;
+
   float mlat0 = log (tan (M_PI / 4.0f + xlat0 / 2.0f));
   float mlat1 = log (tan (M_PI / 4.0f + xlat1 / 2.0f));
 

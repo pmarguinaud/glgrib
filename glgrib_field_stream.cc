@@ -433,6 +433,7 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
 
   program->set1f ("valmin", 0.0f);
   program->set1f ("valmax", normmax);
+  program->set1f ("normmax", normmax);
 
   bool wide = opts.stream.width > 0.0f;
   float Width = 5.0f * opts.stream.width;

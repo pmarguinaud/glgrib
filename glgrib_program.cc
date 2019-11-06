@@ -1367,6 +1367,7 @@ out float norm;
 
 
 uniform mat4 MVP;
+uniform float normmax;
 
 )CODE"
 + projShaderInclude
@@ -1393,7 +1394,7 @@ void main ()
   vec3 n0 = cross (t0, p);
   vec3 n1 = cross (t1, p);
 
-  float c = width * max (0.5f, 2.0f * norm0) / scalingFactor (p);
+  float c = width * max (0.5f, 2.0f * norm0 / normmax) / scalingFactor (p);
 
   if ((gl_VertexID >= 4) && (dot (cross (n0, n1), vertexPos) < 0.))
     c = 0.0;

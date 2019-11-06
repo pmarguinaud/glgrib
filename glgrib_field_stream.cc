@@ -125,10 +125,6 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 //    (*data_v)[i] = 1.0f;
     }
 
-  bool * seen = (bool *)malloc (sizeof (bool) * geometry->numberOfTriangles);
-  for (int i = 0; i < geometry->numberOfTriangles; i++)
-    seen[i] = false;
-
   std::vector<streamline_data_t> stream_data;
 
   int N = 16;
@@ -155,12 +151,8 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
       int i0 = ((j + 0) * it.size ()) / N;
       int i1 = ((j + 1) * it.size ()) / N;
       for (int i = i0; i < i1; i++)
-        processTriangle (it[i], data_u->data (), data_v->data (), 
-                         seen, &stream_data[j]);
+        computeStreamLine (it[i], data_u->data (), data_v->data (), &stream_data[j]);
     }
-
-  free (seen);
-
 
   for (int i = 0; i < N; i++)
     {
@@ -268,18 +260,14 @@ void glgrib_field_stream::getFirstPoint (int it, const float * ru, const float *
   if (glm::dot (u, Vp) < 0.0f)
     {
       std::swap (Vp, Vm); std::swap (wp, wm); std::swap (itp, itm);
-//    std::cout << " Vp = " << to_string (Vp) << std::endl;
-//    std::cout << " Vm = " << to_string (Vm) << std::endl;
-//    std::cout << " itp = " << itp << std::endl;
-//    std::cout << " itm = " << itm << std::endl;
     }
 
 }
 
-void glgrib_field_stream::processTriangle1 (int it, const float * ru, const float * rv, 
-		                            const glm::vec2 & M0, const glm::vec2 & V0,
-                                            bool * seen, float sign, std::valarray<float> w,
-					    std::vector<glm::vec3> & list)
+void glgrib_field_stream::computeStreamLineDir (int it, const float * ru, const float * rv, 
+		                                const glm::vec2 & M0, const glm::vec2 & V0,
+                                                stream_seen_t & seen, float sign, std::valarray<float> w,
+					        std::vector<glm::vec3> & list)
 {
   glm::vec2 V = V0, M = M0;
   bool again_flag = false;
@@ -290,7 +278,7 @@ void glgrib_field_stream::processTriangle1 (int it, const float * ru, const floa
       if (seen[it])
         break;
 
-      seen[it] = true;
+      seen.add (it);
 
       int jglo[3], itri[3];
 
@@ -355,7 +343,7 @@ void glgrib_field_stream::processTriangle1 (int it, const float * ru, const floa
           if ((! again_flag) && (glm::dot (u, sign * V) > 0.0f))
             {
               // Special case
-              seen[it] = false;
+              seen.del (it);
               w[i] = lambda;
 	      w[j] = 1.0f - lambda;
 	      w[k] = 0.0f;
@@ -393,17 +381,12 @@ last:
 }
 
 
-void glgrib_field_stream::processTriangle (int it0, const float * ru, const float * rv, 
-                                           bool * seen, streamline_data_t * stream)
+void glgrib_field_stream::computeStreamLine (int it0, const float * ru, const float * rv, 
+                                             streamline_data_t * stream)
 {
-  if (seen[it0])
-    return;
-
   std::vector<glm::vec3> listf, listb;
 
-  bool * seen_loc = (bool *)malloc (sizeof (bool) * geometry->numberOfTriangles);
-  for (int i = 0; i < geometry->numberOfTriangles; i++)
-    seen_loc[i] = false;
+  stream_seen_t seen;
   
   int itp, itm;
   std::valarray<float> wp (3), wm (3);
@@ -414,12 +397,12 @@ void glgrib_field_stream::processTriangle (int it0, const float * ru, const floa
   listf.push_back (glm::vec3 (M.x, M.y, glm::length (Vp)));
 
   if (itp >= 0)
-    processTriangle1 (itp, ru, rv, M, Vp, seen_loc, +1.0f, wp, listf);
+    computeStreamLineDir (itp, ru, rv, M, Vp, seen, +1.0f, wp, listf);
 
   // Backward
   
   if (itm >= 0)
-    processTriangle1 (itm, ru, rv, M, Vm, seen_loc, -1.0f, wm, listb);
+    computeStreamLineDir (itm, ru, rv, M, Vm, seen, -1.0f, wm, listb);
 
   // Add points to stream
   for (int i = listb.size () - 1; i >= 0; i--)
@@ -429,8 +412,6 @@ void glgrib_field_stream::processTriangle (int it0, const float * ru, const floa
 
   if (listb.size () + listf.size () > 0)
     stream->push (0.0f, 0.0f, 0.0f, 0.0f);
-
-  free (seen_loc);
 
   return;
 }

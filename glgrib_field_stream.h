@@ -87,15 +87,36 @@ private:
 
   std::vector<streamline_t> stream;
 
+  class stream_seen_t : public std::set<int>
+  {
+  public:
+  bool has (const int & k)
+  {
+    return end () != find (k);
+  }
+  bool operator[] (const int & k)
+  {
+    return has (k);
+  }
+  void add (const int & k)
+  {
+    insert (k);
+  }
+  void del (const int & k)
+  {
+    erase (k);
+  }
+  };
+
   void getFirstPoint (int, const float *, const float *, 
 		      glm::vec2 &, glm::vec2 &, glm::vec2 &,
 		      std::valarray<float> &, std::valarray<float> &, 
 		      int &, int &);
-  void processTriangle (int, const float *, const float *, bool *, streamline_data_t *);
-  void processTriangle1 (int, const float *, const float *, 
-                         const glm::vec2 &, const glm::vec2 &,
-                         bool *, float, std::valarray<float>,
-                         std::vector<glm::vec3> &);
+  void computeStreamLine (int, const float *, const float *, streamline_data_t *);
+  void computeStreamLineDir (int, const float *, const float *, 
+                             const glm::vec2 &, const glm::vec2 &,
+                             stream_seen_t &, float, std::valarray<float>,
+                             std::vector<glm::vec3> &);
 };
 
 #endif

@@ -431,10 +431,6 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
 
   palette.setRGBA255 (program->programID);
 
-  float color0[3] = {  0.0f/255.0f, 
-                       0.0f/255.0f, 
-                     255.0f/255.0f};
-  program->set3fv ("color0", color0);
   program->set1f ("valmin", 0.0f);
   program->set1f ("valmax", normmax);
 

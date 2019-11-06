@@ -1329,7 +1329,6 @@ in float dist;
 in float norm;
 out vec4 color;
 
-uniform vec3 color0;
 uniform vec4 RGBA0[256];
 uniform float palmin;
 uniform float palmax;

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-tr=glob25
+tr=glob025
 
 
 #/usr/bin/time -p \

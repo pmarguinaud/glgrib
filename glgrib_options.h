@@ -381,8 +381,12 @@ public:
   DEFINE
   {
     DESC (on,            Enable stream lines);          
+    DESC (width,         Stream lines width);          
+    DESC (density,       Stream lines density);          
   }
   bool on = false;
+  float width = 0.0f;
+  float density = 1.0f;
 };
 
 class glgrib_options_vector : public glgrib_options_base
@@ -1094,7 +1098,6 @@ public:
   glgrib_options_view view;
   glgrib_options_font font;
   glgrib_options_shell shell;
-  virtual bool parse (int, const char * []);
 };
 
 

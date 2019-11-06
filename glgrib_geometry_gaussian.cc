@@ -753,6 +753,8 @@ bool glgrib_geometry_gaussian::triangleIsEdge (int it) const
 
 void glgrib_geometry_gaussian::applyNormScale (float * data) const 
 {
+  if (stretchingFactor == 1.0f)
+    return;
 #pragma omp parallel for 
   for (int jlat = 0; jlat < Nj; jlat++)
     {
@@ -760,24 +762,24 @@ void glgrib_geometry_gaussian::applyNormScale (float * data) const
       float sincoordy = sin (coordy);
       float N = 1.0f / sqrt ((opc2 + sincoordy * omc2) * (opc2 + sincoordy * omc2) 
                            / (opc2 * opc2 - omc2 * omc2));
+      N = 1.0f / N;
       for (int jlon = 0; jlon < pl[jlat]; jlon++)
         {
           int jglo = jglooff[jlat] + jlon;
           data[jglo] = N * data[jglo];
         }
     }
-
-
 }
 
 void glgrib_geometry_gaussian::sampleTriangle (unsigned char * s, const unsigned char s0, const int level) const
 {
+  int lev = std::max (1, level);
   int itrioff = 0;
   for (int jlat = 1; jlat <= Nj-1; jlat++)
     {
       int ntri = pl[jlat-1] + pl[jlat-1];   // Triangles on this row
       for (int jtri = 1; jtri <= ntri; jtri++)
-        if (((jlat - 1) % level == 0) && ((jtri - 1) % (2 * level) == 0))
+        if (((jlat - 1) % lev == 0) && ((jtri - 1) % (2 * lev) == 0))
           s[itrioff+jtri-1] = s0;
       itrioff += ntri;
     }

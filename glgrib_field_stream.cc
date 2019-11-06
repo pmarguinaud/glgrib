@@ -111,19 +111,16 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 
   int size = geometry->size ();
 
-  float normmax = 0.0f;
+  // Apply scale factor
+  geometry->applyNormScale (data_u->data ());
+  geometry->applyNormScale (data_v->data ());
+
   for (int i = 0; i < size; i++)
     normmax = std::max (normmax, (*data_u)[i] * (*data_u)[i] + (*data_v)[i] * (*data_v)[i]);
 
   normmax = sqrt (normmax);
 
-  for (int i = 0; i < size; i++)
-    {
-      (*data_u)[i] = (*data_u)[i] / normmax;
-      (*data_v)[i] = (*data_v)[i] / normmax;
-//    (*data_u)[i] = 1.0f;
-//    (*data_v)[i] = 1.0f;
-    }
+  palette = glgrib_palette::create (opts.palette, 0.0f, normmax, meta_u);
 
   std::vector<streamline_data_t> stream_data;
 
@@ -134,15 +131,21 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 
   std::vector<int> it;
 
-  unsigned char * sample = new unsigned char[geometry->numberOfTriangles];
-  for (int i = 0; i < geometry->numberOfTriangles; i++)
+  int nt = geometry->numberOfTriangles;
+
+  unsigned char * sample = new unsigned char[nt];
+  for (int i = 0; i < nt; i++)
     sample[i] = 0;
 
-  geometry->sampleTriangle (sample, 1, 50);
+  int np = (int)sqrt (geometry->numberOfPoints);
+  int level = (int)(opts.stream.density * np / 40.0f);
 
-  for (int i = 0; i < geometry->numberOfTriangles; i++)
+  geometry->sampleTriangle (sample, 1, level);
+
+  for (int i = 0; i < nt; i++)
     if (sample[i])
       it.push_back (i);
+
   delete [] sample;
 
 #pragma omp parallel for
@@ -426,15 +429,17 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
   view.setMVP (program);
   program->set3fv ("scale0", scale0);
 
-
+  palette.setRGBA255 (program->programID);
 
   float color0[3] = {  0.0f/255.0f, 
                        0.0f/255.0f, 
                      255.0f/255.0f};
   program->set3fv ("color0", color0);
+  program->set1f ("valmin", 0.0f);
+  program->set1f ("valmax", normmax);
 
-  bool wide = true;
-  float Width = 5.0f;
+  bool wide = opts.stream.width > 0.0f;
+  float Width = 5.0f * opts.stream.width;
 
   for (int i = 0; i < stream.size (); i++)
     {

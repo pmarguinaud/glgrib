@@ -131,12 +131,6 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
 
 
   for (int i = 0; i < geometry->numberOfPoints; i++)
-    {
-//    (*data_u)[i] = 1.0f;
-//    (*data_v)[i] = 1.0f;
-    }
-
-  for (int i = 0; i < geometry->numberOfPoints; i++)
     if ((*data_u)[i] == meta_u.valmis)
       {
         (*data_n)[i] = meta_u.valmis;

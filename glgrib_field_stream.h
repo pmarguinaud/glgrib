@@ -86,6 +86,7 @@ private:
   };
 
   std::vector<streamline_t> stream;
+  float normmax;
 
   class stream_seen_t : public std::set<int>
   {

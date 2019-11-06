@@ -15,3 +15,7 @@ Move palette definitions in sqlite3 database
 Add [] operator to glgrib_field_float_buffer_ptr
 
 Setup font with options
+
+Window shell with $
+
+Record palette options in database

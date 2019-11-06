@@ -1330,10 +1330,11 @@ in float norm;
 out vec4 color;
 
 uniform vec3 color0;
-uniform int N = 0;
-uniform bool pattern[256];
-uniform float length;
-uniform bool dash;
+uniform vec4 RGBA0[256];
+uniform float palmin;
+uniform float palmax;
+uniform float valmin;
+uniform float valmax;
 
 void main ()
 {
@@ -1343,8 +1344,8 @@ void main ()
   vec3 grey = vec3 (0.3f, 0.3f, 0.3f);
   vec3 green= vec3 (0.0f, 1.0f, 0.0f);
 
-  color.rgb = norm * green + (1.0f - norm) * grey;
-  color.a = 1.;
+  float n = norm / valmax;
+  color = RGBA0[int (n * 255.0)];
 
 }
 

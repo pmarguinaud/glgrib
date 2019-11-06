@@ -484,12 +484,6 @@ void glgrib_options_parser::display (const std::string & prefix, bool show_hidde
       }   
 }
 
-bool glgrib_options::parse (int argc, const char * argv[])
-{
-  bool v = glgrib_options_base::parse (argc, argv);
-  return v;
-}
-
 void glgrib_options_parser::print (glgrib_options & opts1)
 {
   glgrib_options_parser p1, p2;

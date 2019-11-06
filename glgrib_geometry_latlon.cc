@@ -257,6 +257,45 @@ void glgrib_geometry_latlon::getTriangleNeighbours (int it, int jglo[3], int itr
     }
 }
 
+void glgrib_geometry_latlon::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec2 merc[3]) const
+{
+  bool t021 = (it % 2) == 0;
+  it = t021 ? it : it - 1;                // it is now the rank of the triangle 012
+  int nti = numberOfTriangles / (Nj - 1); // Number of triangles in a row
+  int i = (it % nti) / 2;
+  int j = (it / nti);
+  int ind0 = (j + 0) * Ni + (i + 0), ind1 = periodic && (i == Ni-1) ? (j + 0) * Ni : (j + 0) * Ni + (i + 1); 
+  int ind2 = (j + 1) * Ni + (i + 0), ind3 = periodic && (i == Ni-1) ? (j + 1) * Ni : (j + 1) * Ni + (i + 1); 
+
+  float mlon0 = lon0 + dlon * (float)(i + 0);
+  float mlon1 = lon0 + dlon * (float)(i + 1);
+  float xlat0 = lat0 - dlat * (float)(j + 0);
+  float xlat1 = lat0 - dlat * (float)(j + 1);
+  float mlat0 = log (tan (M_PI / 4.0f + xlat0 / 2.0f));
+  float mlat1 = log (tan (M_PI / 4.0f + xlat1 / 2.0f));
+
+  if (t021)
+    {
+      jglo[0] = ind0; jglo[1] = ind1; jglo[2] = ind2;
+      itri[0] = j > 0 ? it - nti + 1: -1;
+      itri[1] = it + 1;
+      itri[2] = i > 0 ? it - 1 : periodic ? it + nti - 1 : -1;
+      merc[0] = glm::vec2 (mlon0, mlat0);
+      merc[1] = glm::vec2 (mlon1, mlat0);
+      merc[2] = glm::vec2 (mlon0, mlat1);
+    }
+  else
+    {
+      jglo[0] = ind2; jglo[1] = ind3; jglo[2] = ind1;
+      itri[0] = j < Nj-2 ? it + nti : -1;
+      itri[1] = i < Ni-2 ? it + 2 : periodic ? it - nti + 1 : -1;
+      itri[2] = it;
+      merc[0] = glm::vec2 (mlon0, mlat1);
+      merc[1] = glm::vec2 (mlon1, mlat1);
+      merc[2] = glm::vec2 (mlon1, mlat0);
+    }
+}
+
 bool glgrib_geometry_latlon::triangleIsEdge (int it) const
 { 
   bool t021 = (it % 2) == 0;
@@ -274,9 +313,24 @@ bool glgrib_geometry_latlon::triangleIsEdge (int it) const
   return false;
 }
 
-void glgrib_geometry_latlon::sampleTriangle (unsigned char *, const unsigned char, const int) const
+void glgrib_geometry_latlon::sampleTriangle (unsigned char * s, const unsigned char s0, const int level) const
 {
-  throw std::runtime_error (std::string ("glgrib_geometry_latlon::sampleTriangle not implemented"));
+  float Dlat = deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees);
+  float Dlon = deg2rad * (longitudeOfLastGridPointInDegrees - longitudeOfFirstGridPointInDegrees);
+  float dlat = Dlat / (Nj - 1);
+  float lat0 = deg2rad * latitudeOfFirstGridPointInDegrees;
+
+  int lat_stride = (Nj * M_PI) / (level * Dlat);
+
+  for (int jlat = 0; jlat < Nj; jlat++)
+    {
+      float lat = lat0 + dlat * (float)jlat;
+      float coslat = cos (lat);
+      int lon_stride = 2 * (lat_stride * Dlat) / (Dlon * coslat);
+      for (int jlon = 0; jlon < Ni; jlon++)
+        if ((jlat % lat_stride != 0) || (jlon % (2 * lon_stride) != 0))
+          s[jlat*Ni+jlon] = s0;
+    }
 }
 
 int glgrib_geometry_latlon::getTriangle (float, float) const
@@ -284,20 +338,28 @@ int glgrib_geometry_latlon::getTriangle (float, float) const
   throw std::runtime_error (std::string ("glgrib_geometry_latlon::getTriangle not implemented"));
 }
 
-glm::vec2 glgrib_geometry_latlon::xyz2conformal (const glm::vec3 &) const
+glm::vec2 glgrib_geometry_latlon::xyz2conformal (const glm::vec3 & xyz) const
 {
-  throw std::runtime_error (std::string ("glgrib_geometry_latlon::xyz2conformal not implemented"));
+  float lon = atan2 (xyz.y, xyz.x);
+  float lat = asin (xyz.z);
+  return glm::vec2 (lon, log (tan (M_PI / 4.0f + lat / 2.0f)));
 }
 
-glm::vec3 glgrib_geometry_latlon::conformal2xyz (const glm::vec2 &) const
+glm::vec3 glgrib_geometry_latlon::conformal2xyz (const glm::vec2 & merc) const
 {
-  throw std::runtime_error (std::string ("glgrib_geometry_latlon::conformal2xyz not implemented"));
+  float lon = merc.x;
+  float lat = 2.0f * atan (exp (merc.y)) - M_PI / 2.0f;
+
+  float coslon = cos (lon), sinlon = sin (lon);
+  float coslat = cos (lat), sinlat = sin (lat);
+
+  float X = coslon * coslat;
+  float Y = sinlon * coslat;
+  float Z =          sinlat;
+
+  return glm::vec3 (X, Y, Z);
 }
 
-void glgrib_geometry_latlon::getTriangleNeighbours (int, int [3], int [3], glm::vec2 [3]) const
-{
-  throw std::runtime_error (std::string ("glgrib_geometry_latlon::getTriangleNeighbours not implemented"));
-}
 
 
 

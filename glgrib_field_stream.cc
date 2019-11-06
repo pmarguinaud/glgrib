@@ -216,6 +216,8 @@ void glgrib_field_stream::getFirstPoint (int it, const float * ru, const float *
   std::valarray<float> w (3);
   glm::vec2 P[3];
 
+  w[0] = w[1] = w[2] = 0.0f;
+
   geometry->getTriangleNeighbours (it, jglo, itri, P);
 
   
@@ -242,6 +244,10 @@ void glgrib_field_stream::getFirstPoint (int it, const float * ru, const float *
   int j0 = (i0 + 1) % 3;
   int k0 = (i0 + 2) % 3;
   
+  if (! ((0 <= i0) && (i0 <= 2))) abort ();
+  if (! ((0 <= j0) && (j0 <= 2))) abort ();
+  if (! ((0 <= k0) && (k0 <= 2))) abort ();
+
   w[i0] = w[j0] = 0.5f; w[k0] = 0.0f;
   
   M = (w[0] * P[0] + w[1] * P[1] + w[2] * P[2]) / w.sum ();
@@ -409,6 +415,8 @@ void glgrib_field_stream::computeStreamLine (int it0, const float * ru, const fl
   glm::vec2 Vp, Vm, M;
   getFirstPoint (it0, ru, rv, M, Vp, Vm, wp, wm, itp, itm);
 
+
+#ifdef UNDEF
   // Forward 
   listf.push_back (glm::vec3 (M.x, M.y, glm::length (Vp)));
 
@@ -428,6 +436,7 @@ void glgrib_field_stream::computeStreamLine (int it0, const float * ru, const fl
 
   if (listb.size () + listf.size () > 0)
     stream->push (0.0f, 0.0f, 0.0f, 0.0f);
+#endif
 
   return;
 }

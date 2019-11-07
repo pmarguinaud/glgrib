@@ -104,4 +104,44 @@ std::string glgrib_geometry::md5string (const unsigned char md5[]) const
   return str;
 }
 
+void glgrib_geometry::checkTriangles () const
+{
+  int nt = numberOfTriangles;
+#pragma omp parallel for
+  for (int it0 = 0; it0 < nt; it0++)
+    {
+      int itri0[3], jglo0[3]; glm::vec3 xyz0[3];
+      getTriangleNeighbours (it0, jglo0, itri0, xyz0);
+      for (int i0 = 0; i0 < 3; i0++)
+        {
+          int j0 = (i0 + 1) % 3;
+          int it1 = itri0[i0];
+	  if (it1 >= 0)
+	    {
+              int itri1[3], jglo1[3]; glm::vec3 xyz1[3];
+              getTriangleNeighbours (it1, jglo1, itri1, xyz1);
+	      bool found = false, adj = false;
+              for (int i1 = 0; i1 < 3; i1++)
+                {
+                  int j1 = (i1 + 1) % 3;
+                  if (itri1[i1] == it0)
+                    {
+                      found = true;
+                      adj = ((jglo0[i0] == jglo1[i1]) && (jglo0[j0] == jglo1[j1]))
+                         || ((jglo0[i0] == jglo1[j1]) && (jglo0[j0] == jglo1[i1]));
+	              break;
+	            }
+                }
+	      if (! found)
+                printf ("Triangle %d is the neighbour of triangle %d, but the opposite is false\n", it0, it1);
+	      else if (! adj)
+	        printf ("Triangles %d and %d are not neighbours along the same edge\n", it0, it1);
+	    }
+	}
+    }
+  printf ("checkTriangles OK\n");
+}
+
+
+
 

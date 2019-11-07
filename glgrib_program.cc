@@ -1344,7 +1344,8 @@ void main ()
   vec3 green= vec3 (0.0f, 1.0f, 0.0f);
 
   float n = norm / valmax;
-  color = RGBA0[1 + int (n * 254.0)];
+  int k = min (255, 1 + int (n * 254.0));
+  color = RGBA0[k];
 
 }
 

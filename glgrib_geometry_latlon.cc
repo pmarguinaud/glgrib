@@ -47,13 +47,9 @@ void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const float orography
   lat0 = deg2rad * latitudeOfFirstGridPointInDegrees;
   lon0 = deg2rad * longitudeOfFirstGridPointInDegrees;
 
-  double ddlon = lon0 + (Ni + 1) * dlon - 2 * M_PI;
-  while (ddlon < 0.)
-    ddlon += 2 * M_PI;
-  while (ddlon >= 2. * M_PI)
-    ddlon -= 2 * M_PI;
+  double ddlon = Ni * dlon - 2 * M_PI;
     
-  periodic = fabs (ddlon) < 1E-2;
+  periodic = fabs (ddlon) < 1E-2 * dlon;
 
   // Compute number of triangles
   
@@ -133,8 +129,11 @@ int glgrib_geometry_latlon::latlon2index (float lat, float lon) const
   while (dl >= 2 * M_PI)
     dl -= 2 * M_PI;
 
-  int i = dl / dlon;
-  int j = (lat0 - lat) / dlat;
+  int i = (int)(0.5 + dl / dlon);
+  int j = (int)(0.5 + (lat0 - lat) / dlat);
+
+  if ((periodic) && (i >= Ni))
+    i = 0;
 
   if ((i < 0) || (i >= Ni))
     return -1;
@@ -192,7 +191,7 @@ void glgrib_geometry_latlon::sample (unsigned char * p, const unsigned char p0, 
 
   for (int jlat = 0; jlat < Nj; jlat++)
     {
-      float lat = lat0 + dlat * (float)jlat;
+      float lat = lat0 - dlat * (float)jlat;
       float coslat = cos (lat);
       int lon_stride = abs (2 * (lat_stride * Dlat) / (Dlon * coslat));
       lon_stride = std::max (1, lon_stride);
@@ -222,44 +221,11 @@ void glgrib_geometry_latlon::getTriangleVertices (int it, int jglo[3]) const
     }
 }
 
-void glgrib_geometry_latlon::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
-{ 
-  bool t021 = (it % 2) == 0;
-  it = t021 ? it : it - 1;                // it is now the rank of the triangle 012
-  int nti = numberOfTriangles / (Nj - 1); // Number of triangles in a row
-  int i = (it % nti) / 2;
-  int j = (it / nti);
-  int ind0 = (j + 0) * Ni + (i + 0), ind1 = periodic && (i == Ni-1) ? (j + 0) * Ni : (j + 0) * Ni + (i + 1); 
-  int ind2 = (j + 1) * Ni + (i + 0), ind3 = periodic && (i == Ni-1) ? (j + 1) * Ni : (j + 1) * Ni + (i + 1); 
 
-  float coslon0 = cos (lon0 + dlon * (float)(i + 0)), sinlon0 = sin (lon0 + dlon * (float)(i + 0));
-  float coslon1 = cos (lon0 + dlon * (float)(i + 1)), sinlon1 = sin (lon0 + dlon * (float)(i + 1));
-  float coslat0 = cos (lat0 - dlat * (float)(j + 0)), sinlat0 = sin (lat0 - dlat * (float)(j + 0));
-  float coslat1 = cos (lat0 - dlat * (float)(j + 1)), sinlat1 = sin (lat0 - dlat * (float)(j + 1));
-
-  if (t021)
-    {
-      jglo[0] = ind0; jglo[1] = ind1; jglo[2] = ind2;
-      itri[0] = j > 0 ? it - nti + 1: -1;
-      itri[1] = it + 1;
-      itri[2] = i > 0 ? it - 1 : periodic ? it + nti - 1 : -1;
-      xyz[0] = glm::vec3 (coslon0 * coslat0, sinlon0 * coslat0, sinlat0);
-      xyz[1] = glm::vec3 (coslon1 * coslat0, sinlon1 * coslat0, sinlat0);
-      xyz[2] = glm::vec3 (coslon0 * coslat1, sinlon0 * coslat1, sinlat1);
-    }
-  else
-    {
-      jglo[0] = ind2; jglo[1] = ind3; jglo[2] = ind1;
-      itri[0] = j < Nj-2 ? it + nti : -1;
-      itri[1] = i < Ni-2 ? it + 2 : periodic ? it - nti + 1 : -1;
-      itri[2] = it;
-      xyz[0] = glm::vec3 (coslon0 * coslat1, sinlon0 * coslat1, sinlat1);
-      xyz[1] = glm::vec3 (coslon1 * coslat1, sinlon1 * coslat1, sinlat1);
-      xyz[2] = glm::vec3 (coslon1 * coslat0, sinlon1 * coslat0, sinlat0);
-    }
-}
-
-void glgrib_geometry_latlon::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec2 merc[3]) const
+void glgrib_geometry_latlon::getTriangleNeighboursLatLon (int it, int jglo[3], int itri[3], 
+		                                          float & xlon0, float & xlat0, 
+		                                          float & xlon1, float & xlat1)
+const
 {
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;                // it is now the rank of the triangle 012
@@ -269,10 +235,63 @@ void glgrib_geometry_latlon::getTriangleNeighbours (int it, int jglo[3], int itr
   int ind0 = (j + 0) * Ni + (i + 0), ind1 = periodic && (i == Ni-1) ? (j + 0) * Ni : (j + 0) * Ni + (i + 1); 
   int ind2 = (j + 1) * Ni + (i + 0), ind3 = periodic && (i == Ni-1) ? (j + 1) * Ni : (j + 1) * Ni + (i + 1); 
 
-  float mlon0 = lon0 + dlon * (float)(i + 0);
-  float mlon1 = lon0 + dlon * (float)(i + 1);
-  float xlat0 = lat0 - dlat * (float)(j + 0);
-  float xlat1 = lat0 - dlat * (float)(j + 1);
+  xlon0 = lon0 + dlon * (float)(i + 0);
+  xlon1 = lon0 + dlon * (float)(i + 1);
+  xlat0 = lat0 - dlat * (float)(j + 0);
+  xlat1 = lat0 - dlat * (float)(j + 1);
+
+  if (t021)
+    {
+      jglo[0] = ind0; jglo[1] = ind1; jglo[2] = ind2;
+      itri[0] = j > 0 ? it - nti + 1: -1;
+      itri[1] = it + 1;
+      itri[2] = i > 0 ? it - 1 : periodic ? it + nti - 1 : -1;
+    }
+  else
+    {
+      jglo[0] = ind2; jglo[1] = ind3; jglo[2] = ind1;
+      itri[0] = j < Nj-1 ? it + nti : -1;
+      itri[1] = i < Ni-1 ? it + 2 : periodic ? it - nti + 2 : -1;
+      itri[2] = it;
+    }
+
+}
+
+void glgrib_geometry_latlon::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
+{ 
+  bool t021 = (it % 2) == 0;
+  float xlon0, xlat0, xlat1, xlon1;
+
+  getTriangleNeighboursLatLon (it, jglo, itri, xlon0, xlat0, xlon1, xlat1);
+
+  float coslon0 = cos (xlon0), sinlon0 = sin (xlon0);
+  float coslon1 = cos (xlon1), sinlon1 = sin (xlon1);
+  float coslat0 = cos (xlat0), sinlat0 = sin (xlat0);
+  float coslat1 = cos (xlat1), sinlat1 = sin (xlat1);
+
+  if (t021)
+    {
+      xyz[0] = glm::vec3 (coslon0 * coslat0, sinlon0 * coslat0, sinlat0);
+      xyz[1] = glm::vec3 (coslon1 * coslat0, sinlon1 * coslat0, sinlat0);
+      xyz[2] = glm::vec3 (coslon0 * coslat1, sinlon0 * coslat1, sinlat1);
+    }
+  else
+    {
+      xyz[0] = glm::vec3 (coslon0 * coslat1, sinlon0 * coslat1, sinlat1);
+      xyz[1] = glm::vec3 (coslon1 * coslat1, sinlon1 * coslat1, sinlat1);
+      xyz[2] = glm::vec3 (coslon1 * coslat0, sinlon1 * coslat0, sinlat0);
+    }
+}
+
+void glgrib_geometry_latlon::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec2 merc[3]) const
+{
+  bool t021 = (it % 2) == 0;
+  float xlon0, xlat0, xlat1, xlon1;
+
+  getTriangleNeighboursLatLon (it, jglo, itri, xlon0, xlat0, xlon1, xlat1);
+
+  float mlon0 = xlon0;
+  float mlon1 = xlon1;
 
   if (fabsf (xlat0 - M_PI / 2.0f) < 1e-06)
     xlat0 = xlat0 - fabsf (dlat) / 2.0f;
@@ -288,20 +307,12 @@ void glgrib_geometry_latlon::getTriangleNeighbours (int it, int jglo[3], int itr
 
   if (t021)
     {
-      jglo[0] = ind0; jglo[1] = ind1; jglo[2] = ind2;
-      itri[0] = j > 0 ? it - nti + 1: -1;
-      itri[1] = it + 1;
-      itri[2] = i > 0 ? it - 1 : periodic ? it + nti - 1 : -1;
       merc[0] = glm::vec2 (mlon0, mlat0);
       merc[1] = glm::vec2 (mlon1, mlat0);
       merc[2] = glm::vec2 (mlon0, mlat1);
     }
   else
     {
-      jglo[0] = ind2; jglo[1] = ind3; jglo[2] = ind1;
-      itri[0] = j < Nj-2 ? it + nti : -1;
-      itri[1] = i < Ni-2 ? it + 2 : periodic ? it - nti + 1 : -1;
-      itri[2] = it;
       merc[0] = glm::vec2 (mlon0, mlat1);
       merc[1] = glm::vec2 (mlon1, mlat1);
       merc[2] = glm::vec2 (mlon1, mlat0);
@@ -332,22 +343,55 @@ void glgrib_geometry_latlon::sampleTriangle (unsigned char * s, const unsigned c
   float dlat = Dlat / (Nj - 1);
   float lat0 = deg2rad * latitudeOfFirstGridPointInDegrees;
 
-  int lat_stride = (Nj * M_PI) / (level * Dlat);
+  int lat_stride = level;
+
+  int ntpr = periodic ? 2 * Ni : 2 * (Ni - 1);
 
   for (int jlat = 0; jlat < Nj; jlat++)
     {
-      float lat = lat0 + dlat * (float)jlat;
+      float lat = lat0 - dlat * (float)jlat;
+
+      if (fabsf (lat - M_PI / 2.0f) < 1e-6)
+        continue;
+      if (fabsf (lat + M_PI / 2.0f) < 1e-6)
+        continue;
+
       float coslat = cos (lat);
-      int lon_stride = 2 * (lat_stride * Dlat) / (Dlon * coslat);
+
+      int lon_stride = 2.0f * (level * 2.0f * Dlat) / (Dlon * coslat);
+
       for (int jlon = 0; jlon < Ni; jlon++)
-        if ((jlat % lat_stride != 0) || (jlon % (2 * lon_stride) != 0))
-          s[jlat*Ni+jlon] = s0;
+        if ((jlat % lat_stride == 0) && (jlon % lon_stride == 0))
+          s[jlat * ntpr + 2 * jlon] = s0;
+
     }
 }
 
-int glgrib_geometry_latlon::getTriangle (float, float) const
+int glgrib_geometry_latlon::getTriangle (float lon, float lat) const
 {
-  throw std::runtime_error (std::string ("glgrib_geometry_latlon::getTriangle not implemented"));
+  lat = lat * deg2rad;
+  lon = lon * deg2rad;
+
+  float dl = lon - lon0;
+  while (dl < 0.)
+    dl += 2 * M_PI;
+  while (dl >= 2 * M_PI)
+    dl -= 2 * M_PI;
+
+  int i = (int)(dl / dlon);
+  int j = (int)((lat0 - lat) / dlat);
+
+  std::cout << " i, j = " << i << ", " << j << std::endl;
+
+  if ((i < 0) || (i >= Ni))
+    return -1;
+  if ((j < 0) || (j >= Nj))
+    return -1;
+
+  int ntpr = periodic ? 2 * Ni : 2 * (Ni - 1);
+
+
+  return j * ntpr + i * 2;
 }
 
 glm::vec2 glgrib_geometry_latlon::xyz2conformal (const glm::vec3 & xyz) const

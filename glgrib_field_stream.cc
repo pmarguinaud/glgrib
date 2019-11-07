@@ -107,13 +107,11 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 
   geometry = glgrib_geometry_load (ld, opts.path[0]);
 
+  geometry->checkTriangles ();
+
   numberOfColors = 1;
 
   int size = geometry->size ();
-
-  // Apply scale factor
-  geometry->applyNormScale (data_u->data ());
-  geometry->applyNormScale (data_v->data ());
 
   glgrib_field_float_buffer_ptr data_n, data_d;
 
@@ -132,12 +130,16 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 
   int nt = geometry->numberOfTriangles;
 
+  std::cout << " nt = " << nt << std::endl;
+
   unsigned char * sample = new unsigned char[nt];
   for (int i = 0; i < nt; i++)
     sample[i] = 0;
 
   int np = (int)sqrt (geometry->numberOfPoints);
   int level = (int)(opts.stream.density * np / 40.0f);
+
+  std::cout << " level = " << level << std::endl;
 
   geometry->sampleTriangle (sample, 1, level);
 
@@ -147,17 +149,15 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 
   delete [] sample;
 
-//#pragma omp parallel for
+  std::cout << " it.size () = " << it.size () << std::endl;
+
+#pragma omp parallel for
   for (int j = 0; j < N; j++)
     {
       int i0 = ((j + 0) * it.size ()) / N;
       int i1 = ((j + 1) * it.size ()) / N;
-      if (j == 11)
       for (int i = i0; i < i1; i++)
-        {
         computeStreamLine (it[i], data_u->data (), data_v->data (), &stream_data[j]);
-        break;
-        }
     }
 
   for (int i = 0; i < N; i++)
@@ -214,6 +214,7 @@ void glgrib_field_stream::getFirstPoint (int it, const float * ru, const float *
 		                         std::valarray<float> & wp, std::valarray<float> & wm, 
 					 int & itp, int & itm)
 {
+  bool dbg = false;
   // First point of the list; see which segment to start with, initialize weights, V and M
   int jglo[3], itri[3];
 
@@ -224,7 +225,14 @@ void glgrib_field_stream::getFirstPoint (int it, const float * ru, const float *
 
   geometry->getTriangleNeighbours (it, jglo, itri, P);
 
+  if (dbg){
+  std::cout << " it = " << it << std::endl;
+  for (int i = 0; i < 3; i++)
+    printf ("P[%d] = %12.5f %12.5f itri = %8d jglo = %8d\n", i, P[i].x, P[i].y, itri[i], jglo[i]);
+  }
+
   
+  // Find best edge to start with
   int i0 = std::numeric_limits<int>::max ();
   float s0 = std::numeric_limits<float>::max ();
   for (int i = 0; i < 3; i++)
@@ -248,20 +256,24 @@ void glgrib_field_stream::getFirstPoint (int it, const float * ru, const float *
   int j0 = (i0 + 1) % 3;
   int k0 = (i0 + 2) % 3;
   
-  if (! ((0 <= i0) && (i0 <= 2))) abort ();
-  if (! ((0 <= j0) && (j0 <= 2))) abort ();
-  if (! ((0 <= k0) && (k0 <= 2))) abort ();
-
   w[i0] = w[j0] = 0.5f; w[k0] = 0.0f;
   
+  // Starting point, starting vector
   M = (w[0] * P[0] + w[1] * P[1] + w[2] * P[2]) / w.sum ();
+
+  if (dbg)
+  std::cout << " M = " << glm::to_string (M) << std::endl;
 
   glm::vec2 V = glm::vec2 (w[0] * ru[jglo[0]] + w[1] * ru[jglo[1]] + w[2] * ru[jglo[2]],
                            w[0] * rv[jglo[0]] + w[1] * rv[jglo[1]] + w[2] * rv[jglo[2]]) 
 	                 / w.sum ();
 
+  if (dbg)
+  std::cout << " V = " << glm::to_string (V) << std::endl;
+
   Vp = V; itp = it; wp = w;
 
+  // Opposite triangle
   if ((itm = itri[i0]) >= 0)
     {
       int jglom[3], itrim[3];
@@ -278,9 +290,21 @@ void glgrib_field_stream::getFirstPoint (int it, const float * ru, const float *
       Vm = Vp;
     }
 
-  glm::vec2 v = glm::normalize (P[k0] - P[i0]);
+  if (dbg)
+  std::cout << " i0 = " << i0 << " j0 = " << j0 << " k0 = " << k0 << std::endl;
+
+  glm::vec2 v = glm::normalize (P[j0] - P[i0]);
+  if (dbg)
+  std::cout << " v = " << glm::to_string (v) << std::endl;
   glm::vec2 u = P[k0] - P[i0];
-  u = glm::normalize (u - glm::dot (u, v));
+  if (dbg)
+  std::cout << " u = " << glm::to_string (u) << std::endl;
+  u = glm::normalize (u - glm::dot (u, v) * v);
+
+  if (dbg)
+  std::cout << " u = " << glm::to_string (u) << std::endl;
+  if (dbg)
+  std::cout << " glm::dot (u, Vp) = " << glm::dot (u, Vp) << std::endl;
 
   // Pointing outside of triangle
   if (glm::dot (u, Vp) < 0.0f)
@@ -288,6 +312,13 @@ void glgrib_field_stream::getFirstPoint (int it, const float * ru, const float *
       std::swap (Vp, Vm); std::swap (wp, wm); std::swap (itp, itm);
     }
 
+}
+
+static glm::vec2 merc2lonlat (const glm::vec2 & merc)
+{
+  float lon = merc.x;
+  float lat = 2.0f * atan (exp (merc.y)) - M_PI / 2.0f;
+  return glm::vec2 (glm::degrees (lon), glm::degrees (lat));
 }
 
 void glgrib_field_stream::computeStreamLineDir (int it, const float * ru, const float * rv, 
@@ -304,6 +335,12 @@ void glgrib_field_stream::computeStreamLineDir (int it, const float * ru, const 
       if (seen[it])
         break;
 
+      bool dbg = (it == 1080000);
+      dbg = false;
+
+      if (dbg)
+      std::cout << " it = " << it << std::endl;
+
       seen.add (it);
 
       int jglo[3], itri[3];
@@ -311,14 +348,30 @@ void glgrib_field_stream::computeStreamLineDir (int it, const float * ru, const 
       glm::vec2 P[3];
       geometry->getTriangleNeighbours (it, jglo, itri, P);
 
+      if (dbg)
+        {
+          for (int i = 0; i < 3; i++)
+            printf (" %d jglo = %d itri = %d\n", i, jglo[i], itri[i]);
+	}
+
       // Fix periodicity issue
       for (int i = 0; i < 3; i++)
         {
-          if (M.x - P[i].x > M_PI)
+          while (M.x - P[i].x > M_PI)
             P[i].x += 2.0f * M_PI;
-          else 
-          if (P[i].x - M.x > M_PI)
+          while (P[i].x - M.x > M_PI)
             P[i].x -= 2.0f * M_PI;
+        }
+
+      if (dbg)
+        {
+          printf (" M = %12.5f %12.5f\n", M.x, M.y);
+          printf (" V = %12.5f %12.5f\n", V.x, V.y);
+          for (int i = 0; i < 3; i++)
+            {
+              glm::vec2 PL = merc2lonlat (P[i]);
+              printf (" P[%d] = %12.5f %12.5f %12.5f %12.5f\n", i, PL.x, PL.y, P[i].x, P[i].y);
+            }
         }
 
       // Try all edges : intersection of vector line with triangle edges
@@ -332,12 +385,17 @@ void glgrib_field_stream::computeStreamLineDir (int it, const float * ru, const 
 
           float lambda = lineLineIntersect (M, sign * V, P[i], P[j]);
 
+	  if (dbg)
+	  std::cout << " i = " << i << " lambda = " << lambda << std::endl;
+
           if ((lambda < 0.0f) || (1.0f < lambda)) // Cross edge line between P[i] and P[j]
             continue;
 
           bool lpoint = (lambda == 0.0f) || (lambda == 1.0f);
            
           int itn = itri[i], jglon[3];
+
+          if (dbg) std::cout << " itn = " << itn << std::endl;
 
           if (itn < 0)
             {
@@ -346,6 +404,8 @@ void glgrib_field_stream::computeStreamLineDir (int it, const float * ru, const 
               else  
                 goto last;
             }
+
+          if (dbg) std::cout << " seen = " << seen[itn] << std::endl;
 
           if (seen[itn])
             {
@@ -365,6 +425,9 @@ void glgrib_field_stream::computeStreamLineDir (int it, const float * ru, const 
           glm::vec2 v = glm::normalize (P[j] - P[i]);
 	  glm::vec2 u = P[k] - P[i];
 	  u = u - glm::dot (u, v) * v;
+
+	  if (dbg)
+	  std::cout << " again_flag = " << again_flag << std::endl;
 
           if ((! again_flag) && (glm::dot (u, sign * V) > 0.0f))
             {
@@ -391,6 +454,8 @@ void glgrib_field_stream::computeStreamLineDir (int it, const float * ru, const 
                     w[k] = 1.0f - lambda;
                 }
 
+	      if (dbg) std::cout << " w = " << w[0] << " " << w[1] << " " << w[2] << std::endl;
+
               it = itn;
 
 	      again_flag = false;
@@ -410,6 +475,7 @@ last:
 void glgrib_field_stream::computeStreamLine (int it0, const float * ru, const float * rv, 
                                              streamline_data_t * stream)
 {
+  bool dbg = false;
   std::vector<glm::vec3> listf, listb;
 
   stream_seen_t seen;
@@ -418,6 +484,12 @@ void glgrib_field_stream::computeStreamLine (int it0, const float * ru, const fl
   std::valarray<float> wp (3), wm (3);
   glm::vec2 Vp, Vm, M;
   getFirstPoint (it0, ru, rv, M, Vp, Vm, wp, wm, itp, itm);
+
+  if (dbg){
+  std::cout << " it0 = " << it0  << " M = " << glm::to_string (merc2lonlat (M)) << std::endl;
+  std::cout << " itp = " << itp << " itm = " << itm << std::endl;
+  }
+
 
   // Forward 
   listf.push_back (glm::vec3 (M.x, M.y, glm::length (Vp)));

@@ -35,6 +35,7 @@ public:
   virtual glm::vec2 xyz2conformal (const glm::vec3 &) const;
   virtual glm::vec3 conformal2xyz (const glm::vec2 &) const;
 private:
+  void getTriangleNeighboursLatLon (int, int [3], int [3], float &, float &, float &, float &) const;
   long int Ni, Nj;
   double latitudeOfFirstGridPointInDegrees;
   double longitudeOfFirstGridPointInDegrees;

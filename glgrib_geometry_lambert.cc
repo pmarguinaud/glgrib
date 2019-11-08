@@ -60,6 +60,9 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const float orograph
   p_pj = proj_t (deg2rad * LoVInDegrees, deg2rad * LaDInDegrees, projectionCentreFlag == 128 ? -1.0 : +1.0);
   center_xy = p_pj.latlon_to_xy (p_pj.ref_pt);
 
+  std::cout << " DxInMetres = " << DxInMetres << std::endl;
+  std::cout << " DyInMetres = " << DyInMetres << std::endl;
+
   // Generation of coordinates
 #pragma omp parallel for
   for (int j = 0; j < Ny; j++)
@@ -67,12 +70,16 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const float orograph
       {
         xy_t pt_xy ((i - Nux / 2) * DxInMetres, (j - Nuy / 2) * DyInMetres);
         pt_xy = pt_xy + center_xy;
+
         latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
 
+	float coslon = cos (latlon.lon), sinlon = sin (latlon.lon);
+	float coslat = cos (latlon.lat), sinlat = sin (latlon.lat);
+
         int p = j * Nx + i;
-        xyz[3*p+0] = cos (latlon.lon) * cos (latlon.lat);
-        xyz[3*p+1] = sin (latlon.lon) * cos (latlon.lat);
-        xyz[3*p+2] =                    sin (latlon.lat);
+        xyz[3*p+0] = coslon * coslat;
+        xyz[3*p+1] = sinlon * coslat;
+        xyz[3*p+2] =          sinlat;
       }
       
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
@@ -91,8 +98,8 @@ int glgrib_geometry_lambert::latlon2index (float lat, float lon) const
   xy_t xy = p_pj.latlon_to_xy (latlon_t (lon * deg2rad, lat * deg2rad));
   xy = xy - center_xy;
 
-  int i = xy.x / DxInMetres + Nux / 2;
-  int j = xy.y / DyInMetres + Nuy / 2;
+  int i = (xy.x / DxInMetres + Nux / 2 + 0.5);
+  int j = (xy.y / DyInMetres + Nuy / 2 + 0.5);
 
   if ((i < 0) || (i >= Nx))
     return -1;
@@ -231,7 +238,7 @@ void glgrib_geometry_lambert::getTriangleVertices (int it, int jglo[3]) const
     }
 }
 
-void glgrib_geometry_lambert::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
+void glgrib_geometry_lambert::getTriangleNeighboursXY (int it, int jglo[3], int itri[3], xy_t xy[4]) const
 { 
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;                // it is now the rank of the triangle 012
@@ -241,17 +248,13 @@ void glgrib_geometry_lambert::getTriangleNeighbours (int it, int jglo[3], int it
   int ind0 = (j + 0) * Nx + (i + 0), ind1 = (j + 0) * Nx + (i + 1); 
   int ind2 = (j + 1) * Nx + (i + 0), ind3 = (j + 1) * Nx + (i + 1); 
 
-  glm::vec3 pos[4];
   for (int p = 0, j_ = 0; j_ <= 1; j_++)
   for (int i_ = 0; i_ <= 1; i_++, p++)
     {
       int I = i + i_, J = j + j_;
       xy_t pt_xy ((I - Nux / 2) * DxInMetres, (J - Nuy / 2) * DyInMetres);
       pt_xy = pt_xy + center_xy;
-      latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
-      pos[p] = glm::vec3 (cos (latlon.lon) * cos (latlon.lat),
-                          sin (latlon.lon) * cos (latlon.lat),
-                                             sin (latlon.lat));
+      xy[p] = pt_xy;
     }
 
   if (t021)
@@ -260,9 +263,6 @@ void glgrib_geometry_lambert::getTriangleNeighbours (int it, int jglo[3], int it
       itri[0] = j > 0 ? it - nti + 1: -1;
       itri[1] = it + 1;
       itri[2] = i > 0 ? it - 1 : -1;
-      xyz[0] = pos[0];
-      xyz[1] = pos[1];
-      xyz[2] = pos[2];
     }
   else
     {
@@ -270,10 +270,64 @@ void glgrib_geometry_lambert::getTriangleNeighbours (int it, int jglo[3], int it
       itri[0] = j < Ny-2 ? it + nti : -1;
       itri[1] = i < Nx-2 ? it + 2 : -1;
       itri[2] = it;
+    }
+}
+
+void glgrib_geometry_lambert::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
+{ 
+  bool t021 = (it % 2) == 0;
+
+  xy_t xy[4];
+
+  getTriangleNeighboursXY (it, jglo, itri, xy);
+
+  glm::vec3 pos[4];
+  for (int p = 0; p < 4; p++)
+    {
+      latlon_t latlon = p_pj.xy_to_latlon (xy[p]);
+      pos[p] = glm::vec3 (cos (latlon.lon) * cos (latlon.lat),
+                          sin (latlon.lon) * cos (latlon.lat),
+                                             sin (latlon.lat));
+    }
+
+  if (t021)
+    {
+      xyz[0] = pos[0];
+      xyz[1] = pos[1];
+      xyz[2] = pos[2];
+    }
+  else
+    {
       xyz[0] = pos[2];
       xyz[1] = pos[3];
       xyz[2] = pos[1];
     }
+}
+
+void glgrib_geometry_lambert::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec2 xy[3]) const
+{
+  bool t021 = (it % 2) == 0;
+
+  xy_t xya[4];
+
+  getTriangleNeighboursXY (it, jglo, itri, xya);
+
+  for (int i = 0; i < 4; i++)
+    xya[i] = xya[i] - center_xy;
+
+  if (t021)
+    {
+      xy[0] = glm::vec2 (xya[0].x, xya[0].y);     
+      xy[1] = glm::vec2 (xya[1].x, xya[1].y);     
+      xy[2] = glm::vec2 (xya[2].x, xya[2].y);     
+    }
+  else
+    {
+      xy[0] = glm::vec2 (xya[2].x, xya[2].y);
+      xy[1] = glm::vec2 (xya[3].x, xya[3].y);
+      xy[2] = glm::vec2 (xya[1].x, xya[1].y);
+    }
+
 }
 
 bool glgrib_geometry_lambert::triangleIsEdge (int it) const
@@ -293,14 +347,56 @@ bool glgrib_geometry_lambert::triangleIsEdge (int it) const
   return false;
 }
 
-void glgrib_geometry_lambert::sampleTriangle (unsigned char *, const unsigned char, const int) const
+void glgrib_geometry_lambert::sampleTriangle (unsigned char * s, const unsigned char s0, const int level) const
 {
-  throw std::runtime_error (std::string ("glgrib_geometry_lambert::sampleTriangle not implemented"));
+  xy_t pt_sw ((-Nux / 2) * DxInMetres, (-Nuy / 2) * DyInMetres);
+  xy_t pt_ne ((+Nux / 2) * DxInMetres, (+Nuy / 2) * DyInMetres);
+  pt_sw = pt_sw + center_xy;
+  pt_ne = pt_ne + center_xy;
+  latlon_t latlon_sw = p_pj.xy_to_latlon (pt_sw);
+  latlon_t latlon_ne = p_pj.xy_to_latlon (pt_ne);
+  
+  float Dlat = latlon_ne.lat - latlon_sw.lat;
+  float Dlon = latlon_ne.lon - latlon_sw.lon;
+  float lat = (latlon_ne.lat + latlon_sw.lat) / 2.0f;
+  
+  int lat_stride = abs (level * M_PI / Dlat);
+
+  int ntpr = 2 * (Nx - 1);
+
+  for (int jlat = 0; jlat < Ny; jlat++)
+    {
+      int lon_stride = 2.0f * (level * 2.0f * Dlat) / (Dlon * cos (lat));
+      for (int jlon = 0; jlon < Nx; jlon++)
+        if ((jlat % lat_stride == 0) && (jlon % lon_stride == 0))
+          s[jlat * ntpr + 2 * jlon] = s0;
+    }
+
 }
 
-int glgrib_geometry_lambert::getTriangle (float, float) const
+int glgrib_geometry_lambert::getTriangle (float lon, float lat) const
 {
-  throw std::runtime_error (std::string ("glgrib_geometry_lambert::getTriangle not implemented"));
+  xy_t xy = p_pj.latlon_to_xy (latlon_t (lon * deg2rad, lat * deg2rad));
+  xy = xy - center_xy;
+
+  int i = xy.x / DxInMetres + Nux / 2;
+  int j = xy.y / DyInMetres + Nuy / 2;
+
+  std::cout << " i = " << i << " j = " << j << std::endl;
+  int ntpr = 2 * (Nx - 1);
+  int it = j * ntpr + i * 2;
+
+//std::cout << " Nx = " << Nx << " Ny = " << Ny << std::endl;
+//std::cout << " it = " << it << std::endl;
+  {
+    glm::vec2 xy[3];
+    int jglo[3], itri[3];
+    getTriangleNeighbours (it, jglo, itri, xy);
+    for (int i = 0; i < 3; i++)
+      printf (" %d %8d %8d\n", i, jglo[i], itri[i]);
+  }
+
+  return it;
 }
 
 glm::vec2 glgrib_geometry_lambert::xyz2conformal (const glm::vec3 &) const
@@ -308,20 +404,34 @@ glm::vec2 glgrib_geometry_lambert::xyz2conformal (const glm::vec3 &) const
   throw std::runtime_error (std::string ("glgrib_geometry_lambert::xyz2conformal not implemented"));
 }
 
-glm::vec3 glgrib_geometry_lambert::conformal2xyz (const glm::vec2 &) const
+glm::vec3 glgrib_geometry_lambert::conformal2xyz (const glm::vec2 & xy) const
 {
-  throw std::runtime_error (std::string ("glgrib_geometry_lambert::conformal2xyz not implemented"));
+  xy_t pt_xy (xy.x, xy.y);
+  pt_xy = pt_xy + center_xy;
+
+  latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
+
+  float coslon = cos (latlon.lon), sinlon = sin (latlon.lon);
+  float coslat = cos (latlon.lat), sinlat = sin (latlon.lat);
+
+  glm::vec3 xyz;
+
+  xyz.x = coslon * coslat;
+  xyz.y = sinlon * coslat;
+  xyz.z =          sinlat;
+
+  return xyz;
 }
 
-void glgrib_geometry_lambert::getTriangleNeighbours (int, int [3], int [3], glm::vec2 [3]) const
-{
-  throw std::runtime_error (std::string ("glgrib_geometry_lambert::getTriangleNeighbours not implemented"));
-}
 
-
-glm::vec2 glgrib_geometry_lambert::conformal2latlon (const glm::vec2 & merc) const
+glm::vec2 glgrib_geometry_lambert::conformal2latlon (const glm::vec2 & xy) const
 {
-  throw std::runtime_error (std::string ("glgrib_geometry_lambert::conformal2latlon not implemented"));
+  xy_t pt_xy (xy.x, xy.y);
+  pt_xy = pt_xy + center_xy;
+
+  latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
+
+  return glm::vec2 (rad2deg * latlon.lon, rad2deg * latlon.lat);
 }
 
 

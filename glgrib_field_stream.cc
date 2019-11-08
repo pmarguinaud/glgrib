@@ -107,7 +107,7 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 
   geometry = glgrib_geometry_load (ld, opts.path[0]);
 
-  geometry->checkTriangles ();
+//geometry->checkTriangles ();
 
   numberOfColors = 1;
 
@@ -328,8 +328,8 @@ void glgrib_field_stream::computeStreamLineDir (int it, const float * ru, const 
       if (seen[it])
         break;
 
-      bool dbg = (it == 1080000);
-      dbg = false;
+      bool dbg = (it == 54);
+      false;
 
       if (dbg)
       std::cout << " it = " << it << std::endl;
@@ -342,23 +342,22 @@ void glgrib_field_stream::computeStreamLineDir (int it, const float * ru, const 
       geometry->getTriangleNeighbours (it, jglo, itri, P);
 
       if (dbg)
+      for (int i = 0; i < 3; i++)
+        printf (" P[%d] = %12.5f %12.5f\n", i, P[i].x, P[i].y);
+
+
+      if (dbg)
         {
           for (int i = 0; i < 3; i++)
             printf (" %d jglo = %d itri = %d\n", i, jglo[i], itri[i]);
 	}
 
-      // Fix periodicity issue
-      for (int i = 0; i < 3; i++)
-        {
-          while (M.x - P[i].x > M_PI)
-            P[i].x += 2.0f * M_PI;
-          while (P[i].x - M.x > M_PI)
-            P[i].x -= 2.0f * M_PI;
-        }
+      geometry->fixPeriodicity (M, P, 3);
 
       if (dbg)
         {
-          printf (" M = %12.5f %12.5f\n", M.x, M.y);
+          glm::vec2 ML = geometry->conformal2latlon (M);
+          printf (" M = %12.5f %12.5f %12.5f %12.5f\n", M.x, M.y, ML.x, ML.y);
           printf (" V = %12.5f %12.5f\n", V.x, V.y);
           for (int i = 0; i < 3; i++)
             {

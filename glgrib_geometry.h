@@ -40,6 +40,7 @@ public:
   virtual glm::vec3 conformal2xyz (const glm::vec2 &) const = 0;
   virtual glm::vec2 conformal2latlon (const glm::vec2 &) const = 0;
   virtual void checkTriangles () const;
+  virtual void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const = 0;
 protected:
   std::string md5string (const unsigned char []) const;
 };

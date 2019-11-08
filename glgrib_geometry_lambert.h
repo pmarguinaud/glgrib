@@ -205,7 +205,9 @@ public:
   virtual glm::vec2 xyz2conformal (const glm::vec3 &) const;
   virtual glm::vec3 conformal2xyz (const glm::vec2 &) const;
   virtual glm::vec2 conformal2latlon (const glm::vec2 &) const;
+  virtual void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const {}
 private:
+  void getTriangleNeighboursXY (int, int [3], int [3], xy_t [4]) const;
   long int Nx, Ny, Nux, Nuy, projectionCentreFlag;
   double LaDInDegrees, LoVInDegrees, DxInMetres, DyInMetres;
   proj_t p_pj;

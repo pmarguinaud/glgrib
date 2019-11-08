@@ -455,5 +455,14 @@ glm::vec2 glgrib_geometry_latlon::conformal2latlon (const glm::vec2 & merc) cons
   return glm::vec2 (glm::degrees (lon), glm::degrees (lat));
 }
 
-
-
+void glgrib_geometry_latlon::fixPeriodicity (const glm::vec2 & M, glm::vec2 * P, int n) const
+{
+  // Fix periodicity issue
+  for (int i = 0; i < n; i++)
+    {
+      while (M.x - P[i].x > M_PI)
+        P[i].x += 2.0f * M_PI;
+      while (P[i].x - M.x > M_PI)
+        P[i].x -= 2.0f * M_PI;
+    }
+}

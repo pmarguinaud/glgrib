@@ -60,9 +60,6 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const float orograph
   p_pj = proj_t (deg2rad * LoVInDegrees, deg2rad * LaDInDegrees, projectionCentreFlag == 128 ? -1.0 : +1.0);
   center_xy = p_pj.latlon_to_xy (p_pj.ref_pt);
 
-  std::cout << " DxInMetres = " << DxInMetres << std::endl;
-  std::cout << " DyInMetres = " << DyInMetres << std::endl;
-
   // Generation of coordinates
 #pragma omp parallel for
   for (int j = 0; j < Ny; j++)
@@ -361,12 +358,14 @@ void glgrib_geometry_lambert::sampleTriangle (unsigned char * s, const unsigned 
   float lat = (latlon_ne.lat + latlon_sw.lat) / 2.0f;
   
   int lat_stride = abs (level * M_PI / Dlat);
+  lat_stride = std::max (1, lat_stride);
+  int lon_stride = 2.0f * (level * 2.0f * Dlat) / (Dlon * cos (lat));
+  lon_stride = std::max (1, lon_stride);
 
   int ntpr = 2 * (Nx - 1);
 
   for (int jlat = 0; jlat < Ny; jlat++)
     {
-      int lon_stride = 2.0f * (level * 2.0f * Dlat) / (Dlon * cos (lat));
       for (int jlon = 0; jlon < Nx; jlon++)
         if ((jlat % lat_stride == 0) && (jlon % lon_stride == 0))
           s[jlat * ntpr + 2 * jlon] = s0;
@@ -382,19 +381,8 @@ int glgrib_geometry_lambert::getTriangle (float lon, float lat) const
   int i = xy.x / DxInMetres + Nux / 2;
   int j = xy.y / DyInMetres + Nuy / 2;
 
-  std::cout << " i = " << i << " j = " << j << std::endl;
   int ntpr = 2 * (Nx - 1);
   int it = j * ntpr + i * 2;
-
-//std::cout << " Nx = " << Nx << " Ny = " << Ny << std::endl;
-//std::cout << " it = " << it << std::endl;
-  {
-    glm::vec2 xy[3];
-    int jglo[3], itri[3];
-    getTriangleNeighbours (it, jglo, itri, xy);
-    for (int i = 0; i < 3; i++)
-      printf (" %d %8d %8d\n", i, jglo[i], itri[i]);
-  }
 
   return it;
 }

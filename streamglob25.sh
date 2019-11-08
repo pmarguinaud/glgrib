@@ -2,8 +2,8 @@
 
 
 tr=glob025
-lev=P020
 lev=SURF
+lev=P020
 
 
 #/usr/bin/time -p \

@@ -38,6 +38,7 @@ public:
   virtual int getTriangle (float, float) const = 0;
   virtual glm::vec2 xyz2conformal (const glm::vec3 &) const = 0;
   virtual glm::vec3 conformal2xyz (const glm::vec2 &) const = 0;
+  virtual glm::vec2 conformal2latlon (const glm::vec2 &) const = 0;
   virtual void checkTriangles () const;
 protected:
   std::string md5string (const unsigned char []) const;

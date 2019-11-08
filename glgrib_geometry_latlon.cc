@@ -251,7 +251,10 @@ const
     {
       jglo[0] = ind2; jglo[1] = ind3; jglo[2] = ind1;
       itri[0] = j < Nj-1 ? it + nti : -1;
-      itri[1] = i < Ni-1 ? it + 2 : periodic ? it - nti + 2 : -1;
+      if (periodic)
+        itri[1] = i < Ni-1 ? it + 2 : it - nti + 2;
+      else
+        itri[1] = i < Ni-2 ? it + 2 : -1;
       itri[2] = it;
     }
 
@@ -343,7 +346,7 @@ void glgrib_geometry_latlon::sampleTriangle (unsigned char * s, const unsigned c
   float dlat = Dlat / (Nj - 1);
   float lat0 = deg2rad * latitudeOfFirstGridPointInDegrees;
 
-  int lat_stride = level;
+  int lat_stride = abs (level * M_PI / Dlat);
 
   int ntpr = periodic ? 2 * Ni : 2 * (Ni - 1);
 
@@ -381,6 +384,7 @@ int glgrib_geometry_latlon::getTriangle (float lon, float lat) const
   int i = (int)(dl / dlon);
   int j = (int)((lat0 - lat) / dlat);
 
+  std::cout << " Ni, Nj = " << Ni << ", " << Nj << std::endl;
   std::cout << " i, j = " << i << ", " << j << std::endl;
 
   if ((i < 0) || (i >= Ni))
@@ -391,7 +395,35 @@ int glgrib_geometry_latlon::getTriangle (float lon, float lat) const
   int ntpr = periodic ? 2 * Ni : 2 * (Ni - 1);
 
 
-  return j * ntpr + i * 2;
+  int it = j * ntpr + i * 2;
+  int it1 = it + 1;
+
+
+  printf (" it = %d\n", it);
+
+  int itri[3], jglo[3]; glm::vec3 xyz[3];
+  getTriangleNeighbours (it, jglo, itri, xyz);
+  
+  const float rad2deg = 180.0f / M_PI;
+  float xlon = rad2deg * atan2 (xyz[0].y, xyz[0].x);
+  float xlat = rad2deg * asin (xyz[0].z);
+
+  printf (" lat = %12.5f lon = %12.5f\n", xlat, xlon);
+
+  printf (" %s %8s %8s\n", "i", "jglo", "itri");
+  for (int i = 0; i < 3; i++)
+    printf (" %d %8d %8d\n", i, jglo[i], itri[i]);
+
+  printf (" it = %d\n", it1);
+
+  getTriangleNeighbours (it1, jglo, itri, xyz);
+  
+  printf (" %s %8s %8s\n", "i", "jglo", "itri");
+  for (int i = 0; i < 3; i++)
+    printf (" %d %8d %8d\n", i, jglo[i], itri[i]);
+
+
+  return it;
 }
 
 glm::vec2 glgrib_geometry_latlon::xyz2conformal (const glm::vec3 & xyz) const
@@ -416,6 +448,12 @@ glm::vec3 glgrib_geometry_latlon::conformal2xyz (const glm::vec2 & merc) const
   return glm::vec3 (X, Y, Z);
 }
 
+glm::vec2 glgrib_geometry_latlon::conformal2latlon (const glm::vec2 & merc) const
+{
+  float lon = merc.x;
+  float lat = 2.0f * atan (exp (merc.y)) - M_PI / 2.0f;
+  return glm::vec2 (glm::degrees (lon), glm::degrees (lat));
+}
 
 
 

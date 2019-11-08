@@ -881,4 +881,10 @@ glm::vec3 glgrib_geometry_gaussian::conformal2xyz (const glm::vec2 & merc) const
   return glm::vec3 (XYZ.x, XYZ.y, XYZ.z);
 }
 
+glm::vec2 glgrib_geometry_gaussian::conformal2latlon (const glm::vec2 & merc) const
+{
+  float lon = merc.x;
+  float lat = 2.0f * atan (exp (merc.y)) - M_PI / 2.0f;
+  return glm::vec2 (glm::degrees (lon), glm::degrees (lat));
+}
 

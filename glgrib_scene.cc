@@ -71,14 +71,11 @@ void glgrib_scene::display () const
   d.image.render (d.MVP_L);
 
   if ((fld != NULL) && (! d.colorbar.getHidden ()))
-    {
-      glgrib_field::glgrib_field_kind kind = fld->getKind ();
-      if ((kind == glgrib_field::SCALAR) || (kind == glgrib_field::STREAM))
-        d.colorbar.render (d.MVP_L, 
-                           fld->getPalette (), 
-                           fld->getNormedMinValue (), 
-                           fld->getNormedMaxValue ());
-    }
+    if (fld->useColorBar ())
+      d.colorbar.render (d.MVP_L, 
+                         fld->getPalette (), 
+                         fld->getNormedMinValue (), 
+                         fld->getNormedMaxValue ());
 
   d.mapscale.render (d.MVP_L, d.view);
 

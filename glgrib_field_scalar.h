@@ -6,7 +6,7 @@
 class glgrib_field_scalar : public glgrib_field
 {
 public:
-  glgrib_field_kind getKind () const 
+  glgrib_field::kind getKind () const 
   {
     return glgrib_field::SCALAR;
   }
@@ -18,6 +18,7 @@ public:
   virtual void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual ~glgrib_field_scalar ();
   void setupVertexAttributes ();
+  virtual bool useColorBar () const { return true; }
 };
 
 #endif

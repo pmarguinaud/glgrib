@@ -7,7 +7,7 @@
 class glgrib_field_vector : public glgrib_field
 {
 public:
-  glgrib_field_kind getKind () const 
+  glgrib_field::kind getKind () const 
   {
     return glgrib_field::VECTOR;
   }
@@ -33,6 +33,7 @@ public:
     std::vector<float> val = getMaxValue ();
     return val[0];
   }
+  virtual bool useColorBar () const { return false; }
 private:
   GLuint VertexArrayIDvector = 0;
   struct

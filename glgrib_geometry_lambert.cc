@@ -319,4 +319,9 @@ void glgrib_geometry_lambert::getTriangleNeighbours (int, int [3], int [3], glm:
 }
 
 
+glm::vec2 glgrib_geometry_lambert::conformal2latlon (const glm::vec2 & merc) const
+{
+  throw std::runtime_error (std::string ("glgrib_geometry_lambert::conformal2latlon not implemented"));
+}
+
 

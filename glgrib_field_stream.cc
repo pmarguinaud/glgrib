@@ -314,13 +314,6 @@ void glgrib_field_stream::getFirstPoint (int it, const float * ru, const float *
 
 }
 
-static glm::vec2 merc2lonlat (const glm::vec2 & merc)
-{
-  float lon = merc.x;
-  float lat = 2.0f * atan (exp (merc.y)) - M_PI / 2.0f;
-  return glm::vec2 (glm::degrees (lon), glm::degrees (lat));
-}
-
 void glgrib_field_stream::computeStreamLineDir (int it, const float * ru, const float * rv, 
 		                                const glm::vec2 & M0, const glm::vec2 & V0,
                                                 stream_seen_t & seen, float sign, std::valarray<float> w,
@@ -369,7 +362,7 @@ void glgrib_field_stream::computeStreamLineDir (int it, const float * ru, const 
           printf (" V = %12.5f %12.5f\n", V.x, V.y);
           for (int i = 0; i < 3; i++)
             {
-              glm::vec2 PL = merc2lonlat (P[i]);
+              glm::vec2 PL = geometry->conformal2latlon (P[i]);
               printf (" P[%d] = %12.5f %12.5f %12.5f %12.5f\n", i, PL.x, PL.y, P[i].x, P[i].y);
             }
         }
@@ -486,7 +479,7 @@ void glgrib_field_stream::computeStreamLine (int it0, const float * ru, const fl
   getFirstPoint (it0, ru, rv, M, Vp, Vm, wp, wm, itp, itm);
 
   if (dbg){
-  std::cout << " it0 = " << it0  << " M = " << glm::to_string (merc2lonlat (M)) << std::endl;
+  std::cout << " it0 = " << it0  << " M = " << glm::to_string (geometry->conformal2latlon (M)) << std::endl;
   std::cout << " itp = " << itp << " itm = " << itm << std::endl;
   }
 

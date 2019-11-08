@@ -7,7 +7,7 @@
 class glgrib_field_stream : public glgrib_field
 {
 public:
-  glgrib_field_kind getKind () const 
+  glgrib_field::kind getKind () const 
   {
     return glgrib_field::STREAM;
   }
@@ -20,6 +20,7 @@ public:
   virtual ~glgrib_field_stream ();
   void setupVertexAttributes ();
   virtual void clear ();
+  virtual bool useColorBar () const { return true; }
 private:
   class streamline_data_t
   {

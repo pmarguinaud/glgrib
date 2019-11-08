@@ -22,9 +22,10 @@ public:
     CONTOUR=1,
     VECTOR=2,
     STREAM=3,
-  } glgrib_field_kind;
+  } kind;
 
-  virtual glgrib_field_kind getKind () const = 0;
+  virtual kind getKind () const = 0;
+  virtual bool useColorBar () const  = 0;
 
   virtual glgrib_field * clone () const  = 0;
   virtual void setup (glgrib_loader *, const glgrib_options_field &, float = 0) = 0;

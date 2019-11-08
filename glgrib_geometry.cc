@@ -139,6 +139,8 @@ void glgrib_geometry::checkTriangles () const
 	    }
 	}
     }
+
+
   printf ("checkTriangles OK\n");
 }
 

@@ -6,7 +6,7 @@
 class glgrib_field_contour : public glgrib_field
 {
 public:
-  glgrib_field_kind getKind () const 
+  glgrib_field::kind getKind () const 
   {
     return glgrib_field::CONTOUR;
   }
@@ -18,7 +18,8 @@ public:
   virtual void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual ~glgrib_field_contour ();
   void setupVertexAttributes ();
-  virtual void clear ();
+  virtual void clear (); 
+  virtual bool useColorBar () const { return false; }
 private:
   class isoline_data_t
   {

@@ -204,6 +204,7 @@ public:
   virtual int getTriangle (float, float) const;
   virtual glm::vec2 xyz2conformal (const glm::vec3 &) const;
   virtual glm::vec3 conformal2xyz (const glm::vec2 &) const;
+  virtual glm::vec2 conformal2latlon (const glm::vec2 &) const;
 private:
   long int Nx, Ny, Nux, Nuy, projectionCentreFlag;
   double LaDInDegrees, LoVInDegrees, DxInMetres, DyInMetres;

@@ -35,11 +35,14 @@ sub help
 sub readme
 {
   my @t = @test;
+  print "
+Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, gaussian grid.
+  ";
   while (my ($desc, $name, $opts) = splice (@t, 0, 3))
     {
       next unless ($opts =~ m/^--/o);
       print "## $desc -- $name\n";
-      print "![](test.ref/$name/thumb_TEST_0000.png)\n";
+      print "![](test.ref/$name/TEST_0000.png)\n";
       print "\n";
 
       my @o = @{ $test{$name}[1] };

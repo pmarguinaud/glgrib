@@ -1,5 +1,7 @@
-## Clouds, 3 layers, t1198c2.2                                       -- t1198_3l
-![](test.ref/t1198_3l/thumb_TEST_0000.png)
+
+Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, gaussian grid.
+  ## Clouds, 3 layers, t1198c2.2                                       -- t1198_3l
+![](test.ref/t1198_3l/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb 
@@ -10,7 +12,7 @@
     cloud --field[1].palette.name cloud --field[2].palette.name cloud 
 ```
 ## Clouds, 3 layers, t1798c2.2                                       -- t1798_3l
-![](test.ref/t1798_3l/thumb_TEST_0000.png)
+![](test.ref/t1798_3l/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1798/Z.grb 
@@ -21,7 +23,7 @@
     cloud --field[1].palette.name cloud --field[2].palette.name cloud 
 ```
 ## AROME, Lambert geometry                                           -- aro
-![](test.ref/aro/thumb_TEST_0000.png)
+![](test.ref/aro/TEST_0000.png)
 
 ```
     --field[0].path testdata/aro2.5/SURFIND.TERREMER.grb 
@@ -29,7 +31,7 @@
     --view.lon 2.0 --view.fov 5 --coast.on --grid.on 
 ```
 ## Font background color                                             -- background
-![](test.ref/background/thumb_TEST_0000.png)
+![](test.ref/background/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb 
@@ -39,7 +41,7 @@
     --scene.date.font.color.background white 
 ```
 ## Enable debug mode                                                 -- debug
-![](test.ref/debug/thumb_TEST_0000.png)
+![](test.ref/debug/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb 
@@ -47,14 +49,14 @@
     --window.debug.on 
 ```
 ## Select palette automatically                                      -- bw
-![](test.ref/bw/thumb_TEST_0000.png)
+![](test.ref/bw/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb 
     --field[0].path testdata/t1198c2.2/N.grb --field[0].scale 1.03 
 ```
 ## Cities                                                            -- cities
-![](test.ref/cities/thumb_TEST_0000.png)
+![](test.ref/cities/TEST_0000.png)
 
 ```
     --landscape.on --cities.on --cities.points.scale 1.01 
@@ -64,7 +66,7 @@
     --cities.labels.font.scale 0.04 
 ```
 ## Colorbar                                                          -- colorbar
-![](test.ref/colorbar/thumb_TEST_0000.png)
+![](test.ref/colorbar/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb 
@@ -73,7 +75,7 @@
     1000 
 ```
 ## Low-res contour                                                   -- contour1
-![](test.ref/contour1/thumb_TEST_0000.png)
+![](test.ref/contour1/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --landscape.on 
@@ -81,7 +83,7 @@
     testdata/contour/t0049.grb --field[0].scale 1.03 --field[0].contour.on 
 ```
 ## Medium-res contour                                                -- contour2
-![](test.ref/contour2/thumb_TEST_0000.png)
+![](test.ref/contour2/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --landscape.on 
@@ -89,7 +91,7 @@
     testdata/contour/t0479.grb --field[0].scale 1.03 --field[0].contour.on 
 ```
 ## High-res contour                                                  -- contour3
-![](test.ref/contour3/thumb_TEST_0000.png)
+![](test.ref/contour3/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --landscape.on 
@@ -97,7 +99,7 @@
     testdata/contour/t1798.grb --field[0].scale 1.03 --field[0].contour.on 
 ```
 ## Contour & raster, Lambert geometry                                -- contour_aro1
-![](test.ref/contour_aro1/thumb_TEST_0000.png)
+![](test.ref/contour_aro1/TEST_0000.png)
 
 ```
     --field[0].path testdata/aro_small/S041WIND.U.PHYS.grb 
@@ -107,7 +109,7 @@
     --coast.on --grid.on 
 ```
 ## Contour & raster, Lambert geometry                                -- contour_aro2
-![](test.ref/contour_aro2/thumb_TEST_0000.png)
+![](test.ref/contour_aro2/TEST_0000.png)
 
 ```
     --field[0].path testdata/aro2.5/S090WIND.U.PHYS.grb --field[0].scale 
@@ -117,7 +119,7 @@
     --coast.on --grid.on 
 ```
 ## Contour in diff mode, global lat/lon geometry                     -- contour_diff
-![](test.ref/contour_diff/thumb_TEST_0000.png)
+![](test.ref/contour_diff/TEST_0000.png)
 
 ```
     --field[0].diff.on --field[0].contour.on --field[0].path 
@@ -126,7 +128,7 @@
     1.01 
 ```
 ## Low-res simple contour, limited area lat/lon geometry             -- contour_latlon1
-![](test.ref/contour_latlon1/thumb_TEST_0000.png)
+![](test.ref/contour_latlon1/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --landscape.on 
@@ -135,7 +137,7 @@
     --field[0].contour.on 
 ```
 ## Low-res simple contour, limited area lat/lon geometry             -- contour_latlon2
-![](test.ref/contour_latlon2/thumb_TEST_0000.png)
+![](test.ref/contour_latlon2/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --landscape.on 
@@ -144,7 +146,7 @@
     --field[0].contour.on 
 ```
 ## Medium-res contour, limited area lat/lon geometry                 -- contour_latlon3
-![](test.ref/contour_latlon3/thumb_TEST_0000.png)
+![](test.ref/contour_latlon3/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --landscape.on 
@@ -153,7 +155,7 @@
     --field[0].contour.on 
 ```
 ## Medium-res contour and raster, global geometry                    -- contour_latlon4
-![](test.ref/contour_latlon4/thumb_TEST_0000.png)
+![](test.ref/contour_latlon4/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --field[0].path 
@@ -162,14 +164,14 @@
     cold_hot --field[1].contour.on 
 ```
 ## Contour on stretched/rotated gaussian geometry                    -- contour_stretched
-![](test.ref/contour_stretched/thumb_TEST_0000.png)
+![](test.ref/contour_stretched/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --field[0].path 
     testdata/t1198c2.2/Z.grb --field[0].scale 1.03 --field[0].contour.on 
 ```
 ## Contour with dashed lines, gaussian geometry                      -- dashed1
-![](test.ref/dashed1/thumb_TEST_0000.png)
+![](test.ref/dashed1/TEST_0000.png)
 
 ```
     --landscape.on --landscape.orography 0 --landscape.wireframe.on 
@@ -179,7 +181,7 @@
     100 --field[0].contour.patterns X- --view.fov 5 
 ```
 ## Contour with dashed thick lines, gaussian geometry                -- dashed2
-![](test.ref/dashed2/thumb_TEST_0000.png)
+![](test.ref/dashed2/TEST_0000.png)
 
 ```
     --landscape.on --landscape.orography 0 --landscape.wireframe.on 
@@ -190,7 +192,7 @@
     --field[0].contour.widths 5 
 ```
 ## Contour with dashed thick colored lines, gaussian geometry        -- dashed3
-![](test.ref/dashed3/thumb_TEST_0000.png)
+![](test.ref/dashed3/TEST_0000.png)
 
 ```
     --landscape.on --landscape.orography 0 --landscape.wireframe.on 
@@ -201,7 +203,7 @@
     --field[0].contour.widths 5 --field[0].contour.colors red green blue 
 ```
 ## Display French departements                                       -- departements
-![](test.ref/departements/thumb_TEST_0000.png)
+![](test.ref/departements/TEST_0000.png)
 
 ```
     --departements.on --departements.lines.color blue 
@@ -210,7 +212,7 @@
     --view.lat 46.7 --view.fov 5 --coast.on 
 ```
 ## Temperature field on Europe, over global cloud fields             -- eurat01
-![](test.ref/eurat01/thumb_TEST_0000.png)
+![](test.ref/eurat01/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb 
@@ -220,14 +222,14 @@
     --field[1].palette.name cold_hot 
 ```
 ## Test FA format, display sea fraction                              -- fa
-![](test.ref/fa/thumb_TEST_0000.png)
+![](test.ref/fa/TEST_0000.png)
 
 ```
     --field[0].path testdata/fa/PGD.t479.fa%SFX.FRAC_SEA --field[0].scale 
     1.03 
 ```
 ## Surface temperature, global lat/lon field                         -- glob01
-![](test.ref/glob01/thumb_TEST_0000.png)
+![](test.ref/glob01/TEST_0000.png)
 
 ```
     --field[0].path testdata/glob01/lfpw_0_0_0_sfc_0_t.grib2 
@@ -235,7 +237,7 @@
     --grid.on 
 ```
 ## Lambert geometry, French Guyana                                   -- guyane
-![](test.ref/guyane/thumb_TEST_0000.png)
+![](test.ref/guyane/TEST_0000.png)
 
 ```
     --landscape.on --field[0].path testdata/aro_guyane/SURFTEMPERATURE.grb 
@@ -243,7 +245,7 @@
     5 --view.lon -51 --view.fov 3 --coast.on --grid.on 
 ```
 ## Image on top of cloud fields                                      -- image
-![](test.ref/image/thumb_TEST_0000.png)
+![](test.ref/image/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb 
@@ -253,7 +255,7 @@
     --scene.image.y1 0.1 
 ```
 ## Interpolate field over time                                       -- interpolation
-![](test.ref/interpolation/thumb_TEST_0000.png)
+![](test.ref/interpolation/TEST_0000.png)
 
 ```
     --field[0].path testdata/interp/01.grb testdata/interp/36.grb 
@@ -264,7 +266,7 @@
     red --scene.date.on --coast.on --grid.on 
 ```
 ## Landscape over Europe only                                        -- landscape_eurat01
-![](test.ref/landscape_eurat01/thumb_TEST_0000.png)
+![](test.ref/landscape_eurat01/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry 
@@ -272,13 +274,13 @@
     --coast.on --grid.on 
 ```
 ## Display mapscale                                                  -- mapscale
-![](test.ref/mapscale/thumb_TEST_0000.png)
+![](test.ref/mapscale/TEST_0000.png)
 
 ```
     --landscape.on --mapscale.on 
 ```
 ## Display contour field using Mercator projection                   -- mercator
-![](test.ref/mercator/thumb_TEST_0000.png)
+![](test.ref/mercator/TEST_0000.png)
 
 ```
     --field[0].diff.on --field[0].contour.on --field[0].path 
@@ -287,13 +289,13 @@
     1.01 --view.projection MERCATOR --landscape.on 
 ```
 ## Display field with missing values                                 -- missingvalue
-![](test.ref/missingvalue/thumb_TEST_0000.png)
+![](test.ref/missingvalue/TEST_0000.png)
 
 ```
     --field[0].path testdata/t49/SFX.CLAY.grb --coast.on --grid.on 
 ```
 ## Display field with keeping field values in RAM                    -- novalue
-![](test.ref/novalue/thumb_TEST_0000.png)
+![](test.ref/novalue/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1798/Z.grb 
@@ -301,7 +303,7 @@
     1.03 --field[0].palette.name cloud_auto --field[0].no_value_pointer.on 
 ```
 ## Display field in offscreen mode                                   -- offscreen
-![](test.ref/offscreen/thumb_TEST_0000.png)
+![](test.ref/offscreen/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb 
@@ -313,13 +315,13 @@
     --field[0].palette.name cloud_auto cloud_auto cloud_auto 
 ```
 ## Display field with options in file                                -- optionsfile
-![](test.ref/optionsfile/thumb_TEST_0000.png)
+![](test.ref/optionsfile/TEST_0000.png)
 
 ```
     --{testdata/options.list} 
 ```
 ## Display field with palette gradient color                         -- palette_values_grad
-![](test.ref/palette_values_grad/thumb_TEST_0000.png)
+![](test.ref/palette_values_grad/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb 
@@ -330,7 +332,7 @@
     --window.width 1200 
 ```
 ## Display field with discrete palette                               -- palette_values
-![](test.ref/palette_values/thumb_TEST_0000.png)
+![](test.ref/palette_values/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb 
@@ -341,7 +343,7 @@
     --window.width 1200 
 ```
 ## Display field difference                                          -- scalar_diff
-![](test.ref/scalar_diff/thumb_TEST_0000.png)
+![](test.ref/scalar_diff/TEST_0000.png)
 
 ```
     --field[0].diff.on --field[0].path testdata/interp/01.grb 
@@ -349,7 +351,7 @@
     46.7 --view.fov 5 
 ```
 ## Select field from GRIB file                                       -- select_grib
-![](test.ref/select_grib/thumb_TEST_0000.png)
+![](test.ref/select_grib/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb 
@@ -357,7 +359,7 @@
     --field[0].scale 1.03 
 ```
 ## Test interactive shell                                            -- shell
-![](test.ref/shell/thumb_TEST_0000.png)
+![](test.ref/shell/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb 
@@ -365,7 +367,7 @@
     --shell.on 
 ```
 ## Wind on small AROME domain (raster & vector)                      -- small_aro
-![](test.ref/small_aro/thumb_TEST_0000.png)
+![](test.ref/small_aro/TEST_0000.png)
 
 ```
     --field[0].vector.on --field[0].path 
@@ -374,7 +376,7 @@
     --view.lon 26.64 --view.lat 67.36 --view.fov 0.5 --coast.on --grid.on 
 ```
 ## Low-res ARPEGE resolution                                         -- small
-![](test.ref/small/thumb_TEST_0000.png)
+![](test.ref/small/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t49/Z.grb 
@@ -382,7 +384,7 @@
     --coast.on --grid.on 
 ```
 ## 3D strings on the sphere                                          -- strxyz
-![](test.ref/strxyz/thumb_TEST_0000.png)
+![](test.ref/strxyz/TEST_0000.png)
 
 ```
     --field[0].path testdata/t1198c2.2/N.grb --field[0].scale 0.99 
@@ -390,7 +392,7 @@
     1000 --view.projection XYZ --scene.test_strxyz.on 
 ```
 ## Display text                                                      -- text
-![](test.ref/text/thumb_TEST_0000.png)
+![](test.ref/text/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb 
@@ -401,7 +403,7 @@
     --scene.text.font.color.background white 
 ```
 ## Display title (field name)                                        -- title
-![](test.ref/title/thumb_TEST_0000.png)
+![](test.ref/title/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t1198c2.2/Z.grb 
@@ -409,7 +411,7 @@
     --scene.title.on 
 ```
 ## Test travelling option                                            -- travelling
-![](test.ref/travelling/thumb_TEST_0000.png)
+![](test.ref/travelling/TEST_0000.png)
 
 ```
     --scene.travelling.on --scene.travelling.pos1.lon 0 
@@ -420,7 +422,7 @@
     --field[0].scale 1.03 
 ```
 ## Display vector norm & arrow, Lambert geometry                     -- vector
-![](test.ref/vector/thumb_TEST_0000.png)
+![](test.ref/vector/TEST_0000.png)
 
 ```
     --field[0].vector.on --field[0].path 
@@ -430,7 +432,7 @@
     --view.fov 5 --coast.on --grid.on 
 ```
 ## Display vector norm, global lat/lon geometry                      -- vector_glob25
-![](test.ref/vector_glob25/thumb_TEST_0000.png)
+![](test.ref/vector_glob25/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry 
@@ -441,7 +443,7 @@
     --grid.on 
 ```
 ## Vector arrow, stretched/rotated gaussian geometry                 -- vector_t1798
-![](test.ref/vector_t1798/thumb_TEST_0000.png)
+![](test.ref/vector_t1798/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/arpt1798_wind/+1.grb 
@@ -450,7 +452,7 @@
     --field[0].scale 1.01 --coast.on --grid.on 
 ```
 ## Display landscape in WebMercator projection                       -- webmercator
-![](test.ref/webmercator/thumb_TEST_0000.png)
+![](test.ref/webmercator/TEST_0000.png)
 
 ```
     --landscape-{ --on --path 
@@ -458,7 +460,7 @@
     --projection WEBMERCATOR }- --grid.on 
 ```
 ## Display wind on stretched/rotated gaussian geometry               -- wind_arp
-![](test.ref/wind_arp/thumb_TEST_0000.png)
+![](test.ref/wind_arp/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry testdata/t31c2.4/Z.grb 
@@ -468,7 +470,7 @@
     --grid.on 
 ```
 ## Wind on global lat/lon geometry                                   -- wind_glob25
-![](test.ref/wind_glob25/thumb_TEST_0000.png)
+![](test.ref/wind_glob25/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry 
@@ -479,7 +481,7 @@
     --coast.on --grid.on 
 ```
 ## Wind on stretched/rotated gaussian geometry                       -- wind_t1798
-![](test.ref/wind_t1798/thumb_TEST_0000.png)
+![](test.ref/wind_t1798/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry 
@@ -488,4 +490,66 @@
     testdata/arpt1798_wind/S105WIND.U.PHYS.grb 
     testdata/arpt1798_wind/S105WIND.V.PHYS.grb --field[0].scale 1.01 
     --coast.on --grid.on 
+```
+## Streamlines on t1198c2.2 (surface)                                -- stream_t1198c22
+![](test.ref/stream_t1198c22/TEST_0000.png)
+
+```
+    --field[0].scale 1.01 --field[0].path 
+    testdata/wind+temp/t1198c2.2/S105WIND.U.PHYS.grb 
+    testdata/wind+temp/t1198c2.2/S105WIND.V.PHYS.grb --field[0].stream.on 
+    --field[0].palette-{ --colors grey green --min 0. --max 40. --values 
+    0. 40. }- --field[0].stream.width 1.0 --field[0].stream.density 1.0 
+    --field[1].scale 1.01 --field[1].path 
+    testdata/wind+temp/t1198c2.2/S105WIND.U.PHYS.grb 
+    testdata/wind+temp/t1198c2.2/S105WIND.V.PHYS.grb --field[1].vector.on 
+    --field[1].vector.hide_norm.on --field[1].vector.color red --grid.on 
+    --grid.color red --grid.scale 1.02 --coast.lines.scale 1.02 --coast.on 
+    --coast.lines.color red --landscape.on --landscape.path 
+    landscape/white.png 
+```
+## Streamlines on GLOB025 (high level)                               -- stream_glob025
+![](test.ref/stream_glob025/TEST_0000.png)
+
+```
+    --field[0].path testdata/wind+temp/glob025/P020WIND.U.PHYS.grb 
+    testdata/wind+temp/glob025/P020WIND.V.PHYS.grb --field[0].stream.on 
+    --field[0].palette-{ --colors grey green --min 0. --max 40. --values 
+    0. 40. }- --field[0].stream.width 1.0 --field[1].vector.on 
+    --field[1].path testdata/wind+temp/glob025/P020WIND.U.PHYS.grb 
+    testdata/wind+temp/glob025/P020WIND.V.PHYS.grb --field[1].vector.color 
+    red --field[1].vector.scale 5 --field[1].scale 1.01 --grid.on 
+    --landscape.on --landscape.path landscape/white.bmp --field[0].scale 
+    1.01 --grid.color pink --coast.on --coast.lines.color pink 
+```
+## Streamlines on EURAT01 (surface)                                  -- stream_eurat01
+![](test.ref/stream_eurat01/TEST_0000.png)
+
+```
+    --field[0].path testdata/wind+temp/eurat01/H020WIND.U.PHYS.grb 
+    testdata/wind+temp/eurat01/H020WIND.V.PHYS.grb --field[0].stream.on 
+    --field[0].palette-{ --colors grey green --min 0. --max 40. --values 
+    0. 40. }- --field[0].stream.width 1.0 --field[1].vector.on 
+    --field[1].path testdata/wind+temp/eurat01/H020WIND.U.PHYS.grb 
+    testdata/wind+temp/eurat01/H020WIND.V.PHYS.grb --field[1].vector.color 
+    red --field[1].vector.scale 5 --field[1].scale 1.01 --grid.on 
+    --landscape.on --landscape.path landscape/white.bmp --field[0].scale 
+    1.01 --grid.color pink --coast.on --coast.lines.color pink --view.lat 
+    45 --view.lon 5 --view.fov 10 
+```
+## Streamlines on AROME 2.5km (suface)                               -- stream_lambert
+![](test.ref/stream_lambert/TEST_0000.png)
+
+```
+    --field[0].path testdata/aro2.5/S090WIND.U.PHYS.grb 
+    testdata/aro2.5/S090WIND.V.PHYS.grb --field[0].stream.on 
+    --field[0].palette-{ --colors grey green --min 0. --max 40. --values 
+    0. 40. }- --field[0].stream.width 0.0 --field[0].stream.density 0.5 
+    --field[0].stream.width 0.5 --field[1].vector.on --field[1].path 
+    testdata/aro2.5/S090WIND.U.PHYS.grb 
+    testdata/aro2.5/S090WIND.V.PHYS.grb --field[1].vector.color red 
+    --field[1].vector.scale 1 --field[1].scale 1.01 --grid.on 
+    --landscape.on --landscape.path landscape/white.bmp --field[0].scale 
+    1.01 --grid.color pink --coast.on --coast.lines.color pink --view.lon 
+    2 --view.lat 46.7 --view.fov 4 
 ```

@@ -250,7 +250,7 @@ const
   else
     {
       jglo[0] = ind2; jglo[1] = ind3; jglo[2] = ind1;
-      itri[0] = j < Nj-1 ? it + nti : -1;
+      itri[0] = j < Nj-2 ? it + nti : -1;
       if (periodic)
         itri[1] = i < Ni-1 ? it + 2 : it - nti + 2;
       else

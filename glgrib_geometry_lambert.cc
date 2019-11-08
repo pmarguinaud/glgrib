@@ -384,6 +384,20 @@ int glgrib_geometry_lambert::getTriangle (float lon, float lat) const
   int ntpr = 2 * (Nx - 1);
   int it = j * ntpr + i * 2;
 
+
+  {
+    int jglo[3], itri[3]; glm::vec3 xyz[3];
+    getTriangleNeighbours (it, jglo, itri, xyz);
+
+    for (int i = 0; i < 3; i++)
+      printf (" %d %8d %8d\n", i, jglo[i], itri[i]);
+
+    getTriangleNeighbours (it+1, jglo, itri, xyz);
+
+    for (int i = 0; i < 3; i++)
+      printf (" %d %8d %8d\n", i, jglo[i], itri[i]);
+  }
+
   return it;
 }
 

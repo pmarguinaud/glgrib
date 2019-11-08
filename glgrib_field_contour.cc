@@ -117,10 +117,8 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
 
   isoline_data_t iso_data[levels.size ()];
 
-
 #pragma omp parallel for
   for (int i = 0; i < levels.size (); i++)
-//for (int i = 4; i < 5; i++)
     {
       bool * seen = (bool *)malloc (sizeof (bool) * (geometry->numberOfTriangles + 1));
 

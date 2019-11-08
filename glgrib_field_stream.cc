@@ -329,7 +329,7 @@ void glgrib_field_stream::computeStreamLineDir (int it, const float * ru, const 
         break;
 
       bool dbg = (it == 54);
-      false;
+      dbg = false;
 
       if (dbg)
       std::cout << " it = " << it << std::endl;

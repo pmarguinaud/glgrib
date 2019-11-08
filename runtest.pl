@@ -188,6 +188,8 @@ for my $name (@name)
     
     my @cmd = ('gdb', '-ex=set confirm on', '-ex=run', '-ex=quit', '--args', $exec, @args);
     
+    print "Running test $name...\n"; 
+
     system (@cmd)
       and die;
     

@@ -921,7 +921,7 @@ void glgrib_window::createGFLWwindow (GLFWwindow * context)
   glewExperimental = true; // Needed for core profile
   if (glewInit () != GLEW_OK) 
     {
-      fprintf (stderr, "Failed to setupialize GLEW\n");
+      fprintf (stderr, "Failed to initialize GLEW\n");
       glfwTerminate ();
       return;
     }

@@ -537,7 +537,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     1.01 --grid.color pink --coast.on --coast.lines.color pink --view.lat 
     45 --view.lon 5 --view.fov 10 
 ```
-## Streamlines on AROME 2.5km (suface)                               -- stream_lambert
+## Streamlines on AROME 2.5km (surface)                              -- stream_lambert
 ![](test.ref/stream_lambert/TEST_0000.png)
 
 ```
@@ -552,4 +552,29 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --landscape.on --landscape.path landscape/white.bmp --field[0].scale 
     1.01 --grid.color pink --coast.on --coast.lines.color pink --view.lon 
     2 --view.lat 46.7 --view.fov 4 
+```
+## Gaussian grid wireframe                                           -- gauss_wireframe
+![](test.ref/gauss_wireframe/TEST_0000.png)
+
+```
+    --field[0]-{ --path testdata/wind+temp/t0149c2.2/S105TEMPERATURE.grb 
+    --scalar.wireframe.on }- --coast.on --view.lon 2 --view.lat 46.7 
+    --view.fov 5 
+```
+## Scalar field displayed using points                               -- points_scalar
+![](test.ref/points_scalar/TEST_0000.png)
+
+```
+    --field[0]-{ --path testdata/wind+temp/t0224/S105TEMPERATURE.grb 
+    --scalar.points-{ --on --size.value 0.5 --size.variable.on 
+    --size.factor.off }- }- --coast.on --coast.lines.color green 
+```
+## Scalar field with points (stretched/rotated grid)                 -- points_scalar_rot
+![](test.ref/points_scalar_rot/TEST_0000.png)
+
+```
+    --field[0]-{ --scale 1.01 --path 
+    testdata/wind+temp/t0149c2.2/S105TEMPERATURE.grb --scalar.points-{ 
+    --on --size.value 0.2 --size.variable.on --size.factor.on }- }- 
+    --coast.on --coast.lines.color green --landscape.on 
 ```

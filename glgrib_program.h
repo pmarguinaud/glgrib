@@ -25,8 +25,9 @@ public:
     POINTS=11,
     GRID=12,
     STREAM=13,
-    TEST=14,
-    SIZE=15,
+    SCALAR_POINTS=14,
+    TEST=15,
+    SIZE=16,
   } kind;
 
   void set1f (const std::string &, float);

@@ -1148,8 +1148,6 @@ void main()
       vec3 vx = normalize (cross (northPos, pos));
       vec3 vy = normalize (cross (pos, vx));
 
-      vec4 cen4 = MVP * vec4 (pos, 1.);
-
       if (lpointZoo)
         pointRad = siz * 0.02;
       else
@@ -1449,6 +1447,107 @@ void main ()
     }
 
 
+
+}
+)CODE"),
+
+  glgrib_program (  // SCALAR_POINTS
+R"CODE(
+#version 330 core
+
+in float fragmentVal;
+in vec3 fragmentPos;
+in float missingFlag;
+in float pointVal;
+in vec3 centerVec;
+flat in float pointRad;
+out vec4 color;
+
+)CODE" +
+enlightFragmentInclude +
+R"CODE(
+void main ()
+{
+//if (length (centerVec) > pointRad)
+//  discard;
+//if (abs (centerVec.x) + abs (centerVec.y) + abs (centerVec.z) > pointRad)
+//  discard;
+  color = enlightFragment (fragmentPos, fragmentVal, missingFlag);
+}
+)CODE",
+R"CODE(
+#version 330 core
+
+layout(location = 0) in vec3 vertexPos;
+layout(location = 1) in float vertexVal;
+
+out float fragmentVal;
+out vec3 fragmentPos;
+out float missingFlag;
+
+uniform mat4 MVP;
+
+)CODE" 
++ projShaderInclude 
++ scalePositionInclude 
++ R"CODE(
+
+out float pointVal;
+out vec3 centerVec;
+flat out float pointRad;
+
+uniform float length10 = 0.01;
+uniform float pointSiz = 1.0f;
+uniform bool lpointZoo = false;
+uniform bool factor = true;
+
+void main ()
+{
+  vec3 pos = vertexPos;
+
+  vec2 pos2; 
+
+  if (gl_VertexID == 0)
+    pos2 = vec2 (-1.0f, -1.0f);
+  else if (gl_VertexID == 1)
+    pos2 = vec2 (+1.0f, -1.0f);
+  else if (gl_VertexID == 2)
+    pos2 = vec2 (+1.0f, +1.0f);
+  else if (gl_VertexID == 3)
+    pos2 = vec2 (-1.0f, +1.0f);
+  
+  float siz = 0.5 * pointSiz;
+
+  vec3 northPos  = vec3 (0., 0., 1.);
+  vec3 vx = normalize (cross (northPos, pos));
+  vec3 vy = normalize (cross (pos, vx));
+
+  if (lpointZoo)
+    pointRad = siz * 0.02;
+  else
+    pointRad = siz * length10;
+
+ 
+  if (factor)
+    {
+      float f = scalingFactor (compNormedPos (vertexPos));
+      pointRad = pointRad / f;
+    }
+
+  vec3 normedPos;
+
+  centerVec = pointRad * (pos2.x * vx + pos2.y * vy);
+  pos = vertexPos + centerVec;
+
+  normedPos = compNormedPos (pos);
+  pos = compProjedPos (vertexPos, normedPos);
+  pos = scalePosition (pos, normedPos, scale0);
+
+  fragmentPos = normedPos;
+  fragmentVal = vertexVal;
+  missingFlag = vertexVal == 0 ? 1. : 0.;
+
+  gl_Position =  MVP * vec4 (pos, 1.);
 
 }
 )CODE"),

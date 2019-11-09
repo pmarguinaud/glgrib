@@ -19,6 +19,9 @@ public:
   virtual ~glgrib_field_scalar ();
   void setupVertexAttributes ();
   virtual bool useColorBar () const { return true; }
+private:
+  GLuint VertexArrayIDpoints = 0;
+  virtual void clear ();
 };
 
 #endif

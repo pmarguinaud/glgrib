@@ -450,6 +450,10 @@ public:
     DESC (diff.on,             Show field difference);
     DESC (scalar.smooth.on,    Smooth scalar fields);
     DESC (scalar.wireframe.on, Display field as wireframe);
+    DESC (scalar.points.on,    Display field as points);
+    DESC (scalar.points.size.value,  Field point size);
+    DESC (scalar.points.size.variable.on,  Variable field point size);
+    DESC (scalar.points.size.factor.on,  Apply scale factor to point size);
     INCLUDE (palette);
     INCLUDE (vector);
     INCLUDE (contour);
@@ -465,6 +469,22 @@ public:
     {
       bool on = false;
     } wireframe;
+    struct 
+    {
+      bool on = false;
+      struct
+      {
+        float value = 1.0f;
+        struct
+        {
+          bool on = false;
+        } variable;
+        struct
+        {
+          bool on = true;
+        } factor;
+      } size;
+    } points;
   } scalar;
   string_list  path;
   float scale   = 1.0f;

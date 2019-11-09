@@ -16,6 +16,14 @@ glgrib_field_scalar::glgrib_field_scalar (const glgrib_field_scalar & field)
     }
 }
 
+void glgrib_field_scalar::clear ()
+{
+  if (isReady ())
+    glDeleteVertexArrays (1, &VertexArrayIDpoints);
+  glgrib_field::clear ();
+}
+
+
 glgrib_field_scalar * glgrib_field_scalar::clone () const
 {
   if (this == NULL)
@@ -56,6 +64,23 @@ void glgrib_field_scalar::setupVertexAttributes ()
   glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, numberOfColors * sizeof (unsigned char), NULL); 
 
   geometry->elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+
+  glBindVertexArray (0); 
+
+
+  glGenVertexArrays (1, &VertexArrayIDpoints);
+  glBindVertexArray (VertexArrayIDpoints);
+
+  geometry->vertexbuffer->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (0); 
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  glVertexAttribDivisor (0, 1);
+  
+  colorbuffer->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (1); 
+  glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, numberOfColors * sizeof (unsigned char), NULL); 
+  glVertexAttribDivisor (1, 1);
+
   glBindVertexArray (0); 
 }
 
@@ -105,28 +130,61 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
 
 void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  glgrib_program * program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
-  program->use ();
-  float scale0[3] = {opts.scale, opts.scale, opts.scale};
-
-  view.setMVP (program);
-  program->setLight (light);
-  palette.setRGBA255 (program->programID);
-
-  program->set3fv ("scale0", scale0);
-  program->set1f ("valmin", getNormedMinValue ());
-  program->set1f ("valmax", getNormedMaxValue ());
-  program->set1f ("palmin", palette.getMin ());
-  program->set1f ("palmax", palette.getMax ());
-  program->set1i ("smoothed", opts.scalar.smooth.on);
-
-  if (opts.scalar.wireframe.on)
-    glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
-
-  glgrib_field::render (view, light);
-
-  if (opts.scalar.wireframe.on)
-    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+  if (! opts.scalar.points.on)
+    {
+      glgrib_program * program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
+      program->use ();
+      float scale0[3] = {opts.scale, opts.scale, opts.scale};
+    
+      view.setMVP (program);
+      program->setLight (light);
+      palette.setRGBA255 (program->programID);
+    
+      program->set3fv ("scale0", scale0);
+      program->set1f ("valmin", getNormedMinValue ());
+      program->set1f ("valmax", getNormedMaxValue ());
+      program->set1f ("palmin", palette.getMin ());
+      program->set1f ("palmax", palette.getMax ());
+      program->set1i ("smoothed", opts.scalar.smooth.on);
+    
+      if (opts.scalar.wireframe.on)
+        glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+    
+      glgrib_field::render (view, light);
+    
+      if (opts.scalar.wireframe.on)
+        glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+    }
+  else
+    {
+      float length = view.pixel_to_dist_at_nadir (10);
+    
+      glgrib_program * program = glgrib_program_load (glgrib_program::SCALAR_POINTS);
+      program->use ();
+      float scale0[3] = {opts.scale, opts.scale, opts.scale};
+    
+      view.setMVP (program);
+      program->setLight (light);
+      palette.setRGBA255 (program->programID);
+    
+      program->set3fv ("scale0", scale0);
+      program->set1f ("valmin", getNormedMinValue ());
+      program->set1f ("valmax", getNormedMaxValue ());
+      program->set1f ("palmin", palette.getMin ());
+      program->set1f ("palmax", palette.getMax ());
+      program->set1f ("length10", length);
+      program->set1f ("pointSiz", opts.scalar.points.size.value);
+      program->set1i ("lpointZoo", opts.scalar.points.size.variable.on);
+      program->set1i ("factor", opts.scalar.points.size.factor.on);
+    
+      glBindVertexArray (VertexArrayIDpoints);
+    
+      unsigned int ind[6] = {0, 1, 2, 2, 3, 0}; 
+      glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, numberOfPoints);
+    
+      glBindVertexArray (0);
+    
+    }
 
 }
 

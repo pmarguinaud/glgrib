@@ -873,6 +873,9 @@ public:
     DESC (fov,                Camera field of view);
     DESC (distance,           Camera distance);
     DESC (center.on,          Center view);
+    DESC (clip.on,            Enable Mercator and lat/lon clippling);
+    DESC (clip.dlon,          Amount of longitude to clip);
+    DESC (clip.dlat,          Amount of latitude to clip);
   }
   string  projection  = "XYZ";
   string  transformation  = "PERSPECTIVE";
@@ -884,6 +887,12 @@ public:
   {
     bool on = true;
   } center;
+  struct
+  {
+    float dlon = 10.0f;
+    float dlat =  5.0f;
+    bool on = true;
+  } clip;
 };
 
 

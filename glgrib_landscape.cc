@@ -131,13 +131,18 @@ void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_li
     }
 
   glBindVertexArray (VertexArrayID);
+
   if (opts.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+
   glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
+
   glBindVertexArray (0);
+
   if (opts.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 
+  view.delMVP (program);
 }
 
 glgrib_landscape::~glgrib_landscape ()

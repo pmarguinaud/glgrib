@@ -298,7 +298,6 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
   view.setMVP (program);
   program->set3fv ("scale0", scale0);
 
-
   for (int i = 0; i < iso.size (); i++)
     {
       glBindVertexArray (iso[i].VertexArrayID);
@@ -331,6 +330,9 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
         }
       glBindVertexArray (0);
     }
+
+
+  view.delMVP (program);
 
 }
 

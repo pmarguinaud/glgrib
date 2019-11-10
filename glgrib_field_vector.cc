@@ -209,6 +209,9 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 
       glBindVertexArray (VertexArrayIDvector);
       glDrawArraysInstanced (GL_LINE_STRIP, 0, 5, numberOfPoints); 
+      glBindVertexArray (0);
+
+      view.delMVP (program);
     }
 
 // Display vector norm
@@ -235,6 +238,8 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       glBindVertexArray (VertexArrayID);
       glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
       glBindVertexArray (0);
+
+      view.delMVP (program);
     }
 
 }

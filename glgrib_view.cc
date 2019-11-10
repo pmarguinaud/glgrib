@@ -9,6 +9,12 @@
 #include <cctype>
 
 
+void glgrib_view::delMVP (glgrib_program * program) const
+{
+  glDisable (GL_SCISSOR_TEST);
+}
+
+
 void glgrib_view::setMVP (glgrib_program * program) const
 {
   program->setMatrix4fv ("MVP", &MVP[0][0]);
@@ -16,6 +22,23 @@ void glgrib_view::setMVP (glgrib_program * program) const
   float lon0 = opts.lon + 180.0f;
   if (ps.current ()->setLon0 (lon0))
     program->set1f ("lon0", lon0);
+
+
+  int type = ps.current ()->getType ();
+  if ((type == glgrib_projection::LATLON)
+   || (type == glgrib_projection::MERCATOR))
+    {
+      float xpos1, xpos2, ypos1, ypos2;
+      float dlon = 10.0f, dlat = 5.0f;
+      float lon1 = lon0 + dlon, lon2 = lon0 - dlon, 
+            lat1 = -90.0f + dlat, lat2 = +90.0f - dlat;
+
+      get_screen_coords_from_latlon (&xpos1, &ypos1, lat1, lon1);
+      get_screen_coords_from_latlon (&xpos2, &ypos2, lat2, lon2);
+
+      glEnable (GL_SCISSOR_TEST);
+      glScissor (xpos1, ypos1, xpos2-xpos1, ypos2-ypos1);
+    }
 }
 
 void glgrib_view::calcMVP () const

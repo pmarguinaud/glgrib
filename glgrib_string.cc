@@ -235,6 +235,7 @@ void glgrib_string::render (const glgrib_view & view) const
   d.font->select ();
 
   glgrib_program * program = d.font->getProgram ();
+
   view.setMVP (program);
 
   float length = view.pixel_to_dist_at_nadir (10);
@@ -250,6 +251,8 @@ void glgrib_string::render (const glgrib_view & view) const
   glBindVertexArray (VertexArrayID);
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0};
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, d.len);
+
+  view.delMVP (program);
 }
 
 void glgrib_string::render (const glm::mat4 & MVP) const

@@ -130,48 +130,26 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
 
 void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  if (! opts.scalar.points.on)
-    {
-      glgrib_program * program = glgrib_program_load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
-      program->use ();
-      float scale0[3] = {opts.scale, opts.scale, opts.scale};
+  float scale0[3] = {opts.scale, opts.scale, opts.scale};
+
+  glgrib_program * program = glgrib_program_load (opts.scalar.points.on 
+                                                ? glgrib_program::SCALAR_POINTS 
+                                                : glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
+
+  program->use ();
+  view.setMVP (program);
+  program->setLight (light);
+  palette.setRGBA255 (program->programID);
+  program->set3fv ("scale0", scale0);
+  program->set1f ("valmin", getNormedMinValue ());
+  program->set1f ("valmax", getNormedMaxValue ());
+  program->set1f ("palmin", palette.getMin ());
+  program->set1f ("palmax", palette.getMax ());
     
-      view.setMVP (program);
-      program->setLight (light);
-      palette.setRGBA255 (program->programID);
-    
-      program->set3fv ("scale0", scale0);
-      program->set1f ("valmin", getNormedMinValue ());
-      program->set1f ("valmax", getNormedMaxValue ());
-      program->set1f ("palmin", palette.getMin ());
-      program->set1f ("palmax", palette.getMax ());
-      program->set1i ("smoothed", opts.scalar.smooth.on);
-    
-      if (opts.scalar.wireframe.on)
-        glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
-    
-      glgrib_field::render (view, light);
-    
-      if (opts.scalar.wireframe.on)
-        glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-    }
-  else
+  if (opts.scalar.points.on)
     {
       float length = view.pixel_to_dist_at_nadir (10);
     
-      glgrib_program * program = glgrib_program_load (glgrib_program::SCALAR_POINTS);
-      program->use ();
-      float scale0[3] = {opts.scale, opts.scale, opts.scale};
-    
-      view.setMVP (program);
-      program->setLight (light);
-      palette.setRGBA255 (program->programID);
-    
-      program->set3fv ("scale0", scale0);
-      program->set1f ("valmin", getNormedMinValue ());
-      program->set1f ("valmax", getNormedMaxValue ());
-      program->set1f ("palmin", palette.getMin ());
-      program->set1f ("palmax", palette.getMax ());
       program->set1f ("length10", length);
       program->set1f ("pointSiz", opts.scalar.points.size.value);
       program->set1i ("lpointZoo", opts.scalar.points.size.variable.on);
@@ -183,8 +161,21 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
       glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, numberOfPoints);
     
       glBindVertexArray (0);
-    
     }
+  else
+    {
+      program->set1i ("smoothed", opts.scalar.smooth.on);
+    
+      if (opts.scalar.wireframe.on)
+        glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+    
+      glgrib_field::render (view, light);
+
+      if (opts.scalar.wireframe.on)
+        glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+    }
+
+  view.delMVP (program);
 
 }
 

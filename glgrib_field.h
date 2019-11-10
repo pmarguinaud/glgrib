@@ -90,7 +90,22 @@ public:
   const glgrib_palette & getPalette () const;
   void toggle_wireframe () 
   {
-    opts.scalar.wireframe.on = ! opts.scalar.wireframe.on;
+    if (opts.scalar.wireframe.on)
+      {
+        opts.scalar.wireframe.on = false;
+        opts.scalar.points.on = true;
+      }
+    else if (opts.scalar.points.on)
+      {
+        opts.scalar.wireframe.on = false;
+        opts.scalar.points.on = false;
+      }
+    else
+      {
+        opts.scalar.wireframe.on = true;
+        opts.scalar.points.on = false;
+      }
+ 
   }
 protected:
   glgrib_palette palette = palette_cold_hot;

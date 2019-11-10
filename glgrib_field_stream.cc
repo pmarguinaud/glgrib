@@ -466,6 +466,8 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
 
   glBindVertexArray (0);
 
+  view.delMVP (program);
+
 }
 
 glgrib_field_stream::~glgrib_field_stream ()

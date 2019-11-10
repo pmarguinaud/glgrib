@@ -65,6 +65,8 @@ void glgrib_lines::render (const glgrib_view & view, const glgrib_options_light 
 
   glgrib_polygon::render (view, light);
 
+  view.delMVP (program);
+
 }
 
 

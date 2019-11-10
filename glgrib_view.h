@@ -22,6 +22,7 @@ public:
   static transform_type typeFromString (std::string);
 
   void setMVP (glgrib_program *) const;
+  void delMVP (glgrib_program *) const;
   void calcMVP () const;
   void setViewport (int, int);
   glm::vec3 project (const glm::vec3 & xyz) const

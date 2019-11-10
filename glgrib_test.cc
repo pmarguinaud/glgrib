@@ -16,6 +16,9 @@ void glgrib_test::render (const glgrib_view & view, const glgrib_options_light &
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
   glBindVertexArray (0);
+
+  view.delMVP (program);
+
 }
 
 void glgrib_test::clear ()

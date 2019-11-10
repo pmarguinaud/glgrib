@@ -73,6 +73,7 @@ void glgrib_grid::render (const glgrib_view & view, const glgrib_options_light &
 
   glBindVertexArray (0);
 
+  view.delMVP (program);
 
 }
 

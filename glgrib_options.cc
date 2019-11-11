@@ -436,6 +436,36 @@ bool glgrib_options_parser::parse (int _argc, const char * _argv[])
       return false;
     }
 
+
+
+  return true;
+}
+
+bool glgrib_options_base::parse (int argc, const char * argv[])
+{
+  glgrib_options_parser p;
+  traverse ("", &p);
+  return p.parse (argc, argv);
+}
+
+bool glgrib_options::parse (int argc, const char * argv[])
+{
+  glgrib_options_parser p;
+  traverse ("", &p);
+  if (! p.parse (argc, argv))
+    return false;
+
+  std::set<std::string> seen = p.getSeenOptions ();
+
+  // Should go in method like postProcessOption
+  for (int i = 0; i < field.size (); i++)
+    {
+      std::string prefix = "--field[" +  std::to_string (i) + "]";
+      for (std::set<std::string>::iterator it = seen.begin (); it != seen.end (); it++)
+        if (it->substr (0, prefix.length ()) == prefix)
+          field[i].seen.insert (*it);
+    }
+
   return true;
 }
 

@@ -29,7 +29,7 @@ int main (int argc, const char * argv[])
       opts.shell.script = std::string (argv[1]);
     }
   else if (! opts.parse (argc, argv))
-    return 0;
+    return 1;
 
   glfwSetErrorCallback (error_callback);
 

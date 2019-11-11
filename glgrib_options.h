@@ -198,6 +198,8 @@ namespace glgrib_options_parser_detail
 
 };
 
+class glgrib_options_base;
+
 class glgrib_options_callback
 {
 public:
@@ -209,7 +211,8 @@ public:
   };
 
 #define DEF_APPLY(T) \
-  virtual void apply (const std::string & path, const std::string & name, const std::string & desc, T * data, const opt * = NULL) {}
+  virtual void apply (const std::string & path, const std::string & name, glgrib_options_base *, \
+                      const std::string & desc, T * data, const opt * = NULL) {}
   DEF_APPLY (float);
   DEF_APPLY (bool);
   DEF_APPLY (int);
@@ -300,7 +303,7 @@ private:
 
 #define DEF_APPLY(T,C) \
   void apply (const std::string & path, const std::string & name,                      \
-              const std::string & desc, T * data,                                      \
+              glgrib_options_base *, const std::string & desc, T * data,               \
               const glgrib_options_callback::opt * o = NULL)                           \
   {                                                                                    \
     std::string opt_name = get_opt_name (path, name);                                  \
@@ -330,19 +333,14 @@ public:
   typedef std::string string;
   virtual void traverse (const std::string &, glgrib_options_callback *, 
                          const glgrib_options_callback::opt * = NULL) {}
-  virtual bool parse (int argc, const char * argv[])
-  {
-    glgrib_options_parser p;
-    traverse ("", &p);
-    return p.parse (argc, argv);
-  }
+  virtual bool parse (int, const char * []);
 };
 
 
-#define DESC(name, desc) do { cb->apply (p, #name, #desc, &name, o); } while (0)
+#define DESC(name, desc) do { cb->apply (p, #name, this, #desc, &name, o); } while (0)
 #define DESC_H(name, desc) \
   do { glgrib_options_parser::opt o; o.hidden = true; \
-       cb->apply (p, #name, #desc, &name, &o); } while (0)
+       cb->apply (p, #name, this, #desc, &name, &o); } while (0)
 
 #define INCLUDE(name) do { name.traverse (p + ( p == "" ? "" : ".") + #name, cb, o); } while (0)
 
@@ -459,6 +457,7 @@ public:
     INCLUDE (contour);
     INCLUDE (stream);
   }
+  std::set<std::string> seen;
   struct
   {
     struct 
@@ -1127,6 +1126,7 @@ public:
   glgrib_options_view view;
   glgrib_options_font font;
   glgrib_options_shell shell;
+  virtual bool parse (int, const char * []);
 };
 
 

@@ -95,7 +95,7 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
   glgrib_field_float_buffer_ptr data = ld->load (opts.path, slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
 
-  palette = glgrib_palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue (), meta1);
+  palette = glgrib_palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
 
   geometry = glgrib_geometry_load (ld, opts.path[0]);
 

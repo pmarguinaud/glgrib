@@ -32,18 +32,13 @@ glgrib_palette palette_white_black
 
 glgrib_palette glgrib_palette::create 
         (const glgrib_options_palette & o,  
-         float min, float max,
-         const glgrib_field_metadata & meta)
+         float min, float max)
 {
   glgrib_palette p;
 
   if (o.name == "default")
     {
-      if (o.colors.size () == 0)
-        {
-          p = create_by_meta (meta);
-        }
-      else
+      if (o.colors.size () != 0)
         {
           p.opts = o;
 
@@ -325,141 +320,6 @@ bool operator!= (const glgrib_palette & p1, const glgrib_palette & p2)
   return ! (p1 == p2);
 }
  
-glgrib_palette glgrib_palette::create_by_meta (const glgrib_field_metadata  & meta)
-{
-  sqlite3 * db = NULL;
-  sqlite3_stmt * req = NULL;
-  std::string pname = "default";
-  float pmin = std::numeric_limits<float>::max ();
-  float pmax = std::numeric_limits<float>::min ();
-  int rc;
-
-#define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
-  TRY (sqlite3_open (glgrib_resolve ("glgrib.db").c_str (), &db));
-
-  if ((meta.discipline != 255) && (meta.parameterCategory != 255) && (meta.parameterNumber != 255))
-    {
-      TRY (sqlite3_prepare_v2 (db, "SELECT palette, min, max FROM GRIB2PALETTE WHERE discipline = ? "
-                                   "AND parameterCategory = ? AND parameterNumber = ?;", -1, &req, 0));
-
-      TRY (sqlite3_bind_int (req, 1, meta.discipline));
-      TRY (sqlite3_bind_int (req, 2, meta.parameterCategory));
-      TRY (sqlite3_bind_int (req, 3, meta.parameterNumber));
-     
-      if ((rc = sqlite3_step (req)) == SQLITE_ROW)
-        goto step;
-
-      TRY (sqlite3_finalize (req));
-      req = NULL;
-    }
-
-  if (meta.CLNOMA != "")
-    {
-      TRY (sqlite3_prepare_v2 (db, "SELECT palette, min, max "
-                                   "FROM CLNOMA2PALETTE WHERE CLNOMA = ?;", -1, &req, 0));
-     
-      TRY (sqlite3_bind_text (req, 1, meta.CLNOMA.c_str (), meta.CLNOMA.length (), NULL));
-
-      if ((rc = sqlite3_step (req)) == SQLITE_ROW)
-        goto step;
-
-      TRY (sqlite3_finalize (req));
-      req = NULL;
-    }
-
-  goto end;
-#undef TRY
-
-step:
-  
-  char name[32];
-  strcpy (name, (const char *)sqlite3_column_text (req, 0));
-  pmin = sqlite3_column_double (req, 1);
-  pmax = sqlite3_column_double (req, 2);
-  pname = std::string (name);
-  rc = SQLITE_OK;
-
-end:
-
-  if (rc != SQLITE_OK)
-    throw std::runtime_error (std::string (sqlite3_errmsg (db)));
-
-  if (req != NULL)
-    sqlite3_finalize (req);
-  if (db != NULL)
-    sqlite3_close (db);
-
-
-
-  glgrib_palette p = glgrib_palette::create_by_name (pname);
-  p.opts.min = pmin;
-  p.opts.max = pmax;
-
-  if (p.opts.min == p.opts.max)
-    {
-      p.opts.min = defaultMin;
-      p.opts.max = defaultMax;
-    }
-
-  return p;
-}
-
-void glgrib_palette::save (const glgrib_field_metadata & meta) const
-{
-  sqlite3 * db = NULL;
-  sqlite3_stmt * req = NULL;
-  int rc;
-
-#define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
-
-  TRY (sqlite3_open (glgrib_resolve ("glgrib.db").c_str (), &db));
-
-  if ((meta.discipline != 255) && (meta.parameterCategory != 255) && (meta.parameterNumber != 255))
-    {
-      TRY (sqlite3_prepare_v2 (db, "INSERT OR REPLACE INTO GRIB2PALETTE "
-                                   "VALUES (?, ?, ?, ?, ?, ?);", -1, &req, 0));
-      TRY (sqlite3_bind_int    (req, 1, meta.discipline));
-      TRY (sqlite3_bind_int    (req, 2, meta.parameterCategory));
-      TRY (sqlite3_bind_int    (req, 3, meta.parameterNumber));
-      TRY (sqlite3_bind_double (req, 4, opts.min));
-      TRY (sqlite3_bind_double (req, 5, opts.max));
-      TRY (sqlite3_bind_text   (req, 6, opts.name.c_str (), opts.name.length (), NULL));
-     
-      if ((rc = sqlite3_step (req)) != SQLITE_DONE)
-        goto end;
-
-      TRY (sqlite3_finalize (req));
-      req = NULL;
-    }
-
-  if (meta.CLNOMA != "")
-    {
-      TRY (sqlite3_prepare_v2 (db, "INSERT OR REPLACE INTO CLNOMA2PALETTE (CLNOMA, palette, min, "
-                                   "max) VALUES (?, ?, ?, ?);", -1, &req, 0));
-      TRY (sqlite3_bind_text (req, 1, meta.CLNOMA.c_str (), meta.CLNOMA.length (), NULL));
-      TRY (sqlite3_bind_text (req, 2, opts.name.c_str (), opts.name.length (), NULL));
-      TRY (sqlite3_bind_double (req, 3, opts.min));
-      TRY (sqlite3_bind_double (req, 4, opts.max));
- 
-      if ((rc = sqlite3_step (req)) != SQLITE_DONE)
-        goto end;
-
-      TRY (sqlite3_finalize (req));
-      req = NULL;
-    }
-#undef TRY
-
-end:
-
-  if (rc != SQLITE_OK)
-    throw std::runtime_error (std::string (sqlite3_errmsg (db)));
-
-  if (req != NULL)
-    sqlite3_finalize (req);
-  if (db != NULL)
-    sqlite3_close (db);
-
-}
 
 
 

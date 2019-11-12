@@ -317,7 +317,7 @@ void glgrib_window::save_current_palette ()
   glgrib_field * f = scene.getCurrentField ();
   if (f == NULL)
     return;
-  f->saveSettings ();
+  f->saveOptions ();
 }
 
 void glgrib_window::remove_field (int rank)

@@ -19,3 +19,4 @@ Setup font with options
 Window shell with $
 
 Record palette options in database
+MAKE SQLITE3 connection an object

@@ -171,7 +171,7 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
 
   d.vscale = opts.vector.scale * (M_PI / npts) / (meta_n.valmax || 1.0f);
 
-  palette = glgrib_palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue (), meta_u);
+  palette = glgrib_palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
   
   setReady ();
 }

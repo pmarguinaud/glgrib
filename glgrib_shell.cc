@@ -73,7 +73,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
 
   try 
     {
-      cmd = glgrib_options_parser::next_token (&line);
+      cmd = glgrib_options_util::next_token (&line);
 
       if (cmd == "")
         return;
@@ -82,7 +82,7 @@ void glgrib_shell::execute (const std::string & _line, glgrib_window * gwindow)
      
       while (1)
         {
-          std::string arg = glgrib_options_parser::next_token (&line);
+          std::string arg = glgrib_options_util::next_token (&line);
           if (arg == "") 
             break;
           if (arg[0] == '#')

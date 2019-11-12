@@ -16,6 +16,9 @@
 class glgrib_field : public glgrib_world
 {
 public:
+
+  static glgrib_field * create (const glgrib_options_field &, float, glgrib_loader *);
+
   typedef enum
   {
     SCALAR=0,
@@ -41,11 +44,6 @@ public:
     for (int i = 0; i < values.size (); i++)
       val.push_back (values[i] != NULL ? values[i]->data ()[index] : 9999.0f);
     return val;
-  }
-  virtual void saveSettings () const 
-  { 
-    for (int i = 0; i < meta.size (); i++)
-      palette.save (meta[i]); 
   }
   virtual std::vector<float> getMaxValue () const 
   { 
@@ -107,6 +105,9 @@ public:
       }
  
   }
+
+  void saveOptions () const;
+
 protected:
   glgrib_palette palette = palette_cold_hot;
   mutable glgrib_options_field opts;

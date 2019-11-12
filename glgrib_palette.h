@@ -2,8 +2,8 @@
 #define _GLGRIB_PALETTE_H
 
 #include "glgrib_opengl.h"
-#include "glgrib_field_metadata.h"
 #include "glgrib_options.h"
+#include "glgrib_field_metadata.h"
 
 #include <vector>
 #include <iostream>
@@ -21,12 +21,10 @@ public:
   static glgrib_palette next (const glgrib_palette &, float = defaultMin, float = defaultMax);
 
   static glgrib_palette create (const glgrib_options_palette &,  
-                                float = defaultMin, float = defaultMax,
-                                const glgrib_field_metadata & = glgrib_field_metadata ());
+                                float = defaultMin, float = defaultMax);
 
   const std::string & getName () { return opts.name; }
 
-  void save (const glgrib_field_metadata &) const;
   glgrib_option_color rgba_mis;
   std::vector<glgrib_option_color> rgba;
   float getMin () const { return opts.min; }
@@ -74,7 +72,6 @@ public:
   const std::vector<float> & getValues () const { return opts.values; }
 
 private:
-  static glgrib_palette create_by_meta (const glgrib_field_metadata &);
   static glgrib_palette & create_by_name (const std::string &);
   glgrib_options_palette opts;
   template <typename T, typename... Types> 

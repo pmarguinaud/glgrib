@@ -23,13 +23,21 @@ template <> std::string option_tmpl     <glgrib_option_date> ::type () { return 
 template <> std::string option_tmpl     <glgrib_option_color>::type () { return std::string ("COLOR #rrggbb(aa)"); }
 template <> std::string option_tmpl     <std::string>        ::type () { return std::string ("STRING"); }
 template <> std::string option_tmpl     <std::string>        ::asString () const { return '"' + *value + '"'; }
+template <> std::string option_tmpl     <std::string>        ::asOption () const { return name + " " + glgrib_options_util::escape (*value); }
 template <> std::string option_tmpl_list<glgrib_option_color>::type () { return std::string ("LIST OF COLORS #rrggbb(aa)"); }
 template <> std::string option_tmpl_list<std::string>        ::type () { return std::string ("LIST OF STRINGS"); }
 template <> std::string option_tmpl_list<std::string>        ::asString () const 
 { 
   std::string str; 
   for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); it++)
-    str = str + " " + '"' + *it + '"';
+    str = str + " " + *it;
+  return str;
+}
+template <> std::string option_tmpl_list<std::string>        ::asOption () const 
+{ 
+  std::string str = name + " ";
+  for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); it++)
+    str = str + " " + glgrib_options_util::escape (*it);
   return str;
 }
 template <> std::string option_tmpl     <bool>               ::type () { return std::string ("BOOLEAN"); }
@@ -58,6 +66,13 @@ template <> void option_tmpl<bool>::clear ()
 template <> std::string option_tmpl<bool>::asString () const
 {
   return *value ? std::string ("TRUE") : std::string ("FALSE");
+}
+
+template <> std::string option_tmpl<bool>::asOption () const
+{
+  std::string val = name;
+  val.replace (val.length () - 3, 3, (*value ? ".on" : ".off"));
+  return val;
 }
 
 template <> int option_tmpl<bool>::has_arg () const
@@ -250,7 +265,24 @@ end:
   return color;
 }
 
-std::string glgrib_options_parser::next_token (std::string * line)
+std::string glgrib_options_util::escape (const std::string & token)
+{ 
+  std::string tok;
+
+  for (int i = 0; i < token.length (); i++)
+    {
+      if (token[i] == '"') 
+        tok.push_back ('\\');
+      if (token[i] == '\\') 
+        tok.push_back ('\\');
+      tok.push_back (token[i]);
+    }
+
+  return '"' + tok + '"';
+}
+
+
+std::string glgrib_options_util::next_token (std::string * line)
 {
   while (line->length () && (*line)[0] == ' ')
     *line = line->substr (1);
@@ -347,7 +379,7 @@ bool glgrib_options_parser::parse (int _argc, const char * _argv[])
                 {
                   while (1)
                     {
-                      std::string token = next_token (&line);
+                      std::string token = glgrib_options_util::next_token (&line);
                       if (token == "")
                         break;
                       ll.push_back (token);
@@ -448,6 +480,30 @@ bool glgrib_options_base::parse (int argc, const char * argv[])
   return p.parse (argc, argv);
 }
 
+bool glgrib_options_base::parse (const char * args)
+{
+  std::string line (args);
+  std::vector<std::string> list;
+ 
+  while (1)
+    {
+      std::string token = glgrib_options_util::next_token (&line);
+      if (token == "")
+        break;
+      list.push_back (token);
+    }
+
+  int argc = 1 + list.size ();
+  const char * argv [argc];
+
+  for (int i = 0; i < list.size (); i++)
+    argv[1+i] = list[i].c_str ();
+
+  glgrib_options_parser p;
+  traverse ("", &p);
+  return p.parse (argc, argv);
+}
+
 bool glgrib_options::parse (int argc, const char * argv[])
 {
   glgrib_options_parser p;
@@ -484,6 +540,26 @@ void glgrib_options_parser::show_help ()
 {
   printf ("Usage:\n");
   display (std::string ("--"));
+}
+
+std::string glgrib_options_parser::asOption (glgrib_options_parser & p2) 
+{
+  std::string str;
+
+  for (name2option_t::const_iterator it = name2option.begin (); 
+       it != name2option.end (); it++)
+    {
+	glgrib_options_parser_detail::option_base * opt1 = it->second;
+	glgrib_options_parser_detail::option_base * opt2 = p2.name2option[it->first];
+
+	std::string str1 = opt1->asOption ();
+	std::string str2 = opt2->asOption ();
+
+	if (str1 != str2)
+	  str = str + str1 + " ";
+    }
+
+  return str;
 }
 
 void glgrib_options_parser::display (const std::string & prefix, bool show_hidden)
@@ -540,6 +616,21 @@ void glgrib_options_parser::print (glgrib_options & opts1)
     }
 
 
+}
+
+std::string glgrib_options_base::asOption (glgrib_options_base & ref) 
+{
+  glgrib_options_parser p1, p2;
+  traverse ("", &p1);
+  ref.traverse ("", &p2);
+  return p1.asOption (p2);
+}
+
+
+bool glgrib_options_field::parse_unseen (const char * args)
+{
+  parse (args);
+  return true;
 }
 
 

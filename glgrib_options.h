@@ -12,6 +12,12 @@
 #include <string.h>
 #include <time.h>
 
+namespace glgrib_options_util
+{
+  std::string next_token (std::string *);
+  std::string escape (const std::string &);
+};
+
 class glgrib_option_color
 {
 public:
@@ -69,7 +75,6 @@ public:
 };
 
 
-
 namespace glgrib_options_parser_detail 
 {
 
@@ -86,6 +91,7 @@ namespace glgrib_options_parser_detail
     std::string desc;
     virtual std::string type ()  = 0;
     virtual std::string asString () const = 0;
+    virtual std::string asOption () const = 0;
     virtual void clear () = 0;
     virtual bool isEqual (const option_base *) const = 0;
     bool hidden = false;
@@ -98,6 +104,7 @@ namespace glgrib_options_parser_detail
     option_tmpl (const std::string & n, const std::string & d, T * v = NULL) : option_base (n, d), value (v) {}
     T * value = NULL;
     std::string asString () const { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
+    std::string asOption () const { return name + " " + glgrib_options_util::escape (asString ()); }
     void set ()
     {
     }
@@ -138,6 +145,17 @@ namespace glgrib_options_parser_detail
   public:
     option_tmpl_list (const std::string & n, const std::string & d, std::vector<T> * v = NULL) : option_base (n, d), value (v) {}
     std::vector<T> * value = NULL;
+    std::string asOption () const 
+    { 
+      std::string str = name;
+      for (typename std::vector<T>::iterator it = value->begin(); it != value->end (); it++)
+        {
+          std::ostringstream ss;
+          ss << (*it) << " ";
+	  str = str + " " + glgrib_options_util::escape (std::string (ss.str ()));
+	}
+      return str;
+    }
     std::string asString () const
     {
       std::ostringstream ss;
@@ -185,15 +203,18 @@ namespace glgrib_options_parser_detail
   template <> std::string option_tmpl     <glgrib_option_color>::type ();
   template <> std::string option_tmpl     <std::string>        ::type ();
   template <> std::string option_tmpl     <std::string>        ::asString () const;
+  template <> std::string option_tmpl     <std::string>        ::asOption () const;
   template <> std::string option_tmpl_list<glgrib_option_color>::type ();
   template <> std::string option_tmpl_list<std::string>        ::type ();
   template <> std::string option_tmpl_list<std::string>        ::asString () const;
+  template <> std::string option_tmpl_list<std::string>        ::asOption () const;
   template <> std::string option_tmpl     <bool>               ::type ();
   template <> void option_tmpl     <bool>::set        ();
   template <> void option_tmpl_list<std::string>::set (const std::string &);
   template <> void option_tmpl     <std::string>::set (const std::string &);
   template <> void option_tmpl<bool>::clear ();
   template <> std::string option_tmpl<bool>::asString () const;
+  template <> std::string option_tmpl<bool>::asOption () const;
   template <> int option_tmpl<bool>::has_arg () const;
 
 };
@@ -230,7 +251,7 @@ public:
 class glgrib_options_parser : public glgrib_options_callback
 {
 public:
-  static std::string next_token (std::string *);
+  virtual std::string asOption (glgrib_options_parser &);
   static void print (class glgrib_options &);
   bool parse (int, const char * []);
   void show_help ();
@@ -334,6 +355,8 @@ public:
   virtual void traverse (const std::string &, glgrib_options_callback *, 
                          const glgrib_options_callback::opt * = NULL) {}
   virtual bool parse (int, const char * []);
+  virtual bool parse (const char *);
+  virtual std::string asOption (glgrib_options_base &);
 };
 
 
@@ -499,6 +522,7 @@ public:
   glgrib_options_vector vector;
   glgrib_options_contour contour;
   glgrib_options_stream stream;
+  bool parse_unseen (const char *);
 };
 
 

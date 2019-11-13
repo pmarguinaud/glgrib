@@ -527,6 +527,7 @@ int glgrib_geometry_gaussian::latlon2jlatjlon (float lat, float lon, int & jlat,
 
   jlat = jlat - 1; // Start at zero
 
+  return 0;
 }
 
 int glgrib_geometry_gaussian::latlon2index (float lat, float lon) const

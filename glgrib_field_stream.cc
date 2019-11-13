@@ -42,6 +42,7 @@ glgrib_field_stream & glgrib_field_stream::operator= (const glgrib_field_stream 
           setReady ();
         }
     }
+  return *this;
 }
 
 void glgrib_field_stream::clear ()

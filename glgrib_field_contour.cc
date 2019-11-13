@@ -40,6 +40,7 @@ glgrib_field_contour & glgrib_field_contour::operator= (const glgrib_field_conto
           setReady ();
         }
     }
+  return *this;
 }
 
 void glgrib_field_contour::clear ()

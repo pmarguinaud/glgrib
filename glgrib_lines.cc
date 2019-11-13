@@ -20,6 +20,7 @@ glgrib_lines & glgrib_lines::operator= (const glgrib_lines & other)
       setupVertexAttributes ();
       setReady ();
     }
+  return *this;
 }
 
 void glgrib_lines::setup (const glgrib_options_lines & o, 

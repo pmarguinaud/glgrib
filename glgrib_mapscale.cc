@@ -10,6 +10,7 @@ glgrib_mapscale & glgrib_mapscale::operator= (const glgrib_mapscale & mapscale)
       if (mapscale.ready)
         setup (mapscale.opts);
     }
+  return *this;
 }
 
 void glgrib_mapscale::setup (const glgrib_options_mapscale & o)

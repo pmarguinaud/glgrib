@@ -265,13 +265,14 @@ glgrib_palette palette_cloud_auto
   );
 
 
-std::ostream & operator << (std::ostream &out, const glgrib_palette & p)
+std::ostream & operator << (std::ostream & out, const glgrib_palette & p)
 {
   out << p.rgba_mis << std::endl;
   out << "[";
   for (std::vector<glgrib_option_color>::const_iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
     out << *it << ",";
   out << "]" << std::endl;
+  return out;
 }
 
 void glgrib_palette::setRGBA255 (GLuint programID) const

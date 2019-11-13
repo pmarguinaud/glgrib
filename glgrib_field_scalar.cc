@@ -45,6 +45,7 @@ glgrib_field_scalar & glgrib_field_scalar::operator= (const glgrib_field_scalar 
           setReady ();
         }
     }
+  return *this;
 }
 
 void glgrib_field_scalar::setupVertexAttributes ()

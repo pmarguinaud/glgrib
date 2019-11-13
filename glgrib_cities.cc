@@ -122,6 +122,7 @@ glgrib_cities & glgrib_cities::operator= (const glgrib_cities & cities)
           d = cities.d;
 	}
     }
+  return *this;
 }
 
 void glgrib_cities::clear ()

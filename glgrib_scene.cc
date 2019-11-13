@@ -24,6 +24,7 @@ glgrib_scene & glgrib_scene::operator= (const glgrib_scene & other)
         else
           fieldlist.push_back (other.fieldlist[i]->clone ());
    }
+  return *this;
 }
 
 glgrib_scene::~glgrib_scene () 

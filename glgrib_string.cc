@@ -32,6 +32,7 @@ glgrib_string & glgrib_string::operator= (const glgrib_string & str)
 	    }
         }
     }
+  return *this;
 }
 
 

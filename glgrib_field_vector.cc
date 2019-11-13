@@ -39,6 +39,7 @@ glgrib_field_vector & glgrib_field_vector::operator= (const glgrib_field_vector 
           setReady ();
         }
     }
+  return *this;
 }
 
 

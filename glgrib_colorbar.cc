@@ -10,6 +10,7 @@ glgrib_colorbar & glgrib_colorbar::operator= (const glgrib_colorbar & colorbar)
       if (colorbar.ready)
         setup (colorbar.opts);
     }
+  return *this;
 }
 
 void glgrib_colorbar::setup (const glgrib_options_colorbar & o)

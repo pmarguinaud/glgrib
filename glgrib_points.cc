@@ -31,6 +31,7 @@ glgrib_points & glgrib_points::operator= (const glgrib_points & points)
           ready = true;
         }
     }   
+  return *this;
 }
 
 void glgrib_points::setupVertexAttributes ()

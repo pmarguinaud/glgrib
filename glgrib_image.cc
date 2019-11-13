@@ -29,6 +29,7 @@ glgrib_image & glgrib_image::operator= (const glgrib_image & img)
           ready = true;
         }
     }   
+  return *this;
 }
 
 void glgrib_image::setupVertexAttributes ()

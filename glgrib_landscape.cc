@@ -23,6 +23,7 @@ glgrib_landscape & glgrib_landscape::operator= (const glgrib_landscape & landsca
       setupVertexAttributes ();
       setReady ();
    }
+  return *this;
 }
 
 void glgrib_landscape::setupVertexAttributes ()

@@ -89,6 +89,7 @@ public:
   {
     setup ();
     current_ = ps.current_;
+    return *this;
   }
   glgrib_projection * current () const
   {
@@ -114,6 +115,7 @@ public:
          if_type (LATLON);
        }
 #undef if_type
+     return "";
   }
 private:
   int current_ = glgrib_projection::XYZ;

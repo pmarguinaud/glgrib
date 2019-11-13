@@ -17,6 +17,7 @@ glgrib_grid & glgrib_grid::operator= (const glgrib_grid & other)
       setup (opts);
       setReady ();
     }
+  return *this;
 }
 
 void glgrib_grid::setup (const glgrib_options_grid & o)

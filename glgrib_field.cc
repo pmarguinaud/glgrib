@@ -70,7 +70,7 @@ glgrib_field * glgrib_field::create (const glgrib_options_field & opts, float sl
     return NULL;
 
   char options[512];
-  glgrib_options_field opts_sql;
+  glgrib_options_field opts_sql = opts;
   glgrib_options_field opts_ref;
   glgrib_field_metadata meta;
   ld->load (opts.path, 0, &meta);
@@ -103,9 +103,13 @@ glgrib_field * glgrib_field::create (const glgrib_options_field & opts, float sl
         goto step;
     }
 
-  goto end;
+  if (rc == SQLITE_DONE)
+    rc = SQLITE_OK;
 
   opts_sql = opts;
+
+  goto end;
+
 
 step:
 

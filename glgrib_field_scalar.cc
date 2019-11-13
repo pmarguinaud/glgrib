@@ -117,14 +117,9 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
   setupVertexAttributes ();
 
   if (opts.no_value_pointer.on)
-    {
-      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
-    }
+    values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
   else
-    {
-      values.push_back (data);
-    }
-
+    values.push_back (data);
 
   setReady ();
 }

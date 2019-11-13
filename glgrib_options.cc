@@ -348,9 +348,12 @@ cont:
   return token;
 }
 
-bool glgrib_options_parser::parse (int _argc, const char * _argv[])
+bool glgrib_options_parser::parse (int _argc, const char * _argv[], 
+		                   const std::set<std::string> * skip)
 {
   int argc = _argc;
+  bool do_skip = false;
+
   std::list<std::string> argv;
   for (int i = 1; i < argc; i++)
     argv.push_back (_argv[i]);
@@ -426,13 +429,19 @@ bool glgrib_options_parser::parse (int _argc, const char * _argv[])
 
                   bool found = name2option.find (arg) != name2option.end ();
 
+
                   if (found) // Set option
                     {
+                      do_skip = skip && (skip->find (arg) != skip->end ());
+
                       seen.insert (arg);
                       opt = name2option[arg];
-                      opt->clear (); // Clear option; this means that if options appears several times, then the last setting is taken into account
-                      if (! opt->has_arg ())
-                        opt->set ();
+		      if (! do_skip)
+		        {
+                          opt->clear (); // Clear option; this means that if options appears several times, then the last setting is taken into account
+                          if (! opt->has_arg ())
+                            opt->set ();
+			}
                     }
                   else if (arg.substr (arg.length () - 4, 4) == ".off")
                     {
@@ -441,9 +450,11 @@ bool glgrib_options_parser::parse (int _argc, const char * _argv[])
                       found = name2option.find (a) != name2option.end ();
                       if (found) // Unset option
                         {
+                          do_skip = skip && (skip->find (a) != skip->end ());
                           seen.insert (a);
                           opt = name2option[a];
-                          opt->clear (); // Set boolean option to false
+			  if (! do_skip)
+                            opt->clear (); // Set boolean option to false
                         }
                     }
 
@@ -455,7 +466,7 @@ bool glgrib_options_parser::parse (int _argc, const char * _argv[])
             {
               throw std::runtime_error (std::string ("Error parsing options: no valid option for `") + arg + std::string ("'"));
             }
-          else
+          else if (! do_skip)
             {
               opt->set (arg);
             }
@@ -473,14 +484,16 @@ bool glgrib_options_parser::parse (int _argc, const char * _argv[])
   return true;
 }
 
-bool glgrib_options_base::parse (int argc, const char * argv[])
+bool glgrib_options_base::parse (int argc, const char * argv[], 
+		                 const std::set<std::string> * skip)
 {
   glgrib_options_parser p;
   traverse ("", &p);
-  return p.parse (argc, argv);
+  return p.parse (argc, argv, skip);
 }
 
-bool glgrib_options_base::parse (const char * args)
+bool glgrib_options_base::parse (const char * args,
+		                 const std::set<std::string> * skip)
 {
   std::string line (args);
   std::vector<std::string> list;
@@ -501,14 +514,15 @@ bool glgrib_options_base::parse (const char * args)
 
   glgrib_options_parser p;
   traverse ("", &p);
-  return p.parse (argc, argv);
+  return p.parse (argc, argv, skip);
 }
 
-bool glgrib_options::parse (int argc, const char * argv[])
+bool glgrib_options::parse (int argc, const char * argv[], 
+		            const std::set<std::string> * skip)
 {
   glgrib_options_parser p;
   traverse ("", &p);
-  if (! p.parse (argc, argv))
+  if (! p.parse (argc, argv, skip))
     return false;
 
   std::set<std::string> seen = p.getSeenOptions ();
@@ -519,7 +533,12 @@ bool glgrib_options::parse (int argc, const char * argv[])
       std::string prefix = "--field[" +  std::to_string (i) + "]";
       for (std::set<std::string>::iterator it = seen.begin (); it != seen.end (); it++)
         if (it->substr (0, prefix.length ()) == prefix)
-          field[i].seen.insert (*it);
+          {
+            std::string str = *it;
+	    str.replace (0, 1 + prefix.length (), "");
+	    str = "--" + str;
+            field[i].seen.insert (str);
+	  }
     }
 
   return true;
@@ -629,7 +648,7 @@ std::string glgrib_options_base::asOption (glgrib_options_base & ref)
 
 bool glgrib_options_field::parse_unseen (const char * args)
 {
-  parse (args);
+  parse (args, &seen);
   return true;
 }
 

@@ -253,7 +253,7 @@ class glgrib_options_parser : public glgrib_options_callback
 public:
   virtual std::string asOption (glgrib_options_parser &);
   static void print (class glgrib_options &);
-  bool parse (int, const char * []);
+  bool parse (int, const char * [], const std::set<std::string> * = NULL);
   void show_help ();
   void display (const std::string &, bool = false);
   ~glgrib_options_parser ()
@@ -354,8 +354,8 @@ public:
   typedef std::string string;
   virtual void traverse (const std::string &, glgrib_options_callback *, 
                          const glgrib_options_callback::opt * = NULL) {}
-  virtual bool parse (int, const char * []);
-  virtual bool parse (const char *);
+  virtual bool parse (int, const char * [], const std::set<std::string> * = NULL);
+  virtual bool parse (const char *, const std::set<std::string> * = NULL);
   virtual std::string asOption (glgrib_options_base &);
 };
 
@@ -1150,7 +1150,7 @@ public:
   glgrib_options_view view;
   glgrib_options_font font;
   glgrib_options_shell shell;
-  virtual bool parse (int, const char * []);
+  virtual bool parse (int, const char * [], const std::set<std::string> * = NULL);
 };
 
 

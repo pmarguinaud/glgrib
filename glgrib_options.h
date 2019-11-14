@@ -379,7 +379,6 @@ class glgrib_options_contour : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (colors,        Contour colors);
     DESC (number,        Number of levels);
     DESC (levels,        List of levels);
     DESC (widths,        List of widths);
@@ -389,7 +388,6 @@ public:
   int number = 10;
   std::vector<float> levels;
   std::vector<float> widths;
-  std::vector<glgrib_option_color> colors;
   std::vector<std::string> patterns;
   std::vector<float> lengths;
 };
@@ -460,6 +458,7 @@ public:
   DEFINE
   {
     DESC (type,                Field type : SCALAR VECTOR STREAM CONTOUR);
+    DESC (user_pref.on,        Lookup field settings in database);
     DESC (path,                List of GRIB files);                    
     DESC (scale,               Scales to be applied to fields);        
     DESC (no_value_pointer.on, Do not keep field values in memory);    
@@ -476,7 +475,12 @@ public:
     INCLUDE (stream);
   }
   std::set<std::string> seen;
+
   std::string type = "SCALAR";
+  struct
+  {
+    bool on = true;
+  } user_pref;
   struct
   {
     struct 

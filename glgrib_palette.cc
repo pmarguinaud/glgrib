@@ -270,14 +270,14 @@ std::ostream & operator << (std::ostream & out, const glgrib_palette & p)
   return out;
 }
 
-void glgrib_palette::setRGBA255 (GLuint programID) const
+void glgrib_palette::getRGBA255 (float RGBA0[256][4]) const
 {
-  float RGBA0[256][4];
   int n = rgba.size ();
 
   RGBA0[0][0] = rgba_mis.r; RGBA0[0][1] = rgba_mis.b;
   RGBA0[0][2] = rgba_mis.g; RGBA0[0][3] = rgba_mis.a;
 
+#pragma omp parallel for
   for (int j = 0; j < n-1; j++)
     {
       int j0 = j + 0;
@@ -295,6 +295,12 @@ void glgrib_palette::setRGBA255 (GLuint programID) const
         }
     }
 
+}
+
+void glgrib_palette::setRGBA255 (GLuint programID) const
+{
+  float RGBA0[256][4];
+  getRGBA255 (RGBA0);
   glUniform4fv (glGetUniformLocation (programID, "RGBA0"), 256, &RGBA0[0][0]);
 }
 
@@ -316,6 +322,13 @@ bool operator!= (const glgrib_palette & p1, const glgrib_palette & p2)
   return ! (p1 == p2);
 }
  
+glgrib_option_color glgrib_palette::getColor (float val) const
+{
+  float RGBA0[256][4];
+  getRGBA255 (RGBA0);
+  int pal = std::max (1, std::min ((int)(1 + 254 * (val - opts.min) / (opts.max - opts.min)), 255));
+  return glgrib_option_color (255 * RGBA0[pal][0], 255 * RGBA0[pal][1], 255 * RGBA0[pal][2], 255 * RGBA0[pal][3]);
+}
 
 
 

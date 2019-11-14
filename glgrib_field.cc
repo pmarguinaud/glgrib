@@ -65,25 +65,22 @@ const glgrib_options_field & glgrib_field::getOptions () const
 }
 
 
-glgrib_field * glgrib_field::create (const glgrib_options_field & opts, float slot, glgrib_loader * ld)
+void glgrib_field::getUserPref (glgrib_options_field * opts, glgrib_loader * ld)
 {
-
-  if (opts.path.size () == 0)
-    return NULL;
-
-  char options[512];
-  glgrib_options_field opts_sql = opts;
+  glgrib_options_field opts_sql = *opts;
   glgrib_options_field opts_ref;
+  
+  char options[512];
   glgrib_field_metadata meta;
-  ld->load (opts.path, 0, &meta);
-
+  ld->load (opts_sql.path, 0, &meta);
+  
   sqlite3 * db = NULL;
   sqlite3_stmt * req = NULL;
   int rc;
 #define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
-
+      
   TRY (sqlite3_open (glgrib_resolve (std::string ("glgrib.db")).c_str (), &db));
-
+  
   if (meta.CLNOMA != "")
     {
       TRY (sqlite3_prepare_v2 (db, "SELECT options FROM CLNOMA2OPTIONS WHERE CLNOMA = ?;", -1, &req, 0));
@@ -95,8 +92,8 @@ glgrib_field * glgrib_field::create (const glgrib_options_field & opts, float sl
     {
       TRY (sqlite3_prepare_v2 (db, "SELECT options FROM GRIB2OPTIONS WHERE discipline = ? "
                                    "AND parameterCategory = ? AND parameterNumber = ?;", -1, 
-			       &req, 0));
-
+      		       &req, 0));
+  
       TRY (sqlite3_bind_int (req, 1, meta.discipline));
       TRY (sqlite3_bind_int (req, 2, meta.parameterCategory));
       TRY (sqlite3_bind_int (req, 3, meta.parameterNumber));
@@ -104,44 +101,59 @@ glgrib_field * glgrib_field::create (const glgrib_options_field & opts, float sl
       if ((rc = sqlite3_step (req)) == SQLITE_ROW)
         goto step;
     }
-
+  
   if (rc == SQLITE_DONE)
     rc = SQLITE_OK;
-
-  opts_sql = opts;
-
+  
+  opts_sql = *opts;
+  
   goto end;
-
-
+  
+  
 step:
-
+  
   rc = SQLITE_OK;
-
+  
   strncpy (options, (const char *)sqlite3_column_text (req, 0), sizeof (options));
-
+  
   std::cout << " options = " << options << std::endl;
-
+  
   opts_sql.parse_unseen (options);
-  opts_sql.path = opts.path;
-
+  opts_sql.path = opts->path;
+  
   std::cout << " opts_sql = " << opts_sql.asOption (opts_ref) << std::endl;
-
+  
 end:
-
+  
   if (rc != SQLITE_OK)
     throw std::runtime_error (std::string (sqlite3_errmsg (db)));
-
+  
   if (req != NULL)
     sqlite3_finalize (req);
   if (db != NULL)
     sqlite3_close (db);
-    
-
+      
+  
 #undef TRY
+
+
+  *opts = opts_sql;
+}
+
+glgrib_field * glgrib_field::create (const glgrib_options_field & opts, float slot, glgrib_loader * ld)
+{
+
+  if (opts.path.size () == 0)
+    return NULL;
+
+  glgrib_options_field opts1 = opts;
+
+  if (opts.user_pref.on)
+    getUserPref (&opts1, ld);
 
   glgrib_field * fld = NULL;
 
-  std::string type = opts.type;
+  std::string type = opts1.type;
 
   std::transform (type.begin (), type.end (), type.begin (), ::toupper);
 
@@ -156,7 +168,7 @@ end:
   else
     throw std::runtime_error (std::string ("Unknown field type : ") + type);
 
-  fld->setup (ld, opts_sql, slot);
+  fld->setup (ld, opts1, slot);
 
 
   return fld;

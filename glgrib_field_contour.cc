@@ -102,6 +102,8 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
   glgrib_field_float_buffer_ptr data = ld->load (opts.path, slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
 
+  palette = glgrib_palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
+
   geometry = glgrib_geometry_load (ld, opts.path[0]);
 
   numberOfColors = 1;
@@ -162,9 +164,7 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
             iso[i].pattern.push_back (opts.contour.patterns[i][j] == opts.contour.patterns[i][0]);
         }
 
-      int size = opts.contour.colors.size ();
-      if (size > 0)
-        iso[i].color = opts.contour.colors[i % size];
+      iso[i].color = palette.getColor (levels[i]);
 
       iso_data[i].clear ();
 

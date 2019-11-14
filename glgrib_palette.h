@@ -71,7 +71,10 @@ public:
 
   const std::vector<float> & getValues () const { return opts.values; }
 
+  glgrib_option_color getColor (float) const;
+
 private:
+  void getRGBA255 (float RGBA0[256][4]) const;
   static glgrib_palette & create_by_name (const std::string &);
   glgrib_options_palette opts;
   template <typename T, typename... Types> 

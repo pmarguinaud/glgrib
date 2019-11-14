@@ -19,6 +19,10 @@ public:
   virtual ~glgrib_field_scalar ();
   void setupVertexAttributes ();
   virtual bool useColorBar () const { return true; }
+  virtual int getSlotMax () const  
+  {
+    return (int)opts.path.size ();
+  }
 private:
   GLuint VertexArrayIDpoints = 0;
   virtual void clear ();

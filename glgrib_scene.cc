@@ -216,27 +216,17 @@ void glgrib_scene::update_interpolation ()
       for (int i = 0; i < fieldlist.size (); i++)
         {
 	  if (fieldlist[i] != NULL)
-            {
-              if (d.opts.field[i].vector.on)
-                slotmax = std::max (slotmax, (int)d.opts.field[i].path.size () / 2);
-              else if (d.opts.field[i].stream.on)
-                slotmax = std::max (slotmax, (int)d.opts.field[i].path.size () / 2);
-              else if (d.opts.field[i].contour.on)
-                slotmax = std::max (slotmax, (int)d.opts.field[i].path.size ());
-              else
-                slotmax = std::max (slotmax, (int)d.opts.field[i].path.size ());
-	    }
+            slotmax = std::max (slotmax, fieldlist[i]->getSlotMax ());
 	}
+
       slotmax--;
 
       float slot = (float)d.nupdate / (float)d.opts.scene.interpolation.frames;
       if (slot > slotmax)
         slot = slotmax;
 
-
       for (int j = 0; j < fieldlist.size (); j++)
         setFieldOptions (j, d.opts.field[j], slot);
-
     }
 }
 

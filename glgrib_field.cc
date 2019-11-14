@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+#include <string>
+#include <algorithm>
 #include <sqlite3.h>
 
 void glgrib_field::setPaletteOptions (const glgrib_options_palette & o) 
@@ -139,14 +141,20 @@ end:
 
   glgrib_field * fld = NULL;
 
-  if (opts.vector.on)
+  std::string type = opts.type;
+
+  std::transform (type.begin (), type.end (), type.begin (), ::toupper);
+
+  if (type == "VECTOR")
     fld = new glgrib_field_vector ();
-  else if (opts.stream.on)
+  else if (type == "STREAM")
     fld = new glgrib_field_stream ();
-  else if (opts.contour.on)
+  else if (type == "CONTOUR")
     fld = new glgrib_field_contour ();
-  else
+  else if (type == "SCALAR")
     fld = new glgrib_field_scalar ();
+  else
+    throw std::runtime_error (std::string ("Unknown field type : ") + type);
 
   fld->setup (ld, opts_sql, slot);
 

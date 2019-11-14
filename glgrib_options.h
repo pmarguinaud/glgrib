@@ -379,7 +379,6 @@ class glgrib_options_contour : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (on,            Enable contour);          
     DESC (colors,        Contour colors);
     DESC (number,        Number of levels);
     DESC (levels,        List of levels);
@@ -387,7 +386,6 @@ public:
     DESC (patterns,      List of dash patterns);
     DESC (lengths,       List of dash lengths);
   }
-  bool on = false;
   int number = 10;
   std::vector<float> levels;
   std::vector<float> widths;
@@ -401,11 +399,9 @@ class glgrib_options_stream : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (on,            Enable stream lines);          
     DESC (width,         Stream lines width);          
     DESC (density,       Stream lines density);          
   }
-  bool on = false;
   float width = 0.0f;
   float density = 1.0f;
 };
@@ -415,7 +411,6 @@ class glgrib_options_vector : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (on,             Field is a vector);          
     DESC (hide_arrow.on,  Hide arrows);                
     DESC (hide_norm.on,   Hide norm field);            
     DESC (color,          Color for arrows);
@@ -423,7 +418,6 @@ public:
     DESC (scale,          Vector scale);
     DESC (head_size,      Vector head size);
   }
-  bool  on         = false;
   struct
   {
     bool on = false;
@@ -465,6 +459,7 @@ class glgrib_options_field : public glgrib_options_base
 public:
   DEFINE
   {
+    DESC (type,                Field type : SCALAR VECTOR STREAM CONTOUR);
     DESC (path,                List of GRIB files);                    
     DESC (scale,               Scales to be applied to fields);        
     DESC (no_value_pointer.on, Do not keep field values in memory);    
@@ -481,6 +476,7 @@ public:
     INCLUDE (stream);
   }
   std::set<std::string> seen;
+  std::string type = "SCALAR";
   struct
   {
     struct 

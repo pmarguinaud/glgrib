@@ -10,6 +10,7 @@
 #include "glgrib_loader.h"
 
 #include <string>
+#include <algorithm>
 #include <vector>
 
 
@@ -107,6 +108,8 @@ public:
   }
 
   void saveOptions () const;
+
+  virtual int getSlotMax () const  = 0;
 
 protected:
   glgrib_palette palette = palette_cold_hot;

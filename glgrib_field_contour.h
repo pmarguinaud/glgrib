@@ -20,6 +20,10 @@ public:
   void setupVertexAttributes ();
   virtual void clear (); 
   virtual bool useColorBar () const { return false; }
+  virtual int getSlotMax () const  
+  {
+    return (int)opts.path.size ();
+  }
 private:
   class isoline_data_t
   {

@@ -21,6 +21,10 @@ public:
   void setupVertexAttributes ();
   virtual void clear ();
   virtual bool useColorBar () const { return true; }
+  virtual int getSlotMax () const  
+  {
+    return (int)opts.path.size () / 2;
+  }
 private:
   class streamline_data_t
   {

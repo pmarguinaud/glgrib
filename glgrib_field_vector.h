@@ -34,6 +34,10 @@ public:
     return val[0];
   }
   virtual bool useColorBar () const { return false; }
+  virtual int getSlotMax () const  
+  {
+    return (int)opts.path.size () / 2;
+  }
 private:
   GLuint VertexArrayIDvector = 0;
   struct

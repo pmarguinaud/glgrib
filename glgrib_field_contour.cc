@@ -99,7 +99,8 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
   opts = o;
 
   glgrib_field_metadata meta1;
-  glgrib_field_float_buffer_ptr data = ld->load (opts.path, slot, &meta1, 1, 0, opts.diff.on);
+  glgrib_field_float_buffer_ptr data;
+  ld->load (&data, opts.path, slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
 
   palette = glgrib_palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());

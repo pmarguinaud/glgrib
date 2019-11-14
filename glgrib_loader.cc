@@ -216,8 +216,8 @@ next:
   return ghp;
 }
 
-glgrib_field_float_buffer_ptr glgrib_loader::load (const std::vector<std::string> & file, float fslot, 
-                                                   glgrib_field_metadata * meta, int mult, int base, bool diff)
+void glgrib_loader::load (glgrib_field_float_buffer_ptr * ptr, const std::vector<std::string> & file, float fslot, 
+                          glgrib_field_metadata * meta, int mult, int base, bool diff)
 {
   int islot = (int)fslot;
   float a, b;
@@ -232,7 +232,7 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::vector<std::string
       b = fslot - (float)islot;
       a = 1.0f  - b;
       if (fslot == (float)islot)
-        return load (file[mult*islot+base], meta);
+        return load (ptr, file[mult*islot+base], meta);
     }
 
 
@@ -250,69 +250,79 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::vector<std::string
 
   glgrib_field_metadata meta1, meta2;
 
-  glgrib_field_float_buffer_ptr val1 = load (file1, &meta1);
-  glgrib_field_float_buffer_ptr val2 = load (file2, &meta2);
-
-  int size = geom1->size ();
-  glgrib_field_float_buffer_ptr val = new_glgrib_field_float_buffer_ptr (size);
-
-  float valmin = std::numeric_limits<float>::max (), 
-        valmax = std::numeric_limits<float>::min (), 
-        valmis;
-  bool valmis_ok = true;
-
-  for (int i = 0; i < size; i++)
+  if (ptr == NULL)
     {
-      float v1 = (*val1)[i], v2 = (*val2)[i];
-      if ((v1 == meta1.valmis) || (v2 == meta2.valmis))
-        {
-          (*val)[i] = valmis;
-        }
-      else
-        {
-          float v = a * (*val1)[i] + b * (*val2)[i];
-          (*val)[i] = v;
-          valmin = std::min (v, valmin);
-          valmax = std::max (v, valmax);
-          valmis_ok = valmis_ok && (v != valmis);
-        }
+      load (NULL, file1, &meta1);
+      *meta = meta1;
     }
-  if (! valmis_ok)
+  else
     {
-      valmis = valmax * 1.1;
+      glgrib_field_float_buffer_ptr val1, val2;
+
+      load (&val1, file1, &meta1);
+      load (&val2, file2, &meta2);
+    
+      int size = geom1->size ();
+      glgrib_field_float_buffer_ptr val = new_glgrib_field_float_buffer_ptr (size);
+    
+      float valmin = std::numeric_limits<float>::max (), 
+            valmax = std::numeric_limits<float>::min (), 
+            valmis;
+      bool valmis_ok = true;
+    
       for (int i = 0; i < size; i++)
         {
           float v1 = (*val1)[i], v2 = (*val2)[i];
           if ((v1 == meta1.valmis) || (v2 == meta2.valmis))
-            (*val)[i] = valmis;
+            {
+              (*val)[i] = valmis;
+            }
+          else
+            {
+              float v = a * (*val1)[i] + b * (*val2)[i];
+              (*val)[i] = v;
+              valmin = std::min (v, valmin);
+              valmax = std::max (v, valmax);
+              valmis_ok = valmis_ok && (v != valmis);
+            }
         }
+      if (! valmis_ok)
+        {
+          valmis = valmax * 1.1;
+          for (int i = 0; i < size; i++)
+            {
+              float v1 = (*val1)[i], v2 = (*val2)[i];
+              if ((v1 == meta1.valmis) || (v2 == meta2.valmis))
+                (*val)[i] = valmis;
+            }
+        }
+    
+      *meta = meta1;
+    
+      if (diff)
+        {
+          float valm = std::max (fabs (valmin), fabs (valmax));
+          meta->valmin = - valm;
+          meta->valmax = + valm;
+          meta->valmis = valmis;
+          meta->CLNOMA            = "diff";
+          meta->discipline        = 255;
+          meta->parameterCategory = 255;
+          meta->parameterNumber   = 255;
+        }
+      else
+        {
+          meta->term = glgrib_option_date::interpolate (meta1.term, meta2.term, a);
+          meta->valmin = valmin;
+          meta->valmax = valmax;
+          meta->valmis = valmis;
+        }
+    
+      *ptr = val;
     }
-
-  *meta = meta1;
-
-  if (diff)
-    {
-      float valm = std::max (fabs (valmin), fabs (valmax));
-      meta->valmin = - valm;
-      meta->valmax = + valm;
-      meta->valmis = valmis;
-      meta->CLNOMA            = "diff";
-      meta->discipline        = 255;
-      meta->parameterCategory = 255;
-      meta->parameterNumber   = 255;
-    }
-  else
-    {
-      meta->term = glgrib_option_date::interpolate (meta1.term, meta2.term, a);
-      meta->valmin = valmin;
-      meta->valmax = valmax;
-      meta->valmis = valmis;
-    }
-
-  return val;
 }
 
-glgrib_field_float_buffer_ptr glgrib_loader::load (const std::string & file, glgrib_field_metadata * meta)
+void glgrib_loader::load (glgrib_field_float_buffer_ptr * ptr, const std::string & file, glgrib_field_metadata * meta)
 {
   glgrib_handle_ptr ghp = handle_from_file (file);
   codes_handle * h = ghp->getCodesHandle ();
@@ -327,12 +337,16 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::string & file, glg
   double * v = (double *)malloc (sizeof (double) * v_len);
   codes_get_double_array (h, "values", v, &v_len);
 
-  glgrib_field_float_buffer_ptr val = new_glgrib_field_float_buffer_ptr (v_len);
+  if (ptr != NULL)
+    {
+      glgrib_field_float_buffer_ptr val = new_glgrib_field_float_buffer_ptr (v_len);
 
-  for (int i = 0; i < v_len; i++)
-    (*val)[i] = v[i];
+      for (int i = 0; i < v_len; i++)
+        (*val)[i] = v[i];
 
-  free (v);
+      free (v);
+      *ptr = val;
+    }
 
   meta->valmis = vmis;
   meta->valmin = vmin;
@@ -433,7 +447,6 @@ glgrib_field_float_buffer_ptr glgrib_loader::load (const std::string & file, glg
     }
 
 
-  return val;
 }
 
 void glgrib_loader::uv2nd (const_glgrib_geometry_ptr geometry,

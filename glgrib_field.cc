@@ -72,7 +72,7 @@ void glgrib_field::getUserPref (glgrib_options_field * opts, glgrib_loader * ld)
   
   char options[512];
   glgrib_field_metadata meta;
-  ld->load (opts_sql.path, 0, &meta);
+  ld->load (NULL, opts_sql.path, 0, &meta);
   
   sqlite3 * db = NULL;
   sqlite3_stmt * req = NULL;
@@ -116,12 +116,8 @@ step:
   
   strncpy (options, (const char *)sqlite3_column_text (req, 0), sizeof (options));
   
-  std::cout << " options = " << options << std::endl;
-  
   opts_sql.parse_unseen (options);
   opts_sql.path = opts->path;
-  
-  std::cout << " opts_sql = " << opts_sql.asOption (opts_ref) << std::endl;
   
 end:
   
@@ -182,9 +178,6 @@ void glgrib_field::saveOptions () const
   opts1.path.clear ();
   std::string options = opts1.asOption (opts2);
 
-  std::cout << " save = " << options << std::endl;
-
-  
   sqlite3 * db = NULL;
   sqlite3_stmt * req = NULL;
   int rc;
@@ -197,8 +190,9 @@ void glgrib_field::saveOptions () const
       TRY (sqlite3_prepare_v2 (db, "INSERT OR REPLACE INTO CLNOMA2OPTIONS (CLNOMA, options) VALUES (?, ?);", -1, &req, 0));
       TRY (sqlite3_bind_text (req, 1, meta[0].CLNOMA.c_str (), strlen (meta[0].CLNOMA.c_str ()), NULL));
       TRY (sqlite3_bind_text (req, 2, options.c_str (), strlen (options.c_str ()), NULL));
-      if ((rc = sqlite3_step (req)) == SQLITE_DONE)
-        goto done;
+      if ((rc = sqlite3_step (req)) != SQLITE_DONE)
+        goto end;
+      rc = SQLITE_OK;
     }
   if ((meta[0].discipline != 255) && (meta[0].parameterCategory != 255) && (meta[0].parameterNumber != 255))
     {
@@ -211,15 +205,13 @@ void glgrib_field::saveOptions () const
       TRY (sqlite3_bind_int (req, 3, meta[0].parameterNumber));
       TRY (sqlite3_bind_text (req, 4, options.c_str (), strlen (options.c_str ()), NULL));
      
-      if ((rc = sqlite3_step (req)) == SQLITE_DONE)
-        goto done;
+      if ((rc = sqlite3_step (req)) != SQLITE_DONE)
+        goto end;
+      rc = SQLITE_OK;
     }
 
   goto end;
 
-done:
-
-  rc = SQLITE_OK;
 
 end:
 

@@ -36,6 +36,7 @@ namespace glgrib_sqlite_detail
 
   void iset (sqlite3 * db, sqlite3_stmt * req, int rank, std::string t) 
   {
+    std::cout << " t = " << t << std::endl;
     ok (db, sqlite3_bind_text (req, 1 + rank, t.c_str (), strlen (t.c_str ()), NULL));
   }
 
@@ -66,6 +67,7 @@ namespace glgrib_sqlite_detail
   void oget (sqlite3 * db, sqlite3_stmt * req, int rank, std::string * t)
   {
     const char * str = (const char *)sqlite3_column_text (req, rank);
+    std::cout << " str = " << str << std::endl;
     t->resize (strlen (str) + 1);
     strcpy (&(*t)[0], str);
   }

@@ -1,12 +1,12 @@
 #include "glgrib_palette.h"
 #include "glgrib_opengl.h"
 #include "glgrib_resolve.h"
+#include "glgrib_sqlite.h"
 
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
 #include <string.h>
-#include <sqlite3.h>
 
 const float glgrib_palette::defaultMin = std::numeric_limits<float>::max();
 const float glgrib_palette::defaultMax = std::numeric_limits<float>::min();
@@ -128,22 +128,18 @@ glgrib_palette & glgrib_palette::create_by_name (const std::string & name)
     return it->second;
 
   glgrib_palette p;
-  bool found = false;
 
-  sqlite3 * db = NULL;
-  sqlite3_stmt * req = NULL;
-  int rc;
-#define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
 
-  TRY (sqlite3_open (glgrib_resolve (std::string ("glgrib.db")).c_str (), &db));
-  TRY (sqlite3_prepare_v2 (db, "SELECT hexa FROM PALETTES WHERE name = ?;", -1, &req, 0));
-  TRY (sqlite3_bind_text (req, 1, name.c_str (), strlen (name.c_str ()), NULL));
+  glgrib_sqlite db (glgrib_resolve ("glgrib.db"));
+  glgrib_sqlite::stmt st = db.prepare ("SELECT hexa FROM PALETTES WHERE name = ?;");
+  st.bindall (&name);
 
-  if ((rc = sqlite3_step (req)) == SQLITE_ROW)
+
+  bool found;
+  std::string hexa;
+
+  if ((found = st.fetch_row (&hexa)))
     {
-      found = true;
-      char hexa[2049];
-      strcpy (hexa, (const char *)sqlite3_column_text (req, 0));
       for (int i = 0; i < 256; i++)
         {
           int r, g, b, a;
@@ -154,29 +150,9 @@ glgrib_palette & glgrib_palette::create_by_name (const std::string & name)
           else
             p.rgba.push_back (glgrib_option_color (r, g, b, a));
         }
- 
-      rc = SQLITE_OK;
-      found = true;
-
       p.opts.name = name;
     }
-  else
-    {
-      TRY (sqlite3_finalize (req));
-      req = NULL;
-    }
 
-#undef TRY
-
-end:
-
-  if (rc != SQLITE_OK)
-    throw std::runtime_error (std::string (sqlite3_errmsg (db)));
-
-  if (req != NULL)
-    sqlite3_finalize (req);
-  if (db != NULL)
-    sqlite3_close (db);
     
   return found ? p.register_ (p) : palette_white_black;
 }

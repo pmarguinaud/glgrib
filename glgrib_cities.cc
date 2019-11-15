@@ -1,10 +1,10 @@
 #include "glgrib_cities.h"
 #include "glgrib_resolve.h"
+#include "glgrib_sqlite.h"
 
 #include <iostream>
 #include <vector>
 #include <stdlib.h>
-#include <sqlite3.h>
 
 
 void glgrib_cities::setup (const glgrib_options_cities & o)
@@ -18,73 +18,41 @@ void glgrib_cities::setup (const glgrib_options_cities & o)
   std::vector<float> X, Y, Z, A;
   std::vector<std::string> Str;
 
+
+  glgrib_sqlite db (glgrib_resolve ("glgrib.db"));
+  glgrib_sqlite::stmt st;
+ 
+  st = db.prepare ("SELECT max (size) FROM CITIES;");
+
   float maxsize;
+  if (! st.fetch_row (&maxsize))
+    return;
 
-  sqlite3 * db = NULL;
-  sqlite3_stmt * req = NULL;
-  int rc;
+  st = db.prepare ("SELECT name, lon, lat, size FROM CITIES;");
 
-#define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
-
-  TRY (sqlite3_open (glgrib_resolve (std::string ("glgrib.db")).c_str (), &db));
-  TRY (sqlite3_prepare_v2 (db, "SELECT max (size) FROM CITIES;", -1, &req, 0));
-  if ((rc = sqlite3_step (req)) != SQLITE_ROW)
-    goto end;
-  rc = SQLITE_OK;
-  maxsize = sqlite3_column_double (req, 0);
-  sqlite3_finalize (req);
-  req = NULL;
-
-  TRY (sqlite3_prepare_v2 (db, "SELECT name, lon, lat, size FROM CITIES;", -1, &req, 0));
-
-  while (1)
+  float lon_, lat_;
+  int siz_;
+  std::string name;
+  while (st.fetch_row (&name, &lon_, &lat_, &siz_))
     {
-      rc = sqlite3_step (req);
-      switch (rc)
+      lon.push_back (lon_);
+      lat.push_back (lat_);
+      siz.push_back (log (siz_) / log (10.0));
+      if ((siz_ > 1000000) && (opts.labels.on))
         {
-          case SQLITE_ROW:
-            {
-              const char * name = (const char *)sqlite3_column_text (req, 0);
-	      float lon_ = sqlite3_column_double (req, 1);
-	      float lat_ = sqlite3_column_double (req, 2);
-	      float siz_ = sqlite3_column_int    (req, 3);
-              lon.push_back (lon_);
-              lat.push_back (lat_);
-              siz.push_back (log (siz_) / log (10.0));
-	      if ((siz_ > 1000000) && (opts.labels.on))
-                {
-			 
-                  Str.push_back (std::string (name));
-		  float coslon = cos (deg2rad * lon_), sinlon = sin (deg2rad * lon_);
-		  float coslat = cos (deg2rad * lat_), sinlat = sin (deg2rad * lat_);
-		  float x = coslon * coslat * opts.points.scale * 1.01;
-		  float y = sinlon * coslat * opts.points.scale * 1.01;
-		  float z =          sinlat * opts.points.scale * 1.01;
-		  X.push_back (x);
-		  Y.push_back (y);
-		  Z.push_back (z);
-		  A.push_back (0.0f);
-		}
-	      break;
-	    }
-	  case SQLITE_DONE:
-	    rc = SQLITE_OK;
-	  default:
-            goto end;
-	}
+          Str.push_back (std::string (name));
+          float coslon = cos (deg2rad * lon_), sinlon = sin (deg2rad * lon_);
+          float coslat = cos (deg2rad * lat_), sinlat = sin (deg2rad * lat_);
+          float x = coslon * coslat * opts.points.scale * 1.01;
+          float y = sinlon * coslat * opts.points.scale * 1.01;
+          float z =          sinlat * opts.points.scale * 1.01;
+          X.push_back (x);
+          Y.push_back (y);
+          Z.push_back (z);
+          A.push_back (0.0f);
+       }
     }
 
-#undef TRY
-
-end:
-
-  if (rc != SQLITE_OK)
-    throw std::runtime_error (std::string (sqlite3_errmsg (db)));
-
-  if (req != NULL)
-    sqlite3_finalize (req);
-  if (db != NULL)
-    sqlite3_close (db);
 
   glgrib_points::setup (opts.points, lon, lat, siz);
 

@@ -6,13 +6,13 @@
 #include "glgrib_field_contour.h"
 #include "glgrib_field_stream.h"
 #include "glgrib_resolve.h"
+#include "glgrib_sqlite.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
 #include <string>
 #include <algorithm>
-#include <sqlite3.h>
 
 void glgrib_field::setPaletteOptions (const glgrib_options_palette & o) 
 { 
@@ -70,69 +70,35 @@ void glgrib_field::getUserPref (glgrib_options_field * opts, glgrib_loader * ld)
   glgrib_options_field opts_sql = *opts;
   glgrib_options_field opts_ref;
   
-  char options[512];
   glgrib_field_metadata meta;
   ld->load (NULL, opts_sql.path, 0, &meta);
+
+  glgrib_sqlite db (glgrib_resolve ("glgrib.db"));
   
-  sqlite3 * db = NULL;
-  sqlite3_stmt * req = NULL;
-  int rc;
-#define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
-      
-  TRY (sqlite3_open (glgrib_resolve (std::string ("glgrib.db")).c_str (), &db));
-  
+  std::string options;
+
   if (meta.CLNOMA != "")
     {
-      TRY (sqlite3_prepare_v2 (db, "SELECT options FROM CLNOMA2OPTIONS WHERE CLNOMA = ?;", -1, &req, 0));
-      TRY (sqlite3_bind_text (req, 1, meta.CLNOMA.c_str (), strlen (meta.CLNOMA.c_str ()), NULL));
-      if ((rc = sqlite3_step (req)) == SQLITE_ROW)
-        goto step;
+      glgrib_sqlite::stmt st = db.prepare ("SELECT options FROM CLNOMA2OPTIONS WHERE CLNOMA = ?;");
+      st.bindall (&meta.CLNOMA);
+      if (st.fetch_row (&options))
+        goto found;
     }
+
   if ((meta.discipline != 255) && (meta.parameterCategory != 255) && (meta.parameterNumber != 255))
     {
-      TRY (sqlite3_prepare_v2 (db, "SELECT options FROM GRIB2OPTIONS WHERE discipline = ? "
-                                   "AND parameterCategory = ? AND parameterNumber = ?;", -1, 
-      		       &req, 0));
-  
-      TRY (sqlite3_bind_int (req, 1, meta.discipline));
-      TRY (sqlite3_bind_int (req, 2, meta.parameterCategory));
-      TRY (sqlite3_bind_int (req, 3, meta.parameterNumber));
-     
-      if ((rc = sqlite3_step (req)) == SQLITE_ROW)
-        goto step;
+      glgrib_sqlite::stmt st = db.prepare ("SELECT options FROM GRIB2OPTIONS WHERE discipline = ? "
+		                           "AND parameterCategory = ? AND parameterNumber = ?;");
+      st.bindall (&meta.discipline, &meta.parameterCategory, &meta.parameterNumber);
+      if (st.fetch_row (&options))
+        goto found;
     }
   
-  if (rc == SQLITE_DONE)
-    rc = SQLITE_OK;
-  
-  opts_sql = *opts;
-  
-  goto end;
-  
-  
-step:
-  
-  rc = SQLITE_OK;
-  
-  strncpy (options, (const char *)sqlite3_column_text (req, 0), sizeof (options));
-  
-  opts_sql.parse_unseen (options);
+  return;
+
+found:
+  opts_sql.parse_unseen (options.c_str ());
   opts_sql.path = opts->path;
-  
-end:
-  
-  if (rc != SQLITE_OK)
-    throw std::runtime_error (std::string (sqlite3_errmsg (db)));
-  
-  if (req != NULL)
-    sqlite3_finalize (req);
-  if (db != NULL)
-    sqlite3_close (db);
-      
-  
-#undef TRY
-
-
   *opts = opts_sql;
 }
 
@@ -178,54 +144,21 @@ void glgrib_field::saveOptions () const
   opts1.path.clear ();
   std::string options = opts1.asOption (opts2);
 
-  sqlite3 * db = NULL;
-  sqlite3_stmt * req = NULL;
-  int rc;
-#define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
-
-  TRY (sqlite3_open (glgrib_resolve (std::string ("glgrib.db")).c_str (), &db));
+  glgrib_sqlite db (glgrib_resolve ("glgrib.db"));
 
   if (meta[0].CLNOMA != "")
     {
-      TRY (sqlite3_prepare_v2 (db, "INSERT OR REPLACE INTO CLNOMA2OPTIONS (CLNOMA, options) VALUES (?, ?);", -1, &req, 0));
-      TRY (sqlite3_bind_text (req, 1, meta[0].CLNOMA.c_str (), strlen (meta[0].CLNOMA.c_str ()), NULL));
-      TRY (sqlite3_bind_text (req, 2, options.c_str (), strlen (options.c_str ()), NULL));
-      if ((rc = sqlite3_step (req)) != SQLITE_DONE)
-        goto end;
-      rc = SQLITE_OK;
+      glgrib_sqlite::stmt st = db.prepare ("INSERT OR REPLACE INTO CLNOMA2OPTIONS (CLNOMA, options) VALUES (?, ?);");
+      st.bindall (&meta[0].CLNOMA, &options);
+      st.execute ();
     }
   if ((meta[0].discipline != 255) && (meta[0].parameterCategory != 255) && (meta[0].parameterNumber != 255))
     {
-      TRY (sqlite3_prepare_v2 (db, "INSERT OR REPLACE INTO GRIB2OPTIONS (discipline, "
-                                   "parameterCategory, parameterNumber, options) VALUES (?, ?, ?, ?);", -1, 
-			       &req, 0));
-
-      TRY (sqlite3_bind_int (req, 1, meta[0].discipline));
-      TRY (sqlite3_bind_int (req, 2, meta[0].parameterCategory));
-      TRY (sqlite3_bind_int (req, 3, meta[0].parameterNumber));
-      TRY (sqlite3_bind_text (req, 4, options.c_str (), strlen (options.c_str ()), NULL));
-     
-      if ((rc = sqlite3_step (req)) != SQLITE_DONE)
-        goto end;
-      rc = SQLITE_OK;
+      glgrib_sqlite::stmt st = db.prepare ("INSERT OR REPLACE INTO GRIB2OPTIONS (discipline, "
+                                           "parameterCategory, parameterNumber, options) VALUES (?, ?, ?, ?);");
+      st.bindall (&meta[0].discipline, &meta[0].parameterCategory, &meta[0].parameterNumber, &options);
+      st.execute ();
     }
-
-  goto end;
-
-
-end:
-
-  if (rc != SQLITE_OK)
-    throw std::runtime_error (std::string (sqlite3_errmsg (db)));
-
-  if (req != NULL)
-    sqlite3_finalize (req);
-  if (db != NULL)
-    sqlite3_close (db);
-    
-
-#undef TRY
-
 
 }
 

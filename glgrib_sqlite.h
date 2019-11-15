@@ -7,76 +7,66 @@
 #include <list>
 #include <string.h>
 #include <exception>
+#include <memory>
 
 
 namespace glgrib_sqlite_detail
 {
-  static void ok (sqlite3 * db, int rc)
-  {
-    std::cout << " rc = " << rc << std::endl;
-    if (rc != SQLITE_OK)
-      throw std::runtime_error (std::string (sqlite3_errmsg (db)));
-  }
 
-  void iset (sqlite3 * db, sqlite3_stmt * req, int rank, int t) 
+  class _sqlite3
   {
-    ok (db, sqlite3_bind_int (req, 1 + rank, t));
-  }
+  public:
+    ~_sqlite3 () 
+    {
+      if (data != NULL)
+        sqlite3_close (data);
+      data = NULL;
+    }
+    sqlite3 * data = NULL;
+  };
 
-  void iset (sqlite3 * db, sqlite3_stmt * req, int rank, float t) 
+  typedef std::shared_ptr<_sqlite3> sqlite3_ptr;
+
+  class _sqlite3_stmt
   {
-    ok (db, sqlite3_bind_double (req, 1 + rank, t));
-  }
+  public:
+    ~_sqlite3_stmt () 
+    {
+      if (data != NULL)
+        sqlite3_finalize (data);
+      data = NULL;
+    }
+    sqlite3_stmt * data = NULL;
+  };
 
-  void iset (sqlite3 * db, sqlite3_stmt * req, int rank, char * t) 
-  {
-    const char * s = (const char *)t;
-    ok (db, sqlite3_bind_text (req, 1 + rank, s, strlen (s), NULL));
-  }
+  typedef std::shared_ptr<_sqlite3_stmt> sqlite3_stmt_ptr;
 
-  void iset (sqlite3 * db, sqlite3_stmt * req, int rank, std::string t) 
-  {
-    std::cout << " t = " << t << std::endl;
-    ok (db, sqlite3_bind_text (req, 1 + rank, t.c_str (), strlen (t.c_str ()), NULL));
-  }
+  void ok (sqlite3_ptr db, int rc);
 
-  static void iset_list (sqlite3 *, sqlite3_stmt *, int) {}
+  void iset (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, const long int * t);
+  void iset (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, const int * t);
+  void iset (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, const float * t);
+  void iset (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, const char * t);
+  void iset (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, const std::string * t);
+
+  void iset_list (sqlite3_ptr, sqlite3_stmt_ptr, int);
   template <typename T, typename... Types>
-  static void iset_list (sqlite3 * db, sqlite3_stmt * req, int rank, T t, Types... args)
+  void iset_list (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, const T & t, Types... args)
   {
     iset (db, req, rank, t);
     iset_list (db, req, rank + 1, args...);
   }
 
-  void oget (sqlite3 * db, sqlite3_stmt * req, int rank, int * t)
-  {
-    *t = sqlite3_column_int (req, rank);
-  }
+  void oget (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, int * t);
+  void oget (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, float * t);
+  void oget (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, char * t);
+  void oget (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, std::string * t);
 
-  void oget (sqlite3 * db, sqlite3_stmt * req, int rank, float * t)
-  {
-    *t = sqlite3_column_double (req, rank);
-  }
-
-  void oget (sqlite3 * db, sqlite3_stmt * req, int rank, char * t)
-  {
-    const char * str = (const char *)sqlite3_column_text (req, rank);
-    strcpy (t, str);
-  }
-
-  void oget (sqlite3 * db, sqlite3_stmt * req, int rank, std::string * t)
-  {
-    const char * str = (const char *)sqlite3_column_text (req, rank);
-    std::cout << " str = " << str << std::endl;
-    t->resize (strlen (str) + 1);
-    strcpy (&(*t)[0], str);
-  }
-
-  static void oget_list (sqlite3 *, sqlite3_stmt *, int) {}
+  void oget_list (sqlite3_ptr, sqlite3_stmt_ptr, int);
   template <typename T, typename... Types>
-  static void oget_list (sqlite3 * db, sqlite3_stmt * req, int rank, T t, Types... args)
+  void oget_list (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, T t, Types... args)
   {
-    if (rank >= sqlite3_column_count (req))
+    if (rank >= sqlite3_column_count (req->data))
       throw std::runtime_error (std::string ("Column out of bounds"));
     oget (db, req, rank, t);
     oget_list (db, req, rank + 1, args...);
@@ -88,74 +78,76 @@ class glgrib_sqlite
 {
 public:
 
+  typedef glgrib_sqlite_detail::sqlite3_ptr sqlite3_ptr;
+  typedef glgrib_sqlite_detail::sqlite3_stmt_ptr sqlite3_stmt_ptr;
+
   glgrib_sqlite (const std::string & file)
   {
-    int rc = sqlite3_open (file.c_str (), &db);
+    db = std::make_shared<glgrib_sqlite_detail::_sqlite3>();
+    if (sqlite3_open (file.c_str (), &db->data) != SQLITE_OK)
+      throw std::runtime_error (std::string ("Cannot open database ") + file);
   }
 
   class stmt
   {
   public:
+    
     stmt ()
     {
+      req = std::make_shared<glgrib_sqlite_detail::_sqlite3_stmt>();
     }
     ~stmt ()
     {
-      sqlite3_finalize (req);
     }
-  protected:
-    sqlite3_stmt * req = NULL;
-    void execute (sqlite3 * db)
+    void reset ()
     {
-      std::cout << "void execute ();" << std::endl;
+      glgrib_sqlite_detail::ok (db, sqlite3_reset (req->data));
     }
     template <typename... Types>
-    void execute (sqlite3 * db, Types... args)
+    void bindall (Types... args)
     {
-      std::cout << "template <typename... Types> void execute ();" << std::endl;
       glgrib_sqlite_detail::iset_list (db, req, 0, args...);
     }
     template <typename... Types>
-    bool fetch_row (sqlite3 * db, Types... args)
+    void execute (Types... args)
     {
-      int rc = sqlite3_step (req);
-      switch (rc)
+      bindall (args...);
+      sqlite3_step (req->data);
+    }
+    template <typename... Types>
+    bool fetch_row (Types... args)
+    {
+      if (sqlite3_step (req->data) == SQLITE_ROW)
         {
-          case SQLITE_ROW:
-            glgrib_sqlite_detail::oget_list (db, req, 0, args...);
-            return true;
-	  case SQLITE_DONE:
-	    return false;
+          glgrib_sqlite_detail::oget_list (db, req, 0, args...);
+          return true;
 	}
       return false;
     }
+    template <typename T>
+    void bind (int rank, const T * t)
+    {
+      if (rank >= sqlite3_bind_parameter_count (req->data))
+        throw std::runtime_error (std::string ("Column out of bounds"));
+      glgrib_sqlite_detail::iset (db, req, rank, t);
+    }
+protected:
+    sqlite3_stmt_ptr req;
+    sqlite3_ptr db;
     friend class glgrib_sqlite;
-  private:
   };
-
-  void execute (stmt * st)
-  {
-    st->execute (db);
-  }
-
-  template <typename... Types>
-  void execute (stmt * st, Types... args)
-  {
-    st->execute (db, args...);
-  }
-
-  template <typename... Types>
-  bool fetch_row (stmt * st, Types... args)
-  {
-    int rc;
-    return st->fetch_row (db, args...);
-  }
 
   stmt prepare (const std::string & sql)
   {
     stmt st;
-    int rc = sqlite3_prepare_v2 (db, sql.c_str (), -1, &st.req, 0);
+    st.db = db;
+    glgrib_sqlite_detail::ok (db, sqlite3_prepare_v2 (db->data, sql.c_str (), -1, &st.req->data, 0));
     return st;
+  }
+
+  void execute (const std::string & sql)
+  {
+    glgrib_sqlite_detail::ok (db, sqlite3_exec (db->data, sql.c_str (), 0, 0, 0));
   }
 
   ~glgrib_sqlite ()
@@ -163,15 +155,12 @@ public:
     close ();
   }
 
-  void close ()
+  void close () 
   {
-    if (db != NULL)
-      sqlite3_close (db);
-    db = NULL;
   }
 
 private:
-  sqlite3 * db = NULL;
+  sqlite3_ptr db;
 };
 
 

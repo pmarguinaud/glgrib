@@ -1,6 +1,6 @@
 #include "glgrib_dbase.h"
+#include "glgrib_sqlite.h"
 
-#include <sqlite3.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -75,23 +75,16 @@ bool glgrib_dbase::read (record_t * record)
 
 void glgrib_dbase::convert2sqlite (const std::string & path)
 {
-  struct stat st;
-  if (stat ((path + ".db").c_str (), &st) == 0)
+  struct stat sta;
+  if (stat ((path + ".db").c_str (), &sta) == 0)
     return;
 
   open (path);
 
-  char * errmsg;
-  record_t record;
+  glgrib_sqlite db (path + ".db");
   std::string sql;
-  sqlite3 * db = NULL;
-  sqlite3_stmt * req = NULL;
-  int rc;
+  record_t record;
 
-#define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
-
-  TRY (sqlite3_open ((path + ".db").c_str (), &db));
- 
   sql = "CREATE TABLE dbase (";
   for (int i = 0; i < fields.size (); i++)
     {
@@ -103,13 +96,9 @@ void glgrib_dbase::convert2sqlite (const std::string & path)
     }
   sql += ")";
 
-  if (sqlite3_exec (db, sql.c_str (), NULL, NULL, &errmsg) != SQLITE_OK)
-    {
-      throw std::runtime_error (std::string ("Cannot create table ") + std::string (errmsg));
-      goto end;
-    }
+  db.execute (sql);
 
-  TRY (sqlite3_exec (db, "BEGIN", 0, 0, 0));
+  db.execute ("BEGIN");
 
   sql = "INSERT INTO dbase VALUES (";
   for (int i = 0; i < fields.size (); i++)
@@ -120,32 +109,19 @@ void glgrib_dbase::convert2sqlite (const std::string & path)
     }
   sql += ")";
 
-  TRY (sqlite3_prepare_v2 (db, sql.c_str (), -1, &req, 0));
+  glgrib_sqlite::stmt st = db.prepare (sql);
 
   while (read (&record))
     {
       for (int i = 0; i < fields.size (); i++)
-        TRY (sqlite3_bind_text  (req, i+1, record[i].c_str (), record[i].length (), NULL));
-      if ((rc = sqlite3_step (req)) != SQLITE_DONE)
-        goto end;
-      TRY (sqlite3_reset (req));
+        st.bind (i, &record[i]);
+      st.execute ();
+      st.reset ();
     }
 
-  TRY (sqlite3_exec (db, "COMMIT", 0, 0, 0));
+  db.execute ("COMMIT");
 
   close ();
-
-#undef TRY
-
-end:
-
-  if (rc != SQLITE_OK)
-    throw std::runtime_error (std::string (sqlite3_errmsg (db)));
-
-  if (req != NULL)
-    sqlite3_finalize (req);
-  if (db != NULL)
-    sqlite3_close (db);
 
 }
 

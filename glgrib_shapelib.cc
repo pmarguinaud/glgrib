@@ -1,13 +1,13 @@
 #include "glgrib_shapelib.h"
 #include "glgrib_dbase.h"
 #include "glgrib_resolve.h"
+#include "glgrib_sqlite.h"
 
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
 #include <shapefil.h>
-#include <sqlite3.h>
 
 
 #include <stdexcept>
@@ -47,36 +47,13 @@ void glgrib_shapelib::read (const glgrib_options_lines & opts, int * numberOfPoi
     {
       std::string sql = "SELECT rowid FROM dbase WHERE " + selector + ";";
 
-      sqlite3 * db = NULL;
-      sqlite3_stmt * req = NULL;
-      int rc;
+      glgrib_sqlite db (path + ".db");
+      glgrib_sqlite::stmt st = db.prepare (sql);
 
-#define TRY(expr) do { if ((rc = expr) != SQLITE_OK) goto end; } while (0)
-      TRY (sqlite3_open ((path + ".db").c_str (), &db));
-      TRY (sqlite3_prepare_v2 (db, sql.c_str (), -1, &req, 0));
+      int k;
+      while (st.fetch_row (&k))
+        list.push_back (k-1);
 
-      while (1)
-        {
-          rc = sqlite3_step (req);
-          switch (rc)
-	    {
-              case SQLITE_ROW:
-                list.push_back (sqlite3_column_int (req, 0)-1);
-              break;
-	      case SQLITE_DONE:
-	        rc = SQLITE_OK;
-              default:
-	        goto end;
-	    }
-	}
-end:
-      if (rc != SQLITE_OK)
-        throw std::runtime_error (std::string (sqlite3_errmsg (db)));
-      if (req != NULL)
-        sqlite3_finalize (req);
-      if (db != NULL)
-        sqlite3_close (db);
-#undef TRY
     }
   else
     {

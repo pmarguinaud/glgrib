@@ -18,111 +18,68 @@ namespace glgrib_sqlite_detail
       throw std::runtime_error (std::string (sqlite3_errmsg (db)));
   }
 
-  class stmt_ivar_base
+  void iset (sqlite3 * db, sqlite3_stmt * req, int rank, int t) 
   {
-  public:
-  virtual void bind (sqlite3 *, sqlite3_stmt *, int) = 0;
-  };
-
-
-  template <typename T>
-  class stmt_ivar : public stmt_ivar_base
-  {
-  public:
-  stmt_ivar (T _t) : t (_t) { }
-  virtual void bind (sqlite3 *, sqlite3_stmt *, int) 
-  {  
-    std::cout << "template <typename T> void stmt_ivar::bind" << std::endl;
-  }
-  private:
-  T t;
-  };
-
-  template <> void stmt_ivar<int*>::bind (sqlite3 * db, sqlite3_stmt * req, int rank) 
-  {
-    ok (db, sqlite3_bind_int (req, 1 + rank, *t));
+    ok (db, sqlite3_bind_int (req, 1 + rank, t));
   }
 
-  template <> void stmt_ivar<float*>::bind (sqlite3 * db, sqlite3_stmt * req, int rank) 
+  void iset (sqlite3 * db, sqlite3_stmt * req, int rank, float t) 
   {
-    ok (db, sqlite3_bind_double (req, 1 + rank, *t));
+    ok (db, sqlite3_bind_double (req, 1 + rank, t));
   }
 
-  template <> void stmt_ivar<char**>::bind (sqlite3 * db, sqlite3_stmt * req, int rank) 
+  void iset (sqlite3 * db, sqlite3_stmt * req, int rank, char * t) 
   {
-    const char * s = (const char *)(*t);
+    const char * s = (const char *)t;
     ok (db, sqlite3_bind_text (req, 1 + rank, s, strlen (s), NULL));
   }
 
-  template <> void stmt_ivar<std::string*>::bind (sqlite3 * db, sqlite3_stmt * req, int rank) 
+  void iset (sqlite3 * db, sqlite3_stmt * req, int rank, std::string t) 
   {
-    ok (db, sqlite3_bind_text (req, 1 + rank, t->c_str (), strlen (t->c_str ()), NULL));
+    ok (db, sqlite3_bind_text (req, 1 + rank, t.c_str (), strlen (t.c_str ()), NULL));
   }
 
-  static void ibuild_list (std::list<stmt_ivar_base*> *)
-  {
-  }
-
+  static void iset_list (sqlite3 *, sqlite3_stmt *, int) {}
   template <typename T, typename... Types>
-  static void ibuild_list (std::list<stmt_ivar_base*> * list, T t, Types... args)
+  static void iset_list (sqlite3 * db, sqlite3_stmt * req, int rank, T t, Types... args)
   {
-    stmt_ivar<T> * st = new stmt_ivar<T> (t);
-    list->push_back (st);
-    ibuild_list (list, args...);
+    iset (db, req, rank, t);
+    iset_list (db, req, rank + 1, args...);
   }
 
-  class stmt_ovar_base
+  void oget (sqlite3 * db, sqlite3_stmt * req, int rank, int * t)
   {
-  public:
-  virtual void bind (sqlite3 *, sqlite3_stmt *, int) = 0;
-  };
-
-
-  template <typename T>
-  class stmt_ovar : public stmt_ovar_base
-  {
-  public:
-  stmt_ovar (T _t) : t (_t) { }
-  virtual void bind (sqlite3 *, sqlite3_stmt *, int) 
-  {  
-    std::cout << "template <typename T> void stmt_ovar::bind" << std::endl;
-  }
-  private:
-  T t;
-  };
-
-  template <> void stmt_ovar<int*>::bind (sqlite3 * db, sqlite3_stmt * req, int rank) 
-  {
-    ok (db, sqlite3_bind_int (req, 1 + rank, *t));
+    *t = sqlite3_column_int (req, rank);
   }
 
-  template <> void stmt_ovar<float*>::bind (sqlite3 * db, sqlite3_stmt * req, int rank) 
+  void oget (sqlite3 * db, sqlite3_stmt * req, int rank, float * t)
   {
-    ok (db, sqlite3_bind_double (req, 1 + rank, *t));
+    *t = sqlite3_column_double (req, rank);
   }
 
-  template <> void stmt_ovar<char**>::bind (sqlite3 * db, sqlite3_stmt * req, int rank) 
+  void oget (sqlite3 * db, sqlite3_stmt * req, int rank, char * t)
   {
-    const char * s = (const char *)(*t);
-    ok (db, sqlite3_bind_text (req, 1 + rank, s, strlen (s), NULL));
+    const char * str = (const char *)sqlite3_column_text (req, rank);
+    strcpy (t, str);
   }
 
-  template <> void stmt_ovar<std::string*>::bind (sqlite3 * db, sqlite3_stmt * req, int rank) 
+  void oget (sqlite3 * db, sqlite3_stmt * req, int rank, std::string * t)
   {
-    ok (db, sqlite3_bind_text (req, 1 + rank, t->c_str (), strlen (t->c_str ()), NULL));
+    const char * str = (const char *)sqlite3_column_text (req, rank);
+    t->resize (strlen (str) + 1);
+    strcpy (&(*t)[0], str);
   }
 
-  static void obuild_list (std::list<stmt_ovar_base*> *)
-  {
-  }
-
+  static void oget_list (sqlite3 *, sqlite3_stmt *, int) {}
   template <typename T, typename... Types>
-  static void obuild_list (std::list<stmt_ovar_base*> * list, T t, Types... args)
+  static void oget_list (sqlite3 * db, sqlite3_stmt * req, int rank, T t, Types... args)
   {
-    stmt_ovar<T> * st = new stmt_ovar<T> (t);
-    list->push_back (st);
-    obuild_list (list, args...);
+    if (rank >= sqlite3_column_count (req))
+      throw std::runtime_error (std::string ("Column out of bounds"));
+    oget (db, req, rank, t);
+    oget_list (db, req, rank + 1, args...);
   }
+
 };
 
 class glgrib_sqlite
@@ -140,52 +97,30 @@ public:
     stmt ()
     {
     }
-    template <typename... Types>
-    void ibind (Types... args)
-    {
-      for (std::list<glgrib_sqlite_detail::stmt_ivar_base*>::iterator it = ilist.begin (); it != ilist.end (); it++)
-        delete *it;
-      ilist.clear ();
-      glgrib_sqlite_detail::ibuild_list (&ilist, args...);
-    }
-    template <typename... Types>
-    void obind (Types... args)
-    {
-      for (std::list<glgrib_sqlite_detail::stmt_ovar_base*>::iterator it = olist.begin (); it != olist.end (); it++)
-        delete *it;
-      olist.clear ();
-      glgrib_sqlite_detail::obuild_list (&olist, args...);
-    }
     ~stmt ()
     {
-      for (std::list<glgrib_sqlite_detail::stmt_ivar_base*>::iterator it = ilist.begin (); it != ilist.end (); it++)
-        delete *it;
-      for (std::list<glgrib_sqlite_detail::stmt_ovar_base*>::iterator it = olist.begin (); it != olist.end (); it++)
-        delete *it;
       sqlite3_finalize (req);
     }
   protected:
     sqlite3_stmt * req = NULL;
     void execute (sqlite3 * db)
     {
-      int rank;
-      rank = 0;
-      for (std::list<glgrib_sqlite_detail::stmt_ivar_base*>::iterator it = ilist.begin (); 
-           it != ilist.end (); it++, rank++)
-        (*it)->bind (db, req, rank);
+      std::cout << "void execute ();" << std::endl;
     }
-    bool fetch_row (sqlite3 *db)
+    template <typename... Types>
+    void execute (sqlite3 * db, Types... args)
+    {
+      std::cout << "template <typename... Types> void execute ();" << std::endl;
+      glgrib_sqlite_detail::iset_list (db, req, 0, args...);
+    }
+    template <typename... Types>
+    bool fetch_row (sqlite3 * db, Types... args)
     {
       int rc = sqlite3_step (req);
       switch (rc)
         {
           case SQLITE_ROW:
-            {
-              int rank = 0;
-              for (std::list<glgrib_sqlite_detail::stmt_ovar_base*>::iterator it = olist.begin (); 
-                   it != olist.end (); it++, rank++)
-                (*it)->bind (db, req, rank);
-	    }
+            glgrib_sqlite_detail::oget_list (db, req, 0, args...);
             return true;
 	  case SQLITE_DONE:
 	    return false;
@@ -194,8 +129,6 @@ public:
     }
     friend class glgrib_sqlite;
   private:
-    std::list<glgrib_sqlite_detail::stmt_ivar_base*> ilist;
-    std::list<glgrib_sqlite_detail::stmt_ovar_base*> olist;
   };
 
   void execute (stmt * st)
@@ -203,10 +136,17 @@ public:
     st->execute (db);
   }
 
-  bool fetch_row (stmt * st)
+  template <typename... Types>
+  void execute (stmt * st, Types... args)
+  {
+    st->execute (db, args...);
+  }
+
+  template <typename... Types>
+  bool fetch_row (stmt * st, Types... args)
   {
     int rc;
-    return st->fetch_row (db);
+    return st->fetch_row (db, args...);
   }
 
   stmt prepare (const std::string & sql)

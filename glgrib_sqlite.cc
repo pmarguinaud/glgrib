@@ -10,8 +10,10 @@ int main (int argc, char * argv[])
   char tmp[32];
   int k;
   glgrib_sqlite::stmt st = db.prepare ("SELECT CLNOMA, OPTIONS FROM CLNOMA2OPTIONS WHERE CLNOMA = ?;");
-  st.ibind (&CLNOMA);
-  st.obind (&CLNOMB, &OPTIONS);
-  db.execute (&st);
+  db.execute (&st, CLNOMA);
+  db.fetch_row (&st, &CLNOMB, &OPTIONS);
+
+  std::cout << " CLNOMB  = >" << CLNOMB  << "<" << std::endl;
+  std::cout << " OPTIONS = >" << OPTIONS << "<" << std::endl;
   return 0;
 }

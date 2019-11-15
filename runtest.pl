@@ -85,7 +85,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
   "Low-res simple contour, limited area lat/lon geometry            " ,  contour_latlon1     => '--window.width 1024 --window.height 1024 --landscape.on --landscape.path landscape/black.bmp --field[0].path testdata/contour/latlon9x6.grb --field[0].scale 1.03 --field[0].type CONTOUR',
   "Low-res simple contour, limited area lat/lon geometry            " ,  contour_latlon2     => '--window.width 1024 --window.height 1024 --landscape.on --landscape.path landscape/black.bmp --field[0].path testdata/contour/latlon18x13.grb --field[0].scale 1.03 --field[0].type CONTOUR',
   "Medium-res contour, limited area lat/lon geometry                " ,  contour_latlon3     => '--window.width 1024 --window.height 1024 --landscape.on --landscape.path landscape/black.bmp --field[0].path testdata/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --field[0].scale 1.03 --field[0].type CONTOUR',
-  "Medium-res contour and raster, global geometry                   " ,  contour_latlon4     => '--window.width 1024 --window.height 1024 --field[0].path testdata/glob025/lfpw_0_0_0_pl_1000_t.grib2 --field[1].path testdata/glob025/lfpw_0_0_0_pl_1000_t.grib2 --field[1].palette.name cold_hot --field[1].type CONTOUR',
+  "Medium-res contour and raster, global geometry                   " ,  contour_latlon4     => '--window.width 1024 --window.height 1024 --field[0].path testdata/glob025/lfpw_0_0_0_pl_1000_t.grib2 --field[1].path testdata/glob025/lfpw_0_0_0_pl_1000_t.grib2 --field[1].palette.colors black --field[1].type CONTOUR --field[1].scale 1.001',
   "Contour on stretched/rotated gaussian geometry                   " ,  contour_stretched   => '--window.width 1024 --window.height 1024 --field[0].path testdata/t1198c2.2/Z.grb --field[0].scale 1.03 --field[0].type CONTOUR',
   "Contour with dashed lines, gaussian geometry                     " ,  dashed1             => '--landscape.on --landscape.orography 0 --landscape.wireframe.on --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field[0].palette.colors white --field[0].path testdata/contour/t0479.grb --field[0].scale 1.00 --field[0].type CONTOUR --field[0].contour.lengths 100 --field[0].contour.patterns X- --view.fov 5',
   "Contour with dashed thick lines, gaussian geometry               " ,  dashed2             => '--landscape.on --landscape.orography 0 --landscape.wireframe.on --landscape.geometry testdata/contour/t0479.grb --window.width 1024 --window.height 1024 --field[0].palette.colors white --field[0].path testdata/contour/t0479.grb --field[0].scale 1.01 --field[0].type CONTOUR --field[0].contour.lengths 100 --field[0].contour.patterns XXXXXXXXX-X- --view.fov 5 --field[0].contour.widths 5',
@@ -209,7 +209,7 @@ for my $name (@name)
             my $new = "test.run/$name/$png";
             my $thumb = "test.run/$name/thumb_$png";
             rename ($png, $new);
-            system ('convert', -geometry => 300, $new, $thumb);
+#           system ('convert', -geometry => 300, $new, $thumb);
             my $ref = "test.ref/$name/$png";
             my $dif = "test.run/$name/diff_$png";
             if ((-f $ref) && ($comp))

@@ -681,7 +681,6 @@ void glgrib_window::framebuffer (const std::string & format)
 void glgrib_window::display_cursor_position (double xpos, double ypos)
 {
   float lat, lon;
-  std::cout << " xpos = " << xpos << " ypos = " << ypos << std::endl;
   if (get_latlon_from_cursor (&lat, &lon))
     {
       std::string title_;

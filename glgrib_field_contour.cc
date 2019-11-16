@@ -94,6 +94,64 @@ void glgrib_field_contour::setupVertexAttributes ()
     }
 }
 
+static void findHiLo (glgrib_field_float_buffer_ptr data, const_glgrib_geometry_ptr geometry)
+{
+  const int nt = geometry->numberOfTriangles;
+  float * tval = new float[nt];
+  const float * vval = data->data ();
+
+#pragma omp parallel for
+  for (int it = 0; it < nt; it++)
+    {
+      int jglo[3];
+      geometry->getTriangleVertices (it, jglo);
+      tval[it] = (vval[jglo[0]] 
+                + vval[jglo[1]] 
+                + vval[jglo[2]]) / 3.0f;
+    }
+
+  const int N = 16;
+
+  int nlo = 0, nhi = 0;
+//#pragma omp parallel for
+  for (int j = 0; j < N; j++)
+    {
+      int it0 = (nt * (j + 0)) / N;
+      int it1 = (nt * (j + 1)) / N;
+      for (int it = it0; it < it1; it++)
+        {
+          int jglo[3], itri[3]; glm::vec3 xyz[3];
+          geometry->getTriangleNeighbours (it, jglo, itri, xyz);
+          bool hi = true, lo = true;
+          for (int i = 0; i < 3; i++)
+            {
+              if (itri[i] < 0)
+                continue;
+              hi = hi && (tval[itri[i]] < tval[it]);
+              lo = lo && (tval[itri[i]] > tval[it]);
+            }
+          if (hi)
+            nhi++;
+          if (lo)
+            nlo++;
+          if (lo || hi)
+            {
+              const float rad2deg = 1.0f; //180.0f / M_PI;
+              glm::vec3 pos = glm::normalize ((xyz[0] + xyz[1] + xyz[2]) / 3.0f);
+              glm::vec2 latlon = geometry->conformal2latlon (geometry->xyz2conformal (pos));
+
+              if (lo) std::cout << " lo = " << rad2deg * latlon.x << " " << rad2deg * latlon.y << std::endl;
+              if (hi) std::cout << " hi = " << rad2deg * latlon.x << " " << rad2deg * latlon.y << std::endl;
+ 
+            }
+        }
+    }
+  std::cout << " np  = " << geometry->numberOfPoints << std::endl;
+  std::cout << " nhi = " << nhi << std::endl;
+  std::cout << " nlo = " << nlo << std::endl;
+  delete [] tval;
+}
+
 void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field & o, float slot)
 {
   opts = o;
@@ -106,6 +164,8 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
   palette = glgrib_palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
 
   geometry = glgrib_geometry_load (ld, opts.path[0]);
+
+  findHiLo (data, geometry);
 
   numberOfColors = 1;
 

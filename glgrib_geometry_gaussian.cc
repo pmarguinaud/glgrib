@@ -135,8 +135,8 @@ const double glgrib_geometry_gaussian::deg2rad = M_PI / 180.0;
 
 static 
 void compute_trigauss (const long int Nj, const std::vector<long int> pl, unsigned int * ind, 
-                       unsigned int * ind_strip, const int nstripe, const int * indcnt, 
-		       const int * ind_stripcnt, int * triu, int * trid)
+                       const int nstripe, const int * indcnt, 
+		       int * triu, int * trid)
 {
   int iglooff[Nj];
   int indcntoff[nstripe];
@@ -349,9 +349,8 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
 {
   codes_handle * h = ghp ? ghp->getCodesHandle () : NULL;
   std::vector<float> xyz;
-  const int nstripe = 8;
+  const int nstripe = 16;
   int indcnt[nstripe];
-  int ind_stripcnt[nstripe];
 
 
   bool orog = (orography > 0.0f) && (h != NULL);
@@ -382,11 +381,6 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
       indcnt[istripe] = 0;
       for (int jlat = jlat1; jlat <= jlat2; jlat++)
         indcnt[istripe] += pl[jlat-1] + pl[jlat];
-      ind_stripcnt[istripe] = 0;
-      for (int jlat = jlat1; jlat <= jlat2; jlat++)
-        ind_stripcnt[istripe] += pl[jlat-1] + pl[jlat]
-                               + 4 * (2 + abs (pl[jlat-1] - pl[jlat]));
-      ind_strip_size += ind_stripcnt[istripe];
     }
 
   ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
@@ -394,7 +388,7 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
   triu = (int *)malloc (numberOfPoints * sizeof (int));
   trid = (int *)malloc (numberOfPoints * sizeof (int));
   // Generation of triangles
-  compute_trigauss (Nj, pl, ind, ind_strip, nstripe, indcnt, ind_stripcnt, triu, trid);
+  compute_trigauss (Nj, pl, ind, nstripe, indcnt, triu, trid);
 
   latgauss = (double *)malloc (Nj * sizeof (double));
   // Compute Gaussian latitudes

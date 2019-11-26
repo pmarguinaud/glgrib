@@ -1,21 +1,17 @@
-Make shell usable
 Try intel gpu tools
-Write text with X11
-Use opts in scene
 Change names like toggle_transform_type into toggleTransformType
 Make a view below field and above ground, with XYZ movement
-on/off options
 Accessors for scene
 Better container than fieldlist
 Make geometry member of glgrib_world protected
-
-Diff mode
-For each field, create a "mode" option (=scalar, contour, arrows)
-Move palette definitions in sqlite3 database
 Add [] operator to glgrib_field_float_buffer_ptr
-
-Setup font with options
-
 Window shell with $
+Optimisations : 
+- use mapped buffers
+- triangle strip
+- use lat/lon
+- use compressed lat/lon
+- reduce CPU usage
+- use loader for geometry
+- parallelisme sur les latitudes (gauss)
 
-MAKE SQLITE3 connection an object

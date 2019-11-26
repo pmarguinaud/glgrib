@@ -135,7 +135,8 @@ const double glgrib_geometry_gaussian::deg2rad = M_PI / 180.0;
 
 static 
 void compute_trigauss (const long int Nj, const std::vector<long int> pl, unsigned int * ind, 
-                       const int nstripe, const int * indcnt, int * triu, int * trid)
+                       unsigned int * ind_strip, const int nstripe, const int * indcnt, 
+		       const int * ind_stripcnt, int * triu, int * trid)
 {
   int iglooff[Nj];
   int indcntoff[nstripe];
@@ -349,7 +350,9 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
   codes_handle * h = ghp ? ghp->getCodesHandle () : NULL;
   std::vector<float> xyz;
   const int nstripe = 8;
-  int indoff[nstripe];
+  int indcnt[nstripe];
+  int ind_stripcnt[nstripe];
+
 
   bool orog = (orography > 0.0f) && (h != NULL);
 
@@ -371,20 +374,27 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
     numberOfTriangles += pl[jlat-1] + pl[jlat];
   
   // Compute number of triangles per stripe
+  ind_strip_size = 0;
   for (int istripe = 0; istripe < nstripe; istripe++)
     {
       int jlat1 = 1 + ((istripe + 0) * (Nj-1)) / nstripe;
       int jlat2 = 0 + ((istripe + 1) * (Nj-1)) / nstripe;
-      indoff[istripe] = 0;
+      indcnt[istripe] = 0;
       for (int jlat = jlat1; jlat <= jlat2; jlat++)
-        indoff[istripe] += pl[jlat-1] + pl[jlat];
+        indcnt[istripe] += pl[jlat-1] + pl[jlat];
+      ind_stripcnt[istripe] = 0;
+      for (int jlat = jlat1; jlat <= jlat2; jlat++)
+        ind_stripcnt[istripe] += pl[jlat-1] + pl[jlat]
+                               + 4 * (2 + abs (pl[jlat-1] - pl[jlat]));
+      ind_strip_size += ind_stripcnt[istripe];
     }
 
   ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
+  unsigned int * ind_strip = (unsigned int *)malloc (ind_strip_size * sizeof (unsigned int));
   triu = (int *)malloc (numberOfPoints * sizeof (int));
   trid = (int *)malloc (numberOfPoints * sizeof (int));
   // Generation of triangles
-  compute_trigauss (Nj, pl, ind, nstripe, indoff, triu, trid);
+  compute_trigauss (Nj, pl, ind, ind_strip, nstripe, indcnt, ind_stripcnt, triu, trid);
 
   latgauss = (double *)malloc (Nj * sizeof (double));
   // Compute Gaussian latitudes

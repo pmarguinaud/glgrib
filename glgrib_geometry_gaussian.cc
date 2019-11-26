@@ -135,19 +135,13 @@ const double glgrib_geometry_gaussian::deg2rad = M_PI / 180.0;
 
 static 
 void compute_trigauss (const long int Nj, const std::vector<long int> pl, unsigned int * ind, 
-                       const int nstripe, const int * indcnt, 
-		       int * triu, int * trid)
+                       const int indoff[], const int indcnt[], int triu[], int trid[])
 {
   int iglooff[Nj];
-  int indcntoff[nstripe];
 
   iglooff[0] = 0;
   for (int jlat = 2; jlat <= Nj; jlat++)
     iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
-
-  indcntoff[0] = 0;
-  for (int istripe = 1; istripe < nstripe; istripe++)
-    indcntoff[istripe] = indcntoff[istripe-1] + indcnt[istripe-1];
 
   // No triangles above
   if (triu)
@@ -160,48 +154,44 @@ void compute_trigauss (const long int Nj, const std::vector<long int> pl, unsign
       trid[iglooff[Nj-1]+jlon-1] = -1;
   
 #pragma omp parallel for 
-  for (int istripe = 0; istripe < nstripe; istripe++)
+  for (int jlat = 1; jlat <= Nj-1; jlat++)
     {
-      int jlat1 = 1 + ((istripe + 0) * (Nj-1)) / nstripe;
-      int jlat2 = 0 + ((istripe + 1) * (Nj-1)) / nstripe;
-      int ik = 3 * indcntoff[istripe];
+      int ik = 3 * indoff[jlat-1];
 
-      for (int jlat = jlat1; jlat <= jlat2; jlat++)
+      int iloen1 = pl[jlat - 1];
+      int iloen2 = pl[jlat + 0];
+      int jglooff1 = iglooff[jlat-1] + 0;
+      int jglooff2 = iglooff[jlat-1] + iloen1;
+     
+     
+      if (iloen1 == iloen2) 
         {
-          int iloen1 = pl[jlat - 1];
-          int iloen2 = pl[jlat + 0];
-          int jglooff1 = iglooff[jlat-1] + 0;
-          int jglooff2 = iglooff[jlat-1] + iloen1;
-     
-     
-          if (iloen1 == iloen2) 
+          for (int jlon1 = 1; jlon1 <= iloen1; jlon1++)
             {
-              for (int jlon1 = 1; jlon1 <= iloen1; jlon1++)
-                {
-                  int jlon2 = jlon1;
-                  int ica = jglooff1 + jlon1;
-                  int icb = jglooff2 + jlon2;
-                  int icc = jglooff2 + JNEXT (jlon2, iloen2);
-                  int icd = jglooff1 + JNEXT (jlon1, iloen1);
-                  if (triu)
-                    triu[icb-1] = ik / 3;
-                  PRINT (ica, icb, icc);
-                  if (trid) 
-                    trid[ica-1] = ik / 3;
-                  PRINT (ica, icc, icd);
-                }
+              int jlon2 = jlon1;
+              int ica = jglooff1 + jlon1;
+              int icb = jglooff2 + jlon2;
+              int icc = jglooff2 + JNEXT (jlon2, iloen2);
+              int icd = jglooff1 + JNEXT (jlon1, iloen1);
+              if (triu)
+                triu[icb-1] = ik / 3;
+              PRINT (ica, icb, icc);
+              if (trid) 
+                trid[ica-1] = ik / 3;
+              PRINT (ica, icc, icd);
             }
-          else 
+        }
+      else 
+        {
+          int jlon1 = 1;
+          int jlon2 = 1;
+          bool turn = false;
+          while (1)
             {
-              int jlon1 = 1;
-              int jlon2 = 1;
-              bool turn = false;
-              while (1)
-                {
-                  int ica = 0, icb = 0, icc = 0;
+              int ica = 0, icb = 0, icc = 0;
 
-                  int jlon1n = JNEXT (jlon1, iloen1);
-                  int jlon2n = JNEXT (jlon2, iloen2);
+              int jlon1n = JNEXT (jlon1, iloen1);
+              int jlon2n = JNEXT (jlon2, iloen2);
 
 #define AV1 \
   do {                                                                        \
@@ -219,51 +209,50 @@ void compute_trigauss (const long int Nj, const std::vector<long int> pl, unsign
     turn = turn || jlon2 == 1;                                                \
   } while (0)
 
-                  int idlonc = JDLON (jlon1, jlon2);
-                  int idlonn;
-		  if ((jlon1n == 1) && (jlon2n != 1))
-                    idlonn = +1;
-		  else if ((jlon1n != 1) && (jlon2n == 1))
-                    idlonn = -1;
-		  else 
-                    idlonn = JDLON (jlon1n, jlon2n);
+              int idlonc = JDLON (jlon1, jlon2);
+              int idlonn;
+	      if ((jlon1n == 1) && (jlon2n != 1))
+                idlonn = +1;
+	      else if ((jlon1n != 1) && (jlon2n == 1))
+                idlonn = -1;
+	      else 
+                idlonn = JDLON (jlon1n, jlon2n);
 
-                  if (idlonn > 0 || ((idlonn == 0) && (idlonc > 0)))
-                    AV2;
-                  else if (idlonn < 0 || ((idlonn == 0) && (idlonc < 0))) 
-                    AV1;
-                  else
-                    abort ();
+              if (idlonn > 0 || ((idlonn == 0) && (idlonc > 0)))
+                AV2;
+              else if (idlonn < 0 || ((idlonn == 0) && (idlonc < 0))) 
+                AV1;
+              else
+                abort ();
+         
+              PRINT (ica, icb, icc);
              
-                  PRINT (ica, icb, icc);
-                 
-                  if (turn)
-                    {
-                      if (jlon1 == 1)
-                        while (jlon2 != 1)
-                          {
-                            int jlon2n = JNEXT (jlon2, iloen2);
-                            AV2;
-                            PRINT (ica, icb, icc);
-                          }
-                      else if (jlon2 == 1)
-                        while (jlon1 != 1)
-                          {
-                            int jlon1n = JNEXT (jlon1, iloen1);
-                            AV1;
-                           PRINT (ica, icb, icc);
-                          }
-                      break;
-                    }
+              if (turn)
+                {
+                  if (jlon1 == 1)
+                    while (jlon2 != 1)
+                      {
+                        int jlon2n = JNEXT (jlon2, iloen2);
+                        AV2;
+                        PRINT (ica, icb, icc);
+                      }
+                  else if (jlon2 == 1)
+                    while (jlon1 != 1)
+                      {
+                        int jlon1n = JNEXT (jlon1, iloen1);
+                        AV1;
+                       PRINT (ica, icb, icc);
+                      }
+                  break;
+                }
 
      
       
-                }
-         
-         
             }
-
+        
+        
         }
+
 
     }
 
@@ -349,8 +338,6 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
 {
   codes_handle * h = ghp ? ghp->getCodesHandle () : NULL;
   std::vector<float> xyz;
-  const int nstripe = 16;
-  int indcnt[nstripe];
 
 
   bool orog = (orography > 0.0f) && (h != NULL);
@@ -372,15 +359,16 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
   for (int jlat = 1; jlat < Nj; jlat++)
     numberOfTriangles += pl[jlat-1] + pl[jlat];
   
-  // Compute number of triangles per stripe
-  ind_strip_size = 0;
-  for (int istripe = 0; istripe < nstripe; istripe++)
+  int * indcnt = new int[Nj];
+  int * indoff = new int[Nj];
+  // Compute number of triangles per latitude
+  indoff[0] = 0;
+  for (int jlat = 1; jlat <= Nj; jlat++)
     {
-      int jlat1 = 1 + ((istripe + 0) * (Nj-1)) / nstripe;
-      int jlat2 = 0 + ((istripe + 1) * (Nj-1)) / nstripe;
-      indcnt[istripe] = 0;
-      for (int jlat = jlat1; jlat <= jlat2; jlat++)
-        indcnt[istripe] += pl[jlat-1] + pl[jlat];
+      if (jlat < Nj)
+        indcnt[jlat-1] = pl[jlat-1] + pl[jlat];
+      if (jlat > 1)
+        indoff[jlat-1] = indoff[jlat-2] + indcnt[jlat-2];
     }
 
   ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
@@ -388,7 +376,10 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
   triu = (int *)malloc (numberOfPoints * sizeof (int));
   trid = (int *)malloc (numberOfPoints * sizeof (int));
   // Generation of triangles
-  compute_trigauss (Nj, pl, ind, nstripe, indcnt, triu, trid);
+  compute_trigauss (Nj, pl, ind, indoff, indcnt, triu, trid);
+
+  delete [] indcnt;
+  delete [] indoff;
 
   latgauss = (double *)malloc (Nj * sizeof (double));
   // Compute Gaussian latitudes

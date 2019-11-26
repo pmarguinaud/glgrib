@@ -13,5 +13,4 @@ Optimisations :
 - use compressed lat/lon
 - reduce CPU usage
 - use loader for geometry
-- parallelisme sur les latitudes (gauss)
 

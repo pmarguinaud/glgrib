@@ -125,8 +125,185 @@ const double glgrib_geometry_gaussian::deg2rad = M_PI / 180.0;
 
 #define MODULO(x, y) ((x)%(y))
 #define JDLON(JLON1, JLON2) (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1))
-#define JNEXT(JLON, ILOEN) (1 + MODULO ((JLON), (ILOEN)))
+#define JNEXT(JLON, ILOEN) ((JLON) == (ILOEN) ? 1 : (JLON)+1)
+#define JPREV(JLON, ILOEN) ((JLON)-1 > 0 ? (JLON)-1 : (ILOEN))
 
+static 
+void process_lat (int jlat, int iloen1, int iloen2, 
+                  int jglooff1, int jglooff2,
+	          unsigned int ** p_inds_strip, int dir)  
+{
+// iloen1 > iloen2
+
+  int jlon1 = 1;
+  int jlon2 = 1;
+  bool turn = false;
+  int av1 = 0, av2 = 0;
+
+  unsigned int * inds_strip = *p_inds_strip;
+  
+  for (;;)
+    {
+      int ica = 0, icb = 0, icc = 0;
+  
+      int jlon1n = dir > 0 ? JNEXT (jlon1, iloen1) : JPREV (jlon1, iloen1);
+      int jlon2n = dir > 0 ? JNEXT (jlon2, iloen2) : JPREV (jlon2, iloen2);
+
+#define AV1 \
+  do {                                                                        \
+    ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff1 + jlon1n;  \
+    jlon1 = jlon1n;                                                           \
+    turn = turn || jlon1 == 1;                                                \
+    av1++; av2 = 0;                                                           \
+  } while (0)
+
+#define AV2 \
+  do {                                                                        \
+    ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff2 + jlon2n;  \
+    jlon2 = jlon2n;                                                           \
+    turn = turn || jlon2 == 1;                                                \
+    av2++; av1 = 0;                                                           \
+  } while (0)
+
+      int idlonc = dir * JDLON (jlon1, jlon2);
+      int idlonn;
+      if ((jlon1n == 1) && (jlon2n != 1))
+        idlonn = +1;
+      else if ((jlon1n != 1) && (jlon2n == 1))
+        idlonn = -1;
+      else 
+        idlonn = dir * JDLON (jlon1n, jlon2n);
+      
+      if (idlonn > 0 || ((idlonn == 0) && (idlonc > 0)))
+        AV2;
+      else if (idlonn < 0 || ((idlonn == 0) && (idlonc < 0))) 
+        AV1;
+      else
+        abort ();
+      
+#define RS2 \
+  do { \
+    *(inds_strip++) = 0xffffffff;   \
+    *(inds_strip++) = ica-1;        \
+    *(inds_strip++) = icb-1;        \
+    *(inds_strip++) = icc-1;        \
+  } while (0)
+
+      if (idlonc == 0)
+        {
+          if (av2)
+            {
+              abort ();
+            }
+          else if (av1)
+            {
+              RS2;
+            }
+        }
+      else if (av2 > 1)
+        {
+          abort ();
+        }
+      else if (av1 > 1)
+        {
+          RS2;
+        }
+      else
+        {
+          if (inds_strip)
+          *(inds_strip++) = icc-1;
+        }
+      
+      if (turn)
+        {
+          if (jlon1 == 1)
+            while (jlon2 != 1)
+              {
+                abort ();
+              }
+          else if (jlon2 == 1)
+            while (jlon1 != 1)
+              {
+                int jlon1n = dir > 0 ? JNEXT (jlon1, iloen1) : JPREV (jlon1, iloen1);
+                AV1;
+                RS2;
+              }
+          break;
+        }
+
+    }
+
+
+  *p_inds_strip = inds_strip;
+}
+  
+
+#undef AV1
+#undef AV2
+#undef RS1
+#undef RS2
+
+static 
+void compute_trigauss_strip (const long int Nj, const std::vector<long int> & pl, 
+                             unsigned int * ind_strip,
+	                     int ind_stripcnt_per_lat[], 
+	                     int ind_stripoff_per_lat[])
+{
+  int iglooff[Nj];
+  
+  iglooff[0] = 0;
+  for (int jlat = 2; jlat <= Nj; jlat++)
+    iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
+
+#pragma omp parallel for 
+  for (int jlat = 1; jlat <= Nj-1; jlat++)
+    {
+      int iloen1 = pl[jlat - 1];
+      int iloen2 = pl[jlat + 0];
+      int jglooff1 = iglooff[jlat-1] + 0;
+      int jglooff2 = iglooff[jlat-1] + iloen1;
+      unsigned int * inds_strip = ind_strip + ind_stripoff_per_lat[jlat-1];
+  
+  
+      if (iloen1 == iloen2) 
+        {
+          *(inds_strip++) = jglooff1;
+          *(inds_strip++) = jglooff2;
+  
+          for (int jlon1 = 1; jlon1 <= iloen1; jlon1++)
+            {
+              int jlon2 = jlon1;
+              int ica = jglooff1 + jlon1;
+              int icb = jglooff2 + jlon2;
+              int icc = jglooff2 + JNEXT (jlon2, iloen2);
+              int icd = jglooff1 + JNEXT (jlon1, iloen1);
+              *(inds_strip++) = icd-1;
+              *(inds_strip++) = icc-1;
+            }
+        }
+      else if (iloen1 > iloen2)
+        {
+          process_lat (jlat, iloen1, iloen2, jglooff1, jglooff2, &inds_strip, +1);
+        }
+      else if (iloen1 < iloen2)
+        {
+          process_lat (jlat, iloen2, iloen1, jglooff2, jglooff1, &inds_strip, -1);
+        }
+  
+      unsigned int * inds_strip_last = ind_strip 
+    	                        + ind_stripoff_per_lat[jlat-1] 
+    	                        + ind_stripcnt_per_lat[jlat-1];
+  
+      if (inds_strip >= inds_strip_last)
+        abort ();
+  
+      for (; inds_strip < inds_strip_last; inds_strip++)
+        *inds_strip = 0xffffffff;
+  
+    }
+
+
+}
 
 #define PRINT(a,b,c) \
   do {                                                          \
@@ -134,7 +311,7 @@ const double glgrib_geometry_gaussian::deg2rad = M_PI / 180.0;
   } while (0)
 
 static 
-void compute_trigauss (const long int Nj, const std::vector<long int> pl, unsigned int * ind, 
+void compute_trigauss (const long int Nj, const std::vector<long int> & pl, unsigned int * ind, 
                        const int indoff[], const int indcnt[], int triu[], int trid[])
 {
   int iglooff[Nj];
@@ -256,6 +433,9 @@ void compute_trigauss (const long int Nj, const std::vector<long int> pl, unsign
 
     }
 
+#undef AV1
+#undef AV2
+
 }
 
 int glgrib_geometry_gaussian::size () const
@@ -372,7 +552,7 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
     }
 
   ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
-  unsigned int * ind_strip = (unsigned int *)malloc (ind_strip_size * sizeof (unsigned int));
+
   triu = (int *)malloc (numberOfPoints * sizeof (int));
   trid = (int *)malloc (numberOfPoints * sizeof (int));
   // Generation of triangles
@@ -380,6 +560,32 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
 
   delete [] indcnt;
   delete [] indoff;
+
+  int * ind_stripcnt_per_lat  = new int[Nj+1];
+  int * ind_stripoff_per_lat  = new int[Nj+1];
+
+  ind_stripoff_per_lat[0] = 0;
+  for (int jlat = 1; jlat <= Nj+1; jlat++)
+    {
+      if (jlat <= Nj) // k1^k2 < (k1 - k2); k1^k2 is the number of possible restarts
+        ind_stripcnt_per_lat[jlat-1] = pl[jlat-1] + pl[jlat] 
+                 + 4 * (2 + abs (pl[jlat-1] - pl[jlat]));
+      if (jlat > 1)
+        ind_stripoff_per_lat[jlat-1] = ind_stripcnt_per_lat[jlat-2] 
+                 + ind_stripoff_per_lat[jlat-2];
+    }
+
+  ind_strip_size = 0;
+  for (int jlat = 1; jlat <= Nj; jlat++)
+    ind_strip_size += ind_stripcnt_per_lat[jlat-1];
+
+  unsigned int * ind_strip = new unsigned int[ind_strip_size];
+
+  compute_trigauss_strip (Nj, pl, ind_strip, ind_stripcnt_per_lat, ind_stripoff_per_lat); 
+
+  delete [] ind_stripcnt_per_lat;
+  delete [] ind_stripoff_per_lat;
+
 
   latgauss = (double *)malloc (Nj * sizeof (double));
   // Compute Gaussian latitudes
@@ -430,7 +636,18 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
 
 
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (xyz[0]), xyz.data ());
-  elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (ind[0]), ind);
+
+  if (true)
+    {
+      elementbuffer = new_glgrib_opengl_buffer_ptr (ind_strip_size * sizeof (ind_strip[0]), ind_strip);
+    }
+  else
+    {
+      ind_strip_size = 0;
+      elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (ind[0]), ind);
+    }
+
+  delete [] ind_strip;
 
   jglooff.resize (Nj + 1);
 

@@ -166,7 +166,20 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
       if (opts.scalar.wireframe.on)
         glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
     
-      glgrib_field::render (view, light);
+      glBindVertexArray (VertexArrayID);
+      if (geometry->ind_strip_size)
+        {
+          glEnable (GL_PRIMITIVE_RESTART);
+          glPrimitiveRestartIndex (0xffffffff);
+          glDrawElements (GL_TRIANGLE_STRIP, geometry->ind_strip_size, GL_UNSIGNED_INT, NULL);
+          glDisable (GL_PRIMITIVE_RESTART);
+        }
+      else
+        {
+          glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
+        }
+      
+      glBindVertexArray (0);
 
       if (opts.scalar.wireframe.on)
         glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);

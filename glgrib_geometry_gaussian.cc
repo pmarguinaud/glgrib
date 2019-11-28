@@ -438,6 +438,131 @@ void compute_trigauss (const long int Nj, const std::vector<long int> & pl, unsi
 
 }
 
+int glgrib_geometry_gaussian::get_trid (int jlat, int jlon) const
+{
+  if (jlat == Nj)
+    return -1;
+  int iloen1 = pl[jlat-1];
+  int iloen2 = pl[jlat];
+  int jlon1 = jlon;
+  
+  int jlon1n = jlon1 + 1;
+  int jlon2 = 1 + ((jlon1n-1) * iloen2) / iloen1;
+  
+  if (JDLON (jlon1n, jlon2) == 0)
+    {
+      if (iloen1 < iloen2)
+        jlon2 = JPREV (jlon2, iloen2);
+    }
+  
+  int itrid = indoff_per_lat[jlat-1] + jlon1n + jlon2 - 2 - 1;
+
+  return itrid;
+}
+
+int glgrib_geometry_gaussian::get_triu (int jlat, int jlon) const
+{
+  if (jlat == 1)
+    return -1;
+  int iloen1 = pl[jlat-2];
+  int iloen2 = pl[jlat-1];
+  int jlon2 = jlon;
+
+  int jlon2n = jlon2 + 1;
+  int jlon1 = 1 + ((jlon2n-1) * iloen1) / iloen2;
+
+  if (JDLON (jlon1, jlon2n) == 0)
+    {
+      if (iloen2 < iloen1)
+        jlon1 = JPREV (jlon1, iloen1);
+    }
+
+  int itriu = indoff_per_lat[jlat-2] + jlon2n + jlon1 - 2 - 1;
+
+  if (iloen1 == iloen2)
+    itriu = itriu - 1;
+
+  return itriu;
+}
+
+void glgrib_geometry_gaussian::get_ind (int itri, int jglo[3]) const
+{
+  jglo[0] = jglo[1] = jglo[2] = 0;
+
+  int jlat1 = 1, jlat2 = Nj, jlat;
+  while (1)
+    {
+      jlat = (jlat1 + jlat2) / 2;
+
+      if (jlat2 - jlat1 <= 1)
+        break;
+
+      if ((indoff_per_lat[jlat1-1] <= itri) && (itri < indoff_per_lat[jlat-1]))
+        {
+          jlat2 = jlat;
+	}
+      else
+      if ((indoff_per_lat[jlat-1] <= itri) && (itri < indoff_per_lat[jlat2-1]))
+        {
+          jlat1 = jlat;
+	}
+      else
+        {
+          abort ();
+        }
+
+    }
+
+  jlat1 = jlat + 0;
+  jlat2 = jlat + 1;
+
+  int iloen1 = pl[jlat1-1];
+  int iloen2 = pl[jlat2-1];
+
+  int jtri = itri - indoff_per_lat[jlat1-1];
+
+  int jlon2 = 1 + (jtri * iloen2) / (iloen1 + iloen2);
+  int jlon1 = jtri + 2 - jlon2;
+  if (jlon1 == iloen1+1) jlon1 = 1;
+  if (jlon2 == iloen2+1) jlon2 = 1;
+  
+  int itriu2 = get_triu (jlat2, jlon2);
+
+  int dtri = itriu2 - itri;
+  
+  switch (dtri)
+    {
+      case +1:
+        {
+          int jlon1n = JNEXT (jlon1, iloen1);
+          int jlon2n = JNEXT (jlon2, iloen2);
+          jglo[0] = jglooff[jlat1-1]+jlon1 -1; 
+          jglo[1] = jglooff[jlat1-1]+jlon1n-1; 
+          jglo[2] = jglooff[jlat2-1]+jlon2n-1; 
+        }
+        break;
+      case -1:
+        {
+          int jlon1p = JPREV (jlon1, iloen1);
+          jglo[0] = jglooff[jlat1-1]+jlon1p-1; 
+          jglo[1] = jglooff[jlat2-1]+jlon2 -1; 
+          jglo[2] = jglooff[jlat1-1]+jlon1 -1; 
+        }
+        break;
+      case  0:
+        {
+          int jlon2n = JNEXT (jlon2, iloen2);
+          jglo[0] = jglooff[jlat2-1]+jlon2 -1; 
+          jglo[1] = jglooff[jlat2-1]+jlon2n-1; 
+          jglo[2] = jglooff[jlat1-1]+jlon1 -1; 
+        }
+        break;
+      default:
+        abort ();
+    }
+
+}
+
 int glgrib_geometry_gaussian::size () const
 {
   return jglooff[Nj-1] + pl[Nj-1];
@@ -514,6 +639,107 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (glgrib_handle_ptr ghp)
     numberOfPoints += pl[i];
 }
 
+static
+void roll3 (int jglo[3])
+{
+  int l = std::min_element (jglo, jglo + 3) - &jglo[0];
+
+  if (l == 1)
+    {
+      int t = jglo[0]; jglo[0] = jglo[1]; jglo[1] = jglo[2]; jglo[2] = t;
+    }
+  if (l == 2)
+    {
+      int t = jglo[0]; jglo[0] = jglo[2]; jglo[2] = jglo[1]; jglo[1] = t;
+    }
+}
+        
+void glgrib_geometry_gaussian::check_tri () const
+{
+
+  printf (" %8s %8s\n", "jlat", "pl");
+  for (int i = 0; i < Nj; i++)
+    printf (" %8d %8d\n", i+1, pl[i]);
+
+  printf ("----ITRID----\n");
+
+  for (int jlat = 1; jlat <= Nj; jlat++)
+    {
+      int pr = 1;
+
+      for (int jlon = 1; jlon <= pl[jlat-1]; jlon++)
+        {
+          int itrid = get_trid (jlat, jlon);
+          int jglo = jglooff[jlat-1]+jlon-1;
+
+          if (itrid != trid[jglo])
+	    {
+              if (pr) {
+              printf (" jlat = %8d\n", jlat);
+              printf (" %8s %8s %8s\n", "jlon", "itrid", "itrid");
+	      pr = 0;
+	      }
+              printf (" %8d %8d %8d %1d\n", jlon, itrid, trid[jglo], 
+                      itrid == trid[jglo]);
+	    }
+     
+        }
+
+    }
+
+  printf ("----ITRIU----\n");
+
+  for (int jlat = 1; jlat <= Nj; jlat++)
+    {
+      int pr = 1;
+
+      for (int jlon = 1; jlon <= pl[jlat-1]; jlon++)
+        {
+          int itriu = get_triu (jlat, jlon);
+          int jglo = jglooff[jlat-1]+jlon-1;
+
+          if (itriu != triu[jglo])
+	    {
+              if (pr) {
+              printf (" jlat = %8d\n", jlat);
+              printf (" %8s %8s %8s\n", "jlon", "itriu", "itriu");
+	      pr = 0;
+	      }
+              printf (" %8d %8d %8d %1d\n", jlon, itriu, triu[jglo], 
+                      itriu == triu[jglo]);
+	    }
+     
+        }
+
+    }
+
+  printf ("-----IND-----\n");
+
+  for (int it = 0; it < numberOfTriangles; it++)
+    {
+      int jglo0[3];
+      int jglo1[3];
+      for (int i = 0; i < 3; i++)
+        jglo0[i] = ind[3*it+i];
+ 
+      get_ind (it, jglo1);
+
+      roll3 (jglo0);
+      roll3 (jglo1);
+
+      int diff = ((jglo0[0] != jglo1[0]) &&
+                  (jglo0[1] != jglo1[1]) &&
+                  (jglo0[2] != jglo1[2]));
+      if (diff)
+      printf (">> %8d -> %8d %8d %8d | %8d %8d %8d | %s\n", it,
+              jglo0[0], jglo0[1], jglo0[2],
+              jglo1[0], jglo1[1], jglo1[2], diff ? "X" : " ");
+    }
+
+end:
+  return;
+}
+
 void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orography)
 {
   codes_handle * h = ghp ? ghp->getCodesHandle () : NULL;
@@ -539,16 +765,16 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
   for (int jlat = 1; jlat < Nj; jlat++)
     numberOfTriangles += pl[jlat-1] + pl[jlat];
   
-  int * indcnt = new int[Nj];
-  int * indoff = new int[Nj];
+  indcnt_per_lat = new int[Nj];
+  indoff_per_lat = new int[Nj];
   // Compute number of triangles per latitude
-  indoff[0] = 0;
+  indoff_per_lat[0] = 0;
   for (int jlat = 1; jlat <= Nj; jlat++)
     {
       if (jlat < Nj)
-        indcnt[jlat-1] = pl[jlat-1] + pl[jlat];
+        indcnt_per_lat[jlat-1] = pl[jlat-1] + pl[jlat];
       if (jlat > 1)
-        indoff[jlat-1] = indoff[jlat-2] + indcnt[jlat-2];
+        indoff_per_lat[jlat-1] = indoff_per_lat[jlat-2] + indcnt_per_lat[jlat-2];
     }
 
   ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
@@ -556,10 +782,7 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
   triu = (int *)malloc (numberOfPoints * sizeof (int));
   trid = (int *)malloc (numberOfPoints * sizeof (int));
   // Generation of triangles
-  compute_trigauss (Nj, pl, ind, indoff, indcnt, triu, trid);
-
-  delete [] indcnt;
-  delete [] indoff;
+  compute_trigauss (Nj, pl, ind, indoff_per_lat, indcnt_per_lat, triu, trid);
 
   int * ind_stripcnt_per_lat  = new int[Nj+1];
   int * ind_stripoff_per_lat  = new int[Nj+1];
@@ -567,7 +790,7 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
   ind_stripoff_per_lat[0] = 0;
   for (int jlat = 1; jlat <= Nj+1; jlat++)
     {
-      if (jlat <= Nj) // k1^k2 < (k1 - k2); k1^k2 is the number of possible restarts
+      if (jlat < Nj) // k1^k2 < (k1 - k2); k1^k2 is the number of possible restarts
         ind_stripcnt_per_lat[jlat-1] = pl[jlat-1] + pl[jlat] 
                  + 4 * (2 + abs (pl[jlat-1] - pl[jlat]));
       if (jlat > 1)
@@ -576,7 +799,7 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
     }
 
   ind_strip_size = 0;
-  for (int jlat = 1; jlat <= Nj; jlat++)
+  for (int jlat = 1; jlat < Nj; jlat++)
     ind_strip_size += ind_stripcnt_per_lat[jlat-1];
 
   unsigned int * ind_strip = new unsigned int[ind_strip_size];
@@ -654,6 +877,9 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
   jglooff[0] = 0;
   for (int jlat = 2; jlat <= Nj + 1; jlat++)
     jglooff[jlat-1] = jglooff[jlat-2] + pl[jlat-2];
+
+
+  check_tri ();
 }
 
 glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()
@@ -666,10 +892,16 @@ glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()
     free (trid);
   if (latgauss)
     free (latgauss);
+  if (indoff_per_lat)
+    delete [] indoff_per_lat;
+  if (indcnt_per_lat)
+    delete [] indcnt_per_lat;
   ind = NULL;
   triu = NULL;
   trid = NULL;
   latgauss = NULL;
+  indoff_per_lat = NULL;
+  indcnt_per_lat = NULL;
 }
 
 void glgrib_geometry_gaussian::latlon2coordxy (float lat, float lon, 
@@ -766,12 +998,12 @@ std::string glgrib_geometry_gaussian::md5 () const
 }
 
 
-bool glgrib_geometry_gaussian::isEqual (const glgrib_geometry & geom) const
+bool glgrib_geometry_gaussian::isEqual (const glgrib_geometry & other) const
 {
   const float epsilon = 1E-4;
   try
     {
-      const glgrib_geometry_gaussian & g = dynamic_cast<const glgrib_geometry_gaussian &>(geom);
+      const glgrib_geometry_gaussian & g = dynamic_cast<const glgrib_geometry_gaussian &>(other);
       return (Nj == g.Nj) && (fabs (stretchingFactor - g.stretchingFactor) < epsilon) &&
              (fabs (latitudeOfStretchingPoleInDegrees - g.latitudeOfStretchingPoleInDegrees) < epsilon) &&
 	     (fabs (longitudeOfStretchingPoleInDegrees - g.longitudeOfStretchingPoleInDegrees) < epsilon) &&

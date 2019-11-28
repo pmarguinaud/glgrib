@@ -85,6 +85,12 @@ private:
   void latlon2coordxy (float, float, float &, float &) const;
   int latlon2jlatjlon (float, float, int &, int &) const;
 
+  int get_trid (int, int) const;
+  int get_triu (int, int) const;
+  void get_ind (int, int [3]) const;
+  void check_tri () const;
+  
+
 private:
   std::vector<long int> pl;
   long int Nj;
@@ -98,6 +104,10 @@ private:
   bool rotated = false;
   // Keep the following as pointers for performance
   unsigned int * ind = NULL;
+
+  int * indcnt_per_lat = NULL;
+  int * indoff_per_lat = NULL;
+
   int * triu = NULL;          // Rank of triangle above
   int * trid = NULL;          // Rank of triangle below
   double * latgauss = NULL;

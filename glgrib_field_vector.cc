@@ -123,11 +123,8 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
 
   numberOfColors = 1;
 
-  unsigned char * col_n = (unsigned char *)malloc (numberOfColors 
-                        * geometry->getNumberOfPoints () * sizeof (unsigned char));
-  unsigned char * col_d = (unsigned char *)malloc (numberOfColors 
-                        * geometry->getNumberOfPoints () * sizeof (unsigned char));
-
+  unsigned char * col_n = new unsigned char[numberOfColors * geometry->getNumberOfPoints ()];
+  unsigned char * col_d = new unsigned char[numberOfColors * geometry->getNumberOfPoints ()];
 
   for (int i = 0; i < geometry->getNumberOfPoints (); i++)
     {
@@ -147,8 +144,8 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
   d.buffer_d = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints ()
                                                * sizeof (unsigned char), col_d);
 
-  free (col_n);
-  free (col_d);
+  delete [] col_n;
+  delete [] col_d;
 
   meta.push_back (meta_n);
   meta.push_back (meta_d);

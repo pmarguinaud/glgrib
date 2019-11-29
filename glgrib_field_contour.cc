@@ -124,7 +124,7 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
 #pragma omp parallel for
   for (int i = 0; i < levels.size (); i++)
     {
-      bool * seen = (bool *)malloc (sizeof (bool) * (geometry->getNumberOfTriangles () + 1));
+      bool * seen = new bool[geometry->getNumberOfTriangles () + 1];
 
       for (int i = 0; i < geometry->getNumberOfTriangles () + 1; i++)
         seen[i] = false;
@@ -138,7 +138,7 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
       for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
         processTriangle (it, data->data (), levels[i], seen+1, &iso_data[i]);
 
-      free (seen);
+      delete [] seen;
     }
 
   iso.resize (levels.size ());

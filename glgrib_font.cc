@@ -132,7 +132,7 @@ found_u:
   // The third argument has to be GL_RED, but I do not understand why
   glTexImage2D (GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, rgb);
 
-  free (rgb);
+  delete [] rgb;
   ready = true;
 }
 

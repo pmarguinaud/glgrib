@@ -813,17 +813,28 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
 
   bool orog = (orography > 0.0f) && (h != NULL);
 
-  double vmin, vmax, vmis;
-  std::vector<double> v;
-
   if (orog)
     {
-      size_t v_len;
-      v.resize (numberOfPoints);
-      codes_get_double_array (h, "values", v.data (), &v_len);
+      float * height = new float[numberOfPoints];
+
+      double vmin, vmax, vmis;
+      double * v = new double[numberOfPoints];
+      size_t v_len = numberOfPoints;
+
+      codes_get_double_array (h, "values", v, &v_len);
       codes_get_double (h, "maximum",      &vmax);
       codes_get_double (h, "minimum",      &vmin);
       codes_get_double (h, "missingValue", &vmis);
+
+#pragma omp parallel for
+      for (int jglo = 0; jglo < numberOfPoints; jglo++)
+        height[jglo] = v[jglo] == vmis ? 0.0f : orography * v[jglo] / vmax;
+      delete [] v;
+
+      heightbuffer = new_glgrib_opengl_buffer_ptr (numberOfPoints * sizeof (height[0]), height);
+      delete [] height;
+      height = NULL;
+
     }
 
   // Compute number of triangles
@@ -888,7 +899,6 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
   compute_latgauss (Nj, latgauss);
       
   float * lonlat = new float[2 * numberOfPoints];
-  float * height = orog ? new float[numberOfPoints] : NULL;
 
   int iglooff[Nj];
   iglooff[0] = 0;
@@ -928,9 +938,6 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
           float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
           float lon = coordx;
 
-	  if (orog)
-            height[jglo] = v[jglo] == vmis ? 0.0f : orography * v[jglo] / vmax;
-
 	  if (! rotated)
             {
               lonlat[2*jglo+0] = lon;
@@ -960,13 +967,6 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
 
   delete [] lonlat;
   lonlat = NULL;
-
-  if (orog)
-    {
-      heightbuffer = new_glgrib_opengl_buffer_ptr (numberOfPoints * sizeof (height[0]), height);
-      delete [] height;
-      height = NULL;
-    }
 
   if (opts.triangle_strip.on)
     {

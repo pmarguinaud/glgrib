@@ -438,7 +438,7 @@ void compute_trigauss (const long int Nj, const std::vector<long int> & pl, unsi
 
 }
 
-int glgrib_geometry_gaussian::get_trid (int jlat, int jlon) const
+int glgrib_geometry_gaussian::computeLowerTriangle (int jlat, int jlon) const
 {
   if (jlat == Nj)
     return -1;
@@ -460,7 +460,7 @@ int glgrib_geometry_gaussian::get_trid (int jlat, int jlon) const
   return itrid;
 }
 
-int glgrib_geometry_gaussian::get_triu (int jlat, int jlon) const
+int glgrib_geometry_gaussian::computeUpperTriangle (int jlat, int jlon) const
 {
   if (jlat == 1)
     return -1;
@@ -485,10 +485,8 @@ int glgrib_geometry_gaussian::get_triu (int jlat, int jlon) const
   return itriu;
 }
 
-void glgrib_geometry_gaussian::get_ind (int itri, int jglo[3]) const
+void glgrib_geometry_gaussian::computeTriangleVertices (int itri, int jglo[3]) const
 {
-  jglo[0] = jglo[1] = jglo[2] = 0;
-
   int jlat1 = 1, jlat2 = Nj, jlat;
   while (1)
     {
@@ -521,45 +519,112 @@ void glgrib_geometry_gaussian::get_ind (int itri, int jglo[3]) const
 
   int jtri = itri - indoff_per_lat[jlat1-1];
 
-  int jlon2 = 1 + (jtri * iloen2) / (iloen1 + iloen2);
-  int jlon1 = jtri + 2 - jlon2;
-  if (jlon1 == iloen1+1) jlon1 = 1;
-  if (jlon2 == iloen2+1) jlon2 = 1;
-  
-  int itriu2 = get_triu (jlat2, jlon2);
+  int jlon1, jlon2;
+  int itriu2 = 0, itrid1 = 0;
+  int dtri;
 
-  int dtri = itriu2 - itri;
-  
-  switch (dtri)
+  if (iloen1 == iloen2)
     {
-      case +1:
+      int jlon = 1 + jtri / 2;
+      int jlonn = JNEXT (jlon, iloen1);
+      if (jtri % 2)
         {
-          int jlon1n = JNEXT (jlon1, iloen1);
-          int jlon2n = JNEXT (jlon2, iloen2);
-          jglo[0] = jglooff[jlat1-1]+jlon1 -1; 
-          jglo[1] = jglooff[jlat1-1]+jlon1n-1; 
-          jglo[2] = jglooff[jlat2-1]+jlon2n-1; 
+          jglo[0] = jglooff[jlat1-1]+jlon -1;
+          jglo[1] = jglooff[jlat2-1]+jlonn-1; 
+          jglo[2] = jglooff[jlat1-1]+jlonn-1; 
         }
-        break;
-      case -1:
+      else
         {
-          int jlon1p = JPREV (jlon1, iloen1);
-          jglo[0] = jglooff[jlat1-1]+jlon1p-1; 
-          jglo[1] = jglooff[jlat2-1]+jlon2 -1; 
-          jglo[2] = jglooff[jlat1-1]+jlon1 -1; 
+          jglo[0] = jglooff[jlat1-1]+jlon -1; 
+          jglo[1] = jglooff[jlat2-1]+jlon -1;
+          jglo[2] = jglooff[jlat2-1]+jlonn-1; 
         }
-        break;
-      case  0:
-        {
-          int jlon2n = JNEXT (jlon2, iloen2);
-          jglo[0] = jglooff[jlat2-1]+jlon2 -1; 
-          jglo[1] = jglooff[jlat2-1]+jlon2n-1; 
-          jglo[2] = jglooff[jlat1-1]+jlon1 -1; 
-        }
-        break;
-      default:
-        abort ();
+      return;
     }
+  else if (iloen1 < iloen2)
+    {
+      jlon2 = 1 + (jtri * iloen2) / (iloen1 + iloen2);
+      if (jlon2 == iloen2+1) jlon2 = 1;
+      jlon1 = 1 + ((JNEXT (jlon2, iloen2) - 1) * iloen1) / iloen2;
+      itriu2 = computeUpperTriangle (jlat2, jlon2);
+      dtri = itriu2 - itri;
+    }
+  else if (iloen1 > iloen2)
+    {
+      jlon1 = 1 + (jtri * iloen1) / (iloen2 + iloen1);
+      if (jlon1 == iloen1+1) jlon1 = 1;
+      jlon2 = 1 + ((JNEXT (jlon1, iloen1) - 1) * iloen2) / iloen1;
+      itrid1 = computeLowerTriangle (jlat1, jlon1);
+      dtri = itrid1 - itri;
+    }
+
+  while (dtri < 0)
+    {
+      int jlon1n = JNEXT (jlon1, iloen1);
+      int jlon2n = JNEXT (jlon2, iloen2);
+
+      int idlonc = JDLON (jlon1, jlon2);
+      int idlonn;
+      if ((jlon1n == 1) && (jlon2n != 1))
+        idlonn = +1;
+      else if ((jlon1n != 1) && (jlon2n == 1))
+        idlonn = -1;
+      else 
+        idlonn = JDLON (jlon1n, jlon2n);
+
+      if (idlonn > 0 || ((idlonn == 0) && (idlonc > 0)))
+        jlon2 = jlon2n;
+      else if (idlonn < 0 || ((idlonn == 0) && (idlonc < 0))) 
+        jlon1 = jlon1n;
+      else
+        abort ();
+         
+      dtri++;
+    }
+  if (dtri > 0)
+    abort ();
+
+  int jlon1n = JNEXT (jlon1, iloen1);
+  int jlon2n = JNEXT (jlon2, iloen2);
+
+  if ((jlon1n == 1) && (jlon2 == 1))
+    {
+      jglo[0] = jglooff[jlat1-1]+jlon1n-1; 
+      jglo[1] = jglooff[jlat1-1]+jlon1 -1;
+      jglo[2] = jglooff[jlat2-1]+jlon2 -1; 
+      return;
+    }
+  else if ((jlon1 == 1) && (jlon2n == 1))
+    {
+      jglo[0] = jglooff[jlat1-1]+jlon1 -1; 
+      jglo[1] = jglooff[jlat2-1]+jlon2 -1;
+      jglo[2] = jglooff[jlat2-1]+jlon2n-1; 
+      return;
+    }
+
+  int idlonc = JDLON (jlon1, jlon2);
+  int idlonn;
+  if ((jlon1n == 1) && (jlon2n != 1))
+    idlonn = +1;
+  else if ((jlon1n != 1) && (jlon2n == 1))
+    idlonn = -1;
+  else 
+    idlonn = JDLON (jlon1n, jlon2n);
+
+  if (idlonn > 0 || ((idlonn == 0) && (idlonc > 0)))
+    {
+      jglo[0] = jglooff[jlat1-1]+jlon1 -1; 
+      jglo[1] = jglooff[jlat2-1]+jlon2 -1;
+      jglo[2] = jglooff[jlat2-1]+jlon2n-1; 
+    }
+  else if (idlonn < 0 || ((idlonn == 0) && (idlonc < 0))) 
+    {
+      jglo[0] = jglooff[jlat1-1]+jlon1 -1; 
+      jglo[1] = jglooff[jlat2-1]+jlon2 -1;
+      jglo[2] = jglooff[jlat1-1]+jlon1n-1;
+    }
+  else
+    abort ();
 
 }
 
@@ -654,12 +719,14 @@ void roll3 (int jglo[3])
     }
 }
         
-void glgrib_geometry_gaussian::check_tri () const
+void glgrib_geometry_gaussian::checkTriangleComputation () const
 {
 
+  if (0){
   printf (" %8s %8s\n", "jlat", "pl");
   for (int i = 0; i < Nj; i++)
     printf (" %8d %8d\n", i+1, pl[i]);
+  }
 
   printf ("----ITRID----\n");
 
@@ -669,7 +736,7 @@ void glgrib_geometry_gaussian::check_tri () const
 
       for (int jlon = 1; jlon <= pl[jlat-1]; jlon++)
         {
-          int itrid = get_trid (jlat, jlon);
+          int itrid = computeLowerTriangle (jlat, jlon);
           int jglo = jglooff[jlat-1]+jlon-1;
 
           if (itrid != trid[jglo])
@@ -695,7 +762,7 @@ void glgrib_geometry_gaussian::check_tri () const
 
       for (int jlon = 1; jlon <= pl[jlat-1]; jlon++)
         {
-          int itriu = get_triu (jlat, jlon);
+          int itriu = computeUpperTriangle (jlat, jlon);
           int jglo = jglooff[jlat-1]+jlon-1;
 
           if (itriu != triu[jglo])
@@ -722,13 +789,13 @@ void glgrib_geometry_gaussian::check_tri () const
       for (int i = 0; i < 3; i++)
         jglo0[i] = ind[3*it+i];
  
-      get_ind (it, jglo1);
+      computeTriangleVertices (it, jglo1);
 
       roll3 (jglo0);
       roll3 (jglo1);
 
-      int diff = ((jglo0[0] != jglo1[0]) &&
-                  (jglo0[1] != jglo1[1]) &&
+      int diff = ((jglo0[0] != jglo1[0]) ||
+                  (jglo0[1] != jglo1[1]) ||
                   (jglo0[2] != jglo1[2]));
       if (diff)
       printf (">> %8d -> %8d %8d %8d | %8d %8d %8d | %s\n", it,
@@ -740,7 +807,7 @@ end:
   return;
 }
 
-void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orography)
+void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts, const float orography)
 {
   codes_handle * h = ghp ? ghp->getCodesHandle () : NULL;
   std::vector<float> xyz;
@@ -777,12 +844,15 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
         indoff_per_lat[jlat-1] = indoff_per_lat[jlat-2] + indcnt_per_lat[jlat-2];
     }
 
-  ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
 
-  triu = (int *)malloc (numberOfPoints * sizeof (int));
-  trid = (int *)malloc (numberOfPoints * sizeof (int));
-  // Generation of triangles
-  compute_trigauss (Nj, pl, ind, indoff_per_lat, indcnt_per_lat, triu, trid);
+  if (! opts.triangle_strip.on)
+    {
+      ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
+      triu = (int *)malloc (numberOfPoints * sizeof (int));
+      trid = (int *)malloc (numberOfPoints * sizeof (int));
+      // Generation of triangles
+      compute_trigauss (Nj, pl, ind, indoff_per_lat, indcnt_per_lat, triu, trid);
+    }
 
   int * ind_stripcnt_per_lat  = new int[Nj+1];
   int * ind_stripoff_per_lat  = new int[Nj+1];
@@ -802,9 +872,13 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
   for (int jlat = 1; jlat < Nj; jlat++)
     ind_strip_size += ind_stripcnt_per_lat[jlat-1];
 
-  unsigned int * ind_strip = new unsigned int[ind_strip_size];
-
-  compute_trigauss_strip (Nj, pl, ind_strip, ind_stripcnt_per_lat, ind_stripoff_per_lat); 
+  unsigned int * ind_strip = NULL;
+  
+  if (opts.triangle_strip.on)
+    {
+      ind_strip = new unsigned int[ind_strip_size];
+      compute_trigauss_strip (Nj, pl, ind_strip, ind_stripcnt_per_lat, ind_stripoff_per_lat); 
+    }
 
   delete [] ind_stripcnt_per_lat;
   delete [] ind_stripoff_per_lat;
@@ -860,9 +934,10 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
 
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (xyz[0]), xyz.data ());
 
-  if (true)
+  if (opts.triangle_strip.on)
     {
       elementbuffer = new_glgrib_opengl_buffer_ptr (ind_strip_size * sizeof (ind_strip[0]), ind_strip);
+      delete [] ind_strip;
     }
   else
     {
@@ -870,7 +945,6 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
       elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (ind[0]), ind);
     }
 
-  delete [] ind_strip;
 
   jglooff.resize (Nj + 1);
 
@@ -878,8 +952,10 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const float orograp
   for (int jlat = 2; jlat <= Nj + 1; jlat++)
     jglooff[jlat-1] = jglooff[jlat-2] + pl[jlat-2];
 
-
-  check_tri ();
+  if (opts.check.on)
+    {
+      checkTriangleComputation ();
+    }
 }
 
 glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()
@@ -1096,18 +1172,13 @@ glgrib_geometry_gaussian::jlonlat_t glgrib_geometry_gaussian::jlonlat (int jglo)
 }
 
 
-void glgrib_geometry_gaussian::getTriangleVertices (int it, int jglo[3]) const
-{
-  jglo[0] = ind[3*it+0];
-  jglo[1] = ind[3*it+1];
-  jglo[2] = ind[3*it+2];
-}
-
 void glgrib_geometry_gaussian::getTriangleNeighbours (int it, int jglo[3], int itri[3], jlonlat_t jlonlat_[3]) const
 {
-  int jgloA = ind[3*it+0]; 
-  int jgloB = ind[3*it+1]; 
-  int jgloC = ind[3*it+2]; 
+  int jgloABC[3];
+  getTriangleVertices (it, jgloABC);
+  const int jgloA = jgloABC[0]; 
+  const int jgloB = jgloABC[1]; 
+  const int jgloC = jgloABC[2]; 
   
   jlonlat_t jlonlatA = jlonlat (jgloA);
   jlonlat_t jlonlatB = jlonlat (jgloB);
@@ -1142,7 +1213,9 @@ void glgrib_geometry_gaussian::getTriangleNeighbours (int it, int jglo[3], int i
   int ktri = it - otri;                                               // Rank of current triangle in current row
   int Ltri = ktri == 0      ? ntri-1 : ktri-1; Ltri += otri;          // Rank of left triangle
   int Rtri = ktri == ntri-1 ?      0 : ktri+1; Rtri += otri;          // Rank of right triangle
-  int Vtri = up ? trid[jglo0] : triu[jglo0];                          // Rank of triangle above of under segment 01
+  int Vtri = up 
+           ? getLowerTriangle (jglo0, jlonlat0) 
+           : getUpperTriangle (jglo0, jlonlat0);                      // Rank of triangle above of under segment 01
 
   int itr01 = Vtri, itr12 = Rtri, itr20 = Ltri;
   
@@ -1152,6 +1225,36 @@ void glgrib_geometry_gaussian::getTriangleNeighbours (int it, int jglo[3], int i
   jlonlat_[0] = jlonlat0;
   jlonlat_[1] = jlonlat1;
   jlonlat_[2] = jlonlat2;
+}
+
+int glgrib_geometry_gaussian::getUpperTriangle (int jglo, const jlonlat_t & jlonlat) const
+{
+  if (triu)
+    return triu[jglo];
+  else
+    return computeUpperTriangle (jlonlat.jlat, jlonlat.jlon);
+}
+
+int glgrib_geometry_gaussian::getLowerTriangle (int jglo, const jlonlat_t & jlonlat) const
+{
+  if (trid)
+    return trid[jglo];
+  else
+    return computeLowerTriangle (jlonlat.jlat, jlonlat.jlon);
+}
+
+void glgrib_geometry_gaussian::getTriangleVertices (int it, int jglo[3]) const
+{
+  if (ind)
+    {
+      jglo[0] = ind[3*it+0];
+      jglo[1] = ind[3*it+1];
+      jglo[2] = ind[3*it+2];
+    }
+  else
+   {
+     computeTriangleVertices (it, jglo);
+   }
 }
 
 void glgrib_geometry_gaussian::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
@@ -1179,9 +1282,11 @@ void glgrib_geometry_gaussian::getTriangleNeighbours (int it, int jglo[3], int i
 
 bool glgrib_geometry_gaussian::triangleIsEdge (int it) const
 {
-  int jgloA = ind[3*it+0]; 
-  int jgloB = ind[3*it+1]; 
-  int jgloC = ind[3*it+2]; 
+  int jgloABC[3];
+  getTriangleVertices (it, jgloABC);
+  const int jgloA = jgloABC[0]; 
+  const int jgloB = jgloABC[1]; 
+  const int jgloC = jgloABC[2]; 
 
   if ((jgloA >= jglooff[1]) && (jgloB >= jglooff[1]) && (jgloC >= jglooff[1]) 
    && (jgloA < jglooff[Nj-1]) && (jgloB < jglooff[Nj-1]) && (jgloC < jglooff[Nj-1]))

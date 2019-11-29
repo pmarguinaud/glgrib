@@ -374,6 +374,24 @@ public:
 #define DEFINE virtual void traverse (const std::string & p, glgrib_options_callback * cb, \
                                       const glgrib_options_callback::opt * o = NULL)
 
+class glgrib_options_geometry : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (triangle_strip.on,  Enable use of triangle strip);
+    DESC (check.on,           Check geometry);
+  }
+  struct
+  {
+    bool on = false;
+  } triangle_strip;
+  struct
+  {
+    bool on = false;
+  } check;
+};
+
 class glgrib_options_contour : public glgrib_options_base
 {
 public:
@@ -473,6 +491,7 @@ public:
     INCLUDE (vector);
     INCLUDE (contour);
     INCLUDE (stream);
+    INCLUDE (geometry);
   }
   std::set<std::string> seen;
 
@@ -523,6 +542,7 @@ public:
   glgrib_options_contour contour;
   glgrib_options_stream stream;
   bool parse_unseen (const char *);
+  glgrib_options_geometry geometry;
 };
 
 
@@ -572,15 +592,16 @@ public:
     DESC (flat.on,             Make Earth flat);
     DESC (orography,           Factor to apply to orography);
     DESC (path,                Path to landscape image in BMP format);
-    DESC (geometry,            GRIB files to take geometry from);
+    DESC (geometry_path,       GRIB files to take geometry from);
     DESC (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
     DESC (wireframe.on,        Draw landscape in wireframe mode);
     INCLUDE (lonlat.position);
+    INCLUDE (geometry);
   }
   string projection = "LONLAT";
   string path  = "landscape/Whole_world_-_land_and_oceans_08000.bmp";
   float  orography  = 0.05;
-  string  geometry  = "";
+  string geometry_path = "";
   int number_of_latitudes  = 500;
   struct
   {
@@ -595,6 +616,7 @@ public:
   {
     glgrib_options_landscape_position position;
   } lonlat;
+  glgrib_options_geometry geometry;
 };
 
 class glgrib_options_lines : public glgrib_options_base

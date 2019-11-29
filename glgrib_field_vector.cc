@@ -113,10 +113,10 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
   glgrib_field_metadata meta_n, meta_d;
 
   glgrib_field_float_buffer_ptr data_u, data_v;
-  ld->load (&data_u, opts.path, slot, &meta_u, 2, 0);
-  ld->load (&data_v, opts.path, slot, &meta_v, 2, 1);
+  ld->load (&data_u, opts.path, opts.geometry, slot, &meta_u, 2, 0);
+  ld->load (&data_v, opts.path, opts.geometry, slot, &meta_v, 2, 1);
 
-  geometry = glgrib_geometry_load (ld, opts.path[0]);
+  geometry = glgrib_geometry::load (ld, opts.path[0], opts.geometry);
 
 
   glgrib_field_float_buffer_ptr data_n, data_d;

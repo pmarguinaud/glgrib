@@ -216,8 +216,8 @@ next:
   return ghp;
 }
 
-void glgrib_loader::load (glgrib_field_float_buffer_ptr * ptr, const std::vector<std::string> & file, float fslot, 
-                          glgrib_field_metadata * meta, int mult, int base, bool diff)
+void glgrib_loader::load (glgrib_field_float_buffer_ptr * ptr, const std::vector<std::string> & file, const glgrib_options_geometry & opts_geom, 
+		          float fslot, glgrib_field_metadata * meta, int mult, int base, bool diff)
 {
   int islot = (int)fslot;
   float a, b;
@@ -232,15 +232,15 @@ void glgrib_loader::load (glgrib_field_float_buffer_ptr * ptr, const std::vector
       b = fslot - (float)islot;
       a = 1.0f  - b;
       if (fslot == (float)islot)
-        return load (ptr, file[mult*islot+base], meta);
+        return load (ptr, file[mult*islot+base], opts_geom, meta);
     }
 
 
   const std::string file1 = file[mult*(islot+0)+base];
   const std::string file2 = file[mult*(islot+1)+base];
 
-  const_glgrib_geometry_ptr geom1 = glgrib_geometry_load (this, file1);
-  const_glgrib_geometry_ptr geom2 = glgrib_geometry_load (this, file2);
+  const_glgrib_geometry_ptr geom1 = glgrib_geometry::load (this, file1, opts_geom);
+  const_glgrib_geometry_ptr geom2 = glgrib_geometry::load (this, file2, opts_geom);
 
   if (! geom1->isEqual (*geom2))
     {
@@ -252,15 +252,15 @@ void glgrib_loader::load (glgrib_field_float_buffer_ptr * ptr, const std::vector
 
   if (ptr == NULL)
     {
-      load (NULL, file1, &meta1);
+      load (NULL, file1, opts_geom, &meta1);
       *meta = meta1;
     }
   else
     {
       glgrib_field_float_buffer_ptr val1, val2;
 
-      load (&val1, file1, &meta1);
-      load (&val2, file2, &meta2);
+      load (&val1, file1, opts_geom, &meta1);
+      load (&val2, file2, opts_geom, &meta2);
     
       int size = geom1->size ();
       glgrib_field_float_buffer_ptr val = new_glgrib_field_float_buffer_ptr (size);
@@ -322,7 +322,8 @@ void glgrib_loader::load (glgrib_field_float_buffer_ptr * ptr, const std::vector
     }
 }
 
-void glgrib_loader::load (glgrib_field_float_buffer_ptr * ptr, const std::string & file, glgrib_field_metadata * meta)
+void glgrib_loader::load (glgrib_field_float_buffer_ptr * ptr, const std::string & file, 
+		          const glgrib_options_geometry & opts_geom, glgrib_field_metadata * meta)
 {
   glgrib_handle_ptr ghp = handle_from_file (file);
   codes_handle * h = ghp->getCodesHandle ();

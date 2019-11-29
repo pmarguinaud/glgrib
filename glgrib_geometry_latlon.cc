@@ -29,7 +29,7 @@ glgrib_geometry_latlon::glgrib_geometry_latlon (glgrib_handle_ptr ghp)
   
 }
 
-void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const float orography)
+void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts, const float orography)
 {
   codes_handle * h = ghp->getCodesHandle ();
   float * xyz = NULL;

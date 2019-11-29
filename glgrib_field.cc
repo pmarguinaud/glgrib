@@ -71,7 +71,7 @@ void glgrib_field::getUserPref (glgrib_options_field * opts, glgrib_loader * ld)
   glgrib_options_field opts_ref;
   
   glgrib_field_metadata meta;
-  ld->load (NULL, opts_sql.path, 0, &meta);
+  ld->load (NULL, opts_sql.path, opts->geometry, 0, &meta);
 
   glgrib_sqlite db (glgrib_resolve ("glgrib.db"));
   

@@ -189,7 +189,7 @@ public:
   virtual std::string md5 () const;
   virtual int latlon2index (float, float) const;
   glgrib_geometry_lambert (glgrib_handle_ptr);
-  virtual void setup (glgrib_handle_ptr, const float = 0.0f);
+  virtual void setup (glgrib_handle_ptr, const glgrib_options_geometry &, const float = 0.0f);
   virtual int size () const;
   virtual ~glgrib_geometry_lambert ();
   virtual void applyNormScale (float *) const {}

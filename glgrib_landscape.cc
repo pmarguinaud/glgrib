@@ -56,7 +56,7 @@ void glgrib_landscape::setup (glgrib_loader * ld, const glgrib_options_landscape
   unsigned char * rgb;
   int w, h;
 
-  geometry = glgrib_geometry_load (ld, opts.geometry, opts.orography, opts.number_of_latitudes);
+  geometry = glgrib_geometry::load (ld, opts.geometry_path, opts.geometry, opts.orography, opts.number_of_latitudes);
 
   if (endsWith (opts.path, ".png"))
     glgrib_read_png (glgrib_resolve (opts.path), &w, &h, &rgb);

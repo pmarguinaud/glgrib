@@ -18,7 +18,7 @@ public:
   virtual int latlon2index (float, float) const;
   glgrib_geometry_gaussian (glgrib_handle_ptr);
   glgrib_geometry_gaussian (int);
-  virtual void setup (glgrib_handle_ptr, const float = 0.0f);
+  virtual void setup (glgrib_handle_ptr, const glgrib_options_geometry &, const float = 0.0f);
   virtual int size () const;
   virtual ~glgrib_geometry_gaussian ();
   virtual void applyNormScale (float *) const;
@@ -26,7 +26,6 @@ public:
   virtual void sample (unsigned char *, const unsigned char, const int) const;
   virtual void sampleTriangle (unsigned char *, const unsigned char, const int) const;
   virtual float resolution (int level = 0) const { if (level == 0) level = Nj; return M_PI / level; }
-  virtual void getTriangleVertices (int, int [3]) const;
   virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec3 xyz[3]) const;
   virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec2 [3]) const;
   virtual bool triangleIsEdge (int) const;
@@ -81,14 +80,20 @@ private:
     return glm::vec3 (XYZ.x, XYZ.y, XYZ.z);
   }
 
+  int getUpperTriangle (int jglo, const jlonlat_t & jlonlat) const;
+  
+  int getLowerTriangle (int jglo, const jlonlat_t & jlonlat) const;
+
+  void getTriangleVertices (int it, int jglo[3]) const;
+
   void getTriangleNeighbours (int, int [3], int [3], jlonlat_t [3]) const;
   void latlon2coordxy (float, float, float &, float &) const;
   int latlon2jlatjlon (float, float, int &, int &) const;
 
-  int get_trid (int, int) const;
-  int get_triu (int, int) const;
-  void get_ind (int, int [3]) const;
-  void check_tri () const;
+  int computeLowerTriangle (int, int) const;
+  int computeUpperTriangle (int, int) const;
+  void computeTriangleVertices (int, int [3]) const;
+  void checkTriangleComputation () const;
   
 
 private:

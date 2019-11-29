@@ -15,3 +15,5 @@ Remove unused shaders
 Optimize coordinates latlon->XYZ in shaders
 Use lat/lon in lines, contour, stream
 
+Temp object for unmapping buffers ?
+

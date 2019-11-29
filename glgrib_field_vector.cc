@@ -253,10 +253,7 @@ void glgrib_field_vector::clear ()
 
 void glgrib_field_vector::reSample (const glgrib_view & view)
 {
-  d.buffer_d->bind (GL_ARRAY_BUFFER);
-  unsigned char * col_d = (unsigned char *)glMapBufferRange (GL_ARRAY_BUFFER, 0, 
-                                           numberOfPoints * sizeof (unsigned char), 
-                                           GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
+  unsigned char * col_d = (unsigned char *)d.buffer_d->map ();
 
   float * data_d = values[1]->data ();
 
@@ -280,8 +277,8 @@ void glgrib_field_vector::reSample (const glgrib_view & view)
 
   d.vscale = opts.vector.scale * (M_PI / npts) / (meta_n.valmax || 1.0f);
 
-  glFlushMappedBufferRange (GL_ARRAY_BUFFER, 0, numberOfPoints * sizeof (unsigned char));
-  glUnmapBuffer (GL_ARRAY_BUFFER);
+  d.buffer_d->unmap ();
+
 }
 
 void glgrib_field_vector::resize (const glgrib_view & view)

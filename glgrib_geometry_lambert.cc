@@ -37,22 +37,47 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options
 {
   codes_handle * h = ghp->getCodesHandle ();
   float * xyz = NULL;
-  unsigned int * ind = NULL;
+  unsigned int * ind = NULL, * ind_strip = NULL;
 
   // Compute number of triangles
   
   numberOfTriangles = 2 * (Nx - 1) * (Ny - 1);
   
-  ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
+  if (opts.triangle_strip.on)
+    {
+      ind_strip_size = (2 * Nx + 1) * (Ny - 1);
+      ind_strip = (unsigned int *)malloc (ind_strip_size * sizeof (unsigned int));
+    }
+  else
+    {
+      ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
+    }
   // Generation of triangles
-  for (int j = 0, t = 0; j < Ny-1; j++)
-    for (int i = 0; i < Nx-1; i++)
-      {
-        int ind0 = (j + 0) * Nx + (i + 0); int ind1 = (j + 0) * Nx + (i + 1); 
-        int ind2 = (j + 1) * Nx + (i + 0); int ind3 = (j + 1) * Nx + (i + 1); 
-        ind[3*t+0] = ind2; ind[3*t+1] = ind0; ind[3*t+2] = ind1; t++;
-        ind[3*t+0] = ind2; ind[3*t+1] = ind1; ind[3*t+2] = ind3; t++;
-      }
+  
+  if (ind)
+    {
+      for (int j = 0, t = 0; j < Ny-1; j++)
+        for (int i = 0; i < Nx-1; i++)
+          {
+            int ind0 = (j + 0) * Nx + (i + 0); int ind1 = (j + 0) * Nx + (i + 1); 
+            int ind2 = (j + 1) * Nx + (i + 0); int ind3 = (j + 1) * Nx + (i + 1); 
+            ind[3*t+0] = ind2; ind[3*t+1] = ind0; ind[3*t+2] = ind1; t++;
+            ind[3*t+0] = ind2; ind[3*t+1] = ind1; ind[3*t+2] = ind3; t++;
+          }
+    }
+  else
+    {
+      for (int j = 0, t = 0; j < Ny-1; j++)
+        {
+          for (int i = 0; i < Nx; i++)
+            {
+              int ind0 = (j + 0) * Nx + (i + 0); 
+              int ind2 = (j + 1) * Nx + (i + 0); 
+              ind_strip[t++] = ind2; ind_strip[t++] = ind0;
+            }
+	  ind_strip[t++] = 0xffffffff;
+	}
+    }
 
   xyz = (float *)malloc (3 * sizeof (float) * Nx * Ny);
   numberOfPoints  = Nx * Ny;
@@ -79,11 +104,20 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options
         xyz[3*p+2] =          sinlat;
       }
       
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
-  elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (unsigned int), ind);
 
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
   free (xyz); xyz = NULL;
-  free (ind); ind = NULL;
+
+  if (ind)
+    {
+      elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (unsigned int), ind);
+      free (ind); ind = NULL;
+    }
+  else
+    {
+      elementbuffer = new_glgrib_opengl_buffer_ptr (ind_strip_size * sizeof (unsigned int), ind_strip);
+      free (ind_strip); ind_strip = NULL;
+    }
 }
 
 glgrib_geometry_lambert::~glgrib_geometry_lambert ()

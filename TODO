@@ -6,7 +6,6 @@ Better container than fieldlist
 Make geometry member of glgrib_world protected
 Add [] operator to glgrib_field_float_buffer_ptr
 Optimisations : 
-- use mapped buffers for scalar, vector, contour, stream
 - use compressed lat/lon
 - reduce CPU usage
 Use preprocessor for shaders

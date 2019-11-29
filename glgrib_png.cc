@@ -70,8 +70,8 @@ void glgrib_read_png (const std::string & filename, int * pwidth, int * pheight,
   png_read_update_info (png, info);
 
   size_t rowsize = png_get_rowbytes (png, info);
-  png_rows = (png_bytep *)malloc (sizeof (png_bytep) * height);
-  png_byte * png_bytes = (png_byte *)malloc (rowsize * height);
+  png_rows = new png_bytep[height];
+  png_byte * png_bytes = new png_byte[rowsize * height];
 
   for(int j = 0; j < height; j++) 
     png_rows[j] = png_bytes + j * rowsize;
@@ -80,7 +80,7 @@ void glgrib_read_png (const std::string & filename, int * pwidth, int * pheight,
 
   fclose (fp);
 
-  unsigned char * pixels = (unsigned char *)malloc (width * height * 3);
+  unsigned char * pixels = new unsigned char[width * height * 3];
 
   for (int j = 0; j < height; j++)
     for (int i = 0; i < width; i++)
@@ -92,8 +92,8 @@ void glgrib_read_png (const std::string & filename, int * pwidth, int * pheight,
 
   png_destroy_read_struct (&png, &info, NULL);
 
-  free (png_bytes);
-  free (png_rows);
+  delete [] png_bytes;
+  delete [] png_rows;
 
   *pwidth = width;
   *pheight = height;
@@ -109,8 +109,8 @@ void glgrib_write_png (const std::string & filename, int width, int height, unsi
   size_t nvals = format_nchannels * width * height;
   FILE * fp = fopen (filename.c_str (), "w");
 
-  png_bytes = (png_byte *)malloc (nvals * sizeof (png_byte));
-  png_rows = (png_byte **)malloc (height * sizeof (png_byte *));
+  png_bytes = new png_byte[nvals];
+  png_rows = new png_bytep[height];
 
   for (int i = 0; i < nvals; i++)
     png_bytes[i] = pixels[i];
@@ -143,7 +143,7 @@ void glgrib_write_png (const std::string & filename, int width, int height, unsi
 
   fclose (fp);
 
-  free (png_bytes);
-  free (png_rows);
+  delete [] png_bytes;
+  delete [] png_rows;
 }
 

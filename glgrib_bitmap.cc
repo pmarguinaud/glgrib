@@ -25,7 +25,7 @@ void glgrib_bitmap (const std::string & file, unsigned char ** rgb, int * width,
   int ncol = S4 (&h[18]);
   int nrow = S4 (&h[22]);
 
-  *rgb = (unsigned char *)malloc (3 * ncol * nrow * sizeof (unsigned char));
+  *rgb = new unsigned char[3 * ncol * nrow];
   
   fseek (fp, ioff, SEEK_SET);
 

@@ -71,7 +71,7 @@ void glgrib_landscape::setup (glgrib_loader * ld, const glgrib_options_landscape
 
   texture = new_glgrib_opengl_texture_ptr (w, h, rgb);
 
-  free (rgb);
+  delete [] rgb;
 
   setupVertexAttributes ();
   

@@ -725,7 +725,7 @@ void glgrib_geometry_gaussian::checkTriangleComputation () const
   if (0){
   printf (" %8s %8s\n", "jlat", "pl");
   for (int i = 0; i < Nj; i++)
-    printf (" %8d %8d\n", i+1, pl[i]);
+    printf (" %8d %8ld\n", i+1, pl[i]);
   }
 
   printf ("----ITRID----\n");

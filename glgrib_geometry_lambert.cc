@@ -46,11 +46,11 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options
   if (opts.triangle_strip.on)
     {
       ind_strip_size = (2 * Nx + 1) * (Ny - 1);
-      ind_strip = (unsigned int *)malloc (ind_strip_size * sizeof (unsigned int));
+      ind_strip = new unsigned int[ind_strip_size]; 
     }
   else
     {
-      ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
+      ind = new unsigned int[3 * numberOfTriangles]; 
     }
   // Generation of triangles
   
@@ -79,7 +79,7 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options
 	}
     }
 
-  xyz = (float *)malloc (3 * sizeof (float) * Nx * Ny);
+  xyz = new float[3 * Nx * Ny]; 
   numberOfPoints  = Nx * Ny;
 
   p_pj = proj_t (deg2rad * LoVInDegrees, deg2rad * LaDInDegrees, projectionCentreFlag == 128 ? -1.0 : +1.0);
@@ -106,17 +106,17 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options
       
 
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
-  free (xyz); xyz = NULL;
+  delete [] xyz; xyz = NULL;
 
   if (ind)
     {
       elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (unsigned int), ind);
-      free (ind); ind = NULL;
+      delete [] ind; ind = NULL;
     }
   else
     {
       elementbuffer = new_glgrib_opengl_buffer_ptr (ind_strip_size * sizeof (unsigned int), ind_strip);
-      free (ind_strip); ind_strip = NULL;
+      delete [] ind_strip; ind_strip = NULL;
     }
 }
 

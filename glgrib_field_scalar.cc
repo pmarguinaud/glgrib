@@ -99,7 +99,7 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
 
   numberOfColors = 1;
 
-  col = (unsigned char *)malloc (numberOfColors * geometry->getNumberOfPoints () * sizeof (unsigned char));
+  col = new unsigned char [numberOfColors * geometry->getNumberOfPoints ()];
 
   for (int i = 0; i < geometry->getNumberOfPoints (); i++)
     if ((*data)[i] == meta1.valmis)
@@ -109,7 +109,7 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
 
   colorbuffer = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints () * sizeof (unsigned char), col);
 
-  free (col);
+  delete [] col;
 
   setupVertexAttributes ();
 

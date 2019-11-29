@@ -32,7 +32,7 @@ glgrib_geometry_latlon::glgrib_geometry_latlon (glgrib_handle_ptr ghp)
 void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts, const float orography)
 {
   codes_handle * h = ghp->getCodesHandle ();
-  float * xyz = NULL;
+  float * lonlat = NULL;
   unsigned int * ind = NULL, * ind_strip = NULL;
   periodic = false;
 
@@ -111,38 +111,26 @@ void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const glgrib_options_
         }
     }
 
-  xyz = new float[3 * Ni * Nj];
+  lonlat = new float[2 * Ni * Nj];
   numberOfPoints  = Ni * Nj;
-
-  double sinlon[Ni];
-  double coslon[Ni];
-
-#pragma omp parallel for
-  for (int i = 0; i < Ni; i++)
-    {
-      float lon = lon0 + dlon * (float)i;
-      coslon[i] = cos (lon); 
-      sinlon[i] = sin (lon);
-    }
 
   // Generation of coordinates
 #pragma omp parallel for
   for (int j = 0; j < Nj; j++)
     {
       float lat = lat0 - dlat * (float)j;
-      float coslat = cos (lat), sinlat = sin (lat);
       for (int i = 0; i < Ni; i++)
         {
+          float lon = lon0 + dlon * (float)i;
           int p = j * Ni + i;
-          xyz[3*p+0] = coslon[i] * coslat;
-          xyz[3*p+1] = sinlon[i] * coslat;
-          xyz[3*p+2] =             sinlat;
+	  lonlat[2*p+0] = lon;
+	  lonlat[2*p+1] = lat;
         }
     }
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
-  delete [] xyz; 
-  xyz = NULL;
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (float), lonlat);
+  delete [] lonlat;
+  lonlat = NULL;
 
   if (ind)
     {

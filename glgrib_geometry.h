@@ -60,7 +60,7 @@ public:
     if (attr >= 0)
       {
         glEnableVertexAttribArray (attr);
-        glVertexAttribPointer (attr, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        glVertexAttribPointer (attr, 2, GL_FLOAT, GL_FALSE, 0, NULL);
       }
   }
   void bindTriangles () const

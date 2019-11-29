@@ -36,7 +36,7 @@ glgrib_geometry_lambert::glgrib_geometry_lambert (glgrib_handle_ptr ghp)
 void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts, const float orography)
 {
   codes_handle * h = ghp->getCodesHandle ();
-  float * xyz = NULL;
+  float * lonlat = NULL;
   unsigned int * ind = NULL, * ind_strip = NULL;
 
   // Compute number of triangles
@@ -79,7 +79,7 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options
 	}
     }
 
-  xyz = new float[3 * Nx * Ny]; 
+  lonlat = new float[2 * Nx * Ny]; 
   numberOfPoints  = Nx * Ny;
 
   p_pj = proj_t (deg2rad * LoVInDegrees, deg2rad * LaDInDegrees, projectionCentreFlag == 128 ? -1.0 : +1.0);
@@ -95,18 +95,14 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options
 
         latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
 
-	float coslon = cos (latlon.lon), sinlon = sin (latlon.lon);
-	float coslat = cos (latlon.lat), sinlat = sin (latlon.lat);
-
         int p = j * Nx + i;
-        xyz[3*p+0] = coslon * coslat;
-        xyz[3*p+1] = sinlon * coslat;
-        xyz[3*p+2] =          sinlat;
+	lonlat[2*p+0] = latlon.lon;
+	lonlat[2*p+1] = latlon.lat;
       }
       
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
-  delete [] xyz; xyz = NULL;
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (float), lonlat);
+  delete [] lonlat; lonlat = NULL;
 
   if (ind)
     {

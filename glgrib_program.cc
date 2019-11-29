@@ -19,6 +19,14 @@ uniform bool isflat = true;
 uniform float lon0 = 180.0; // Latitude of right handside
 const float pi = 3.1415926;
 
+vec3 posFromLonLat (vec2 vertexLonLat)
+{
+  float lon = vertexLonLat.x, lat = vertexLonLat.y;
+  float coslon = cos (lon), sinlon = sin (lon);
+  float coslat = cos (lat), sinlat = sin (lat);
+  return vec3 (coslon * coslat, sinlon * coslat, sinlat);
+}
+
 vec3 compNormedPos (vec3 vertexPos)
 {
   float x = vertexPos.x;
@@ -415,7 +423,7 @@ void main ()
 R"CODE(
 #version 330 core
 
-layout(location = 0) in vec3 vertexPos;
+layout(location = 0) in vec2 vertexLonLat;
 layout(location = 1) in float vertexVal;
 
 out float fragmentVal;
@@ -431,6 +439,7 @@ uniform mat4 MVP;
 
 void main ()
 {
+  vec3 vertexPos = posFromLonLat (vertexLonLat);
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);
   pos = scalePosition (pos, normedPos, scale0);

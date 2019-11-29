@@ -810,7 +810,6 @@ end:
 void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts, const float orography)
 {
   codes_handle * h = ghp ? ghp->getCodesHandle () : NULL;
-  std::vector<float> xyz;
 
 
   bool orog = (orography > 0.0f) && (h != NULL);
@@ -888,7 +887,8 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
   // Compute Gaussian latitudes
   compute_latgauss (Nj, latgauss);
       
-  xyz.resize (3 * numberOfPoints);
+  std::vector<float> lonlat;
+  lonlat.resize (3 * numberOfPoints);
 
   int iglooff[Nj];
   iglooff[0] = 0;
@@ -900,39 +900,68 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
   for (int jlat = 1; jlat <= Nj; jlat++)
     {
       float coordy = latgauss[jlat-1];
-      float sincoordy = sin (coordy);
-      float lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
-      float coslat = cos (lat); float sinlat = sin (lat);
+      float lat;
+
+      if (rotated)
+        {
+          float sincoordy = sin (coordy);
+          lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
+        }
+      else
+        {
+          lat = coordy;
+        }
+
+      float coslat, sinlat;
+
+      if (rotated)
+        {
+          coslat = cos (lat); 
+	  sinlat = sin (lat);
+	}
+
       int jglo = iglooff[jlat-1];
+
       for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
         {
+
           float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
           float lon = coordx;
-          float coslon = cos (lon); float sinlon = sin (lon);
 
-          float radius;
- 
-          if (orog)
-            radius = (1.0 + ((v[jglo] == vmis) ? 0. : 0.05 * v[jglo]/vmax));
+	  if (! rotated)
+            {
+              lonlat[2*jglo+0] = lon;
+              lonlat[2*jglo+1] = lat;
+            }
           else
-            radius = 1.0f;
+            {
+              float coslon = cos (lon); float sinlon = sin (lon);
 
-          float X = coslon * coslat * radius;
-          float Y = sinlon * coslat * radius;
-          float Z =          sinlat * radius;
+#ifdef UNDEF
+              float radius;
+              if (orog)
+                radius = (1.0 + ((v[jglo] == vmis) ? 0. : 0.05 * v[jglo]/vmax));
+              else
+                radius = 1.0f;
+#endif
 
-          glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
-          XYZ = rot * XYZ;
+              float X = coslon * coslat;
+              float Y = sinlon * coslat;
+              float Z =          sinlat;
 
-          xyz[3*jglo+0] = XYZ.x;
-          xyz[3*jglo+1] = XYZ.y;
-          xyz[3*jglo+2] = XYZ.z;
+              glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
+              XYZ = rot * XYZ;
+
+              lonlat[2*jglo+0] = atan2 (XYZ.y, XYZ.x);
+              lonlat[2*jglo+1] = asin (XYZ.z);
+
+	    }
 
         }
     }
 
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (xyz[0]), xyz.data ());
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (lonlat[0]), lonlat.data ());
 
   if (opts.triangle_strip.on)
     {

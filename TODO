@@ -12,3 +12,6 @@ Optimisations :
 - reduce CPU usage
 Use preprocessor for shaders
 
+Handle orography in geometry
+Optimize coordinates latlon->XYZ in shaders
+

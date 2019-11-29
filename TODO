@@ -10,4 +10,5 @@ Optimisations :
 - use lat/lon
 - use compressed lat/lon
 - reduce CPU usage
+Use preprocessor for shaders
 

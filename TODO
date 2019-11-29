@@ -6,13 +6,14 @@ Better container than fieldlist
 Make geometry member of glgrib_world protected
 Add [] operator to glgrib_field_float_buffer_ptr
 Optimisations : 
+- use glDrawArraysInstanced for lines
+- use lat/lon for contour & stream
 - use compressed lat/lon
 - reduce CPU usage
 Use preprocessor for shaders
 Remove unused shaders
 
 Optimize coordinates latlon->XYZ in shaders
-Use lat/lon in lines, contour, stream
 
 Temp object for unmapping buffers ?
 Template for openGL buffers depending on type being allocated ?

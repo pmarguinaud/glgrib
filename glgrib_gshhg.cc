@@ -81,7 +81,7 @@ static int read_GSHHG_POINT_list (std::vector<GSHHG_POINT_t> * gpl, int n, FILE 
 
 
 void glgrib_gshhg::read (const glgrib_options_lines & opts, int * numberOfPoints, 
-		         unsigned int * numberOfLines, std::vector<float> * xyz,
+		         unsigned int * numberOfLines, std::vector<float> * lonlat,
 			 std::vector<unsigned int> * ind, 
                          const std::vector<unsigned int> & mask, 
                          const std::vector<unsigned int> & code)
@@ -151,14 +151,9 @@ void glgrib_gshhg::read (const glgrib_options_lines & opts, int * numberOfPoints
                 {
                   float lon = microdeg2rad * gpl[i].x;
     	          float lat = microdeg2rad * gpl[i].y;
-                  float coslon = cos (lon);
-                  float sinlon = sin (lon);
-                  float coslat = cos (lat);
-                  float sinlat = sin (lat);
 
-                  xyz->push_back (coslon * coslat);
-                  xyz->push_back (sinlon * coslat);
-                  xyz->push_back (         sinlat);
+                  lonlat->push_back (lon);
+                  lonlat->push_back (lat);
                   ind->push_back (ip);
                   ip++;
                 }
@@ -176,7 +171,7 @@ void glgrib_gshhg::read (const glgrib_options_lines & opts, int * numberOfPoints
 
     }   
 
-  *numberOfPoints = xyz->size () / 3;
+  *numberOfPoints = lonlat->size () / 3;
   *numberOfLines = ind->size ();
 
   fclose (fp);

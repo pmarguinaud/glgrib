@@ -248,7 +248,7 @@ void main()
 }
 )CODE"),
 
-  glgrib_program ( // Fixed color
+  glgrib_program ( // Fixed color MONO
 R"CODE(
 #version 330 core
 
@@ -270,7 +270,7 @@ void main()
 R"CODE(
 #version 330 core
 
-layout(location = 0) in vec3 vertexPos;
+layout(location = 0) in vec2 vertexLonLat;
 out float alpha;
 
 
@@ -283,6 +283,7 @@ uniform float scale = 1.005;
 
 void main()
 {
+  vec3 vertexPos = posFromLonLat (vertexLonLat);
   vec3 pos;
 
   alpha = 1.0;

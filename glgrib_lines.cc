@@ -32,15 +32,15 @@ void glgrib_lines::setup (const glgrib_options_lines & o,
 
   numberOfColors = use_alpha () ? 4 : 3;
 
-  std::vector <float> xyz;
+  std::vector <float> lonlat;
   std::vector <unsigned int> ind;
 
   if (opts.format == "gshhg")
-     glgrib_gshhg::read (opts, &numberOfPoints, &numberOfLines, &xyz, &ind, mask, code);
+     glgrib_gshhg::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &ind, mask, code);
   else
-     glgrib_shapelib::read (opts, &numberOfPoints, &numberOfLines, &xyz, &ind, opts.selector);
+     glgrib_shapelib::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &ind, opts.selector);
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (xyz.size () * sizeof (float), xyz.data ());
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (lonlat.size () * sizeof (float), lonlat.data ());
   elementbuffer = new_glgrib_opengl_buffer_ptr (ind.size () * sizeof (unsigned int), ind.data ());
 
   setupVertexAttributes ();
@@ -55,7 +55,6 @@ void glgrib_lines::render (const glgrib_view & view, const glgrib_options_light 
   float color[3] = {(float)opts.color.r / 255.0f, 
                     (float)opts.color.g / 255.0f, 
                     (float)opts.color.b / 255.0f};
-
 
   view.setMVP (program);
   program->setLight (light);

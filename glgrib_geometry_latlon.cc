@@ -64,11 +64,11 @@ void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const glgrib_options_
         ind_strip_size = (2 * (Ni + 1) + 1) * (Nj - 1);
       else
         ind_strip_size = (2 * Ni + 1) * (Nj - 1);
-      ind_strip = (unsigned int *)malloc (ind_strip_size * sizeof (unsigned int));
+      ind_strip = new unsigned int[ind_strip_size];
     }
   else
     {
-      ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
+      ind = new unsigned int[3 * numberOfTriangles];
     }
   // Generation of triangles
   if (ind)
@@ -111,7 +111,7 @@ void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const glgrib_options_
         }
     }
 
-  xyz = (float *)malloc (3 * sizeof (float) * Ni * Nj);
+  xyz = new float[3 * Ni * Nj];
   numberOfPoints  = Ni * Nj;
 
   double sinlon[Ni];
@@ -141,18 +141,18 @@ void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const glgrib_options_
     }
 
   vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
-  free (xyz); 
+  delete [] xyz; 
   xyz = NULL;
 
   if (ind)
     {
       elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (unsigned int), ind);
-      free (ind); ind = NULL;
+      delete [] ind; ind = NULL;
     }
   else
     {
       elementbuffer = new_glgrib_opengl_buffer_ptr (3 * ind_strip_size * sizeof (unsigned int), ind_strip);
-      free (ind_strip); ind_strip = NULL;
+      delete [] ind_strip; ind_strip = NULL;
     }
 }
 

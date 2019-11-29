@@ -107,7 +107,7 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
     else
       col[i] = 1 + (int)(254 * ((*data)[i] - meta1.valmin)/(meta1.valmax - meta1.valmin));
 
-
+  col = NULL;
   colorbuffer->unmap ();
 
   setupVertexAttributes ();

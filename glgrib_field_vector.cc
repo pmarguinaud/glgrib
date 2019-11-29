@@ -122,27 +122,26 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
   numberOfColors = 1;
 
   unsigned char * col_n = new unsigned char[numberOfColors * geometry->getNumberOfPoints ()];
-  unsigned char * col_d = new unsigned char[numberOfColors * geometry->getNumberOfPoints ()];
-
   for (int i = 0; i < geometry->getNumberOfPoints (); i++)
-    {
-      col_n[i] = 1 + (int)(254 * ((*data_n)[i] - meta_n.valmin)
-                   / (meta_n.valmax - meta_n.valmin));
-      col_d[i] = 1 + (int)(254 * ((*data_d)[i] - meta_d.valmin)
-                   / (meta_d.valmax - meta_d.valmin));
-    }
+    col_n[i] = 1 + (int)(254 * ((*data_n)[i] - meta_n.valmin)
+                 / (meta_n.valmax - meta_n.valmin));
+  d.buffer_n = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints ()
+                                               * sizeof (unsigned char), col_n);
+
+  delete [] col_n;
+
+  unsigned char * col_d = new unsigned char[numberOfColors * geometry->getNumberOfPoints ()];
+  for (int i = 0; i < geometry->getNumberOfPoints (); i++)
+    col_d[i] = 1 + (int)(254 * ((*data_d)[i] - meta_d.valmin)
+                 / (meta_d.valmax - meta_d.valmin));
 
   float resolution = geometry->resolution ();
   const int npts = opts.vector.density;
   geometry->sample (col_d, 0, npts);
 
-  d.buffer_n = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints ()
-                                               * sizeof (unsigned char), col_n);
-
   d.buffer_d = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints ()
                                                * sizeof (unsigned char), col_d);
 
-  delete [] col_n;
   delete [] col_d;
 
   meta.push_back (meta_n);

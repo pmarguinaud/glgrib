@@ -1487,7 +1487,7 @@ void main ()
 R"CODE(
 #version 330 core
 
-layout(location = 0) in vec3 vertexPos;
+layout(location = 0) in vec2 vertexLonLat;
 layout(location = 1) in float vertexVal;
 
 out float fragmentVal;
@@ -1512,6 +1512,8 @@ uniform bool factor = true;
 
 void main ()
 {
+  vec3 vertexPos = posFromLonLat (vertexLonLat);
+
   vec3 pos = vertexPos;
 
   vec2 pos2; 

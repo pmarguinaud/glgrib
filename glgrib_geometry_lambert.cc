@@ -36,26 +36,18 @@ glgrib_geometry_lambert::glgrib_geometry_lambert (glgrib_handle_ptr ghp)
 void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts, const float orography)
 {
   codes_handle * h = ghp->getCodesHandle ();
-  float * lonlat = NULL;
-  unsigned int * ind = NULL, * ind_strip = NULL;
 
   // Compute number of triangles
   
   numberOfTriangles = 2 * (Nx - 1) * (Ny - 1);
+  numberOfPoints  = Nx * Ny;
   
-  if (opts.triangle_strip.on)
-    {
-      ind_strip_size = (2 * Nx + 1) * (Ny - 1);
-      ind_strip = new unsigned int[ind_strip_size]; 
-    }
-  else
-    {
-      ind = new unsigned int[3 * numberOfTriangles]; 
-    }
   // Generation of triangles
   
-  if (ind)
+  if (! opts.triangle_strip.on)
     {
+      elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (unsigned int));
+      unsigned int * ind = (unsigned int *)elementbuffer->map ();
       for (int j = 0, t = 0; j < Ny-1; j++)
         for (int i = 0; i < Nx-1; i++)
           {
@@ -67,6 +59,9 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options
     }
   else
     {
+      ind_strip_size = (2 * Nx + 1) * (Ny - 1);
+      elementbuffer = new_glgrib_opengl_buffer_ptr (ind_strip_size * sizeof (unsigned int));
+      unsigned int * ind_strip = (unsigned int *)elementbuffer->map ();
       for (int j = 0, t = 0; j < Ny-1; j++)
         {
           for (int i = 0; i < Nx; i++)
@@ -79,8 +74,12 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options
 	}
     }
 
-  lonlat = new float[2 * Nx * Ny]; 
-  numberOfPoints  = Nx * Ny;
+  elementbuffer->unmap ();
+
+
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (float));
+
+  float * lonlat = (float *)vertexbuffer->map ();
 
   p_pj = proj_t (deg2rad * LoVInDegrees, deg2rad * LaDInDegrees, projectionCentreFlag == 128 ? -1.0 : +1.0);
   center_xy = p_pj.latlon_to_xy (p_pj.ref_pt);
@@ -101,19 +100,9 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options
       }
       
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (float), lonlat);
-  delete [] lonlat; lonlat = NULL;
+  lonlat = NULL;
+  vertexbuffer->unmap ();
 
-  if (ind)
-    {
-      elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (unsigned int), ind);
-      delete [] ind; ind = NULL;
-    }
-  else
-    {
-      elementbuffer = new_glgrib_opengl_buffer_ptr (ind_strip_size * sizeof (unsigned int), ind_strip);
-      delete [] ind_strip; ind_strip = NULL;
-    }
 }
 
 glgrib_geometry_lambert::~glgrib_geometry_lambert ()

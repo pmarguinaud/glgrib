@@ -16,4 +16,5 @@ Optimize coordinates latlon->XYZ in shaders
 Use lat/lon in lines, contour, stream
 
 Temp object for unmapping buffers ?
+Template for openGL buffers depending on type being allocated ?
 

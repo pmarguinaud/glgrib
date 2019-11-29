@@ -460,8 +460,8 @@ void glgrib_loader::uv2nd (const_glgrib_geometry_ptr geometry,
                            glgrib_field_metadata & meta_n, 
                            glgrib_field_metadata & meta_d)
 {
-  data_n = new_glgrib_field_float_buffer_ptr (geometry->numberOfPoints);
-  data_d = new_glgrib_field_float_buffer_ptr (geometry->numberOfPoints);
+  data_n = new_glgrib_field_float_buffer_ptr (geometry->getNumberOfPoints ());
+  data_d = new_glgrib_field_float_buffer_ptr (geometry->getNumberOfPoints ());
 
   const double rad2deg = 180.0 / M_PI;
 
@@ -474,7 +474,7 @@ void glgrib_loader::uv2nd (const_glgrib_geometry_ptr geometry,
   meta_d.valmax = +180.0f;
 
 #pragma omp parallel for
-  for (int i = 0; i < geometry->numberOfPoints; i++)
+  for (int i = 0; i < geometry->getNumberOfPoints (); i++)
     if ((*data_u)[i] == meta_u.valmis)
       {
         (*data_n)[i] = meta_u.valmis;
@@ -490,7 +490,7 @@ void glgrib_loader::uv2nd (const_glgrib_geometry_ptr geometry,
 
   geometry->applyNormScale (data_n->data ());
 
-  for (int i = 0; i < geometry->numberOfPoints; i++)
+  for (int i = 0; i < geometry->getNumberOfPoints (); i++)
     if ((*data_u)[i] != meta_u.valmis)
       {
         if ((*data_n)[i] < meta_n.valmin)

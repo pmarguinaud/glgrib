@@ -126,12 +126,12 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
   numberOfColors = 1;
 
   unsigned char * col_n = (unsigned char *)malloc (numberOfColors 
-                        * geometry->numberOfPoints * sizeof (unsigned char));
+                        * geometry->getNumberOfPoints () * sizeof (unsigned char));
   unsigned char * col_d = (unsigned char *)malloc (numberOfColors 
-                        * geometry->numberOfPoints * sizeof (unsigned char));
+                        * geometry->getNumberOfPoints () * sizeof (unsigned char));
 
 
-  for (int i = 0; i < geometry->numberOfPoints; i++)
+  for (int i = 0; i < geometry->getNumberOfPoints (); i++)
     {
       col_n[i] = 1 + (int)(254 * ((*data_n)[i] - meta_n.valmin)
                    / (meta_n.valmax - meta_n.valmin));
@@ -143,10 +143,10 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
   const int npts = opts.vector.density;
   geometry->sample (col_d, 0, npts);
 
-  d.buffer_n = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
+  d.buffer_n = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints ()
                                                * sizeof (unsigned char), col_n);
 
-  d.buffer_d = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints 
+  d.buffer_d = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints ()
                                                * sizeof (unsigned char), col_d);
 
   free (col_n);
@@ -155,8 +155,8 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
   meta.push_back (meta_n);
   meta.push_back (meta_d);
 
-  numberOfPoints = geometry->numberOfPoints;
-  numberOfTriangles = geometry->numberOfTriangles;
+  numberOfPoints = geometry->getNumberOfPoints ();
+  numberOfTriangles = geometry->getNumberOfTriangles ();
 
   setupVertexAttributes ();
 
@@ -280,7 +280,7 @@ void glgrib_field_vector::reSample (const glgrib_view & view)
 
   const int npts = 2 * opts.vector.density / w;
 
-  for (int i = 0; i < geometry->numberOfPoints; i++)
+  for (int i = 0; i < geometry->getNumberOfPoints (); i++)
     col_d[i] = 1 + (int)(254 * (data_d[i] - meta_d.valmin)
                  / (meta_d.valmax - meta_d.valmin));
   geometry->sample (col_d, 0, npts);

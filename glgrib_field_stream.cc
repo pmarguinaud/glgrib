@@ -57,8 +57,8 @@ void glgrib_field_stream::clear ()
 
 void glgrib_field_stream::setupVertexAttributes ()
 {
-  numberOfPoints = geometry->numberOfPoints;
-  numberOfTriangles = geometry->numberOfTriangles;
+  numberOfPoints = geometry->getNumberOfPoints ();
+  numberOfTriangles = geometry->getNumberOfTriangles ();
 
   for (int i = 0; i < stream.size (); i++)
     {
@@ -130,13 +130,13 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 
   std::vector<int> it;
 
-  int nt = geometry->numberOfTriangles;
+  int nt = geometry->getNumberOfTriangles ();
 
   unsigned char * sample = new unsigned char[nt];
   for (int i = 0; i < nt; i++)
     sample[i] = 0;
 
-  int np = (int)sqrt (geometry->numberOfPoints);
+  int np = (int)sqrt (geometry->getNumberOfPoints ());
   int level = (int)(opts.stream.density * np / 40.0f);
 
   geometry->sampleTriangle (sample, 1, level);

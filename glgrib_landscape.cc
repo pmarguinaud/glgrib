@@ -28,8 +28,8 @@ glgrib_landscape & glgrib_landscape::operator= (const glgrib_landscape & landsca
 
 void glgrib_landscape::setupVertexAttributes ()
 {
-  numberOfPoints = geometry->numberOfPoints;
-  numberOfTriangles = geometry->numberOfTriangles;
+  numberOfPoints = geometry->getNumberOfPoints ();
+  numberOfTriangles = geometry->getNumberOfTriangles ();
 
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
@@ -136,7 +136,7 @@ void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_li
   if (opts.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 
-  glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
+  geometry->renderTriangles ();
 
   glBindVertexArray (0);
 

@@ -29,10 +29,7 @@ public:
   virtual int size () const = 0;
   virtual int latlon2index (float, float) const = 0;
   virtual ~glgrib_geometry ();
-  int numberOfPoints; 
-  unsigned int numberOfTriangles = 0;
   glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
-  unsigned int ind_strip_size = 0;
   glgrib_opengl_buffer_ptr triangle_strip_buffer;
   virtual std::string md5 () const = 0;
   virtual void applyUVangle (float *) const = 0;
@@ -50,7 +47,19 @@ public:
   virtual glm::vec2 conformal2latlon (const glm::vec2 &) const = 0;
   virtual void checkTriangles () const;
   virtual void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const = 0;
+  virtual void renderTriangles () const;
+  int getNumberOfPoints () const
+  {
+    return numberOfPoints;
+  }
+  int getNumberOfTriangles () const
+  {
+    return numberOfTriangles;
+  }
 protected:
+  unsigned int ind_strip_size = 0;
+  int numberOfPoints; 
+  unsigned int numberOfTriangles = 0;
   std::string md5string (const unsigned char []) const;
 };
 

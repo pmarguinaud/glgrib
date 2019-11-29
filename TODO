@@ -13,4 +13,4 @@ Optimisations :
 - use compressed lat/lon
 - reduce CPU usage
 - use loader for geometry
-
+replace malloc by new

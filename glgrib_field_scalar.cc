@@ -50,8 +50,8 @@ glgrib_field_scalar & glgrib_field_scalar::operator= (const glgrib_field_scalar 
 
 void glgrib_field_scalar::setupVertexAttributes ()
 {
-  numberOfPoints = geometry->numberOfPoints;
-  numberOfTriangles = geometry->numberOfTriangles;
+  numberOfPoints = geometry->getNumberOfPoints ();
+  numberOfTriangles = geometry->getNumberOfTriangles ();
 
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
@@ -103,15 +103,15 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
 
   numberOfColors = 1;
 
-  col = (unsigned char *)malloc (numberOfColors * geometry->numberOfPoints * sizeof (unsigned char));
+  col = (unsigned char *)malloc (numberOfColors * geometry->getNumberOfPoints () * sizeof (unsigned char));
 
-  for (int i = 0; i < geometry->numberOfPoints; i++)
+  for (int i = 0; i < geometry->getNumberOfPoints (); i++)
     if ((*data)[i] == meta1.valmis)
       col[i] = 0;
     else
       col[i] = 1 + (int)(254 * ((*data)[i] - meta1.valmin)/(meta1.valmax - meta1.valmin));
 
-  colorbuffer = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->numberOfPoints * sizeof (unsigned char), col);
+  colorbuffer = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints () * sizeof (unsigned char), col);
 
   free (col);
 
@@ -167,17 +167,8 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
         glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
     
       glBindVertexArray (VertexArrayID);
-      if (geometry->ind_strip_size)
-        {
-          glEnable (GL_PRIMITIVE_RESTART);
-          glPrimitiveRestartIndex (0xffffffff);
-          glDrawElements (GL_TRIANGLE_STRIP, geometry->ind_strip_size, GL_UNSIGNED_INT, NULL);
-          glDisable (GL_PRIMITIVE_RESTART);
-        }
-      else
-        {
-          glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
-        }
+
+      geometry->renderTriangles ();
       
       glBindVertexArray (0);
 

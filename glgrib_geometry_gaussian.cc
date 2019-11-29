@@ -1247,14 +1247,12 @@ void glgrib_geometry_gaussian::getTriangleVertices (int it, int jglo[3]) const
 {
   if (ind)
     {
-      jglo[0] = ind[3*it+0];
-      jglo[1] = ind[3*it+1];
-      jglo[2] = ind[3*it+2];
+      jglo[0] = ind[3*it+0]; jglo[1] = ind[3*it+1]; jglo[2] = ind[3*it+2];
     }
   else
-   {
-     computeTriangleVertices (it, jglo);
-   }
+    {
+      computeTriangleVertices (it, jglo);
+    }
 }
 
 void glgrib_geometry_gaussian::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const

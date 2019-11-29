@@ -55,8 +55,8 @@ void glgrib_field_contour::clear ()
 
 void glgrib_field_contour::setupVertexAttributes ()
 {
-  numberOfPoints = geometry->numberOfPoints;
-  numberOfTriangles = geometry->numberOfTriangles;
+  numberOfPoints = geometry->getNumberOfPoints ();
+  numberOfTriangles = geometry->getNumberOfTriangles ();
 
   for (int i = 0; i < iso.size (); i++)
     {
@@ -124,18 +124,18 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
 #pragma omp parallel for
   for (int i = 0; i < levels.size (); i++)
     {
-      bool * seen = (bool *)malloc (sizeof (bool) * (geometry->numberOfTriangles + 1));
+      bool * seen = (bool *)malloc (sizeof (bool) * (geometry->getNumberOfTriangles () + 1));
 
-      for (int i = 0; i < geometry->numberOfTriangles + 1; i++)
+      for (int i = 0; i < geometry->getNumberOfTriangles () + 1; i++)
         seen[i] = false;
       seen[0] = true;
 
       // First visit edge triangles
-      for (int it = 0; it < geometry->numberOfTriangles; it++)
+      for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
         if (geometry->triangleIsEdge (it))
           processTriangle (it, data->data (), levels[i], seen+1, &iso_data[i]);
 
-      for (int it = 0; it < geometry->numberOfTriangles; it++)
+      for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
         processTriangle (it, data->data (), levels[i], seen+1, &iso_data[i]);
 
       free (seen);

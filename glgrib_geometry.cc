@@ -148,6 +148,19 @@ void glgrib_geometry::checkTriangles () const
   printf ("checkTriangles OK\n");
 }
 
-
+void glgrib_geometry::renderTriangles () const
+{
+  if (ind_strip_size)
+    {
+      glEnable (GL_PRIMITIVE_RESTART);
+      glPrimitiveRestartIndex (0xffffffff);
+      glDrawElements (GL_TRIANGLE_STRIP, ind_strip_size, GL_UNSIGNED_INT, NULL);
+      glDisable (GL_PRIMITIVE_RESTART);
+    }
+  else
+    {
+      glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
+    }
+}
 
 

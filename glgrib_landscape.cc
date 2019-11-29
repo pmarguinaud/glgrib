@@ -35,6 +35,7 @@ void glgrib_landscape::setupVertexAttributes ()
   glBindVertexArray (VertexArrayID);
 
   geometry->bindCoordinates (0);
+  geometry->bindHeight (1);
   
   geometry->bindTriangles ();
   glBindVertexArray (0); 

@@ -63,6 +63,23 @@ public:
         glVertexAttribPointer (attr, 2, GL_FLOAT, GL_FALSE, 0, NULL);
       }
   }
+  void bindHeight (int attr = -1) const
+  {
+    if (heightbuffer)
+      {
+        heightbuffer->bind (GL_ARRAY_BUFFER);
+        if (attr >= 0)
+          {
+            glEnableVertexAttribArray (attr);
+            glVertexAttribPointer (attr, 1, GL_FLOAT, GL_FALSE, 0, NULL);
+          }
+      }
+    else
+      {
+        glDisableVertexAttribArray (attr);
+	glVertexAttrib1f (attr, 0.0f);
+      }
+  }
   void bindTriangles () const
   {
     elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
@@ -71,7 +88,7 @@ protected:
   unsigned int ind_strip_size = 0;
   int numberOfPoints; 
   unsigned int numberOfTriangles = 0;
-  glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
+  glgrib_opengl_buffer_ptr vertexbuffer, heightbuffer, elementbuffer;
   std::string md5string (const unsigned char []) const;
 };
 

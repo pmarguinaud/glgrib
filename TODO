@@ -11,6 +11,7 @@ Optimisations :
 - use compressed lat/lon
 - reduce CPU usage
 Use preprocessor for shaders
+Remove unused shaders
 
 Handle orography in geometry
 Optimize coordinates latlon->XYZ in shaders

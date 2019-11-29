@@ -811,11 +811,11 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
 {
   codes_handle * h = ghp ? ghp->getCodesHandle () : NULL;
 
-
   bool orog = (orography > 0.0f) && (h != NULL);
 
   double vmin, vmax, vmis;
   std::vector<double> v;
+
   if (orog)
     {
       size_t v_len;
@@ -887,8 +887,8 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
   // Compute Gaussian latitudes
   compute_latgauss (Nj, latgauss);
       
-  std::vector<float> lonlat;
-  lonlat.resize (3 * numberOfPoints);
+  float * lonlat = new float[2 * numberOfPoints];
+  float * height = orog ? new float[numberOfPoints] : NULL;
 
   int iglooff[Nj];
   iglooff[0] = 0;
@@ -928,6 +928,9 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
           float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
           float lon = coordx;
 
+	  if (orog)
+            height[jglo] = v[jglo] == vmis ? 0.0f : orography * v[jglo] / vmax;
+
 	  if (! rotated)
             {
               lonlat[2*jglo+0] = lon;
@@ -936,14 +939,6 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
           else
             {
               float coslon = cos (lon); float sinlon = sin (lon);
-
-#ifdef UNDEF
-              float radius;
-              if (orog)
-                radius = (1.0 + ((v[jglo] == vmis) ? 0. : 0.05 * v[jglo]/vmax));
-              else
-                radius = 1.0f;
-#endif
 
               float X = coslon * coslat;
               float Y = sinlon * coslat;
@@ -961,7 +956,17 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
     }
 
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (lonlat[0]), lonlat.data ());
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (lonlat[0]), lonlat);
+
+  delete [] lonlat;
+  lonlat = NULL;
+
+  if (orog)
+    {
+      heightbuffer = new_glgrib_opengl_buffer_ptr (numberOfPoints * sizeof (height[0]), height);
+      delete [] height;
+      height = NULL;
+    }
 
   if (opts.triangle_strip.on)
     {

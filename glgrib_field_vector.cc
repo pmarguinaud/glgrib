@@ -51,9 +51,7 @@ void glgrib_field_vector::setupVertexAttributes ()
   glBindVertexArray (VertexArrayID);
 
   // Position
-  geometry->vertexbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  geometry->bindCoordinates (0);
   
   // Norm
   d.buffer_n->bind (GL_ARRAY_BUFFER);
@@ -69,7 +67,7 @@ void glgrib_field_vector::setupVertexAttributes ()
                          numberOfColors * sizeof (unsigned char), NULL); 
 
 
-  geometry->elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+  geometry->bindTriangles ();
   glBindVertexArray (0); 
 
 
@@ -79,7 +77,7 @@ void glgrib_field_vector::setupVertexAttributes ()
   glBindVertexArray (VertexArrayIDvector);
 
   // Position
-  geometry->vertexbuffer->bind (GL_ARRAY_BUFFER);
+  geometry->bindCoordinates ();
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
   glVertexAttribDivisor (0, 1);  
@@ -100,7 +98,7 @@ void glgrib_field_vector::setupVertexAttributes ()
   glVertexAttribDivisor (2, 1);  
 
 
-  geometry->elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+  geometry->bindTriangles ();
   glBindVertexArray (0); 
 
 }

@@ -34,11 +34,9 @@ void glgrib_landscape::setupVertexAttributes ()
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
 
-  geometry->vertexbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  geometry->bindCoordinates (0);
   
-  geometry->elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+  geometry->bindTriangles ();
   glBindVertexArray (0); 
 }
 

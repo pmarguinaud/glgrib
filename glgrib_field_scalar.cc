@@ -56,15 +56,13 @@ void glgrib_field_scalar::setupVertexAttributes ()
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
 
-  geometry->vertexbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  geometry->bindCoordinates (0);
   
   colorbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, numberOfColors * sizeof (unsigned char), NULL); 
 
-  geometry->elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+  geometry->bindTriangles ();
 
   glBindVertexArray (0); 
 
@@ -72,9 +70,7 @@ void glgrib_field_scalar::setupVertexAttributes ()
   glGenVertexArrays (1, &VertexArrayIDpoints);
   glBindVertexArray (VertexArrayIDpoints);
 
-  geometry->vertexbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  geometry->bindCoordinates (0);
   glVertexAttribDivisor (0, 1);
   
   colorbuffer->bind (GL_ARRAY_BUFFER);

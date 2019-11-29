@@ -8,9 +8,7 @@ Add [] operator to glgrib_field_float_buffer_ptr
 Window shell with $
 Optimisations : 
 - use mapped buffers
-- triangle strip
 - use lat/lon
 - use compressed lat/lon
 - reduce CPU usage
-- use loader for geometry
 replace malloc by new

@@ -33,7 +33,7 @@ void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const glgrib_options_
 {
   codes_handle * h = ghp->getCodesHandle ();
   float * xyz = NULL;
-  unsigned int * ind = NULL;
+  unsigned int * ind = NULL, * ind_strip = NULL;
   periodic = false;
 
   dlat = deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees) / (Nj - 1);
@@ -58,24 +58,57 @@ void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const glgrib_options_
   else
     numberOfTriangles = 2 * (Ni - 1) * (Nj - 1);
   
-  ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
-  // Generation of triangles
-  for (int j = 0, t = 0; j < Nj-1; j++)
+  if (opts.triangle_strip.on)
     {
-      for (int i = 0; i < Ni-1; i++)
-        {
-          int ind0 = (j + 0) * Ni + (i + 0); int ind1 = (j + 0) * Ni + (i + 1); 
-          int ind2 = (j + 1) * Ni + (i + 0); int ind3 = (j + 1) * Ni + (i + 1); 
-          ind[3*t+0] = ind0; ind[3*t+1] = ind2; ind[3*t+2] = ind1; t++;
-          ind[3*t+0] = ind1; ind[3*t+1] = ind2; ind[3*t+2] = ind3; t++;
-        }
       if (periodic)
+        ind_strip_size = (2 * (Ni + 1) + 1) * (Nj - 1);
+      else
+        ind_strip_size = (2 * Ni + 1) * (Nj - 1);
+      ind_strip = (unsigned int *)malloc (ind_strip_size * sizeof (unsigned int));
+    }
+  else
+    {
+      ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
+    }
+  // Generation of triangles
+  if (ind)
+    {
+      for (int j = 0, t = 0; j < Nj-1; j++)
         {
-          int ind0 = (j + 0) * Ni + Ni-1; int ind1 = (j + 0) * Ni + 0; 
-          int ind2 = (j + 1) * Ni + Ni-1; int ind3 = (j + 1) * Ni + 0; 
-          ind[3*t+0] = ind0; ind[3*t+1] = ind2; ind[3*t+2] = ind1; t++;
-          ind[3*t+0] = ind1; ind[3*t+1] = ind2; ind[3*t+2] = ind3; t++;
-	}
+          for (int i = 0; i < Ni-1; i++)
+            {
+              int ind0 = (j + 0) * Ni + (i + 0); int ind1 = (j + 0) * Ni + (i + 1); 
+              int ind2 = (j + 1) * Ni + (i + 0); int ind3 = (j + 1) * Ni + (i + 1); 
+              ind[3*t+0] = ind0; ind[3*t+1] = ind2; ind[3*t+2] = ind1; t++;
+              ind[3*t+0] = ind1; ind[3*t+1] = ind2; ind[3*t+2] = ind3; t++;
+            }
+          if (periodic)
+            {
+              int ind0 = (j + 0) * Ni + Ni-1; int ind1 = (j + 0) * Ni + 0; 
+              int ind2 = (j + 1) * Ni + Ni-1; int ind3 = (j + 1) * Ni + 0; 
+              ind[3*t+0] = ind0; ind[3*t+1] = ind2; ind[3*t+2] = ind1; t++;
+              ind[3*t+0] = ind1; ind[3*t+1] = ind2; ind[3*t+2] = ind3; t++;
+            }
+        }
+    }
+  else
+    {
+      for (int j = 0, t = 0; j < Nj-1; j++)
+        {
+          for (int i = 0; i < Ni; i++)
+            {
+              int ind0 = (j + 0) * Ni + (i + 0); 
+              int ind2 = (j + 1) * Ni + (i + 0); 
+	      ind_strip[t++] = ind0; ind_strip[t++] = ind2;
+            }
+          if (periodic)
+            {
+              int ind1 = (j + 0) * Ni + 0; 
+              int ind3 = (j + 1) * Ni + 0; 
+	      ind_strip[t++] = ind1; ind_strip[t++] = ind3;
+            }
+	  ind_strip[t++] = 0xffffffff;
+        }
     }
 
   xyz = (float *)malloc (3 * sizeof (float) * Ni * Nj);
@@ -106,12 +139,21 @@ void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const glgrib_options_
           xyz[3*p+2] =             sinlat;
         }
     }
-      
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
-  elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (unsigned int), ind);
 
-  free (xyz); xyz = NULL;
-  free (ind); ind = NULL;
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfPoints * sizeof (float), xyz);
+  free (xyz); 
+  xyz = NULL;
+
+  if (ind)
+    {
+      elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (unsigned int), ind);
+      free (ind); ind = NULL;
+    }
+  else
+    {
+      elementbuffer = new_glgrib_opengl_buffer_ptr (3 * ind_strip_size * sizeof (unsigned int), ind_strip);
+      free (ind_strip); ind_strip = NULL;
+    }
 }
 
 glgrib_geometry_latlon::~glgrib_geometry_latlon ()

@@ -29,8 +29,6 @@ public:
   virtual int size () const = 0;
   virtual int latlon2index (float, float) const = 0;
   virtual ~glgrib_geometry ();
-  glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
-  glgrib_opengl_buffer_ptr triangle_strip_buffer;
   virtual std::string md5 () const = 0;
   virtual void applyUVangle (float *) const = 0;
   virtual void applyNormScale (float *) const = 0;
@@ -56,10 +54,24 @@ public:
   {
     return numberOfTriangles;
   }
+  void bindCoordinates (int attr = -1) const
+  {
+    vertexbuffer->bind (GL_ARRAY_BUFFER);
+    if (attr >= 0)
+      {
+        glEnableVertexAttribArray (attr);
+        glVertexAttribPointer (attr, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+      }
+  }
+  void bindTriangles () const
+  {
+    elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+  }
 protected:
   unsigned int ind_strip_size = 0;
   int numberOfPoints; 
   unsigned int numberOfTriangles = 0;
+  glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
   std::string md5string (const unsigned char []) const;
 };
 

@@ -19,9 +19,9 @@ void compute_latgauss (int kn, double * latgauss)
   const int itemax = 20;
   const double zeps = std::numeric_limits <double>::epsilon ();
   
-  double * zfn = (double *)malloc (sizeof (double) * (kn+1)*(kn+1));
-  double * zfnlat = (double *)malloc (sizeof (double) * (kn/2+2));
-  double * zmod = (double *)malloc (sizeof (double) * kn);
+  double * zfn    = new double[(kn+1)*(kn+1)]; 
+  double * zfnlat = new double[kn/2+2]; 
+  double * zmod   = new double[kn]; 
 
   //     ------------------------------------------------------------------
   //        1. initialization.
@@ -115,9 +115,9 @@ void compute_latgauss (int kn, double * latgauss)
         }
     }
   
-  free (zmod);
-  free (zfnlat);
-  free (zfn);
+  delete [] zmod;
+  delete [] zfnlat;
+  delete [] zfn;
 }
 
 const double glgrib_geometry_gaussian::rad2deg = 180.0 / M_PI;
@@ -847,9 +847,9 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
 
   if (! opts.triangle_strip.on)
     {
-      ind = (unsigned int *)malloc (3 * numberOfTriangles * sizeof (unsigned int));
-      triu = (int *)malloc (numberOfPoints * sizeof (int));
-      trid = (int *)malloc (numberOfPoints * sizeof (int));
+      ind  = new unsigned int[3 * numberOfTriangles]; 
+      triu = new int[numberOfPoints]; 
+      trid = new int[numberOfPoints]; 
       // Generation of triangles
       compute_trigauss (Nj, pl, ind, indoff_per_lat, indcnt_per_lat, triu, trid);
     }
@@ -884,7 +884,7 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
   delete [] ind_stripoff_per_lat;
 
 
-  latgauss = (double *)malloc (Nj * sizeof (double));
+  latgauss = new double[Nj]; 
   // Compute Gaussian latitudes
   compute_latgauss (Nj, latgauss);
       
@@ -961,13 +961,13 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
 glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()
 {
   if (ind)
-    free (ind);
+    delete [] ind;
   if (triu)
-    free (triu);
+    delete [] triu;
   if (trid)
-    free (trid);
+    delete [] trid;
   if (latgauss)
-    free (latgauss);
+    delete [] latgauss;
   if (indoff_per_lat)
     delete [] indoff_per_lat;
   if (indcnt_per_lat)

@@ -171,7 +171,7 @@ void glgrib_gshhg::read (const glgrib_options_lines & opts, int * numberOfPoints
 
     }   
 
-  *numberOfPoints = lonlat->size () / 3;
+  *numberOfPoints = lonlat->size () / 2;
   *numberOfLines = ind->size ();
 
   fclose (fp);

@@ -815,7 +815,9 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
 
   if (orog)
     {
-      float * height = new float[numberOfPoints];
+      heightbuffer = new_glgrib_opengl_buffer_ptr (numberOfPoints * sizeof (float));
+
+      float * height = (float *)heightbuffer->map ();
 
       double vmin, vmax, vmis;
       double * v = new double[numberOfPoints];
@@ -829,12 +831,10 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
 #pragma omp parallel for
       for (int jglo = 0; jglo < numberOfPoints; jglo++)
         height[jglo] = v[jglo] == vmis ? 0.0f : orography * v[jglo] / vmax;
+
       delete [] v;
 
-      heightbuffer = new_glgrib_opengl_buffer_ptr (numberOfPoints * sizeof (height[0]), height);
-      delete [] height;
-      height = NULL;
-
+      heightbuffer->unmap ();
     }
 
   // Compute number of triangles
@@ -862,43 +862,48 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
       trid = new int[numberOfPoints]; 
       // Generation of triangles
       compute_trigauss (Nj, pl, ind, indoff_per_lat, indcnt_per_lat, triu, trid);
+      elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (ind[0]), ind);
     }
-
-  int * ind_stripcnt_per_lat  = new int[Nj+1];
-  int * ind_stripoff_per_lat  = new int[Nj+1];
-
-  ind_stripoff_per_lat[0] = 0;
-  for (int jlat = 1; jlat <= Nj+1; jlat++)
+  else
     {
-      if (jlat < Nj) // k1^k2 < (k1 - k2); k1^k2 is the number of possible restarts
-        ind_stripcnt_per_lat[jlat-1] = pl[jlat-1] + pl[jlat] 
-                 + 4 * (2 + abs (pl[jlat-1] - pl[jlat]));
-      if (jlat > 1)
-        ind_stripoff_per_lat[jlat-1] = ind_stripcnt_per_lat[jlat-2] 
-                 + ind_stripoff_per_lat[jlat-2];
-    }
+      int * ind_stripcnt_per_lat  = new int[Nj+1];
+      int * ind_stripoff_per_lat  = new int[Nj+1];
 
-  ind_strip_size = 0;
-  for (int jlat = 1; jlat < Nj; jlat++)
-    ind_strip_size += ind_stripcnt_per_lat[jlat-1];
+      ind_stripoff_per_lat[0] = 0;
+      for (int jlat = 1; jlat <= Nj+1; jlat++)
+        {
+          if (jlat < Nj) // k1^k2 < (k1 - k2); k1^k2 is the number of possible restarts
+            ind_stripcnt_per_lat[jlat-1] = pl[jlat-1] + pl[jlat] 
+                     + 4 * (2 + abs (pl[jlat-1] - pl[jlat]));
+          if (jlat > 1)
+            ind_stripoff_per_lat[jlat-1] = ind_stripcnt_per_lat[jlat-2] 
+                     + ind_stripoff_per_lat[jlat-2];
+        }
 
-  unsigned int * ind_strip = NULL;
   
-  if (opts.triangle_strip.on)
-    {
-      ind_strip = new unsigned int[ind_strip_size];
-      compute_trigauss_strip (Nj, pl, ind_strip, ind_stripcnt_per_lat, ind_stripoff_per_lat); 
-    }
+      ind_strip_size = 0;
+      for (int jlat = 1; jlat < Nj; jlat++)
+        ind_strip_size += ind_stripcnt_per_lat[jlat-1];
 
-  delete [] ind_stripcnt_per_lat;
-  delete [] ind_stripoff_per_lat;
+      elementbuffer = new_glgrib_opengl_buffer_ptr (ind_strip_size * sizeof (unsigned int));
+      unsigned int * ind_strip = (unsigned int*)elementbuffer->map ();
+
+      compute_trigauss_strip (Nj, pl, ind_strip, ind_stripcnt_per_lat, ind_stripoff_per_lat); 
+
+      delete [] ind_stripcnt_per_lat;
+      delete [] ind_stripoff_per_lat;
+
+      elementbuffer->unmap ();
+
+    }
 
 
   latgauss = new double[Nj]; 
   // Compute Gaussian latitudes
   compute_latgauss (Nj, latgauss);
       
-  float * lonlat = new float[2 * numberOfPoints];
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (float));
+  float * lonlat = (float *)vertexbuffer->map ();
 
   int iglooff[Nj];
   iglooff[0] = 0;
@@ -962,23 +967,8 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
         }
     }
 
-
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (lonlat[0]), lonlat);
-
-  delete [] lonlat;
   lonlat = NULL;
-
-  if (opts.triangle_strip.on)
-    {
-      elementbuffer = new_glgrib_opengl_buffer_ptr (ind_strip_size * sizeof (ind_strip[0]), ind_strip);
-      delete [] ind_strip;
-    }
-  else
-    {
-      ind_strip_size = 0;
-      elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (ind[0]), ind);
-    }
-
+  vertexbuffer->unmap ();
 
   jglooff.resize (Nj + 1);
 

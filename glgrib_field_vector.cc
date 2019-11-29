@@ -121,16 +121,16 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
 
   numberOfColors = 1;
 
-  unsigned char * col_n = new unsigned char[numberOfColors * geometry->getNumberOfPoints ()];
+  d.buffer_n = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints () * sizeof (unsigned char));
+  unsigned char * col_n = (unsigned char *)d.buffer_n->map ();
   for (int i = 0; i < geometry->getNumberOfPoints (); i++)
     col_n[i] = 1 + (int)(254 * ((*data_n)[i] - meta_n.valmin)
                  / (meta_n.valmax - meta_n.valmin));
-  d.buffer_n = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints ()
-                                               * sizeof (unsigned char), col_n);
+  col_n = NULL;
+  d.buffer_n->unmap ();
 
-  delete [] col_n;
-
-  unsigned char * col_d = new unsigned char[numberOfColors * geometry->getNumberOfPoints ()];
+  d.buffer_d = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints () * sizeof (unsigned char));
+  unsigned char * col_d = (unsigned char *)d.buffer_d->map ();
   for (int i = 0; i < geometry->getNumberOfPoints (); i++)
     col_d[i] = 1 + (int)(254 * ((*data_d)[i] - meta_d.valmin)
                  / (meta_d.valmax - meta_d.valmin));
@@ -139,10 +139,8 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
   const int npts = opts.vector.density;
   geometry->sample (col_d, 0, npts);
 
-  d.buffer_d = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints ()
-                                               * sizeof (unsigned char), col_d);
-
-  delete [] col_d;
+  col_d = NULL;
+  d.buffer_d->unmap ();
 
   meta.push_back (meta_n);
   meta.push_back (meta_d);

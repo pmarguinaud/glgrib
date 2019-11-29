@@ -7,11 +7,9 @@ void gl_init ()
   glEnable (GL_DEPTH_TEST);
   glEnable (GL_BLEND);
   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//#ifdef UNDEF
   glCullFace (GL_BACK);
   glFrontFace (GL_CCW);
   glEnable (GL_CULL_FACE);
-//#endif
   glDepthFunc (GL_LESS); 
   glEnable (GL_MULTISAMPLE);
 }
@@ -28,6 +26,18 @@ glgrib_opengl_buffer::glgrib_opengl_buffer (size_t size, const void * data)
   glBufferData (GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
   allocated_ = true;
   size_ = size;
+}
+
+void * glgrib_opengl_buffer::map ()
+{
+  bind (GL_ARRAY_BUFFER);
+  return glMapBufferRange (GL_ARRAY_BUFFER, 0, size_, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
+}
+
+void glgrib_opengl_buffer::unmap ()
+{
+  glFlushMappedBufferRange (GL_ARRAY_BUFFER, 0, size_);
+  glUnmapBuffer (GL_ARRAY_BUFFER);
 }
 
 glgrib_opengl_buffer::~glgrib_opengl_buffer ()

@@ -305,10 +305,7 @@ void glgrib_string::update (const std::vector<std::string> & str)
     for (int j = 0; j < d.data[i].size (); j++)
       d.data[i][j] = ' ';
 
-  d.letterbuffer->bind (GL_ARRAY_BUFFER);
-
-  float * let = (float *)glMapBufferRange (GL_ARRAY_BUFFER, 0, d.len * sizeof (float), 
-  	                                   GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
+  float * let = (float *)d.letterbuffer->map ();
 
   for (int j = 0, ii = 0; j < d.data.size (); j++)
     for (int i = 0; i < d.data[j].size (); i++, ii++) 
@@ -317,8 +314,7 @@ void glgrib_string::update (const std::vector<std::string> & str)
         let[ii] = rank; 
       }
 
-  glFlushMappedBufferRange (GL_ARRAY_BUFFER, 0, d.len * sizeof (float));
-  glUnmapBuffer (GL_ARRAY_BUFFER);
+  d.letterbuffer->unmap ();
 }
 
 void glgrib_string::setShared (bool p)

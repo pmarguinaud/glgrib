@@ -12,3 +12,5 @@ Optimisations :
 - use compressed lat/lon
 - reduce CPU usage
 replace malloc by new
+
+glgrib_loader.c : use directly glgrib_field_float_buffer_ptr (line 344)

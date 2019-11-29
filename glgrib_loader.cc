@@ -177,7 +177,7 @@ next:
             throw std::runtime_error (std::string ("File ") + file + 
 			    std::string (" does not contains ") + ext);
 
-	  ITAB = (integer64 *)malloc (8 * ILONG);
+	  ITAB = new integer64[ILONG];
 	  lfilec_mt64_ (LFI, &IREP, &INUMER, CLNOMA, ITAB, &ILONG, CLNOMA_len);
 
           if (IREP != 0)
@@ -190,7 +190,7 @@ next:
             throw std::runtime_error (std::string ("Closing ") + f + std::string (" failed"));
 
           h = codes_handle_new_from_message_copy (0, ITAB + 3, 8 * (ILONG - 3));
-	  free (ITAB);
+	  delete [] ITAB;
 
           if (h == NULL)
             throw std::runtime_error (std::string ("Article ") + ext + std::string (" of file ") + file +
@@ -335,17 +335,18 @@ void glgrib_loader::load (glgrib_field_float_buffer_ptr * ptr, const std::string
   codes_get_double (h, "missingValue", &vmis);
   codes_get_double (h, "minimum",      &vmin);
   codes_get_double (h, "maximum",      &vmax);
-  double * v = (double *)malloc (sizeof (double) * v_len);
-  codes_get_double_array (h, "values", v, &v_len);
 
   if (ptr != NULL)
     {
+      double * v = new double[v_len];
+      codes_get_double_array (h, "values", v, &v_len);
+
       glgrib_field_float_buffer_ptr val = new_glgrib_field_float_buffer_ptr (v_len);
 
       for (int i = 0; i < v_len; i++)
         (*val)[i] = v[i];
 
-      free (v);
+      delete [] v;
       *ptr = val;
     }
 

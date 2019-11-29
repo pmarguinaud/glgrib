@@ -5,7 +5,6 @@ Accessors for scene
 Better container than fieldlist
 Make geometry member of glgrib_world protected
 Add [] operator to glgrib_field_float_buffer_ptr
-Window shell with $
 Optimisations : 
 - use mapped buffers
 - use lat/lon

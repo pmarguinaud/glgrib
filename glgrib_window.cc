@@ -195,6 +195,7 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
       if_key (ALT,     S     ,  Resample current field                               , resample_current_field   ());
       if_key (NONE,    V     ,  Hide/show vector arrows                              , toggle_show_vector       ());
       if_key (CONTROL, V     ,  Hide/show vector norm                                , toggle_show_norm         ());
+      if_key (NONE,    U     ,  Start shell                                          , startShell               ());
 
 
     }
@@ -1015,6 +1016,13 @@ void glgrib_window_set::run (glgrib_shell * shell)
            it != end (); it++)
         {
           glgrib_window * w = *it;
+
+	  if ((! shell) && (w->getStartShell ()))
+            {
+	      Shell.setup (w->scene.getOptions ().shell);
+	      Shell.start (this);
+              shell = &Shell;
+	    }
 
           w->run (shell);
 

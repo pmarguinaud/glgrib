@@ -157,6 +157,14 @@ public:
   void toggleColorBar ();
   void setOptions (const glgrib_options_window &);
   glgrib_options_window getOptions () { return opts; }
+  void startShell ()
+  {
+    start_shell = true;
+  }
+  bool getStartShell () const
+  {
+    return start_shell;
+  }
 
   void fix_landscape (float, float, float, float);
 
@@ -168,6 +176,7 @@ protected:
   bool master = false;
   glgrib_options_window opts;
 private:
+  bool start_shell = false;
   int id_;
   double t0;
   int nframes = 0;

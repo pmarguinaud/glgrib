@@ -25,7 +25,7 @@ public:
   int windowid = 0;
   void lock () { pthread_mutex_lock (&mutex); }
   void unlock () { pthread_mutex_unlock (&mutex); }
-  void wait () { pthread_join (thread, NULL); }
+  void wait () { if (wset) pthread_join (thread, NULL); }
   bool started () { return wset != NULL; }
   char * option_generator (const char *, int);
   const glgrib_options_shell & getOptions () const { return opts; }

@@ -35,7 +35,7 @@ int main (int argc, const char * argv[])
 
   if (! glfwInit ())
     {
-      fprintf (stderr, "Failed to setupialize GLFW\n");
+      fprintf (stderr, "Failed to initialize GLFW\n");
       exit (EXIT_FAILURE);
     }
 
@@ -56,13 +56,13 @@ int main (int argc, const char * argv[])
       Shell.setup (opts.shell);
       Shell.start (&wset);
       wset.run (&Shell);
-      Shell.wait ();
     }
   else
     {
       wset.run ();
     }
-   
+
+  Shell.wait ();
 
   glfwTerminate ();
   

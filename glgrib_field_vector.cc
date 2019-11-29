@@ -77,9 +77,7 @@ void glgrib_field_vector::setupVertexAttributes ()
   glBindVertexArray (VertexArrayIDvector);
 
   // Position
-  geometry->bindCoordinates ();
-  glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+  geometry->bindCoordinates (0);
   glVertexAttribDivisor (0, 1);  
   
   // Norm

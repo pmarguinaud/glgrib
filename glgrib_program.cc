@@ -577,7 +577,7 @@ void main ()
 R"CODE(
 #version 330 core
 
-layout (location = 0) in vec3 vertexPos;
+layout (location = 0) in vec2 vertexLonLat;
 
 out vec3 fragmentPos;
 uniform mat4 MVP;
@@ -586,6 +586,7 @@ uniform mat4 MVP;
 
 void main()
 {
+  vec3 vertexPos = posFromLonLat (vertexLonLat);
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);
   gl_Position =  MVP * vec4 (pos, 1.);
@@ -616,7 +617,7 @@ void main ()
 R"CODE(
 #version 330 core
 
-layout(location = 0) in vec3 vertexPos;
+layout(location = 0) in vec2 vertexLonLat;
 layout(location = 1) in float vertexVal_n;
 layout(location = 2) in float vertexVal_d;
 
@@ -649,6 +650,8 @@ uniform float posmax = 0.97;
 
 void main ()
 {
+  vec3 vertexPos = posFromLonLat (vertexLonLat);
+
   vec3 u = normalize (vec3 (-vertexPos.y, +vertexPos.x, 0.));
   vec3 v = vprod (vertexPos, u);
 

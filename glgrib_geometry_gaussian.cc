@@ -807,35 +807,9 @@ end:
   return;
 }
 
-void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts, const float orography)
+void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts)
 {
   codes_handle * h = ghp ? ghp->getCodesHandle () : NULL;
-
-  bool orog = (orography > 0.0f) && (h != NULL);
-
-  if (orog)
-    {
-      heightbuffer = new_glgrib_opengl_buffer_ptr (numberOfPoints * sizeof (float));
-
-      float * height = (float *)heightbuffer->map ();
-
-      double vmin, vmax, vmis;
-      double * v = new double[numberOfPoints];
-      size_t v_len = numberOfPoints;
-
-      codes_get_double_array (h, "values", v, &v_len);
-      codes_get_double (h, "maximum",      &vmax);
-      codes_get_double (h, "minimum",      &vmin);
-      codes_get_double (h, "missingValue", &vmis);
-
-#pragma omp parallel for
-      for (int jglo = 0; jglo < numberOfPoints; jglo++)
-        height[jglo] = v[jglo] == vmis ? 0.0f : orography * (v[jglo]-vmin) / (vmax - vmin);
-
-      delete [] v;
-
-      heightbuffer->unmap ();
-    }
 
   // Compute number of triangles
   numberOfTriangles = 0;

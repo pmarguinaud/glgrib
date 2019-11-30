@@ -35,8 +35,20 @@ void glgrib_landscape::setupVertexAttributes ()
   glBindVertexArray (VertexArrayID);
 
   geometry->bindCoordinates (0);
-  geometry->bindHeight (1);
-  
+ 
+  if (heightbuffer)
+    {   
+      heightbuffer->bind (GL_ARRAY_BUFFER);
+      glEnableVertexAttribArray (1);
+      glVertexAttribPointer (1, 1, GL_FLOAT, GL_FALSE, 0, NULL);
+    }   
+  else
+    {   
+      glDisableVertexAttribArray (1);
+      glVertexAttrib1f (1, 0.0f);
+    }   
+
+ 
   geometry->bindTriangles ();
   glBindVertexArray (0); 
 }
@@ -55,7 +67,7 @@ void glgrib_landscape::setup (glgrib_loader * ld, const glgrib_options_landscape
   unsigned char * rgb;
   int w, h;
 
-  geometry = glgrib_geometry::load (ld, opts.geometry_path, opts.geometry, opts.orography, opts.number_of_latitudes);
+  geometry = glgrib_geometry::load (ld, opts.geometry_path, opts.geometry, opts.number_of_latitudes);
 
   if (endsWith (opts.path, ".png"))
     glgrib_read_png (glgrib_resolve (opts.path), &w, &h, &rgb);
@@ -69,10 +81,28 @@ void glgrib_landscape::setup (glgrib_loader * ld, const glgrib_options_landscape
   if ((sizemax < w) || (sizemax < h))
     throw std::runtime_error (std::string ("Image is too large to be used as a texture :") + opts.path);
 
-
   texture = new_glgrib_opengl_texture_ptr (w, h, rgb);
-
   delete [] rgb;
+
+  if ((opts.geometry_path != "") && (opts.orography > 0.0f))
+    {
+      int size = geometry->getNumberOfPoints ();
+
+      glgrib_field_float_buffer_ptr data;
+      glgrib_field_metadata meta;
+
+      ld->load (&data, opts.geometry_path, opts.geometry, &meta);
+
+      heightbuffer = new_glgrib_opengl_buffer_ptr (size * sizeof (float));
+
+      float * height = (float *)heightbuffer->map (); 
+#pragma omp parallel for
+      for (int jglo = 0; jglo < size; jglo++)
+        height[jglo] = (*data)[jglo] == meta.valmis ? 0.0f : opts.orography * ((*data)[jglo]-meta.valmin) / (meta.valmax - meta.valmin);
+
+      heightbuffer->unmap (); 
+    }
+
 
   setupVertexAttributes ();
   

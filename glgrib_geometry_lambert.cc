@@ -33,7 +33,7 @@ glgrib_geometry_lambert::glgrib_geometry_lambert (glgrib_handle_ptr ghp)
   
 }
 
-void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts, const float orography)
+void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts)
 {
   codes_handle * h = ghp->getCodesHandle ();
 

@@ -15,7 +15,7 @@
 typedef std::map <std::string,glgrib_geometry_ptr> cache_t;
 static cache_t cache;
 
-glgrib_geometry_ptr glgrib_geometry::load (glgrib_loader * ld, const std::string & file, const glgrib_options_geometry & opts, const float orography, const int Nj)
+glgrib_geometry_ptr glgrib_geometry::load (glgrib_loader * ld, const std::string & file, const glgrib_options_geometry & opts, const int Nj)
 {
   glgrib_handle_ptr ghp;
   codes_handle * h = NULL;
@@ -65,7 +65,7 @@ glgrib_geometry_ptr glgrib_geometry::load (glgrib_loader * ld, const std::string
 	}
     }
 
-  geom->setup (ghp, opts, orography);
+  geom->setup (ghp, opts);
 
   if (opts.check.on)
     geom->checkTriangles ();

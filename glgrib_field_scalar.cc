@@ -62,8 +62,6 @@ void glgrib_field_scalar::setupVertexAttributes ()
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, numberOfColors * sizeof (unsigned char), NULL); 
 
-  geometry->bindHeight (2);
-
   geometry->bindTriangles ();
 
   glBindVertexArray (0); 

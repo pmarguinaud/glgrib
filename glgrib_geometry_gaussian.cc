@@ -830,7 +830,7 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
 
 #pragma omp parallel for
       for (int jglo = 0; jglo < numberOfPoints; jglo++)
-        height[jglo] = v[jglo] == vmis ? 0.0f : orography * v[jglo] / vmax;
+        height[jglo] = v[jglo] == vmis ? 0.0f : orography * (v[jglo]-vmin) / (vmax - vmin);
 
       delete [] v;
 

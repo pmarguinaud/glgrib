@@ -60,12 +60,7 @@ void glgrib_field_vector::setupVertexAttributes ()
                          numberOfColors * sizeof (unsigned char), NULL); 
 
 
-  // Direction
-  d.buffer_d->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (2); 
-  glVertexAttribPointer (2, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
-                         numberOfColors * sizeof (unsigned char), NULL); 
-
+  geometry->bindHeight (2);
 
   geometry->bindTriangles ();
   glBindVertexArray (0); 

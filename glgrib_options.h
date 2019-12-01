@@ -381,6 +381,9 @@ public:
   {
     DESC (triangle_strip.on,  Enable use of triangle strip);
     DESC (check.on,           Check geometry);
+    DESC (height.on,          Enable height);
+    DESC (height.path,        Height field path);
+    DESC (height.scale,       Scale to apply to height field);
   }
   struct
   {
@@ -390,6 +393,12 @@ public:
   {
     bool on = false;
   } check;
+  struct
+  {
+    bool on = false;
+    std::string path = "";
+    float scale = 0.05;
+  } height;
 };
 
 class glgrib_options_contour : public glgrib_options_base
@@ -590,7 +599,6 @@ public:
     DESC (on,                  Enable landscape);
     DESC (projection,          Projection : LONLAT or WEBMERCATOR);
     DESC (flat.on,             Make Earth flat);
-    DESC (orography,           Factor to apply to orography);
     DESC (path,                Path to landscape image in BMP format);
     DESC (geometry_path,       GRIB files to take geometry from);
     DESC (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);

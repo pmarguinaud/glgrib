@@ -84,21 +84,21 @@ void glgrib_landscape::setup (glgrib_loader * ld, const glgrib_options_landscape
   texture = new_glgrib_opengl_texture_ptr (w, h, rgb);
   delete [] rgb;
 
-  if ((opts.geometry_path != "") && (opts.orography > 0.0f))
+  if (opts.geometry.height.on)
     {
       int size = geometry->getNumberOfPoints ();
 
       glgrib_field_float_buffer_ptr data;
       glgrib_field_metadata meta;
 
-      ld->load (&data, opts.geometry_path, opts.geometry, &meta);
+      ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
 
       heightbuffer = new_glgrib_opengl_buffer_ptr (size * sizeof (float));
 
       float * height = (float *)heightbuffer->map (); 
 #pragma omp parallel for
       for (int jglo = 0; jglo < size; jglo++)
-        height[jglo] = (*data)[jglo] == meta.valmis ? 0.0f : opts.orography * ((*data)[jglo]-meta.valmin) / (meta.valmax - meta.valmin);
+        height[jglo] = (*data)[jglo] == meta.valmis ? 0.0f : opts.geometry.height.scale * ((*data)[jglo]-meta.valmin) / (meta.valmax - meta.valmin);
 
       heightbuffer->unmap (); 
     }

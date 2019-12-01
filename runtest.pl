@@ -133,7 +133,8 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
   "Scalar field with points (stretched/rotated grid)                " ,  points_scalar_rot   => '--field[0]-{ --scale 1.01 --path testdata/wind+temp/t0149c2.2/S105TEMPERATURE.grb --scalar.points-{ --on --size.value 0.2 --size.variable.on --size.factor.on }-  }-  --coast.on --coast.lines.color green --landscape.on',
   "Scalar field on octahedral grid                                  " ,  gauss_octahedral    => '--field[0].path ./testdata/ecmwf/ecmf_0_1_0_ml_137_q.grib2  --field[0].palette.colors gray cyan blue  --field[0].palette.values 0 0.005 0.03  --colorbar.on --window.width 1200',
   "Landscape with orography (T479)                                  " ,  land_orography      => '--landscape.on --landscape.geometry_path ./testdata/t479/Z.grb  --landscape.geometry.height.on --landscape.geometry.height.scale 0.2 --landscape.geometry.height.path ./testdata/t479/Z.grb --landscape.flat.off',
-# "Spherical harmonic (T1198)                                       " ,  harmonic            => '--landscape.on --landscape.geometry_path testdata/harmonics/SPEC.+0008.+0004.grb  --landscape.orography 0.2 --field[0].path testdata/harmonics/SPEC.+0008.+0004.grb --field[0].palette.name cool  --field[0].scale 1.01  --view.fov 25 --view.lon 20',
+  "Spherical harmonic (T1198)                                       " ,  harmonic            => '--field[0].path testdata/harmonics/SPEC.+0008.+0004.grb --field[0].palette-{ --colors blue green red  --values -1 0. 1 }- --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 --view.fov 25 --view.lon 20 --scene.light.on',
+  "Orography with height                                            " ,  orography_height   => '--field[0].path ./testdata/t1798/Z.grb --field[0].palette.name topo --field[0].scale 1.005 --landscape.on --field[0].geometry.height.on',
 );
 
 

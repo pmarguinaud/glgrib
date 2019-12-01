@@ -53,6 +53,7 @@ void glgrib_field_scalar::setupVertexAttributes ()
   numberOfPoints = geometry->getNumberOfPoints ();
   numberOfTriangles = geometry->getNumberOfTriangles ();
 
+  // Colored field
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
 
@@ -64,9 +65,22 @@ void glgrib_field_scalar::setupVertexAttributes ()
 
   geometry->bindTriangles ();
 
+  if (heightbuffer)
+    {
+      heightbuffer->bind (GL_ARRAY_BUFFER);
+      glEnableVertexAttribArray (2);
+      glVertexAttribPointer (2, 1, GL_UNSIGNED_BYTE, GL_TRUE, 0, NULL);
+    }
+  else
+    {
+      glDisableVertexAttribArray (2);
+      glVertexAttrib1f (2, 0.0f);
+    }
+
   glBindVertexArray (0); 
 
 
+  // Points
   glGenVertexArrays (1, &VertexArrayIDpoints);
   glBindVertexArray (VertexArrayIDpoints);
 
@@ -77,6 +91,19 @@ void glgrib_field_scalar::setupVertexAttributes ()
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, numberOfColors * sizeof (unsigned char), NULL); 
   glVertexAttribDivisor (1, 1);
+
+  if (heightbuffer)
+    {
+      heightbuffer->bind (GL_ARRAY_BUFFER);
+      glEnableVertexAttribArray (2);
+      glVertexAttribPointer (2, 1, GL_UNSIGNED_BYTE, GL_TRUE, 0, NULL);
+      glVertexAttribDivisor (2, 1);
+    }
+  else
+    {
+      glDisableVertexAttribArray (2);
+      glVertexAttrib1f (2, 0.0f);
+    }
 
   glBindVertexArray (0); 
 }
@@ -110,6 +137,38 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
   col = NULL;
   colorbuffer->unmap ();
 
+  if (opts.geometry.height.on)
+    {
+      if (opts.geometry.height.path == "")
+        {
+          heightbuffer = colorbuffer;
+        }
+      else
+        {
+          glgrib_geometry_ptr geometry_height = glgrib_geometry::load (ld, opts.geometry.height.path, opts.geometry);
+
+          if (! geometry_height->isEqual (*geometry))
+            throw std::runtime_error (std::string ("Field and height have different geometries"));
+
+          int size = geometry->getNumberOfPoints ();
+
+          glgrib_field_float_buffer_ptr data;
+          glgrib_field_metadata meta;
+
+          ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
+
+          heightbuffer = new_glgrib_opengl_buffer_ptr (size * sizeof (unsigned char));
+
+          float * height = (float *)heightbuffer->map (); 
+#pragma omp parallel for
+          for (int jglo = 0; jglo < size; jglo++)
+            height[jglo] = (*data)[jglo] == meta.valmis ? 0.0f : 255 * ((*data)[jglo]-meta.valmin) / (meta.valmax - meta.valmin);
+
+          heightbuffer->unmap (); 
+
+        }
+    }
+
   setupVertexAttributes ();
 
   if (opts.no_value_pointer.on)
@@ -137,6 +196,7 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   program->set1f ("valmax", getNormedMaxValue ());
   program->set1f ("palmin", palette.getMin ());
   program->set1f ("palmax", palette.getMax ());
+  program->set1f ("height_scale", opts.geometry.height.scale);
     
   if (opts.scalar.points.on)
     {

@@ -426,13 +426,14 @@ R"CODE(
 
 layout(location = 0) in vec2 vertexLonLat;
 layout(location = 1) in float vertexVal;
-//layout(location = 2) in float vertexHeight;
+layout(location = 2) in float vertexHeight;
 
 out float fragmentVal;
 out vec3 fragmentPos;
 out float missingFlag;
 
 uniform mat4 MVP;
+uniform float height_scale = 0.05;
 
 )CODE" 
 + projShaderInclude 
@@ -445,7 +446,9 @@ void main ()
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);
   pos = scalePosition (pos, normedPos, scale0);
-//pos = pos * (1.0f + vertexHeight);
+
+  if (proj == XYZ)
+    pos = pos * (1.0f + height_scale * vertexHeight);
 
   gl_Position =  MVP * vec4 (pos, 1.);
 
@@ -1497,6 +1500,7 @@ R"CODE(
 
 layout(location = 0) in vec2 vertexLonLat;
 layout(location = 1) in float vertexVal;
+layout(location = 2) in float vertexHeight;
 
 out float fragmentVal;
 out vec3 fragmentPos;
@@ -1517,6 +1521,8 @@ uniform float length10 = 0.01;
 uniform float pointSiz = 1.0f;
 uniform bool lpointZoo = false;
 uniform bool factor = true;
+
+uniform float height_scale = 0.05;
 
 void main ()
 {
@@ -1561,6 +1567,10 @@ void main ()
   normedPos = compNormedPos (pos);
   pos = compProjedPos (vertexPos, normedPos);
   pos = scalePosition (pos, normedPos, scale0);
+
+  if (proj == XYZ)
+    pos = pos * (1.0f + height_scale * vertexHeight);
+
 
   fragmentPos = normedPos;
   fragmentVal = vertexVal;

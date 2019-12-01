@@ -86,6 +86,11 @@ void glgrib_landscape::setup (glgrib_loader * ld, const glgrib_options_landscape
 
   if (opts.geometry.height.on)
     {
+      glgrib_geometry_ptr geometry_height = glgrib_geometry::load (ld, opts.geometry.height.path, opts.geometry);
+
+      if (! geometry_height->isEqual (*geometry))
+        throw std::runtime_error (std::string ("Landscape and height have different geometries"));
+
       int size = geometry->getNumberOfPoints ();
 
       glgrib_field_float_buffer_ptr data;

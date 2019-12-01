@@ -65,17 +65,7 @@ void glgrib_field_scalar::setupVertexAttributes ()
 
   geometry->bindTriangles ();
 
-  if (heightbuffer)
-    {
-      heightbuffer->bind (GL_ARRAY_BUFFER);
-      glEnableVertexAttribArray (2);
-      glVertexAttribPointer (2, 1, GL_UNSIGNED_BYTE, GL_TRUE, 0, NULL);
-    }
-  else
-    {
-      glDisableVertexAttribArray (2);
-      glVertexAttrib1f (2, 0.0f);
-    }
+  bindHeight (2);
 
   glBindVertexArray (0); 
 
@@ -137,37 +127,7 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
   col = NULL;
   colorbuffer->unmap ();
 
-  if (opts.geometry.height.on)
-    {
-      if (opts.geometry.height.path == "")
-        {
-          heightbuffer = colorbuffer;
-        }
-      else
-        {
-          glgrib_geometry_ptr geometry_height = glgrib_geometry::load (ld, opts.geometry.height.path, opts.geometry);
-
-          if (! geometry_height->isEqual (*geometry))
-            throw std::runtime_error (std::string ("Field and height have different geometries"));
-
-          int size = geometry->getNumberOfPoints ();
-
-          glgrib_field_float_buffer_ptr data;
-          glgrib_field_metadata meta;
-
-          ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
-
-          heightbuffer = new_glgrib_opengl_buffer_ptr (size * sizeof (unsigned char));
-
-          float * height = (float *)heightbuffer->map (); 
-#pragma omp parallel for
-          for (int jglo = 0; jglo < size; jglo++)
-            height[jglo] = (*data)[jglo] == meta.valmis ? 0.0f : 255 * ((*data)[jglo]-meta.valmin) / (meta.valmax - meta.valmin);
-
-          heightbuffer->unmap (); 
-
-        }
-    }
+  loadHeight (colorbuffer, ld);
 
   setupVertexAttributes ();
 

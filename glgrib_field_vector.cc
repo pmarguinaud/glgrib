@@ -61,6 +61,9 @@ void glgrib_field_vector::setupVertexAttributes ()
 
 
   geometry->bindTriangles ();
+
+  bindHeight (2);
+
   glBindVertexArray (0); 
 
 
@@ -88,6 +91,8 @@ void glgrib_field_vector::setupVertexAttributes ()
                          numberOfColors * sizeof (unsigned char), NULL); 
   glVertexAttribDivisor (2, 1);  
 
+  bindHeight (3);
+  glVertexAttribDivisor (3, 1);  
 
   geometry->bindTriangles ();
   glBindVertexArray (0); 
@@ -121,6 +126,8 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
                  / (meta_n.valmax - meta_n.valmin));
   col_n = NULL;
   d.buffer_n->unmap ();
+
+  loadHeight (d.buffer_n, ld);
 
   d.buffer_d = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints () * sizeof (unsigned char));
   unsigned char * col_d = (unsigned char *)d.buffer_d->map ();
@@ -186,6 +193,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       program->set1f ("valmax_d", valmax[1]);
       program->set1f ("valmin", valmin[0]);
       program->set1f ("valmax", valmax[0]);
+      program->set1f ("height_scale", opts.geometry.height.scale);
 
       float color0[3] = {opts.vector.color.r/255.0f, opts.vector.color.g/255.0f, opts.vector.color.b/255.0f};
       program->set3fv ("color0", color0);
@@ -219,6 +227,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       program->set1f ("valmax", valmax[0]);
       program->set1f ("palmin", palette.getMin ());
       program->set1f ("palmax", palette.getMax ());
+      program->set1f ("height_scale", opts.geometry.height.scale);
 
       glBindVertexArray (VertexArrayID);
       glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);

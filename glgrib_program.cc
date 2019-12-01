@@ -628,6 +628,7 @@ R"CODE(
 layout(location = 0) in vec2 vertexLonLat;
 layout(location = 1) in float vertexVal_n;
 layout(location = 2) in float vertexVal_d;
+layout(location = 3) in float vertexHeight;
 
 out vec3 fragmentPos;
 out float alpha;
@@ -655,6 +656,8 @@ const float deg2rad = pi / 180.0;
 uniform float vscale = 0.01;
 uniform float head = 0.1;
 uniform float posmax = 0.97;
+
+uniform float height_scale = 0.05;
 
 void main ()
 {
@@ -693,6 +696,9 @@ void main ()
       vec3 normedPos = compNormedPos (pos);
       vec3 projedPos = compProjedPos (pos, normedPos);
       pos = scalePosition (projedPos, normedPos, scale0);
+
+      if (proj == XYZ)
+        pos = pos * (1.0f + height_scale * vertexHeight);
 
       if ((proj == LATLON) || (proj == MERCATOR))
       if ((pos.y < -posmax) || (+posmax < pos.y))

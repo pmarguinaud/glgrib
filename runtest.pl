@@ -135,6 +135,8 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
   "Landscape with orography (T479)                                  " ,  land_orography      => '--landscape.on --landscape.geometry_path ./testdata/t479/Z.grb  --landscape.geometry.height.on --landscape.geometry.height.scale 0.2 --landscape.geometry.height.path ./testdata/t479/Z.grb --landscape.flat.off',
   "Spherical harmonic (T1198)                                       " ,  harmonic            => '--field[0].path testdata/harmonics/SPEC.+0008.+0004.grb --field[0].palette-{ --colors blue green red  --values -1 0. 1 }- --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 --view.fov 25 --view.lon 20 --scene.light.on',
   "Orography with height                                            " ,  orography_height   => '--field[0].path ./testdata/t1798/Z.grb --field[0].palette.name topo --field[0].scale 1.005 --landscape.on --field[0].geometry.height.on',
+  "Height = vector norm value                                       " ,  height_vector      => '--field[0].type VECTOR --field[0].path testdata/wind+temp/t0224/S105WIND.U.PHYS.grb testdata/wind+temp/t0224/S105WIND.V.PHYS.grb  --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 --field[0].vector.color red --field[0].palette.name summer',
+  "Height = scalar norm value                                       " ,  height_scalar      => '--field[0].path testdata/wind+temp/t0224/S105TEMPERATURE.grb  --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 --view.fov 24',
 );
 
 

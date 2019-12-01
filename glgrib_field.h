@@ -111,7 +111,10 @@ public:
 
   virtual int getSlotMax () const  = 0;
 
+
 protected:
+  virtual void loadHeight (glgrib_opengl_buffer_ptr, glgrib_loader *);
+  virtual void bindHeight (int);
   static void getUserPref (glgrib_options_field *, glgrib_loader *);
   glgrib_palette palette = palette_cold_hot;
   mutable glgrib_options_field opts;

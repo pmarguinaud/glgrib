@@ -70,7 +70,7 @@ void glgrib_field_stream::setupVertexAttributes ()
       for (int j = 0; j < 3; j++)
         {
           glEnableVertexAttribArray (j);
-          glVertexAttribPointer (j, 3, GL_FLOAT, GL_FALSE, 0, (const void *)(j * 3 * sizeof (float)));
+          glVertexAttribPointer (j, 2, GL_FLOAT, GL_FALSE, 0, (const void *)(j * 2 * sizeof (float)));
           glVertexAttribDivisor (j, 1);
         }
      
@@ -158,9 +158,9 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 
   for (int i = 0; i < N; i++)
     {
-      stream[i].vertexbuffer   = new_glgrib_opengl_buffer_ptr (stream_data[i].xyz.size () * sizeof (float), stream_data[i].xyz.data ());
-      stream[i].normalbuffer   = new_glgrib_opengl_buffer_ptr (stream_data[i].drw.size () * sizeof (float), stream_data[i].drw.data ());
-      stream[i].distancebuffer = new_glgrib_opengl_buffer_ptr (stream_data[i].dis.size () * sizeof (float), stream_data[i].dis.data ());
+      stream[i].vertexbuffer   = new_glgrib_opengl_buffer_ptr (stream_data[i].lonlat.size () * sizeof (float), stream_data[i].lonlat.data ());
+      stream[i].normalbuffer   = new_glgrib_opengl_buffer_ptr (stream_data[i].values.size () * sizeof (float), stream_data[i].values.data ());
+      stream[i].distancebuffer = new_glgrib_opengl_buffer_ptr (stream_data[i].length.size () * sizeof (float), stream_data[i].length.data ());
       stream[i].size = stream_data[i].size () - 1;
     }
 

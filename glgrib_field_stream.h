@@ -29,9 +29,14 @@ private:
   class streamline_data_t
   {
   public:
-    std::vector<float> xyz; // Position
-    std::vector<float> drw; // Flag (=0, hide, =1 show)
-    std::vector<float> dis; // Distance 
+    std::vector<float> lonlat; // Position
+    std::vector<float> values; // Field value
+    std::vector<float> length; // Distance 
+
+    struct
+    {
+      float x = 0.0f, y = 0.0f, z = 0.0f;
+    } last;
 
     void push (const glm::vec3 & xyz, const float d = 1.0f)
     {
@@ -40,46 +45,47 @@ private:
     void push (const float x, const float y, const float z, const float d = 1.) 
     {
       double D = 0.0f;
+      float lon = 0.0f, lat = 2 * M_PI;
       if (d > 0)
         {
-          int sz = size (), last = sz - 1;
+          lat = asin (z);
+	  lon = atan2 (y, x);
+          int sz = size (), ilast = sz - 1;
           if (sz > 0)
             {
-              float x0 = xyz[3*last+0];
-              float y0 = xyz[3*last+1];
-              float z0 = xyz[3*last+2];
-              if ((x0 != 0.0f) || (y0 != 0.0f) || (z0 != 0.0f))
+              if ((last.x != 0.0f) || (last.y != 0.0f) || (last.z != 0.0f))
                 {
-                  float dx = x - x0;
-                  float dy = y - y0;
-                  float dz = z - z0;
-                  D = dis[last] + sqrt (dx * dx + dy * dy + dz * dz);
+                  float dx = x - last.x;
+                  float dy = y - last.y;
+                  float dz = z - last.z;
+                  D = length[ilast] + sqrt (dx * dx + dy * dy + dz * dz);
                 }
             }
         }
-      xyz.push_back (x);
-      xyz.push_back (y);
-      xyz.push_back (z);
-      drw.push_back (d);
-      dis.push_back (D);
+      last.x = x;
+      last.y = y;
+      last.z = z;
+      lonlat.push_back (lon);
+      lonlat.push_back (lat);
+      values.push_back (d);
+      length.push_back (D);
     }
     void pop ()
     {
-      xyz.pop_back (); 
-      xyz.pop_back (); 
-      xyz.pop_back (); 
-      drw.pop_back (); 
-      dis.pop_back (); 
+      lonlat.pop_back (); 
+      lonlat.pop_back (); 
+      values.pop_back (); 
+      length.pop_back (); 
     }
     void clear ()
     {
-      xyz.clear (); 
-      drw.clear (); 
-      dis.clear (); 
+      lonlat.clear (); 
+      values.clear (); 
+      length.clear (); 
     }
     int size ()
     {
-      return drw.size ();
+      return values.size ();
     }
   };
   class streamline_t

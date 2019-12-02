@@ -65,7 +65,7 @@ int main (int argc, const char * argv[])
   Shell.wait ();
 
   glfwTerminate ();
-  
+
   return 0;
 }
 

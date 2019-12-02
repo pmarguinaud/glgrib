@@ -68,7 +68,7 @@ void glgrib_field_contour::setupVertexAttributes ()
       for (int j = 0; j < 3; j++)
         {
           glEnableVertexAttribArray (j);
-          glVertexAttribPointer (j, 3, GL_FLOAT, GL_FALSE, 0, (const void *)(j * 3 * sizeof (float)));
+          glVertexAttribPointer (j, 2, GL_FLOAT, GL_FALSE, 0, (const void *)(j * 2 * sizeof (float)));
           glVertexAttribDivisor (j, 1);
         }
 
@@ -146,11 +146,11 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
   for (int i = 0; i < levels.size (); i++)
     {
       iso[i].level = levels[i];
-      iso[i].vertexbuffer   = new_glgrib_opengl_buffer_ptr (iso_data[i].xyz.size () * sizeof (float), 
-                                                            iso_data[i].xyz.data ());
-      iso[i].normalbuffer   = new_glgrib_opengl_buffer_ptr (iso_data[i].drw.size () * sizeof (float), 
+      iso[i].vertexbuffer   = new_glgrib_opengl_buffer_ptr (iso_data[i].lonlat.size () * sizeof (float), 
+                                                            iso_data[i].lonlat.data ());
+      iso[i].normalbuffer   = new_glgrib_opengl_buffer_ptr (iso_data[i].drw.size ()    * sizeof (float), 
                                                             iso_data[i].drw.data ());
-      iso[i].distancebuffer = new_glgrib_opengl_buffer_ptr (iso_data[i].dis.size () * sizeof (float), 
+      iso[i].distancebuffer = new_glgrib_opengl_buffer_ptr (iso_data[i].dis.size ()    * sizeof (float), 
                                                             iso_data[i].dis.data ());
       iso[i].size = iso_data[i].size () - 1;
 
@@ -195,8 +195,8 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, bool *
   bool edge = false;
   int it = it0;
   int its[2];
-  int ind_start = iso->size ();
-
+  bool first = true;
+  float xyz_first[3];
 
   while (cont)
     {
@@ -263,6 +263,14 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, bool *
 
               iso->push (X, Y, Z);
 
+	      if (first)
+                {
+                  first = false;
+		  xyz_first[0] = X;
+		  xyz_first[1] = Y;
+		  xyz_first[2] = Z;
+		}
+
               if (count < 2)
                 its[count] = it;
 
@@ -283,7 +291,7 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, bool *
   if (count > 0)
     {
       if (! edge)
-        iso->push (iso->xyz[3*(ind_start+1)+0], iso->xyz[3*(ind_start+1)+1], iso->xyz[3*(ind_start+1)+2], 0.);
+        iso->push (xyz_first[0], xyz_first[1], xyz_first[2], 0.0f);
       iso->push (0., 0., 0., 0.);
     }
 

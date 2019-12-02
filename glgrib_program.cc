@@ -22,6 +22,8 @@ const float pi = 3.1415926;
 vec3 posFromLonLat (vec2 vertexLonLat)
 {
   float lon = vertexLonLat.x, lat = vertexLonLat.y;
+  if (abs (lat) > pi)
+    return vec3 (0.0f, 0.0f, 0.0f);
   float coslon = cos (lon), sinlon = sin (lon);
   float coslat = cos (lat), sinlat = sin (lat);
   return vec3 (coslon * coslat, sinlon * coslat, sinlat);
@@ -775,9 +777,9 @@ if(false){
 R"CODE(
 #version 330 core
 
-layout(location = 0) in vec3 vertexPos0;
-layout(location = 1) in vec3 vertexPos1;
-layout(location = 2) in vec3 vertexPos2;
+layout(location = 0) in vec2 vertexLonLat0;
+layout(location = 1) in vec2 vertexLonLat1;
+layout(location = 2) in vec2 vertexLonLat2;
 layout(location = 3) in float norm0;
 layout(location = 4) in float norm1;
 layout(location = 5) in float dist0;
@@ -801,6 +803,10 @@ uniform float width = 0.005;
 
 void main ()
 {
+  vec3 vertexPos0 = posFromLonLat (vertexLonLat0);
+  vec3 vertexPos1 = posFromLonLat (vertexLonLat1);
+  vec3 vertexPos2 = posFromLonLat (vertexLonLat2);
+
   vec3 vertexPos;
   vec3 t0 = normalize (vertexPos1 - vertexPos0);
   vec3 t1 = normalize (vertexPos2 - vertexPos1);

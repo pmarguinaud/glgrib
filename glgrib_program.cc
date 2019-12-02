@@ -848,7 +848,7 @@ void main ()
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);
 
-  alpha = min (length (vertexPos0), length (vertexPos1));
+  alpha = min (min (1.0f, length (vertexPos0)), min (1.0f, length (vertexPos1)));
 
   if (proj == XYZ)
     {

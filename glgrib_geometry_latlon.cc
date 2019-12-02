@@ -350,11 +350,18 @@ bool glgrib_geometry_latlon::triangleIsEdge (int it) const
   int i = it % nti;
   int j = it / nti;
 
-  if ((j == 0) || (j == Nj-1))
-    return true;
+  if (j == 0)
+    return t021;
+  if (j == Nj-1)
+    return ! t021;
     
-  if (((i == 0) || (j == Ni-1)) && (! periodic))
-    return true;
+  if (! periodic)
+    {
+      if (i == 0)
+        return t021;
+      if (i == Ni-1)
+        return ! t021;
+    }
 
   return false;
 }

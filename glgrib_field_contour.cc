@@ -118,24 +118,16 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
 
   geometry = glgrib_geometry::load (ld, opts.path[0], opts.geometry);
 
-  glgrib_field_float_buffer_ptr height;
-  glgrib_field_metadata meta_height;
-  if (opts.geometry.height.on)
+  glgrib_field_float_buffer_ptr height = data;
+  glgrib_field_metadata meta_height = meta1;
+  if ((opts.geometry.height.on) && (opts.geometry.height.path != ""))
     {
-      if (opts.geometry.height.path == "")
-	{
-          height = data;
-	  meta_height = meta1;
-	}
-      else
-        {
-          glgrib_geometry_ptr geometry_height = glgrib_geometry::load (ld, opts.geometry.height.path, opts.geometry);
+      glgrib_geometry_ptr geometry_height = glgrib_geometry::load (ld, opts.geometry.height.path, opts.geometry);
 
-          if (! geometry_height->isEqual (*geometry))
-            throw std::runtime_error (std::string ("Field and height have different geometries"));
+      if (! geometry_height->isEqual (*geometry))
+        throw std::runtime_error (std::string ("Field and height have different geometries"));
 
-          ld->load (&height, opts.geometry.height.path, opts.geometry, &meta_height);
-        }
+      ld->load (&height, opts.geometry.height.path, opts.geometry, &meta_height);
     }
 
   numberOfColors = 1;
@@ -154,6 +146,7 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
 #pragma omp parallel for
   for (int i = 0; i < levels.size (); i++)
     {
+
       bool * seen = new bool[geometry->getNumberOfTriangles () + 1];
 
       for (int i = 0; i < geometry->getNumberOfTriangles () + 1; i++)
@@ -163,8 +156,10 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
       // First visit edge triangles
       for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
         if (geometry->triangleIsEdge (it))
+	{
           processTriangle (it, data->data (), levels[i], height->data (), meta_height.valmin, 
 			   meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
+	}
 
       for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
         processTriangle (it, data->data (), levels[i], height->data (), meta_height.valmin, 

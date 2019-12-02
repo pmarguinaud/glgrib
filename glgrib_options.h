@@ -387,7 +387,7 @@ public:
   }
   struct
   {
-    bool on = false;
+    bool on = true;
   } triangle_strip;
   struct
   {

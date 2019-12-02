@@ -344,23 +344,25 @@ void glgrib_geometry_latlon::getTriangleNeighbours (int it, int jglo[3], int itr
 
 bool glgrib_geometry_latlon::triangleIsEdge (int it) const
 { 
+  int jt = it;
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;
-  int nti = numberOfTriangles / (2 * (Nj - 1)); // Number of triangles in a row
+  it = it / 2;
+  int nti = numberOfTriangles / (2 * (Nj - 1)); // Number of squares in a row
   int i = it % nti;
   int j = it / nti;
 
-  if (j == 0)
-    return t021;
-  if (j == Nj-1)
-    return ! t021;
+  if ((j == 0) && t021)
+    return true;
+  if ((j == Nj-2) && (! t021))
+    return true;
     
   if (! periodic)
     {
-      if (i == 0)
-        return t021;
-      if (i == Ni-1)
-        return ! t021;
+      if ((i == 0) && t021)
+        return true;
+      if ((i == Ni-2) && (! t021))
+        return true;
     }
 
   return false;

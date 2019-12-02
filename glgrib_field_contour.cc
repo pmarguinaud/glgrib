@@ -143,8 +143,9 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
 
   isoline_data_t iso_data[levels.size ()];
 
-#pragma omp parallel for
-  for (int i = 0; i < levels.size (); i++)
+//#pragma omp parallel for
+//for (int i = 0; i < levels.size (); i++)
+  for (int i = 5; i < levels.size (); i++)
     {
 
       bool * seen = new bool[geometry->getNumberOfTriangles () + 1];
@@ -158,14 +159,15 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
         if (geometry->triangleIsEdge (it))
 	{
           processTriangle (it, data->data (), levels[i], height->data (), meta_height.valmin, 
-			   meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
-	}
-
-      for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
-        processTriangle (it, data->data (), levels[i], height->data (), meta_height.valmin, 
-                         meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
+        		   meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
+        }
+//
+//    for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
+//      processTriangle (it, data->data (), levels[i], height->data (), meta_height.valmin, 
+//                       meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
 
       delete [] seen;
+      break;
     }
 
   iso.resize (levels.size ());

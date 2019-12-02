@@ -230,7 +230,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       program->set1f ("height_scale", opts.geometry.height.scale);
 
       glBindVertexArray (VertexArrayID);
-      glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
+      geometry->renderTriangles ();
       glBindVertexArray (0);
 
       view.delMVP (program);

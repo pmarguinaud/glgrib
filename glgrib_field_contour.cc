@@ -72,14 +72,25 @@ void glgrib_field_contour::setupVertexAttributes ()
           glVertexAttribDivisor (j, 1);
         }
 
-      iso[i].normalbuffer->bind (GL_ARRAY_BUFFER);
-
-      for (int j = 0; j < 2; j++)
+      if (opts.geometry.height.on)
         {
-          glEnableVertexAttribArray (3 + j);
-          glVertexAttribPointer (3 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float)));
-          glVertexAttribDivisor (3 + j, 1);
+          iso[i].heightbuffer->bind (GL_ARRAY_BUFFER);
+
+          for (int j = 0; j < 2; j++)
+            {
+              glEnableVertexAttribArray (3 + j);
+              glVertexAttribPointer (3 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float)));
+              glVertexAttribDivisor (3 + j, 1);
+            }
         }
+      else
+        {
+          for (int j = 0; j < 2; j++)
+            {
+              glDisableVertexAttribArray (3 + j);
+              glVertexAttrib1f (3 + j, 0.0f);
+            }
+	}
 
       iso[i].distancebuffer->bind (GL_ARRAY_BUFFER);
 
@@ -133,10 +144,10 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
       // First visit edge triangles
       for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
         if (geometry->triangleIsEdge (it))
-          processTriangle (it, data->data (), levels[i], seen+1, &iso_data[i]);
+          processTriangle (it, data->data (), levels[i], minval, maxval, meta1.valmis, seen+1, &iso_data[i]);
 
       for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
-        processTriangle (it, data->data (), levels[i], seen+1, &iso_data[i]);
+        processTriangle (it, data->data (), levels[i], minval, maxval, meta1.valmis, seen+1, &iso_data[i]);
 
       delete [] seen;
     }
@@ -148,10 +159,14 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
       iso[i].level = levels[i];
       iso[i].vertexbuffer   = new_glgrib_opengl_buffer_ptr (iso_data[i].lonlat.size () * sizeof (float), 
                                                             iso_data[i].lonlat.data ());
-      iso[i].normalbuffer   = new_glgrib_opengl_buffer_ptr (iso_data[i].drw.size ()    * sizeof (float), 
-                                                            iso_data[i].drw.data ());
-      iso[i].distancebuffer = new_glgrib_opengl_buffer_ptr (iso_data[i].dis.size ()    * sizeof (float), 
-                                                            iso_data[i].dis.data ());
+      if (opts.geometry.height.on)
+        {
+          iso[i].heightbuffer   = new_glgrib_opengl_buffer_ptr (iso_data[i].height.size () * sizeof (float), 
+                                                                iso_data[i].height.data ());
+        }
+
+      iso[i].distancebuffer = new_glgrib_opengl_buffer_ptr (iso_data[i].length.size () * sizeof (float), 
+                                                            iso_data[i].length.data ());
       iso[i].size = iso_data[i].size () - 1;
 
       if (i < opts.contour.widths.size ())
@@ -188,7 +203,8 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
   setReady ();
 }
 
-void glgrib_field_contour::processTriangle (int it0, float * r, float r0, bool * seen, isoline_data_t * iso)
+void glgrib_field_contour::processTriangle (int it0, float * r, float r0, float rmin, float rmax, 
+                                            float rmis, bool * seen, isoline_data_t * iso)
 {
   int count = 0;
   bool cont = true;
@@ -196,7 +212,7 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, bool *
   int it = it0;
   int its[2];
   bool first = true;
-  float xyz_first[3];
+  float xyzv_first[4];
 
   while (cont)
     {
@@ -261,14 +277,20 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, bool *
               float R = sqrt (X * X + Y * Y + Z * Z);
               X /= R; Y /= R; Z /= R;
 
-              iso->push (X, Y, Z);
+	      float V = 0.0f;
+
+	      if (opts.geometry.height.on)
+	        V = (r[jgloA] == rmis) || (r[jgloB] == rmis) ? 0.0f : ((1 - a) * r[jgloA] + a * r[jgloB] - rmin) / (rmax - rmin);
+
+              iso->push (X, Y, Z, V);
 
 	      if (first)
                 {
                   first = false;
-		  xyz_first[0] = X;
-		  xyz_first[1] = Y;
-		  xyz_first[2] = Z;
+		  xyzv_first[0] = X;
+		  xyzv_first[1] = Y;
+		  xyzv_first[2] = Z;
+		  xyzv_first[3] = V;
 		}
 
               if (count < 2)
@@ -291,7 +313,7 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, bool *
   if (count > 0)
     {
       if (! edge)
-        iso->push (xyz_first[0], xyz_first[1], xyz_first[2], 0.0f);
+        iso->push (xyzv_first[0], xyzv_first[1], xyzv_first[2], xyzv_first[3]);
       iso->push (0., 0., 0., 0.);
     }
 
@@ -307,6 +329,7 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
 
   view.setMVP (program);
   program->set3fv ("scale0", scale0);
+  program->set1f ("height_scale", opts.geometry.height.scale);
 
   for (int i = 0; i < iso.size (); i++)
     {

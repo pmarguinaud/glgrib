@@ -29,16 +29,17 @@ private:
   {
   public:
     std::vector<float> lonlat; // Position
-    std::vector<float> drw;    // Flag (=0, hide, =1 show)
-    std::vector<float> dis;    // Distance 
+    std::vector<float> height; // Height
+    std::vector<float> length; // Distance 
     double dis_last = 0.;
     struct
     {
       float x = 0.0f, y = 0.0f, z = 0.0f;
     } last;
-    void push (const float x, const float y, const float z, const float d = 1.) 
+    void push (const float x, const float y, const float z, const float h) 
     {
       double D = 0.0f;
+      float d = fabs (x) + fabs (y) + fabs (z);
       float lon = 0.0f, lat = 2 * M_PI;
       if (d > 0)
         {
@@ -58,26 +59,26 @@ private:
       last.z = z;
       lonlat.push_back (lon);
       lonlat.push_back (lat);
-      drw.push_back (d);
-      dis.push_back (D);
+      height.push_back (h);
+      length.push_back (D);
       dis_last = D;
     }
     void pop ()
     {
       lonlat.pop_back (); 
       lonlat.pop_back (); 
-      drw.pop_back (); 
-      dis.pop_back (); 
+      height.pop_back (); 
+      length.pop_back (); 
     }
     void clear ()
     {
       lonlat.clear (); 
-      drw.clear (); 
-      dis.clear (); 
+      height.clear (); 
+      length.clear (); 
     }
     int size ()
     {
-      return drw.size ();
+      return length.size ();
     }
   };
   class isoline_t
@@ -91,12 +92,12 @@ private:
     glgrib_option_color color;
     std::vector<int> pattern;
     GLuint VertexArrayID;
-    glgrib_opengl_buffer_ptr vertexbuffer, normalbuffer, distancebuffer;
+    glgrib_opengl_buffer_ptr vertexbuffer, heightbuffer, distancebuffer;
     GLuint size;
   };
 
   std::vector<isoline_t> iso;
-  void processTriangle (int, float *, float, bool *, isoline_data_t *);
+  void processTriangle (int, float *, float, float, float, float, bool *, isoline_data_t *);
 };
 
 #endif

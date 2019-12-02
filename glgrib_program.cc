@@ -780,8 +780,8 @@ R"CODE(
 layout(location = 0) in vec2 vertexLonLat0;
 layout(location = 1) in vec2 vertexLonLat1;
 layout(location = 2) in vec2 vertexLonLat2;
-layout(location = 3) in float norm0;
-layout(location = 4) in float norm1;
+layout(location = 3) in float vertexHeight0;
+layout(location = 4) in float vertexHeight1;
 layout(location = 5) in float dist0;
 layout(location = 6) in float dist1;
 
@@ -801,6 +801,8 @@ uniform bool do_alpha = false;
 uniform float posmax = 0.97;
 uniform float width = 0.005;
 
+uniform float height_scale = 0.05;
+
 void main ()
 {
   vec3 vertexPos0 = posFromLonLat (vertexLonLat0);
@@ -808,14 +810,22 @@ void main ()
   vec3 vertexPos2 = posFromLonLat (vertexLonLat2);
 
   vec3 vertexPos;
+  float height;
+
   vec3 t0 = normalize (vertexPos1 - vertexPos0);
   vec3 t1 = normalize (vertexPos2 - vertexPos1);
 
 
   if ((gl_VertexID == 0) || (gl_VertexID == 2))
-    vertexPos = vertexPos0;
+    {
+      vertexPos = vertexPos0;
+      height    = vertexHeight0;
+    }
   else if ((gl_VertexID == 1) || (gl_VertexID == 3) || (gl_VertexID == 5) || (gl_VertexID == 4))
-    vertexPos = vertexPos1;  
+    {
+      vertexPos = vertexPos1;  
+      height    = vertexHeight1;
+    }
 
   vec3 p = normalize (vertexPos);
   vec3 n0 = cross (t0, p);
@@ -838,11 +848,12 @@ void main ()
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);
 
-  alpha = min (norm0, norm1);
+  alpha = min (length (vertexPos0), length (vertexPos1));
 
   if (proj == XYZ)
     {
       pos = scalePosition (pos, normedPos, scale0);
+      pos = pos * (1.0f + height_scale * height);
     }
   else
     {

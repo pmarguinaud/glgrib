@@ -118,17 +118,36 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
 
   geometry = glgrib_geometry::load (ld, opts.path[0], opts.geometry);
 
+  glgrib_field_float_buffer_ptr height;
+  glgrib_field_metadata meta_height;
+  if (opts.geometry.height.on)
+    {
+      if (opts.geometry.height.path == "")
+	{
+          height = data;
+	  meta_height = meta1;
+	}
+      else
+        {
+          glgrib_geometry_ptr geometry_height = glgrib_geometry::load (ld, opts.geometry.height.path, opts.geometry);
+
+          if (! geometry_height->isEqual (*geometry))
+            throw std::runtime_error (std::string ("Field and height have different geometries"));
+
+          ld->load (&height, opts.geometry.height.path, opts.geometry, &meta_height);
+        }
+    }
+
   numberOfColors = 1;
 
   int size = geometry->size ();
-  float maxval = *std::max_element (data->data (), data->data () + size);
   float minval = *std::min_element (data->data (), data->data () + size);
 
   std::vector<float> levels = opts.contour.levels;
 
   if (levels.size () == 0)
     for (int i = 0; i < opts.contour.number; i++)
-      levels.push_back (minval + (i + 1) * (maxval - minval) / (opts.contour.number + 1));
+      levels.push_back (meta1.valmin + (i + 1) * (meta1.valmax - meta1.valmin) / (opts.contour.number + 1));
 
   isoline_data_t iso_data[levels.size ()];
 
@@ -144,10 +163,12 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
       // First visit edge triangles
       for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
         if (geometry->triangleIsEdge (it))
-          processTriangle (it, data->data (), levels[i], minval, maxval, meta1.valmis, seen+1, &iso_data[i]);
+          processTriangle (it, data->data (), levels[i], height->data (), meta_height.valmin, 
+			   meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
 
       for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
-        processTriangle (it, data->data (), levels[i], minval, maxval, meta1.valmis, seen+1, &iso_data[i]);
+        processTriangle (it, data->data (), levels[i], height->data (), meta_height.valmin, 
+                         meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
 
       delete [] seen;
     }
@@ -203,8 +224,8 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
   setReady ();
 }
 
-void glgrib_field_contour::processTriangle (int it0, float * r, float r0, float rmin, float rmax, 
-                                            float rmis, bool * seen, isoline_data_t * iso)
+void glgrib_field_contour::processTriangle (int it0, float * r, float r0, float * h, float hmin, float hmax, 
+                                            float hmis, bool * seen, isoline_data_t * iso)
 {
   int count = 0;
   bool cont = true;
@@ -280,7 +301,7 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, float 
 	      float V = 0.0f;
 
 	      if (opts.geometry.height.on)
-	        V = (r[jgloA] == rmis) || (r[jgloB] == rmis) ? 0.0f : ((1 - a) * r[jgloA] + a * r[jgloB] - rmin) / (rmax - rmin);
+	        V = (h[jgloA] == hmis) || (h[jgloB] == hmis) ? 0.0f : ((1 - a) * h[jgloA] + a * h[jgloB] - hmin) / (hmax - hmin);
 
               iso->push (X, Y, Z, V);
 

@@ -143,11 +143,9 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
 
   isoline_data_t iso_data[levels.size ()];
 
-//#pragma omp parallel for
-//for (int i = 0; i < levels.size (); i++)
-  for (int i = 5; i < levels.size (); i++)
+#pragma omp parallel for
+  for (int i = 0; i < levels.size (); i++)
     {
-
       bool * seen = new bool[geometry->getNumberOfTriangles () + 1];
 
       for (int i = 0; i < geometry->getNumberOfTriangles () + 1; i++)
@@ -161,13 +159,12 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
           processTriangle (it, data->data (), levels[i], height->data (), meta_height.valmin, 
         		   meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
         }
-//
-//    for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
-//      processTriangle (it, data->data (), levels[i], height->data (), meta_height.valmin, 
-//                       meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
+  
+      for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
+        processTriangle (it, data->data (), levels[i], height->data (), meta_height.valmin, 
+                         meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
 
       delete [] seen;
-      break;
     }
 
   iso.resize (levels.size ());
@@ -269,6 +266,11 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, float 
                 c++;
             }
           edge = c != 2;
+          if ((! edge) && geometry->triangleIsEdge (it))
+            {
+              seen[it] = false;
+              return;
+            }
         }
 
       // Find a way out of current triangle

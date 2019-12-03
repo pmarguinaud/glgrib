@@ -88,7 +88,7 @@ void glgrib_points::render (const glgrib_view & view) const
 
   float length = view.pixel_to_dist_at_nadir (10);
 
-  glgrib_program * program = glgrib_program_load (glgrib_program::POINTS);
+  glgrib_program * program = glgrib_program::load (glgrib_program::POINTS);
   program->use ();
 
   float scale0[3] = {d.opts.scale, d.opts.scale, d.opts.scale};

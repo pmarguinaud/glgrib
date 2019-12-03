@@ -342,7 +342,7 @@ void glgrib_field_contour::processTriangle (int it0, float * r, float r0, float 
 
 void glgrib_field_contour::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  glgrib_program * program = glgrib_program_load (glgrib_program::CONTOUR);
+  glgrib_program * program = glgrib_program::load (glgrib_program::CONTOUR);
   program->use ();
   float scale0[3] = {opts.scale, opts.scale, opts.scale};
   const glgrib_palette & p = palette;

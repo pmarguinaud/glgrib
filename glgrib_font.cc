@@ -29,7 +29,7 @@ glgrib_font_ptr new_glgrib_font_ptr (const glgrib_options_font & opts)
 
 void glgrib_font::select () const
 {
-  glgrib_program * program = glgrib_program_load (glgrib_program::FONT);
+  glgrib_program * program = glgrib_program::load (glgrib_program::FONT);
   program->use ();
   program->set1fv ("xoff", xoff.data (), xoff.size ());
   program->set1fv ("yoff", yoff.data (), yoff.size ());

@@ -118,7 +118,7 @@ void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_li
 {
   const float deg2rad = M_PI / 180.0;
 
-  glgrib_program * program = glgrib_program_load (glgrib_program::FLAT_TEX);
+  glgrib_program * program = glgrib_program::load (glgrib_program::FLAT_TEX);
   program->use ();
 
   view.setMVP (program);

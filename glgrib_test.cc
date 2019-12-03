@@ -8,7 +8,7 @@
 
 void glgrib_test::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  glgrib_program * program = glgrib_program_load (glgrib_program::TEST);
+  glgrib_program * program = glgrib_program::load (glgrib_program::TEST);
   program->use (); 
 
   view.setMVP (program);

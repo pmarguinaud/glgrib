@@ -430,7 +430,7 @@ void glgrib_field_stream::computeStreamLine (int it0, const float * ru, const fl
 
 void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  glgrib_program * program = glgrib_program_load (glgrib_program::STREAM);
+  glgrib_program * program = glgrib_program::load (glgrib_program::STREAM);
   program->use ();
   float scale0[3] = {opts.scale, opts.scale, opts.scale};
   const glgrib_palette & p = palette;

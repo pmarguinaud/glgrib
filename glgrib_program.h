@@ -8,6 +8,7 @@
 class glgrib_program
 {
 public:
+
   typedef enum 
   {
     NONE=-1,
@@ -30,6 +31,8 @@ public:
     SIZE=16,
   } kind;
 
+  static glgrib_program * load (glgrib_program::kind);
+
   void set1f (const std::string &, float);
   void set1fv (const std::string &, const float *, int = 1);
   void set1iv (const std::string &, const int *, int = 1);
@@ -41,12 +44,16 @@ public:
   void compile ();
 
   void setLight (const glgrib_options_light &);
+
+  glgrib_program () {}
   glgrib_program (const std::string & fsc, const std::string & vsc, const std::string & gsc)
      : FragmentShaderCode (fsc), VertexShaderCode (vsc), GeometryShaderCode (gsc) { }
   glgrib_program (const std::string & fsc, const std::string & vsc)
      : FragmentShaderCode (fsc), VertexShaderCode (vsc), GeometryShaderCode ("") { }
   virtual ~glgrib_program ();
   void use () const;
+  void read (const std::string &);
+
   std::string FragmentShaderCode;
   std::string VertexShaderCode;
   std::string GeometryShaderCode;
@@ -56,6 +63,5 @@ public:
   mutable bool active = false;
 };
 
-glgrib_program * glgrib_program_load (glgrib_program::kind);
 
 #endif

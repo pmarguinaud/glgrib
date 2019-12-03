@@ -143,7 +143,7 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
 {
   float scale0[3] = {opts.scale, opts.scale, opts.scale};
 
-  glgrib_program * program = glgrib_program_load (opts.scalar.points.on 
+  glgrib_program * program = glgrib_program::load (opts.scalar.points.on 
                                                 ? glgrib_program::SCALAR_POINTS 
                                                 : glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
 

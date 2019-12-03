@@ -50,7 +50,7 @@ void glgrib_lines::setup (const glgrib_options_lines & o,
 
 void glgrib_lines::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  glgrib_program * program = glgrib_program_load (glgrib_program::MONO);
+  glgrib_program * program = glgrib_program::load (glgrib_program::MONO);
   program->use ();
   float color[3] = {(float)opts.color.r / 255.0f, 
                     (float)opts.color.g / 255.0f, 

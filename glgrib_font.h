@@ -21,7 +21,7 @@ public:
     int iy = 5 - (c - 32) / 16;
     return iy * nx + ix;
   }
-  glgrib_program * getProgram () const { return glgrib_program_load (glgrib_program::FONT); }
+  glgrib_program * getProgram () const { return glgrib_program::load (glgrib_program::FONT); }
   void select () const;
   float getAspect () const { return aspect; }
   float getPosBelow () const { return posb; }

@@ -350,14 +350,19 @@ bool glgrib_geometry_lambert::triangleIsEdge (int it) const
 { 
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;
-  int nti = numberOfTriangles / (2 * (Ny - 1)); // Number of triangles in a row
+  it = it / 2;
+  int nti = numberOfTriangles / (2 * (Ny - 1)); // Number of squares in a row
   int i = it % nti;
   int j = it / nti;
 
-  if ((j == 0) || (j == Ny-1))
+  if ((j == 0) && t021)
+    return true;
+  if ((j == Ny-2) && (! t021))
     return true;
     
-  if ((i == 0) || (j == Nx-1))
+  if ((i == 0) && t021)
+    return true;
+  if ((i == Nx-2) && (! t021))
     return true;
 
   return false;

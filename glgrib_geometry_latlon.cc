@@ -344,7 +344,6 @@ void glgrib_geometry_latlon::getTriangleNeighbours (int it, int jglo[3], int itr
 
 bool glgrib_geometry_latlon::triangleIsEdge (int it) const
 { 
-  int jt = it;
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;
   it = it / 2;

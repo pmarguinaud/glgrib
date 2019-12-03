@@ -61,8 +61,8 @@ std::string slurp (const std::string & file)
 
 void glgrib_program::read (const std::string & file)
 {
-  VertexShaderCode   = slurp (glgrib_resolve ("shaders/" + file + ".vs"));
-  FragmentShaderCode = slurp (glgrib_resolve ("shaders/" + file + ".fs"));
+  VertexShaderCode   = slurp (glgrib_resolve (".shaders/" + file + ".vs"));
+  FragmentShaderCode = slurp (glgrib_resolve (".shaders/" + file + ".fs"));
 }
 
 void glgrib_program::compile ()

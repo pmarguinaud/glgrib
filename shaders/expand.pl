@@ -13,6 +13,8 @@ sub load
   return @text;
 }
 
+mkdir ('.shaders');
+
 for my $f (<shaders/src/*.vs>, <shaders/src/*.fs>)
   {
     my @text = &load ($f);
@@ -30,5 +32,5 @@ for my $f (<shaders/src/*.vs>, <shaders/src/*.fs>)
 	  }
       }
     $f = &basename ($f);
-    'FileHandle'->new (">shaders/$f")->print (join ('', @code));
+    'FileHandle'->new (">.shaders/$f")->print (join ('', @code));
   }

@@ -14,6 +14,7 @@ OBJECTS=glgrib_sqlite.o glgrib_dbase.o glgrib_test.o glgrib_cities.o glgrib_poin
 
 glgrib.x: $(OBJECTS)
 	g++ $(CXXFLAGS) -o glgrib.x $(OBJECTS) $(LDFLAGS) 
+	./shaders/expand.pl
 
 glgrib_dbase2sqlite.x: glgrib_dbase2sqlite.o glgrib_dbase.o
 	g++ $(CXXFLAGS) -o glgrib_dbase2sqlite.x glgrib_dbase2sqlite.o glgrib_dbase.o -lsqlite3

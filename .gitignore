@@ -11,3 +11,4 @@ big
 *.aux
 *.log
 *.mp4
+.shaders

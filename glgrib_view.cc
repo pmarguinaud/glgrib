@@ -26,6 +26,8 @@ void glgrib_view::setMVP (glgrib_program * program) const
 
   if (opts.clip.on)
     {
+      float xmin = width  * opts.clip.xmin, xmax = width  * opts.clip.xmax, 
+	    ymin = height * opts.clip.ymin, ymax = height * opts.clip.ymax;
       int type = ps.current ()->getType ();
       if ((type == glgrib_projection::LATLON)
        || (type == glgrib_projection::MERCATOR))
@@ -38,9 +40,11 @@ void glgrib_view::setMVP (glgrib_program * program) const
           get_screen_coords_from_latlon (&xpos1, &ypos1, lat1, lon1);
           get_screen_coords_from_latlon (&xpos2, &ypos2, lat2, lon2);
 
-          glEnable (GL_SCISSOR_TEST);
-          glScissor (xpos1, ypos1, xpos2-xpos1, ypos2-ypos1);
+          xmin = std::max (xmin, xpos1); xmax = std::min (xmax, xpos2);
+          ymin = std::max (ymin, ypos1); ymax = std::min (ymax, ypos2);
         }
+      glEnable (GL_SCISSOR_TEST);
+      glScissor (xmin, ymin, xmax-xmin, ymax-ymin);
     }
 }
 

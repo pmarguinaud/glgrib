@@ -929,6 +929,10 @@ public:
     DESC (clip.on,            Enable Mercator and lat/lon clippling);
     DESC (clip.dlon,          Amount of longitude to clip);
     DESC (clip.dlat,          Amount of latitude to clip);
+    DESC (clip.xmin,          Min viewport x coordinate);
+    DESC (clip.xmax,          Max viewport x coordinate);
+    DESC (clip.ymin,          Min viewport y coordinate);
+    DESC (clip.ymax,          Max viewport y coordinate);
   }
   string  projection  = "XYZ";
   string  transformation  = "PERSPECTIVE";
@@ -944,6 +948,7 @@ public:
   {
     float dlon = 10.0f;
     float dlat =  5.0f;
+    float xmin = 0.0f, xmax = 1.0f, ymin = 0.0f, ymax = 1.0f;
     bool on = true;
   } clip;
 };

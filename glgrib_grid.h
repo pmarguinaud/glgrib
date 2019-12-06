@@ -3,6 +3,7 @@
 
 #include "glgrib_object.h"
 #include "glgrib_options.h"
+#include "glgrib_string.h"
 
 class glgrib_grid : public glgrib_object
 {
@@ -24,6 +25,7 @@ public:
   void clear ();
   ~glgrib_grid ();
 private:
+  glgrib_string labels;
   glgrib_options_grid opts;
   GLuint VertexArrayID;
   int numberOfPoints;

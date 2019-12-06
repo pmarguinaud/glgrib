@@ -555,6 +555,27 @@ public:
 };
 
 
+class glgrib_options_font : public glgrib_options_base
+{
+public:
+  glgrib_options_font (const std::string & b, float s) : bitmap (b), scale (s) {}
+  glgrib_options_font () {}
+  DEFINE
+  {
+    DESC (bitmap,     Bitmap path);
+    DESC (scale,      Bitmap scale);
+    DESC (color.foreground, Foreground color);
+    DESC (color.background, Background color);
+  }
+  std::string bitmap = "fonts/08.bmp";
+  float scale = 0.05f;
+  struct
+  {
+    glgrib_option_color foreground = glgrib_option_color (255, 255, 255, 255);
+    glgrib_option_color background = glgrib_option_color (  0,   0,   0,   0);
+  } color;
+};
+
 class glgrib_options_grid : public glgrib_options_base
 {
 public:
@@ -567,6 +588,11 @@ public:
     DESC (points,            Number of points along a parallel);
     DESC (color,             Grid color);
     DESC (scale,             Grid scale);
+    DESC (labels.on,         Enable labels);
+    DESC (labels.lon,        Longitude of latitude labels);
+    DESC (labels.lat,        Latitude of longitude labels);
+    DESC (labels.angle,      Angle of labels);
+    INCLUDE (labels.font);
   }
   int resolution = 9;
   int points = 200;
@@ -575,7 +601,13 @@ public:
   glgrib_option_color color = glgrib_option_color (0, 255, 0);
   bool on = false;
   float scale = 1.005;
-  
+  struct 
+  {
+    bool on = false;
+    float lon = 0.0f, lat = 0.0f;
+    float angle = 0.0f;
+    glgrib_options_font font;
+  } labels;
 };
 
 class glgrib_options_landscape_position : public glgrib_options_base
@@ -800,27 +832,6 @@ public:
   std::string path = "";
   float x0 = 0.0, x1 = 1.0, y0 = 0.0, y1 = 1.0;
   std::string align;
-};
-
-class glgrib_options_font : public glgrib_options_base
-{
-public:
-  glgrib_options_font (const std::string & b, float s) : bitmap (b), scale (s) {}
-  glgrib_options_font () {}
-  DEFINE
-  {
-    DESC (bitmap,     Bitmap path);
-    DESC (scale,      Bitmap scale);
-    DESC (color.foreground, Foreground color);
-    DESC (color.background, Background color);
-  }
-  std::string bitmap = "fonts/08.bmp";
-  float scale = 0.05f;
-  struct
-  {
-    glgrib_option_color foreground = glgrib_option_color (255, 255, 255, 255);
-    glgrib_option_color background = glgrib_option_color (  0,   0,   0,   0);
-  } color;
 };
 
 class glgrib_options_text : public glgrib_options_base

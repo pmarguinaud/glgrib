@@ -27,6 +27,56 @@ void glgrib_grid::setup (const glgrib_options_grid & o)
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
 
+
+  if (opts.labels.on)
+    {
+      
+      glgrib_font_ptr font = new_glgrib_font_ptr (opts.labels.font);
+      labels.setShared (true);
+      labels.setChange (false);
+
+      std::vector<std::string> L;
+      std::vector<float> X, Y, Z, A;
+
+      X.reserve (opts.resolution); Y.reserve (opts.resolution);
+      Z.reserve (opts.resolution); A.reserve (opts.resolution);
+      L.reserve (opts.resolution);
+
+      auto push = [&X, &Y, &Z, &A, &L, this] (float lon, float lat, const std::string & l)
+      {
+        const float deg2rad = M_PI / 180.0f;
+	float coslon = cos (deg2rad * lon), sinlon = sin (deg2rad * lon);
+	float coslat = cos (deg2rad * lat), sinlat = sin (deg2rad * lat);
+        float x = coslon * coslat, y = sinlon * coslat, z = sinlat;
+        float a = opts.labels.angle;
+        X.push_back (x); Y.push_back (y);
+	Z.push_back (z); A.push_back (a);
+	L.push_back (l);
+      };
+
+      for (int i = 1; i < opts.resolution-1; i++)
+        {
+          float lon = opts.labels.lon, lat = 180.0f / 2 - i * 180.0f / opts.resolution;
+          char s[64];
+          sprintf (s, "%+4.0f", lat);
+          std::string str = std::string (s);
+	  push (lon, lat, str);
+	}
+
+      for (int i = -opts.resolution; i < opts.resolution; i++)
+        {
+          float lon = i * 360.0f / (2.0f * opts.resolution), lat = opts.labels.lat;
+          char s[64];
+          sprintf (s, "%+4.0f", lon);
+          std::string str = std::string (s);
+	  push (lon, lat, str);
+	}
+
+      labels.setup3D (font, L, X, Y, Z, A, opts.labels.font.scale, glgrib_string::C);
+      labels.setForegroundColor (opts.labels.font.color.foreground);
+    }
+
+
   setReady ();
 }
 
@@ -75,6 +125,8 @@ void glgrib_grid::render (const glgrib_view & view, const glgrib_options_light &
   glBindVertexArray (0);
 
   view.delMVP (program);
+
+  labels.render (view);
 
 }
 

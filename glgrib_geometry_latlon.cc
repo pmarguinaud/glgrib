@@ -494,3 +494,27 @@ void glgrib_geometry_latlon::fixPeriodicity (const glm::vec2 & M, glm::vec2 * P,
         P[i].x -= 2.0f * M_PI;
     }
 }
+
+void glgrib_geometry_latlon::getPointNeighbours (int jglo, std::vector<int> * neigh) const
+{
+  neigh->resize (0);
+  int i = jglo % Ni;
+  int j = jglo / Ni;
+
+  int iijj[16] = {-1, +1, +0, +1, +1, +1, +1, +0, 
+                  +1, -1, +0, -1, -1, -1, -1, +0};
+
+  for (int k = 0; k < 8; k++)
+    {
+      int i_ = i + iijj[2*k+0];
+      int j_ = j + iijj[2*k+1];
+      if ((j_ < 0) || (j_ >= Nj))
+        continue;
+      if (! periodic)
+        if ((i_ < 0) || (i_ >= Ni))
+          continue;
+      neigh->push_back (j_ * Ni + i_);
+    }
+}
+
+

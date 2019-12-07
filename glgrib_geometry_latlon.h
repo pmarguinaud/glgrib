@@ -11,6 +11,7 @@ public:
   static const double rad2deg;
   static const double deg2rad;
   virtual bool isEqual (const glgrib_geometry &) const;
+  virtual void getPointNeighbours (int, std::vector<int> *) const;
   virtual std::string md5 () const;
   virtual int latlon2index (float, float) const;
   glgrib_geometry_latlon (glgrib_handle_ptr);

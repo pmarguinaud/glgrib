@@ -20,6 +20,7 @@ class glgrib_geometry
 {
 public:
   static glgrib_geometry_ptr load (class glgrib_loader *, const std::string &, const glgrib_options_geometry & opts, const int  = 0);
+  virtual void getPointNeighbours (int, std::vector<int> *) const = 0;
   virtual bool isEqual (const glgrib_geometry &) const = 0;
   virtual bool operator== (const glgrib_geometry & geom) const
   {

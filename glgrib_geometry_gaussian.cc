@@ -1445,3 +1445,67 @@ void glgrib_geometry_gaussian::fixPeriodicity (const glm::vec2 & M, glm::vec2 * 
         P[i].x -= 2.0f * M_PI;
     }
 }
+
+void glgrib_geometry_gaussian::getPointNeighbours (int jglo, std::vector<int> * neigh) const
+{
+  neigh->resize (0);
+  jlonlat_t jlonlat = this->jlonlat (jglo);
+
+  int jlat = jlonlat.jlat, iloen = pl[jlat-1], jlon = jlonlat.jlon; 
+  int jlonp = jlon ==     1 ? iloen : jlon - 1;
+  int jlonn = jlon == iloen ?     1 : jlon + 1;
+
+  if (jlonlat.jlat < Nj)
+    {
+      // Current point
+      int jlat2 = jlonlat.jlat+0, iloen2 = pl[jlat2-1], jlon2 = jlonlat.jlon; 
+      // Point below
+      int jlat1 = jlonlat.jlat+1, iloen1 = pl[jlat1-1], jlon1 = 1 + ((jlon2 - 1) * iloen1) / iloen2; 
+
+      if ((jlon1 - 1) * iloen2 == (jlon2 - 1) * iloen1) // Two points are aligned
+        {
+          int jlon1p = jlon1 ==      1 ? iloen1 : jlon1 - 1;
+          int jlon1n = jlon1 == iloen1 ?      1 : jlon1 + 1;
+          neigh->push_back (jglooff[jlat1-1]+jlon1p-1);
+          neigh->push_back (jglooff[jlat1-1]+jlon1 -1);
+          neigh->push_back (jglooff[jlat1-1]+jlon1n-1);
+        }
+      else
+        {
+          int jlon1n = jlon1 == iloen1 ?      1 : jlon1 + 1;
+          neigh->push_back (jglooff[jlat1-1]+jlon1 -1);
+          neigh->push_back (jglooff[jlat1-1]+jlon1n-1);
+        }
+    }
+  
+  neigh->push_back (jglooff[jlonlat.jlat-1]+jlonn-1);
+
+  if (jlonlat.jlat > 1)
+    {
+      // Current point
+      int jlat2 = jlonlat.jlat+0, iloen2 = pl[jlat2-1], jlon2 = jlonlat.jlon; 
+      // Point above
+      int jlat1 = jlonlat.jlat-1, iloen1 = pl[jlat1-1], jlon1 = 1 + ((jlon2 - 1) * iloen1) / iloen2; 
+
+      if ((jlon1 - 1) * iloen2 == (jlon2 - 1) * iloen1) // Two points are aligned
+        {
+          int jlon1p = jlon1 ==      1 ? iloen1 : jlon1 - 1;
+          int jlon1n = jlon1 == iloen1 ?      1 : jlon1 + 1;
+          neigh->push_back (jglooff[jlat1-1]+jlon1n-1);
+          neigh->push_back (jglooff[jlat1-1]+jlon1 -1);
+          neigh->push_back (jglooff[jlat1-1]+jlon1p-1);
+        }
+      else
+        {
+          int jlon1n = jlon1 == iloen1 ?      1 : jlon1 + 1;
+          neigh->push_back (jglooff[jlat1-1]+jlon1n-1);
+          neigh->push_back (jglooff[jlat1-1]+jlon1 -1);
+        }
+    }
+
+  neigh->push_back (jglooff[jlonlat.jlat-1]+jlonp-1);
+
+  
+}
+
+

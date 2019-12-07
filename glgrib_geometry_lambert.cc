@@ -460,4 +460,26 @@ glm::vec2 glgrib_geometry_lambert::conformal2latlon (const glm::vec2 & xy) const
   return glm::vec2 (rad2deg * latlon.lon, rad2deg * latlon.lat);
 }
 
+void glgrib_geometry_lambert::getPointNeighbours (int jglo, std::vector<int> * neigh) const
+{
+  neigh->resize (0);
+  int i = jglo % Nx;
+  int j = jglo / Nx;
+
+  int iijj[16] = {-1, +1, +0, +1, +1, +1, +1, +0, 
+                  +1, -1, +0, -1, -1, -1, -1, +0};
+
+  for (int k = 0; k < 8; k++)
+    {
+      int i_ = i + iijj[2*k+0];
+      int j_ = j + iijj[2*k+1];
+      if ((j_ < 0) || (j_ >= Ny))
+        continue;
+      if ((i_ < 0) || (i_ >= Nx))
+        continue;
+      neigh->push_back (j_ * Nx + i_);
+    }
+}
+
+
 

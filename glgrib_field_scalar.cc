@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+#include <algorithm>
 
 glgrib_field_scalar::glgrib_field_scalar (const glgrib_field_scalar & field)
 {
@@ -98,6 +99,87 @@ void glgrib_field_scalar::setupVertexAttributes ()
   glBindVertexArray (0); 
 }
 
+static
+int hilo_count (const_glgrib_geometry_ptr geometry, glgrib_field_float_buffer_ptr data,
+                int jglo, int radius)
+{
+  const float * val = data->data ();
+  std::vector<int> neigh;
+  std::set<int> seen;
+  
+  seen.insert (jglo);
+
+  std::set<int> seen1, * s2 = &seen1, seen2, * s1 = &seen2;
+
+  // s1 : last inserted values
+  // s2 : values being inserted
+  s1->insert (jglo);
+
+  for (int j = 1; j < radius; j++)
+    {
+      s2->clear ();
+      for (std::set<int>::iterator it = s1->begin (); it != s1->end (); it++)
+        {
+          int jglo0 = *it;
+          geometry->getPointNeighbours (jglo0, &neigh);
+          for (int i = 0; i < neigh.size (); i++)
+            {
+              int jglo1 = neigh[i];
+              if (seen.find (jglo1) == seen.end ())
+                continue;
+              if (val[jglo1] > val[jglo0])
+                return j-1;
+              s2->insert (jglo1);
+            }
+        }
+      for (std::set<int>::iterator it = s2->begin (); it != s2->end (); it++)
+        seen.insert (*it);
+      std::swap (s1, s2);
+    }
+
+  return radius;
+}
+
+static
+void hilo (const_glgrib_geometry_ptr geometry, glgrib_field_float_buffer_ptr data)
+{
+  std::vector<int> neigh;
+  std::vector<int> jglo_lo, jglo_hi;
+  int np = geometry->getNumberOfPoints ();
+
+  const float * val = data->data ();
+
+  int nhi = 0, nlo = 0;
+  for (int jglo = 0; jglo < np; jglo++)
+    {
+      geometry->getPointNeighbours (jglo, &neigh);
+      bool hi = true, lo = true;
+      for (int i = 0; i < neigh.size (); i++)
+        {
+          hi = hi && (val[jglo] > val[neigh[i]]);
+          lo = lo && (val[jglo] < val[neigh[i]]);
+          if ((! hi) && (! lo))
+            break;
+        }
+      if (hi)
+        jglo_hi.push_back (jglo);
+      if (lo)
+        jglo_lo.push_back (jglo);
+    }
+
+  auto cmp_lo = [val](int i, int j) { return val[i] <= val[j]; }; 
+  std::sort (jglo_lo.begin (), jglo_lo.end (), cmp_lo);
+  auto cmp_hi = [val](int i, int j) { return val[i] >= val[j]; }; 
+  std::sort (jglo_hi.begin (), jglo_hi.end (), cmp_hi);
+
+  std::cout << " np = " << np  << std::endl;
+  std::cout << " lo = " << jglo_lo.size () << std::endl;
+  std::cout << " hi = " << jglo_hi.size () << std::endl;
+  std::cout << val[jglo_hi[0]] << " " << val[jglo_hi[1]] << std::endl;
+  std::cout << val[jglo_lo[0]] << " " << val[jglo_lo[1]] << std::endl;
+
+}
+
 void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field & o, float slot)
 {
   opts = o;
@@ -112,6 +194,8 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
   palette = glgrib_palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
 
   geometry = glgrib_geometry::load (ld, opts.path[0], opts.geometry);
+
+  hilo (geometry, data);
 
   numberOfColors = 1;
 

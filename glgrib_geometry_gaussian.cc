@@ -1449,6 +1449,10 @@ void glgrib_geometry_gaussian::fixPeriodicity (const glm::vec2 & M, glm::vec2 * 
 void glgrib_geometry_gaussian::getPointNeighbours (int jglo, std::vector<int> * neigh) const
 {
   neigh->resize (0);
+ 
+  if ((jglo < 0) || (numberOfPoints <= jglo))
+    return;
+
   jlonlat_t jlonlat = this->jlonlat (jglo);
 
   int jlat = jlonlat.jlat, iloen = pl[jlat-1], jlon = jlonlat.jlon; 
@@ -1478,7 +1482,7 @@ void glgrib_geometry_gaussian::getPointNeighbours (int jglo, std::vector<int> * 
         }
     }
   
-  neigh->push_back (jglooff[jlonlat.jlat-1]+jlonn-1);
+  neigh->push_back (jglooff[jlat-1]+jlonn-1);
 
   if (jlonlat.jlat > 1)
     {
@@ -1503,7 +1507,7 @@ void glgrib_geometry_gaussian::getPointNeighbours (int jglo, std::vector<int> * 
         }
     }
 
-  neigh->push_back (jglooff[jlonlat.jlat-1]+jlonp-1);
+  neigh->push_back (jglooff[jlat-1]+jlonp-1);
 
   
 }

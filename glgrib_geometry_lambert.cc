@@ -463,6 +463,10 @@ glm::vec2 glgrib_geometry_lambert::conformal2latlon (const glm::vec2 & xy) const
 void glgrib_geometry_lambert::getPointNeighbours (int jglo, std::vector<int> * neigh) const
 {
   neigh->resize (0);
+
+  if ((jglo < 0) || (numberOfPoints <= jglo))
+    return;
+
   int i = jglo % Nx;
   int j = jglo / Nx;
 

@@ -498,6 +498,10 @@ void glgrib_geometry_latlon::fixPeriodicity (const glm::vec2 & M, glm::vec2 * P,
 void glgrib_geometry_latlon::getPointNeighbours (int jglo, std::vector<int> * neigh) const
 {
   neigh->resize (0);
+
+  if ((jglo < 0) || (numberOfPoints <= jglo))
+    return;
+
   int i = jglo % Ni;
   int j = jglo / Ni;
 

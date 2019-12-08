@@ -118,6 +118,9 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
 
   geometry = glgrib_geometry::load (ld, opts.path[0], opts.geometry);
 
+  if (opts.hilo.on)
+    setupHilo (data);
+
   glgrib_field_float_buffer_ptr height = data;
   glgrib_field_metadata meta_height = meta1;
   if ((opts.geometry.height.on) && (opts.geometry.height.path != ""))
@@ -386,6 +389,8 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
 
 
   view.delMVP (program);
+
+  renderHilo (view);
 
 }
 

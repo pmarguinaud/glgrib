@@ -198,8 +198,7 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
 
   view.delMVP (program);
 
-  if (opts.hilo.on)
-    hilo.render (view);
+  renderHilo (view);
 
 }
 

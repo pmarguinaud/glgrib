@@ -40,6 +40,7 @@ public:
   void scalePaletteUp (float = 0.025);
   void scalePaletteDown (float = 0.025);
   void setupHilo (glgrib_field_float_buffer_ptr);
+  void renderHilo (const glgrib_view &) const;
 
   virtual ~glgrib_field () {}
   virtual std::vector<float> getValue (int index) const 
@@ -123,7 +124,7 @@ protected:
   mutable glgrib_options_field opts;
   std::vector<glgrib_field_metadata> meta;
   std::vector<glgrib_field_float_buffer_ptr> values;
-  glgrib_string hilo;
+  std::vector<glgrib_string> hilo;
 };
 
 #endif

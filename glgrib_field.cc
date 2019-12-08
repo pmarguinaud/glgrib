@@ -70,6 +70,8 @@ int hilo_count (const_glgrib_geometry_ptr geometry, glgrib_field_float_buffer_pt
 
 void glgrib_field::setupHilo (glgrib_field_float_buffer_ptr data)
 {
+  const int nhilo = 32;
+
   class hilo_t
   {
   public:
@@ -83,7 +85,7 @@ void glgrib_field::setupHilo (glgrib_field_float_buffer_ptr data)
     }
   };
 
-  hilo_t lhilo;
+  hilo_t lhilo[nhilo];
 
   std::vector<int> neigh;
   int np = geometry->getNumberOfPoints ();
@@ -92,34 +94,48 @@ void glgrib_field::setupHilo (glgrib_field_float_buffer_ptr data)
   
   geometry->applyNormScale (&scale[0]);
 
+  const int radius = 50;
+  const int thresh = 20;
+
   const float * val = data->data ();
 
-  int nhi = 0, nlo = 0;
-  for (int jglo = 0; jglo < np; jglo++)
+#pragma omp parallel for
+  for (int i = 0; i < nhilo; i++)
     {
-      float x, y, z;
-      int chi = hilo_count (geometry, data, jglo, 50 * scale[jglo], false);
-      int clo = hilo_count (geometry, data, jglo, 50 * scale[jglo], true);
-      bool lhi = chi > 20;
-      bool llo = clo > 20;
-      if (lhi || llo)
+      int jglo1 = (np * (i + 0)) / nhilo;
+      int jglo2 = (np * (i + 1)) / nhilo;
+      for (int jglo = jglo1; jglo < jglo2; jglo++)
         {
-          float lon, lat;
-          geometry->index2latlon (jglo, &lat, &lon);
-          float coslon = cos (lon), sinlon = sin (lon);
-          float coslat = cos (lat), sinlat = sin (lat);
-          x = coslon * coslat; y = sinlon * coslat; z = sinlat;
-          lhilo.push (lhi ? "H" : "L", x, y, z);
+          float x, y, z;
+          int chi = hilo_count (geometry, data, jglo, radius * scale[jglo], false);
+          int clo = hilo_count (geometry, data, jglo, radius * scale[jglo], true);
+          bool lhi = chi > thresh;
+          bool llo = clo > thresh;
+          if (lhi || llo)
+            {
+              float lon, lat;
+              geometry->index2latlon (jglo, &lat, &lon);
+              float coslon = cos (lon), sinlon = sin (lon);
+              float coslat = cos (lat), sinlat = sin (lat);
+              x = opts.scale * coslon * coslat; 
+              y = opts.scale * sinlon * coslat; 
+              z = opts.scale * sinlat;
+              lhilo[i].push (lhi ? "H" : "L", x, y, z);
+            }
         }
     }
 
   glgrib_font_ptr font = new_glgrib_font_ptr (opts.hilo.font);
-  hilo.setShared (true);
-  hilo.setChange (false);
 
-  hilo.setup3D (font, lhilo.L, lhilo.X, lhilo.Y, lhilo.Z, lhilo.A, 
-                opts.hilo.font.scale, glgrib_string::C);
-  hilo.setForegroundColor (opts.hilo.font.color.foreground);
+  hilo.resize (nhilo);
+  for (int i = 0; i < nhilo; i++)
+    {
+      hilo[i].setShared (true);
+      hilo[i].setChange (false);
+      hilo[i].setup3D (font, lhilo[i].L, lhilo[i].X, lhilo[i].Y, lhilo[i].Z, lhilo[i].A, 
+                       opts.hilo.font.scale, glgrib_string::C);
+      hilo[i].setForegroundColor (opts.hilo.font.color.foreground);
+    }
 
 
 }
@@ -324,4 +340,10 @@ void glgrib_field::bindHeight (int attr)
     }
 }
 
+void glgrib_field::renderHilo (const glgrib_view & view) const
+{
+  if (opts.hilo.on)
+    for (int i = 0; i < hilo.size (); i++)
+      hilo[i].render (view);
+}
 

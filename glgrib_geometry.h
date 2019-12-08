@@ -29,6 +29,7 @@ public:
   virtual void setup (glgrib_handle_ptr, const glgrib_options_geometry &) = 0;
   virtual int size () const = 0;
   virtual int latlon2index (float, float) const = 0;
+  virtual void index2latlon (int, float *, float *) const = 0;
   virtual ~glgrib_geometry ();
   virtual std::string md5 () const = 0;
   virtual void applyUVangle (float *) const = 0;

@@ -125,6 +125,20 @@ int glgrib_geometry_lambert::latlon2index (float lat, float lon) const
   return j * Nx + i;
 }
 
+void glgrib_geometry_lambert::index2latlon (int jglo, float * lat, float * lon) const
+{
+  int i = jglo % Nx;
+  int j = jglo / Nx;
+
+  xy_t pt_xy ((i - Nux / 2) * DxInMetres, (j - Nuy / 2) * DyInMetres);
+  pt_xy = pt_xy + center_xy;
+  
+  latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
+  
+  *lon = latlon.lon;
+  *lat = latlon.lat;
+}
+
 std::string glgrib_geometry_lambert::md5 () const
 {
   unsigned char out[MD5_DIGEST_LENGTH];

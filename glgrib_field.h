@@ -8,6 +8,7 @@
 #include "glgrib_field_metadata.h"
 #include "glgrib_field_float_buffer.h"
 #include "glgrib_loader.h"
+#include "glgrib_string.h"
 
 #include <string>
 #include <algorithm>
@@ -38,6 +39,8 @@ public:
   void setNextPalette ();
   void scalePaletteUp (float = 0.025);
   void scalePaletteDown (float = 0.025);
+  void setupHilo (glgrib_field_float_buffer_ptr);
+
   virtual ~glgrib_field () {}
   virtual std::vector<float> getValue (int index) const 
   { 
@@ -120,6 +123,7 @@ protected:
   mutable glgrib_options_field opts;
   std::vector<glgrib_field_metadata> meta;
   std::vector<glgrib_field_float_buffer_ptr> values;
+  glgrib_string hilo;
 };
 
 #endif

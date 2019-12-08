@@ -1055,6 +1055,14 @@ int glgrib_geometry_gaussian::latlon2index (float lat, float lon) const
   return jglooff[jlat] + jlon;
 }
 
+void glgrib_geometry_gaussian::index2latlon (int jglo, float * lat, float * lon) const
+{
+  jlonlat_t jlonlat = this->jlonlat (jglo);
+  glm::vec2 lonlat = jlonlat2lonlat (jlonlat);
+  *lon = lonlat[0];
+  *lat = lonlat[1];
+}
+
 std::string glgrib_geometry_gaussian::md5 () const
 {
   unsigned char out[MD5_DIGEST_LENGTH];

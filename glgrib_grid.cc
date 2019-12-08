@@ -85,6 +85,7 @@ void glgrib_grid::clear ()
   if (isReady ()) 
     glDeleteVertexArrays (1, &VertexArrayID);
   glgrib_object::clear (); 
+  labels.clear ();
 }
 
 glgrib_grid::~glgrib_grid ()

@@ -479,6 +479,27 @@ public:
   std::vector<glgrib_option_color> colors;
 };
 
+class glgrib_options_font : public glgrib_options_base
+{
+public:
+  glgrib_options_font (const std::string & b, float s) : bitmap (b), scale (s) {}
+  glgrib_options_font () {}
+  DEFINE
+  {
+    DESC (bitmap,     Bitmap path);
+    DESC (scale,      Bitmap scale);
+    DESC (color.foreground, Foreground color);
+    DESC (color.background, Background color);
+  }
+  std::string bitmap = "fonts/08.bmp";
+  float scale = 0.05f;
+  struct
+  {
+    glgrib_option_color foreground = glgrib_option_color (255, 255, 255, 255);
+    glgrib_option_color background = glgrib_option_color (  0,   0,   0,   0);
+  } color;
+};
+
 class glgrib_options_field : public glgrib_options_base
 {
 public:
@@ -496,13 +517,23 @@ public:
     DESC (scalar.points.size.value,  Field point size);
     DESC (scalar.points.size.variable.on,  Variable field point size);
     DESC (scalar.points.size.factor.on,  Apply scale factor to point size);
+    DESC (hilo.on,             Display low & high);
+    INCLUDE (hilo.font);
     INCLUDE (palette);
     INCLUDE (vector);
     INCLUDE (contour);
     INCLUDE (stream);
     INCLUDE (geometry);
+    
   }
   std::set<std::string> seen;
+
+
+  struct 
+  {
+    bool on = false;
+    glgrib_options_font font;
+  } hilo;
 
   std::string type = "SCALAR";
   struct
@@ -554,27 +585,6 @@ public:
   glgrib_options_geometry geometry;
 };
 
-
-class glgrib_options_font : public glgrib_options_base
-{
-public:
-  glgrib_options_font (const std::string & b, float s) : bitmap (b), scale (s) {}
-  glgrib_options_font () {}
-  DEFINE
-  {
-    DESC (bitmap,     Bitmap path);
-    DESC (scale,      Bitmap scale);
-    DESC (color.foreground, Foreground color);
-    DESC (color.background, Background color);
-  }
-  std::string bitmap = "fonts/08.bmp";
-  float scale = 0.05f;
-  struct
-  {
-    glgrib_option_color foreground = glgrib_option_color (255, 255, 255, 255);
-    glgrib_option_color background = glgrib_option_color (  0,   0,   0,   0);
-  } color;
-};
 
 class glgrib_options_grid : public glgrib_options_base
 {

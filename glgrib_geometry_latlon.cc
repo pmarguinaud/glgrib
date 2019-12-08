@@ -163,6 +163,15 @@ int glgrib_geometry_latlon::latlon2index (float lat, float lon) const
   return j * Ni + i;
 }
 
+void glgrib_geometry_latlon::index2latlon (int jglo, float * lat, float * lon) const
+{
+  int i = jglo % Ni;
+  int j = jglo / Ni;
+
+  *lat = lat0 - dlat * (float)j;
+  *lon = lon0 + dlon * (float)i;
+}
+
 std::string glgrib_geometry_latlon::md5 () const
 {
   unsigned char out[MD5_DIGEST_LENGTH];

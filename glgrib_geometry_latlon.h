@@ -14,6 +14,7 @@ public:
   virtual void getPointNeighbours (int, std::vector<int> *) const;
   virtual std::string md5 () const;
   virtual int latlon2index (float, float) const;
+  virtual void index2latlon (int, float *, float *) const;
   glgrib_geometry_latlon (glgrib_handle_ptr);
   virtual void setup (glgrib_handle_ptr, const glgrib_options_geometry &);
   virtual int size () const;

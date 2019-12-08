@@ -17,6 +17,7 @@ public:
   virtual void getPointNeighbours (int, std::vector<int> *) const;
   virtual std::string md5 () const;
   virtual int latlon2index (float, float) const;
+  virtual void index2latlon (int, float *, float *) const;
   glgrib_geometry_gaussian (glgrib_handle_ptr);
   glgrib_geometry_gaussian (int);
   virtual void setup (glgrib_handle_ptr, const glgrib_options_geometry &);
@@ -79,6 +80,20 @@ private:
     XYZ = rot * XYZ;
  
     return glm::vec3 (XYZ.x, XYZ.y, XYZ.z);
+  }
+  glm::vec2 jlonlat2lonlat (const jlonlat_t & jlonlat) const
+  {
+    if ((stretchingFactor == 1.0f) && (! rotated))
+      {
+        int jlat = jlonlat.jlat, jlon = jlonlat.jlon;
+        float lat = latgauss[jlat-1];
+        float lon = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
+        return glm::vec2 (lon, lat);
+      }
+    glm::vec3 xyz = jlonlat2xyz (jlonlat);
+    float lon = atan2 (xyz.y, xyz.x);
+    float lat = asin (xyz.z);
+    return glm::vec2 (lon, lat);
   }
 
   int getUpperTriangle (int jglo, const jlonlat_t & jlonlat) const;

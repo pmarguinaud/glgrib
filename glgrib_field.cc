@@ -14,6 +14,116 @@
 #include <string>
 #include <algorithm>
 
+static
+int hilo_count (const_glgrib_geometry_ptr geometry, glgrib_field_float_buffer_ptr data,
+                int jglo0, int radius, bool lo)
+{
+  const float * val = data->data ();
+  std::vector<int> neigh;
+  std::set<int> seen;
+  
+  seen.insert (jglo0);
+
+  std::set<int> seen1, * s2 = &seen1, seen2, * s1 = &seen2;
+
+  // s1 : last inserted values
+  // s2 : values being inserted
+  s1->insert (jglo0);
+
+  for (int j = 1; j < radius; j++)
+    {
+
+      s2->clear ();
+
+      for (std::set<int>::iterator it = s1->begin (); it != s1->end (); it++)
+        {
+          int jglo1 = *it;
+          geometry->getPointNeighbours (jglo1, &neigh);
+          for (int i = 0; i < neigh.size (); i++)
+            {
+              int jglo2 = neigh[i];
+              if (seen.find (jglo2) != seen.end ())
+                continue;
+              if (lo)
+                {
+                  if (val[jglo2] < val[jglo0])
+                    return j-1;
+                }
+              else
+                {
+                  if (val[jglo2] > val[jglo0])
+                    return j-1;
+                }
+              s2->insert (jglo2);
+            }
+        }
+
+
+      for (std::set<int>::iterator it = s2->begin (); it != s2->end (); it++)
+        seen.insert (*it);
+
+      std::swap (s1, s2);
+    }
+
+  return radius;
+}
+
+void glgrib_field::setupHilo (glgrib_field_float_buffer_ptr data)
+{
+  class hilo_t
+  {
+  public:
+    std::vector<float> X, Y, Z, A;
+    std::vector<std::string> L;
+    void push (const std::string & l, float x, float y, float z, float a = 0.0f)
+    {
+      L.push_back (l);
+      X.push_back (x); Y.push_back (y);
+      Z.push_back (z); A.push_back (a);
+    }
+  };
+
+  hilo_t lhilo;
+
+  std::vector<int> neigh;
+  int np = geometry->getNumberOfPoints ();
+
+  std::vector<float> scale (np, 1.0f);
+  
+  geometry->applyNormScale (&scale[0]);
+
+  const float * val = data->data ();
+
+  int nhi = 0, nlo = 0;
+  for (int jglo = 0; jglo < np; jglo++)
+    {
+      float x, y, z;
+      int chi = hilo_count (geometry, data, jglo, 50 * scale[jglo], false);
+      int clo = hilo_count (geometry, data, jglo, 50 * scale[jglo], true);
+      bool lhi = chi > 20;
+      bool llo = clo > 20;
+      if (lhi || llo)
+        {
+          float lon, lat;
+          geometry->index2latlon (jglo, &lat, &lon);
+          float coslon = cos (lon), sinlon = sin (lon);
+          float coslat = cos (lat), sinlat = sin (lat);
+          x = coslon * coslat; y = sinlon * coslat; z = sinlat;
+          lhilo.push (lhi ? "H" : "L", x, y, z);
+        }
+    }
+
+  glgrib_font_ptr font = new_glgrib_font_ptr (opts.hilo.font);
+  hilo.setShared (true);
+  hilo.setChange (false);
+
+  hilo.setup3D (font, lhilo.L, lhilo.X, lhilo.Y, lhilo.Z, lhilo.A, 
+                opts.hilo.font.scale, glgrib_string::C);
+  hilo.setForegroundColor (opts.hilo.font.color.foreground);
+
+
+}
+
 void glgrib_field::setPaletteOptions (const glgrib_options_palette & o) 
 { 
   palette = glgrib_palette::create (o, getNormedMinValue (), getNormedMaxValue ());
@@ -28,6 +138,7 @@ void glgrib_field::clear ()
 {
   values.clear ();
   meta.clear ();
+  hilo.clear ();
   glgrib_world::clear ();
 }
 

@@ -124,7 +124,7 @@ protected:
   mutable glgrib_options_field opts;
   std::vector<glgrib_field_metadata> meta;
   std::vector<glgrib_field_float_buffer_ptr> values;
-  std::vector<glgrib_string> hilo;
+  glgrib_string hilo;
 };
 
 #endif

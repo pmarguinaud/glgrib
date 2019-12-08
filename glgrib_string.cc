@@ -5,6 +5,7 @@
 
 glgrib_string & glgrib_string::operator= (const glgrib_string & str)
 {
+
   if (this != &str)
     {
       clear ();

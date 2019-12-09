@@ -70,6 +70,7 @@ int hilo_count (const_glgrib_geometry_ptr geometry, glgrib_field_float_buffer_pt
 
 void glgrib_field::setupHilo (glgrib_field_float_buffer_ptr data)
 {
+  const double deg2rad = M_PI / 180.0;
 
   class hilo_t
   {
@@ -89,12 +90,7 @@ void glgrib_field::setupHilo (glgrib_field_float_buffer_ptr data)
   std::vector<int> neigh;
   int np = geometry->getNumberOfPoints ();
 
-  std::vector<float> scale (np, 1.0f);
-  
-  geometry->applyNormScale (&scale[0]);
-
-  const int radius = 50;
-  const int thresh = 20;
+  const float radius = deg2rad * opts.hilo.radius;
 
   const float * val = data->data ();
 
@@ -102,10 +98,15 @@ void glgrib_field::setupHilo (glgrib_field_float_buffer_ptr data)
   for (int jglo = 0; jglo < np; jglo++)
     {
       float x, y, z;
-      int chi = hilo_count (geometry, data, jglo, radius * scale[jglo], false);
-      int clo = hilo_count (geometry, data, jglo, radius * scale[jglo], true);
-      bool lhi = chi > thresh;
-      bool llo = clo > thresh;
+      float mesh = geometry->getLocalMeshSize (jglo);
+
+      int r = (int)(radius / mesh);
+      int chi = hilo_count (geometry, data, jglo, r, false);
+      int clo = hilo_count (geometry, data, jglo, r, true);
+
+      bool lhi = chi >= r;
+      bool llo = clo >= r;
+
       if (lhi || llo)
         {
           float lon, lat;

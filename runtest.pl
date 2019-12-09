@@ -138,6 +138,8 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
   "Height = vector norm value                                       " ,  height_vector       => '--field[0].type VECTOR --field[0].path testdata/wind+temp/t0224/S105WIND.U.PHYS.grb testdata/wind+temp/t0224/S105WIND.V.PHYS.grb  --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 --field[0].vector.color red --field[0].palette.name summer',
   "Height = scalar norm value                                       " ,  height_scalar       => '--field[0].path testdata/wind+temp/t0224/S105TEMPERATURE.grb  --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 --view.fov 24',
   "Orography (raster & contour) with height                         " ,  contour_height      => '--field[0].path testdata/t479/Z.grb  --field[0].scale 1.005 --field[0].type CONTOUR --field[1].geometry.height.on --field[0].palette.colors black --field[1].path testdata/t479/Z.grb  --field[0].geometry.height.on  --view.lat -16 --view.lon 134',
+  "Grid labels                                                      " ,  grid_labels         => '--grid.on --grid.labels.on --landscape.on', 
+  "Display low & high                                               " ,  hilo                => '--field[0].path testdata/wind+temp/t0224/S105TEMPERATURE.grb --field[0].hilo.on --field[0].hilo.font.color.foreground green',
 );
 
 

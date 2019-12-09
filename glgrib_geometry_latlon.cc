@@ -531,3 +531,8 @@ void glgrib_geometry_latlon::getPointNeighbours (int jglo, std::vector<int> * ne
 }
 
 
+float glgrib_geometry_latlon::getLocalMeshSize (int) const
+{
+  return dlat;
+}
+

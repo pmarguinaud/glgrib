@@ -36,6 +36,7 @@ public:
   virtual glm::vec3 conformal2xyz (const glm::vec2 &) const;
   virtual glm::vec2 conformal2latlon (const glm::vec2 &) const;
   virtual void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const;
+  virtual float getLocalMeshSize (int) const;
 
 private:
 

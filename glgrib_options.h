@@ -518,6 +518,7 @@ public:
     DESC (scalar.points.size.variable.on,  Variable field point size);
     DESC (scalar.points.size.factor.on,  Apply scale factor to point size);
     DESC (hilo.on,             Display low & high);
+    DESC (hilo.radius,         High/low radius in degrees);
     INCLUDE (hilo.font);
     INCLUDE (palette);
     INCLUDE (vector);
@@ -533,6 +534,7 @@ public:
   {
     bool on = false;
     glgrib_options_font font;
+    float radius = 10.0f;
   } hilo;
 
   std::string type = "SCALAR";

@@ -1520,4 +1520,20 @@ void glgrib_geometry_gaussian::getPointNeighbours (int jglo, std::vector<int> * 
   
 }
 
+float glgrib_geometry_gaussian::getLocalMeshSize (int jglo) const
+{
+  float mesh = M_PI / Nj;
+
+  if (stretchingFactor == 1.0f)
+    return mesh;
+
+  jlonlat_t jlonlat = this->jlonlat (jglo);
+  int jlat = jlonlat.jlat-1;
+
+  float coordy = latgauss[jlat];
+  float sincoordy = sin (coordy);
+  float N = 1.0f / sqrt ((opc2 + sincoordy * omc2) * (opc2 + sincoordy * omc2) 
+                       / (opc2 * opc2 - omc2 * omc2));
+  return mesh / N;
+}
 

@@ -500,4 +500,9 @@ void glgrib_geometry_lambert::getPointNeighbours (int jglo, std::vector<int> * n
 }
 
 
+float glgrib_geometry_lambert::getLocalMeshSize (int jglo) const
+{
+  return DxInMetres / a;
+}
+
 

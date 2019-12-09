@@ -305,6 +305,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
 
 ```
     --field[0].path testdata/t49/SFX.CLAY.grb --coast.on --grid.on 
+    --field[0].user_pref.off 
 ```
 ## Display field with keeping field values in RAM                    -- novalue
 ![](test.ref/novalue/TEST_0000.png)
@@ -394,7 +395,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
 ```
     --landscape.on --landscape.geometry_path testdata/t49/Z.grb 
     --field[0].scale 1.01 --field[0].path testdata/t49/SFX.CLAY.grb 
-    --coast.on --grid.on 
+    --coast.on --grid.on --field[0].user_pref.off 
 ```
 ## 3D strings on the sphere                                          -- strxyz
 ![](test.ref/strxyz/TEST_0000.png)
@@ -648,4 +649,17 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].type CONTOUR --field[1].geometry.height.on 
     --field[0].palette.colors black --field[1].path testdata/t479/Z.grb 
     --field[0].geometry.height.on --view.lat -16 --view.lon 134 
+```
+## Grid labels                                                       -- grid_labels
+![](test.ref/grid_labels/TEST_0000.png)
+
+```
+    --grid.on --grid.labels.on --landscape.on 
+```
+## Display low & high                                                -- hilo
+![](test.ref/hilo/TEST_0000.png)
+
+```
+    --field[0].path testdata/wind+temp/t0224/S105TEMPERATURE.grb 
+    --field[0].hilo.on --field[0].hilo.font.color.foreground green 
 ```

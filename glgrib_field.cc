@@ -113,9 +113,9 @@ void glgrib_field::setupHilo (glgrib_field_float_buffer_ptr data)
           geometry->index2latlon (jglo, &lat, &lon);
           float coslon = cos (lon), sinlon = sin (lon);
           float coslat = cos (lat), sinlat = sin (lat);
-          x = opts.scale * coslon * coslat; 
-          y = opts.scale * sinlon * coslat; 
-          z = opts.scale * sinlat;
+          x = coslon * coslat; 
+          y = sinlon * coslat; 
+          z = sinlat;
 #pragma omp critical
           {
             lhilo.push (lhi ? "H" : "L", x, y, z);
@@ -130,6 +130,7 @@ void glgrib_field::setupHilo (glgrib_field_float_buffer_ptr data)
   hilo.setup3D (font, lhilo.L, lhilo.X, lhilo.Y, lhilo.Z, lhilo.A, 
                 opts.hilo.font.scale, glgrib_string::C);
   hilo.setForegroundColor (opts.hilo.font.color.foreground);
+  hilo.setScaleXYZ (opts.scale);
 
 }
 

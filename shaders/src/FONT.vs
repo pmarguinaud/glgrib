@@ -13,6 +13,7 @@ out float fletterVal;
 uniform mat4 MVP;
 uniform bool l3d = false;
 uniform float length10;
+uniform float scaleXYZ = 1.0f;
 
 #include "projection.h"
 #include "scale.h"
@@ -43,7 +44,7 @@ void main ()
     {
       if (proj == XYZ)
         {
-          vec3 pos = letterXYZ;
+          vec3 pos = scaleXYZ * letterXYZ;
           vec3 northPos  = vec3 (0., 0., 1.);
           vec3 vx = normalize (cross (northPos, pos));
           vec3 vy = normalize (cross (pos, vx));

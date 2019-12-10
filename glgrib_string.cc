@@ -248,6 +248,7 @@ void glgrib_string::render (const glgrib_view & view) const
   program->set4fv ("color0", d.color0);
   program->set4fv ("color1", d.color1);
   program->set1f ("length10", length);
+  program->set1f ("scaleXYZ", d.scaleXYZ);
 
 
   glBindVertexArray (VertexArrayID);
@@ -267,6 +268,7 @@ void glgrib_string::render (const glm::mat4 & MVP) const
   glgrib_program * program = d.font->getProgram ();
   program->setMatrix4fv ("MVP", &MVP[0][0]);
   program->set1f ("scale", d.scale);
+  program->set1f ("scaleXYZ", 1.0f);
   program->set1i ("texture", 0);
   program->set1i ("l3d", 0);
   program->set4fv ("color0", d.color0);

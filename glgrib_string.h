@@ -87,6 +87,11 @@ public:
   void setChange (bool);
   bool isReady () const { return ready; }
 
+  void setScaleXYZ (float s)
+  {
+    d.scaleXYZ = s;
+  }
+
 private:
   GLuint VertexArrayID;
   struct 
@@ -100,6 +105,7 @@ private:
     float color0[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     float color1[4] = {0.0f, 0.0f, 0.0f, 0.0f};
     float scale;
+    float scaleXYZ = 1.0f;
     int len;    // Total number of characters
     glgrib_opengl_buffer_ptr xyzbuffer, vertexbuffer, letterbuffer;
     const_glgrib_font_ptr font = NULL; 

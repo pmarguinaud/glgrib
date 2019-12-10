@@ -72,7 +72,6 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
   if (! p1.hasMax ())
     p1.setMax (valmax);
 
-  int rank2rgba[256];
 
   if (p1 != pref)
     {
@@ -125,6 +124,9 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
               y.push_back ((opts.position.ymax - opts.position.ymin) * (val - pref.getMin ()) 
                             / (pref.getMax () - pref.getMin ()) + opts.position.ymin);
             }
+
+          for (int i = 0; i < 256; i++)
+            rank2rgba[i] = i;
         }
       else
         {
@@ -141,6 +143,16 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
               y.push_back ((opts.position.ymax - opts.position.ymin) * i 
                             / (values_pal.size () - 1) + opts.position.ymin);
             }
+
+	  rank2rgba[0] = 0;
+          for (int i = 0; i < values_pal.size () - 1; i++)
+            {
+              int j1 = 1 + (255 * (i + 0)) / (values_pal.size () - 1);
+              int j2 = 1 + (255 * (i + 1)) / (values_pal.size () - 1);
+              int k = pref.getColorIndex (values_pal[i+1]);
+              for (int j = j1; j < j2; j++)
+                rank2rgba[j] = k;
+	    }
         }
 
       label.setup2D (font, str, x, y, opts.font.scale, glgrib_string::SE);
@@ -151,24 +163,6 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
     }
 
   label.render (MVP);
-
-  if (! pref.isLinear ())
-    {
-      for (int i = 0; i < 256; i++)
-        rank2rgba[i] = i;
-    }
-  else 
-    {
-      const std::vector<float> & values_pal = pref.getValues ();
-      for (int i = 0; i < values_pal.size () - 1; i++)
-        {
-          int j1 = 1 + (255 * (i + 0)) / (values_pal.size () - 1);
-          int j2 = 1 + (255 * (i + 1)) / (values_pal.size () - 1);
-          int k = pref.getColorIndex (values_pal[i+1]);
-          for (int j = j1; j < j2; j++)
-            rank2rgba[j] = k;
-	}
-    }
 
   program.use ();
 

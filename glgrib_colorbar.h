@@ -22,7 +22,6 @@ public:
   bool getHidden () const { return hidden; }
   const glgrib_options_colorbar & getOptions () const { return opts; }
 private:
-  int rank2rgba[256];
   glgrib_options_colorbar opts;
   static glgrib_program program;
   GLuint VertexArrayID;
@@ -30,6 +29,7 @@ private:
   bool ready = false;
   bool hidden = false;
   int nt;
+  mutable int rank2rgba[256];
   mutable glgrib_string label;
   mutable glgrib_palette pref;
 };

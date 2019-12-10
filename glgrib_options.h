@@ -471,12 +471,17 @@ public:
     DESC (max,         Palette max value);                              
     DESC (values,      Palette values);
     DESC (colors,      Palette colors);
+    DESC (linear.on,   Linear colorbar display);
   }
   string name = "default";
   float min = defaultMin;
   float max = defaultMax;
   std::vector<float> values;
   std::vector<glgrib_option_color> colors;
+  struct
+  {
+    bool on = false;
+  } linear;
 };
 
 class glgrib_options_font : public glgrib_options_base

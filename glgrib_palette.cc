@@ -58,7 +58,6 @@ glgrib_palette glgrib_palette::create
 
       p.rgba_mis = glgrib_option_color (0, 0, 0, 0);
 
-
       if (p.opts.values.size () == p.opts.colors.size ())
         {
           for (int i = 1, j = 0; i < 256; i++)
@@ -306,9 +305,9 @@ glgrib_option_color glgrib_palette::getColor (float val) const
   return glgrib_option_color (255 * RGBA0[pal][0], 255 * RGBA0[pal][1], 255 * RGBA0[pal][2], 255 * RGBA0[pal][3]);
 }
 
-
-
-
-
-
+int glgrib_palette::getColorIndex (float val) const
+{
+  int pal = std::max (1, std::min ((int)(1 + 254 * (val - opts.min) / (opts.max - opts.min)), 255));
+  return pal;
+}
 

@@ -13,3 +13,10 @@ Optimize coordinates latlon->XYZ in shaders
 Temp object for unmapping buffers ?
 Template for openGL buffers depending on type being allocated ?
 
+
+Colorbar not linear
+Compress data for contour
+Frame with latitudes/longitudes
+Scale hilo
+
+

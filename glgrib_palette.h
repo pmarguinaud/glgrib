@@ -72,7 +72,12 @@ public:
   const std::vector<float> & getValues () const { return opts.values; }
 
   glgrib_option_color getColor (float) const;
+  int getColorIndex (float) const;
 
+  bool isLinear () const
+  {
+    return opts.linear.on && (opts.values.size () == opts.colors.size () + 1);
+  }
 private:
   void getRGBA255 (float RGBA0[256][4]) const;
   static glgrib_palette & create_by_name (const std::string &);

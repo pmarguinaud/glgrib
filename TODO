@@ -17,5 +17,6 @@ Template for openGL buffers depending on type being allocated ?
 Compress data for contour
 Frame with latitudes/longitudes
 Scale hilo
+Allow for errors in field creation
 
 

@@ -56,8 +56,7 @@ void glgrib_field_vector::setupVertexAttributes ()
   // Norm
   d.buffer_n->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
-                         numberOfColors * sizeof (unsigned char), NULL); 
+  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), NULL); 
 
 
   geometry->bindTriangles ();
@@ -79,16 +78,14 @@ void glgrib_field_vector::setupVertexAttributes ()
   // Norm
   d.buffer_n->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
-                         numberOfColors * sizeof (unsigned char), NULL); 
+  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), NULL); 
   glVertexAttribDivisor (1, 1);  
 
 
   // Direction
   d.buffer_d->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (2); 
-  glVertexAttribPointer (2, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, 
-                         numberOfColors * sizeof (unsigned char), NULL); 
+  glVertexAttribPointer (2, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), NULL); 
   glVertexAttribDivisor (2, 1);  
 
   bindHeight (3);
@@ -117,23 +114,17 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
 
   glgrib_loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
-  numberOfColors = 1;
-
-  d.buffer_n = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints () * sizeof (unsigned char));
+  d.buffer_n = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned char));
   unsigned char * col_n = (unsigned char *)d.buffer_n->map ();
-  for (int i = 0; i < geometry->getNumberOfPoints (); i++)
-    col_n[i] = 1 + (int)(254 * ((*data_n)[i] - meta_n.valmin)
-                 / (meta_n.valmax - meta_n.valmin));
+  pack8 (data_n->data (), geometry->getNumberOfPoints (), meta_n.valmin, meta_n.valmax, meta_n.valmis, col_n);
   col_n = NULL;
   d.buffer_n->unmap ();
 
   loadHeight (d.buffer_n, ld);
 
-  d.buffer_d = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints () * sizeof (unsigned char));
+  d.buffer_d = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned char));
   unsigned char * col_d = (unsigned char *)d.buffer_d->map ();
-  for (int i = 0; i < geometry->getNumberOfPoints (); i++)
-    col_d[i] = 1 + (int)(254 * ((*data_d)[i] - meta_d.valmin)
-                 / (meta_d.valmax - meta_d.valmin));
+  pack8 (data_d->data (), geometry->getNumberOfPoints (), meta_d.valmin, meta_d.valmax, meta_d.valmis, col_d);
 
   float resolution = geometry->resolution ();
   const int npts = opts.vector.density;
@@ -269,9 +260,8 @@ void glgrib_field_vector::reSample (const glgrib_view & view)
 
   const int npts = 2 * opts.vector.density / w;
 
-  for (int i = 0; i < geometry->getNumberOfPoints (); i++)
-    col_d[i] = 1 + (int)(254 * (data_d[i] - meta_d.valmin)
-                 / (meta_d.valmax - meta_d.valmin));
+  pack8 (data_d, geometry->getNumberOfPoints (), meta_d.valmin, meta_d.valmax, meta_d.valmis, col_d);
+
   geometry->sample (col_d, 0, npts);
 
   d.vscale = opts.vector.scale * (M_PI / npts) / (meta_n.valmax || 1.0f);

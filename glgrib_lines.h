@@ -12,7 +12,6 @@ public:
   glgrib_lines & operator=(const glgrib_lines &);
   void setup (const glgrib_options_lines &, const std::vector<unsigned int> & = {0x00000000}, 
              const std::vector<unsigned int> & = {0x00000000});
-  virtual bool use_alpha () { return false; }
   virtual void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual void resize (const glgrib_view &) {}
   const glgrib_options_lines & getOptions () const { return opts; }

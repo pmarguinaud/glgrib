@@ -16,7 +16,6 @@ public:
   virtual void setup (glgrib_loader *, const glgrib_options_landscape &);
   void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual ~glgrib_landscape ();
-  virtual bool use_alpha () { return false; }
   void set_flat (bool f) { opts.flat.on = f; }
   void toggle_flat () { opts.flat.on = ! opts.flat.on; }
   void setupVertexAttributes ();

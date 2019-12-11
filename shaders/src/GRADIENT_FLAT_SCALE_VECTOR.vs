@@ -17,6 +17,7 @@ uniform mat4 MVP;
 
 #include "projection.h"
 #include "scale.h"
+#include "unpack.h"
 
 vec3 vprod (vec3 u, vec3 v)
 {
@@ -59,8 +60,8 @@ void main ()
   alpha = 1.;
   if (defined)
     {
-      float N = valmin_n + (valmax_n - valmin_n) * (255.0 * vertexVal_n - 1.0) / 254.0;
-      float D = valmin_d + (valmax_d - valmin_d) * (255.0 * vertexVal_d - 1.0) / 254.0;
+      float N = unpack (vertexVal_d, valmin_n, valmax_n);
+      float D = unpack (vertexVal_d, valmin_d, valmax_d);
       D = D * deg2rad;
       float X = vscale * N * cos (D) / valmax_n;
       float Y = vscale * N * sin (D) / valmax_n;

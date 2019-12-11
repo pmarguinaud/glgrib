@@ -340,3 +340,44 @@ void glgrib_field::renderHilo (const glgrib_view & view) const
     hilo.render (view);
 }
 
+void glgrib_field::pack8 (const float * f, const int n, const float valmin, 
+		          const float valmax, const float valmis, unsigned char * b)
+{
+  const unsigned int nmax = std::numeric_limits<unsigned char>::max () - 1;
+#pragma omp parallel for
+  for (int i = 0; i < n; i++)
+    if (f[i] == valmis)
+      b[i] = 0;
+    else
+      b[i] = 1 + (int)(nmax * (f[i] - valmin)/(valmax - valmin));
+}
+
+void glgrib_field::unpack8 (float * f, const int n, const float valmin, 
+		            const float valmax, const float valmis, const unsigned char * b)
+{
+  const unsigned int nmax = std::numeric_limits<unsigned char>::max () - 1;
+#pragma omp parallel for
+  for (int i = 0; i < n; i++)
+    if (b[i] == 0)
+      f[i] = valmis;
+    else
+      f[i] = valmin + (valmax - valmin) * (b[i] - 1) / nmax;
+}
+
+void glgrib_field::packUnpack8 (const float * g, float * f, const int n, const float valmin, const float valmax, const float valmis)
+{
+  const unsigned int nmax = std::numeric_limits<unsigned char>::max () - 1;
+#pragma omp parallel for
+  for (int i = 0; i < n; i++)
+    {
+      if (g[i] != valmis)
+        {
+          unsigned char b = 1 + (int)(254 * (g[i] - valmin)/(valmax - valmin));
+          f[i] = valmin + (valmax - valmin) * (b - 1) / nmax;
+        }
+    }
+
+}
+
+
+

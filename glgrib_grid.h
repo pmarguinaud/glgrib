@@ -10,7 +10,6 @@ class glgrib_grid : public glgrib_object
 public:
   glgrib_grid & operator=(const glgrib_grid &);
   void setup (const glgrib_options_grid &);
-  virtual bool use_alpha () { return false; }
   virtual void render (const glgrib_view &, const glgrib_options_light &) const;
   virtual void resize (const glgrib_view &) {}
   const glgrib_options_grid & getOptions () const { return opts; }

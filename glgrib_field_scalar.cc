@@ -62,7 +62,7 @@ void glgrib_field_scalar::setupVertexAttributes ()
   
   colorbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, numberOfColors * sizeof (unsigned char), NULL); 
+  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), NULL); 
 
   geometry->bindTriangles ();
 
@@ -80,7 +80,7 @@ void glgrib_field_scalar::setupVertexAttributes ()
   
   colorbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, numberOfColors, GL_UNSIGNED_BYTE, GL_TRUE, numberOfColors * sizeof (unsigned char), NULL); 
+  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), NULL); 
   glVertexAttribDivisor (1, 1);
 
   if (heightbuffer)
@@ -103,6 +103,7 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
 {
   opts = o;
 
+  const int jglo0 = 60486;
 
   glgrib_field_metadata meta1;
 
@@ -117,17 +118,17 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
   if (opts.hilo.on)
     setupHilo (data);
 
-  numberOfColors = 1;
-
-
-  colorbuffer = new_glgrib_opengl_buffer_ptr (numberOfColors * geometry->getNumberOfPoints () * sizeof (unsigned char));
+  colorbuffer = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned char));
   unsigned char * col = (unsigned char *)colorbuffer->map ();
+  pack8 (data->data (), geometry->getNumberOfPoints (), meta1.valmin, meta1.valmax, meta1.valmis, col);
 
-  for (int i = 0; i < geometry->getNumberOfPoints (); i++)
-    if ((*data)[i] == meta1.valmis)
-      col[i] = 0;
-    else
-      col[i] = 1 + (int)(254 * ((*data)[i] - meta1.valmin)/(meta1.valmax - meta1.valmin));
+  float z = meta1.valmin + (meta1.valmax - meta1.valmin) * (col[jglo0] - 1.0f) / 254.0f;
+  std::cout << " data = " << (*data)[jglo0] << " " << (int)col[jglo0]  << " "
+	  << z
+	  << std::endl;
+
+  std::cout << " data => " << palette.getColor ((*data)[jglo0]) << std::endl;
+  std::cout << " z => " << palette.getColor (z) << std::endl;
 
   col = NULL;
   colorbuffer->unmap ();

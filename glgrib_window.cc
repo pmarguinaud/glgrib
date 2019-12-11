@@ -698,6 +698,7 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
               for (int i = 0; i < value.size (); i++)
                 {
                   sprintf (tmp, " %8.3g", value[i]);
+		  std::cout << value[i] << std::endl;
                   title_ = title_ + std::string (tmp);
                 }
 	    }

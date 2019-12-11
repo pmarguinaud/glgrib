@@ -10,7 +10,6 @@ class glgrib_object
 {
 public:
   virtual void render (const glgrib_view &, const glgrib_options_light &) const = 0;
-  virtual bool use_alpha () { return true; }
   bool isReady () const { return ready_; }
   void setReady () { ready_ = true; }
   void hide () { hidden = true; }

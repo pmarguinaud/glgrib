@@ -111,8 +111,6 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 
 //geometry->checkTriangles ();
 
-  numberOfColors = 1;
-
   int size = geometry->size ();
 
   glgrib_field_float_buffer_ptr data_n, data_d;

@@ -30,8 +30,6 @@ void glgrib_lines::setup (const glgrib_options_lines & o,
 
   opts = o;
 
-  numberOfColors = use_alpha () ? 4 : 3;
-
   std::vector <float> lonlat;
   std::vector <unsigned int> ind;
 

@@ -6,6 +6,7 @@ in vec3 fragmentPos;
 in float missingFlag;
 out vec4 color;
 
+#include "unpack.h"
 #include "enlight.h"
 
 void main ()

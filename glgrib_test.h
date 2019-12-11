@@ -10,7 +10,6 @@ class glgrib_test : public glgrib_object
 {
 public:
   virtual void render (const glgrib_view &, const glgrib_options_light &) const;
-  virtual bool use_alpha () { return true; }
   virtual ~glgrib_test () { clear (); }
   const_glgrib_geometry_ptr getGeometry () const { return geometry; }
   virtual void clear ();
@@ -20,7 +19,7 @@ protected:
   glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
   const_glgrib_geometry_ptr geometry;
   int numberOfPoints;
-  unsigned int numberOfColors, numberOfTriangles;
+  unsigned int numberOfTriangles;
   GLuint VertexArrayID = 0;
 };
 

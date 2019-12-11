@@ -9,6 +9,7 @@ in vec3 centerVec;
 flat in float pointRad;
 out vec4 color;
 
+#include "unpack.h"
 #include "enlight.h"
 
 void main ()

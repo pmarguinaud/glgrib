@@ -1,3 +1,5 @@
+
+
 uniform vec4 RGBA0[256];
 uniform float valmin, valmax;
 uniform float palmin, palmax;
@@ -23,7 +25,7 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal, float missingFlag)
       total = frac + (1.0 - frac) * max (dot (fragmentPos, lightDir), 0.0);
     }
 
-  float val = valmin + (valmax - valmin) * (255.0 * fragmentVal - 1.0f) / 254.0f;
+  float val = unpack (fragmentVal, valmin, valmax);
   float pal = max (1.0f, min (1.0f + 254.0f * (val - palmin) / (palmax - palmin), 255.0f));
 
   if (smoothed)

@@ -34,7 +34,6 @@ public:
 
   virtual glgrib_field * clone () const  = 0;
   virtual void setup (glgrib_loader *, const glgrib_options_field &, float = 0) = 0;
-  virtual bool use_alpha () { return false; }
   void setPaletteOptions (const glgrib_options_palette &);
   void setNextPalette ();
   void scalePaletteUp (float = 0.025);
@@ -117,6 +116,11 @@ public:
 
 
 protected:
+  void pack8 (const float *, const int, const float, 
+              const float, const float, unsigned char *);
+  void unpack8 (float *, const int, const float, 
+                const float, const float, const unsigned char *);
+  void packUnpack8 (const float *, float *, const int, const float, const float, const float);
   virtual void loadHeight (glgrib_opengl_buffer_ptr, glgrib_loader *);
   virtual void bindHeight (int);
   static void getUserPref (glgrib_options_field *, glgrib_loader *);

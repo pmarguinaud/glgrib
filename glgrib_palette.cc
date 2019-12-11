@@ -91,7 +91,7 @@ glgrib_palette glgrib_palette::create
         {
           for (int i = 1, j = 0; i < 256; i++)
             {
-              float val = (i-1) * (p.opts.max - p.opts.min) / 255 + p.opts.min;
+              float val = (i-1) * (p.opts.max - p.opts.min) / 254 + p.opts.min;
               while (j < p.opts.values.size ())
                 {
                   if (val < p.opts.values[j])
@@ -102,6 +102,7 @@ glgrib_palette glgrib_palette::create
                 p.rgba.push_back (p.opts.colors.back ());
               else
                 p.rgba.push_back (p.opts.colors[j-1]);
+	      std::cout << val << " " << p.rgba.size ()-1 << ", " << p.rgba[p.rgba.size ()-1] << std::endl;
             }
          }
     }

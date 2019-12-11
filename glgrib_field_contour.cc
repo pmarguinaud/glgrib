@@ -147,9 +147,6 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
   float * pval = new float[geometry->getNumberOfPoints ()];
 
   packUnpack8 (data->data (), pval, geometry->getNumberOfPoints (), meta1.valmin, meta1.valmax, meta1.valmis);
-  const int jglo0 = 60486;
-
-  std::cout << " CONTOUR " << (*data)[jglo0] << " " << pval[jglo0] << std::endl;
   
 
 #pragma omp parallel for

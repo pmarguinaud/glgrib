@@ -103,8 +103,6 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
 {
   opts = o;
 
-  const int jglo0 = 60486;
-
   glgrib_field_metadata meta1;
 
   glgrib_field_float_buffer_ptr data;
@@ -119,16 +117,9 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
     setupHilo (data);
 
   colorbuffer = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned char));
+
   unsigned char * col = (unsigned char *)colorbuffer->map ();
   pack8 (data->data (), geometry->getNumberOfPoints (), meta1.valmin, meta1.valmax, meta1.valmis, col);
-
-  float z = meta1.valmin + (meta1.valmax - meta1.valmin) * (col[jglo0] - 1.0f) / 254.0f;
-  std::cout << " data = " << (*data)[jglo0] << " " << (int)col[jglo0]  << " "
-	  << z
-	  << std::endl;
-
-  std::cout << " data => " << palette.getColor ((*data)[jglo0]) << std::endl;
-  std::cout << " z => " << palette.getColor (z) << std::endl;
 
   col = NULL;
   colorbuffer->unmap ();
@@ -150,8 +141,8 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   float scale0[3] = {opts.scale, opts.scale, opts.scale};
 
   glgrib_program * program = glgrib_program::load (opts.scalar.points.on 
-                                                ? glgrib_program::SCALAR_POINTS 
-                                                : glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
+                                                 ? glgrib_program::SCALAR_POINTS 
+                                                 : glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
 
   program->use ();
   view.setMVP (program);

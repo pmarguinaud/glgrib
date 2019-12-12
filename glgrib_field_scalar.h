@@ -24,6 +24,10 @@ public:
     return (int)opts.path.size ();
   }
 private:
+  template <typename T>
+  void setupVertexAttributes ();
+  template <typename T>
+  void setup (glgrib_loader *, const glgrib_options_field &, float = 0);
   GLuint VertexArrayIDpoints = 0;
   virtual void clear ();
 };

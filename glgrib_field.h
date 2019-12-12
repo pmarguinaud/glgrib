@@ -125,8 +125,10 @@ protected:
   template <typename T>
   void packUnpack (const float *, float *, const int, 
 		   const float, const float, const float);
-  virtual void loadHeight (glgrib_opengl_buffer_ptr, glgrib_loader *);
-  virtual void bindHeight (int);
+  template <typename T>
+  void loadHeight (glgrib_opengl_buffer_ptr, glgrib_loader *);
+  template <typename T>
+  void bindHeight (int);
   static void getUserPref (glgrib_options_field *, glgrib_loader *);
   glgrib_palette palette = palette_cold_hot;
   mutable glgrib_options_field opts;

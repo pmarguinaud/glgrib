@@ -61,7 +61,7 @@ void glgrib_field_vector::setupVertexAttributes ()
 
   geometry->bindTriangles ();
 
-  bindHeight (2);
+  bindHeight <unsigned char> (2);
 
   glBindVertexArray (0); 
 
@@ -88,7 +88,7 @@ void glgrib_field_vector::setupVertexAttributes ()
   glVertexAttribPointer (2, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), NULL); 
   glVertexAttribDivisor (2, 1);  
 
-  bindHeight (3);
+  bindHeight <unsigned char> (3);
   glVertexAttribDivisor (3, 1);  
 
   geometry->bindTriangles ();
@@ -120,7 +120,7 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
   col_n = NULL;
   d.buffer_n->unmap ();
 
-  loadHeight (d.buffer_n, ld);
+  loadHeight <unsigned char> (d.buffer_n, ld);
 
   d.buffer_d = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned char));
   unsigned char * col_d = (unsigned char *)d.buffer_d->map ();

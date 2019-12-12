@@ -23,7 +23,9 @@ template void glgrib_field::pack<T>  \
              const float, const float, T *);  \
 template void glgrib_field::packUnpack<T>   \
           (const float *, float *, const int,   \
-           const float, const float, const float);
+           const float, const float, const float); \
+template void glgrib_field::loadHeight <T> (glgrib_opengl_buffer_ptr, glgrib_loader *); \
+template void glgrib_field::bindHeight <T> (int);
 
 DEF (unsigned char)
 DEF (unsigned short)
@@ -298,6 +300,7 @@ void glgrib_field::saveOptions () const
 
 }
 
+template <typename T>
 void glgrib_field::loadHeight (glgrib_opengl_buffer_ptr buf, glgrib_loader * ld)
 {
   if (opts.geometry.height.on)
@@ -320,11 +323,11 @@ void glgrib_field::loadHeight (glgrib_opengl_buffer_ptr buf, glgrib_loader * ld)
 
           ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
 
-          heightbuffer = new_glgrib_opengl_buffer_ptr (size * sizeof (unsigned char));
+          heightbuffer = new_glgrib_opengl_buffer_ptr (size * sizeof (T));
 
-          unsigned char * height = (unsigned char *)heightbuffer->map (); 
+          T * height = (T *)heightbuffer->map (); 
 
-	  pack<unsigned char> (data->data (), size, meta.valmin, meta.valmax, meta.valmis, height);
+	  pack<T> (data->data (), size, meta.valmin, meta.valmax, meta.valmis, height);
 
           heightbuffer->unmap (); 
 
@@ -333,13 +336,14 @@ void glgrib_field::loadHeight (glgrib_opengl_buffer_ptr buf, glgrib_loader * ld)
 
 }
 
+template <typename T>
 void glgrib_field::bindHeight (int attr)
 {
   if (heightbuffer)
     {
       heightbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (attr);
-      glVertexAttribPointer (attr, 1, GL_UNSIGNED_BYTE, GL_TRUE, 0, NULL);
+      glVertexAttribPointer (attr, 1, getOpenglType<T> (), GL_TRUE, 0, NULL);
     }
   else
     {

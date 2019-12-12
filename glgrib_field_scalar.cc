@@ -7,8 +7,6 @@
 #include <iostream>
 #include <algorithm>
 
-const int packN = 8;
-
 glgrib_field_scalar::glgrib_field_scalar (const glgrib_field_scalar & field)
 {
   if (field.isReady ())
@@ -53,38 +51,42 @@ glgrib_field_scalar & glgrib_field_scalar::operator= (const glgrib_field_scalar 
 
 void glgrib_field_scalar::setupVertexAttributes ()
 {
+  switch (opts.scalar.pack.bytes)
+    {
+      case  8:
+        setupVertexAttributes <unsigned char > ();
+      break;
+      case 16:
+        setupVertexAttributes <unsigned short> ();
+      break;
+      case 32:
+        setupVertexAttributes <unsigned int  > ();
+      break;
+      default:
+        throw std::runtime_error (std::string ("Wrong number of bytes for packing field: ") +
+                                  std::to_string (opts.scalar.pack.bytes));
+    }
+}
+
+template <typename T>
+void glgrib_field_scalar::setupVertexAttributes ()
+{
   numberOfPoints = geometry->getNumberOfPoints ();
   numberOfTriangles = geometry->getNumberOfTriangles ();
 
-  // Colored field
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
 
   geometry->bindCoordinates (0);
-  
 
   colorbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
 
-  switch (packN)
-    {
-      case  8:
-        glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE,  GL_TRUE, 0,  NULL); 
-      break;
-      case 16:
-        glVertexAttribPointer (1, 1, GL_UNSIGNED_SHORT, GL_TRUE, 0,  NULL); 
-      break;
-      case 32:
-        glVertexAttribPointer (1, 1, GL_UNSIGNED_INT,   GL_TRUE, 0,  NULL); 
-      break;
-      default:
-        abort ();
-    }
-
+  glVertexAttribPointer (1, 1, getOpenglType<T> (), GL_TRUE, 0,  NULL); 
 
   geometry->bindTriangles ();
 
-  bindHeight (2);
+  bindHeight <T> (2);
 
   glBindVertexArray (0); 
 
@@ -97,14 +99,14 @@ void glgrib_field_scalar::setupVertexAttributes ()
   
   colorbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_TRUE, 0, NULL); 
+  glVertexAttribPointer (1, 1, getOpenglType<T> (), GL_TRUE, 0, NULL); 
   glVertexAttribDivisor (1, 1);
 
   if (heightbuffer)
     {
       heightbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (2);
-      glVertexAttribPointer (2, 1, GL_UNSIGNED_BYTE, GL_TRUE, 0, NULL);
+      glVertexAttribPointer (2, 1, getOpenglType<T> (), GL_TRUE, 0, NULL);
       glVertexAttribDivisor (2, 1);
     }
   else
@@ -116,6 +118,27 @@ void glgrib_field_scalar::setupVertexAttributes ()
   glBindVertexArray (0); 
 }
 
+void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field & o, float slot)
+{
+  opts = o;
+  switch (opts.scalar.pack.bytes)
+    {
+      case  8:
+        setup<unsigned char > (ld, o, slot);
+      break;
+      case 16:
+        setup<unsigned short> (ld, o, slot);
+      break;
+      case 32:
+        setup<unsigned int  > (ld, o, slot);
+      break;
+      default:
+        throw std::runtime_error (std::string ("Wrong number of bytes for packing field: ") +
+                                  std::to_string (opts.scalar.pack.bytes));
+    }
+}
+
+template <typename T>
 void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field & o, float slot)
 {
   opts = o;
@@ -133,41 +156,16 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
   if (opts.hilo.on)
     setupHilo (data);
 
-  switch (packN)
-    {
-      case  8:
-      {
-        colorbuffer = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned char));
-        unsigned char * col = (unsigned char *)colorbuffer->map ();
-        pack<unsigned char>  (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
-			      meta1.valmax, meta1.valmis, col);
-        colorbuffer->unmap ();
-      }
-      break;
-      case 16:
-      {
-        colorbuffer = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned short));
-        unsigned short * col = (unsigned short *)colorbuffer->map ();
-        pack<unsigned short> (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
-			      meta1.valmax, meta1.valmis, col);
-      }
-      break;
-      case 32:
-      {
-        colorbuffer = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned int));
-        unsigned int * col = (unsigned int *)colorbuffer->map ();
-        pack<unsigned int> (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
-			      meta1.valmax, meta1.valmis, col);
-        colorbuffer->unmap ();
-      }
-      break;
-      default:
-        abort ();
-    }
+  colorbuffer = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (T));
+  T * col = (T *)colorbuffer->map ();
+  pack<T>  (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
+            meta1.valmax, meta1.valmis, col);
+  col = NULL;
+  colorbuffer->unmap ();
 
-  loadHeight (colorbuffer, ld);
+  loadHeight <T> (colorbuffer, ld);
 
-  setupVertexAttributes ();
+  setupVertexAttributes<T> ();
 
   if (opts.no_value_pointer.on)
     values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
@@ -197,7 +195,7 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   program->set1f ("height_scale", opts.geometry.height.scale);
 
   unsigned int Nmax = 1;
-  for (int i = 0; i < packN; i++)
+  for (int i = 0; i < opts.scalar.pack.bytes; i++)
     Nmax = Nmax * 2;
 
   program->set1i ("Nmax", Nmax-1);

@@ -522,6 +522,7 @@ public:
     DESC (scalar.points.size.value,  Field point size);
     DESC (scalar.points.size.variable.on,  Variable field point size);
     DESC (scalar.points.size.factor.on,  Apply scale factor to point size);
+    DESC (scalar.pack.bytes,   Number of bytes used to pack field);
     DESC (hilo.on,             Display low & high);
     DESC (hilo.radius,         High/low radius in degrees);
     INCLUDE (hilo.font);
@@ -573,6 +574,10 @@ public:
         } factor;
       } size;
     } points;
+    struct
+    {
+      int bytes = 8;
+    } pack;
   } scalar;
   string_list  path;
   float scale   = 1.0f;

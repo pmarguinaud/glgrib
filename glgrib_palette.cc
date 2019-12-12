@@ -102,7 +102,6 @@ glgrib_palette glgrib_palette::create
                 p.rgba.push_back (p.opts.colors.back ());
               else
                 p.rgba.push_back (p.opts.colors[j-1]);
-	      std::cout << val << " " << p.rgba.size ()-1 << ", " << p.rgba[p.rgba.size ()-1] << std::endl;
             }
          }
     }

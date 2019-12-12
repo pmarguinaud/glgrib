@@ -14,6 +14,21 @@
 #include <string>
 #include <algorithm>
 
+#define DEF(T) \
+template void glgrib_field::unpack<T>  \
+            (float *, const int, const float,   \
+             const float, const float, const T *);  \
+template void glgrib_field::pack<T>  \
+          (const float *, const int, const float,   \
+             const float, const float, T *);  \
+template void glgrib_field::packUnpack<T>   \
+          (const float *, float *, const int,   \
+           const float, const float, const float);
+
+DEF (unsigned char)
+DEF (unsigned short)
+DEF (unsigned int)
+
 static
 int hilo_count (const_glgrib_geometry_ptr geometry, glgrib_field_float_buffer_ptr data,
                 int jglo0, int radius, bool lo)
@@ -307,10 +322,9 @@ void glgrib_field::loadHeight (glgrib_opengl_buffer_ptr buf, glgrib_loader * ld)
 
           heightbuffer = new_glgrib_opengl_buffer_ptr (size * sizeof (unsigned char));
 
-          float * height = (float *)heightbuffer->map (); 
-#pragma omp parallel for
-          for (int jglo = 0; jglo < size; jglo++)
-            height[jglo] = (*data)[jglo] == meta.valmis ? 0.0f : 255 * ((*data)[jglo]-meta.valmin) / (meta.valmax - meta.valmin);
+          unsigned char * height = (unsigned char *)heightbuffer->map (); 
+
+	  pack<unsigned char> (data->data (), size, meta.valmin, meta.valmax, meta.valmis, height);
 
           heightbuffer->unmap (); 
 
@@ -340,10 +354,11 @@ void glgrib_field::renderHilo (const glgrib_view & view) const
     hilo.render (view);
 }
 
-void glgrib_field::pack8 (const float * f, const int n, const float valmin, 
-		          const float valmax, const float valmis, unsigned char * b)
+template <typename T>
+void glgrib_field::pack (const float * f, const int n, const float valmin, 
+		         const float valmax, const float valmis, T * b)
 {
-  const unsigned int nmax = std::numeric_limits<unsigned char>::max () - 1;
+  const T nmax = std::numeric_limits<T>::max () - 1;
 #pragma omp parallel for
   for (int i = 0; i < n; i++)
     if (f[i] == valmis)
@@ -352,10 +367,11 @@ void glgrib_field::pack8 (const float * f, const int n, const float valmin,
       b[i] = 1 + (int)(nmax * (f[i] - valmin)/(valmax - valmin));
 }
 
-void glgrib_field::unpack8 (float * f, const int n, const float valmin, 
-		            const float valmax, const float valmis, const unsigned char * b)
+template <typename T>
+void glgrib_field::unpack (float * f, const int n, const float valmin, 
+		           const float valmax, const float valmis, const T * b)
 {
-  const unsigned int nmax = std::numeric_limits<unsigned char>::max () - 1;
+  const T nmax = std::numeric_limits<T>::max () - 1;
 #pragma omp parallel for
   for (int i = 0; i < n; i++)
     if (b[i] == 0)
@@ -364,15 +380,16 @@ void glgrib_field::unpack8 (float * f, const int n, const float valmin,
       f[i] = valmin + (valmax - valmin) * (b[i] - 1) / nmax;
 }
 
-void glgrib_field::packUnpack8 (const float * g, float * f, const int n, const float valmin, const float valmax, const float valmis)
+template <typename T>
+void glgrib_field::packUnpack (const float * g, float * f, const int n, const float valmin, const float valmax, const float valmis)
 {
-  const unsigned int nmax = std::numeric_limits<unsigned char>::max () - 1;
+  const T nmax = std::numeric_limits<T>::max () - 1;
 #pragma omp parallel for
   for (int i = 0; i < n; i++)
     {
       if (g[i] != valmis)
         {
-          unsigned char b = 1 + (int)(254 * (g[i] - valmin)/(valmax - valmin));
+          T b = 1 + (int)((nmax - 1) * (g[i] - valmin)/(valmax - valmin));
           f[i] = valmin + (valmax - valmin) * (b - 1) / nmax;
         }
     }

@@ -23,6 +23,13 @@ private:
   size_t size_;
 };
 
+template <typename T>
+class glgrib_opengl_buffer_typed : public glgrib_opengl_buffer
+{
+public:
+  GLenum getOpenGLType ();
+};
+
 typedef std::shared_ptr<glgrib_opengl_buffer> glgrib_opengl_buffer_ptr;
 extern glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (size_t, const void * = NULL);
 extern glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (const glgrib_opengl_buffer_ptr &);

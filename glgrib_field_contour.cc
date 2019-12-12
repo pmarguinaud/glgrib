@@ -144,11 +144,6 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
 
   isoline_data_t iso_data[levels.size ()];
 
-  float * pval = new float[geometry->getNumberOfPoints ()];
-
-  packUnpack8 (data->data (), pval, geometry->getNumberOfPoints (), meta1.valmin, meta1.valmax, meta1.valmis);
-  
-
 #pragma omp parallel for
   for (int i = 0; i < levels.size (); i++)
     {
@@ -161,20 +156,15 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
       // First visit edge triangles
       for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
         if (geometry->triangleIsEdge (it))
-	{
-          processTriangle (it, pval, levels[i], height->data (), meta_height.valmin, 
-        		   meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
-        }
+          processTriangle (it, data->data (), levels[i], height->data (), meta_height.valmin, 
+          		   meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
   
       for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
-        processTriangle (it, pval, levels[i], height->data (), meta_height.valmin, 
+        processTriangle (it, data->data (), levels[i], height->data (), meta_height.valmin, 
                          meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
 
       delete [] seen;
     }
-
-  delete [] pval;
-  pval = NULL;
 
   iso.resize (levels.size ());
 

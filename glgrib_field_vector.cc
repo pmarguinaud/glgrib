@@ -116,7 +116,7 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
 
   d.buffer_n = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned char));
   unsigned char * col_n = (unsigned char *)d.buffer_n->map ();
-  pack8 (data_n->data (), geometry->getNumberOfPoints (), meta_n.valmin, meta_n.valmax, meta_n.valmis, col_n);
+  pack<unsigned char> (data_n->data (), geometry->getNumberOfPoints (), meta_n.valmin, meta_n.valmax, meta_n.valmis, col_n);
   col_n = NULL;
   d.buffer_n->unmap ();
 
@@ -124,7 +124,7 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
 
   d.buffer_d = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned char));
   unsigned char * col_d = (unsigned char *)d.buffer_d->map ();
-  pack8 (data_d->data (), geometry->getNumberOfPoints (), meta_d.valmin, meta_d.valmax, meta_d.valmis, col_d);
+  pack<unsigned char> (data_d->data (), geometry->getNumberOfPoints (), meta_d.valmin, meta_d.valmax, meta_d.valmis, col_d);
 
   float resolution = geometry->resolution ();
   const int npts = opts.vector.density;
@@ -219,6 +219,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       program->set1f ("palmin", palette.getMin ());
       program->set1f ("palmax", palette.getMax ());
       program->set1f ("height_scale", opts.geometry.height.scale);
+      program->set1f ("Nmax", 255);
 
       glBindVertexArray (VertexArrayID);
       geometry->renderTriangles ();
@@ -260,7 +261,7 @@ void glgrib_field_vector::reSample (const glgrib_view & view)
 
   const int npts = 2 * opts.vector.density / w;
 
-  pack8 (data_d, geometry->getNumberOfPoints (), meta_d.valmin, meta_d.valmax, meta_d.valmis, col_d);
+  pack<unsigned char> (data_d, geometry->getNumberOfPoints (), meta_d.valmin, meta_d.valmax, meta_d.valmis, col_d);
 
   geometry->sample (col_d, 0, npts);
 

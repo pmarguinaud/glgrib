@@ -116,11 +116,15 @@ public:
 
 
 protected:
-  void pack8 (const float *, const int, const float, 
-              const float, const float, unsigned char *);
-  void unpack8 (float *, const int, const float, 
-                const float, const float, const unsigned char *);
-  void packUnpack8 (const float *, float *, const int, const float, const float, const float);
+  template <typename T>
+  void unpack (float *, const int, const float, 
+               const float, const float, const T *);
+  template <typename T>
+  void pack (const float *, const int, const float, 
+             const float, const float, T *);
+  template <typename T>
+  void packUnpack (const float *, float *, const int, 
+		   const float, const float, const float);
   virtual void loadHeight (glgrib_opengl_buffer_ptr, glgrib_loader *);
   virtual void bindHeight (int);
   static void getUserPref (glgrib_options_field *, glgrib_loader *);

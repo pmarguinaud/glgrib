@@ -51,7 +51,7 @@ glgrib_field_scalar & glgrib_field_scalar::operator= (const glgrib_field_scalar 
 
 void glgrib_field_scalar::setupVertexAttributes ()
 {
-  switch (opts.scalar.pack.bytes)
+  switch (opts.scalar.pack.bits)
     {
       case  8:
         setupVertexAttributes <unsigned char > ();
@@ -63,8 +63,8 @@ void glgrib_field_scalar::setupVertexAttributes ()
         setupVertexAttributes <unsigned int  > ();
       break;
       default:
-        throw std::runtime_error (std::string ("Wrong number of bytes for packing field: ") +
-                                  std::to_string (opts.scalar.pack.bytes));
+        throw std::runtime_error (std::string ("Wrong number of bits for packing field: ") +
+                                  std::to_string (opts.scalar.pack.bits));
     }
 }
 
@@ -121,7 +121,7 @@ void glgrib_field_scalar::setupVertexAttributes ()
 void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field & o, float slot)
 {
   opts = o;
-  switch (opts.scalar.pack.bytes)
+  switch (opts.scalar.pack.bits)
     {
       case  8:
         setup<unsigned char > (ld, o, slot);
@@ -133,8 +133,8 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
         setup<unsigned int  > (ld, o, slot);
       break;
       default:
-        throw std::runtime_error (std::string ("Wrong number of bytes for packing field: ") +
-                                  std::to_string (opts.scalar.pack.bytes));
+        throw std::runtime_error (std::string ("Wrong number of bits for packing field: ") +
+                                  std::to_string (opts.scalar.pack.bits));
     }
 }
 
@@ -195,7 +195,7 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   program->set1f ("height_scale", opts.geometry.height.scale);
 
   unsigned int Nmax = 1;
-  for (int i = 0; i < opts.scalar.pack.bytes; i++)
+  for (int i = 0; i < opts.scalar.pack.bits; i++)
     Nmax = Nmax * 2;
 
   program->set1i ("Nmax", Nmax-1);

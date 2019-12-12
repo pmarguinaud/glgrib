@@ -97,3 +97,4 @@ glgrib_opengl_texture_ptr new_glgrib_opengl_texture_ptr (int width, int height, 
 template <> GLenum getOpenglType<unsigned char > () { return GL_UNSIGNED_BYTE ; }
 template <> GLenum getOpenglType<unsigned short> () { return GL_UNSIGNED_SHORT; }
 template <> GLenum getOpenglType<unsigned int  > () { return GL_UNSIGNED_INT  ; }
+template <> GLenum getOpenglType<float         > () { return GL_FLOAT         ; }

@@ -49,5 +49,6 @@ template <typename T> GLenum getOpenglType ();
 template <> GLenum getOpenglType<unsigned char > ();
 template <> GLenum getOpenglType<unsigned short> ();
 template <> GLenum getOpenglType<unsigned int  > ();
+template <> GLenum getOpenglType<float         > ();
 
 #endif

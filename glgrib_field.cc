@@ -368,7 +368,7 @@ void glgrib_field::pack (const float * f, const int n, const float valmin,
     if (f[i] == valmis)
       b[i] = 0;
     else
-      b[i] = 1 + (int)(nmax * (f[i] - valmin)/(valmax - valmin));
+      b[i] = 1 + (T)round (nmax * (f[i] - valmin)/(valmax - valmin));
 }
 
 template <typename T>
@@ -393,7 +393,7 @@ void glgrib_field::packUnpack (const float * g, float * f, const int n, const fl
     {
       if (g[i] != valmis)
         {
-          T b = 1 + (int)((nmax - 1) * (g[i] - valmin)/(valmax - valmin));
+          T b = 1 + (T)round ((nmax - 1) * (g[i] - valmin)/(valmax - valmin));
           f[i] = valmin + (valmax - valmin) * (b - 1) / nmax;
         }
     }

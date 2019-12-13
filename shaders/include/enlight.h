@@ -38,7 +38,7 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal, float missingFlag)
     }
   else
     {
-      color = RGBA0[int (pal)];
+      color = RGBA0[int (round (pal))];
     }
 
   color.rgb = total * color.rgb;

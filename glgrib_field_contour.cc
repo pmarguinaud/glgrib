@@ -144,6 +144,9 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
 
   isoline_data_t iso_data[levels.size ()];
 
+
+  float * val = data->data ();
+
 #pragma omp parallel for
   for (int i = 0; i < levels.size (); i++)
     {
@@ -156,15 +159,17 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
       // First visit edge triangles
       for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
         if (geometry->triangleIsEdge (it))
-          processTriangle (it, data->data (), levels[i], height->data (), meta_height.valmin, 
+          processTriangle (it, val, levels[i], height->data (), meta_height.valmin, 
           		   meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
   
       for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
-        processTriangle (it, data->data (), levels[i], height->data (), meta_height.valmin, 
+        processTriangle (it, val, levels[i], height->data (), meta_height.valmin, 
                          meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
 
       delete [] seen;
     }
+
+  val = NULL;
 
   iso.resize (levels.size ());
 
@@ -174,10 +179,8 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
       iso[i].vertexbuffer   = new_glgrib_opengl_buffer_ptr (iso_data[i].lonlat.size () * sizeof (float), 
                                                             iso_data[i].lonlat.data ());
       if (opts.geometry.height.on)
-        {
-          iso[i].heightbuffer   = new_glgrib_opengl_buffer_ptr (iso_data[i].height.size () * sizeof (float), 
-                                                                iso_data[i].height.data ());
-        }
+        iso[i].heightbuffer   = new_glgrib_opengl_buffer_ptr (iso_data[i].height.size () * sizeof (float), 
+                                                              iso_data[i].height.data ());
 
       iso[i].distancebuffer = new_glgrib_opengl_buffer_ptr (iso_data[i].length.size () * sizeof (float), 
                                                             iso_data[i].length.data ());

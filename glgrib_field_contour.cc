@@ -139,8 +139,12 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
   std::vector<float> levels = opts.contour.levels;
 
   if (levels.size () == 0)
-    for (int i = 0; i < opts.contour.number; i++)
-      levels.push_back (meta1.valmin + (i + 1) * (meta1.valmax - meta1.valmin) / (opts.contour.number + 1));
+    {
+      float min = opts.contour.min == glgrib_options_contour::defaultMin ? meta1.valmin : opts.contour.min;
+      float max = opts.contour.max == glgrib_options_contour::defaultMax ? meta1.valmax : opts.contour.max;
+      for (int i = 0; i < opts.contour.number; i++)
+        levels.push_back (min + (i + 1) * (max - min) / (opts.contour.number + 1));
+    }
 
   isoline_data_t iso_data[levels.size ()];
 

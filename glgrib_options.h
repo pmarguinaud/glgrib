@@ -404,16 +404,22 @@ public:
 class glgrib_options_contour : public glgrib_options_base
 {
 public:
+  static float defaultMin;
+  static float defaultMax;
   DEFINE
   {
     DESC (number,        Number of levels);
     DESC (levels,        List of levels);
+    DESC (min,           Min level);
+    DESC (max,           Max level);
     DESC (widths,        List of widths);
     DESC (patterns,      List of dash patterns);
     DESC (lengths,       List of dash lengths);
   }
   int number = 10;
   std::vector<float> levels;
+  float min = defaultMin;
+  float max = defaultMax;
   std::vector<float> widths;
   std::vector<std::string> patterns;
   std::vector<float> lengths;

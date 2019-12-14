@@ -12,6 +12,8 @@
 
 float glgrib_options_palette::defaultMin = glgrib_palette::defaultMin;
 float glgrib_options_palette::defaultMax = glgrib_palette::defaultMax;
+float glgrib_options_contour::defaultMin = glgrib_palette::defaultMin;
+float glgrib_options_contour::defaultMax = glgrib_palette::defaultMax;
 
 namespace glgrib_options_parser_detail
 {

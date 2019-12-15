@@ -586,7 +586,7 @@ public:
     } pack;
     struct
     {
-      bool on = true;
+      bool on = false;
     } discrete;
   } scalar;
   string_list  path;

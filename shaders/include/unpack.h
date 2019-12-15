@@ -1,6 +1,5 @@
 
-//uniform int Nmax = 255;
-  uniform int Nmax = 65535;
+uniform int Nmax = 255;
 
 float unpack (float v, float vmin, float vmax)
 {

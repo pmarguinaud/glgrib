@@ -7,6 +7,7 @@ in float missingFlag;
 in float pointVal;
 in vec3 centerVec;
 flat in float pointRad;
+flat in float fragmentValFlat;
 out vec4 color;
 
 #include "unpack.h"

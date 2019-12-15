@@ -193,6 +193,7 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   program->set1f ("palmin", palette.getMin ());
   program->set1f ("palmax", palette.getMax ());
   program->set1f ("height_scale", opts.geometry.height.scale);
+  program->set1f ("discrete", opts.scalar.discrete.on);
 
   unsigned int Nmax = 1;
   for (int i = 0; i < opts.scalar.pack.bits; i++)

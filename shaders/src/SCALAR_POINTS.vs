@@ -17,6 +17,7 @@ uniform mat4 MVP;
 out float pointVal;
 out vec3 centerVec;
 flat out float pointRad;
+flat out float fragmentValFlat;
 
 uniform float length10 = 0.01;
 uniform float pointSiz = 1.0f;
@@ -27,8 +28,9 @@ uniform float height_scale = 0.05;
 
 void main ()
 {
-  vec3 vertexPos = posFromLonLat (vertexLonLat);
+  fragmentValFlat = vertexVal;
 
+  vec3 vertexPos = posFromLonLat (vertexLonLat);
   vec3 pos = vertexPos;
 
   vec2 pos2; 

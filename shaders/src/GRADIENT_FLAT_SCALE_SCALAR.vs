@@ -8,6 +8,7 @@ layout(location = 2) in float vertexHeight;
 out float fragmentVal;
 out vec3 fragmentPos;
 out float missingFlag;
+flat out float fragmentValFlat;
 
 uniform mat4 MVP;
 uniform float height_scale = 0.05;
@@ -17,6 +18,8 @@ uniform float height_scale = 0.05;
 
 void main ()
 {
+  fragmentValFlat = vertexVal;
+
   vec3 vertexPos = posFromLonLat (vertexLonLat);
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);

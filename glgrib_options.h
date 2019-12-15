@@ -529,6 +529,7 @@ public:
     DESC (scalar.points.size.variable.on,  Variable field point size);
     DESC (scalar.points.size.factor.on,  Apply scale factor to point size);
     DESC (scalar.pack.bits,    Number of bytes used to pack field);
+    DESC (scalar.discrete.on,  Plot as a discrete field);
     DESC (hilo.on,             Display low & high);
     DESC (hilo.radius,         High/low radius in degrees);
     INCLUDE (hilo.font);
@@ -540,7 +541,6 @@ public:
     
   }
   std::set<std::string> seen;
-
 
   struct 
   {
@@ -584,6 +584,10 @@ public:
     {
       int bits = 8;
     } pack;
+    struct
+    {
+      bool on = true;
+    } discrete;
   } scalar;
   string_list  path;
   float scale   = 1.0f;

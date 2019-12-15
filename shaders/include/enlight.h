@@ -8,12 +8,16 @@ uniform vec3 lightDir = vec3 (0., 1., 0.);
 uniform vec3 lightCol = vec3 (1., 1., 1.);
 uniform bool light = false;
 uniform float frac = 0.1;
-uniform bool smoothed = true;
+uniform bool smoothed = false;
+uniform bool discrete = false;
 
 
 vec4 enlightFragment (vec3 fragmentPos, float fragmentVal, float missingFlag)
 {
   if (missingFlag > 0.)
+    discard;
+
+  if ((discrete) && (fragmentValFlat != fragmentVal))
     discard;
 
   vec4 color;

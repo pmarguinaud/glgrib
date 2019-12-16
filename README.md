@@ -691,3 +691,15 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     313.15 --palette.min 253.15 --palette.name cold_hot_temp }- --view.lat 
     36 --view.lon -15 
 ```
+## Display sphere partitionning (t1192c2.2)                          -- myproc22
+![](test.ref/myproc22/TEST_0000.png)
+
+```
+    --field[0].scalar.discrete.on --field[0].path 
+    testdata/discrete_stretched/MYPROC.grb --field[0].palette.colors green 
+    --field[0].scalar.discrete.missing_color black 
+    --field[0].palette.colors #00000000 --field[1].path 
+    testdata/discrete_stretched/SURFTEMPERATURE.grb --field[1]-{ 
+    --palette.max 313.15 --palette.min 253.15 --palette.name cold_hot_temp 
+    }- 
+```

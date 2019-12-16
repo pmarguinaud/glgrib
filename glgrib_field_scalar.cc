@@ -195,6 +195,13 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   program->set1f ("height_scale", opts.geometry.height.scale);
   program->set1f ("discrete", opts.scalar.discrete.on);
 
+  float missing_color[4] = {(float)opts.scalar.discrete.missing_color.r / 255.0f, 
+                            (float)opts.scalar.discrete.missing_color.g / 255.0f, 
+                            (float)opts.scalar.discrete.missing_color.b / 255.0f,
+                            (float)opts.scalar.discrete.missing_color.a / 255.0f};
+
+  program->set4fv ("RGBAM", missing_color);
+
   unsigned int Nmax = 1;
   for (int i = 0; i < opts.scalar.pack.bits; i++)
     Nmax = Nmax * 2;

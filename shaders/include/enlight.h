@@ -1,6 +1,7 @@
 
 
 uniform vec4 RGBA0[256];
+uniform vec4 RGBAM = vec4 (0.0f, 0.0f, 0.0f, 0.0f);
 uniform float valmin, valmax;
 uniform float palmin, palmax;
 
@@ -17,10 +18,16 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal, float missingFlag)
   if (missingFlag > 0.)
     discard;
 
-  if ((discrete) && (fragmentValFlat != fragmentVal))
-    discard;
-
   vec4 color;
+
+  if ((discrete) && (fragmentValFlat != fragmentVal))
+    {
+      if ((RGBAM.r == 0.0f) && (RGBAM.g == 0.0f) && (RGBAM.b == 0.0f) && (RGBAM.a == 0.0f))
+        discard;
+      color = RGBAM;
+      return color;
+    }
+
 
   float total = 1.;
 
@@ -46,6 +53,12 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal, float missingFlag)
     }
 
   color.rgb = total * color.rgb;
+
+  if (discrete)
+    {
+      if ((color.r == 0.0f) && (color.g == 0.0f) && (color.b == 0.0f) && (color.a == 0.0f))
+        discard;
+    }
 
   return color;
 }

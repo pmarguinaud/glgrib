@@ -1,12 +1,17 @@
 #!/bin/bash
 
-id=18215
+id=$(cat id.txt)
 
 
 ./glgrib.x \
 --field[0].path ftp://prolix.meteo.fr//scratch/work/marguina/tmp/tmp.$id/MYPROC.001.fa%TESTFIELD \
    --field[0].palette-{ --colors blue red green yellow pink white red green blue  --values 0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 }-  \
    --view.lat 67.49 --view.lon 26.92 --view.fov 0.3 --field[0].scalar.points.on --window.offscreen.format myproc.png --window.offscreen.on
+
+./glgrib.x \
+--field[0].path ftp://prolix.meteo.fr//scratch/work/marguina/tmp/tmp.$id/MYPROC.001.fa%TESTFIELD \
+   --field[0].palette-{ --colors blue red green yellow pink white red green blue  --values 0.5 1.5 2.5 3.5 4.5 5.5 6.5 7.5 8.5 9.5 }-  \
+   --view.lat 67.49 --view.lon 26.92 --view.fov 0.3 --field[0].scalar.discrete.on --window.offscreen.format myproc1.png --window.offscreen.on
 
 for d in 1 2 3
 do

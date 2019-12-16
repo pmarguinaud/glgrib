@@ -530,6 +530,7 @@ public:
     DESC (scalar.points.size.factor.on,  Apply scale factor to point size);
     DESC (scalar.pack.bits,    Number of bytes used to pack field);
     DESC (scalar.discrete.on,  Plot as a discrete field);
+    DESC (scalar.discrete.missing_color, Color for missing values);
     DESC (hilo.on,             Display low & high);
     DESC (hilo.radius,         High/low radius in degrees);
     INCLUDE (hilo.font);
@@ -587,6 +588,7 @@ public:
     struct
     {
       bool on = false;
+      glgrib_option_color missing_color = glgrib_option_color (0, 0, 0, 0);
     } discrete;
   } scalar;
   string_list  path;

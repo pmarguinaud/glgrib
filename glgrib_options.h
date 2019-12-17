@@ -478,6 +478,7 @@ public:
     DESC (values,      Palette values);
     DESC (colors,      Palette colors);
     DESC (linear.on,   Linear colorbar display);
+    DESC (scale,       Scale for colorbar figures);
   }
   string name = "default";
   float min = defaultMin;
@@ -488,6 +489,7 @@ public:
   {
     bool on = false;
   } linear;
+  float scale = 1.0f;
 };
 
 class glgrib_options_font : public glgrib_options_base

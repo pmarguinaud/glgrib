@@ -78,6 +78,13 @@ public:
   {
     return opts.linear.on && (opts.values.size () == opts.colors.size () + 1);
   }
+
+  float getScale () const
+  {
+    return opts.scale;
+  }
+
+
 private:
   void getRGBA255 (float RGBA0[256][4]) const;
   static glgrib_palette & create_by_name (const std::string &);

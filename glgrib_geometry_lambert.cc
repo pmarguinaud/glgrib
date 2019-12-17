@@ -505,4 +505,33 @@ float glgrib_geometry_lambert::getLocalMeshSize (int jglo) const
   return DxInMetres / a;
 }
 
+void glgrib_geometry_lambert::getView (glgrib_view * view) const
+{
+  glgrib_options_view view_opts = view->getOptions (); 
+  latlon_t latlon = p_pj.xy_to_latlon (center_xy);
+  view_opts.lon = latlon.lon * rad2deg;
+  view_opts.lat = latlon.lat * rad2deg;
+
+  glm::vec3 xyz[2][2];
+
+  for (int j = 0; j < 2; j++)
+    for (int i = 0; i < 2; i++)
+      {
+        xy_t pt_xy ((i * (Nx-1) - Nux / 2) * DxInMetres, (j * (Ny-1) - Nuy / 2) * DyInMetres);
+        pt_xy = pt_xy + center_xy;
+	latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
+        float coslon = cos (latlon.lon), sinlon = sin (latlon.lon);
+        float coslat = cos (latlon.lat), sinlat = sin (latlon.lat);
+        xyz[i][j].x = coslon * coslat;
+        xyz[i][j].y = sinlon * coslat;
+        xyz[i][j].z =          sinlat;
+      }
+
+  float angmax = acos (glm::dot (xyz[0][0], xyz[1][1]));
+
+  view_opts.fov = rad2deg * angmax / view_opts.distance;
+
+  view->setOptions (view_opts);
+}
+
 

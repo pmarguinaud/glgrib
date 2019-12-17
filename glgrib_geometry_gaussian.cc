@@ -1537,3 +1537,14 @@ float glgrib_geometry_gaussian::getLocalMeshSize (int jglo) const
   return mesh / N;
 }
 
+void glgrib_geometry_gaussian::getView (glgrib_view * view) const
+{
+  if (! rotated)
+    return;
+  glgrib_options_view view_opts = view->getOptions (); 
+  view_opts.lon = longitudeOfStretchingPoleInDegrees;
+  view_opts.lat = latitudeOfStretchingPoleInDegrees;
+  view->setOptions (view_opts);
+}
+
+

@@ -356,6 +356,18 @@ void glgrib_scene::setup (const glgrib_options & o)
 
   d.currentFieldRank = d.opts.scene.select.field;
 
+
+  if (d.opts.scene.center.on)
+    {
+      glgrib_field * field = getCurrentField ();
+      if (field != NULL)
+        {
+          const_glgrib_geometry_ptr geometry = field->getGeometry ();
+          geometry->getView (&d.view);
+        }
+    }
+
+
   resize ();
 }
 

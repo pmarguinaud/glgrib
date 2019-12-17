@@ -536,3 +536,44 @@ float glgrib_geometry_latlon::getLocalMeshSize (int) const
   return dlat;
 }
 
+
+static void latlon2xyz (float lat, float lon, glm::vec3 * xyz)
+{
+  float coslon = cos (glgrib_geometry_latlon::deg2rad * lon), 
+        sinlon = sin (glgrib_geometry_latlon::deg2rad * lon);
+  float coslat = cos (glgrib_geometry_latlon::deg2rad * lat), 
+        sinlat = sin (glgrib_geometry_latlon::deg2rad * lat);
+  xyz->x = coslon * coslat;
+  xyz->y = sinlon * coslat;
+  xyz->z =          sinlat;
+}
+
+void glgrib_geometry_latlon::getView (glgrib_view * view) const
+{
+  if (periodic)
+    return;
+
+  glgrib_options_view view_opts = view->getOptions (); 
+
+  glm::vec3 xyz[2][2];
+
+  latlon2xyz (latitudeOfFirstGridPointInDegrees, longitudeOfFirstGridPointInDegrees, &xyz[0][0]);
+  latlon2xyz (latitudeOfLastGridPointInDegrees,  longitudeOfFirstGridPointInDegrees, &xyz[0][1]);
+  latlon2xyz (latitudeOfFirstGridPointInDegrees, longitudeOfLastGridPointInDegrees,  &xyz[1][0]);
+  latlon2xyz (latitudeOfLastGridPointInDegrees,  longitudeOfLastGridPointInDegrees,  &xyz[1][1]);
+
+  glm::vec3 xyz0 = (xyz[0][0] + xyz[0][1] + xyz[1][0] + xyz[1][1]) / 4.0f;
+
+  float lon0 = atan2 (xyz0.y, xyz0.x);
+  float lat0 = asin (xyz0.z);
+
+  view_opts.lon = lon0 * rad2deg;
+  view_opts.lat = lat0 * rad2deg;
+
+  float angmax = acos (glm::dot (xyz[0][0], xyz[1][1]));
+
+  view_opts.fov = rad2deg * angmax / view_opts.distance;
+
+  view->setOptions (view_opts);
+}
+

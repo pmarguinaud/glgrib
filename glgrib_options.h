@@ -938,6 +938,7 @@ public:
     INCLUDE (date);
     INCLUDE (title);
     DESC (select.field, Rank of field to select);
+    DESC (center.on, Center on first field);
   }
   struct
   {
@@ -959,6 +960,10 @@ public:
   {
     int field = 0;
   } select;
+  struct
+  {
+    bool on = false;
+  } center;
 };
 
 class glgrib_options_view : public glgrib_options_base

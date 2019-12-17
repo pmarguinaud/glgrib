@@ -4,6 +4,7 @@
 #include "glgrib_opengl.h"
 #include "glgrib_handle.h"
 #include "glgrib_options.h"
+#include "glgrib_view.h"
 
 #include <glm/glm.hpp>
 #include <eccodes.h>
@@ -70,6 +71,7 @@ public:
   {
     elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
   }
+  virtual void getView (glgrib_view *) const = 0;
 protected:
   unsigned int ind_strip_size = 0;
   int numberOfPoints; 

@@ -84,6 +84,11 @@ public:
     return opts.scale;
   }
 
+  float getOffset () const
+  {
+    return opts.offset;
+  }
+
 
 private:
   void getRGBA255 (float RGBA0[256][4]) const;

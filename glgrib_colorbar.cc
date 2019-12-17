@@ -115,7 +115,7 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
             {
               float val = values[i];
               char tmp[32];
-              sprintf (tmp, opts.format.c_str (), val * pref.getScale ());
+              sprintf (tmp, opts.format.c_str (), pref.getOffset () + val * pref.getScale ());
               std::string s = std::string (tmp);
               while (s.length () < 6)
                 s += " ";
@@ -134,7 +134,7 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
             {
               float val = values_pal[i];
               char tmp[32];
-              sprintf (tmp, opts.format.c_str (), val * pref.getScale ());
+              sprintf (tmp, opts.format.c_str (), pref.getOffset () + val * pref.getScale ());
               std::string s = std::string (tmp);
               while (s.length () < 6)
                 s += " ";

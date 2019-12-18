@@ -6,8 +6,6 @@ in float islatcst;
 in vec3 fragmentPos;
 out vec4 color;
 
-uniform vec3 color0;
-
 uniform vec4 colorb = vec4 (0.3f, 0.3f, 0.3f, 1.0f);
 uniform vec4 colorw = vec4 (1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -34,11 +32,5 @@ void main ()
     }
 
 
-if(false){
-  color.r = color0.r;
-  color.g = color0.g;
-  color.b = color0.b;
-  color.a = 1.;
-}
 }
 

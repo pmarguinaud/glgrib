@@ -385,6 +385,9 @@ public:
     DESC (height.path,        Height field path);
     DESC (height.scale,       Scale to apply to height field);
     DESC (frame.on,           Draw frame around domain);
+    DESC (frame.color1,       First frame color);
+    DESC (frame.color2,       Second frame color);
+    DESC (frame.width,        Frame width);
   }
   struct
   {
@@ -403,6 +406,9 @@ public:
   struct 
   {
     bool on = false;
+    glgrib_option_color color1 = glgrib_option_color (255, 255, 255);
+    glgrib_option_color color2 = glgrib_option_color ( 80,  80,  80);
+    float width = 0.0f;
   } frame;
 };
 

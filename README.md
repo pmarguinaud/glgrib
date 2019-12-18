@@ -741,3 +741,22 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.lon -150 --view.projection LATLON --window.width 1500 
     --view.fov 13 --grid.color gray 
 ```
+## 2m temperature                                                    -- contour9
+![](test.ref/contour9/TEST_0000.png)
+
+```
+    --field[0]-{ --path testdata/2m_temperature.grib --palette.values 
+    241.15 243.15 245.15 247.15 249.15 251.15 253.15 255.15 257.15 259.15 
+    261.15 263.15 265.15 267.15 269.15 271.15 273.15 275.15 277.15 279.15 
+    281.15 283.15 285.15 287.15 289.15 291.15 293.15 295.15 297.15 299.15 
+    301.15 303.15 305.15 307.15 309.15 311.15 313.15 315.15 
+    --palette.colors #4c4c4cff #666666ff #7f7f7fff #999999ff #b2b2b2ff 
+    #ccccccff #590099ff #7f00e5ff #9933ffff #bf66ffff #d899ffff #0000bfff 
+    #0000ffff #3366ffff #66b2ffff #99e5ffff #008c30ff #26bf19ff #7fd800ff 
+    #a5f200ff #ccff33ff #a5a500ff #cccc00ff #eaea00ff #ffff00ff #ffff99ff 
+    #d87200ff #ff7f00ff #ff9e00ff #ffbc00ff #ffd800ff #990000ff #cc0000ff 
+    #ff0000ff #ff6666ff #ff9999ff #ffbfbfff --palette.offset -273.15 
+    --palette.linear.on }- --colorbar.on --coast.on --coast.lines.color 
+    black --view.projection LATLON --window.width 1500 --view.lon 10 
+    --view.lat 52 --view.fov 3 --view.clip.xmin 0.15 
+```

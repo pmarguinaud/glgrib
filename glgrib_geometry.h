@@ -88,7 +88,7 @@ public:
   }
   virtual int getFrameNumberOfPoints () const
   {
-    return 0;
+    return numberOfPoints_frame;
   }
 protected:
   unsigned int ind_strip_size = 0;

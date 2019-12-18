@@ -40,10 +40,6 @@ public:
   virtual void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const;
   virtual float getLocalMeshSize (int) const;
   virtual void getView (glgrib_view *) const;
-  virtual int getFrameNumberOfPoints () const
-  {
-    return numberOfPoints_frame;
-  }
 private:
   void getTriangleNeighboursLatLon (int, int [3], int [3], float &, float &, float &, float &) const;
   long int Ni, Nj;

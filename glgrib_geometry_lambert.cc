@@ -103,6 +103,47 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options
   lonlat = NULL;
   vertexbuffer->unmap ();
 
+  if (opts.frame.on)
+    {
+      numberOfPoints_frame = 2 * (Nx + Ny - 2);
+      vertexbuffer_frame = new_glgrib_opengl_buffer_ptr (3 * (numberOfPoints_frame + 2) 
+                                                         * sizeof (float));
+
+      float * lonlat = (float *)vertexbuffer_frame->map ();
+
+      int p = 0;
+
+      auto push = [lonlat, &p, this] (int i, int j, int latcst)
+      {
+        xy_t pt_xy ((i - Nux / 2) * DxInMetres, (j - Nuy / 2) * DyInMetres);
+        pt_xy = pt_xy + center_xy;
+
+        latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
+
+        lonlat[3*p+0] = latlon.lon;
+        lonlat[3*p+1] = latlon.lat;
+        lonlat[3*p+2] = latcst == 0 ? 1.0f : 0.0f;
+        p++;
+      };
+       
+      for (int j = 0; j < Ny-1; j++)
+        push (0, j, 1);
+      
+      for (int i = 0; i < Nx-1; i++)
+        push (i, Ny-1, 0);
+
+      for (int j = Ny-1; j >= 1; j--)
+        push (Nx-1, j, 1);
+      
+      for (int i = Nx-1; i >= 1; i--)
+        push (i, 0, 0);
+      
+      for (int j = 0; j < 2; j++)
+        push (0, j, 1);
+      
+      vertexbuffer_frame->unmap ();
+    }
+
 }
 
 glgrib_geometry_lambert::~glgrib_geometry_lambert ()

@@ -33,7 +33,7 @@ public:
     std::vector<float> val = getMaxValue ();
     return val[0];
   }
-  virtual bool useColorBar () const { return false; }
+  virtual bool useColorBar () const { return true; }
   virtual int getSlotMax () const  
   {
     return (int)opts.path.size () / 2;

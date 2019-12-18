@@ -429,6 +429,8 @@ void glgrib_field::renderFrame (const glgrib_view & view) const
   program->set3fv ("scale0", scale0);
   program->set4fv ("colorb", colorb);
   program->set4fv ("colorw", colorw);
+  program->set1f ("dlon", opts.geometry.frame.dlon);
+  program->set1f ("dlat", opts.geometry.frame.dlat);
 
   glBindVertexArray (VertexArrayID_frame);
 

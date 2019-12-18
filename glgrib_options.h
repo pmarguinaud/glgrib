@@ -388,6 +388,8 @@ public:
     DESC (frame.color1,       First frame color);
     DESC (frame.color2,       Second frame color);
     DESC (frame.width,        Frame width);
+    DESC (frame.dlon,         Longitude interval);
+    DESC (frame.dlat,         Latitude interval);
   }
   struct
   {
@@ -409,6 +411,8 @@ public:
     glgrib_option_color color1 = glgrib_option_color (255, 255, 255);
     glgrib_option_color color2 = glgrib_option_color ( 80,  80,  80);
     float width = 0.0f;
+    float dlon = 10.0f;
+    float dlat = 10.0f;
   } frame;
 };
 

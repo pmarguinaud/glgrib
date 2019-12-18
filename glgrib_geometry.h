@@ -80,8 +80,8 @@ public:
         for (int j = 0; j < 3; j++)
           {
             glEnableVertexAttribArray (attr + j);
-            glVertexAttribPointer (attr + j, 2, GL_FLOAT, GL_FALSE, 0, 
-                                   (const void *)(j * 2 * sizeof (float)));
+            glVertexAttribPointer (attr + j, 3, GL_FLOAT, GL_FALSE, 0, 
+                                   (const void *)(j * 3 * sizeof (float)));
             glVertexAttribDivisor (attr + j, 1);
           }
       }

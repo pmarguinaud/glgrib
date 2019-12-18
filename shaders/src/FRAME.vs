@@ -1,9 +1,9 @@
 
 #version 330 core
 
-layout(location = 0) in vec2 vertexLonLat0;
-layout(location = 1) in vec2 vertexLonLat1;
-layout(location = 2) in vec2 vertexLonLat2;
+layout(location = 0) in vec3 vertexLonLatCst0;
+layout(location = 1) in vec3 vertexLonLatCst1;
+layout(location = 2) in vec3 vertexLonLatCst2;
 
 
 out float alpha;
@@ -24,11 +24,11 @@ uniform float width = 0.005;
 
 void main ()
 {
-  vec3 vertexPos0 = posFromLonLat (vertexLonLat0);
-  vec3 vertexPos1 = posFromLonLat (vertexLonLat1);
-  vec3 vertexPos2 = posFromLonLat (vertexLonLat2);
+  vec3 vertexPos0 = posFromLonLat (vertexLonLatCst0.xy);
+  vec3 vertexPos1 = posFromLonLat (vertexLonLatCst1.xy);
+  vec3 vertexPos2 = posFromLonLat (vertexLonLatCst2.xy);
 
-  islatcst = vertexLonLat0.y == vertexLonLat1.y ? 1.0 : 0.0f;
+  islatcst = vertexLonLatCst0.z;
 
   vec3 vertexPos;
 

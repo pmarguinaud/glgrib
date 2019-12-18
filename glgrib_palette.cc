@@ -270,6 +270,7 @@ void glgrib_palette::getRGBA255 (float RGBA0[256][4]) const
         }
     }
 
+
 }
 
 void glgrib_palette::setRGBA255 (GLuint programID) const

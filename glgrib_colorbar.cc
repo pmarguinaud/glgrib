@@ -170,6 +170,7 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
 
   program.setMatrix4fv ("MVP", &MVP[0][0]);
   program.set1iv ("rank2rgba", rank2rgba, 256);
+
   program.set1f ("xmin", opts.position.xmin);
   program.set1f ("xmax", opts.position.xmax);
   program.set1f ("ymin", opts.position.ymin);
@@ -204,7 +205,7 @@ void main ()
   color = RGBA0[rank2rgba[rank]];
   }
   if(false)
-  if(rank == 0)
+  if(rank2rgba[rank] == 255)
     color = vec4 (1., 1., 1., 1.);
 }
 )CODE",

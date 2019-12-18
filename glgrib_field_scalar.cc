@@ -248,7 +248,9 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   view.delMVP (program);
 
   renderHilo (view);
-  renderFrame (view);
+  
+  if (opts.geometry.frame.on)
+    renderFrame (view);
 
 }
 

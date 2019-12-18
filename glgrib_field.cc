@@ -420,9 +420,12 @@ void glgrib_field::renderFrame (const glgrib_view & view) const
   program->use ();
   view.setMVP (program);
 
+  
+
   float color[3] = {1.0f, 1.0f, 1.0f};
   program->set3fv ("color0", color);
-  program->set1f ("scale", opts.scale);
+  float scale0[3] = {opts.scale, opts.scale, opts.scale};
+  program->set3fv ("scale0", scale0);
 
   glBindVertexArray (VertexArrayID_frame);
 

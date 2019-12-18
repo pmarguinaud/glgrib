@@ -9,6 +9,8 @@ layout(location = 2) in vec2 vertexLonLat2;
 out float alpha;
 out vec3 fragmentPos;
 out float islatcst;
+out vec3 posA;
+out vec3 posB;
 
 
 uniform mat4 MVP;
@@ -19,7 +21,6 @@ uniform mat4 MVP;
 uniform bool do_alpha = false;
 uniform float posmax = 0.97;
 uniform float width = 0.005;
-uniform float scale = 1.0f;
 
 void main ()
 {
@@ -45,54 +46,60 @@ void main ()
 
   fragmentPos = vertexPos;
 
-  vertexPos = scale * vertexPos;
+  vec3 vertexPosA = vertexPos;
+  vec3 vertexPosB = vertexPos;
 
-  vec3 p = normalize (vertexPos);
+  vec3 p = normalize (vertexPosB);
   vec3 n0 = cross (t0, p);
   vec3 n1 = cross (t1, p);
 
   float c = width / scalingFactor (p);
 
-  if ((gl_VertexID >= 4) && (dot (cross (n0, n1), vertexPos) < 0.))
+  if ((gl_VertexID >= 4) && (dot (cross (n0, n1), vertexPosB) < 0.))
     c = 0.0;
 
   if (gl_VertexID == 2)
-    vertexPos = vertexPos + c * n0;
+    vertexPosB = vertexPosB + c * n0;
   if (gl_VertexID == 3)
-    vertexPos = vertexPos + c * n0;
+    vertexPosB = vertexPosB + c * n0;
   if (gl_VertexID == 4)
-    vertexPos = vertexPos + c * normalize (n0 + n1);
+    vertexPosB = vertexPosB + c * normalize (n0 + n1);
   if (gl_VertexID == 5)
-    vertexPos = vertexPos + c * n1;
+    vertexPosB = vertexPosB + c * n1;
 
-  vec3 normedPos = compNormedPos (vertexPos);
-  vec3 pos = compProjedPos (vertexPos, normedPos);
+  vec3 normedPosA = compNormedPos (vertexPosA);
+  vec3 normedPosB = compNormedPos (vertexPosB);
+  posA = compProjedPos (vertexPosA, normedPosA);
+  posB = compProjedPos (vertexPosB, normedPosB);
 
   alpha = min (min (1.0f, length (vertexPos0)), min (1.0f, length (vertexPos1)));
 
   if (proj == XYZ)
     {
-      pos = scalePosition (pos, normedPos, scale0);
+      posB = scalePosition (posB, normedPosB, scale0);
     }
-  else
+  else 
     {
+      if ((gl_VertexID != 0) && (gl_VertexID != 1))
+        posB = posA + width * 0.3 * normalize (posB - posA);
+
       if ((proj == LATLON) || (proj == MERCATOR))
-      if ((pos.y < -posmax) || (+posmax < pos.y))
+      if ((posB.y < -posmax) || (+posmax < posB.y))
         {
-          pos.x = -0.1;
+          posB.x = -0.1;
           if (do_alpha)
             alpha = 0.0;
 	}
       if (proj == LATLON)
-      if ((pos.z > +0.49) || (pos.z < -0.49))
+      if ((posB.z > +0.49) || (posB.z < -0.49))
         alpha = 0.0;
 
       if (proj == POLAR_SOUTH)
-        pos.x = pos.x - 0.005;
+        posB.x = posB.x - 0.005;
       else
-        pos.x = pos.x + 0.005;
+        posB.x = posB.x + 0.005;
     }
 
-  gl_Position =  MVP * vec4 (pos, 1);
+  gl_Position =  MVP * vec4 (posB, 1);
 
 }

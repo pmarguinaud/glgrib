@@ -8,6 +8,9 @@ out vec4 color;
 
 uniform vec3 color0;
 
+uniform vec4 colorb = vec4 (0.3f, 0.3f, 0.3f, 1.0f);
+uniform vec4 colorw = vec4 (1.0f, 1.0f, 1.0f, 1.0f);
+
 void main ()
 {
   const float pi = 3.1415926;
@@ -19,19 +22,15 @@ void main ()
   if (alpha < 1.)
     discard;
 
-  vec4 b = vec4 (0.3f, 0.3f, 0.3f, 1.0f);
-  vec4 w = vec4 (1.0f, 1.0f, 1.0f, 1.0f);
-
-
   if (islatcst > 0.0f)
     {
       int lonm = int (mod (int (lon / 10.0f), 2));
-      color = lonm == 0 ? b : w;
+      color = lonm == 0 ? colorb : colorw;
     }
   else
     {
       int latm = int (mod (int (lat / 10.0f), 2));
-      color = latm == 0 ? b : w;
+      color = latm == 0 ? colorb : colorw;
     }
 
 

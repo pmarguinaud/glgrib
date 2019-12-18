@@ -40,6 +40,8 @@ public:
   void scalePaletteDown (float = 0.025);
   void setupHilo (glgrib_field_float_buffer_ptr);
   void renderHilo (const glgrib_view &) const;
+  void setupVertexAttributesFrame ();
+  void renderFrame (const glgrib_view &) const;
 
   virtual ~glgrib_field () {}
   virtual std::vector<float> getValue (int index) const 

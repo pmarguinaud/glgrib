@@ -18,6 +18,7 @@ protected:
   int numberOfPoints;
   unsigned int numberOfTriangles;
   GLuint VertexArrayID = 0;
+  GLuint VertexArrayID_frame = 0;
 };
 
 #endif

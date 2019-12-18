@@ -108,6 +108,7 @@ void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const glgrib_options_
 
   elementbuffer->unmap ();
 
+
   numberOfPoints  = Ni * Nj;
 
   vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (float));
@@ -131,6 +132,43 @@ void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const glgrib_options_
   lonlat = NULL;
   vertexbuffer->unmap ();
 
+
+  if (opts.frame.on && (! periodic))
+    {
+      numberOfPoints_frame = 2 * (Ni + Nj - 2);
+      vertexbuffer_frame = new_glgrib_opengl_buffer_ptr (2 * (numberOfPoints_frame + 2) 
+                                                         * sizeof (float));
+
+      float * lonlat = (float *)vertexbuffer_frame->map ();
+
+      int p = 0;
+
+      auto push = [lonlat, &p, this] (int i, int j)
+      {
+        float lat = lat0 - dlat * (float)j;
+        float lon = lon0 + dlon * (float)i;
+        lonlat[2*p+0] = lon;
+        lonlat[2*p+1] = lat;
+        p++;
+      };
+       
+      for (int j = 0; j < Nj-1; j++)
+        push (0, j);
+      
+      for (int i = 0; i < Ni-1; i++)
+        push (i, Nj-1);
+
+      for (int j = Nj-1; j >= 1; j--)
+        push (Ni-1, j);
+      
+      for (int i = Ni-1; i >= 1; i--)
+        push (i, 0);
+      
+      for (int j = 0; j < 2; j++)
+        push (0, j);
+      
+      vertexbuffer_frame->unmap ();
+    }
 
 }
 

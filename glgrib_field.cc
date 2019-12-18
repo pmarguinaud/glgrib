@@ -166,6 +166,8 @@ void glgrib_field::clear ()
   values.clear ();
   meta.clear ();
   hilo.clear ();
+  if (isReady ())
+    glDeleteVertexArrays (1, &VertexArrayID_frame);
   glgrib_world::clear ();
 }
 
@@ -399,6 +401,48 @@ void glgrib_field::packUnpack (const float * g, float * f, const int n, const fl
     }
 
 }
+
+
+void glgrib_field::setupVertexAttributesFrame ()
+{
+  glGenVertexArrays (1, &VertexArrayID_frame);
+  glBindVertexArray (VertexArrayID_frame);
+
+  geometry->bindFrame (0);
+
+  glBindVertexArray (0); 
+}
+
+void glgrib_field::renderFrame (const glgrib_view & view) const
+{
+  glgrib_program * program = glgrib_program::load (glgrib_program::FRAME); 
+
+  program->use ();
+  view.setMVP (program);
+
+  float color[3] = {1.0f, 1.0f, 1.0f};
+  program->set3fv ("color0", color);
+  program->set1f ("scale", opts.scale);
+
+  glBindVertexArray (VertexArrayID_frame);
+
+  bool wide = true;
+
+  if (wide)
+    {
+      float width = view.pixel_to_dist_at_nadir (10.0f);
+      program->set1f ("width", width);
+      unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
+      glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, 
+                               geometry->getFrameNumberOfPoints ());
+    }
+  else
+    {
+      glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, geometry->getFrameNumberOfPoints ());
+    }
+
+}
+
 
 
 

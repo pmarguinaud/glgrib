@@ -116,6 +116,10 @@ void glgrib_field_scalar::setupVertexAttributes ()
     }
 
   glBindVertexArray (0); 
+
+  if (opts.geometry.frame.on)
+    setupVertexAttributesFrame ();
+
 }
 
 void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field & o, float slot)
@@ -244,6 +248,7 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   view.delMVP (program);
 
   renderHilo (view);
+  renderFrame (view);
 
 }
 

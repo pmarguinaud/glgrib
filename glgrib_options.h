@@ -384,6 +384,7 @@ public:
     DESC (height.on,          Enable height);
     DESC (height.path,        Height field path);
     DESC (height.scale,       Scale to apply to height field);
+    DESC (frame.on,           Draw frame around domain);
   }
   struct
   {
@@ -399,6 +400,10 @@ public:
     std::string path = "";
     float scale = 0.05;
   } height;
+  struct 
+  {
+    bool on = false;
+  } frame;
 };
 
 class glgrib_options_contour : public glgrib_options_base

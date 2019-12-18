@@ -3,7 +3,6 @@
 *.o
 *.swp
 *.rpm
-src
 usr
 big
 .glgrib_history

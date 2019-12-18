@@ -72,11 +72,31 @@ public:
     elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
   }
   virtual void getView (glgrib_view *) const = 0;
+  void bindFrame (int attr = -1) const
+  {
+    vertexbuffer_frame->bind (GL_ARRAY_BUFFER);
+    if (attr >= 0)
+      {
+        for (int j = 0; j < 3; j++)
+          {
+            glEnableVertexAttribArray (attr + j);
+            glVertexAttribPointer (attr + j, 2, GL_FLOAT, GL_FALSE, 0, 
+                                   (const void *)(j * 2 * sizeof (float)));
+            glVertexAttribDivisor (attr + j, 1);
+          }
+      }
+  }
+  virtual int getFrameNumberOfPoints () const
+  {
+    return 0;
+  }
 protected:
   unsigned int ind_strip_size = 0;
-  int numberOfPoints; 
+  int numberOfPoints = 0;
   unsigned int numberOfTriangles = 0;
   glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
+  int numberOfPoints_frame = 0;
+  glgrib_opengl_buffer_ptr vertexbuffer_frame;
   std::string md5string (const unsigned char []) const;
 };
 

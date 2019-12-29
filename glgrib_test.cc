@@ -59,42 +59,172 @@ bool inTriangle (const glm::vec3 & p, const glm::vec3 & a1, const glm::vec3 & a2
   return true;
 }
 
-
-static
-void earCut (const std::vector<glm::vec3> xyz, 
-             const std::vector<float> ang, 
-             std::vector<unsigned int> * ind)
+class node_t
 {
-  int numberOfPoints1 = ang.size ();
+public:
 
-  for (int j = 0; j < numberOfPoints1; j++)
-    {
+  node_t (int _rank) : rank (_rank) {}
 
-      if ((0.0f < ang[j]) && (ang[j] < M_PI))
-        {
-          int i = j == 0 ? numberOfPoints1-1 : j-1;
-          int k = j == numberOfPoints1-1 ? 0 : j+1;
-
-bool intri = false;
-for (int j1 = 0; j1 < numberOfPoints1; j1++)
+  void setNext (node_t * _next) 
   {
-    if ((j1 == i) || (j1 == j) || (j1 == k))
-      continue;
-    if (ang[j1] <= 0.0)
-      intri = intri || inTriangle (xyz[j1], xyz[i], xyz[j], xyz[k]);
+    next = _next;
+    dirty = true;
+  }
+  void setPrev (node_t * _prev) 
+  {
+    prev = _prev;
+    dirty = true;
+  }
+  void setPrevNext (node_t * _prev, node_t * _next)
+  {
+    prev = _prev; next = _next; dirty = true;
+  }
+  node_t * getNext () const
+  {
+    return next;
+  }
+  node_t * getPrev () const
+  {
+    return prev;
+  }
+  int getRank () const
+  {
+    return rank;
   }
 
-if (intri)
-  std::cout << j << std::endl;
+  float getAngle (const std::vector<glm::vec3> & xyz) const 
+  {
+    if (dirty)
+      {
+        int numberOfPoints1 = xyz.size () - 1;
+        int j = rank;
+        int i = prev->rank;
+        int k = next->rank;
+        glm::vec3 ji = glm::cross (xyz[j], xyz[i] - xyz[j]);
+        glm::vec3 jk = glm::cross (xyz[j], xyz[k] - xyz[j]);
+        float X = glm::dot (ji, jk);
+        float Y = glm::dot (xyz[j], glm::cross (ji, jk));
+        ang = atan2 (Y, X);
+        dirty = false;
+      }
+    return ang;
+  }
+
+  const glm::vec3 & getXYZ (const std::vector<glm::vec3> & xyz) const
+  {
+    return xyz[rank];
+  }
+
+  bool inTriangle (const glm::vec3 & p, const std::vector<glm::vec3> & xyz) const
+  {
+    const glm::vec3 t[3] = {xyz[prev->rank], xyz[rank], xyz[next->rank]};
+  
+    float S;
+  
+    for (int i = 0; i < 3; i++)
+      {
+        int j = (i + 1) % 3;
+        const glm::vec3 u = glm::cross (t[i], t[j] - t[i]);
+        float s = glm::dot (p - t[i], u);
+        if (i == 0)
+          S = s;
+        else if (s * S < 0.0f)
+          return false;
+      }
+  
+    return true;
+  }
+
+  void cut (node_t ** x, node_t ** list)
+  {
+    node_t * n = next, * p = prev;
+    n->setPrev (prev);
+    p->setNext (next);
+
+    *x = next;
+
+    next = prev = NULL; 
+
+    if (this == *list)
+      *list = *x;
+    
+  }
+
+  int count () const
+  {
+    int c = 0;
+    for (const node_t * n = this; ; )
+      {
+        c++;
+        n = n->next;
+        if (n == this)
+          break;
+      }
+    return c;
+  }
+
+
+private:
+  int rank = -1;
+  node_t * prev = NULL, * next = NULL;
+
+  mutable float ang = 0.0f;
+  mutable bool dirty = true;
+  
+};
+
+
+static 
+void earCut (node_t ** nodelist,  
+             const std::vector<glm::vec3> & xyz,
+             std::vector<unsigned int> * ind)
+{
+
+  for (node_t * n = *nodelist; ; )
+    {
+      float ang = n->getAngle (xyz);
+
+      if ((0.0f < ang) && (ang < M_PI))
+        {
+  
+          bool intri = false;
+          for (const node_t * n1 = *nodelist; ;)
+            {
+              if ((n1->getAngle (xyz) <= 0.0f) && (n1 != n) && 
+                  (n1 != n->getNext ()) && (n1 != n->getPrev ()))
+                {
+                  const glm::vec3 & p = n1->getXYZ (xyz);
+                  intri = n->inTriangle (p, xyz);
+                  if (intri)
+                    break;
+                }
+
+              n1 = n1->getNext ();
+              if (n1 == *nodelist)
+                break;
+            }
+
           if (! intri)
             {
-              ind->push_back (i);
-              ind->push_back (j);
-              ind->push_back (k);
+              
+              ind->push_back (n->getPrev ()->getRank ());
+              ind->push_back (n            ->getRank ());
+              ind->push_back (n->getNext ()->getRank ());
+
+              
+              n->cut (&n, nodelist);
+
             }
+
         }
+
+
+      n = n->getNext ();
+      if (n == *nodelist)
+        break;
     }
 
+   
 }
 
 
@@ -128,54 +258,66 @@ void glgrib_test::setup ()
     }
 
 
+  std::vector<node_t> nodevec;
+
+  nodevec.reserve (numberOfPoints1);
+
+  for (int j = 0; j < numberOfPoints1; j++)
+    nodevec.push_back (node_t (j));
 
   for (int j = 0; j < numberOfPoints1; j++)
     {
       int i = j == 0 ? numberOfPoints1-1 : j-1;
       int k = j == numberOfPoints1-1 ? 0 : j+1;
-      glm::vec3 ji = glm::cross (xyz[j], xyz[i] - xyz[j]);
-      glm::vec3 jk = glm::cross (xyz[j], xyz[k] - xyz[j]);
-      float X = glm::dot (ji, jk);
-      float Y = glm::dot (xyz[j], glm::cross (ji, jk));
-      ang[j] = atan2 (Y, X);
-
-
-#ifdef UNDEF
-bool dbg = j < 10;
-
-      if (dbg)
-        {
-          printf ("%3d\n", j);
-          printf ("xyz = %8.2f, %8.2f, %8.2f\n", xyz[j].x, xyz[j].y, xyz[j].z);
-          printf ("ji  = %8.2f, %8.2f, %8.2f\n", ji    .x, ji    .y, ji    .z);
-          printf ("jk  = %8.2f, %8.2f, %8.2f\n", jk    .x, jk    .y, jk    .z);
-          printf ("ang = %8.2f\n", rad2deg * ang[j]);
-
-          printf ("\n");
-        }
-#endif
-
-
+      nodevec[j].setPrevNext (&nodevec[i], &nodevec[k]);
     }
-
-  
-#ifdef UNDEF
-  FILE * fp = fopen ("lonlat.dat", "w");
-
-  for (int j = -10; j < +10; j++)
-    {
-      int i = j < 0 ? j + numberOfPoints1 : j;
-      fprintf (fp, " %6d %8.2f %8.2f %8.2f\n", i, rad2deg * lonlat[2*i+0], rad2deg * lonlat[2*i+1], rad2deg * ang[i]);
-    }
-
-  fclose (fp);
-#endif
-
-
 
   std::vector<unsigned int> ind;
 
-  earCut (xyz, ang, &ind);
+  node_t * nodelist = &nodevec[0];
+
+  std::cout << nodelist->count () << std::endl;
+  earCut (&nodelist, xyz, &ind);
+  std::cout << nodelist->count () << std::endl;
+  earCut (&nodelist, xyz, &ind);
+  std::cout << nodelist->count () << std::endl;
+  earCut (&nodelist, xyz, &ind);
+  std::cout << nodelist->count () << std::endl;
+  earCut (&nodelist, xyz, &ind);
+  std::cout << nodelist->count () << std::endl;
+  earCut (&nodelist, xyz, &ind);
+  std::cout << nodelist->count () << std::endl;
+  earCut (&nodelist, xyz, &ind);
+  std::cout << nodelist->count () << std::endl;
+  earCut (&nodelist, xyz, &ind);
+  std::cout << nodelist->count () << std::endl;
+  earCut (&nodelist, xyz, &ind);
+  std::cout << nodelist->count () << std::endl;
+  earCut (&nodelist, xyz, &ind);
+  std::cout << nodelist->count () << std::endl;
+
+  int k = 0;
+
+  FILE * fp = fopen ("nodelist.dat", "w");
+  for (node_t * n = nodelist; ; )
+    {
+      int r = n->getRank ();
+
+      fprintf (fp, " %8d %8.2f %8.2f %8.2f %8.2f %8.2f %8.2f \n", r, xyz[r].x, 
+               xyz[r].y, xyz[r].z, rad2deg * lonlat[2*r+0], rad2deg * lonlat[2*r+1],
+               rad2deg * n->getAngle (xyz));
+
+      n = n->getNext ();
+      if (n == nodelist)
+        break;
+      k++;
+
+      if (k > 10)
+        break;
+    }
+  fclose (fp);
+
+
 
   numberOfTriangles = ind.size () / 3;
 

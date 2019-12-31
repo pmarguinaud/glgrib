@@ -91,7 +91,7 @@ public:
     return iterator (this, d.size (), 0);
   }
 
-  T & operator[] (ind_t ii)
+  T & operator[] (ind_t ii) const
   {
     return (*(d[ii.i]))[ii.j];
   }
@@ -252,31 +252,35 @@ private:
 
 static 
 void earCut (node_t ** nodelist,  
+             const vecvec_t<node_t> & vv,
+             std::vector<ind_t> & polygon,
+             std::vector<ind_t> & ainside,
              std::vector<unsigned int> * ind)
 {
 
   for (node_t * n = *nodelist; ; )
     {
+
+      
+
       float ang = n->getAngle ();
 
       if ((0.0f < ang) && (ang < M_PI))
         {
   
           bool intri = false;
-          for (const node_t * n1 = *nodelist; ;)
+
+          for (std::vector<ind_t>::const_iterator it = ainside.begin ();
+               it != ainside.end (); it++)
             {
-              if ((n1->getAngle () <= 0.0f) && (n1 != n) && 
-                  (n1 != n->getNext ()) && (n1 != n->getPrev ()))
+              const node_t * n1 = &vv[*it];
+              if ((n1 != n) && (n1 != n->getNext ()) && (n1 != n->getPrev ()))
                 {
                   const glm::vec3 & p = n1->getXYZ ();
                   intri = n->inTriangle (p);
                   if (intri)
                     break;
                 }
-
-              n1 = n1->getNext ();
-              if (n1 == *nodelist)
-                break;
             }
 
           if (! intri)
@@ -299,6 +303,9 @@ void earCut (node_t ** nodelist,
         break;
     }
 
+
+
+
    
 }
 
@@ -319,6 +326,8 @@ void glgrib_test::setup ()
   int numberOfPoints1 = numberOfPoints-1;
 
   std::vector<node_t> * nodevec = new std::vector<node_t>();
+  std::vector<ind_t> polygon;
+  std::vector<ind_t> ainside;
 
   nodevec->reserve (numberOfPoints1);
 
@@ -331,12 +340,14 @@ void glgrib_test::setup ()
     }
 
 
-
   for (int j = 0; j < numberOfPoints1; j++)
     {
       int i = j == 0 ? numberOfPoints1-1 : j-1;
       int k = j == numberOfPoints1-1 ? 0 : j+1;
       (*nodevec)[j].setPrevNext (&(*nodevec)[i], &(*nodevec)[k]);
+      polygon.push_back (ind_t (0, j));
+      if ((*nodevec)[j].getAngle () <= 0.0f)
+        ainside.push_back (ind_t (0, j));
     }
 
   vecvec_t<node_t> vv;
@@ -345,26 +356,29 @@ void glgrib_test::setup ()
 
   std::vector<unsigned int> ind;
 
+  
+
+
   node_t * nodelist = &(*nodevec)[0];
 
   std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, &ind);
+  earCut (&nodelist, vv, polygon, ainside, &ind);
   std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, &ind);
+  earCut (&nodelist, vv, polygon, ainside, &ind);
   std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, &ind);
+  earCut (&nodelist, vv, polygon, ainside, &ind);
   std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, &ind);
+  earCut (&nodelist, vv, polygon, ainside, &ind);
   std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, &ind);
+  earCut (&nodelist, vv, polygon, ainside, &ind);
   std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, &ind);
+  earCut (&nodelist, vv, polygon, ainside, &ind);
   std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, &ind);
+  earCut (&nodelist, vv, polygon, ainside, &ind);
   std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, &ind);
+  earCut (&nodelist, vv, polygon, ainside, &ind);
   std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, &ind);
+  earCut (&nodelist, vv, polygon, ainside, &ind);
   std::cout << nodelist->count () << std::endl;
 
   std::vector<glm::vec3> xyz;

@@ -195,34 +195,23 @@ public:
     return true;
   }
 
-  void cut (node_t ** x, node_t ** list)
+  void cut ()
   {
     node_t * n = next, * p = prev;
 
-    const glm::vec3 & xyzn = n->getXYZ ();
-    const glm::vec3 & xyzp = p->getXYZ ();
+// const glm::vec3 & xyzn = n->getXYZ ();
+// const glm::vec3 & xyzp = p->getXYZ ();
+// float a = acos (glm::dot (xyzn, xyzp));
 
-    float a = acos (glm::dot (xyzn, xyzp));
-
-    float amax = 1.0f * M_PI / 180.0f;
-
-    if (0 && (a > amax))
-      {
-        
-      }
-    else
-      {
-        n->setPrev (prev);
-        p->setNext (next);
-     
-        *x = next;
-     
-        next = prev = NULL; 
-     
-        if (this == *list)
-          *list = *x;
-      }
+    n->setPrev (prev);
+    p->setNext (next);
+    next = prev = NULL; 
     
+  }
+
+  bool isLinked () const
+  {
+    return (prev != NULL) && (next != NULL);
   }
 
   int count () const
@@ -251,17 +240,22 @@ private:
 
 
 static 
-void earCut (node_t ** nodelist,  
-             const vecvec_t<node_t> & vv,
+void earCut (const vecvec_t<node_t> & vv,
              std::vector<ind_t> & polygon,
              std::vector<ind_t> & ainside,
              std::vector<unsigned int> * ind)
 {
+  std::vector<ind_t> polygon1;
+  std::vector<node_t*> listcut;
 
-  for (node_t * n = *nodelist; ; )
+  polygon1.reserve (polygon.size ());
+
+
+
+  for (int i = 0; i < polygon.size (); i++)
     {
 
-      
+      node_t * n = &vv[polygon[i]];
 
       float ang = n->getAngle ();
 
@@ -286,26 +280,52 @@ void earCut (node_t ** nodelist,
           if (! intri)
             {
               
-              ind->push_back (n->getPrev ()->getRank ());
-              ind->push_back (n            ->getRank ());
-              ind->push_back (n->getNext ()->getRank ());
+//            ind->push_back (n->getPrev ()->getRank ());
+//            ind->push_back (n            ->getRank ());
+//            ind->push_back (n->getNext ()->getRank ());
 
-              
-              n->cut (&n, nodelist);
+              listcut.push_back (n);
+
+//            n->cut (); 
+              i++;
+
+
 
             }
 
         }
 
-
-      n = n->getNext ();
-      if (n == *nodelist)
-        break;
+      if (i < polygon.size ())
+        polygon1.push_back (polygon[i]);
     }
 
+  int ind_base = ind->size ();
+  ind->resize (ind_base + 3 * listcut.size ());
+  for (int i = 0; i < listcut.size (); i++)
+    {
+      node_t * n = listcut[i];
+      (*ind)[ind_base+3*i+0] = n->getPrev ()->getRank ();
+      (*ind)[ind_base+3*i+1] = n            ->getRank ();
+      (*ind)[ind_base+3*i+2] = n->getNext ()->getRank ();
+      n->cut ();
+    }
 
+  polygon = polygon1;
 
-
+  for (int i = 0; i < ainside.size (); i++)
+    {
+      const node_t * n = &vv[ainside[i]];
+      if (! n->isLinked ())
+        {
+          std::swap (ainside[i], ainside.back ());
+          ainside.pop_back ();
+        }
+      else if (n->getAngle () >= 0.0f)
+        {
+          std::swap (ainside[i], ainside.back ());
+          ainside.pop_back ();
+        }
+    }
    
 }
 
@@ -359,27 +379,24 @@ void glgrib_test::setup ()
   
 
 
-  node_t * nodelist = &(*nodevec)[0];
+  std::cout << polygon.size () << ", " << ainside.size () << std::endl;
+  earCut (vv, polygon, ainside, &ind);
+  std::cout << polygon.size () << ", " << ainside.size () << std::endl;
 
-  std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, vv, polygon, ainside, &ind);
-  std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, vv, polygon, ainside, &ind);
-  std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, vv, polygon, ainside, &ind);
-  std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, vv, polygon, ainside, &ind);
-  std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, vv, polygon, ainside, &ind);
-  std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, vv, polygon, ainside, &ind);
-  std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, vv, polygon, ainside, &ind);
-  std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, vv, polygon, ainside, &ind);
-  std::cout << nodelist->count () << std::endl;
-  earCut (&nodelist, vv, polygon, ainside, &ind);
-  std::cout << nodelist->count () << std::endl;
+if(1){
+  earCut (vv, polygon, ainside, &ind);
+  std::cout << polygon.size () << ", " << ainside.size () << std::endl;
+  earCut (vv, polygon, ainside, &ind);
+  std::cout << polygon.size () << ", " << ainside.size () << std::endl;
+  earCut (vv, polygon, ainside, &ind);
+  std::cout << polygon.size () << ", " << ainside.size () << std::endl;
+  earCut (vv, polygon, ainside, &ind);
+  std::cout << polygon.size () << ", " << ainside.size () << std::endl;
+  earCut (vv, polygon, ainside, &ind);
+  std::cout << polygon.size () << ", " << ainside.size () << std::endl;
+  earCut (vv, polygon, ainside, &ind);
+  std::cout << polygon.size () << ", " << ainside.size () << std::endl;
+}
 
   std::vector<glm::vec3> xyz;
 

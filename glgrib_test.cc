@@ -115,6 +115,11 @@ public:
     return s;
   }
 
+  size_t size1 () const
+  {
+    return d.size ();
+  }
+
 private:
   friend class iterator;
 
@@ -170,6 +175,15 @@ public:
     return ang;
   }
 
+  float getDist () const 
+  {
+    const glm::vec3 & xyzn = next->getXYZ ();
+    const glm::vec3 & xyzp = prev->getXYZ ();
+    return acos (std::max (-1.0f, 
+                 std::min (+1.0f, 
+                           glm::dot (xyzn, xyzp))));
+  }
+
   const glm::vec3 & getXYZ () const
   {
     return xyz;
@@ -199,14 +213,20 @@ public:
   {
     node_t * n = next, * p = prev;
 
-// const glm::vec3 & xyzn = n->getXYZ ();
-// const glm::vec3 & xyzp = p->getXYZ ();
-// float a = acos (glm::dot (xyzn, xyzp));
-
     n->setPrev (prev);
     p->setNext (next);
     next = prev = NULL; 
     
+  }
+
+  void replace (node_t * n)
+  {
+    n->next->prev = this;
+    n->prev->next = this;
+    next = n->next;
+    prev = n->prev;
+    n->next = NULL;
+    n->prev = NULL;
   }
 
   bool isLinked () const
@@ -227,6 +247,11 @@ public:
     return c;
   }
 
+  void setRank (int _rank)
+  {
+    rank = _rank;
+  }
+
 
 private:
   int rank = -1;
@@ -240,19 +265,19 @@ private:
 
 
 static 
-void earCut (const vecvec_t<node_t> & vv,
+void earCut (vecvec_t<node_t> & vv,
              std::vector<ind_t> & polygon,
              std::vector<ind_t> & ainside,
              std::vector<unsigned int> * ind)
 {
   std::vector<ind_t> polygon1;
-  std::vector<node_t*> listcut;
+  std::vector<node_t*> listcut, listmov;
+  std::vector<node_t> * listnew = NULL;
+
 
   polygon1.reserve (polygon.size ());
 
-
-
-  for (int i = 0; i < polygon.size (); i++)
+  for (int i = 0; i < polygon.size ()-1; i++)
     {
 
       node_t * n = &vv[polygon[i]];
@@ -280,16 +305,25 @@ void earCut (const vecvec_t<node_t> & vv,
           if (! intri)
             {
               
-//            ind->push_back (n->getPrev ()->getRank ());
-//            ind->push_back (n            ->getRank ());
-//            ind->push_back (n->getNext ()->getRank ());
+              const float dmax = M_PI / 180.0f;
 
-              listcut.push_back (n);
+              if (n->getDist () > dmax)
+                {
+                  listmov.push_back (n);
+                  if (listnew == NULL)
+                    listnew = new std::vector<node_t>();
+                  glm::vec3 xyz = glm::normalize (n->getPrev ()->getXYZ () 
+                                                + n->getNext ()->getXYZ ());
+                  node_t n1 (-1, xyz);
+                  n1.replace (n);
+                  listnew->push_back (n1);
+                }
+              else
+                {
+                  listcut.push_back (n);
+                }
 
-//            n->cut (); 
               i++;
-
-
 
             }
 
@@ -310,7 +344,37 @@ void earCut (const vecvec_t<node_t> & vv,
       n->cut ();
     }
 
+
+  if (listnew)
+    {
+      int round = vv.size1 (), rank_base = vv.size ();
+
+      vv.push (listnew);
+
+      int ind_base = ind->size ();
+      ind->resize (ind_base + 6 * listnew->size ());
+     
+      for (int i = 0; i < listnew->size (); i++)
+        {
+          node_t * n = listmov[i];
+          node_t * n1 = &(*listnew)[i];
+
+          n1->setRank (rank_base + i);
+
+          (*ind)[ind_base+6*i+0] = n1->getPrev ()->getRank ();
+          (*ind)[ind_base+6*i+1] = n1            ->getRank ();
+          (*ind)[ind_base+6*i+2] = n             ->getRank ();
+ 
+          (*ind)[ind_base+6*i+3] = n1->getNext ()->getRank ();
+          (*ind)[ind_base+6*i+4] = n1            ->getRank ();
+          (*ind)[ind_base+6*i+5] = n             ->getRank ();
+
+        }
+
+    }
+
   polygon = polygon1;
+
 
   for (int i = 0; i < ainside.size (); i++)
     {
@@ -383,7 +447,7 @@ void glgrib_test::setup ()
   earCut (vv, polygon, ainside, &ind);
   std::cout << polygon.size () << ", " << ainside.size () << std::endl;
 
-if(1){
+if(0){
   earCut (vv, polygon, ainside, &ind);
   std::cout << polygon.size () << ", " << ainside.size () << std::endl;
   earCut (vv, polygon, ainside, &ind);
@@ -404,6 +468,16 @@ if(1){
 
   for (vecvec_t<node_t>::iterator it = vv.begin (); it != vv.end (); it++)
     xyz.push_back (it->getXYZ ());
+
+
+  for (int i = 0; i < xyz.size (); i++)
+    if (glm::length (xyz[i]) < 0.1f)
+    printf (" !!!!! %8d | %8.2f | %8.2f | %8.2f\n", i, xyz[i].x, xyz[i].y, xyz[i].z);
+
+  for (int i = 0; i < ind.size (); i++)
+    if (ind[i] >= xyz.size ())
+      printf (" !!!!! ind %8d %8u\n", i, ind[i]);
+
 
   numberOfTriangles = ind.size () / 3;
 

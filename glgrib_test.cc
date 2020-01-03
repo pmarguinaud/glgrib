@@ -123,16 +123,25 @@ public:
     const glm::vec3 t[3] = {xyz[prev->rank], xyz[rank], xyz[next->rank]};
   
     float S;
+    bool o = true;
   
     for (int i = 0; i < 3; i++)
       {
         int j = (i + 1) % 3;
         const glm::vec3 u = glm::cross (t[i], t[j] - t[i]);
         float s = glm::dot (p - t[i], u);
-        if (i == 0)
-          S = s;
+        if (o)
+          {
+            if (s != 0.0f)
+              {
+                S = s; 
+                o = false;
+              }
+          }
         else if (s * S < 0.0f)
-          return false;
+          {
+            return false;
+          }
       }
   
     return true;
@@ -234,14 +243,15 @@ public:
 
   void update (const std::vector<glm::vec3> & xyz)
   {
-#pragma omp parallel for
+//#pragma omp parallel for
     for (int i = 0; i < len.size (); i++)
       for (int j = off[i]; j < off[i] + len[i]; j++)
-        if (nodes[j]->getAngle (xyz) < 0.0f) 
+        if ((! nodes[j]->linked ()) || (nodes[j]->getAngle (xyz) >= 0.0f))
           {
             int k = off[i]+len[i]-1;
             std::swap (nodes[j], nodes[k]);
             len[i]--;
+            j--;
           }
   }
 
@@ -275,7 +285,7 @@ public:
     {
 
 static 
-bool dbg = true;
+bool dbg = false;
 
       ilatmin = floor ((latmin + halfpi) / ll2n->dlat), ilatmax = floor ((latmax + halfpi) / ll2n->dlat);
       ilonmin = floor ( lonmin           / ll2n->dlon), ilonmax = floor ( lonmax           / ll2n->dlon);
@@ -382,6 +392,18 @@ dbg = false;
     const lonlat2node_t * ll2n = NULL;
   };
 
+  std::string asString (const std::vector<glm::vec3> & xyz) const
+  {
+    std::string t;
+    for (int i = 0; i < len.size (); i++)
+      for (int j = off[i]; j < off[i] + len[i]; j++)
+        {
+          t += std::to_string (nodes[j]->getRank ()) + " " + 
+               std::to_string (nodes[j]->getAngle (xyz) * rad2deg) + "\n";
+        }
+    return t;
+  }
+
   iterator begin (const node_t & n, const std::vector<float> & lonlat) const
   {
     float lat0 = n.            getLat (lonlat);
@@ -414,6 +436,14 @@ dbg = false;
     return it;
   }
 
+  int size () const 
+  {
+    int s = 0;
+    for (int i = 0; i < len.size (); i++)
+      s += len[i];
+    return s;
+  }
+
 
 private:
   friend class iterator;
@@ -436,6 +466,8 @@ std::ostream & operator<< (std::ostream& os, const lonlat2node_t::iterator & it)
 static 
 void earCut (node_t ** nodelist,  
              const std::vector<glm::vec3> & xyz,
+             const std::vector<float> & lonlat,
+             const lonlat2node_t & ll2n,
              std::vector<unsigned int> * ind,
              std::vector<node_t*> * ain)
 {
@@ -449,10 +481,11 @@ void earCut (node_t ** nodelist,
       if ((0.0f < ang) && (ang < M_PI))
         {
   
+#ifndef UNDEF
           volatile 
           int intri = 0;
 
-#pragma omp parallel
+//#pragma omp parallel
           {
           int nt = omp_get_num_threads ();
           int it = omp_get_thread_num ();
@@ -464,12 +497,12 @@ void earCut (node_t ** nodelist,
             {
               node_t * n1 = (*ain)[i];
               if ((n1 != n) && n1->linked () && (n1 != n->getNext ()) && 
-                  (n1 != n->getPrev ()) && (n1->getAngle (xyz) <= 0.0f))
+                  (n1 != n->getPrev ()))
                 {
                   const glm::vec3 & p = n1->getXYZ (xyz);
                   if (n->inTriangle (p, xyz))
                     {
-#pragma omp atomic
+//#pragma omp atomic
                       intri++;
                     }
                 }
@@ -477,6 +510,25 @@ void earCut (node_t ** nodelist,
                 break;
             }
           }
+#else
+
+          bool intri = false;
+
+          lonlat2node_t::iterator it = ll2n.begin (*n, lonlat);
+          lonlat2node_t::iterator it1 = ll2n.end (*n, lonlat);
+          for ( ; it != it1; ++it)
+            {
+              const node_t * n1 = *it;
+              const glm::vec3 & p = n1->getXYZ (xyz);
+              if ((n == n1) || (n->getNext () == n1) || (n->getPrev () == n1))
+                continue;
+              if (n->inTriangle (p, xyz))
+                {
+                  intri = true;
+                  break;
+                }
+            }
+#endif
 
           if (! intri)
             {
@@ -513,6 +565,185 @@ void earCut (node_t ** nodelist,
    
 }
 
+static void dump (node_t * nodelist, const std::vector<node_t*> & ain,
+                  const lonlat2node_t & ll2n, const std::vector<glm::vec3> & xyz,
+                  const std::vector<float> & lonlat, const std::string & prefix)
+{
+{
+  std::string filename = prefix + ".ain.txt";
+  FILE * fp = fopen (filename.c_str (), "w");
+
+  fprintf (fp, " %8d \n", ain.size ());
+  
+  for (int i = 0; i < ain.size (); i++)
+    fprintf (fp, " %d %f\n", ain[i]->getRank (), ain[i]->getAngle (xyz) * rad2deg);
+  fprintf (fp, "\n");
+
+  for (node_t * n = nodelist; ; )
+    {
+      std::vector<int> ii;
+
+      for (int i = 0; i < ain.size (); i++)
+        {
+          const node_t * n1 = ain[i];
+          const glm::vec3 & p = n1->getXYZ (xyz);
+          if ((n == n1) || (n->getNext () == n1) || (n->getPrev () == n1))
+            continue;
+          if (n->inTriangle (p, xyz))
+            ii.push_back (n1->getRank ());
+        }
+      if (ii.size ())
+        {
+          int rank = n->getRank ();
+          sort (ii.begin (), ii.end ()); 
+          fprintf (fp, "%8d | %12.2f %12.2f %12.2f :", rank,
+                   rad2deg * n->getAngle (xyz), lonlat[2*rank+0] * rad2deg, lonlat[2*rank+1] * rad2deg);
+          for (int i = 0; i < ii.size (); i++)
+            fprintf (fp, " %8d", ii[i]);
+          fprintf (fp, "\n");
+        } 
+
+      n = n->getNext ();
+      if (n == nodelist)
+        break;
+    }
+
+  fclose (fp);
+}
+{
+  std::string filename = prefix + ".ll2.txt";
+  FILE * fp = fopen (filename.c_str (), "w");
+  fprintf (fp, " %8d \n", ll2n.size ());
+
+  fprintf (fp, "%s\n", ll2n.asString (xyz).c_str ());
+
+  for (node_t * n = nodelist; ; )
+    {
+      std::vector<int> ii;
+
+bool dbg = n->getRank () == 297;
+
+      lonlat2node_t::iterator it = ll2n.begin (*n, lonlat);
+      lonlat2node_t::iterator it1 = ll2n.end (*n, lonlat);
+      for ( ; it != it1; ++it)
+        {
+          const node_t * n1 = *it;
+          const glm::vec3 & p = n1->getXYZ (xyz);
+          if ((n == n1) || (n->getNext () == n1) || (n->getPrev () == n1))
+            continue;
+          if (n->inTriangle (p, xyz))
+            ii.push_back (n1->getRank ());
+        }
+      if (ii.size ())
+        {
+          int rank = n->getRank ();
+          sort (ii.begin (), ii.end ()); 
+          fprintf (fp, "%8d | %12.2f %12.2f %12.2f :", rank,
+                   rad2deg * n->getAngle (xyz), lonlat[2*rank+0] * rad2deg, lonlat[2*rank+1] * rad2deg);
+          for (int i = 0; i < ii.size (); i++)
+            fprintf (fp, " %8d", ii[i]);
+          fprintf (fp, "\n");
+        } 
+      n = n->getNext ();
+      if (n == nodelist)
+        break;
+    }
+  fclose (fp);
+}
+}
+
+
+static
+void pr (const std::vector<float> & lonlat, 
+         const std::vector<glm::vec3> & xyz,
+         const lonlat2node_t & ll2n,
+         int jj, node_t * nodelist)
+{
+
+  node_t * n;
+  
+  for (n = nodelist; ; )
+    {
+      n = n->getNext ();
+
+      if (n->getRank () == jj)
+        break;
+
+      if (n == nodelist)
+        return;
+    }
+
+{
+  std::cout << jj << " -> " << *n << std::endl;
+
+  lonlat2node_t::iterator it = ll2n.begin (*n, lonlat);
+  lonlat2node_t::iterator it1 = ll2n.end (*n, lonlat);
+  for ( ; it != it1; ++it)
+    {
+      const node_t * n = *it;
+      int rank = n->getRank ();
+      std::cout << it << " " << *n << " ";
+      printf (" %12.2f %12.2f %12.2f", 
+              rad2deg * lonlat[2*rank+0], 
+              rad2deg * lonlat[2*rank+1], 
+              rad2deg * n->getAngle (xyz));
+      std::cout << std::endl;
+    }
+
+}
+
+{
+  FILE * fp = fopen ("lonlat.dat", "w");
+
+  node_t * p = n;
+
+  for (int i = 0; i < 10; i++)
+    {
+      p = p->getPrev ();
+      i++;
+      if (p == n)
+        break;
+    }
+
+  for (int i = 0; i < 20; i++)
+    {
+      int j = p->getRank ();
+      fprintf (fp, "%8d %12.2f %12.2f\n", j, rad2deg * lonlat[2*j+0], 
+               rad2deg * lonlat[2*j+1]);
+      p = p->getNext ();
+    }
+
+
+  fclose (fp);
+}
+
+
+{
+  int j = 297;
+  int j1 = 967;
+  node_t * n1;
+
+
+  for (n1 = nodelist; ; )
+    {
+      n1 = n1->getNext ();
+
+      if (n1->getRank () == j1)
+        break;
+
+      if (n1 == nodelist)
+        return;
+    }
+
+  
+
+  const glm::vec3 & p = n1->getXYZ (xyz);
+  if (n->inTriangle (p, xyz))
+    std::cout << j1 << " in " << j << std::endl;
+}
+
+}
+
 
 void glgrib_test::setup ()
 {
@@ -524,7 +755,10 @@ void glgrib_test::setup ()
   std::vector<unsigned int> indl;
   
   opts.path = "coastlines/shp/GSHHS_i_L1.shp";
+  opts.path = "coastlines/shp/GSHHS_h_L1.shp";
+  opts.path = "coastlines/shp/GSHHS_f_L1.shp";
   opts.path = "coastlines/shp/GSHHS_c_L1.shp";
+
   opts.selector = "rowid == 1";
   glgrib_shapelib::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &indl, opts.selector);
 
@@ -568,30 +802,6 @@ void glgrib_test::setup ()
   ll2n.init (nodevec, lonlat, xyz);
 
 
-
-  for (int jj = 572; jj < 573; jj++) {
-
-  
-  std::cout << jj << " -> " << nodevec[jj] << std::endl;
-
-  lonlat2node_t::iterator it = ll2n.begin (nodevec[jj], lonlat);
-  lonlat2node_t::iterator it1 = ll2n.end (nodevec[jj], lonlat);
-  for ( ; it != it1; ++it)
-    {
-      const node_t * n = *it;
-      int rank = n->getRank ();
-      std::cout << it << " " << *n << " ";
-      printf (" %12.2f %12.2f %12.2f", 
-              rad2deg * lonlat[2*rank+0], 
-              rad2deg * lonlat[2*rank+1], 
-              rad2deg * n->getAngle (xyz));
-      std::cout << std::endl;
-    }
-
-  }
-
-
-
   std::vector<node_t*> ain;
 
   ain.reserve (numberOfPoints1);
@@ -600,90 +810,46 @@ void glgrib_test::setup ()
     if (nodevec[j].getAngle (xyz) < 0.0f)
       ain.push_back (&nodevec[j]);
 
+  node_t * nodelist = &nodevec[0];
+
   std::vector<unsigned int> ind;
 
 
-{
-  FILE * fp = fopen ("ain.dat", "w");
-  for (int j = 0; j < nodevec.size (); j++)
-    {
-      std::vector<int> ii;
-
-      const node_t * n = &nodevec[j];
-      for (int i = 0; i < ain.size (); i++)
-        {
-          const node_t * n1 = ain[i];
-          const glm::vec3 & p = n1->getXYZ (xyz);
-          if (n->inTriangle (p, xyz))
-            ii.push_back (n1->getRank ());
-        }
-      if (ii.size ())
-        {
-          int rank = n->getRank ();
-          sort (ii.begin (), ii.end ()); 
-          fprintf (fp, "%8d | %12.2f %12.2f %12.2f :", rank,
-                   rad2deg * n->getAngle (xyz), lonlat[2*rank+0] * rad2deg, lonlat[2*rank+1] * rad2deg);
-          for (int i = 0; i < ii.size (); i++)
-            fprintf (fp, " %8d", ii[i]);
-          fprintf (fp, "\n");
-        } 
-    }
-
-  fclose (fp);
-}
-{
-  FILE * fp = fopen ("ll2.dat", "w");
-  for (int j = 0; j < nodevec.size (); j++)
-    {
-      std::vector<int> ii;
-
-      const node_t * n = &nodevec[j];
-      lonlat2node_t::iterator it = ll2n.begin (nodevec[j], lonlat);
-      lonlat2node_t::iterator it1 = ll2n.end (nodevec[j], lonlat);
-      for ( ; it != it1; ++it)
-        {
-          const node_t * n1 = *it;
-          const glm::vec3 & p = n1->getXYZ (xyz);
-          if (n->inTriangle (p, xyz))
-            ii.push_back (n1->getRank ());
-        }
-      if (ii.size ())
-        {
-          int rank = n->getRank ();
-          sort (ii.begin (), ii.end ()); 
-          fprintf (fp, "%8d | %12.2f %12.2f %12.2f :", rank,
-                   rad2deg * n->getAngle (xyz), lonlat[2*rank+0] * rad2deg, lonlat[2*rank+1] * rad2deg);
-          for (int i = 0; i < ii.size (); i++)
-            fprintf (fp, " %8d", ii[i]);
-          fprintf (fp, "\n");
-        } 
-    }
-  fclose (fp);
-}
 
 
-  node_t * nodelist = &nodevec[0];
+FILE * fp = fopen ("LOG.txt", "w");
 
 for (int i = 0; i < 22; i++)
 {
-//printf (" %8d %8d %8ld\n", i, nodelist->count (), ain.size ());
-  earCut (&nodelist, xyz, &ind, &ain);
-}
-//printf (" %8s %8d %8ld\n", "", nodelist->count (), ain.size ());
+
+  if (i == 15) {
+  dump (nodelist, ain, ll2n, xyz, lonlat, std::to_string (i));
+  pr (lonlat, xyz, ll2n, 297, nodelist);
+  }
+
+  fprintf (fp, " %8d %8d %8ld\n", i, nodelist->count (), ain.size ());
+  earCut (&nodelist, xyz, lonlat, ll2n, &ind, &ain);
 
 
-{
-  FILE * fp = fopen ("lonlat.dat", "w");
+  if (i == 15)
+    break;
 
-  for (int i = 550; i < 590; i++)
+  fprintf (fp, "----LIST---- %d\n", i);
+  for (node_t * n = nodelist; ; )
     {
-      int j = i < 0 ? i + nodevec.size () : i;
-      fprintf (fp, "%8d %12.2f %12.2f\n", j, rad2deg * lonlat[2*j+0], rad2deg * lonlat[2*j+1]);
+      fprintf (fp, " %8d", n->getRank ());
+      n = n->getNext ();
+      if (n == nodelist)
+        break;
     }
+  fprintf (fp, "\n");
 
+  ll2n.update (xyz);
 
-  fclose (fp);
 }
+  fprintf (fp, " %8s %8d %8ld\n", "", nodelist->count (), ain.size ());
+
+fclose (fp);
 
 
 

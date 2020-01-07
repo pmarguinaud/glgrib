@@ -37,6 +37,7 @@ void glgrib_test::clear ()
 }
 
 static const float rad2deg = 180.0f / M_PI;
+static const float deg2rad = M_PI / 180.0f;
 static const float twopi = 2.0f * M_PI;
 static const float pi = M_PI;
 static const float halfpi = M_PI / 2.0f;
@@ -203,6 +204,60 @@ std::ostream & operator<< (std::ostream& os, const node_t & n)
 {
   os << n.asString ();
   return os;
+}
+
+static
+glm::vec3 lonlat2xyz (const glm::vec2 & lonlat)
+{
+  float coslon = cos (lonlat.x), sinlon = sin (lonlat.x);
+  float coslat = cos (lonlat.y), sinlat = sin (lonlat.y);
+  return glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
+}
+
+static
+void getLonLatRange (const glm::vec2 & lonlat1, const glm::vec2 & lonlat2, 
+                     float * latmin, float * latmax)
+{
+  const glm::vec3 p1 = lonlat2xyz (lonlat1);
+  const glm::vec3 p2 = lonlat2xyz (lonlat2);
+ 
+  float zmin, zmax;
+
+  zmin = std::min (p1.z, p2.z);
+  zmax = std::max (p1.z, p2.z);
+
+  glm::vec3 p = glm::cross (p1, p2);
+
+  float np = glm::length (p);
+
+  if (np == 0.0f)
+    {
+      if (glm::dot (p1, p2) < 0.0f)
+        zmax = 1.0f;
+      return;
+    }
+
+  p = p / np;
+  glm::vec3 q1 = glm::cross (p, p1);
+
+  float theta_op1 = atan2 (q1.z, p1.z), 
+        theta_op2 = theta_op1 + pi,
+        theta_max = atan2 (glm::dot (p2, q1), glm::dot (p2, p1));
+
+  if ((0 <= theta_op1) && (theta_op1 <= theta_max))
+    {
+      float z = p1.z * cos (theta_op1) + q1.z * sin (theta_op1);
+      zmin = std::min (zmin, z); zmax = std::max (zmax, z);
+    }
+
+  if ((0 <= theta_op2) && (theta_op2 <= theta_max))
+    {
+      float z = p1.z * cos (theta_op2) + q1.z * sin (theta_op2);
+      zmin = std::min (zmin, z); zmax = std::max (zmax, z);
+    }
+
+  *latmin = asin (zmin);
+  *latmax = asin (zmax);
 }
 
 
@@ -826,13 +881,9 @@ public:
     else if ((! cmin) && (! cmax))
       {
         if (in02pi (xmin - inter.xmax) < in02pi (inter.xmin - xmax))
-          {
-             xmin = inter.xmin;
-          }
+          xmin = inter.xmin;
         else
-          {
-             xmax = inter.xmax;
-          }
+          xmax = inter.xmax;
       }
 
   }
@@ -844,6 +895,22 @@ public:
 
 void glgrib_test::setup ()
 {
+
+
+if(0)
+{
+  glm::vec2 lonlat1 (deg2rad *   0.0f, deg2rad * -10.0f);
+  glm::vec2 lonlat2 (deg2rad * 180.0f, deg2rad * -10.0f);
+
+  float latmin, latmax;
+
+  getLonLatRange (lonlat1, lonlat2, &latmin, &latmax);
+
+  std::cout << " latmin, latmax = " << rad2deg * latmin << ", " << rad2deg * latmax << std::endl;
+
+  exit (0);
+
+}
 
   int numberOfPoints;
   glgrib_options_lines opts;
@@ -926,7 +993,7 @@ void glgrib_test::setup ()
 
   std::cout << " xmin, xmax = " << rad2deg * minmax.xmin << ", " << rad2deg * minmax.xmax << std::endl;
 
-  exit (0);
+//exit (0);
 
 
   xy2node_t ll2n;

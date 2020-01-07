@@ -8,6 +8,10 @@
 #include <iostream>
 #include <omp.h>
 
+#include <glm/gtc/type_ptr.hpp>
+#include "glgrib_eigen3.h"
+
+
 
 void glgrib_test::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
@@ -200,616 +204,6 @@ private:
   
 };
 
-std::ostream & operator<< (std::ostream& os, const node_t & n)
-{
-  os << n.asString ();
-  return os;
-}
-
-static
-glm::vec3 lonlat2xyz (const glm::vec2 & lonlat)
-{
-  float coslon = cos (lonlat.x), sinlon = sin (lonlat.x);
-  float coslat = cos (lonlat.y), sinlat = sin (lonlat.y);
-  return glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
-}
-
-static
-void getLonLatRange (const glm::vec2 & lonlat1, const glm::vec2 & lonlat2, 
-                     float * latmin, float * latmax)
-{
-  const glm::vec3 p1 = lonlat2xyz (lonlat1);
-  const glm::vec3 p2 = lonlat2xyz (lonlat2);
- 
-  float zmin, zmax;
-
-  zmin = std::min (p1.z, p2.z);
-  zmax = std::max (p1.z, p2.z);
-
-  glm::vec3 p = glm::cross (p1, p2);
-
-  float np = glm::length (p);
-
-  if (np == 0.0f)
-    {
-      if (glm::dot (p1, p2) < 0.0f)
-        zmax = 1.0f;
-      return;
-    }
-
-  p = p / np;
-  glm::vec3 q1 = glm::cross (p, p1);
-
-  float theta_op1 = atan2 (q1.z, p1.z), 
-        theta_op2 = theta_op1 + pi,
-        theta_max = atan2 (glm::dot (p2, q1), glm::dot (p2, p1));
-
-  if ((0 <= theta_op1) && (theta_op1 <= theta_max))
-    {
-      float z = p1.z * cos (theta_op1) + q1.z * sin (theta_op1);
-      zmin = std::min (zmin, z); zmax = std::max (zmax, z);
-    }
-
-  if ((0 <= theta_op2) && (theta_op2 <= theta_max))
-    {
-      float z = p1.z * cos (theta_op2) + q1.z * sin (theta_op2);
-      zmin = std::min (zmin, z); zmax = std::max (zmax, z);
-    }
-
-  *latmin = asin (zmin);
-  *latmax = asin (zmax);
-}
-
-
-class xy2node_t
-{
-public:
-  void init (const std::vector<node_t> & nodevec,
-             const std::vector<float> & xy, 
-             const std::vector<glm::vec3> & xyz)
-  {
-
-    dx = (xmax - xmin) / nx;
-    dy = (ymax - ymin) / ny;
-
-    off.resize (nx * ny);
-    len.resize (nx * ny);
-
-    for (int k = 0; k < len.size (); k++)
-      len[k] = 0;
-
-    for (int i = 0; i < nodevec.size (); i++)
-      {
-        if (nodevec[i].getAngle (xyz) < 0.0f)
-          {
-            int ind = xy2ind (xy[2*i+0], xy[2*i+1]);
-            len[ind]++;
-          }
-      }
-
-    off[0] = 0;
-    for (int k = 1; k < off.size (); k++)
-      off[k] = off[k-1] + len[k-1];
-
-    nodes.resize (off.back () + len.back ());
-
-    std::vector<int> cur = off;
-    
-    for (int i = 0; i < nodevec.size (); i++)
-      {
-        if (nodevec[i].getAngle (xyz) < 0.0f)
-          {
-            int ind = xy2ind (xy[2*i+0], xy[2*i+1]);
-            nodes[cur[ind]] = &nodevec[i];
-            cur[ind]++;
-          }
-      }
-  }
-
-  void update (const std::vector<glm::vec3> & xyz)
-  {
-//#pragma omp parallel for
-    for (int i = 0; i < len.size (); i++)
-      for (int j = off[i]; j < off[i] + len[i]; j++)
-        if ((! nodes[j]->linked ()) || (nodes[j]->getAngle (xyz) >= 0.0f))
-          {
-            int k = off[i]+len[i]-1;
-            std::swap (nodes[j], nodes[k]);
-            len[i]--;
-            j--;
-          }
-  }
-
-  int xy2ind (float x, float y) const
-  {
-    while (x < xmin) x += twopi;
-    while (x > xmax) x -= twopi;
-    int ix = nx * x / (xmax - xmin);
-    int iy = ny * (y - ymin) / (ymax - ymin);
-    int ind = ix + iy * nx;
-    if (ind >= off.size ())
-      abort ();
-    return ind;
-  }
-
-  int xy2ind (int ix, int iy) const
-  {
-    while (ix <  0) ix += nx;
-    while (ix > nx) ix -= nx;
-    int ind = ix + iy * nx;
-    if (ind >= off.size ())
-      abort ();
-    return ind;
-  }
-
-  class iterator 
-  {
-  public:
-    iterator (float _ymin, float _ymax, float _xmin, float _xmax, const xy2node_t * _ll2n) 
-    : ymin (_ymin), ymax (_ymax), xmin (_xmin), xmax (_xmax), ll2n (_ll2n)
-    {
-
-static 
-bool dbg = false;
-
-      iymin = floor ((ymin - ll2n->ymin) / ll2n->dy), iymax = floor ((ymax - ll2n->ymin) / ll2n->dy);
-      ixmin = floor ((xmin - ll2n->xmin) / ll2n->dx), ixmax = floor ((xmax - ll2n->xmin) / ll2n->dx);
-
-      ny = iymax - iymin + 1;
-      nx = ixmax - ixmin + 1;
-
-if(dbg){
-      std::cout << " iymin = " << iymin << " iymax = " << iymax << std::endl;
-      std::cout << " ixmin = " << ixmin << " ixmax = " << ixmax << std::endl;
-}
-
-      xmin = ixmin * ll2n->dx         ; xmax = ixmax * ll2n->dx         ;
-      ymin = iymin * ll2n->dy + ll2n->ymin; ymax = iymax * ll2n->dy + ll2n->ymin;
-
-if(dbg){
-      std::cout << "  ymin = " << rad2deg * ymin << "  ymax = " << rad2deg * ymax << std::endl;
-      std::cout << "  xmin = " << rad2deg * xmin << "  xmax = " << rad2deg * xmax << std::endl;
-}
-
-dbg = false;
-
-      this->seek (0);
-    }
-    void seek (int whence)
-    {
-      if (whence == 0)
-        {
-          ind = ll2n->xy2ind (ixmin, iymin);
-          cur = 0;
-          iy = 0; ix = 0;
-          if (ll2n->len[ind] == 0)
-            operator++ ();
-        }
-      else
-        {
-          cur = 0; iy = ny; ix = 0;
-        }
-    }
-
-    iterator & operator++ ()
-    {
-       cur++;
-       while (cur >= ll2n->len[ind])
-         {
-           cur = 0;
-           ix++;
-           if (ix >= nx)
-             {
-               ix = 0;
-               iy++;
-               if (iy == ny)
-                 break;
-             }
-           ind = ll2n->xy2ind (ixmin + ix, 
-                                   iymin + iy);
-         }
-       return *this;
-    }
-
-
-    const node_t * const & operator* ()
-    {
-      return ll2n->nodes[ll2n->off[ind]+cur];
-    }
-
-    bool operator!= (const iterator & rhs) const
-    {
-      return ! operator== (rhs);
-    }
-    bool operator== (const iterator & rhs) const
-    {
-      return (ll2n == rhs.ll2n) && (ix == rhs.ix) && 
-             (iy == rhs.iy) && (cur == rhs.cur);
-    }
-
-    std::string asString () const
-    {
-      int ix1 = ind % ll2n->nx;
-      int iy1 = ind / ll2n->nx;
-      float x1 = ix1 * ll2n->dx,              x2 = x1 + ll2n->dx;
-      float y1 = iy1 * ll2n->dy + ll2n->ymin, y2 = y1 + ll2n->dy;
-      
-      return std::string ("iterator{") +
-             "ix  =" + std::to_string (ix) + "/" + std::to_string (nx)           + ", " +
-             "iy  =" + std::to_string (iy) + "/" + std::to_string (ny)           + ", " +
-             "cur =" + std::to_string (cur)  + "/" + std::to_string (ll2n->len[ind]) + ", " +
-             "ind =" + std::to_string (ind)  +                                         ", " +
-             "off =" + std::to_string (ll2n->off[ind])     + ", " +
-             "len =" + std::to_string (ll2n->len[ind])     + ", " +
-             "    =" + std::to_string (ll2n->off[ind]+cur) +
-             "[" + std::to_string (rad2deg * x1) + ".." + std::to_string (rad2deg * x2) + "]" +
-             "[" + std::to_string (rad2deg * y1) + ".." + std::to_string (rad2deg * y2) + "]" +
-             "}";
-    }
-
-  private:
-    int ind; // Current index in ll2n
-    int cur; // Current index in nodes
-    int iy, ix;
-    int ny, nx;
-    float  ymin,  ymax,  xmin,  xmax;
-    int   iymin, iymax, ixmin, ixmax;
-    const xy2node_t * ll2n = NULL;
-  };
-
-  std::string asString (const std::vector<glm::vec3> & xyz) const
-  {
-    std::string t;
-    for (int i = 0; i < len.size (); i++)
-      for (int j = off[i]; j < off[i] + len[i]; j++)
-        {
-          t += std::to_string (nodes[j]->getRank ()) + " " + 
-               std::to_string (nodes[j]->getAngle (xyz) * rad2deg) + "\n";
-        }
-    return t;
-  }
-
-  iterator begin (const node_t & n, const std::vector<float> & xy) const
-  {
-    float y0 = n.            getY (xy);
-    float y1 = n.getNext ()->getY (xy);
-    float y2 = n.getPrev ()->getY (xy);
-
-    float ymin = std::min (y0, std::min (y1, y2));
-    float ymax = std::max (y0, std::max (y1, y2));
-
-    float x0 = n.            getX (xy);
-    float x1 = n.getNext ()->getX (xy);
-    float x2 = n.getPrev ()->getX (xy);
-
-
-    while (x1 - x0 > +twopi) x1 -= twopi;
-    while (x1 - x0 < -twopi) x1 += twopi;
-    while (x2 - x0 > +twopi) x2 -= twopi;
-    while (x2 - x0 < -twopi) x2 += twopi;
-
-    float xmin = std::min (x0, std::min (x1, x2));
-    float xmax = std::max (x0, std::max (x1, x2));
-
-    return iterator (ymin, ymax, xmin, xmax, this);
-  }
-
-  iterator end (const node_t & n, const std::vector<float> & xy) const
-  {
-    iterator it = begin (n, xy);
-    it.seek (1);
-    return it;
-  }
-
-  int size () const 
-  {
-    int s = 0;
-    for (int i = 0; i < len.size (); i++)
-      s += len[i];
-    return s;
-  }
-
-
-private:
-  friend class iterator;
-  int nx = 360, ny = 180;
-  std::vector<int> off, len;
-  std::vector<const node_t*> nodes;
-  float dx, dy;
-  const float ymin = -halfpi, ymax = +halfpi;
-  const float xmin = 0.0f,    xmax = twopi;
-};
-
-
-std::ostream & operator<< (std::ostream& os, const xy2node_t::iterator & it)
-{
-  os << it.asString ();
-  return os;
-}
-
-
-
-static 
-void earCut (node_t ** nodelist,  
-             const std::vector<glm::vec3> & xyz,
-             const std::vector<float> & xy,
-             const xy2node_t & ll2n,
-             std::vector<unsigned int> * ind,
-             std::vector<node_t*> * ain)
-{
-
-  node_t * last = (*nodelist)->getPrev ();
-
-  for (node_t * n = *nodelist; ; )
-    {
-      float ang = n->getAngle (xyz);
-
-      if ((0.0f < ang) && (ang < M_PI))
-        {
-  
-#ifndef UNDEF
-          volatile 
-          int intri = 0;
-
-//#pragma omp parallel
-          {
-          int nt = omp_get_num_threads ();
-          int it = omp_get_thread_num ();
-
-          int i1 = (ain->size () * (it + 0)) / nt;
-          int i2 = (ain->size () * (it + 1)) / nt;
-
-          for (int i = i1; i < i2; i++)
-            {
-              node_t * n1 = (*ain)[i];
-              if ((n1 != n) && n1->linked () && (n1 != n->getNext ()) && 
-                  (n1 != n->getPrev ()))
-                {
-                  const glm::vec3 & p = n1->getXYZ (xyz);
-                  if (n->inTriangle (p, xyz))
-                    {
-//#pragma omp atomic
-                      intri++;
-                    }
-                }
-              if (intri)
-                break;
-            }
-          }
-#else
-
-          bool intri = false;
-
-          xy2node_t::iterator it = ll2n.begin (*n, xy);
-          xy2node_t::iterator it1 = ll2n.end (*n, xy);
-          for ( ; it != it1; ++it)
-            {
-              const node_t * n1 = *it;
-              const glm::vec3 & p = n1->getXYZ (xyz);
-              if ((n == n1) || (n->getNext () == n1) || (n->getPrev () == n1))
-                continue;
-              if (n->inTriangle (p, xyz))
-                {
-                  intri = true;
-                  break;
-                }
-            }
-#endif
-
-          if (! intri)
-            {
-              
-              ind->push_back (n->getPrev ()->getRank ());
-              ind->push_back (n            ->getRank ());
-              ind->push_back (n->getNext ()->getRank ());
-
-              
-              n->cut (&n, nodelist);
-
-            }
-
-        }
-
-
-      n = n->getNext ();
-      if (n == last)
-        break;
-    }
-
-
-  for (int i = 0; i < ain->size (); i++)
-    {
-      node_t * n = (*ain)[i];
-      if ((! n->linked ()) || (n->getAngle (xyz) >= 0.0f))
-        {
-          std::swap ((*ain)[i], ain->back ());
-          ain->resize (ain->size () - 1);
-          i--;
-        }
-    }
-
-   
-}
-
-static void dump (node_t * nodelist, const std::vector<node_t*> & ain,
-                  const xy2node_t & ll2n, const std::vector<glm::vec3> & xyz,
-                  const std::vector<float> & xy, const std::string & prefix)
-{
-{
-  std::string filename = prefix + ".ain.txt";
-  FILE * fp = fopen (filename.c_str (), "w");
-
-  fprintf (fp, " %8lu \n", ain.size ());
-  
-  for (int i = 0; i < ain.size (); i++)
-    fprintf (fp, " %d %f\n", ain[i]->getRank (), ain[i]->getAngle (xyz) * rad2deg);
-  fprintf (fp, "\n");
-
-  for (node_t * n = nodelist; ; )
-    {
-      std::vector<int> ii;
-
-      for (int i = 0; i < ain.size (); i++)
-        {
-          const node_t * n1 = ain[i];
-          const glm::vec3 & p = n1->getXYZ (xyz);
-          if ((n == n1) || (n->getNext () == n1) || (n->getPrev () == n1))
-            continue;
-          if (n->inTriangle (p, xyz))
-            ii.push_back (n1->getRank ());
-        }
-      if (ii.size ())
-        {
-          int rank = n->getRank ();
-          sort (ii.begin (), ii.end ()); 
-          fprintf (fp, "%8d | %12.2f %12.2f %12.2f :", rank,
-                   rad2deg * n->getAngle (xyz), xy[2*rank+0] * rad2deg, xy[2*rank+1] * rad2deg);
-          for (int i = 0; i < ii.size (); i++)
-            fprintf (fp, " %8d", ii[i]);
-          fprintf (fp, "\n");
-        } 
-
-      n = n->getNext ();
-      if (n == nodelist)
-        break;
-    }
-
-  fclose (fp);
-}
-{
-  std::string filename = prefix + ".ll2.txt";
-  FILE * fp = fopen (filename.c_str (), "w");
-  fprintf (fp, " %8d \n", ll2n.size ());
-
-  fprintf (fp, "%s\n", ll2n.asString (xyz).c_str ());
-
-  for (node_t * n = nodelist; ; )
-    {
-      std::vector<int> ii;
-
-bool dbg = n->getRank () == 297;
-
-      xy2node_t::iterator it = ll2n.begin (*n, xy);
-      xy2node_t::iterator it1 = ll2n.end (*n, xy);
-      for ( ; it != it1; ++it)
-        {
-          const node_t * n1 = *it;
-          const glm::vec3 & p = n1->getXYZ (xyz);
-          if ((n == n1) || (n->getNext () == n1) || (n->getPrev () == n1))
-            continue;
-          if (n->inTriangle (p, xyz))
-            ii.push_back (n1->getRank ());
-        }
-      if (ii.size ())
-        {
-          int rank = n->getRank ();
-          sort (ii.begin (), ii.end ()); 
-          fprintf (fp, "%8d | %12.2f %12.2f %12.2f :", rank,
-                   rad2deg * n->getAngle (xyz), xy[2*rank+0] * rad2deg, xy[2*rank+1] * rad2deg);
-          for (int i = 0; i < ii.size (); i++)
-            fprintf (fp, " %8d", ii[i]);
-          fprintf (fp, "\n");
-        } 
-      n = n->getNext ();
-      if (n == nodelist)
-        break;
-    }
-  fclose (fp);
-}
-}
-
-
-static
-void pr (const std::vector<float> & xy, 
-         const std::vector<glm::vec3> & xyz,
-         const xy2node_t & ll2n,
-         int jj, node_t * nodelist)
-{
-
-  node_t * n;
-  
-  for (n = nodelist; ; )
-    {
-      n = n->getNext ();
-
-      if (n->getRank () == jj)
-        break;
-
-      if (n == nodelist)
-        return;
-    }
-
-{
-  std::cout << jj << " -> " << *n << std::endl;
-
-  xy2node_t::iterator it = ll2n.begin (*n, xy);
-  xy2node_t::iterator it1 = ll2n.end (*n, xy);
-  for ( ; it != it1; ++it)
-    {
-      const node_t * n = *it;
-      int rank = n->getRank ();
-      std::cout << it << " " << *n << " ";
-      printf (" %12.2f %12.2f %12.2f", 
-              rad2deg * xy[2*rank+0], 
-              rad2deg * xy[2*rank+1], 
-              rad2deg * n->getAngle (xyz));
-      std::cout << std::endl;
-    }
-
-}
-
-{
-  FILE * fp = fopen ("xy.dat", "w");
-
-  node_t * p = n;
-
-  for (int i = 0; i < 10; i++)
-    {
-      p = p->getPrev ();
-      i++;
-      if (p == n)
-        break;
-    }
-
-  for (int i = 0; i < 20; i++)
-    {
-      int j = p->getRank ();
-      fprintf (fp, "%8d %12.2f %12.2f\n", j, rad2deg * xy[2*j+0], 
-               rad2deg * xy[2*j+1]);
-      p = p->getNext ();
-    }
-
-
-  fclose (fp);
-}
-
-
-{
-  int j = 297;
-  int j1 = 967;
-  node_t * n1;
-
-
-  for (n1 = nodelist; ; )
-    {
-      n1 = n1->getNext ();
-
-      if (n1->getRank () == j1)
-        break;
-
-      if (n1 == nodelist)
-        return;
-    }
-
-  
-
-  const glm::vec3 & p = n1->getXYZ (xyz);
-  if (n->inTriangle (p, xyz))
-    std::cout << j1 << " in " << j << std::endl;
-}
-
-}
-
 static float in02pi (float x)
 {
   while (x < 0.0f ) x += twopi;
@@ -893,86 +287,20 @@ public:
 };
         
 
-void glgrib_test::setup ()
+static
+void getLonRange (const std::vector<node_t> & nodevec, 
+                  const std::vector<float> & lonlat,
+                  float * lonmin, float * lonmax)
 {
-
-
-if(0)
-{
-  glm::vec2 lonlat1 (deg2rad *   0.0f, deg2rad * -10.0f);
-  glm::vec2 lonlat2 (deg2rad * 180.0f, deg2rad * -10.0f);
-
-  float latmin, latmax;
-
-  getLonLatRange (lonlat1, lonlat2, &latmin, &latmax);
-
-  std::cout << " latmin, latmax = " << rad2deg * latmin << ", " << rad2deg * latmax << std::endl;
-
-  exit (0);
-
-}
-
-  int numberOfPoints;
-  glgrib_options_lines opts;
-  unsigned int numberOfLines; 
-  std::vector<float> lonlat;
-  std::vector<float> xy;
-  std::vector<unsigned int> indl;
-  
-  opts.path = "coastlines/shp/GSHHS_i_L1.shp";
-  opts.path = "coastlines/shp/GSHHS_h_L1.shp";
-  opts.path = "coastlines/shp/GSHHS_f_L1.shp";
-  opts.path = "coastlines/shp/GSHHS_c_L1.shp";
-
-  opts.selector = "rowid == 1";
-  glgrib_shapelib::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &indl, opts.selector);
-
-  std::vector<glm::vec3> xyz;
-  std::vector<float> ang;
-
-  int numberOfPoints1 = numberOfPoints-1;
-
-  ang.resize (numberOfPoints1);
-  xyz.resize (numberOfPoints1);
-
-#pragma omp parallel for
-  for (int i = 0; i < numberOfPoints1; i++)
-    {
-      float lon = lonlat[2*i+0], lat = lonlat[2*i+1];
-      float coslon = cos (lon), sinlon = sin (lon);
-      float coslat = cos (lat), sinlat = sin (lat);
-      xyz[i] = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
-    }
-
-
-  xy = lonlat;
-
-  std::vector<node_t> nodevec;
-
-  nodevec.reserve (numberOfPoints1);
-
-  for (int j = 0; j < numberOfPoints1; j++)
-    nodevec.push_back (node_t (j));
-
-#pragma omp parallel for
-  for (int j = 0; j < numberOfPoints1; j++)
-    {
-      int i = j == 0 ? numberOfPoints1-1 : j-1;
-      int k = j == numberOfPoints1-1 ? 0 : j+1;
-      nodevec[j].setPrevNext (&nodevec[i], &nodevec[k]);
-      nodevec[j].getAngle (xyz);
-    }
-
-
   inter_t minmax;
 
   int i = 0;
-  for (node_t * n1 = &nodevec[0]; ; )
+  for (const node_t * n1 = &nodevec[0]; ; )
     {
-      node_t * n2 = n1->getNext ();
+      const node_t * n2 = n1->getNext ();
 
-      float x1 = n1->getX (xy);
-      float x2 = n2->getX (xy);
+      float x1 = n1->getX (lonlat);
+      float x2 = n2->getX (lonlat);
 
       xint (x1, x2);
 
@@ -991,72 +319,794 @@ if(0)
         break;
     }
 
-  std::cout << " xmin, xmax = " << rad2deg * minmax.xmin << ", " << rad2deg * minmax.xmax << std::endl;
+  *lonmin = minmax.xmin;
+  *lonmax = minmax.xmax;
 
-//exit (0);
+}
+
+std::ostream & operator<< (std::ostream& os, const node_t & n)
+{
+  os << n.asString ();
+  return os;
+}
+
+static
+glm::vec3 lonlat2xyz (const glm::vec2 & lonlat)
+{
+  float coslon = cos (lonlat.x), sinlon = sin (lonlat.x);
+  float coslat = cos (lonlat.y), sinlat = sin (lonlat.y);
+  return glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
+}
+
+static
+glm::vec2 xyz2lonlat (const glm::vec3 & xyz)
+{
+  return glm::vec2 (atan2 (xyz.y, xyz.x), asin (xyz.z));
+}
+
+static
+void getLatRange (const glm::vec2 & lonlat1, const glm::vec2 & lonlat2, 
+                  float * latmin, float * latmax)
+{
+  const glm::vec3 p1 = lonlat2xyz (lonlat1);
+  const glm::vec3 p2 = lonlat2xyz (lonlat2);
+ 
+  float zmin, zmax;
+
+  zmin = std::min (p1.z, p2.z);
+  zmax = std::max (p1.z, p2.z);
+
+  glm::vec3 p = glm::cross (p1, p2);
+
+  float np = glm::length (p);
+
+  if (np == 0.0f)
+    {
+      if (glm::dot (p1, p2) < 0.0f)
+        zmax = 1.0f;
+      return;
+    }
+
+  p = p / np;
+  glm::vec3 q1 = glm::cross (p, p1);
+
+  float theta_op1 = atan2 (q1.z, p1.z), 
+        theta_op2 = theta_op1 + pi,
+        theta_max = atan2 (glm::dot (p2, q1), glm::dot (p2, p1));
+
+  if ((0 <= theta_op1) && (theta_op1 <= theta_max))
+    {
+      float z = p1.z * cos (theta_op1) + q1.z * sin (theta_op1);
+      zmin = std::min (zmin, z); zmax = std::max (zmax, z);
+    }
+
+  if ((0 <= theta_op2) && (theta_op2 <= theta_max))
+    {
+      float z = p1.z * cos (theta_op2) + q1.z * sin (theta_op2);
+      zmin = std::min (zmin, z); zmax = std::max (zmax, z);
+    }
+
+  *latmin = asin (zmin);
+  *latmax = asin (zmax);
+}
+
+static
+void getLatRange (const std::vector<node_t> & nodevec, 
+                  const std::vector<float> & lonlat,
+                  float * latmin, float * latmax)
+{
+  *latmax = *latmin = lonlat[2*0+1];
+  for (int i = 0; i < nodevec.size (); i++)
+    {
+      float lat = lonlat[2*i+1];
+      *latmin = std::min (lat, *latmin);
+      *latmax = std::max (lat, *latmax);
+    }
+
+  std::cout << " latmin, latmax = " << rad2deg * *latmin 
+            << ", " << rad2deg * *latmax << std::endl;
+
+  *latmax = *latmin = lonlat[2*0+1];
+  for (const node_t * n = &nodevec[0]; ; )
+    {
+
+ 
+      float ri = n->getRank ();
+      float rj = n->getNext ()->getRank ();
+
+      float llatmin, llatmax;
+
+      getLatRange (glm::vec2 (lonlat[2*ri+0], lonlat[2*ri+1]),
+                   glm::vec2 (lonlat[2*rj+0], lonlat[2*rj+1]),
+                   &llatmin, &llatmax);
+
+      *latmin = std::min (*latmin, llatmin);
+      *latmax = std::max (*latmax, llatmax);
+
+      n = n->getNext ();
+      if (n == &nodevec[0])
+        break;
+    }
+
+  std::cout << " latmin, latmax = " << rad2deg * *latmin 
+            << ", " << rad2deg * *latmax << std::endl;
+
+  int rank[3] = {297, 367, 458};
+
+  float latmin_ = +pi, latmax_ = -pi;
+  for (int i = 0; i < 3; i++)
+    {
+      int j = (i + 1) % 3;
+      int ri = rank[i], rj = rank[j];
+     
+      float llatmin, llatmax;
+
+      getLatRange (glm::vec2 (lonlat[2*ri+0], lonlat[2*ri+1]),
+                   glm::vec2 (lonlat[2*rj+0], lonlat[2*rj+1]),
+                   &llatmin, &llatmax);
+
+      latmin_ = std::min (latmin_, llatmin);
+      latmax_ = std::max (latmax_, llatmax);
+
+    }
+
+  std::cout << " latmin, latmax = " << rad2deg * latmin_
+            << ", " << rad2deg * latmax_ << std::endl;
+
+
+}
+
+
+class xy2node_t
+{
+public:
+  void init (const std::vector<node_t> & nodevec,
+             const std::vector<float> & xy, 
+             const std::vector<glm::vec3> & xyz)
+  {
+    float lonmin, lonmax, latmin, latmax;
+
+    getLonRange (nodevec, xy, &lonmin, &lonmax);
+    getLatRange (nodevec, xy, &latmin, &latmax);
+
+    printf (" lon = %12.2f .. %12.2f, lat = %12.2f .. %12.2f\n",
+            rad2deg * lonmin, rad2deg * lonmax, rad2deg * latmin, rad2deg * latmax);
+
+    float ddy = (latmax - latmin) / ny;
+    ymin = std::max (-pi, latmin - ddy);
+    ymax = std::min (+pi, latmax + ddy);
+    dy = (ymax - ymin) / ny;
+
+
+    xmin = lonmin;
+    xmax = lonmax;
+
+    while (xmin > xmax)
+      xmin -= twopi;
+
+    float ddx = (xmax - xmin) / nx;
+
+    xmin = xmin - ddx;
+    xmax = xmax + ddx;
+
+    dx = (xmax - xmin) / nx;
+
+    off.resize (nx * ny);
+    len.resize (nx * ny);
+
+    for (int k = 0; k < len.size (); k++)
+      len[k] = 0;
+
+    for (int i = 0; i < nodevec.size (); i++)
+      {
+        if (nodevec[i].getAngle (xyz) < 0.0f)
+          {
+            int ind = xy2ind (xy[2*i+0], xy[2*i+1]);
+            len[ind]++;
+          }
+      }
+
+    off[0] = 0;
+    for (int k = 1; k < off.size (); k++)
+      off[k] = off[k-1] + len[k-1];
+
+    nodes.resize (off.back () + len.back ());
+
+    std::vector<int> cur = off;
+    
+    for (int i = 0; i < nodevec.size (); i++)
+      {
+        if (nodevec[i].getAngle (xyz) < 0.0f)
+          {
+            int ind = xy2ind (xy[2*i+0], xy[2*i+1]);
+            nodes[cur[ind]] = &nodevec[i];
+            cur[ind]++;
+          }
+      }
+  }
+
+  void update (const std::vector<glm::vec3> & xyz)
+  {
+#pragma omp parallel for
+    for (int i = 0; i < len.size (); i++)
+      for (int j = off[i]; j < off[i] + len[i]; j++)
+        if ((! nodes[j]->linked ()) || (nodes[j]->getAngle (xyz) >= 0.0f))
+          {
+            int k = off[i]+len[i]-1;
+            std::swap (nodes[j], nodes[k]);
+            len[i]--;
+            j--;
+          }
+  }
+
+  int xy2ind (float x, float y) const
+  {
+    while (x < xmin) x += twopi;
+    while (x > xmax) x -= twopi;
+    int ix = nx * (x - xmin) / (xmax - xmin);
+    int iy = ny * (y - ymin) / (ymax - ymin);
+
+    if ((ix < 0) || (nx <= ix))
+      abort ();
+    if ((iy < 0) || (ny <= iy))
+      abort ();
+
+    int ind = ix + iy * nx;
+    return ind;
+  }
+
+  int xy2ind (int ix, int iy) const
+  {
+    while (ix <  0) ix += nx;
+    while (ix > nx) ix -= nx;
+
+    if ((ix < 0) || (nx <= ix))
+      abort ();
+    if ((iy < 0) || (ny <= iy))
+      abort ();
+
+    int ind = ix + iy * nx;
+    return ind;
+  }
+
+  class iterator 
+  {
+  public:
+    iterator (float _ymin, float _ymax, float _xmin, float _xmax, const xy2node_t * _ll2n) 
+    : ymin (_ymin), ymax (_ymax), xmin (_xmin), xmax (_xmax), ll2n (_ll2n)
+    {
+
+      while (xmin < ll2n->xmin) xmin += twopi;
+      while (xmin > ll2n->xmax) xmin -= twopi;
+
+      if ((xmin < ll2n->xmin) || (ll2n->xmax < xmin))
+        abort ();
+
+      while (xmax < ll2n->xmin) xmax += twopi;
+      while (xmax > ll2n->xmax) xmax -= twopi;
+
+      if ((xmax < ll2n->xmin) || (ll2n->xmax < xmax))
+        abort ();
+
+static 
+bool dbg = false;
+
+      iymin = floor ((ymin - ll2n->ymin) / ll2n->dy); 
+      iymax = floor ((ymax - ll2n->ymin) / ll2n->dy);
+      ixmin = floor ((xmin - ll2n->xmin) / ll2n->dx); 
+      ixmax = floor ((xmax - ll2n->xmin) / ll2n->dx);
+
+      ny = iymax - iymin + 1;
+      nx = ixmax - ixmin + 1;
+
+      if ((ixmin < 0) || (ll2n->nx <= ixmax))
+        abort ();
+
+      if ((iymin < 0) || (ll2n->ny <= iymax))
+        abort ();
+
+
+if(dbg){
+      std::cout << " iymin = " << iymin << " iymax = " << iymax << std::endl;
+      std::cout << " ixmin = " << ixmin << " ixmax = " << ixmax << std::endl;
+}
+
+      xmin = ixmin * ll2n->dx         ; xmax = ixmax * ll2n->dx         ;
+      ymin = iymin * ll2n->dy + ll2n->ymin; ymax = iymax * ll2n->dy + ll2n->ymin;
+
+if(dbg){
+      std::cout << "  ymin = " << rad2deg * ymin << "  ymax = " << rad2deg * ymax << std::endl;
+      std::cout << "  xmin = " << rad2deg * xmin << "  xmax = " << rad2deg * xmax << std::endl;
+}
+
+dbg = false;
+
+      this->seek (0);
+    }
+    void seek (int whence)
+    {
+      if (whence == 0)
+        {
+          ind = ll2n->xy2ind (ixmin, iymin);
+          cur = 0;
+          iy = 0; ix = 0;
+          if (ll2n->len[ind] == 0)
+            operator++ ();
+        }
+      else
+        {
+          cur = 0; iy = ny; ix = 0;
+        }
+    }
+
+    iterator & operator++ ()
+    {
+       cur++;
+       while (cur >= ll2n->len[ind])
+         {
+           cur = 0;
+           ix++;
+           if (ix >= nx)
+             {
+               ix = 0;
+               iy++;
+               if (iy == ny)
+                 break;
+             }
+           ind = ll2n->xy2ind (ixmin + ix, iymin + iy);
+         }
+       return *this;
+    }
+
+
+    const node_t * const & operator* ()
+    {
+      return ll2n->nodes[ll2n->off[ind]+cur];
+    }
+
+    bool operator!= (const iterator & rhs) const
+    {
+      return ! operator== (rhs);
+    }
+    bool operator== (const iterator & rhs) const
+    {
+      return (ll2n == rhs.ll2n) && (ix == rhs.ix) && 
+             (iy == rhs.iy) && (cur == rhs.cur);
+    }
+
+    std::string asString () const
+    {
+      int ix1 = ind % ll2n->nx;
+      int iy1 = ind / ll2n->nx;
+      float x1 = ix1 * ll2n->dx,              x2 = x1 + ll2n->dx;
+      float y1 = iy1 * ll2n->dy + ll2n->ymin, y2 = y1 + ll2n->dy;
+      
+      return std::string ("iterator{") +
+             "ix  =" + std::to_string (ix) + "/" + std::to_string (nx)           + ", " +
+             "iy  =" + std::to_string (iy) + "/" + std::to_string (ny)           + ", " +
+             "cur =" + std::to_string (cur)  + "/" + std::to_string (ll2n->len[ind]) + ", " +
+             "ind =" + std::to_string (ind)  +                                         ", " +
+             "off =" + std::to_string (ll2n->off[ind])     + ", " +
+             "len =" + std::to_string (ll2n->len[ind])     + ", " +
+             "    =" + std::to_string (ll2n->off[ind]+cur) +
+             "[" + std::to_string (rad2deg * x1) + ".." + std::to_string (rad2deg * x2) + "]" +
+             "[" + std::to_string (rad2deg * y1) + ".." + std::to_string (rad2deg * y2) + "]" +
+             "}";
+    }
+
+  private:
+    int ind; // Current index in ll2n
+    int cur; // Current index in nodes
+    int iy, ix;
+    int ny, nx;
+    float  ymin,  ymax,  xmin,  xmax;
+    int   iymin, iymax, ixmin, ixmax;
+    const xy2node_t * ll2n = NULL;
+  };
+
+  std::string asString (const std::vector<glm::vec3> & xyz) const
+  {
+    std::string t;
+    for (int i = 0; i < len.size (); i++)
+      for (int j = off[i]; j < off[i] + len[i]; j++)
+        {
+          t += std::to_string (nodes[j]->getRank ()) + " " + 
+               std::to_string (nodes[j]->getAngle (xyz) * rad2deg) + "\n";
+        }
+    return t;
+  }
+
+  iterator begin (const node_t & n, const std::vector<float> & xy) const
+  {
+    const node_t * nn[3] = {n.getPrev (), &n, n.getNext ()};
+
+    float ymin = +pi, ymax = -pi;
+
+    for (int i = 0; i < 3; i++)
+      {
+        int j = (i + 1) % 3;
+        int ri = nn[i]->getRank (); 
+        int rj = nn[j]->getRank ();
+        float yymin, yymax;
+        getLatRange (glm::vec2 (xy[2*ri+0], xy[2*ri+1]), 
+                     glm::vec2 (xy[2*rj+0], xy[2*rj+1]), 
+                     &yymin, &yymax);
+        ymin = std::min (ymin, yymin);
+        ymax = std::max (ymax, yymax);
+      }
+
+    float x0 = n.            getX (xy);
+    float x1 = n.getNext ()->getX (xy);
+    float x2 = n.getPrev ()->getX (xy);
+
+    while (x1 - x0 > +twopi) x1 -= twopi;
+    while (x1 - x0 < -twopi) x1 += twopi;
+    while (x2 - x0 > +twopi) x2 -= twopi;
+    while (x2 - x0 < -twopi) x2 += twopi;
+
+    float xmin = std::min (x0, std::min (x1, x2));
+    float xmax = std::max (x0, std::max (x1, x2));
+
+    return iterator (ymin, ymax, xmin, xmax, this);
+  }
+
+  iterator end (const node_t & n, const std::vector<float> & xy) const
+  {
+    iterator it = begin (n, xy);
+    it.seek (1);
+    return it;
+  }
+
+  int size () const 
+  {
+    int s = 0;
+    for (int i = 0; i < len.size (); i++)
+      s += len[i];
+    return s;
+  }
+
+
+private:
+  friend class iterator;
+  int nx = 360, ny = 180;
+  std::vector<int> off, len;
+  std::vector<const node_t*> nodes;
+  float dx, dy;
+  float ymin = -halfpi, ymax = +halfpi;
+  float xmin = 0.0f,    xmax = twopi;
+};
+
+
+std::ostream & operator<< (std::ostream& os, const xy2node_t::iterator & it)
+{
+  os << it.asString ();
+  return os;
+}
+
+
+
+static 
+void earCut (node_t ** nodelist,  
+             const std::vector<glm::vec3> & xyz,
+             const std::vector<float> & xy,
+             const xy2node_t & ll2n,
+             std::vector<unsigned int> * ind)
+{
+
+  std::vector<node_t*> b, e;
+  int count = (*nodelist)->count ();
+  int pools;
+
+  if (count > 100)
+    {
+      pools = 8;
+      int chunk = count / pools;
+      int i = 0;
+      for (node_t * n = *nodelist; n != (*nodelist)->getPrev (); n = n->getNext ())
+        {
+          if (i % chunk == 0)
+            b.push_back (n);
+     
+          if ((i + 3) % chunk == 0)
+            e.push_back (n);
+     
+          i++;
+        }
+    }
+  else
+    {
+      pools = 1;
+      b.push_back (*nodelist);
+      e.push_back ((*nodelist)->getPrev ());
+    }
+
+  if (0)
+  for (int c = 0; c < pools; c++)
+    {
+      std::cout << c << " " << b[c]->getRank () << " ... " 
+                << e[c]->getRank () << std::endl;
+    }
+
+  std::vector<unsigned int> ind1[pools];
+
+//#pragma omp parallel for
+  for (int c = 0; c < pools; c++)
+    {
+      std::vector<unsigned int> * ind = &ind1[c];
+      for (node_t * n = b[c]; n != e[c]; n = n->getNext ())
+        {
+          float ang = n->getAngle (xyz);
+
+          if ((0.0f < ang) && (ang < M_PI))
+            {
+      
+              bool intri = false;
+
+              xy2node_t::iterator it = ll2n.begin (*n, xy);
+              xy2node_t::iterator it1 = ll2n.end (*n, xy);
+              for ( ; it != it1; ++it)
+                {
+                  const node_t * n1 = *it;
+                  const glm::vec3 & p = n1->getXYZ (xyz);
+                  if ((n == n1) || (n->getNext () == n1) || (n->getPrev () == n1))
+                    continue;
+                  if (n->inTriangle (p, xyz))
+                    {
+                      intri = true;
+                      break;
+                    }
+                }
+
+              if (! intri)
+                {
+                  ind->push_back (n->getPrev ()->getRank ());
+                  ind->push_back (n            ->getRank ());
+                  ind->push_back (n->getNext ()->getRank ());
+                  n->cut (&n, nodelist);
+                  if (n == e[c])
+                    break;
+                }
+
+            }
+
+        }
+    }
+
+  int size = ind->size ();
+ 
+  for (int c = 0; c < pools; c++)
+    size += ind1[c].size ();
+
+  int offset[pools];
+  offset[0] = ind->size ();
+  for (int c = 1; c < pools; c++)
+    offset[c] = offset[c-1] + ind1[c-1].size ();
+
+  ind->resize (size);
+
+#pragma omp parallel for
+  for (int c = 0; c < pools; c++)
+    for (int i = 0; i < ind1[c].size (); i++)
+      (*ind)[offset[c]+i] = ind1[c][i];
+
+}
+
+static 
+glm::mat4 getRotMat (const std::vector<glm::vec3> & xyz)
+{
+  // Average point
+
+  glm::dvec3 dxyzm (0.0f, 0.0f, 0.0f);
+
+  for (int i = 0; i < xyz.size (); i++)
+    dxyzm += xyz[i];
+  dxyzm = dxyzm / (double)xyz.size (); 
+  glm::vec3 xyzm = dxyzm;
+
+  // Covariance
+  glm::dmat3 A;
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+    A[i][j] = 0.0f;
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+  for (int k = 0; k < xyz.size (); k++)
+    A[i][j] += (xyz[k][i] - xyzm[i]) * (xyz[k][j] - xyzm[j]);
+
+  A = A / (double)xyz.size ();
+
+  std::cout << " det (A) = " << glm::determinant (A) << std::endl;
+
+  printf (" A = \n");
+  for (int i = 0; i < 3; i++) 
+    {
+      for (int j = 0; j < 3; j++) 
+        printf (" %12.5f", A[i][j]);
+      printf ("\n");
+    }
+  
+  printf ("--------\n");
+  for (int i = 0; i < 3; i++) 
+    {
+      glm::vec3 u (0.0f, 0.0f, 0.0f);
+      u[i] = 1.0f;
+      glm::vec3 v = A * u;
+      for (int j = 0; j < 3; j++) 
+        printf (" %12.5f", v[j]);
+      printf ("\n");
+    }
+  
+    
+  printf ("--------\n");
+  for (int i = 0; i < 3; i++) 
+    {
+      glm::vec3 u (1.0f, 1.0f, 1.0f);
+      u[i] = 0.0f;
+      glm::vec3 v = A * u;
+      for (int j = 0; j < 3; j++) 
+        printf (" %12.5f", v[j]);
+      printf ("\n");
+    }
+  
+    
+  glm::dvec3 w;
+  glm::dmat3 Q;
+
+  // Get eigenvectors & eigenvalues
+
+  glgrib_diag (A, &Q, &w);
+
+  glm::dmat3 B = glm::transpose (Q) * A * Q;
+
+  printf (" B = \n");
+  for (int i = 0; i < 3; i++) 
+    {
+      for (int j = 0; j < 3; j++) 
+        printf (" %12.5f", B[i][j]);
+      printf ("\n");
+    }
+  
+
+
+  printf (" %12.2e %12.2e %12.2e\n", w[0], w[1], w[2]);
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+    {
+      printf (" %8d, %8d -> %12.2f\n", i, j, glm::dot (Q[i], Q[j]));
+    }
+  for (int i = 0; i < 3; i++)
+    {
+      glm::dvec3 u (Q[i][0], Q[i][1], Q[i][2]);
+      glm::dvec3 q = A * u;
+      printf (" u   = %12.2e %12.2e %12.2e\n", u[0], u[1], u[2]);
+      printf (" q   = %12.2e %12.2e %12.2e\n", q[0], q[1], q[2]);
+      printf (" q/u = %12.2e %12.2e %12.2e\n", q[0]/u[0], q[1]/u[1], q[2]/u[2]);
+    }
+  for (int i = 0; i < 3; i++)
+    {
+      for (int j = 0; j < 3; j++)
+        printf (" %12.2e", Q[i][j]);
+      printf ("\n");
+    }
+
+  exit (0);
+
+  return glm::mat3 (Q);
+}
+
+
+
+void glgrib_test::setup ()
+{
+
+
+  int numberOfPoints;
+  glgrib_options_lines opts;
+  unsigned int numberOfLines; 
+  std::vector<float> lonlat1;
+  std::vector<unsigned int> indl;
+  
+  opts.path = "coastlines/shp/GSHHS_i_L1.shp";
+  opts.path = "coastlines/shp/GSHHS_h_L1.shp";
+  opts.path = "coastlines/shp/GSHHS_f_L1.shp";
+  opts.path = "coastlines/shp/GSHHS_c_L1.shp";
+
+  opts.selector = "rowid == 1";
+  glgrib_shapelib::read (opts, &numberOfPoints, &numberOfLines, &lonlat1, 
+                         &indl, opts.selector);
+
+  std::vector<glm::vec3> xyz1;
+
+  int numberOfPoints1 = numberOfPoints-1;
+
+  xyz1.resize (numberOfPoints1);
+
+#pragma omp parallel for
+  for (int i = 0; i < numberOfPoints1; i++)
+    {
+      float lon = lonlat1[2*i+0], lat = lonlat1[2*i+1];
+      float coslon = cos (lon), sinlon = sin (lon);
+      float coslat = cos (lat), sinlat = sin (lat);
+      xyz1[i] = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
+    }
+
+
+  glm::mat3 R = getRotMat (xyz1);
+
+
+  std::vector<glm::vec3> xyz2;
+  std::vector<float> lonlat2;
+
+  xyz2.resize (xyz1.size ());
+  lonlat2.resize (2 * xyz1.size ());
+
+#pragma omp parallel for
+  for (int i = 0; i < xyz1.size (); i++)
+    {
+      xyz2[i] = R * xyz1[i];
+      lonlat2[2*i+0] = atan2 (xyz2[i].y, xyz2[i].x); 
+      lonlat2[2*i+1] = asin (xyz2[i].z);
+    }
+
+  std::vector<glm::vec3> & xyz = xyz2;
+  std::vector<float> & lonlat = lonlat2;
+
+  std::vector<node_t> nodevec;
+
+  nodevec.reserve (numberOfPoints1);
+
+  for (int j = 0; j < numberOfPoints1; j++)
+    nodevec.push_back (node_t (j));
+
+#pragma omp parallel for
+  for (int j = 0; j < numberOfPoints1; j++)
+    {
+      int i = j == 0 ? numberOfPoints1-1 : j-1;
+      int k = j == numberOfPoints1-1 ? 0 : j+1;
+      nodevec[j].setPrevNext (&nodevec[i], &nodevec[k]);
+      nodevec[j].getAngle (xyz);
+    }
+
+
 
 
   xy2node_t ll2n;
 
-  ll2n.init (nodevec, xy, xyz);
-
-
-  std::vector<node_t*> ain;
-
-  ain.reserve (numberOfPoints1);
-
-  for (int j = 0; j < numberOfPoints1; j++)
-    if (nodevec[j].getAngle (xyz) < 0.0f)
-      ain.push_back (&nodevec[j]);
+  ll2n.init (nodevec, lonlat, xyz);
 
   node_t * nodelist = &nodevec[0];
 
   std::vector<unsigned int> ind;
 
-
-
-
-FILE * fp = fopen ("LOG.txt", "w");
-
-for (int i = 0; i < 22; i++)
-{
-
-  if (i == 15) {
-  dump (nodelist, ain, ll2n, xyz, xy, std::to_string (i));
-  pr (xy, xyz, ll2n, 297, nodelist);
-  }
-
-  fprintf (fp, " %8d %8d %8ld\n", i, nodelist->count (), ain.size ());
-  earCut (&nodelist, xyz, xy, ll2n, &ind, &ain);
-
-
-  if (i == 15)
-    break;
-
-  fprintf (fp, "----LIST---- %d\n", i);
-  for (node_t * n = nodelist; ; )
+  int i = 0, k = -1;
+  while (1)
     {
-      fprintf (fp, " %8d", n->getRank ());
-      n = n->getNext ();
-      if (n == nodelist)
+      printf (" %8d, nodelist = %8d, ll2n = %8d\n", i, nodelist->count (), ll2n.size ());
+      earCut (&nodelist, xyz, lonlat, ll2n, &ind);
+      ll2n.update (xyz);
+
+      int count = nodelist->count ();
+      if (count == k)
+        break;
+      k = count;
+      i++;
+      if (i == 14)
         break;
     }
-  fprintf (fp, "\n");
-
-  ll2n.update (xyz);
-
-}
-  fprintf (fp, " %8s %8d %8ld\n", "", nodelist->count (), ain.size ());
-
-fclose (fp);
+  printf (" %8s  nodelist = %8d, ll2n = %8d\n", "", nodelist->count (), ll2n.size ());
 
 
 
 
   numberOfTriangles = ind.size () / 3;
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (xyz.size () * sizeof (xyz[0]), xyz.data ());
-  elementbuffer = new_glgrib_opengl_buffer_ptr (ind.size () * sizeof (ind[0]), ind.data ());
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (xyz1.size () * sizeof (xyz1[0]), 
+                                               xyz1.data ());
+  elementbuffer = new_glgrib_opengl_buffer_ptr (ind.size () * sizeof (ind[0]), 
+                                                ind.data ());
 
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);

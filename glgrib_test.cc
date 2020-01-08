@@ -316,6 +316,7 @@ void getLonRange (const std::vector<node_t> & nodevec,
 
   for (int i = 0; i < nodevec.size (); i++)
     {
+
       const node_t * n1 = &nodevec[i];
       const node_t * n2 = n1->getNext ();
 
@@ -323,6 +324,9 @@ void getLonRange (const std::vector<node_t> & nodevec,
       float x2 = n2->getX (lonlat);
 
       xint (x1, x2);
+
+      if (x1 == x2) 
+        continue;
 
       if (i == 0)
         {
@@ -420,9 +424,6 @@ void getLatRange (const std::vector<node_t> & nodevec,
       *latmax = std::max (lat, *latmax);
     }
 
-  std::cout << " latmin, latmax = " << rad2deg * *latmin 
-            << ", " << rad2deg * *latmax << std::endl;
-
   *latmax = *latmin = lonlat[2*0+1];
   for (const node_t * n = &nodevec[0]; ; )
     {
@@ -445,31 +446,9 @@ void getLatRange (const std::vector<node_t> & nodevec,
         break;
     }
 
+if(0)
   std::cout << " latmin, latmax = " << rad2deg * *latmin 
             << ", " << rad2deg * *latmax << std::endl;
-
-  int rank[3] = {297, 367, 458};
-
-  float latmin_ = +pi, latmax_ = -pi;
-  for (int i = 0; i < 3; i++)
-    {
-      int j = (i + 1) % 3;
-      int ri = rank[i], rj = rank[j];
-     
-      float llatmin, llatmax;
-
-      getLatRange (glm::vec2 (lonlat[2*ri+0], lonlat[2*ri+1]),
-                   glm::vec2 (lonlat[2*rj+0], lonlat[2*rj+1]),
-                   &llatmin, &llatmax);
-
-      latmin_ = std::min (latmin_, llatmin);
-      latmax_ = std::max (latmax_, llatmax);
-
-    }
-
-  std::cout << " latmin, latmax = " << rad2deg * latmin_
-            << ", " << rad2deg * latmax_ << std::endl;
-
 
 }
 
@@ -486,6 +465,7 @@ public:
     getLonRange (nodevec, xy, &lonmin, &lonmax);
     getLatRange (nodevec, xy, &latmin, &latmax);
 
+if(0)
     printf (" lon = %12.2f .. %12.2f, lat = %12.2f .. %12.2f\n",
             rad2deg * lonmin, rad2deg * lonmax, rad2deg * latmin, rad2deg * latmax);
 
@@ -1048,9 +1028,99 @@ glm::mat4 getRotMat (const std::vector<glm::vec3> & xyz)
 
   Q[1] = Q[2]; Q[2] = glm::cross (Q[0], Q[1]);
 
+
+#ifdef UNDEF
+  const char * n = "XYZ";
+  for (int i = 0; i < 3; i++)
+    {
+      glm::vec2 lonlat = xyz2lonlat (Q[i]);
+      printf ("%c > %12.2f %12.2f\n", n[i], rad2deg * lonlat.x, rad2deg * lonlat.y);
+    }
+#endif
+
   return glm::mat3 (Q);
 }
 
+
+
+static 
+void processRing (const std::vector<float> & lonlat1, 
+                  int rank1, int rank2, 
+                  std::vector<unsigned int> * ind)
+{
+  std::vector<glm::vec3> xyz1;
+
+  int numberOfPoints1 = rank2-rank1;
+
+  xyz1.resize (numberOfPoints1);
+
+#pragma omp parallel for
+  for (int i = 0; i < numberOfPoints1; i++)
+    {
+      int j = i + rank1;
+      float lon = lonlat1[2*j+0], lat = lonlat1[2*j+1];
+      float coslon = cos (lon), sinlon = sin (lon);
+      float coslat = cos (lat), sinlat = sin (lat);
+      xyz1[i] = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
+    }
+
+
+  glm::mat3 R = getRotMat (xyz1);
+
+  std::vector<glm::vec3> xyz2;
+  std::vector<float> lonlat2;
+
+  xyz2.resize (xyz1.size ());
+  lonlat2.resize (2 * xyz1.size ());
+
+#pragma omp parallel for
+  for (int i = 0; i < xyz1.size (); i++)
+    {
+      xyz2[i] = R * xyz1[i];
+      lonlat2[2*i+0] = atan2 (xyz2[i].y, xyz2[i].x); 
+      lonlat2[2*i+1] = asin (xyz2[i].z);
+    }
+
+  std::vector<glm::vec3> & xyz = xyz2;
+  std::vector<float> & lonlat = lonlat2;
+
+  std::vector<node_t> nodevec;
+
+  nodevec.reserve (numberOfPoints1);
+
+  for (int j = 0; j < numberOfPoints1; j++)
+    nodevec.push_back (node_t (j));
+
+#pragma omp parallel for
+  for (int j = 0; j < numberOfPoints1; j++)
+    {
+      int i = j == 0 ? numberOfPoints1-1 : j-1;
+      int k = j == numberOfPoints1-1 ? 0 : j+1;
+      nodevec[j].setPrevNext (&nodevec[i], &nodevec[k]);
+      nodevec[j].getAngle (xyz);
+    }
+
+  xy2node_t ll2n;
+
+  ll2n.init (nodevec, lonlat, xyz);
+
+  node_t * nodelist = &nodevec[0];
+
+  for (int i = 0, k = -1; ; i++)
+    {
+//    printf (" %8d, nodelist = %8d, ll2n = %8d\n", i, nodelist->count (), ll2n.size ());
+      earCut (&nodelist, xyz, lonlat, ll2n, ind);
+      ll2n.update (xyz);
+
+      int count = nodelist->count ();
+      if (count == k)
+        break;
+      k = count;
+      i++;
+    }
+//printf (" %8s  nodelist = %8d, ll2n = %8d\n", "", nodelist->count (), ll2n.size ());
+
+}
 
 
 void glgrib_test::setup (const glgrib_options_test & o)
@@ -1066,6 +1136,9 @@ void glgrib_test::setup (const glgrib_options_test & o)
   lopts.path = opts.path; lopts.selector = opts.selector;
   glgrib_shapelib::read (lopts, &numberOfPoints, &numberOfLines, &lonlat1, 
                          &indl, lopts.selector);
+
+
+#ifndef UNDEF
 
   std::vector<glm::vec3> xyz1;
 
@@ -1103,6 +1176,15 @@ void glgrib_test::setup (const glgrib_options_test & o)
   std::vector<glm::vec3> & xyz = xyz2;
   std::vector<float> & lonlat = lonlat2;
 
+if(0)
+{
+  FILE * fp = fopen ("lonlat.dat", "w");
+  for (int i = 0; i < xyz.size (); i++)
+    fprintf (fp, " %12.2f %12.2f\n", lonlat[2*i+0] * rad2deg, lonlat[2*i+1] * rad2deg);
+  fclose (fp);
+}
+
+
   std::vector<node_t> nodevec;
 
   nodevec.reserve (numberOfPoints1);
@@ -1132,7 +1214,7 @@ void glgrib_test::setup (const glgrib_options_test & o)
 
   for (int i = 0, k = -1; ; i++)
     {
-      printf (" %8d, nodelist = %8d, ll2n = %8d\n", i, nodelist->count (), ll2n.size ());
+//    printf (" %8d, nodelist = %8d, ll2n = %8d\n", i, nodelist->count (), ll2n.size ());
       earCut (&nodelist, xyz, lonlat, ll2n, &ind);
       ll2n.update (xyz);
 
@@ -1142,15 +1224,20 @@ void glgrib_test::setup (const glgrib_options_test & o)
       k = count;
       i++;
     }
-  printf (" %8s  nodelist = %8d, ll2n = %8d\n", "", nodelist->count (), ll2n.size ());
+//printf (" %8s  nodelist = %8d, ll2n = %8d\n", "", nodelist->count (), ll2n.size ());
 
+#else
+  std::vector<unsigned int> ind;
+
+  processRing (lonlat1, 0, , numberOfPoints-1, &ind);
+#endif
 
   const std::vector<glm::vec3> & xyzb = xyz1;
 
   numberOfTriangles = ind.size () / 3;
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (xyzb.size () * sizeof (xyzb[0]), 
-                                               xyzb.data ());
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (lonlat1.size () * sizeof (lonlat1[0]), 
+                                               lonlat1.data ());
   elementbuffer = new_glgrib_opengl_buffer_ptr (ind.size () * sizeof (ind[0]), 
                                                 ind.data ());
 
@@ -1159,7 +1246,7 @@ void glgrib_test::setup (const glgrib_options_test & o)
 
   vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
     
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
   glBindVertexArray (0); 

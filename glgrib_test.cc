@@ -57,7 +57,7 @@ class node_t
 {
 public:
 
-  node_t (int _rank) : rank (_rank) {}
+  node_t (int _rank, int _index) : rank (_rank), index (_index) {}
 
   std::string asString () const
   {
@@ -96,15 +96,19 @@ public:
   {
     return rank;
   }
+  int getIndex () const
+  {
+    return index;
+  }
 
   float getAngle (const std::vector<glm::vec3> & xyz) const 
   {
     if (dirty)
       {
         int numberOfPoints1 = xyz.size () - 1;
-        int j = rank;
-        int i = prev->rank;
-        int k = next->rank;
+        int j = index;
+        int i = prev->index;
+        int k = next->index;
         glm::vec3 ji = glm::cross (xyz[j], xyz[i] - xyz[j]);
         glm::vec3 jk = glm::cross (xyz[j], xyz[k] - xyz[j]);
         float X = glm::dot (ji, jk);
@@ -117,32 +121,32 @@ public:
 
   const glm::vec3 & getXYZ (const std::vector<glm::vec3> & xyz) const
   {
-    return xyz[rank];
+    return xyz[index];
   }
 
   float getLon (const std::vector<float> & lonlat) const
   {
-    return lonlat[2*rank+0];
+    return lonlat[2*index+0];
   }
 
   float getLat (const std::vector<float> & lonlat) const
   {
-    return lonlat[2*rank+1];
+    return lonlat[2*index+1];
   }
 
   float getX (const std::vector<float> & xy) const
   {
-    return xy[2*rank+0];
+    return xy[2*index+0];
   }
 
   float getY (const std::vector<float> & xy) const
   {
-    return xy[2*rank+1];
+    return xy[2*index+1];
   }
 
   bool inTriangle (const glm::vec3 & p, const std::vector<glm::vec3> & xyz) const
   {
-    const glm::vec3 t[3] = {xyz[prev->rank], xyz[rank], xyz[next->rank]};
+    const glm::vec3 t[3] = {xyz[prev->index], xyz[index], xyz[next->index]};
   
     float S;
     bool o = true;
@@ -203,7 +207,7 @@ public:
 
 
 private:
-  int rank = -1;
+  int rank = -1, index = -1;
   node_t * prev = NULL, * next = NULL;
 
   mutable float ang = 0.0f;
@@ -429,8 +433,8 @@ void getLatRange (const std::vector<node_t> & nodevec,
     {
 
  
-      float ri = n->getRank ();
-      float rj = n->getNext ()->getRank ();
+      float ri = n            ->getIndex ();
+      float rj = n->getNext ()->getIndex ();
 
       float llatmin, llatmax;
 
@@ -722,8 +726,8 @@ dbg = false;
     for (int i = 0; i < 3; i++)
       {
         int j = (i + 1) % 3;
-        int ri = nn[i]->getRank (); 
-        int rj = nn[j]->getRank ();
+        int ri = nn[i]->getIndex (); 
+        int rj = nn[j]->getIndex ();
         float yymin, yymax;
         getLatRange (glm::vec2 (xy[2*ri+0], xy[2*ri+1]), 
                      glm::vec2 (xy[2*rj+0], xy[2*rj+1]), 
@@ -1089,7 +1093,7 @@ void processRing (const std::vector<float> & lonlat1,
   nodevec.reserve (numberOfPoints1);
 
   for (int j = 0; j < numberOfPoints1; j++)
-    nodevec.push_back (node_t (j));
+    nodevec.push_back (node_t (rank1+j, j));
 
 #pragma omp parallel for
   for (int j = 0; j < numberOfPoints1; j++)
@@ -1140,7 +1144,52 @@ void glgrib_test::setup (const glgrib_options_test & o)
 
   std::vector<unsigned int> ind;
 
-  processRing (lonlat1, 0, numberOfPoints-1, &ind);
+  std::vector<int> offset, length;
+  offset.push_back (0);
+  for (int i = 0; i < numberOfPoints; i++)
+    {
+      if (indl[i] == 0xffffffff)
+        {
+          length.push_back (i-offset.back ());
+          offset.push_back (i+1);
+        }
+    }
+  length.push_back (numberOfPoints-offset.back ());
+
+#ifdef UNDEF
+  for (int i = 0; i < length.size (); i++)
+    {
+      printf ("%8d | ", i);
+      if (i > 0)
+        printf ("%8x (%8d)", indl[offset[i]-1], offset[i]-1);
+      else
+        printf ("%8s %10s", "", "");
+      printf (" %8u (%8d) %8u (%8d) %8d %8d", 
+              indl[offset[i]], offset[i], indl[offset[i]+length[i]-1], 
+              offset[i]+length[i]-1, offset[i], length[i]);
+      if (i < length.size ()-1)
+        printf (" %8x (%8d) ", indl[offset[i]+length[i]], offset[i]+length[i]);
+      else
+        printf ("%8s", "");
+      printf ("\n");
+    }
+#endif
+
+  if (opts.selector == "rowid == 3")
+    {
+      processRing (lonlat1, 0, numberOfPoints-1, &ind);
+    }
+  else
+    {
+      int k = 3; processRing (lonlat1, offset[k], offset[k]+length[k]+1, &ind);
+    }
+
+//std::cout << ind.size () << std::endl;
+//for (int i = 0; i < ind.size (); i+=3)
+//  printf (" %8d -> %8u, %8u, %8u\n", i/3, ind[i+0], ind[i+1], ind[i+2]);
+
+//ind.resize (3*216);
+
 
   numberOfTriangles = ind.size () / 3;
 

@@ -663,6 +663,20 @@ public:
   } labels;
 };
 
+class glgrib_options_test : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (selector, "Shape selection");
+    DESC (path,     "Path to coastlines");
+    DESC (on,       "Enable test");
+  }
+  std::string selector = "rowid == 1";
+  std::string path     = "coastlines/shp/GSHHS_c_L1.shp";
+  bool on              = false;
+};
+
 class glgrib_options_landscape_position : public glgrib_options_base
 {
 public:
@@ -1233,6 +1247,7 @@ public:
     INCLUDE (mapscale);
     INCLUDE (departements);
     INCLUDE (shell);
+    INCLUDE_H (test);
   }
   std::vector<glgrib_options_field> field =
     {glgrib_options_field (), glgrib_options_field (), 
@@ -1254,6 +1269,7 @@ public:
   glgrib_options_view view;
   glgrib_options_font font;
   glgrib_options_shell shell;
+  glgrib_options_test test;
   virtual bool parse (int, const char * [], const std::set<std::string> * = NULL);
 };
 

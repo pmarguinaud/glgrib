@@ -5,6 +5,7 @@
 #include "glgrib_opengl.h"
 #include "glgrib_view.h"
 #include "glgrib_geometry.h"
+#include "glgrib_options.h"
 
 class glgrib_test : public glgrib_object
 {
@@ -13,9 +14,10 @@ public:
   virtual ~glgrib_test () { clear (); }
   const_glgrib_geometry_ptr getGeometry () const { return geometry; }
   virtual void clear ();
-  virtual void setup ();
+  virtual void setup (const glgrib_options_test &);
   virtual void resize (const glgrib_view &) {}
 protected:
+  glgrib_options_test opts;
   glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
   const_glgrib_geometry_ptr geometry;
   int numberOfPoints;

@@ -11,6 +11,13 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "glgrib_eigen3.h"
 
+static
+float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2) 
+{
+  return acos (std::max (-1.0f, 
+               std::min (+1.0f, 
+               glm::dot (xyz1, xyz2))));
+}
 
 
 void glgrib_test::render (const glgrib_view & view, const glgrib_options_light & light) const
@@ -233,7 +240,7 @@ class inter_t
 public:
   inter_t () {}
   inter_t (float _xmin, float _xmax) : xmin (_xmin), xmax (_xmax) {}
-  bool contains (float x)
+  bool contains (float x) const
   {
     if (full)
       return true;
@@ -244,6 +251,7 @@ public:
   }
   void expand (const inter_t & inter)
   {
+
     if (full)
       return;
 
@@ -255,14 +263,26 @@ public:
 
     bool cmin = contains (inter.xmin);
     bool cmax = contains (inter.xmax);
-    bool cmid = contains ((inter.xmin + inter.xmax) / 2.0f);
 
-    if (cmin && cmax && cmid)
-      return;
 
     if (cmin && cmax)
       {
-        full = true;
+        if (xmin < xmax)
+          { 
+            if (inter.xmin < inter.xmax)
+              return;
+            else
+              full = true;
+          }
+        else
+          {
+            bool cmin1 = inter.contains (xmin);
+            bool cmax1 = inter.contains (xmax);
+            if (cmin1 && cmax1)
+              full = true;
+            else
+              return;
+          }
       }
     else if (cmin && (! cmax))
       {
@@ -294,9 +314,9 @@ void getLonRange (const std::vector<node_t> & nodevec,
 {
   inter_t minmax;
 
-  int i = 0;
-  for (const node_t * n1 = &nodevec[0]; ; )
+  for (int i = 0; i < nodevec.size (); i++)
     {
+      const node_t * n1 = &nodevec[i];
       const node_t * n2 = n1->getNext ();
 
       float x1 = n1->getX (lonlat);
@@ -314,9 +334,6 @@ void getLonRange (const std::vector<node_t> & nodevec,
           minmax.expand (inter_t (x1, x2));
         }
 
-      i++;
-      if ((n1 = n2) == &nodevec[0])
-        break;
     }
 
   *lonmin = minmax.xmin;
@@ -799,6 +816,10 @@ void earCut (node_t ** nodelist,
 
   if (count > 100)
     {
+
+      for (int i = 0; i < 10; i++)
+        (*nodelist) = (*nodelist)->getNext ();
+
       pools = 8;
       int chunk = count / pools;
       int i = 0;
@@ -829,7 +850,7 @@ void earCut (node_t ** nodelist,
 
   std::vector<unsigned int> ind1[pools];
 
-//#pragma omp parallel for
+#pragma omp parallel for
   for (int c = 0; c < pools; c++)
     {
       std::vector<unsigned int> * ind = &ind1[c];
@@ -898,10 +919,28 @@ glm::mat4 getRotMat (const std::vector<glm::vec3> & xyz)
 
   glm::dvec3 dxyzm (0.0f, 0.0f, 0.0f);
 
+  std::vector<float> w;
+  float W = 0.0f;
+
+  w.resize (xyz.size ());
+
+#pragma omp parallel for
   for (int i = 0; i < xyz.size (); i++)
-    dxyzm += xyz[i];
-  dxyzm = dxyzm / (double)xyz.size (); 
-  glm::vec3 xyzm = dxyzm;
+    {
+      int j = i != xyz.size () - 1 ? i + 1 : 0;
+      w[i] = getAngle (xyz[i], xyz[j]);
+    }
+
+  for (int i = 0; i < xyz.size (); i++)
+    W += w[i];
+
+#pragma omp parallel for
+  for (int i = 0; i < xyz.size (); i++)
+    w[i] = w[i] / W;
+
+
+  for (int i = 0; i < xyz.size (); i++)
+    dxyzm += w[i] * xyz[i];
 
   // Covariance
   glm::dmat3 A;
@@ -910,12 +949,15 @@ glm::mat4 getRotMat (const std::vector<glm::vec3> & xyz)
   for (int j = 0; j < 3; j++)
     A[i][j] = 0.0f;
 
+#pragma omp parallel for collapse (2)
   for (int i = 0; i < 3; i++)
   for (int j = 0; j < 3; j++)
   for (int k = 0; k < xyz.size (); k++)
-    A[i][j] += (xyz[k][i] - xyzm[i]) * (xyz[k][j] - xyzm[j]);
+    A[i][j] += w[k] * (xyz[k][i] - dxyzm[i]) * (xyz[k][j] - dxyzm[j]);
 
-  A = A / (double)xyz.size ();
+
+
+#ifdef UNDEF
 
   std::cout << " det (A) = " << glm::determinant (A) << std::endl;
 
@@ -949,14 +991,17 @@ glm::mat4 getRotMat (const std::vector<glm::vec3> & xyz)
         printf (" %12.5f", v[j]);
       printf ("\n");
     }
-  
+ 
+#endif
     
-  glm::dvec3 w;
+  glm::dvec3 e;
   glm::dmat3 Q;
 
   // Get eigenvectors & eigenvalues
 
-  glgrib_diag (A, &Q, &w);
+  glgrib_diag (A, &Q, &e);
+
+#ifdef UNDEF
 
   glm::dmat3 B = glm::transpose (Q) * A * Q;
 
@@ -970,7 +1015,14 @@ glm::mat4 getRotMat (const std::vector<glm::vec3> & xyz)
   
 
 
-  printf (" %12.2e %12.2e %12.2e\n", w[0], w[1], w[2]);
+  for (int i = 0; i < 3; i++)
+    {
+      glm::vec2 lonlat = xyz2lonlat (Q[i]);
+      printf (" > %12.2f %12.2f\n", rad2deg * lonlat.x, rad2deg * lonlat.y);
+    }
+
+
+  printf (" %12.2e %12.2e %12.2e\n", e[0], e[1], e[2]);
 
   for (int i = 0; i < 3; i++)
   for (int j = 0; j < 3; j++)
@@ -991,32 +1043,29 @@ glm::mat4 getRotMat (const std::vector<glm::vec3> & xyz)
         printf (" %12.2e", Q[i][j]);
       printf ("\n");
     }
+#endif
 
-  exit (0);
+
+  Q[1] = Q[2]; Q[2] = glm::cross (Q[0], Q[1]);
 
   return glm::mat3 (Q);
 }
 
 
 
-void glgrib_test::setup ()
+void glgrib_test::setup (const glgrib_options_test & o)
 {
-
+  opts = o;
 
   int numberOfPoints;
-  glgrib_options_lines opts;
+  glgrib_options_lines lopts;
   unsigned int numberOfLines; 
   std::vector<float> lonlat1;
   std::vector<unsigned int> indl;
   
-  opts.path = "coastlines/shp/GSHHS_i_L1.shp";
-  opts.path = "coastlines/shp/GSHHS_h_L1.shp";
-  opts.path = "coastlines/shp/GSHHS_f_L1.shp";
-  opts.path = "coastlines/shp/GSHHS_c_L1.shp";
-
-  opts.selector = "rowid == 1";
-  glgrib_shapelib::read (opts, &numberOfPoints, &numberOfLines, &lonlat1, 
-                         &indl, opts.selector);
+  lopts.path = opts.path; lopts.selector = opts.selector;
+  glgrib_shapelib::read (lopts, &numberOfPoints, &numberOfLines, &lonlat1, 
+                         &indl, lopts.selector);
 
   std::vector<glm::vec3> xyz1;
 
@@ -1081,8 +1130,7 @@ void glgrib_test::setup ()
 
   std::vector<unsigned int> ind;
 
-  int i = 0, k = -1;
-  while (1)
+  for (int i = 0, k = -1; ; i++)
     {
       printf (" %8d, nodelist = %8d, ll2n = %8d\n", i, nodelist->count (), ll2n.size ());
       earCut (&nodelist, xyz, lonlat, ll2n, &ind);
@@ -1093,18 +1141,16 @@ void glgrib_test::setup ()
         break;
       k = count;
       i++;
-      if (i == 14)
-        break;
     }
   printf (" %8s  nodelist = %8d, ll2n = %8d\n", "", nodelist->count (), ll2n.size ());
 
 
-
+  const std::vector<glm::vec3> & xyzb = xyz1;
 
   numberOfTriangles = ind.size () / 3;
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (xyz1.size () * sizeof (xyz1[0]), 
-                                               xyz1.data ());
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (xyzb.size () * sizeof (xyzb[0]), 
+                                               xyzb.data ());
   elementbuffer = new_glgrib_opengl_buffer_ptr (ind.size () * sizeof (ind[0]), 
                                                 ind.data ());
 

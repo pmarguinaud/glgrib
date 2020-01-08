@@ -19,6 +19,7 @@ void glgrib_diag (const glm::dmat3 & A, glm::dmat3 * Q, glm::dvec3 * w)
   for (int i = 0; i < 3; i++) 
     (*w)[i] = es.eigenvalues () (i);
 
+#ifdef UNDEF
   for (int i = 0; i < 3; i++)
     {
       Eigen::Vector3d u_ = es.eigenvectors ().col (i);
@@ -33,5 +34,6 @@ void glgrib_diag (const glm::dmat3 & A, glm::dmat3 * Q, glm::dvec3 * w)
       printf (" q_/u_ = %12.2e %12.2e %12.2e\n", q_ (0) / u_ (0), q_ (1) / u_ (1), q_ (2) / u_ (2));
       printf (" q /u  = %12.2e %12.2e %12.2e\n", q  [0] / u  [0], q  [1] / u  [1], q  [2] / u  [2]);
     }
+#endif
 
 }

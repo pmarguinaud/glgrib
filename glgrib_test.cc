@@ -460,10 +460,13 @@ if(0)
 class xy2node_t
 {
 public:
-  void init (const std::vector<node_t> & nodevec,
+  xy2node_t (const std::vector<node_t> & nodevec,
              const std::vector<float> & xy, 
-             const std::vector<glm::vec3> & xyz)
+             const std::vector<glm::vec3> & xyz,
+	     bool _openmp)
   {
+    openmp = _openmp;
+
     float lonmin, lonmax, latmin, latmax;
 
     getLonRange (nodevec, xy, &lonmin, &lonmax);
@@ -473,7 +476,8 @@ if(0)
     printf (" lon = %12.2f .. %12.2f, lat = %12.2f .. %12.2f\n",
             rad2deg * lonmin, rad2deg * lonmax, rad2deg * latmin, rad2deg * latmax);
 
-    float ddy = (latmax - latmin) / ny;
+    float ddy = std::max ((latmax - latmin) / ny, 0.1f * deg2rad);
+
     ymin = std::max (-pi, latmin - ddy);
     ymax = std::min (+pi, latmax + ddy);
     dy = (ymax - ymin) / ny;
@@ -485,7 +489,10 @@ if(0)
     while (xmin > xmax)
       xmin -= twopi;
 
-    float ddx = (xmax - xmin) / nx;
+    float ddx = std::max ((xmax - xmin) / nx, 0.1f * deg2rad);
+
+if(0)
+    printf (" ddx = %12.2e\n", ddx * rad2deg);
 
     xmin = xmin - ddx;
     xmax = xmax + ddx;
@@ -528,7 +535,7 @@ if(0)
 
   void update (const std::vector<glm::vec3> & xyz)
   {
-#pragma omp parallel for
+#pragma omp parallel for if (openmp)
     for (int i = 0; i < len.size (); i++)
       for (int j = off[i]; j < off[i] + len[i]; j++)
         if ((! nodes[j]->linked ()) || (nodes[j]->getAngle (xyz) >= 0.0f))
@@ -775,6 +782,7 @@ private:
   float dx, dy;
   float ymin = -halfpi, ymax = +halfpi;
   float xmin = 0.0f,    xmax = twopi;
+  bool openmp = true;
 };
 
 
@@ -791,14 +799,15 @@ void earCut (node_t ** nodelist,
              const std::vector<glm::vec3> & xyz,
              const std::vector<float> & xy,
              const xy2node_t & ll2n,
-             std::vector<unsigned int> * ind)
+             std::vector<unsigned int> * ind,
+	     bool openmp)
 {
 
   std::vector<node_t*> b, e;
   int count = (*nodelist)->count ();
   int pools;
 
-  if (count > 100)
+  if ((count > 100) && openmp)
     {
 
       for (int i = 0; i < 10; i++)
@@ -834,7 +843,7 @@ void earCut (node_t ** nodelist,
 
   std::vector<unsigned int> ind1[pools];
 
-#pragma omp parallel for
+#pragma omp parallel for if (openmp)
   for (int c = 0; c < pools; c++)
     {
       std::vector<unsigned int> * ind = &ind1[c];
@@ -889,7 +898,7 @@ void earCut (node_t ** nodelist,
 
   ind->resize (size);
 
-#pragma omp parallel for
+#pragma omp parallel for if (openmp)
   for (int c = 0; c < pools; c++)
     for (int i = 0; i < ind1[c].size (); i++)
       (*ind)[offset[c]+i] = ind1[c][i];
@@ -897,7 +906,7 @@ void earCut (node_t ** nodelist,
 }
 
 static 
-glm::mat3 getRotMat (const std::vector<glm::vec3> & xyz)
+glm::mat3 getRotMat (const std::vector<glm::vec3> & xyz, bool openmp)
 {
   // Average point
 
@@ -908,7 +917,7 @@ glm::mat3 getRotMat (const std::vector<glm::vec3> & xyz)
 
   w.resize (xyz.size ());
 
-#pragma omp parallel for
+#pragma omp parallel for if (openmp)
   for (int i = 0; i < xyz.size (); i++)
     {
       int j = i != xyz.size () - 1 ? i + 1 : 0;
@@ -918,7 +927,7 @@ glm::mat3 getRotMat (const std::vector<glm::vec3> & xyz)
   for (int i = 0; i < xyz.size (); i++)
     W += w[i];
 
-#pragma omp parallel for
+#pragma omp parallel for if (openmp)
   for (int i = 0; i < xyz.size (); i++)
     w[i] = w[i] / W;
 
@@ -933,7 +942,7 @@ glm::mat3 getRotMat (const std::vector<glm::vec3> & xyz)
   for (int j = 0; j < 3; j++)
     A[i][j] = 0.0f;
 
-#pragma omp parallel for collapse (2)
+#pragma omp parallel for collapse (2) if (openmp)
   for (int i = 0; i < 3; i++)
   for (int j = 0; j < 3; j++)
   for (int k = 0; k < xyz.size (); k++)
@@ -1050,17 +1059,19 @@ glm::mat3 getRotMat (const std::vector<glm::vec3> & xyz)
 static 
 void processRing (const std::vector<float> & lonlat1, 
                   int rank1, int rank2, 
-                  std::vector<unsigned int> * ind)
+                  std::vector<unsigned int> * ind,
+		  bool openmp)
 {
   std::vector<glm::vec3> xyz1;
 
   int numberOfPoints1 = rank2-rank1;
 
+  if(0)
   printf (" numberOfPoints1 = %d\n", numberOfPoints1);
 
   xyz1.resize (numberOfPoints1);
 
-#pragma omp parallel for
+#pragma omp parallel for if (openmp)
   for (int i = 0; i < numberOfPoints1; i++)
     {
       int j = i + rank1;
@@ -1070,13 +1081,14 @@ void processRing (const std::vector<float> & lonlat1,
       xyz1[i] = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
     }
 
+  if(0)
   for (int i = 0; i < numberOfPoints1; i++)
      printf (" %8d | %8d | %12.2e %12.2e %12.2e | %12.2f %12.2f\n", 
              i, i+rank1, xyz1[i].x, xyz1[i].y, xyz1[i].z, 
 	     rad2deg * lonlat1[2*(i+rank1)+0], rad2deg * lonlat1[2*(i+rank1)+1]);
 
 
-  glm::mat3 R = getRotMat (xyz1);
+  glm::mat3 R = getRotMat (xyz1, openmp);
 
   std::vector<glm::vec3> xyz2;
   std::vector<float> lonlat2;
@@ -1084,7 +1096,7 @@ void processRing (const std::vector<float> & lonlat1,
   xyz2.resize (xyz1.size ());
   lonlat2.resize (2 * xyz1.size ());
 
-#pragma omp parallel for
+#pragma omp parallel for if (openmp)
   for (int i = 0; i < xyz1.size (); i++)
     {
       xyz2[i] = R * xyz1[i];
@@ -1102,7 +1114,7 @@ void processRing (const std::vector<float> & lonlat1,
   for (int j = 0; j < numberOfPoints1; j++)
     nodevec.push_back (node_t (rank1+j, j));
 
-#pragma omp parallel for
+#pragma omp parallel for if (openmp)
   for (int j = 0; j < numberOfPoints1; j++)
     {
       int i = j == 0 ? numberOfPoints1-1 : j-1;
@@ -1111,16 +1123,14 @@ void processRing (const std::vector<float> & lonlat1,
       nodevec[j].getAngle (xyz);
     }
 
-  xy2node_t ll2n;
-
-  ll2n.init (nodevec, lonlat, xyz);
+  xy2node_t ll2n (nodevec, lonlat, xyz, openmp);
 
   node_t * nodelist = &nodevec[0];
 
   for (int i = 0, k = -1; ; i++)
     {
 //    printf (" %8d, nodelist = %8d, ll2n = %8d\n", i, nodelist->count (), ll2n.size ());
-      earCut (&nodelist, xyz, lonlat, ll2n, ind);
+      earCut (&nodelist, xyz, lonlat, ll2n, ind, openmp);
       ll2n.update (xyz);
 
       int count = nodelist->count ();
@@ -1161,16 +1171,39 @@ void glgrib_test::setup (const glgrib_options_test & o)
           offset.push_back (i + 1 - offset.size ());
         }
     }
-  length.push_back (numberOfPoints-offset.back ());
+  length.push_back (numberOfPoints - offset.back () - offset.size ());
 
-  for (int k = 0; k < std::min ((size_t)10, offset.size ()); k++)
-    processRing (lonlat1, offset[k], offset[k]+length[k], &ind);
+  std::vector<int> ord;
+  ord.reserve (length.size ());
 
-//std::cout << ind.size () << std::endl;
-//for (int i = 0; i < ind.size (); i+=3)
-//  printf (" %8d -> %8u, %8u, %8u\n", i/3, ind[i+0], ind[i+1], ind[i+2]);
+  for (int i = 0; i < length.size (); i++)
+    ord.push_back (i);
 
-//ind.resize (3*216);
+  auto comp = [&length] (int i, int j)
+  {
+    return length[j] < length[i];
+  };
+
+  std::sort (ord.begin (), ord.end (), comp);
+
+  {
+    FILE * fp = fopen ("length.txt", "w");
+    for (int i = 0; i < length.size (); i++)
+      fprintf (fp, "%d\n", length[ord[i]]);
+    fclose (fp);
+  }
+
+  int k = 0;
+  for (k = 0; k < ord.size (); k++)
+    {
+      int j = ord[k];
+      if (length[j] < 300)
+        break;
+      processRing (lonlat1, offset[j], offset[j]+length[j], &ind, true);
+    }
+
+
+
 
 
   numberOfTriangles = ind.size () / 3;

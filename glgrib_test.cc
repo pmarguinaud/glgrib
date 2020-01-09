@@ -1157,7 +1157,7 @@ void glgrib_test::setup (const glgrib_options_test & o)
     {
       if (indl[i] == 0xffffffff)
         {
-          length.push_back (i - offset.back ());
+          length.push_back (i - offset.back () - offset.size ());
           offset.push_back (i + 1 - offset.size ());
         }
     }
@@ -1188,7 +1188,7 @@ void glgrib_test::setup (const glgrib_options_test & o)
     }
   else
     {
-      int k = 5; processRing (lonlat1, offset[k], offset[k]+length[k]-k-1, &ind);
+      int k = 5; processRing (lonlat1, offset[k], offset[k]+length[k], &ind);
     }
 
 //std::cout << ind.size () << std::endl;

@@ -1163,33 +1163,8 @@ void glgrib_test::setup (const glgrib_options_test & o)
     }
   length.push_back (numberOfPoints-offset.back ());
 
-#ifdef UNDEF
-  for (int i = 0; i < length.size (); i++)
-    {
-      printf ("%8d | ", i);
-      if (i > 0)
-        printf ("%8x (%8d)", indl[offset[i]-1], offset[i]-1);
-      else
-        printf ("%8s %10s", "", "");
-      printf (" %8u (%8d) %8u (%8d) %8d %8d", 
-              indl[offset[i]], offset[i], indl[offset[i]+length[i]-1], 
-              offset[i]+length[i]-1, offset[i], length[i]);
-      if (i < length.size ()-1)
-        printf (" %8x (%8d) ", indl[offset[i]+length[i]], offset[i]+length[i]);
-      else
-        printf ("%8s", "");
-      printf ("\n");
-    }
-#endif
-
-  if (opts.selector != "")
-    {
-      processRing (lonlat1, 0, numberOfPoints-1, &ind);
-    }
-  else
-    {
-      int k = 5; processRing (lonlat1, offset[k], offset[k]+length[k], &ind);
-    }
+  for (int k = 0; k < std::min ((size_t)10, offset.size ()); k++)
+    processRing (lonlat1, offset[k], offset[k]+length[k], &ind);
 
 //std::cout << ind.size () << std::endl;
 //for (int i = 0; i < ind.size (); i+=3)

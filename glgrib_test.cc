@@ -927,6 +927,13 @@ glm::mat3 getRotMat (const std::vector<glm::vec3> & xyz, bool openmp)
   for (int i = 0; i < xyz.size (); i++)
     W += w[i];
 
+  if (W == 0.0f)
+    {
+      W = xyz.size ();
+      for (int i = 0; i < xyz.size (); i++)
+        w[i] = 1.0f;
+    }
+
 #pragma omp parallel for if (openmp)
   for (int i = 0; i < xyz.size (); i++)
     w[i] = w[i] / W;
@@ -1066,7 +1073,7 @@ void processRing (const std::vector<float> & lonlat1,
 
   int numberOfPoints1 = rank2-rank1;
 
-  if(0)
+if(0)
   printf (" numberOfPoints1 = %d\n", numberOfPoints1);
 
   xyz1.resize (numberOfPoints1);
@@ -1081,14 +1088,24 @@ void processRing (const std::vector<float> & lonlat1,
       xyz1[i] = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
     }
 
-  if(0)
+if(0)
   for (int i = 0; i < numberOfPoints1; i++)
-     printf (" %8d | %8d | %12.2e %12.2e %12.2e | %12.2f %12.2f\n", 
+     printf (" %8d | %8d | %12.2e %12.2e %12.2e | %18.6f %18.6f\n", 
              i, i+rank1, xyz1[i].x, xyz1[i].y, xyz1[i].z, 
 	     rad2deg * lonlat1[2*(i+rank1)+0], rad2deg * lonlat1[2*(i+rank1)+1]);
 
 
   glm::mat3 R = getRotMat (xyz1, openmp);
+
+if(0)
+  for (int i = 0; i < 3; i++)
+    {
+      for (int j = 0; j < 3; j++)
+        printf (" %12.2e", R[i][j]);
+      printf ("\n");
+    }
+
+
 
   std::vector<glm::vec3> xyz2;
   std::vector<float> lonlat2;
@@ -1103,6 +1120,12 @@ void processRing (const std::vector<float> & lonlat1,
       lonlat2[2*i+0] = atan2 (xyz2[i].y, xyz2[i].x); 
       lonlat2[2*i+1] = asin (xyz2[i].z);
     }
+
+if(0)
+  for (int i = 0; i < xyz1.size (); i++)
+     printf (" %8d | %12.2e %12.2e %12.2e | %18.6f %18.6f\n", 
+             i, xyz2[i].x, xyz2[i].y, xyz2[i].z, 
+	     rad2deg * lonlat2[2*i+0], rad2deg * lonlat2[2*i+1]);
 
   std::vector<glm::vec3> & xyz = xyz2;
   std::vector<float> & lonlat = lonlat2;
@@ -1129,7 +1152,7 @@ void processRing (const std::vector<float> & lonlat1,
 
   for (int i = 0, k = -1; ; i++)
     {
-//    printf (" %8d, nodelist = %8d, ll2n = %8d\n", i, nodelist->count (), ll2n.size ());
+      printf (" %8d, nodelist = %8d, ll2n = %8d\n", i, nodelist->count (), ll2n.size ());
       earCut (&nodelist, xyz, lonlat, ll2n, ind, openmp);
       ll2n.update (xyz);
 
@@ -1137,9 +1160,25 @@ void processRing (const std::vector<float> & lonlat1,
       if (count == k)
         break;
       k = count;
-      i++;
+
+if (i >= 31)
+  for (node_t * n = nodelist; ; )
+    {
+      int r = n->getRank ();
+
+      printf (" %8d | %12.2f %12.2f | %12.2f\n", 
+              r, rad2deg * lonlat1[2*r+0], rad2deg * lonlat1[2*r+1],
+              n->getAngle (xyz2));
+
+      n = n->getNext ();
+      if (n == nodelist)
+        break;
     }
-//printf (" %8s  nodelist = %8d, ll2n = %8d\n", "", nodelist->count (), ll2n.size ());
+
+      if (i == 31)
+        break;
+    }
+  printf (" %8s  nodelist = %8d, ll2n = %8d\n", "", nodelist->count (), ll2n.size ());
 
 }
 
@@ -1193,17 +1232,25 @@ void glgrib_test::setup (const glgrib_options_test & o)
     fclose (fp);
   }
 
+  std::cout << ord.size () << std::endl;
+
   int k = 0;
-  for (k = 0; k < ord.size (); k++)
+//for (k = 0; k < ord.size (); k++)
+  for (k = 2; k < 3; k++)
     {
       int j = ord[k];
-      if (length[j] < 300)
-        break;
+//    if (length[j] < 300)
+//      break;
+      int size = ind.size ();
       processRing (lonlat1, offset[j], offset[j]+length[j], &ind, true);
+      if (length[j] > 2)
+      if (ind.size () - size != 3 * (length[j] - 2))
+      printf ("%8d | %8d %8lu %8d\n", k, length[j], ind.size () - size, 3 * (length[j] - 2));
     }
 
 
 
+//exit (0);
 
 
   numberOfTriangles = ind.size () / 3;

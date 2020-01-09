@@ -897,7 +897,7 @@ void earCut (node_t ** nodelist,
 }
 
 static 
-glm::mat4 getRotMat (const std::vector<glm::vec3> & xyz)
+glm::mat3 getRotMat (const std::vector<glm::vec3> & xyz)
 {
   // Average point
 
@@ -1056,6 +1056,8 @@ void processRing (const std::vector<float> & lonlat1,
 
   int numberOfPoints1 = rank2-rank1;
 
+  printf (" numberOfPoints1 = %d\n", numberOfPoints1);
+
   xyz1.resize (numberOfPoints1);
 
 #pragma omp parallel for
@@ -1067,6 +1069,11 @@ void processRing (const std::vector<float> & lonlat1,
       float coslat = cos (lat), sinlat = sin (lat);
       xyz1[i] = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
     }
+
+  for (int i = 0; i < numberOfPoints1; i++)
+     printf (" %8d | %8d | %12.2e %12.2e %12.2e | %12.2f %12.2f\n", 
+             i, i+rank1, xyz1[i].x, xyz1[i].y, xyz1[i].z, 
+	     rad2deg * lonlat1[2*(i+rank1)+0], rad2deg * lonlat1[2*(i+rank1)+1]);
 
 
   glm::mat3 R = getRotMat (xyz1);
@@ -1175,13 +1182,13 @@ void glgrib_test::setup (const glgrib_options_test & o)
     }
 #endif
 
-  if (opts.selector == "rowid == 3")
+  if (opts.selector != "")
     {
       processRing (lonlat1, 0, numberOfPoints-1, &ind);
     }
   else
     {
-      int k = 3; processRing (lonlat1, offset[k], offset[k]+length[k]+1, &ind);
+      int k = 3; processRing (lonlat1, offset[k]-k, offset[k]+length[k]-k-1, &ind);
     }
 
 //std::cout << ind.size () << std::endl;

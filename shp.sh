@@ -7,7 +7,8 @@ set -x
 #./glgrib.x --coast.on --coast.lines.format shp  --coast.lines.path gshhs/GSHHS_shp/c/GSHHS_c_L6.shp --test.on --test.path gshhs/GSHHS_shp/c/GSHHS_c_L6.shp --test.selector "rowid == 2"
 
 
- gdb -ex="set confirm on" -ex=run -ex=quit --args ./glgrib.x --test.on  --test.path coastlines/shp/GSHHS_i_L1.shp --test.selector "" --view.lat -43 --view.lon -65 --view.fov 2 --grid.on
+ gdb -ex="set confirm on" -ex=run -ex=quit --args ./glgrib.x --test.on  --test.path coastlines/shp/GSHHS_i_L1.shp --test.selector "" --window.width 1200 --grid.on --view.lon -69.76 --view.lat 43.81 --view.fov 0.05 \
+	    --coast.on --coast.lines.path coastlines/shp/GSHHS_i_L1.shp --coast.lines.format shp
 
 exit
 

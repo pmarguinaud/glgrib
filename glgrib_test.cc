@@ -11,6 +11,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "glgrib_eigen3.h"
 
+
 static
 float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2) 
 {
@@ -27,14 +28,13 @@ void glgrib_test::render (const glgrib_view & view, const glgrib_options_light &
 
   view.setMVP (program);
 
-  glDisable (GL_CULL_FACE);
+//glDisable (GL_CULL_FACE);
 
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
   glBindVertexArray (0);
 
-  glEnable (GL_CULL_FACE);
-  
+//glEnable (GL_CULL_FACE);
 
   view.delMVP (program);
 
@@ -317,6 +317,7 @@ void getLonRange (const std::vector<node_t> & nodevec,
                   float * lonmin, float * lonmax)
 {
   inter_t minmax;
+  bool init = false;
 
   for (int i = 0; i < nodevec.size (); i++)
     {
@@ -332,10 +333,11 @@ void getLonRange (const std::vector<node_t> & nodevec,
       if (x1 == x2) 
         continue;
 
-      if (i == 0)
+      if (! init)
         {
           minmax.xmin = x1;
           minmax.xmax = x2;
+	  init = true;
         }
       else
         {
@@ -724,7 +726,7 @@ dbg = false;
     return t;
   }
 
-  iterator begin (const node_t & n, const std::vector<float> & xy) const
+  iterator begin (const node_t & n, const std::vector<float> & xy, bool dbg = false) const
   {
     const node_t * nn[3] = {n.getPrev (), &n, n.getNext ()};
 
@@ -747,13 +749,29 @@ dbg = false;
     float x1 = n.getNext ()->getX (xy);
     float x2 = n.getPrev ()->getX (xy);
 
-    while (x1 - x0 > +twopi) x1 -= twopi;
-    while (x1 - x0 < -twopi) x1 += twopi;
-    while (x2 - x0 > +twopi) x2 -= twopi;
-    while (x2 - x0 < -twopi) x2 += twopi;
+    inter_t int01, int02;
 
-    float xmin = std::min (x0, std::min (x1, x2));
-    float xmax = std::max (x0, std::max (x1, x2));
+    {
+      float x0 = n.            getX (xy);
+      float x1 = n.getNext ()->getX (xy);
+      xint (x0, x1);
+      int01 = inter_t (x0, x1);
+    }
+
+    {
+      float x0 = n.            getX (xy);
+      float x2 = n.getPrev ()->getX (xy);
+      xint (x0, x2);
+      int02 = inter_t (x0, x2);
+    }
+
+    int01.expand (int02);
+
+    float xmin = int01.xmin;
+    float xmax = int01.xmax;
+
+    while (xmax - xmin > twopi) xmax -= twopi;
+    while (xmin - xmax > twopi) xmin -= twopi;
 
     return iterator (ymin, ymax, xmin, xmax, this);
   }
@@ -862,8 +880,10 @@ void earCut (node_t ** nodelist,
                 {
                   const node_t * n1 = *it;
                   const glm::vec3 & p = n1->getXYZ (xyz);
+
                   if ((n == n1) || (n->getNext () == n1) || (n->getPrev () == n1))
                     continue;
+
                   if (n->inTriangle (p, xyz))
                     {
                       intri = true;
@@ -873,8 +893,8 @@ void earCut (node_t ** nodelist,
 
               if (! intri)
                 {
-                  ind->push_back (n->getPrev ()->getRank ());
                   ind->push_back (n            ->getRank ());
+                  ind->push_back (n->getPrev ()->getRank ());
                   ind->push_back (n->getNext ()->getRank ());
                   n->cut (&n, nodelist);
                   if (n == e[c])
@@ -1152,7 +1172,7 @@ if(0)
 
   for (int i = 0, k = -1; ; i++)
     {
-      printf (" %8d, nodelist = %8d, ll2n = %8d\n", i, nodelist->count (), ll2n.size ());
+//    printf (" %8d, nodelist = %8d, ll2n = %8d\n", i, nodelist->count (), ll2n.size ());
       earCut (&nodelist, xyz, lonlat, ll2n, ind, openmp);
       ll2n.update (xyz);
 
@@ -1160,25 +1180,8 @@ if(0)
       if (count == k)
         break;
       k = count;
-
-if (i >= 31)
-  for (node_t * n = nodelist; ; )
-    {
-      int r = n->getRank ();
-
-      printf (" %8d | %12.2f %12.2f | %12.2f\n", 
-              r, rad2deg * lonlat1[2*r+0], rad2deg * lonlat1[2*r+1],
-              n->getAngle (xyz2));
-
-      n = n->getNext ();
-      if (n == nodelist)
-        break;
     }
-
-      if (i == 31)
-        break;
-    }
-  printf (" %8s  nodelist = %8d, ll2n = %8d\n", "", nodelist->count (), ll2n.size ());
+//printf (" %8s  nodelist = %8d, ll2n = %8d\n", "", nodelist->count (), ll2n.size ());
 
 }
 
@@ -1234,21 +1237,34 @@ void glgrib_test::setup (const glgrib_options_test & o)
 
   std::cout << ord.size () << std::endl;
 
+  int ind_size = 0;
+  for (int k = 0; k < ord.size (); k++)
+    {
+      int j = ord[k];
+      if (length[j] > 2)
+        {
+          ind_size += 3 * (length[j] - 2);
+        }
+    }
+
   int k = 0;
-//for (k = 0; k < ord.size (); k++)
-  for (k = 2; k < 3; k++)
+  for (k = 0; k < ord.size (); k++)
     {
       int j = ord[k];
 //    if (length[j] < 300)
 //      break;
       int size = ind.size ();
-      processRing (lonlat1, offset[j], offset[j]+length[j], &ind, true);
       if (length[j] > 2)
-      if (ind.size () - size != 3 * (length[j] - 2))
-      printf ("%8d | %8d %8lu %8d\n", k, length[j], ind.size () - size, 3 * (length[j] - 2));
+        {
+          processRing (lonlat1, offset[j], offset[j]+length[j], &ind, true);
+          if (ind.size () - size != 3 * (length[j] - 2))
+          printf ("%8d, %8d | %8d %8lu %8d\n", k, j, length[j], 
+                  ind.size () - size, 3 * (length[j] - 2));
+        }
     }
 
-
+  std::cout << " ind_size    = " << ind_size    << std::endl;
+  std::cout << " ind.size () = " << ind.size () << std::endl;
 
 //exit (0);
 

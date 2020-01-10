@@ -966,122 +966,60 @@ glm::mat3 getRotMat (const std::vector<glm::vec3> & xyz, bool openmp)
     dxyzm += w[i] * xyz[i];
 
   // Covariance
-  glm::dmat3 A;
+  glm::dmat2 A;
 
-  for (int i = 0; i < 3; i++)
-  for (int j = 0; j < 3; j++)
+  for (int i = 0; i < 2; i++)
+  for (int j = 0; j < 2; j++)
     A[i][j] = 0.0f;
 
+
+  std::vector<glm::vec2> XY (xyz.size ());
+
+  glm::vec3 r = glm::normalize (glm::vec3 (dxyzm));
+  glm::vec3 s = glm::normalize (glm::cross (glm::vec3 (0.0f, 0.0f, 1.0f), r));
+  glm::vec3 t = glm::normalize (glm::cross (r, s));
+#pragma omp parallel for if (openmp)
+  for (int i = 0; i < xyz.size (); i++)
+    XY[i] = glm::vec2 (glm::dot (s, xyz[i]), glm::dot (t, xyz[i]));
+
+
 #pragma omp parallel for collapse (2) if (openmp)
-  for (int i = 0; i < 3; i++)
-  for (int j = 0; j < 3; j++)
-  for (int k = 0; k < xyz.size (); k++)
-    A[i][j] += w[k] * (xyz[k][i] - dxyzm[i]) * (xyz[k][j] - dxyzm[j]);
+  for (int i = 0; i < 2; i++)
+  for (int j = 0; j < 2; j++)
+  for (int k = 0; k < XY.size (); k++)
+    A[i][j] += w[k] * XY[k][i] * XY[k][j];
 
 
 
-#ifdef UNDEF
-
-  std::cout << " det (A) = " << glm::determinant (A) << std::endl;
-
-  printf (" A = \n");
-  for (int i = 0; i < 3; i++) 
-    {
-      for (int j = 0; j < 3; j++) 
-        printf (" %12.5f", A[i][j]);
-      printf ("\n");
-    }
-  
-  printf ("--------\n");
-  for (int i = 0; i < 3; i++) 
-    {
-      glm::vec3 u (0.0f, 0.0f, 0.0f);
-      u[i] = 1.0f;
-      glm::vec3 v = A * u;
-      for (int j = 0; j < 3; j++) 
-        printf (" %12.5f", v[j]);
-      printf ("\n");
-    }
-  
-    
-  printf ("--------\n");
-  for (int i = 0; i < 3; i++) 
-    {
-      glm::vec3 u (1.0f, 1.0f, 1.0f);
-      u[i] = 0.0f;
-      glm::vec3 v = A * u;
-      for (int j = 0; j < 3; j++) 
-        printf (" %12.5f", v[j]);
-      printf ("\n");
-    }
- 
-#endif
-    
-  glm::dvec3 e;
-  glm::dmat3 Q;
+  glm::dvec2 e;
+  glm::dmat2 Q;
 
   // Get eigenvectors & eigenvalues
 
   glgrib_diag (A, &Q, &e);
 
+  glm::vec3 r_ = r;
+  glm::vec3 s_ = (float)Q[1][0] * s + (float)Q[1][1] * t;
+  glm::vec3 t_ = glm::cross (r_, s_);
+
+  glm::mat3 RST (r_, s_, t_);
+
 #ifdef UNDEF
-
-  glm::dmat3 B = glm::transpose (Q) * A * Q;
-
-  printf (" B = \n");
-  for (int i = 0; i < 3; i++) 
-    {
-      for (int j = 0; j < 3; j++) 
-        printf (" %12.5f", B[i][j]);
-      printf ("\n");
-    }
   
-
-
-  for (int i = 0; i < 3; i++)
-    {
-      glm::vec2 lonlat = xyz2lonlat (Q[i]);
-      printf (" > %12.2f %12.2f\n", rad2deg * lonlat.x, rad2deg * lonlat.y);
-    }
-
-
-  printf (" %12.2e %12.2e %12.2e\n", e[0], e[1], e[2]);
-
-  for (int i = 0; i < 3; i++)
-  for (int j = 0; j < 3; j++)
-    {
-      printf (" %8d, %8d -> %12.2f\n", i, j, glm::dot (Q[i], Q[j]));
-    }
-  for (int i = 0; i < 3; i++)
-    {
-      glm::dvec3 u (Q[i][0], Q[i][1], Q[i][2]);
-      glm::dvec3 q = A * u;
-      printf (" u   = %12.2e %12.2e %12.2e\n", u[0], u[1], u[2]);
-      printf (" q   = %12.2e %12.2e %12.2e\n", q[0], q[1], q[2]);
-      printf (" q/u = %12.2e %12.2e %12.2e\n", q[0]/u[0], q[1]/u[1], q[2]/u[2]);
-    }
-  for (int i = 0; i < 3; i++)
-    {
-      for (int j = 0; j < 3; j++)
-        printf (" %12.2e", Q[i][j]);
-      printf ("\n");
-    }
-#endif
-
-
-  Q[1] = Q[2]; Q[2] = glm::cross (Q[0], Q[1]);
-
-
-#ifdef UNDEF
   const char * n = "XYZ";
   for (int i = 0; i < 3; i++)
     {
-      glm::vec2 lonlat = xyz2lonlat (Q[i]);
+      glm::vec2 lonlat = xyz2lonlat (RST[i]);
       printf ("%c > %12.2f %12.2f\n", n[i], rad2deg * lonlat.x, rad2deg * lonlat.y);
     }
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+    printf (" %8d %8d | %12.2e\n", i, j, glm::dot (RST[i], RST[j]));
+
 #endif
 
-  return glm::mat3 (Q);
+  return RST;
 }
 
 

@@ -3,7 +3,7 @@
 
 #include <glm/glm.hpp>
 
-void glgrib_diag (const glm::dmat3 &, glm::dmat3 *, glm::dvec3 *);
+void glgrib_diag (const glm::dmat2 &, glm::dmat2 *, glm::dvec2 *);
 
 
 #endif

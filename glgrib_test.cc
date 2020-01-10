@@ -817,7 +817,9 @@ void earCut (node_t ** nodelist,
              const std::vector<glm::vec3> & xyz,
              const std::vector<float> & xy,
              const xy2node_t & ll2n,
+	     int * indr,
              std::vector<unsigned int> * ind,
+	     int indrmax,
 	     bool openmp)
 {
 
@@ -895,7 +897,7 @@ void earCut (node_t ** nodelist,
                 {
                   ind->push_back (n            ->getRank ());
                   ind->push_back (n->getPrev ()->getRank ());
-                  ind->push_back (n->getNext ()->getRank ());
+		  ind->push_back (n->getNext ()->getRank ());
                   n->cut (&n, nodelist);
                   if (n == e[c])
                     break;
@@ -906,23 +908,24 @@ void earCut (node_t ** nodelist,
         }
     }
 
-  int size = ind->size ();
- 
-  for (int c = 0; c < pools; c++)
-    size += ind1[c].size ();
-
   int offset[pools];
-  offset[0] = ind->size ();
+
+  // Start to write at indr
+  offset[0] = *indr;
   for (int c = 1; c < pools; c++)
     offset[c] = offset[c-1] + ind1[c-1].size ();
 
-  ind->resize (size);
+  // Check for ind bounds
+  if (offset[pools-1] + ind1[pools-1].size () > indrmax)
+    abort ();
 
 #pragma omp parallel for if (openmp)
   for (int c = 0; c < pools; c++)
     for (int i = 0; i < ind1[c].size (); i++)
       (*ind)[offset[c]+i] = ind1[c][i];
 
+  // Update ind pointer
+  (*indr) = offset[pools-1] + ind1[pools-1].size ();
 }
 
 static 
@@ -1086,6 +1089,7 @@ glm::mat3 getRotMat (const std::vector<glm::vec3> & xyz, bool openmp)
 static 
 void processRing (const std::vector<float> & lonlat1, 
                   int rank1, int rank2, 
+		  int indr1, int indr2,
                   std::vector<unsigned int> * ind,
 		  bool openmp)
 {
@@ -1170,10 +1174,11 @@ if(0)
 
   node_t * nodelist = &nodevec[0];
 
+  int indr = indr1;
   for (int i = 0, k = -1; ; i++)
     {
 //    printf (" %8d, nodelist = %8d, ll2n = %8d\n", i, nodelist->count (), ll2n.size ());
-      earCut (&nodelist, xyz, lonlat, ll2n, ind, openmp);
+      earCut (&nodelist, xyz, lonlat, ll2n, &indr, ind, indr2, openmp);
       ll2n.update (xyz);
 
       int count = nodelist->count ();
@@ -1201,7 +1206,6 @@ void glgrib_test::setup (const glgrib_options_test & o)
                          &indl, lopts.selector);
 
 
-  std::vector<unsigned int> ind;
 
   std::vector<int> offset, length;
   offset.push_back (0);
@@ -1228,14 +1232,9 @@ void glgrib_test::setup (const glgrib_options_test & o)
 
   std::sort (ord.begin (), ord.end (), comp);
 
-  {
-    FILE * fp = fopen ("length.txt", "w");
-    for (int i = 0; i < length.size (); i++)
-      fprintf (fp, "%d\n", length[ord[i]]);
-    fclose (fp);
-  }
-
-  std::cout << ord.size () << std::endl;
+  // Offset/length for each ring
+  std::vector<int> ind_offset (ord.size ());
+  std::vector<int> ind_length (ord.size ());
 
   int ind_size = 0;
   for (int k = 0; k < ord.size (); k++)
@@ -1243,30 +1242,40 @@ void glgrib_test::setup (const glgrib_options_test & o)
       int j = ord[k];
       if (length[j] > 2)
         {
-          ind_size += 3 * (length[j] - 2);
+          ind_length[k] = 3 * (length[j] - 2);
+          if (k > 0)
+            ind_offset[k] = ind_offset[k-1] + ind_length[k-1];
+	  else
+            ind_offset[0] = 0;
+          ind_size += ind_length[k];
         }
     }
 
+  std::vector<unsigned int> ind (ind_size);
+
+  // Process big blocks serially, with OpenMP on inner loops
   int k = 0;
   for (k = 0; k < ord.size (); k++)
     {
       int j = ord[k];
-//    if (length[j] < 300)
-//      break;
-      int size = ind.size ();
+      if (length[j] < 300)
+        break;
       if (length[j] > 2)
-        {
-          processRing (lonlat1, offset[j], offset[j]+length[j], &ind, true);
-          if (ind.size () - size != 3 * (length[j] - 2))
-          printf ("%8d, %8d | %8d %8lu %8d\n", k, j, length[j], 
-                  ind.size () - size, 3 * (length[j] - 2));
-        }
+        processRing (lonlat1, offset[j], offset[j]+length[j], 
+                     ind_offset[k], ind_offset[k]+ind_length[k],
+                     &ind, true);
     }
 
-  std::cout << " ind_size    = " << ind_size    << std::endl;
-  std::cout << " ind.size () = " << ind.size () << std::endl;
-
-//exit (0);
+  // Process small blocks in parallel
+#pragma omp parallel for
+  for (int l = k; l < ord.size (); l++)
+    {
+      int j = ord[l];
+      if (length[j] > 2)
+        processRing (lonlat1, offset[j], offset[j]+length[j], 
+                     ind_offset[l], ind_offset[l]+ind_length[l],
+                     &ind, false);
+    }
 
 
   numberOfTriangles = ind.size () / 3;

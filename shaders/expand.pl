@@ -15,7 +15,7 @@ sub load
 
 mkdir ('.shaders');
 
-for my $f (<shaders/src/*.vs>, <shaders/src/*.fs>)
+for my $f (<shaders/src/*.vs>, <shaders/src/*.fs>, <shaders/src/*.gs>)
   {
     my @text = &load ($f);
     my @code;

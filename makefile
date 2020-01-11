@@ -6,7 +6,7 @@ LDFLAGS=-fopenmp -lGLEW -lGL -lglfw -lpng -lreadline -lncurses -ltinfo -lssl -lc
 RUNTEST=./runtest.pl $@ ./glgrib.x
 
 
-CXXFLAGS=-O0 -fopenmp -std=c++11 -g -I$(HOME)/3d/usr/include -I$(ECCODES_PREFIX)/include  -I/home/phi001/install/eigen/include/eigen3/
+CXXFLAGS=-O0 -fopenmp -std=c++11 -g -I$(HOME)/3d/usr/include -I$(ECCODES_PREFIX)/include  
 
 all: glgrib.x 
 	@./shaders/expand.pl

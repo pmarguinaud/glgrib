@@ -44,13 +44,13 @@ std::string kind2name (glgrib_program::kind kind)
 }
 
 static
-std::string slurp (const std::string & file)
+std::string slurp (const std::string & file, bool fatal = true)
 {
   struct stat st;
   if (stat (file.c_str (), &st) == 0)
     {
       std::string code;
-      code.reserve (st.st_size + 1);
+      code.resize (st.st_size + 1);
       FILE * fp = fopen (file.c_str (), "r");
       if (fread (&code[0], st.st_size, 1, fp) != 1)
         throw std::runtime_error (std::string ("Cannot read ") + file);
@@ -58,13 +58,16 @@ std::string slurp (const std::string & file)
       code[st.st_size] = 0;
       return code;
     }
-  throw std::runtime_error (std::string ("Cannot open ") + file);
+  if (fatal)
+    throw std::runtime_error (std::string ("Cannot open ") + file);
+  return "";
 }
 
 void glgrib_program::read (const std::string & file)
 {
   VertexShaderCode   = slurp (glgrib_resolve (".shaders/" + file + ".vs"));
   FragmentShaderCode = slurp (glgrib_resolve (".shaders/" + file + ".fs"));
+  GeometryShaderCode = slurp (glgrib_resolve (".shaders/" + file + ".gs"), false);
 }
 
 void glgrib_program::compile ()

@@ -51,8 +51,7 @@ void glgrib_scene::display () const
 
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  if (d.opts.test.on)
-    d.test.render (d.view, d.opts.scene.light);
+  d.test.render (d.view, d.opts.scene.light);
   
   display_obj (&d.landscape);
   display_obj (&d.coast);
@@ -95,6 +94,8 @@ void glgrib_scene::display () const
   if (d.opts.cities.on)
     d.cities.render (d.view);
 
+  if (d.opts.land.on)
+    d.land.render (d.view, d.opts.scene.light);
 }
 
 const glgrib_option_date * glgrib_scene::get_date ()
@@ -301,8 +302,7 @@ void glgrib_scene::setup (const glgrib_options & o)
 {
   d.opts = o;
 
-  if (o.test.on)
-    d.test.setup (o.test);
+  d.test.setup ();
 
   setViewport (d.opts.window.width, d.opts.window.height);
   setLightOptions (d.opts.scene.light);
@@ -369,6 +369,8 @@ void glgrib_scene::setup (const glgrib_options & o)
         }
     }
 
+  if (o.land.on)
+    d.land.setup (o.land);
 
   resize ();
 }

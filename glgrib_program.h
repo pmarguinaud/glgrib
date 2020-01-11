@@ -27,6 +27,7 @@ public:
     STREAM,
     SCALAR_POINTS,
     FRAME,
+    LAND,
     TEST,
   } kind;
 

@@ -37,6 +37,7 @@ std::string kind2name (glgrib_program::kind kind)
   KIND (STREAM);
   KIND (SCALAR_POINTS);
   KIND (FRAME);
+  KIND (LAND);
   KIND (TEST);
 #undef KIND
   throw std::runtime_error (std::string ("Unknown program kind"));

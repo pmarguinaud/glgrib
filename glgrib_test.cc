@@ -9,7 +9,6 @@
 #include <omp.h>
 
 #include <glm/gtc/type_ptr.hpp>
-#include "glgrib_eigen3.h"
 
 
 static
@@ -18,6 +17,19 @@ float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2)
   return acos (std::max (-1.0f, 
                std::min (+1.0f, 
                glm::dot (xyz1, xyz2))));
+}
+
+static
+void glgrib_diag (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
+{
+  double a = A[0][0], b = A[1][1], c = A[0][1];
+  double D = sqrt ((a - b) * (a - b) + 4 * c * c);
+
+  (*w)[0] = 0.5 * (a + b - D);
+  (*w)[1] = 0.5 * (a + b + D);
+
+  (*Q)[0] = glm::normalize (glm::dvec2 (2.0 * c, b - a - D));
+  (*Q)[1] = glm::normalize (glm::dvec2 (2.0 * c, b - a + D));
 }
 
 
@@ -998,6 +1010,21 @@ glm::mat3 getRotMat (const std::vector<glm::vec3> & xyz, bool openmp)
 
   glgrib_diag (A, &Q, &e);
 
+#ifdef UNDEF
+  printf ("e =\n");
+  for (int i = 0; i < 2; i++)
+    printf (" %12.2e", e[i]);
+  printf ("\n");
+
+  printf ("Q =\n");
+  for (int i = 0; i < 2; i++)
+    {
+      for (int j = 0; j < 2; j++)
+        printf (" %12.2f", Q[j][i]);
+      printf ("\n");
+    }
+#endif
+
   glm::vec3 r_ = r;
   glm::vec3 s_ = (float)Q[1][0] * s + (float)Q[1][1] * t;
   glm::vec3 t_ = glm::cross (r_, s_);
@@ -1016,6 +1043,14 @@ glm::mat3 getRotMat (const std::vector<glm::vec3> & xyz, bool openmp)
   for (int i = 0; i < 3; i++)
   for (int j = 0; j < 3; j++)
     printf (" %8d %8d | %12.2e\n", i, j, glm::dot (RST[i], RST[j]));
+
+  printf ("\n");
+  for (int i = 0; i < 3; i++)
+    {
+      for (int j = 0; j < 3; j++)
+        printf (" %12.2e", RST[j][i]);
+      printf ("\n");
+    }
 
 #endif
 

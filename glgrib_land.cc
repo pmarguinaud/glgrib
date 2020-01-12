@@ -1225,6 +1225,190 @@ if(0)
 }
 
 
+class edge_t
+{
+public:
+  edge_t () {}
+  int count = 0;
+  int rankb = 0;
+  float angle;
+  void computePointCoordinates (int i, int j, std::vector<glm::vec3> & xyz) const
+  {
+    const glm::vec3 & u = xyz[i];
+    const glm::vec3 w = glm::cross (xyz[i], xyz[j]);
+    const glm::vec3 v = glm::cross (w, u);
+    const float ang = getAngle (xyz[i], xyz[j]);
+    for (int k = 0; k < count; k++)
+      {
+        int rank = rankb + k;
+        float a = ang * (k + 1) / (count + 1);
+        xyz[rank] = cos (a) * u + sin (a) * v;
+      }
+  }
+};
+
+class edge_idx_t : public std::map<std::pair<int,int>,edge_t>
+{
+public:
+  bool has (int i, int j) const
+  {
+    order (i, j);
+    return find (std::pair<int,int> (i, j)) != end ();
+  }
+  edge_t & get (int i, int j) 
+  {
+    order (i, j);
+    edge_idx_t::iterator it = find (std::pair<int,int> (i, j));
+    return it->second;
+  }
+  edge_t & add (int i, int j)
+  {
+    order (i, j);
+    std::pair<edge_idx_t::iterator,bool> r =
+    insert (std::pair<std::pair<int,int>, edge_t> (std::pair<int,int> (i, j), edge_t ()));
+    return r.first->second;
+  }
+  private:
+  void order (int & i, int & j) const
+  {
+    if (j < i) std::swap (i, j);
+  }
+};
+
+class triangle_t
+{
+public:
+  int rank = -1;
+  
+  int getLongEdges (const float anglemax, const std::vector<unsigned int> & ind, 
+                    const std::vector<glm::vec3> & xyz, edge_idx_t * eidx) const
+  {
+    int sub[3];
+    for (int i = 0; i < 3; i++)
+      {
+        int j = (i + 1) % 3;
+        int rank1 = ind[3*rank+i], rank2 = ind[3*rank+j];
+
+        if (eidx->has (rank1, rank2))
+          continue;
+
+        float angle = getAngle (xyz[rank1], xyz[rank2]);
+        int count = angle / anglemax;
+
+        if (count)
+          {
+            edge_t & e = eidx->add (rank1, rank2);
+            e.count = count;
+            e.angle = angle;
+          }
+
+        sub[i] = count;
+      }
+    
+    // Number of triangles we can get now
+    int jtri = sub[0] + sub[1] + sub[2] - *std::min_element (sub, sub + 3);
+    return jtri ? (jtri+1) : jtri;
+  }
+ 
+};
+
+
+
+static
+void subdivideRing (std::vector<glm::vec3> & xyz, 
+                    std::vector<unsigned int> & ind,
+                    int indr1, int indr2, const float angmax, bool openmp)
+{
+  int itri = 0;
+
+  int indt1 = indr1/3, indt2 = indr2/3;
+
+  std::vector<triangle_t> triangles (indt2-indt1);
+
+#pragma omp parallel for
+  for (int i = indt1; i < indt2; i++)
+    triangles[i].rank = i;
+
+  printf ("%d\n", indt2-indt1);
+
+  edge_idx_t eidx;
+
+  // Find edges to be split
+  for (int i = indt1; i < indt2; i++)
+    itri += triangles[i].getLongEdges (angmax, ind, xyz, &eidx);
+
+  printf (" itri = %d\n", itri);
+  
+  int count = 0;
+
+  for (edge_idx_t::iterator it = eidx.begin (); it != eidx.end (); it++)
+    {
+      edge_t & e = it->second;
+      int i = it->first.first;
+      int j = it->first.second;
+      e.rankb = xyz.size () + count;
+      count += e.count;
+    }
+
+  // Add extra points
+  xyz.resize (xyz.size () + count);
+
+  // Compute coordinates of new points
+  for (edge_idx_t::iterator it = eidx.begin (); it != eidx.end (); it++)
+    {
+      edge_t & e = it->second;
+      int i = it->first.first;
+      int j = it->first.second;
+      e.computePointCoordinates (i, j, xyz);
+    }
+
+
+  // First subdivision
+
+  printf ("count = %d\n", count);
+
+#ifdef UNDEF
+
+  ind.resize (ind.size () + itri);
+
+  for (int i = indr1; i < indr2; i += 3)
+    {
+      int sub[3] = {0, 0, 0};
+      for (int j = 0; j < 3; j++)
+        {
+          int k = (j + 1) % 3;
+          int rank1 = ind[3*i+j], rank2 = ind[3*i+k];
+          if (eidx.has (rank1, rank2))
+            sub[j] = eidx.get (rank1, rank2).count;
+        }
+  
+      int count = sub[0] + sub[1] + sub[2];
+
+      if (count == 0)
+        continue;
+
+      int ord[3] = {0, 1, 2};
+
+      std::sort (sub, sub + 2, [sub](int a, int b) { return sub[a] < sub[b]; });
+
+      // Single edge
+      if ((sub[ord[0]] == 0) && (sub[ord[1]] == 0))
+        {
+
+        }
+      // Two edges
+      else
+        {
+
+        }
+
+ 
+    }
+#endif
+
+
+}
+
 void glgrib_land::setup (const glgrib_options_land & o)
 {
   opts = o;
@@ -1232,11 +1416,11 @@ void glgrib_land::setup (const glgrib_options_land & o)
   int numberOfPoints;
   glgrib_options_lines lopts;
   unsigned int numberOfLines; 
-  std::vector<float> lonlat1;
+  std::vector<float> lonlat;
   std::vector<unsigned int> indl;
   
   lopts.path = opts.path; lopts.selector = opts.selector;
-  glgrib_shapelib::read (lopts, &numberOfPoints, &numberOfLines, &lonlat1, 
+  glgrib_shapelib::read (lopts, &numberOfPoints, &numberOfLines, &lonlat, 
                          &indl, lopts.selector);
 
 
@@ -1295,7 +1479,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
       if (length[j] < 300)
         break;
       if (length[j] > 2)
-        processRing (lonlat1, offset[j], offset[j]+length[j], 
+        processRing (lonlat, offset[j], offset[j]+length[j], 
                      ind_offset[k], ind_offset[k]+ind_length[k],
                      &ind, true);
     }
@@ -1306,15 +1490,34 @@ void glgrib_land::setup (const glgrib_options_land & o)
     {
       int j = ord[l];
       if (length[j] > 2)
-        processRing (lonlat1, offset[j], offset[j]+length[j], 
+        processRing (lonlat, offset[j], offset[j]+length[j], 
                      ind_offset[l], ind_offset[l]+ind_length[l],
                      &ind, false);
     }
 
+  std::vector<glm::vec3> xyz;
+
+  xyz.resize (lonlat.size () / 2);
+
+
+#pragma omp parallel for
+  for (int i = 0; i < lonlat.size () / 2; i++)
+    xyz[i] = lonlat2xyz (glm::vec2 (lonlat[2*i+0], lonlat[2*i+1]));
+   
+  const float angmax = deg2rad * 1.0f;
+ 
+  for (int k = 0; k < 1; k++)
+    {
+      int j = ord[k];
+      subdivideRing (xyz, ind, ind_offset[k], ind_offset[k]+ind_length[k], angmax, true);
+    }
+
+
+
 
   numberOfTriangles = ind.size () / 3;
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (lonlat1.size () * sizeof (lonlat1[0]), lonlat1.data ());
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (lonlat.size () * sizeof (lonlat[0]), lonlat.data ());
   elementbuffer = new_glgrib_opengl_buffer_ptr (ind.size () * sizeof (ind[0]), ind.data ());
 
   glGenVertexArrays (1, &VertexArrayID);

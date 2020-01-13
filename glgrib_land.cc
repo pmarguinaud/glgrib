@@ -77,9 +77,10 @@ public:
   void computePointCoordinates (int i, int j, std::vector<glm::vec3> & xyz) const
   {
     const glm::vec3 & u = xyz[i];
-    const glm::vec3 w = glm::cross (xyz[i], xyz[j]);
+    const glm::vec3 w = glm::normalize (glm::cross (xyz[i], xyz[j]));
     const glm::vec3 v = glm::cross (w, u);
     const float ang = getAngle (xyz[i], xyz[j]);
+
     for (int k = 0; k < count; k++)
       {
         int rank = rankb + k;
@@ -87,6 +88,26 @@ public:
         xyz[rank] = cos (a) * u + sin (a) * v;
       }
   }
+  void getEdgeSubdivisions (int i, int j, int * r)
+  {
+    if (i < j)
+      {
+        r[0] = i;
+        for (int l = 0; l < count; l++)
+          r[l+1] = rankb + l;
+        r[count+1] = j;
+      }
+    else
+      {
+        r[0] = i;
+        for (int l = 0; l < count; l++)
+          r[l+1] = rankb + count - 1 - l;
+        r[count+1] = j;
+      }
+
+
+  }
+
 };
 
 class edge_idx_t : public std::map<std::pair<int,int>,edge_t>
@@ -100,16 +121,20 @@ public:
   edge_t & get (int i, int j) 
   {
     order (i, j);
+    if ((i == 8) && (j == 9)) std::cout << "get 8 9" << std::endl;
     edge_idx_t::iterator it = find (std::pair<int,int> (i, j));
     return it->second;
   }
   edge_t & add (int i, int j)
   {
     order (i, j);
+    if ((i == 8) && (j == 9)) 
+	    std::cout << "add 8 9" << std::endl;
     std::pair<edge_idx_t::iterator,bool> r =
     insert (std::pair<std::pair<int,int>, edge_t> (std::pair<int,int> (i, j), edge_t ()));
     return r.first->second;
   }
+
   private:
   void order (int & i, int & j) const
   {
@@ -121,46 +146,128 @@ class triangle_t
 {
 public:
   int rank = -1;
+  float sub[3];
   
   int getLongEdges (const float anglemax, const std::vector<unsigned int> & ind, 
-                    const std::vector<glm::vec3> & xyz, edge_idx_t * eidx) const
+                    const std::vector<glm::vec3> & xyz, edge_idx_t * eidx) 
   {
-    int sub[3];
     for (int i = 0; i < 3; i++)
       {
         int j = (i + 1) % 3;
         int rank1 = ind[3*rank+i], rank2 = ind[3*rank+j];
 
-        if (eidx->has (rank1, rank2))
-          continue;
-
-        float angle = getAngle (xyz[rank1], xyz[rank2]);
-        int count = angle / anglemax;
-
-        if (count)
+        if (! eidx->has (rank1, rank2))
           {
-            edge_t & e = eidx->add (rank1, rank2);
-            e.count = count;
-            e.angle = angle;
+            float angle = getAngle (xyz[rank1], xyz[rank2]);
+            float count = angle / anglemax;
+          
+            if (count > 1.0f)
+              {
+                edge_t & e = eidx->add (rank1, rank2);
+                e.count = (int)count;
+                e.angle = angle;
+              }
           }
-
-        sub[i] = count;
+	else
+          {
+            edge_t & e = eidx->get (rank1, rank2);
+            sub[i] = e.angle / anglemax;
+	  }
       }
     
-    // Number of triangles we can get now
-    int jtri = sub[0] + sub[1] + sub[2] - *std::min_element (sub, sub + 3);
-    return jtri ? (jtri+1) : jtri;
+    return getSubTriangles ();
   }
  
+  int getSubTriangles () const
+  {
+    // Number of triangles we can get now
+//  int jtri = sub[0] + sub[1] + sub[2] - *std::min_element (sub, sub + 3);
+    int jtri = (int)*std::max_element (sub, sub + 3);
+    return jtri ? (jtri+1) : jtri;
+  }
+
+
+  void subdivide (edge_idx_t & eidx, std::vector<unsigned int> & ind, int * itrioff)
+  {
+    int j = (int)(std::max_element (sub, sub + 3) - sub);
+    int k = (j + 1) % 3;
+    int i = (k + 1) % 3;
+
+
+    int ri = ind[3*rank+i];
+    int rj = ind[3*rank+j];
+    int rk = ind[3*rank+k];
+
+    bool dbg = false;
+    if (dbg){ std::cout << "subdivide 8 9 : " << rank << std::endl;
+	    std::cout << ri << ", " << rj << ", " << rk << std::endl;
+    }
+    
+    edge_t & e = eidx.get (rj, rk);
+
+
+    int r[e.count+2];
+
+    e.getEdgeSubdivisions (rj, rk, r);
+
+    if (dbg)
+    {
+      std::cout << ri << ", " << rj << ", " << rk << std::endl;
+      printf ("r = ");
+      for (int i = 0; i < e.count+2; i++)
+        printf (" %8d", r[i]);
+      printf ("\n");
+    }
+
+    ind[3*rank+i] = ri;
+    ind[3*rank+j] = r[0];
+    ind[3*rank+k] = r[1];
+
+    if (dbg) {
+      std::cout << " ind = " <<
+         ind[3*rank+i] << ", " <<
+         ind[3*rank+j] << ", " <<
+         ind[3*rank+k] << std::endl;
+    }
+
+    int n = *itrioff;
+
+    for (int l = 0; l < e.count; l++)
+      {
+        ind[3*n+0] = ri;
+        ind[3*n+1] = r[l+1];
+        ind[3*n+2] = r[l+2];
+
+    if (dbg) {
+      std::cout << " ind = " <<
+        ind[3*n+0] << ", " << 
+        ind[3*n+1] << ", " << 
+        ind[3*n+2] << ", " << std::endl;
+    }
+	n++;
+      }
+
+    *itrioff = n;
+
+  }
+
 };
 
 
 
 static
-void subdivideRing (std::vector<glm::vec3> & xyz, 
+void subdivideRing (std::vector<float> & lonlat, 
                     std::vector<unsigned int> & ind,
                     int indr1, int indr2, const float angmax, bool openmp)
 {
+
+  std::vector<glm::vec3> xyz;
+  xyz.resize (lonlat.size () / 2);
+
+#pragma omp parallel for if (openmp)
+  for (int i = 0; i < lonlat.size () / 2; i++)
+    xyz[i] = lonlat2xyz (glm::vec2 (lonlat[2*i+0], lonlat[2*i+1]));
+   
   int itri = 0;
 
   int indt1 = indr1/3, indt2 = indr2/3;
@@ -169,7 +276,7 @@ void subdivideRing (std::vector<glm::vec3> & xyz,
 
 #pragma omp parallel for
   for (int i = indt1; i < indt2; i++)
-    triangles[i].rank = i;
+    triangles[i-indt1].rank = i;
 
   printf ("%d\n", indt2-indt1);
 
@@ -177,7 +284,7 @@ void subdivideRing (std::vector<glm::vec3> & xyz,
 
   // Find edges to be split
   for (int i = indt1; i < indt2; i++)
-    itri += triangles[i].getLongEdges (angmax, ind, xyz, &eidx);
+    itri += triangles[i-indt1].getLongEdges (angmax, ind, xyz, &eidx);
 
   printf (" itri = %d\n", itri);
   
@@ -209,44 +316,46 @@ void subdivideRing (std::vector<glm::vec3> & xyz,
 
   printf ("count = %d\n", count);
 
-#ifdef UNDEF
 
-  ind.resize (ind.size () + itri);
+  int ind_off = ind.size ();
+  ind.resize (ind_off + 3 * itri);
 
-  for (int i = indr1; i < indr2; i += 3)
+  int jtri = ind_off/3;
+
+
+  printf (" jtri = %d\n", jtri);
+  int cc = 0;
+
+printf (" indt1 = %d, indt2 = %d\n", indt1, indt2);
+
+  for (int i = indt1; i < indt2; i++)
     {
-      int sub[3] = {0, 0, 0};
-      for (int j = 0; j < 3; j++)
+      if (triangles[i-indt1].getSubTriangles ())
         {
-          int k = (j + 1) % 3;
-          int rank1 = ind[3*i+j], rank2 = ind[3*i+k];
-          if (eidx.has (rank1, rank2))
-            sub[j] = eidx.get (rank1, rank2).count;
-        }
-  
-      int count = sub[0] + sub[1] + sub[2];
-
-      if (count == 0)
-        continue;
-
-      int ord[3] = {0, 1, 2};
-
-      std::sort (sub, sub + 2, [sub](int a, int b) { return sub[a] < sub[b]; });
-
-      // Single edge
-      if ((sub[ord[0]] == 0) && (sub[ord[1]] == 0))
-        {
-
-        }
-      // Two edges
-      else
-        {
-
-        }
-
- 
+        triangles[i-indt1].subdivide (eidx, ind, &jtri);
+	}
     }
-#endif
+
+  printf (" jtri = %8d\n", jtri);
+  printf (" ind.size ()/3 = %8d\n", ind.size ()/3);
+
+
+
+  int npts1 = lonlat.size () / 2;
+  int npts2 = xyz.size ();
+
+
+  std::cout << " npts1 = " << npts1 << " npts2 = " << npts2 << std::endl;
+
+  lonlat.resize (2 * npts2);
+
+#pragma omp parallel for if (openmp)
+  for (int i = npts1; i < npts2; i++)
+    {
+      glm::vec2 ll = xyz2lonlat (xyz[i]);
+      lonlat[2*i+0] = ll.x;
+      lonlat[2*i+1] = ll.y;
+    }
 
 
 }
@@ -337,25 +446,14 @@ void glgrib_land::setup (const glgrib_options_land & o)
                                     &ind, false);
     }
 
-  std::vector<glm::vec3> xyz;
 
-  xyz.resize (lonlat.size () / 2);
-
-
-#pragma omp parallel for
-  for (int i = 0; i < lonlat.size () / 2; i++)
-    xyz[i] = lonlat2xyz (glm::vec2 (lonlat[2*i+0], lonlat[2*i+1]));
-   
   const float angmax = deg2rad * 1.0f;
- 
+ if(1)
   for (int k = 0; k < 1; k++)
     {
       int j = ord[k];
-      subdivideRing (xyz, ind, ind_offset[k], ind_offset[k]+ind_length[k], angmax, true);
+      subdivideRing (lonlat, ind, ind_offset[k], ind_offset[k]+ind_length[k], angmax, true);
     }
-
-
-
 
   numberOfTriangles = ind.size () / 3;
 

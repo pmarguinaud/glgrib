@@ -447,7 +447,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
     }
 
 
-  const float angmax = deg2rad * 1.0f;
+  const float angmax = deg2rad * 2.0f;
  if(1)
   for (int k = 0; k < 1; k++)
     {

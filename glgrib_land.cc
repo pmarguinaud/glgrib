@@ -125,15 +125,12 @@ public:
   edge_t & get (int i, int j) 
   {
     order (i, j);
-    if ((i == 8) && (j == 9)) std::cout << "get 8 9" << std::endl;
     edge_idx_t::iterator it = find (std::pair<int,int> (i, j));
     return it->second;
   }
   edge_t & add (int i, int j)
   {
     order (i, j);
-    if ((i == 8) && (j == 9)) 
-	    std::cout << "add 8 9" << std::endl;
     std::pair<edge_idx_t::iterator,bool> r =
     insert (std::pair<std::pair<int,int>, edge_t> (std::pair<int,int> (i, j), edge_t ()));
     return r.first->second;
@@ -304,18 +301,19 @@ public:
 
 
 static
-void subdivideRing (std::vector<glm::vec3> & xyz,
-		    std::vector<float> & lonlat, 
-                    std::vector<unsigned int> & ind,
-                    int indr1, int indr2, 
-		    const float angmax, bool openmp)
+void subdivideRing1 (std::vector<glm::vec3> & xyz,
+		     std::vector<float> & lonlat, 
+                     std::vector<unsigned int> & ind,
+                     int indr1, int indr2, 
+		     const float angmax)
 {
 
   int indt1 = indr1/3, indt2 = indr2/3;
 
+  printf (" indt = %8d .. %8d\n", indt1, indt2);
+
   std::vector<triangle_t> triangles (indt2-indt1);
 
-#pragma omp parallel for
   for (int i = indt1; i < indt2; i++)
     triangles[i-indt1].rank = i;
 
@@ -357,6 +355,22 @@ void subdivideRing (std::vector<glm::vec3> & xyz,
   for (int i = indt1; i < indt2; i++)
     if (triangles[i-indt1].getSubTriangles ())
       triangles[i-indt1].subdivide (eidx, ind, &jtri);
+
+}
+
+static
+void subdivideRing (std::vector<glm::vec3> & xyz,
+		    std::vector<float> & lonlat, 
+                    std::vector<unsigned int> & ind,
+                    int indr1, int indr2, 
+		    const float angmax)
+{
+  int ind_off = ind.size ();
+
+  subdivideRing1 (xyz, lonlat, ind, indr1, indr2, angmax);
+
+  subdivideRing1 (xyz, lonlat, ind, ind_off, ind.size (), angmax);
+  
 
 }
 
@@ -455,11 +469,12 @@ void glgrib_land::setup (const glgrib_options_land & o)
     xyz[i] = lonlat2xyz (glm::vec2 (lonlat[2*i+0], lonlat[2*i+1]));
    
   const float angmax = deg2rad * 1.0f;
+
  if(1)
-  for (int k = 0; k < 1; k++)
+  for (int k = 1; k < 2; k++)
     {
       int j = ord[k];
-      subdivideRing (xyz, lonlat, ind, ind_offset[k], ind_offset[k]+ind_length[k], angmax, true);
+      subdivideRing (xyz, lonlat, ind, ind_offset[k], ind_offset[k]+ind_length[k], angmax);
     }
 
   numberOfTriangles = ind.size () / 3;

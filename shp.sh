@@ -7,7 +7,7 @@ set -x
 #./glgrib.x --coast.on --coast.lines.format shp  --coast.lines.path gshhs/GSHHS_shp/c/GSHHS_c_L6.shp --test.on --test.path gshhs/GSHHS_shp/c/GSHHS_c_L6.shp --test.selector "rowid == 2"
 
 
-gdb -ex="set confirm on" -ex=run -ex=quit --args ./glgrib.x --land.on  --land.path coastlines/shp/GSHHS_c_L1.shp --land.selector "rowid == 1" \
+gdb -ex="set confirm on" -ex=run -ex=quit --args ./glgrib.x --land.on  --land.path coastlines/shp/GSHHS_c_L1.shp --land.selector "rowid < 4" \
 	    --coast.on --coast.lines.path coastlines/shp/GSHHS_c_L1.shp --coast.lines.format shp --view.lon 78 --view.lat 45 
 
 exit

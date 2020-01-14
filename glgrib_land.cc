@@ -74,7 +74,8 @@ public:
   int count = 0;
   int rankb = 0;
   float angle;
-  void computePointCoordinates (int i, int j, std::vector<glm::vec3> & xyz) const
+  void computePointCoordinates (int i, int j, std::vector<glm::vec3> & xyz,
+		                std::vector<float> & lonlat) const
   {
     const glm::vec3 & u = xyz[i];
     const glm::vec3 w = glm::normalize (glm::cross (xyz[i], xyz[j]));
@@ -86,6 +87,9 @@ public:
         int rank = rankb + k;
         float a = ang * (k + 1) / (count + 1);
         xyz[rank] = cos (a) * u + sin (a) * v;
+        glm::vec2 ll = xyz2lonlat (xyz[rank]);
+        lonlat[2*rank+0] = ll.x;
+        lonlat[2*rank+1] = ll.y;
       }
   }
   void getEdgeSubdivisions (int i, int j, int * r)
@@ -193,42 +197,19 @@ public:
     int k = (j + 1) % 3;
     int i = (k + 1) % 3;
 
-
     int ri = ind[3*rank+i];
     int rj = ind[3*rank+j];
     int rk = ind[3*rank+k];
 
-    bool dbg = false;
-    if (dbg){ std::cout << "subdivide 8 9 : " << rank << std::endl;
-	    std::cout << ri << ", " << rj << ", " << rk << std::endl;
-    }
-    
     edge_t & e = eidx.get (rj, rk);
-
 
     int r[e.count+2];
 
     e.getEdgeSubdivisions (rj, rk, r);
 
-    if (dbg)
-    {
-      std::cout << ri << ", " << rj << ", " << rk << std::endl;
-      printf ("r = ");
-      for (int i = 0; i < e.count+2; i++)
-        printf (" %8d", r[i]);
-      printf ("\n");
-    }
-
     ind[3*rank+i] = ri;
     ind[3*rank+j] = r[0];
     ind[3*rank+k] = r[1];
-
-    if (dbg) {
-      std::cout << " ind = " <<
-         ind[3*rank+i] << ", " <<
-         ind[3*rank+j] << ", " <<
-         ind[3*rank+k] << std::endl;
-    }
 
     int n = *itrioff;
 
@@ -238,12 +219,6 @@ public:
         ind[3*n+1] = r[l+1];
         ind[3*n+2] = r[l+2];
 
-    if (dbg) {
-      std::cout << " ind = " <<
-        ind[3*n+0] << ", " << 
-        ind[3*n+1] << ", " << 
-        ind[3*n+2] << ", " << std::endl;
-    }
 	n++;
       }
 
@@ -256,18 +231,12 @@ public:
 
 
 static
-void subdivideRing (std::vector<float> & lonlat, 
+void subdivideRing (std::vector<glm::vec3> & xyz,
+		    std::vector<float> & lonlat, 
                     std::vector<unsigned int> & ind,
-                    int indr1, int indr2, const float angmax, bool openmp)
+                    int indr1, int indr2, 
+		    const float angmax, bool openmp)
 {
-
-  std::vector<glm::vec3> xyz;
-  xyz.resize (lonlat.size () / 2);
-
-#pragma omp parallel for if (openmp)
-  for (int i = 0; i < lonlat.size () / 2; i++)
-    xyz[i] = lonlat2xyz (glm::vec2 (lonlat[2*i+0], lonlat[2*i+1]));
-   
   int itri = 0;
 
   int indt1 = indr1/3, indt2 = indr2/3;
@@ -293,22 +262,21 @@ void subdivideRing (std::vector<float> & lonlat,
   for (edge_idx_t::iterator it = eidx.begin (); it != eidx.end (); it++)
     {
       edge_t & e = it->second;
-      int i = it->first.first;
-      int j = it->first.second;
+      int i = it->first.first, j = it->first.second;
       e.rankb = xyz.size () + count;
       count += e.count;
     }
 
   // Add extra points
   xyz.resize (xyz.size () + count);
+  lonlat.resize (lonlat.size () + 2 * count);
 
   // Compute coordinates of new points
   for (edge_idx_t::iterator it = eidx.begin (); it != eidx.end (); it++)
     {
       edge_t & e = it->second;
-      int i = it->first.first;
-      int j = it->first.second;
-      e.computePointCoordinates (i, j, xyz);
+      int i = it->first.first, j = it->first.second;
+      e.computePointCoordinates (i, j, xyz, lonlat);
     }
 
 
@@ -339,23 +307,6 @@ printf (" indt1 = %d, indt2 = %d\n", indt1, indt2);
   printf (" jtri = %8d\n", jtri);
   printf (" ind.size ()/3 = %8d\n", ind.size ()/3);
 
-
-
-  int npts1 = lonlat.size () / 2;
-  int npts2 = xyz.size ();
-
-
-  std::cout << " npts1 = " << npts1 << " npts2 = " << npts2 << std::endl;
-
-  lonlat.resize (2 * npts2);
-
-#pragma omp parallel for if (openmp)
-  for (int i = npts1; i < npts2; i++)
-    {
-      glm::vec2 ll = xyz2lonlat (xyz[i]);
-      lonlat[2*i+0] = ll.x;
-      lonlat[2*i+1] = ll.y;
-    }
 
 
 }
@@ -447,12 +398,19 @@ void glgrib_land::setup (const glgrib_options_land & o)
     }
 
 
+  std::vector<glm::vec3> xyz;
+  xyz.resize (lonlat.size () / 2);
+
+#pragma omp parallel for 
+  for (int i = 0; i < lonlat.size () / 2; i++)
+    xyz[i] = lonlat2xyz (glm::vec2 (lonlat[2*i+0], lonlat[2*i+1]));
+   
   const float angmax = deg2rad * 2.0f;
  if(1)
   for (int k = 0; k < 1; k++)
     {
       int j = ord[k];
-      subdivideRing (lonlat, ind, ind_offset[k], ind_offset[k]+ind_length[k], angmax, true);
+      subdivideRing (xyz, lonlat, ind, ind_offset[k], ind_offset[k]+ind_length[k], angmax, true);
     }
 
   numberOfTriangles = ind.size () / 3;

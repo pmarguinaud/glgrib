@@ -150,7 +150,7 @@ class triangle_t
 {
 public:
   int rank = -1;
-  float sub[3];
+  float count[3];
   
   int getLongEdges (const float anglemax, const std::vector<unsigned int> & ind, 
                     const std::vector<glm::vec3> & xyz, edge_idx_t * eidx) 
@@ -163,37 +163,87 @@ public:
         if (! eidx->has (rank1, rank2))
           {
             float angle = getAngle (xyz[rank1], xyz[rank2]);
-            float count = angle / anglemax;
+            count[i] = angle / anglemax;
           
-            if (count > 1.0f)
+            if (count[i] > 1.0f)
               {
                 edge_t & e = eidx->add (rank1, rank2);
-                e.count = (int)count;
+                e.count = (int)count[i];
                 e.angle = angle;
               }
           }
 	else
           {
             edge_t & e = eidx->get (rank1, rank2);
-            sub[i] = e.angle / anglemax;
+            count[i] = e.angle / anglemax;
 	  }
       }
     
     return getSubTriangles ();
   }
- 
+
   int getSubTriangles () const
   {
+    int ord[3] = {0, 1, 2};
+    std::sort (ord, ord + 3, [this] (int i, int j) { return this->count[j] < this->count[i]; });
     // Number of triangles we can get now
-//  int jtri = sub[0] + sub[1] + sub[2] - *std::min_element (sub, sub + 3);
-    int jtri = (int)*std::max_element (sub, sub + 3);
-    return jtri ? (jtri+1) : jtri;
+    if (count[ord[2]] > 1)
+      return 1 + (int)count[ord[0]] + (int)count[ord[1]];
+    else if (count[ord[1]] > 1)
+      return 1 + (int)count[ord[0]] + (int)count[ord[1]];
+    else if (count[ord[0]] > 1)
+      return 1 + (int)count[ord[0]];
+    return 0;
   }
 
-
-  void subdivide (edge_idx_t & eidx, std::vector<unsigned int> & ind, int * itrioff)
+  void subdivide2 (edge_idx_t & eidx, std::vector<unsigned int> & ind, int * itrioff, int ord[3])
   {
-    int j = (int)(std::max_element (sub, sub + 3) - sub);
+    int k = ord[2];
+    int i = (k + 1) % 3;
+    int j = (i + 1) % 3;
+
+    int ri = ind[3*rank+i];
+    int rj = ind[3*rank+j];
+    int rk = ind[3*rank+k];
+
+    edge_t & ekj = eidx.get (rk, rj);
+    edge_t & eij = eidx.get (ri, rj);
+
+    int nkj = ekj.count+2, lkj = 0; int rkj[nkj]; ekj.getEdgeSubdivisions (rk, rj, rkj);
+    int nij = eij.count+2, lij = 0; int rij[nij]; eij.getEdgeSubdivisions (ri, rj, rij);
+
+    auto cmp = [nij, nkj] (int lkj, int lij) { return lkj * nij < lij * nkj; };
+
+    int n = *itrioff;
+
+    while ((lkj < nkj-2) || (lij < nij-2))
+      {
+        if (cmp (lkj+1, lij+1))
+          {
+            ind[3*n+0] = rkj[lkj+1];
+            ind[3*n+1] = rkj[lkj];
+            ind[3*n+2] = rij[lij];
+	    lkj++;
+	  }
+	else
+          {
+            ind[3*n+0] = rij[lij+1];
+            ind[3*n+1] = rkj[lkj];
+            ind[3*n+2] = rij[lij];
+	    lij++;
+          }
+	n++;
+      }
+
+    ind[3*rank+j] = rj;
+    ind[3*rank+k] = rkj[nkj-2];
+    ind[3*rank+i] = rij[nij-2];
+
+    *itrioff = n+1;
+  }
+  void subdivide1 (edge_idx_t & eidx, std::vector<unsigned int> & ind, int * itrioff, int ord[3])
+  {
+    int j = ord[0];
     int k = (j + 1) % 3;
     int i = (k + 1) % 3;
 
@@ -223,7 +273,19 @@ public:
       }
 
     *itrioff = n;
+  }
 
+  void subdivide (edge_idx_t & eidx, std::vector<unsigned int> & ind, int * itrioff)
+  {
+    int ord[3] = {0, 1, 2};
+    std::sort (ord, ord + 3, [this] (int i, int j) { return this->count[j] < this->count[i]; });
+
+    if (count[ord[2]] > 1)
+      subdivide2 (eidx, ind, itrioff, ord);
+    else if (count[ord[1]] > 1)
+      subdivide2 (eidx, ind, itrioff, ord);
+    else if (count[ord[0]] > 1)
+      subdivide1 (eidx, ind, itrioff, ord);
   }
 
 };
@@ -288,8 +350,7 @@ void subdivideRing (std::vector<glm::vec3> & xyz,
   int ind_off = ind.size ();
   ind.resize (ind_off + 3 * itri);
 
-  int jtri = ind_off/3;
-
+  int jtri = ind_off / 3;
 
   printf (" jtri = %d\n", jtri);
   int cc = 0;
@@ -405,7 +466,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
   for (int i = 0; i < lonlat.size () / 2; i++)
     xyz[i] = lonlat2xyz (glm::vec2 (lonlat[2*i+0], lonlat[2*i+1]));
    
-  const float angmax = deg2rad * 2.0f;
+  const float angmax = deg2rad * 1.0f;
  if(1)
   for (int k = 0; k < 1; k++)
     {

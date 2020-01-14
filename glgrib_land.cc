@@ -235,11 +235,17 @@ public:
 	n++;
       }
 
-    ind[3*rank+j] = rj;
-    ind[3*rank+k] = rkj[nkj-2];
-    ind[3*rank+i] = rij[nij-2];
+    ind[3*rank+j] = 0;
+    ind[3*rank+k] = 0;
+    ind[3*rank+i] = 0;
 
-    *itrioff = n+1;
+    ind[3*n+0] = rj;
+    ind[3*n+1] = rkj[nkj-2];
+    ind[3*n+2] = rij[nij-2];
+
+    n++;
+
+    *itrioff = n;
   }
   void subdivide1 (edge_idx_t & eidx, std::vector<unsigned int> & ind, int * itrioff, int ord[3])
   {
@@ -257,18 +263,23 @@ public:
 
     e.getEdgeSubdivisions (rj, rk, r);
 
-    ind[3*rank+i] = ri;
-    ind[3*rank+j] = r[0];
-    ind[3*rank+k] = r[1];
+    ind[3*rank+i] = 0;
+    ind[3*rank+j] = 0;
+    ind[3*rank+k] = 0;
 
     int n = *itrioff;
+
+    ind[3*n+0] = ri;
+    ind[3*n+1] = r[0];
+    ind[3*n+2] = r[1];
+
+    n++;
 
     for (int l = 0; l < e.count; l++)
       {
         ind[3*n+0] = ri;
         ind[3*n+1] = r[l+1];
         ind[3*n+2] = r[l+2];
-
 	n++;
       }
 
@@ -299,7 +310,6 @@ void subdivideRing (std::vector<glm::vec3> & xyz,
                     int indr1, int indr2, 
 		    const float angmax, bool openmp)
 {
-  int itri = 0;
 
   int indt1 = indr1/3, indt2 = indr2/3;
 
@@ -309,29 +319,27 @@ void subdivideRing (std::vector<glm::vec3> & xyz,
   for (int i = indt1; i < indt2; i++)
     triangles[i-indt1].rank = i;
 
-  printf ("%d\n", indt2-indt1);
-
   edge_idx_t eidx;
+
+  int itri = 0;
 
   // Find edges to be split
   for (int i = indt1; i < indt2; i++)
     itri += triangles[i-indt1].getLongEdges (angmax, ind, xyz, &eidx);
 
-  printf (" itri = %d\n", itri);
-  
-  int count = 0;
+  int ixyz = 0;
 
   for (edge_idx_t::iterator it = eidx.begin (); it != eidx.end (); it++)
     {
       edge_t & e = it->second;
       int i = it->first.first, j = it->first.second;
-      e.rankb = xyz.size () + count;
-      count += e.count;
+      e.rankb = xyz.size () + ixyz;
+      ixyz += e.count;
     }
 
   // Add extra points
-  xyz.resize (xyz.size () + count);
-  lonlat.resize (lonlat.size () + 2 * count);
+  xyz.resize (xyz.size () + ixyz);
+  lonlat.resize (lonlat.size () + 2 * ixyz);
 
   // Compute coordinates of new points
   for (edge_idx_t::iterator it = eidx.begin (); it != eidx.end (); it++)
@@ -341,34 +349,14 @@ void subdivideRing (std::vector<glm::vec3> & xyz,
       e.computePointCoordinates (i, j, xyz, lonlat);
     }
 
-
-  // First subdivision
-
-  printf ("count = %d\n", count);
-
-
   int ind_off = ind.size ();
   ind.resize (ind_off + 3 * itri);
 
   int jtri = ind_off / 3;
 
-  printf (" jtri = %d\n", jtri);
-  int cc = 0;
-
-printf (" indt1 = %d, indt2 = %d\n", indt1, indt2);
-
   for (int i = indt1; i < indt2; i++)
-    {
-      if (triangles[i-indt1].getSubTriangles ())
-        {
-        triangles[i-indt1].subdivide (eidx, ind, &jtri);
-	}
-    }
-
-  printf (" jtri = %8d\n", jtri);
-  printf (" ind.size ()/3 = %8d\n", ind.size ()/3);
-
-
+    if (triangles[i-indt1].getSubTriangles ())
+      triangles[i-indt1].subdivide (eidx, ind, &jtri);
 
 }
 

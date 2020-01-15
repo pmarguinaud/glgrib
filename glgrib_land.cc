@@ -4,10 +4,6 @@
 #include "glgrib_options.h"
 #include "glgrib_earcut.h"
 
-#include "dbg.h"
-
-bool DBG = false;
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -597,8 +593,6 @@ void glgrib_land::setup (const glgrib_options_land & o)
   for (int l = k; l < ord.size (); l++)
     {
       int j = ord[l];
-      DBG = j == 42;
-
       if (length[j] > 2)
         glgrib_earcut::processRing (lonlat, offset[j], offset[j]+length[j], 
                                     ind_offset[l], ind_offset[l]+ind_length[l],
@@ -614,6 +608,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
 
 #pragma omp parallel for
       for (int k = 0; k < ord.size (); k++)
+//    for (int k = 14854; k < 14855; k++)
         {
           int j = ord[k];
           sr[k].init (lonlat, ind, offset[j], offset[j]+length[j], 

@@ -359,12 +359,19 @@ void subdivideRing1 (std::vector<glm::vec3> & xyz,
 }
 
 static
-void subdivideRing (std::vector<glm::vec3> & xyz,
-		    std::vector<float> & lonlat, 
+void subdivideRing (std::vector<float> & lonlat, 
                     std::vector<unsigned int> & ind,
+		    int indp1, int indp2,
                     int indr1, int indr2, 
 		    const float angmax)
 {
+  std::vector<glm::vec3> xyz;
+  xyz.resize (lonlat.size () / 2);
+
+#pragma omp parallel for 
+  for (int i = 0; i < lonlat.size () / 2; i++)
+    xyz[i] = lonlat2xyz (glm::vec2 (lonlat[2*i+0], lonlat[2*i+1]));
+   
   int ind_off = ind.size ();
 
   subdivideRing1 (xyz, lonlat, ind, indr1, indr2, angmax);
@@ -461,20 +468,14 @@ void glgrib_land::setup (const glgrib_options_land & o)
     }
 
 
-  std::vector<glm::vec3> xyz;
-  xyz.resize (lonlat.size () / 2);
-
-#pragma omp parallel for 
-  for (int i = 0; i < lonlat.size () / 2; i++)
-    xyz[i] = lonlat2xyz (glm::vec2 (lonlat[2*i+0], lonlat[2*i+1]));
-   
   const float angmax = deg2rad * 1.0f;
 
  if(1)
-  for (int k = 1; k < 2; k++)
+  for (int k = 2; k < 3; k++)
     {
       int j = ord[k];
-      subdivideRing (xyz, lonlat, ind, ind_offset[k], ind_offset[k]+ind_length[k], angmax);
+      subdivideRing (lonlat, ind, offset[j], offset[j]+length[j], 
+                     ind_offset[j], ind_offset[j]+ind_length[j], angmax);
     }
 
   numberOfTriangles = ind.size () / 3;

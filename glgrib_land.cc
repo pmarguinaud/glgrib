@@ -305,8 +305,6 @@ void subdivideRing1 (std::vector<glm::vec3> & xyz,
 
   int indt1 = indr1/3, indt2 = indr2/3;
 
-  printf (" indt = %8d .. %8d\n", indt1, indt2);
-
   std::vector<triangle_t> triangles (indt2-indt1);
 
   for (int i = indt1; i < indt2; i++)
@@ -479,39 +477,6 @@ public:
 
 
 
-static
-void subdivideRing_ (std::vector<float> & lonlat, 
-                     std::vector<unsigned int> & ind,
-                     int indp1, int indp2,
-                     int indr1, int indr2, 
-                     const float angmax)
-{
-  subdivideRing_t sr;
- 
-  sr.init (lonlat, ind, indp1, indp2, indr1, indr2);
-
-  sr.subdivide (angmax);
-
-
-  int points_offset;
-  int triangles_offset;
-
-  int points_length = lonlat.size () / 2;
-  lonlat.resize (2 * (points_length + sr.getPointsLength ()));
-  points_offset = points_length;
-    
-  int triangles_length = ind.size (); 
-  ind.resize (ind.size () + sr.getTrianglesLength ());
-  triangles_offset = triangles_length;
-
-
-  sr.append (lonlat, ind, points_offset, triangles_offset);
-
-
-}
-
-
-
 void glgrib_land::setup (const glgrib_options_land & o)
 {
   opts = o;
@@ -602,12 +567,49 @@ void glgrib_land::setup (const glgrib_options_land & o)
   const float angmax = deg2rad * 1.0f;
 
  if(1)
-  for (int k = 0; k < 2; k++)
-    {
-      int j = ord[k];
-      subdivideRing_ (lonlat, ind, offset[j], offset[j]+length[j], 
-                      ind_offset[k], ind_offset[k]+ind_length[k], angmax);
-    }
+   {
+     subdivideRing_t sr[ord.size ()];
+
+     for (int k = 0; k < ord.size (); k++)
+       {
+         int j = ord[k];
+         sr[k].init (lonlat, ind, offset[j], offset[j]+length[j], 
+                     ind_offset[k], ind_offset[k]+ind_length[k]);
+         sr[k].subdivide (angmax);
+       }
+
+     std::vector<int> points_offset    (ord.size ());
+     std::vector<int> triangles_offset (ord.size ());
+
+     points_offset   [0] = lonlat.size () / 2;
+     triangles_offset[0] = ind.size ();
+
+     for (int k = 1; k < ord.size (); k++)
+       {
+         points_offset   [k] = points_offset   [k-1] + sr[k-1].getPointsLength    ();
+	 triangles_offset[k] = triangles_offset[k-1] + sr[k-1].getTrianglesLength ();
+       }
+     
+     for (int k = 0; k < ord.size (); k++)
+     printf (" k = %8d p = %8d t = %8d\n", k, points_offset[k], triangles_offset[k]);
+
+     printf ("-------------\n");
+
+     for (int k = 0; k < ord.size (); k++)
+       {
+	 printf (" k = %8d l = %8d i = %8d\n", k, lonlat.size ()/2, ind.size ());
+
+         int points_offset = lonlat.size () / 2;
+         lonlat.resize (2 * (points_offset + sr[k].getPointsLength ()));
+           
+         int triangles_offset = ind.size (); 
+         ind.resize (triangles_offset + sr[k].getTrianglesLength ());
+
+         sr[k].append (lonlat, ind, points_offset, triangles_offset);
+
+       }
+
+   }
 
   numberOfTriangles = ind.size () / 3;
 

@@ -428,10 +428,6 @@ public:
                int points_offset, int triangles_offset)
   {
     // Append new points
-    int points_length = lonlat.size () / 2;
-    lonlat.resize (2 * (points_length + getPointsLength ()));
-    points_offset = points_length;
-    
     for (int i = xyz1_size; i < xyz1.size (); i++)
       {   
         glm::vec2 ll = xyz2lonlat (xyz1[i]);
@@ -440,10 +436,6 @@ public:
       }   
    
     // Append new triangles
-    int triangles_length = ind.size (); 
-    ind.resize (ind.size () + getTrianglesLength ());
-    triangles_offset = triangles_length;
-   
     for (int i = ind1_size; i < ind1.size (); i++)
       {   
         int j = triangles_offset + i - ind1_size;
@@ -503,6 +495,15 @@ void subdivideRing_ (std::vector<float> & lonlat,
 
   int points_offset;
   int triangles_offset;
+
+  int points_length = lonlat.size () / 2;
+  lonlat.resize (2 * (points_length + sr.getPointsLength ()));
+  points_offset = points_length;
+    
+  int triangles_length = ind.size (); 
+  ind.resize (ind.size () + sr.getTrianglesLength ());
+  triangles_offset = triangles_length;
+
 
   sr.append (lonlat, ind, points_offset, triangles_offset);
 

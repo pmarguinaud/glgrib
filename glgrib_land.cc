@@ -553,7 +553,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
     }
 
   // Process small blocks in parallel
-#pragma omp parallel for
+//#pragma omp parallel for
   for (int l = k; l < ord.size (); l++)
     {
       int j = ord[l];

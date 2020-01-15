@@ -4,6 +4,10 @@
 #include "glgrib_options.h"
 #include "glgrib_earcut.h"
 
+#include "dbg.h"
+
+bool DBG = false;
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -493,17 +497,52 @@ void glgrib_land::setup (const glgrib_options_land & o)
 
 
 
-  std::vector<int> offset, length;
-  offset.push_back (0);
-  for (int i = 0; i < numberOfPoints; i++)
+  std::vector<int> offset = {+0}, length = {-1};
+
+  for (int i = 0; i < indl.size (); i++)
     {
       if (indl[i] == 0xffffffff)
         {
-          length.push_back (i - offset.back () - offset.size ());
-          offset.push_back (i + 1 - offset.size ());
-        }
+          if (i < indl.size ()-1)
+            {
+              offset.push_back (indl[i+1]);
+              length.push_back (-1);
+	    }
+	}
+      else
+        {
+          length.back ()++;
+	}
     }
-  length.push_back (numberOfPoints - offset.back () - 1);
+
+  
+
+#ifdef UNDEF
+  {
+  FILE * fp = fopen ("coords.dat", "w");
+  for (int i = 0; i < indl.size (); i++)
+    fprintf (fp, "%8d | %32u\n", i, indl[i]);
+  fclose (fp);
+  }
+  {
+  FILE * fp = fopen ("pos.dat", "w");
+  for (int i = 0; i < length.size (); i++)
+    fprintf (fp, "%8d | %8d %8d\n", i, offset[i], length[i]);
+  fclose (fp);
+  }
+
+  for (int j = 0; j < offset.size (); j++)
+  {
+  char f[64];
+  sprintf (f, "r.%3.3d.dat", j);
+  FILE * fp = fopen (f, "w");
+  fprintf (fp, " offset, length = %d, %d\n", offset[j], length[j]);
+  for (int i = offset[j]; i < offset[j]+length[j]+1; i++)
+    fprintf (fp, " %8d | %12.2f %12.2f\n", i-offset[j], rad2deg * lonlat[2*i+0], rad2deg * lonlat[2*i+1]);
+  fclose (fp);
+  }
+//exit (0);
+#endif
 
   std::vector<int> ord;
   ord.reserve (length.size ());
@@ -552,11 +591,14 @@ void glgrib_land::setup (const glgrib_options_land & o)
                                     &ind, true);
     }
 
+
   // Process small blocks in parallel
-//#pragma omp parallel for
+#pragma omp parallel for
   for (int l = k; l < ord.size (); l++)
     {
       int j = ord[l];
+      DBG = j == 42;
+
       if (length[j] > 2)
         glgrib_earcut::processRing (lonlat, offset[j], offset[j]+length[j], 
                                     ind_offset[l], ind_offset[l]+ind_length[l],
@@ -566,36 +608,38 @@ void glgrib_land::setup (const glgrib_options_land & o)
 
   const float angmax = deg2rad * 1.0f;
 
- if(0)
-   {
-     std::vector<subdivideRing_t> sr (ord.size ());
+  if (1)
+    {
+      std::vector<subdivideRing_t> sr (ord.size ());
 
-     for (int k = 0; k < ord.size (); k++)
-       {
-         int j = ord[k];
-         sr[k].init (lonlat, ind, offset[j], offset[j]+length[j], 
-                     ind_offset[k], ind_offset[k]+ind_length[k]);
-         sr[k].subdivide (angmax);
-       }
+#pragma omp parallel for
+      for (int k = 0; k < ord.size (); k++)
+        {
+          int j = ord[k];
+          sr[k].init (lonlat, ind, offset[j], offset[j]+length[j], 
+                      ind_offset[k], ind_offset[k]+ind_length[k]);
+          sr[k].subdivide (angmax);
+        }
 
-     std::vector<int> points_offset    (ord.size ());
-     std::vector<int> triangles_offset (ord.size ());
+      std::vector<int> points_offset    (ord.size ());
+      std::vector<int> triangles_offset (ord.size ());
 
-     points_offset   [0] = lonlat.size () / 2;
-     triangles_offset[0] = ind.size ();
+      points_offset   [0] = lonlat.size () / 2;
+      triangles_offset[0] = ind.size ();
 
-     for (int k = 1; k < ord.size (); k++)
-       {
-         points_offset   [k] = points_offset   [k-1] + sr[k-1].getPointsLength    ();
-	 triangles_offset[k] = triangles_offset[k-1] + sr[k-1].getTrianglesLength ();
-       }
+      for (int k = 1; k < ord.size (); k++)
+        {
+          points_offset   [k] = points_offset   [k-1] + sr[k-1].getPointsLength    ();
+          triangles_offset[k] = triangles_offset[k-1] + sr[k-1].getTrianglesLength ();
+        }
 
-     lonlat.resize (lonlat.size () + 2 * (points_offset.back () + sr.back ().getPointsLength ()));
-     ind.resize (ind.size () + triangles_offset.back () + sr.back ().getTrianglesLength ());
+      lonlat.resize (lonlat.size () + 2 * (points_offset.back () + sr.back ().getPointsLength ()));
+      ind.resize (ind.size () + triangles_offset.back () + sr.back ().getTrianglesLength ());
 
-     for (int k = 0; k < ord.size (); k++)
-       sr[k].append (lonlat, ind, points_offset[k], triangles_offset[k]);
-   }
+#pragma omp parallel for
+      for (int k = 0; k < ord.size (); k++)
+        sr[k].append (lonlat, ind, points_offset[k], triangles_offset[k]);
+    }
 
   numberOfTriangles = ind.size () / 3;
 

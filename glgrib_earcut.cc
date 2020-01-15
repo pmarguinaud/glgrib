@@ -1096,7 +1096,15 @@ void glgrib_earcut::processRing (const std::vector<float> & lonlat1,
   int numberOfPoints1 = rank2-rank1;
 
 if(0)
+{
   printf (" numberOfPoints1 = %d\n", numberOfPoints1);
+  printf (" first = %12.2f %12.2f\n", 
+          rad2deg * lonlat1[2*rank1+0], 
+          rad2deg * lonlat1[2*rank1+1]);
+  printf (" last  = %12.2f %12.2f\n", 
+          rad2deg * lonlat1[2*(rank2-1)+0], 
+          rad2deg * lonlat1[2*(rank2-1)+1]);
+}
 
   xyz1.resize (numberOfPoints1);
 

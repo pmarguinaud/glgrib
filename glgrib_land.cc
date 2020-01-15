@@ -568,7 +568,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
 
  if(1)
    {
-     subdivideRing_t sr[ord.size ()];
+     std::vector<subdivideRing_t> sr (ord.size ());
 
      for (int k = 0; k < ord.size (); k++)
        {
@@ -589,26 +589,12 @@ void glgrib_land::setup (const glgrib_options_land & o)
          points_offset   [k] = points_offset   [k-1] + sr[k-1].getPointsLength    ();
 	 triangles_offset[k] = triangles_offset[k-1] + sr[k-1].getTrianglesLength ();
        }
-     
-     for (int k = 0; k < ord.size (); k++)
-     printf (" k = %8d p = %8d t = %8d\n", k, points_offset[k], triangles_offset[k]);
 
-     printf ("-------------\n");
+     lonlat.resize (lonlat.size () + 2 * (points_offset.back () + sr.back ().getPointsLength ()));
+     ind.resize (ind.size () + triangles_offset.back () + sr.back ().getTrianglesLength ());
 
      for (int k = 0; k < ord.size (); k++)
-       {
-	 printf (" k = %8d l = %8d i = %8d\n", k, lonlat.size ()/2, ind.size ());
-
-         int points_offset = lonlat.size () / 2;
-         lonlat.resize (2 * (points_offset + sr[k].getPointsLength ()));
-           
-         int triangles_offset = ind.size (); 
-         ind.resize (triangles_offset + sr[k].getTrianglesLength ());
-
-         sr[k].append (lonlat, ind, points_offset, triangles_offset);
-
-       }
-
+       sr[k].append (lonlat, ind, points_offset[k], triangles_offset[k]);
    }
 
   numberOfTriangles = ind.size () / 3;

@@ -566,7 +566,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
 
   const float angmax = deg2rad * 1.0f;
 
- if(1)
+ if(0)
    {
      std::vector<subdivideRing_t> sr (ord.size ());
 

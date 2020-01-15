@@ -74,8 +74,7 @@ public:
   int count = 0;
   int rankb = 0;
   float angle;
-  void computePointCoordinates (int i, int j, std::vector<glm::vec3> & xyz,
-		                std::vector<float> & lonlat) const
+  void computePointCoordinates (int i, int j, std::vector<glm::vec3> & xyz) const
   {
     const glm::vec3 & u = xyz[i];
     const glm::vec3 w = glm::normalize (glm::cross (xyz[i], xyz[j]));
@@ -87,9 +86,6 @@ public:
         int rank = rankb + k;
         float a = ang * (k + 1) / (count + 1);
         xyz[rank] = cos (a) * u + sin (a) * v;
-        glm::vec2 ll = xyz2lonlat (xyz[rank]);
-        lonlat[2*rank+0] = ll.x;
-        lonlat[2*rank+1] = ll.y;
       }
   }
   void getEdgeSubdivisions (int i, int j, int * r)
@@ -302,7 +298,6 @@ public:
 
 static
 void subdivideRing1 (std::vector<glm::vec3> & xyz,
-		     std::vector<float> & lonlat, 
                      std::vector<unsigned int> & ind,
                      int indr1, int indr2, 
 		     const float angmax)
@@ -337,14 +332,13 @@ void subdivideRing1 (std::vector<glm::vec3> & xyz,
 
   // Add extra points
   xyz.resize (xyz.size () + ixyz);
-  lonlat.resize (lonlat.size () + 2 * ixyz);
 
   // Compute coordinates of new points
   for (edge_idx_t::iterator it = eidx.begin (); it != eidx.end (); it++)
     {
       edge_t & e = it->second;
       int i = it->first.first, j = it->first.second;
-      e.computePointCoordinates (i, j, xyz, lonlat);
+      e.computePointCoordinates (i, j, xyz);
     }
 
   int ind_off = ind.size ();
@@ -374,10 +368,18 @@ void subdivideRing (std::vector<float> & lonlat,
    
   int ind_off = ind.size ();
 
-  subdivideRing1 (xyz, lonlat, ind, indr1, indr2, angmax);
+  subdivideRing1 (xyz, ind, indr1, indr2, angmax);
 
-  subdivideRing1 (xyz, lonlat, ind, ind_off, ind.size (), angmax);
+  subdivideRing1 (xyz, ind, ind_off, ind.size (), angmax);
+
+  int lonlat_size = lonlat.size () / 2;
+  lonlat.resize (2 * lonlat_size + 2 * (xyz.size () - lonlat_size));
   
+  for (int i = lonlat_size; i < xyz.size (); i++)
+    {
+      glm::vec2 ll = xyz2lonlat (xyz[i]);
+      lonlat[2*i+0] = ll.x; lonlat[2*i+1] = ll.y;
+    }
 
 }
 

@@ -388,6 +388,129 @@ void subdivideRing (std::vector<float> & lonlat,
 
 }
 
+
+class subdivideRing_t
+{
+public:
+
+  subdivideRing_t () {}
+
+  void init (const std::vector<float> & lonlat, 
+             const std::vector<unsigned int> & ind,
+             int _indp1, int _indp2,
+             int _indr1, int _indr2)
+  {
+    indp1 = _indp1; indp2 = _indp2; 
+    indr1 = _indr1; indr2 = _indr2;
+
+    xyz1.resize (indp2-indp1);
+    ind1.resize (indr2-indr1);
+    indt1 = indr1/3; 
+    indt2 = indr2/3;
+    for (int i = indp1; i < indp2; i++)
+      xyz1[i-indp1] = lonlat2xyz (glm::vec2 (lonlat[2*i+0], lonlat[2*i+1]));
+
+    for (int i = indr1; i < indr2; i++)
+      ind1[i-indr1] = ind[i]-indp1;
+
+    ind1_size = ind1.size (); 
+    xyz1_size = xyz1.size (); 
+
+  }
+ 
+  void subdivide (float angmax)
+  {
+    subdivideRing1 (xyz1, ind1,         0, ind1.size (), angmax);
+    subdivideRing1 (xyz1, ind1, ind1_size, ind1.size (), angmax);
+  }
+
+  void append (std::vector<float> & lonlat, std::vector<unsigned int> & ind,
+               int points_offset, int triangles_offset)
+  {
+    // Append new points
+    int points_length = lonlat.size () / 2;
+    lonlat.resize (2 * (points_length + getPointsLength ()));
+    points_offset = points_length;
+    
+    for (int i = xyz1_size; i < xyz1.size (); i++)
+      {   
+        glm::vec2 ll = xyz2lonlat (xyz1[i]);
+        int j = points_offset + i - xyz1_size;
+        lonlat[2*j+0] = ll.x; lonlat[2*j+1] = ll.y;
+      }   
+   
+    // Append new triangles
+    int triangles_length = ind.size (); 
+    ind.resize (ind.size () + getTrianglesLength ());
+    triangles_offset = triangles_length;
+   
+    for (int i = ind1_size; i < ind1.size (); i++)
+      {   
+        int j = triangles_offset + i - ind1_size;
+        // Two cases 
+        if (ind1[i] < xyz1_size)     // This vertex already existed
+          ind[j] = ind1[i] + indp1;
+        else                         // New vertex
+          ind[j] = ind1[i] - xyz1_size + points_offset;
+      }   
+   
+    // Discard some of the old triangles
+    for (int i = indt1; i < indt2; i++)
+      {   
+        int j = i - indt1;
+        if ((ind1[3*j+0] == ind1[3*j+1]) && (ind1[3*j+1] == ind1[3*j+2]))
+          ind[3*i+0] = ind[3*i+1] = ind[3*i+2] = 0;
+      }   
+
+  }
+
+  int getPointsLength () const
+  {
+    return xyz1.size () - xyz1_size;
+  }
+
+  int getTrianglesLength () const
+  {
+    return ind1.size () - ind1_size;
+  }
+
+  int indt1, indt2;
+  int indp1, indp2;
+  int indr1, indr2;
+  std::vector<glm::vec3> xyz1;
+  std::vector<unsigned int> ind1;
+
+  int ind1_size;
+  int xyz1_size;
+  
+};
+
+
+
+static
+void subdivideRing_ (std::vector<float> & lonlat, 
+                     std::vector<unsigned int> & ind,
+                     int indp1, int indp2,
+                     int indr1, int indr2, 
+                     const float angmax)
+{
+  subdivideRing_t sr;
+ 
+  sr.init (lonlat, ind, indp1, indp2, indr1, indr2);
+
+  sr.subdivide (angmax);
+
+
+  int points_offset;
+  int triangles_offset;
+
+  sr.append (lonlat, ind, points_offset, triangles_offset);
+
+
+}
+
+
+
 void glgrib_land::setup (const glgrib_options_land & o)
 {
   opts = o;
@@ -478,11 +601,11 @@ void glgrib_land::setup (const glgrib_options_land & o)
   const float angmax = deg2rad * 1.0f;
 
  if(1)
-  for (int k = 1; k < 2; k++)
+  for (int k = 0; k < 2; k++)
     {
       int j = ord[k];
-      subdivideRing (lonlat, ind, offset[j], offset[j]+length[j], 
-                     ind_offset[k], ind_offset[k]+ind_length[k], angmax);
+      subdivideRing_ (lonlat, ind, offset[j], offset[j]+length[j], 
+                      ind_offset[k], ind_offset[k]+ind_length[k], angmax);
     }
 
   numberOfTriangles = ind.size () / 3;

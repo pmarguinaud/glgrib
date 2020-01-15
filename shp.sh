@@ -8,7 +8,7 @@ set -x
 
 
 gdb -ex="set confirm on" -ex=run -ex=quit --args ./glgrib.x --land.on  --land.path coastlines/shp/GSHHS_c_L1.shp --land.selector "rowid == 3 or rowid == 1" \
-	    --coast.on --coast.lines.path coastlines/shp/GSHHS_c_L1.shp --coast.lines.format shp --view.lon 78 --view.lat 45 
+	    --coast.on --coast.lines.path coastlines/shp/GSHHS_c_L1.shp --coast.lines.format shp --view.lon 39 --view.lat -12 --view.fov 3
 
 exit
 

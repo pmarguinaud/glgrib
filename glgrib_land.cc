@@ -161,24 +161,9 @@ void glgrib_land::setup (const glgrib_options_land & o)
     {
       int j = ord[l];
       if (length[j] > 2)
-        {
-	if (j == 2244)
-	{
-        FILE * fp = fopen ("2244.dat", "w");
-        for (int ii = offset[j]; ii < offset[j]+length[j]; ii++)
-          fprintf (fp, "%12.6f %12.6f %8d\n", rad2deg * lonlat[2*ii+0], rad2deg * lonlat[2*ii+1], ii);
-	fclose (fp);
-	}
         glgrib_earcut::processRing (lonlat, offset[j], length[j], 
                                     ind_offset[l], &ind_length[l],
                                     &ind, false);
-	if (j == 2244)
-          {
-          std::cout << "coucou" << std::endl;
-	  printf (" offset[l] = %8d\n", offset[j]);
-	  printf (" %8u %8u %8u\n", ind[ind_offset[l]+0], ind[ind_offset[l]+1], ind[ind_offset[l]+2]);
-	  }
-	}
     }
 
 
@@ -188,13 +173,10 @@ void glgrib_land::setup (const glgrib_options_land & o)
     {
       std::vector<glgrib_subdivide> sr (ord.size ());
 
-//    for (int k = 14854; k < 14855; k++)
 #pragma omp parallel for
       for (int k = 0; k < ord.size (); k++)
         {
           int j = ord[k];
-	  if (offset[j] == 194020)
-            std::cout << " j, k = " << j << ", " << k << std::endl;
           sr[k].init (lonlat, ind, offset[j], length[j], 
                       ind_offset[k], ind_length[k]);
           sr[k].subdivide (angmax);

@@ -5,9 +5,6 @@
 #include <iostream>
 #include <omp.h>
 
-static bool DBG = false;
-#pragma omp threadprivate (DBG)
-
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -59,14 +56,10 @@ void glgrib_diag1 (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
 static
 float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2) 
 {
-  if (DBG) printf (" xyz1 = %12.7e, %12.7e, %12.7e\n", xyz1.x, xyz1.y, xyz1.z);
-  if (DBG) printf (" xyz2 = %12.7e, %12.7e, %12.7e\n", xyz2.x, xyz2.y, xyz2.z);
-  if (DBG) printf (" dot = %12.7e\n", glm::dot (xyz1, xyz2));
   float ang =
          acos (std::max (-1.0f, 
                std::min (+1.0f, 
                glm::dot (xyz1, xyz2))));
-  if (DBG) printf (" ang = %12.7e\n", ang);
   return ang;
 }
 
@@ -145,20 +138,10 @@ public:
         int j = index;
         int i = prev->index;
         int k = next->index;
-	if (DBG){
-          printf (" i, j, k = %8d, %8d, %8d\n", i, j, k);
-          printf (" xyz[i] = %12.2e, %12.2e, %12.2e\n", 
-                  xyz[i].x, xyz[i].y, xyz[i].z);
-          printf (" xyz[j] = %12.2e, %12.2e, %12.2e\n", 
-                  xyz[j].x, xyz[j].y, xyz[j].z);
-          printf (" xyz[k] = %12.2e, %12.2e, %12.2e\n", 
-                  xyz[k].x, xyz[k].y, xyz[k].z);
-	}
         glm::vec3 ji = glm::cross (xyz[j], xyz[i] - xyz[j]);
         glm::vec3 jk = glm::cross (xyz[j], xyz[k] - xyz[j]);
         float X = glm::dot (ji, jk);
         float Y = glm::dot (xyz[j], glm::cross (ji, jk));
-	if (DBG) printf (" X = %12.2f, Y = %12.2f\n", X, Y);
         ang = atan2 (Y, X);
         dirty = false;
       }
@@ -925,9 +908,6 @@ void earCut (node_t ** nodelist,
       for (node_t * n = b[c]; n != e[c]; n = n->getNext ())
         {
           float ang = n->getAngle (xyz);
-
-if (DBG) printf (" n = %8d, %12.2f\n", n->getRank (), ang);
-
           if ((0.0f < ang) && (ang < M_PI))
             {
       
@@ -1049,9 +1029,6 @@ glm::mat3 getRotMat (glgrib_diag_t diag, const std::vector<glm::vec3> & xyz, boo
   if (fabs (glm::determinant (A)) < 1e-8)
     return glm::mat3 (1.0f);
 
-  if (DBG)
-    printf (" det (A) = %e\n", glm::determinant (A));
-
   glm::dvec2 e;
   glm::dmat2 Q;
 
@@ -1122,7 +1099,6 @@ void glgrib_earcut::processRing (const std::vector<float> & lonlat1,
 {
   int rank1 = rankb, rank2 = rankb + rankl;
   int indr1 = indrb, indr2 = indrb + *indrl;
-  DBG = rank1 == 194020;
 
   std::vector<glm::vec3> xyz1;
 
@@ -1151,15 +1127,6 @@ if(0)
       xyz1[i] = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
     }
 
-  if (DBG){
-    printf (" xyz1.size () = %d\n", xyz1.size ());
-    printf (" rank1 = %d, rank2 = %d\n", rank1, rank2);
-    printf (" indr1 = %d, indr2 = %d\n", indr1, indr2);
-    printf (" xyz1[0] = %12.2e, %12.2e, %12.2e\n", xyz1[0].x, xyz1[0].y, xyz1[0].z);
-    printf (" xyz1[1] = %12.2e, %12.2e, %12.2e\n", xyz1[1].x, xyz1[1].y, xyz1[1].z);
-    printf (" xyz1[2] = %12.2e, %12.2e, %12.2e\n", xyz1[2].x, xyz1[2].y, xyz1[2].z);
-  }
-
 if(0)
   for (int i = 0; i < numberOfPoints1; i++)
      printf (" %8d | %8d | %12.2e %12.2e %12.2e | %18.6f %18.6f\n", 
@@ -1169,13 +1136,6 @@ if(0)
 
   glm::mat3 R;
   R = getRotMat (glgrib_diag2, xyz1, openmp);
-
-  if (DBG){
-    printf (" R = \n");
-    printf (" %12.2e %12.2e %12.2e\n", R[0][0], R[0][1], R[0][2]);
-    printf (" %12.2e %12.2e %12.2e\n", R[1][0], R[1][1], R[1][2]);
-    printf (" %12.2e %12.2e %12.2e\n", R[2][0], R[2][1], R[2][2]);
-  }
 
 if(0)
   for (int i = 0; i < 3; i++)
@@ -1233,8 +1193,7 @@ if(0)
   int indr = indr1;
   for (int i = 0, k = -1; ; i++)
     {
-      if (DBG)
-      printf (" %8d, nodelist = %8d, ll2n = %8d\n", i, nodelist->count (), ll2n.size ());
+//    printf (" %8d, nodelist = %8d, ll2n = %8d\n", i, nodelist->count (), ll2n.size ());
       earCut (&nodelist, xyz, lonlat, ll2n, &indr, ind, indr2, openmp);
       ll2n.update (xyz);
 
@@ -1243,22 +1202,8 @@ if(0)
         break;
       k = count;
     }
-  if (DBG)
-  printf (" %8s  nodelist = %8d, ll2n = %8d\n", "", nodelist->count (), ll2n.size ());
 
-  if (DBG)
-  {
-  FILE * fp = fopen ("2244.end.dat", "w");
-  for (node_t * n = nodelist; ;)
-    {
-      fprintf (fp, "%12.6f %12.6f %8d\n", rad2deg * n->getLon (lonlat), 
-               rad2deg * n->getLat (lonlat), n->getRank ());
-      n = n->getNext ();
-      if (n == nodelist)
-        break;
-    }
-  fclose (fp);
-  }
+//printf (" %8s  nodelist = %8d, ll2n = %8d\n", "", nodelist->count (), ll2n.size ());
 
   *indrl = indr - indr1;
 }

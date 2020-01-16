@@ -60,7 +60,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
 
 
   // Offset/length of each ring
-  std::vector<int> offset = {+0}, length = {-1};
+  std::vector<int> pos_offset = {+0}, pos_length = {-1};
 
   for (int i = 0; i < indl.size (); i++)
     {
@@ -68,13 +68,13 @@ void glgrib_land::setup (const glgrib_options_land & o)
         {
           if (i < indl.size ()-1)
             {
-              offset.push_back (indl[i+1]);
-              length.push_back (-1);
+              pos_offset.push_back (indl[i+1]);
+              pos_length.push_back (-1);
 	    }
 	}
       else
         {
-          length.back ()++;
+          pos_length.back ()++;
 	}
     }
 
@@ -89,32 +89,33 @@ void glgrib_land::setup (const glgrib_options_land & o)
   }
   {
   FILE * fp = fopen ("pos.dat", "w");
-  for (int i = 0; i < length.size (); i++)
-    fprintf (fp, "%8d | %8d %8d\n", i, offset[i], length[i]);
+  for (int i = 0; i < pos_length.size (); i++)
+    fprintf (fp, "%8d | %8d %8d\n", i, pos_offset[i], pos_length[i]);
   fclose (fp);
   }
 
-//for (int j = 0; j < offset.size (); j++)
+//for (int j = 0; j < pos_offset.size (); j++)
   for (int j = 14850; j < 14860; j++)
   {
   char f[64];
   sprintf (f, "r.%3.3d.dat", j);
   FILE * fp = fopen (f, "w");
-  fprintf (fp, " offset, length = %d, %d\n", offset[j], length[j]);
-  for (int i = offset[j]; i < offset[j]+length[j]+1; i++)
-    fprintf (fp, " %8d | %12.2f %12.2f\n", i-offset[j], rad2deg * lonlat[2*i+0], rad2deg * lonlat[2*i+1]);
+  fprintf (fp, " pos_offset, pos_length = %d, %d\n", pos_offset[j], pos_length[j]);
+  for (int i = pos_offset[j]; i < pos_offset[j]+pos_length[j]+1; i++)
+    fprintf (fp, " %8d | %12.2f %12.2f\n", i-pos_offset[j], rad2deg * lonlat[2*i+0], rad2deg * lonlat[2*i+1]);
   fclose (fp);
   }
 //exit (0);
 #endif
 
   // Sort rings (bigger first)
-  std::vector<int> ord (length.size ());
+  std::vector<int> ord (pos_length.size ());
 
-  for (int i = 0; i < length.size (); i++)
+  for (int i = 0; i < pos_length.size (); i++)
     ord[i] = i;
 
-  std::sort (ord.begin (), ord.end (), [&length] (int i, int j) { return length[j] < length[i]; });
+  std::sort (ord.begin (), ord.end (), [&pos_length] (int i, int j) 
+             { return pos_length[j] < pos_length[i]; });
 
 
   // Offset/length for each indices block 
@@ -124,9 +125,9 @@ void glgrib_land::setup (const glgrib_options_land & o)
   int ind_size = 0;
   for (int k = 0; k < ord.size (); k++)
     {
-      if (length[k] > 2)
+      if (pos_length[k] > 2)
         {
-          ind_length[k] = 3 * (length[k] - 2);
+          ind_length[k] = 3 * (pos_length[k] - 2);
           if (k > 0)
             ind_offset[k] = ind_offset[k-1] + ind_length[k-1];
 	  else
@@ -142,10 +143,10 @@ void glgrib_land::setup (const glgrib_options_land & o)
   for (k = 0; k < ord.size (); k++)
     {
       int j = ord[k];
-      if (length[j] < 300)
+      if (pos_length[j] < 300)
         break;
-      if (length[j] > 2)
-        glgrib_earcut::processRing (lonlat, offset[j], length[j], 
+      if (pos_length[j] > 2)
+        glgrib_earcut::processRing (lonlat, pos_offset[j], pos_length[j], 
                                     ind_offset[j], &ind_length[j],
                                     &ind, true);
     }
@@ -156,8 +157,8 @@ void glgrib_land::setup (const glgrib_options_land & o)
   for (int l = k; l < ord.size (); l++)
     {
       int j = ord[l];
-      if (length[j] > 2)
-        glgrib_earcut::processRing (lonlat, offset[j], length[j], 
+      if (pos_length[j] > 2)
+        glgrib_earcut::processRing (lonlat, pos_offset[j], pos_length[j], 
                                     ind_offset[j], &ind_length[j],
                                     &ind, false);
     }
@@ -187,7 +188,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
       for (int k = 0; k < ord.size (); k++)
         {
           int j = ord[k];
-          sr[k].init (lonlat, ind, offset[j], length[j], 
+          sr[k].init (lonlat, ind, pos_offset[j], pos_length[j], 
                       ind_offset[j], ind_length[j]);
           sr[k].subdivide (angmax);
         }

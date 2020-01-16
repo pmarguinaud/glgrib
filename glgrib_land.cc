@@ -127,10 +127,9 @@ void glgrib_land::setup (const glgrib_options_land & o)
   int ind_size = 0;
   for (int k = 0; k < ord.size (); k++)
     {
-      int j = ord[k];
-      if (length[j] > 2)
+      if (length[k] > 2)
         {
-          ind_length[k] = 3 * (length[j] - 2);
+          ind_length[k] = 3 * (length[k] - 2);
           if (k > 0)
             ind_offset[k] = ind_offset[k-1] + ind_length[k-1];
 	  else
@@ -150,7 +149,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
         break;
       if (length[j] > 2)
         glgrib_earcut::processRing (lonlat, offset[j], length[j], 
-                                    ind_offset[k], &ind_length[k],
+                                    ind_offset[j], &ind_length[j],
                                     &ind, true);
     }
 
@@ -162,7 +161,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
       int j = ord[l];
       if (length[j] > 2)
         glgrib_earcut::processRing (lonlat, offset[j], length[j], 
-                                    ind_offset[l], &ind_length[l],
+                                    ind_offset[j], &ind_length[j],
                                     &ind, false);
     }
 
@@ -178,7 +177,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
         {
           int j = ord[k];
           sr[k].init (lonlat, ind, offset[j], length[j], 
-                      ind_offset[k], ind_length[k]);
+                      ind_offset[j], ind_length[j]);
           sr[k].subdivide (angmax);
         }
 

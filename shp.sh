@@ -4,7 +4,7 @@ set -x
 
 #/usr/bin/time -p perf record \
 
-S=i
+S=c
 
 gdb -ex="set confirm on" -ex=run -ex=quit --args \
 ./glgrib.x --land.on  --land.path coastlines/shp/GSHHS_${S}_L1.shp \

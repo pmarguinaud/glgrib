@@ -21,6 +21,9 @@ void glgrib_land::render (const glgrib_view & view, const glgrib_options_light &
 
   view.setMVP (program);
 
+  float scale0[3] = {opts.scale, opts.scale, opts.scale};
+  program->set3fv ("scale0", scale0);
+
 //glDisable (GL_CULL_FACE);
 
   glBindVertexArray (VertexArrayID);

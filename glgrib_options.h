@@ -671,9 +671,11 @@ public:
     DESC (selector, "Shape selection");
     DESC (path,     "Path to coastlines");
     DESC (on,       "Enable");
+    DESC (scale,    "Scale");
   }
   std::string selector = "";
   std::string path     = "coastlines/shp/GSHHS_c_L1.shp";
+  float scale          = 1.0f;
   bool on              = false;
 };
 

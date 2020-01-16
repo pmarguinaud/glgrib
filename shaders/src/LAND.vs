@@ -5,14 +5,15 @@ layout(location = 0) in vec2 vertexLonLat;
 
 uniform mat4 MVP;
 
+#include "projection.h"
+#include "scale.h"
+
 void main()
 {
-  float lon = vertexLonLat.x, lat = vertexLonLat.y;
+  vec3 vertexPos = posFromLonLat (vertexLonLat);
+  vec3 normedPos = compNormedPos (vertexPos);
+  vec3 pos = compProjedPos (vertexPos, normedPos);
+  pos = scalePosition (pos, normedPos, scale0);
 
-  float coslon = cos (lon), sinlon = sin (lon);
-  float coslat = cos (lat), sinlat = sin (lat);
-
-  vec3 vertexPos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
-
-  gl_Position = MVP * vec4 (vertexPos, 1);
+  gl_Position =  MVP * vec4 (pos, 1.);
 }

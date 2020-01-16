@@ -181,10 +181,19 @@ void glgrib_land::setup (const glgrib_options_land & o)
     printf (" total = %d\n", ind_offset.back () + ind_length.back ());
   }
 
-  std::vector<int> ind_offset_sub = ind_offset;
-  std::vector<int> ind_length_sub = ind_length;
-  std::vector<int> pos_offset_sub = pos_offset;
-  std::vector<int> pos_length_sub = pos_length;
+  std::vector<int> ind_offset_sub;
+  std::vector<int> ind_length_sub;
+  std::vector<int> pos_offset_sub;
+  std::vector<int> pos_length_sub;
+
+  if(1){
+  ind_offset_sub = ind_offset;
+  ind_length_sub = ind_length;
+  pos_offset_sub = pos_offset;
+  pos_length_sub = pos_length;
+  }else{
+    int ntri = (ind_offset.back () + ind_length.back ()) / 3;
+  }
 
   if (1)
     {

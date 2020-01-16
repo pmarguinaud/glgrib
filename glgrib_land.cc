@@ -167,7 +167,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
   const float angmax = deg2rad * 1.0f;
 
 
-  if (0)
+  if (1)
   {
     FILE * fp = fopen ("ind.txt", "w");
     for (int i = 0; i < ind_offset.size (); i++)

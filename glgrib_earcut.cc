@@ -1115,11 +1115,13 @@ glm::mat3 getRotMat (glgrib_diag_t diag, const std::vector<glm::vec3> & xyz, boo
 }
 
 void glgrib_earcut::processRing (const std::vector<float> & lonlat1, 
-                                 int rank1, int rank2, 
-		                 int indr1, int indr2,
+                                 int rankb, int rankl, 
+		                 int indrb, int * indrl,
                                  std::vector<unsigned int> * ind,
 		                 bool openmp)
 {
+  int rank1 = rankb, rank2 = rankb + rankl;
+  int indr1 = indrb, indr2 = indrb + *indrl;
   DBG = rank1 == 194020;
 
   std::vector<glm::vec3> xyz1;
@@ -1258,6 +1260,7 @@ if(0)
   fclose (fp);
   }
 
+  *indrl = indr - indr1;
 }
 
 

@@ -79,7 +79,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
 
   
 
-//#ifdef UNDEF
+#ifdef UNDEF
   {
   FILE * fp = fopen ("coords.dat", "w");
   for (int i = 0; i < indl.size (); i++)
@@ -105,7 +105,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
   fclose (fp);
   }
 //exit (0);
-//#endif
+#endif
 
   std::vector<int> ord;
   ord.reserve (length.size ());
@@ -149,8 +149,8 @@ void glgrib_land::setup (const glgrib_options_land & o)
       if (length[j] < 300)
         break;
       if (length[j] > 2)
-        glgrib_earcut::processRing (lonlat, offset[j], offset[j]+length[j], 
-                                    ind_offset[k], ind_offset[k]+ind_length[k],
+        glgrib_earcut::processRing (lonlat, offset[j], length[j], 
+                                    ind_offset[k], &ind_length[k],
                                     &ind, true);
     }
 
@@ -169,8 +169,8 @@ void glgrib_land::setup (const glgrib_options_land & o)
           fprintf (fp, "%12.6f %12.6f %8d\n", rad2deg * lonlat[2*ii+0], rad2deg * lonlat[2*ii+1], ii);
 	fclose (fp);
 	}
-        glgrib_earcut::processRing (lonlat, offset[j], offset[j]+length[j], 
-                                    ind_offset[l], ind_offset[l]+ind_length[l],
+        glgrib_earcut::processRing (lonlat, offset[j], length[j], 
+                                    ind_offset[l], &ind_length[l],
                                     &ind, false);
 	if (j == 2244)
           {
@@ -195,8 +195,8 @@ void glgrib_land::setup (const glgrib_options_land & o)
           int j = ord[k];
 	  if (offset[j] == 194020)
             std::cout << " j, k = " << j << ", " << k << std::endl;
-          sr[k].init (lonlat, ind, offset[j], offset[j]+length[j], 
-                      ind_offset[k], ind_offset[k]+ind_length[k]);
+          sr[k].init (lonlat, ind, offset[j], length[j], 
+                      ind_offset[k], ind_length[k]);
           sr[k].subdivide (angmax);
         }
 

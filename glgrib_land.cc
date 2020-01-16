@@ -59,6 +59,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
 
 
 
+  // Offset/length of each ring
   std::vector<int> offset = {+0}, length = {-1};
 
   for (int i = 0; i < indl.size (); i++)
@@ -107,11 +108,11 @@ void glgrib_land::setup (const glgrib_options_land & o)
 //exit (0);
 #endif
 
-  std::vector<int> ord;
-  ord.reserve (length.size ());
+  // Sort rings (bigger first)
+  std::vector<int> ord (length.size ());
 
   for (int i = 0; i < length.size (); i++)
-    ord.push_back (i);
+    ord[i] = i;
 
   auto comp = [&length] (int i, int j)
   {
@@ -120,7 +121,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
 
   std::sort (ord.begin (), ord.end (), comp);
 
-  // Offset/length for each ring
+  // Offset/length for each indices block 
   std::vector<int> ind_offset (ord.size ());
   std::vector<int> ind_length (ord.size ());
 
@@ -167,6 +168,20 @@ void glgrib_land::setup (const glgrib_options_land & o)
 
 
   const float angmax = deg2rad * 1.0f;
+
+
+  if (0)
+  {
+    FILE * fp = fopen ("ind.txt", "w");
+    for (int i = 0; i < ind_offset.size (); i++)
+      {
+        fprintf (fp, " %8d %8d", ind_offset[i], ind_length[i]);
+	if ((i > 0) && (ind_offset[i-1] + ind_length[i-1] != ind_offset[i]))
+          fprintf (fp, " X");
+	fprintf (fp, "\n");
+      }
+    fclose (fp);
+  }
 
   if (1)
     {

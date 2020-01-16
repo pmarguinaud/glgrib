@@ -137,7 +137,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
   const float angmax = deg2rad * 1.0f;
 
 
-  if (1)
+  if (0)
   {
     FILE * fp = fopen ("ind.txt", "w");
     for (int i = 0; i < ind_offset.size (); i++)
@@ -148,7 +148,6 @@ void glgrib_land::setup (const glgrib_options_land & o)
 	fprintf (fp, "\n");
       }
     fclose (fp);
-    printf (" total = %d\n", ind_offset.back () + ind_length.back ());
     fp = fopen ("pos.txt", "w");
     for (int i = 0; i < pos_offset.size (); i++)
       {
@@ -165,7 +164,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
   std::vector<int> pos_offset_sub;
   std::vector<int> pos_length_sub;
 
-  if(1){
+  if(0){
   ind_offset_sub = ind_offset;
   ind_length_sub = ind_length;
   pos_offset_sub = pos_offset;
@@ -178,37 +177,60 @@ void glgrib_land::setup (const glgrib_options_land & o)
     if (jtri * count != ntri)
       count++;
 
-    ind_offset_sub.push_back (0); ind_length_sub.push_back (0);
-    pos_offset_sub.push_back (0); pos_length_sub.push_back (0);
+    ind_offset_sub.push_back (0); ind_length_sub.push_back (ind_length[0]);
+    pos_offset_sub.push_back (0); pos_length_sub.push_back (pos_offset[1]-pos_offset[0]);
 
-    for (int i = 0; i < ind_length.size (); i++)
+    const int n = ind_length.size ();
+    for (int i = 1; i < n; i++)
       {
 	int sz = (ind_length_sub.back () + ind_length[i]) - jtri * 3;
-        if (sz > 0)
+	bool b = (i != n-1) && (ind_offset[i+1]-ind_offset[i] != ind_length[i]);
+	if (b)
           {
-            ind_length_sub.back () = jtri * 3;
-	    pos_length_sub.back () += pos_length[i];
-	    while (sz > 0)
-              {
-	        ind_offset_sub.push_back (ind_offset_sub.back () + ind_length_sub.back ());
-	        ind_length_sub.push_back (std::min (jtri * 3, sz));
-		pos_offset_sub.push_back (pos_offset[i]);
-		pos_length_sub.push_back (pos_length[i]);
-                sz -= jtri * 3;
-              }
+	    ind_offset_sub.push_back (ind_offset_sub.back () + ind_length_sub.back ());
+	    ind_length_sub.push_back (ind_length[i]);
+	    pos_offset_sub.push_back (pos_offset[i]);
+	    pos_length_sub.push_back (pos_length[i]);
+	    i++;
+	    sz = 1;
+	  }
+	if (sz > 0)
+          {
+	    ind_offset_sub.push_back ( b ? ind_offset[i] : ind_offset_sub.back () + ind_length_sub.back ());
+	    ind_length_sub.push_back (0);
+	    ind_length_sub.back () += i+1 < n
+                        ? ind_offset[i+1]-ind_offset[i+0] : ind_length[i];
+	    pos_offset_sub.push_back (pos_offset[i]);
+	    pos_length_sub.push_back (0);
+	    pos_length_sub.back () += i+1 < n 
+                        ? pos_offset[i+1]-pos_offset[i+0] : pos_length[i];
 	  }
 	else
           {
             ind_length_sub.back () += ind_length[i];
-	    pos_length_sub.back () += pos_length[i];
+	    pos_length_sub.back () += i+1 < n 
+                        ? pos_offset[i+1]-pos_offset[i+0] : pos_length[i];
 	  }
       }
-
+if(0)
+{
+  FILE * fp = fopen ("sub.txt", "w");
     for (int i = 0; i < ind_length_sub.size (); i++)
-      printf (" %8d %8d %8d %8d\n", ind_offset_sub[i], ind_offset_sub[i]+ind_length_sub[i],
-              pos_offset_sub[i], pos_offset_sub[i]+pos_length_sub[i]);
-
-    exit (0);
+      {
+      int indr1 = ind_offset_sub[i];
+      int indr2 = ind_offset_sub[i]+ind_length_sub[i];
+      int indp1 = pos_offset_sub[i];
+      int indp2 = pos_offset_sub[i]+pos_length_sub[i];
+      int pmin = *std::min_element (ind.begin () + indr1, ind.begin () + indr2);
+      int pmax = *std::max_element (ind.begin () + indr1, ind.begin () + indr2);
+     
+      fprintf (fp, " %8d %8d %8d %8d | %8d %8d | %d %d\n", 
+              indr1, indr2, indp1, indp2, pmin, pmax,
+	      (pmin < indp1) || (pmin >= indp2), (pmax < indp1) || (pmax >= indp2));
+      }
+  fclose (fp);
+}
+//  exit (0);
   }
 
   if (1)
@@ -219,6 +241,8 @@ void glgrib_land::setup (const glgrib_options_land & o)
 #pragma omp parallel for
       for (int k = 0; k < n; k++)
         {
+if (264335 == pos_offset_sub[k])
+  printf (" k = %d\n", k);
           sr[k].init (lonlat, ind, 
                       pos_offset_sub[k], pos_length_sub[k], 
                       ind_offset_sub[k], ind_length_sub[k]);

@@ -114,12 +114,8 @@ void glgrib_land::setup (const glgrib_options_land & o)
   for (int i = 0; i < length.size (); i++)
     ord[i] = i;
 
-  auto comp = [&length] (int i, int j)
-  {
-    return length[j] < length[i];
-  };
+  std::sort (ord.begin (), ord.end (), [&length] (int i, int j) { return length[j] < length[i]; });
 
-  std::sort (ord.begin (), ord.end (), comp);
 
   // Offset/length for each indices block 
   std::vector<int> ind_offset (ord.size ());

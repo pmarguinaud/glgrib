@@ -918,7 +918,7 @@ void earCut (node_t ** nodelist,
 
   std::vector<unsigned int> ind1[pools];
 
-//#pragma omp parallel for if (openmp)
+#pragma omp parallel for if (openmp)
   for (int c = 0; c < pools; c++)
     {
       std::vector<unsigned int> * ind = &ind1[c];

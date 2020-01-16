@@ -182,10 +182,11 @@ void glgrib_land::setup (const glgrib_options_land & o)
 
   if (1)
     {
-      std::vector<glgrib_subdivide> sr (ord.size ());
+      const int n = ord.size ();
+      std::vector<glgrib_subdivide> sr (n);
 
 #pragma omp parallel for
-      for (int k = 0; k < ord.size (); k++)
+      for (int k = 0; k < n; k++)
         {
           int j = ord[k];
           sr[k].init (lonlat, ind, pos_offset[j], pos_length[j], 
@@ -193,13 +194,13 @@ void glgrib_land::setup (const glgrib_options_land & o)
           sr[k].subdivide (angmax);
         }
 
-      std::vector<int> points_offset    (ord.size ());
-      std::vector<int> triangles_offset (ord.size ());
+      std::vector<int> points_offset    (n);
+      std::vector<int> triangles_offset (n);
 
       points_offset   [0] = lonlat.size () / 2;
       triangles_offset[0] = ind.size ();
 
-      for (int k = 1; k < ord.size (); k++)
+      for (int k = 1; k < n; k++)
         {
           points_offset   [k] = points_offset   [k-1] + sr[k-1].getPointsLength    ();
           triangles_offset[k] = triangles_offset[k-1] + sr[k-1].getTrianglesLength ();
@@ -209,7 +210,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
       ind.resize (ind.size () + triangles_offset.back () + sr.back ().getTrianglesLength ());
 
 #pragma omp parallel for
-      for (int k = 0; k < ord.size (); k++)
+      for (int k = 0; k < n; k++)
         sr[k].append (lonlat, ind, points_offset[k], triangles_offset[k]);
     }
 

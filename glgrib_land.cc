@@ -178,7 +178,13 @@ void glgrib_land::setup (const glgrib_options_land & o)
 	fprintf (fp, "\n");
       }
     fclose (fp);
+    printf (" total = %d\n", ind_offset.back () + ind_length.back ());
   }
+
+  std::vector<int> ind_offset_sub = ind_offset;
+  std::vector<int> ind_length_sub = ind_length;
+  std::vector<int> pos_offset_sub = pos_offset;
+  std::vector<int> pos_length_sub = pos_length;
 
   if (1)
     {
@@ -189,29 +195,30 @@ void glgrib_land::setup (const glgrib_options_land & o)
       for (int k = 0; k < n; k++)
         {
           int j = ord[k];
-          sr[k].init (lonlat, ind, pos_offset[j], pos_length[j], 
-                      ind_offset[j], ind_length[j]);
+          sr[k].init (lonlat, ind, 
+                      pos_offset_sub[j], pos_length_sub[j], 
+                      ind_offset_sub[j], ind_length_sub[j]);
           sr[k].subdivide (angmax);
         }
 
-      std::vector<int> points_offset    (n);
-      std::vector<int> triangles_offset (n);
+      std::vector<int> pts_offset (n);
+      std::vector<int> tri_offset (n);
 
-      points_offset   [0] = lonlat.size () / 2;
-      triangles_offset[0] = ind.size ();
+      pts_offset[0] = lonlat.size () / 2;
+      tri_offset[0] = ind.size ();
 
       for (int k = 1; k < n; k++)
         {
-          points_offset   [k] = points_offset   [k-1] + sr[k-1].getPointsLength    ();
-          triangles_offset[k] = triangles_offset[k-1] + sr[k-1].getTrianglesLength ();
+          pts_offset[k] = pts_offset[k-1] + sr[k-1].getPtsLength ();
+          tri_offset[k] = tri_offset[k-1] + sr[k-1].getTriLength ();
         }
 
-      lonlat.resize (lonlat.size () + 2 * (points_offset.back () + sr.back ().getPointsLength ()));
-      ind.resize (ind.size () + triangles_offset.back () + sr.back ().getTrianglesLength ());
+      lonlat.resize (lonlat.size () + 2 * (pts_offset.back () + sr.back ().getPtsLength ()));
+      ind.resize (ind.size () + tri_offset.back () + sr.back ().getTriLength ());
 
 #pragma omp parallel for
       for (int k = 0; k < n; k++)
-        sr[k].append (lonlat, ind, points_offset[k], triangles_offset[k]);
+        sr[k].append (lonlat, ind, pts_offset[k], tri_offset[k]);
     }
 
   numberOfTriangles = ind.size () / 3;

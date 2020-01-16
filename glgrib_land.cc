@@ -78,36 +78,6 @@ void glgrib_land::setup (const glgrib_options_land & o)
 	}
     }
 
-  
-
-#ifdef UNDEF
-  {
-  FILE * fp = fopen ("coords.dat", "w");
-  for (int i = 0; i < indl.size (); i++)
-    fprintf (fp, "%8d | %32u\n", i, indl[i]);
-  fclose (fp);
-  }
-  {
-  FILE * fp = fopen ("pos.dat", "w");
-  for (int i = 0; i < pos_length.size (); i++)
-    fprintf (fp, "%8d | %8d %8d\n", i, pos_offset[i], pos_length[i]);
-  fclose (fp);
-  }
-
-//for (int j = 0; j < pos_offset.size (); j++)
-  for (int j = 14850; j < 14860; j++)
-  {
-  char f[64];
-  sprintf (f, "r.%3.3d.dat", j);
-  FILE * fp = fopen (f, "w");
-  fprintf (fp, " pos_offset, pos_length = %d, %d\n", pos_offset[j], pos_length[j]);
-  for (int i = pos_offset[j]; i < pos_offset[j]+pos_length[j]+1; i++)
-    fprintf (fp, " %8d | %12.2f %12.2f\n", i-pos_offset[j], rad2deg * lonlat[2*i+0], rad2deg * lonlat[2*i+1]);
-  fclose (fp);
-  }
-//exit (0);
-#endif
-
   // Sort rings (bigger first)
   std::vector<int> ord (pos_length.size ());
 
@@ -179,6 +149,15 @@ void glgrib_land::setup (const glgrib_options_land & o)
       }
     fclose (fp);
     printf (" total = %d\n", ind_offset.back () + ind_length.back ());
+    fp = fopen ("pos.txt", "w");
+    for (int i = 0; i < pos_offset.size (); i++)
+      {
+        fprintf (fp, " %8d %8d", pos_offset[i], pos_offset[i]+pos_length[i]);
+	if ((i > 0) && (pos_offset[i-1] + pos_length[i-1] != pos_offset[i]))
+          fprintf (fp, " X");
+	fprintf (fp, "\n");
+      }
+    fclose (fp);
   }
 
   std::vector<int> ind_offset_sub;
@@ -192,21 +171,57 @@ void glgrib_land::setup (const glgrib_options_land & o)
   pos_offset_sub = pos_offset;
   pos_length_sub = pos_length;
   }else{
+    int count = 100;
     int ntri = (ind_offset.back () + ind_length.back ()) / 3;
+
+    int jtri = ntri / count;
+    if (jtri * count != ntri)
+      count++;
+
+    ind_offset_sub.push_back (0); ind_length_sub.push_back (0);
+    pos_offset_sub.push_back (0); pos_length_sub.push_back (0);
+
+    for (int i = 0; i < ind_length.size (); i++)
+      {
+	int sz = (ind_length_sub.back () + ind_length[i]) - jtri * 3;
+        if (sz > 0)
+          {
+            ind_length_sub.back () = jtri * 3;
+	    pos_length_sub.back () += pos_length[i];
+	    while (sz > 0)
+              {
+	        ind_offset_sub.push_back (ind_offset_sub.back () + ind_length_sub.back ());
+	        ind_length_sub.push_back (std::min (jtri * 3, sz));
+		pos_offset_sub.push_back (pos_offset[i]);
+		pos_length_sub.push_back (pos_length[i]);
+                sz -= jtri * 3;
+              }
+	  }
+	else
+          {
+            ind_length_sub.back () += ind_length[i];
+	    pos_length_sub.back () += pos_length[i];
+	  }
+      }
+
+    for (int i = 0; i < ind_length_sub.size (); i++)
+      printf (" %8d %8d %8d %8d\n", ind_offset_sub[i], ind_offset_sub[i]+ind_length_sub[i],
+              pos_offset_sub[i], pos_offset_sub[i]+pos_length_sub[i]);
+
+    exit (0);
   }
 
   if (1)
     {
-      const int n = ord.size ();
+      const int n = pos_offset_sub.size ();
       std::vector<glgrib_subdivide> sr (n);
 
 #pragma omp parallel for
       for (int k = 0; k < n; k++)
         {
-          int j = ord[k];
           sr[k].init (lonlat, ind, 
-                      pos_offset_sub[j], pos_length_sub[j], 
-                      ind_offset_sub[j], ind_length_sub[j]);
+                      pos_offset_sub[k], pos_length_sub[k], 
+                      ind_offset_sub[k], ind_length_sub[k]);
           sr[k].subdivide (angmax);
         }
 

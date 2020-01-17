@@ -2,11 +2,11 @@
 
 set -x
 
-#/usr/bin/time -p perf record \
 
-S=c
+S=i
+#gdb -ex="set confirm on" -ex=run -ex=quit --args \
 
-gdb -ex="set confirm on" -ex=run -ex=quit --args \
+/usr/bin/time -p perf record \
 ./glgrib.x --land.on  --land.path coastlines/shp/GSHHS_${S}_L1.shp \
 --land.selector "rowid <= 40000" --land.scale 1.01 \
 --coast.on --coast.lines.path coastlines/shp/GSHHS_${S}_L1.shp \

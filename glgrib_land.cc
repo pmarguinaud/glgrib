@@ -136,6 +136,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
                                     &ind, false);
     }
 
+exit (0);
 
   const float angmax = deg2rad * 1.0f;
 
@@ -162,6 +163,8 @@ void glgrib_land::setup (const glgrib_options_land & o)
     fclose (fp);
   }
 
+  if (0)
+    {
   std::vector<int> ind_offset_sub;
   std::vector<int> ind_length_sub;
   std::vector<int> pos_offset_sub;
@@ -236,8 +239,6 @@ if(0)
 //  exit (0);
   }
 
-  if (1)
-    {
       const int n = pos_offset_sub.size ();
       std::vector<glgrib_subdivide> sr (n);
 
@@ -271,6 +272,7 @@ if (264335 == pos_offset_sub[k])
       for (int k = 0; k < n; k++)
         sr[k].append (lonlat, ind, pts_offset[k], tri_offset[k]);
     }
+
 
   numberOfTriangles = ind.size () / 3;
 

@@ -5,6 +5,9 @@ out vec4 color;
 
 void main()
 {
+  color = vec4 (0.0f, 1.0f, 0.0f, 1.0f);
+  return;
+
   int k = gl_PrimitiveID % 8;
   
   vec3 colors[8];

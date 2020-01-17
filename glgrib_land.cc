@@ -163,7 +163,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
     fclose (fp);
   }
 
-  if (0)
+  if (1)
     {
   std::vector<int> ind_offset_sub;
   std::vector<int> ind_length_sub;

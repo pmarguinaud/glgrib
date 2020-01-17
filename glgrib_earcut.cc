@@ -503,8 +503,8 @@ public:
     getLonRange (nodevec, xy, &lonmin, &lonmax);
     getLatRange (nodevec, xy, &latmin, &latmax);
 
-//  nx = std::min (2, (int)(rad2deg * (lonmax - lonmin)));
-//  ny = std::min (2, (int)(rad2deg * (latmax - latmin)));
+    nx = std::max (2, (int)(rad2deg * (lonmax - lonmin)));
+    ny = std::max (2, (int)(rad2deg * (latmax - latmin)));
 
 if(0)
     printf (" lon = %12.2f .. %12.2f, lat = %12.2f .. %12.2f\n",

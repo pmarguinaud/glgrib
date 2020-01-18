@@ -1,4 +1,5 @@
 #include "glgrib_program.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_opengl.h"
 #include "glgrib_shader.h"
 #include "glgrib_resolve.h"
@@ -121,7 +122,6 @@ void glgrib_program::setLight (const glgrib_options_light & light)
       glUniform1i (lightid, light.on);
       if (light.on)
         {
-          const double deg2rad = M_PI / 180.0;
           float coslon = cos (deg2rad * light.lon);
           float sinlon = sin (deg2rad * light.lon);
           float coslat = cos (deg2rad * light.lat);

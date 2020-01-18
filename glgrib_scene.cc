@@ -1,4 +1,5 @@
 #include "glgrib_scene.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_opengl.h"
 
 #include <stdio.h>
@@ -137,7 +138,7 @@ void glgrib_scene::update_light ()
       float time = (date->hour * 60.0f + date->minute) * 60.0f + date->second;
       for (int m = 0; m < date->month-1; m++)
         cday += nday[m];
-      d.opts.scene.light.lat = dtrop * sin (2.0f * M_PI * (cday - eday) / 365.0f);
+      d.opts.scene.light.lat = dtrop * sin (twopi * (cday - eday) / 365.0f);
       d.opts.scene.light.lon = 360.0f * ((12.0f * 3600.0f - time) / (24.0f * 3600.0f));
     }
 }

@@ -1,4 +1,5 @@
 #include "glgrib_gshhg.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_resolve.h"
 
 #include <stdio.h>
@@ -97,7 +98,7 @@ void glgrib_gshhg::read (const glgrib_options_lines & opts, int * numberOfPoints
 
   int ip = 0;
 
-  const float microdeg2rad = M_PI / (1000000. * 180.);
+  const float microdeg2rad = pi / (1000000. * 180.);
 
   FILE * fp = fopen (path.c_str (), "r");
 

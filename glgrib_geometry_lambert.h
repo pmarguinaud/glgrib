@@ -2,14 +2,13 @@
 #define _GLGRIB_GEOMETRY_LAMBERT_H
 
 #include "glgrib_geometry.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_options.h"
 #include "glgrib_handle.h"
 
 class glgrib_geometry_lambert : public glgrib_geometry
 {
 public:
-  static const double rad2deg;
-  static const double deg2rad;
   static const double a;
   
   class latlon_t
@@ -70,8 +69,8 @@ public:
   static inline double dist_2ref (const latlon_t & pt_coord, const latlon_t & ref_coord)
   {
     double z = pt_coord.lon - ref_coord.lon;
-    z = z - sign (M_PI, z) * (1.0 + sign (1.0, fabs (z) - M_PI));
-    return -z * sign (1.0, z - M_PI);
+    z = z - sign (pi, z) * (1.0 + sign (1.0, fabs (z) - pi));
+    return -z * sign (1.0, z - pi);
   }
   
   class proj_t
@@ -95,7 +94,7 @@ public:
                  latlon_t 
                    (
                      ref_pt.lon + pt_rtheta.V.theta / kl,
-                     pole * ((M_PI / 2.0) - 2.0 * atan (pow (pt_rtheta.V.r / r_equateur, 1.0 / kl)))
+                     pole * ((pi / 2.0) - 2.0 * atan (pow (pt_rtheta.V.r / r_equateur, 1.0 / kl)))
                    ), 
                  latlon_t 
                    (
@@ -114,7 +113,7 @@ public:
     latlon_t rtheta_to_latlon (const rtheta_t & pt_rtheta) const 
     {
       return latlon_t (ref_pt.lon + pt_rtheta.theta / kl,
-                       pole * ((M_PI / 2.0) - 2.0 * atan(pow (pt_rtheta.r / r_equateur, 1.0 / kl))));
+                       pole * ((pi / 2.0) - 2.0 * atan(pow (pt_rtheta.r / r_equateur, 1.0 / kl))));
     }
     rtheta_j_t xy_to_rtheta (const xy_j_t & pt_xy) const
     {
@@ -127,11 +126,11 @@ public:
    
    
       if (pt_xy.V.y == 0.0)
-        tatng = (pt_xy.V.x == 0.0) ? M_PI : sign (M_PI / 2.0, -pole * pt_xy.V.x);
+        tatng = (pt_xy.V.x == 0.0) ? pi : sign (pi / 2.0, -pole * pt_xy.V.x);
       else
         tatng = atan (-pole * (pt_xy.V.x / pt_xy.V.y));
 
-      theta = M_PI * sign (1.0, pt_xy.V.x) * (sign (0.5, pole * pt_xy.V.y) + 0.5) + tatng;
+      theta = pi * sign (1.0, pt_xy.V.x) * (sign (0.5, pole * pt_xy.V.y) + 0.5) + tatng;
 
       if (r2 > 0.0)
         {
@@ -153,10 +152,10 @@ public:
       double theta;
     
       if (pt_xy.y == 0.0) 
-        tatng = (pt_xy.x == 0.0) ? M_PI : sign (M_PI / 2.0, -pole * pt_xy.x);
+        tatng = (pt_xy.x == 0.0) ? pi : sign (pi / 2.0, -pole * pt_xy.x);
       else
         tatng = atan (-pole * (pt_xy.x / pt_xy.y));
-      theta = M_PI * sign (1.0, pt_xy.x) * (sign (0.5, pole * pt_xy.y) + 0.5) + tatng;
+      theta = pi * sign (1.0, pt_xy.x) * (sign (0.5, pole * pt_xy.y) + 0.5) + tatng;
     
       return rtheta_t (r, theta);
     }
@@ -171,7 +170,7 @@ public:
     rtheta_t latlon_to_rtheta (const latlon_t & pt_coord) const 
     {
       return rtheta_t 
-    	  (r_equateur * pow (tan ((M_PI / 4.0) - ((pole * pt_coord.lat) / 2.0)), kl),
+    	  (r_equateur * pow (tan ((pi / 4.0) - ((pole * pt_coord.lat) / 2.0)), kl),
                kl * dist_2ref (pt_coord, ref_pt));
     }
     xy_t rtheta_to_xy (const rtheta_t & pt_rtheta) const 

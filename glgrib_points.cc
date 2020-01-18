@@ -1,4 +1,5 @@
 #include "glgrib_points.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_bitmap.h"
 
 #include <iostream>
@@ -53,8 +54,6 @@ void glgrib_points::setup (const glgrib_options_points & o,
                           const std::vector<float> & val)
 {
   d.opts = o;
-
-  const double deg2rad = M_PI / 180.0;
 
   d.len = lon.size ();
   std::vector<float> lls;

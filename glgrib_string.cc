@@ -1,4 +1,5 @@
 #include "glgrib_string.h"
+#include "glgrib_trigonometry.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -150,7 +151,6 @@ void glgrib_string::setup (const_glgrib_font_ptr ff, const std::vector<std::stri
       else if (d.align & NY)
         yy = yy - dym;
      
-      const float deg2rad = M_PI / 180.0;
       float X = j < _X.size () ?  _X[j] : 0.0f;
       float Y = j < _Y.size () ?  _Y[j] : 0.0f;
       float Z = j < _Z.size () ?  _Z[j] : 0.0f;

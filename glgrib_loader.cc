@@ -1,4 +1,5 @@
 #include "glgrib_loader.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_geometry.h"
 #include "glgrib_palette.h"
 
@@ -463,8 +464,6 @@ void glgrib_loader::uv2nd (const_glgrib_geometry_ptr geometry,
 {
   data_n = new_glgrib_field_float_buffer_ptr (geometry->getNumberOfPoints ());
   data_d = new_glgrib_field_float_buffer_ptr (geometry->getNumberOfPoints ());
-
-  const double rad2deg = 180.0 / M_PI;
 
   meta_n = meta_u; // TODO : handle this differently
   meta_d = meta_u;

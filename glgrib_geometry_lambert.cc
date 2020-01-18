@@ -9,8 +9,6 @@
 #include <iostream>
 #include <stdexcept>
 
-const double glgrib_geometry_lambert::rad2deg = 180.0 / M_PI;
-const double glgrib_geometry_lambert::deg2rad = M_PI / 180.0;
 const double glgrib_geometry_lambert::a = 6371229.0;
 
 int glgrib_geometry_lambert::size () const
@@ -234,7 +232,7 @@ void glgrib_geometry_lambert::sample (unsigned char * p, const unsigned char p0,
   float Dlon = latlon_ne.lon - latlon_sw.lon;
   float lat = (latlon_ne.lat + latlon_sw.lat) / 2.0f;
   
-  int lat_stride = (Ny * M_PI) / (level * Dlat);
+  int lat_stride = (Ny * pi) / (level * Dlat);
   if (lat_stride == 0)
     lat_stride = 1;
 
@@ -436,7 +434,7 @@ void glgrib_geometry_lambert::sampleTriangle (unsigned char * s, const unsigned 
   float Dlon = latlon_ne.lon - latlon_sw.lon;
   float lat = (latlon_ne.lat + latlon_sw.lat) / 2.0f;
   
-  int lat_stride = abs (level * M_PI / Dlat);
+  int lat_stride = abs (level * pi / Dlat);
   lat_stride = std::max (1, lat_stride);
   int lon_stride = 2.0f * (level * 2.0f * Dlat) / (Dlon * cos (lat));
   lon_stride = std::max (1, lon_stride);

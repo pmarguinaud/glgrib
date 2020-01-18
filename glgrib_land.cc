@@ -1,4 +1,5 @@
 #include "glgrib_land.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_opengl.h"
 #include "glgrib_shapelib.h"
 #include "glgrib_options.h"
@@ -43,10 +44,6 @@ void glgrib_land::clear ()
     glDeleteVertexArrays (1, &VertexArrayID);
   glgrib_object::clear ();
 }
-
-static const float rad2deg = 180.0f / M_PI;
-static const float deg2rad = M_PI / 180.0f;
-
 
 void glgrib_land::triangulate (std::vector<int> * _pos_offset, 
                                std::vector<int> * _pos_length,

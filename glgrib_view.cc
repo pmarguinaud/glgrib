@@ -1,4 +1,5 @@
 #include "glgrib_view.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_opengl.h"
 #include "glgrib_projection.h"
 
@@ -154,8 +155,6 @@ float glgrib_view::frac_to_dist_at_nadir (float frac) const
 
 float glgrib_view::pixel_to_dist_at_nadir (float pixels) const
 {
-  const double deg2rad = M_PI / 180.0;
-
   float lon = deg2rad * opts.lon, lat = deg2rad * opts.lat;
 
   float coslon0 = cos (lon), sinlon0 = sin (lon);
@@ -181,8 +180,7 @@ float glgrib_view::pixel_to_dist_at_nadir (float pixels) const
     }
   else
     {
-std::cout << " M_PI" << std::endl;
-      return M_PI;
+      return pi;
     }
 }
 

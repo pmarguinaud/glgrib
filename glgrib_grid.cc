@@ -1,4 +1,5 @@
 #include "glgrib_grid.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_program.h"
 
 #include <math.h>
@@ -44,7 +45,6 @@ void glgrib_grid::setup (const glgrib_options_grid & o)
 
       auto push = [&X, &Y, &Z, &A, &L, this] (float lon, float lat, const std::string & l)
       {
-        const float deg2rad = M_PI / 180.0f;
 	float coslon = cos (deg2rad * lon), sinlon = sin (deg2rad * lon);
 	float coslat = cos (deg2rad * lat), sinlat = sin (deg2rad * lat);
         float x = coslon * coslat, y = sinlon * coslat, z = sinlat;

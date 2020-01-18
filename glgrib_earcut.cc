@@ -1,4 +1,5 @@
 #include "glgrib_earcut.h"
+#include "glgrib_trigonometry.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -33,12 +34,6 @@ void glgrib_diag (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
   (*Q)[0] = -glm::normalize (glm::dvec2 (2.0 * c, b - a - D));
   (*Q)[1] = -glm::normalize (glm::dvec2 (2.0 * c, b - a + D));
 }
-
-static const float rad2deg = 180.0f / M_PI;
-static const float deg2rad = M_PI / 180.0f;
-static const float twopi = 2.0f * M_PI;
-static const float pi = M_PI;
-static const float halfpi = M_PI / 2.0f;
 
 class node_t
 {
@@ -794,7 +789,7 @@ void earCut (node_t ** nodelist,
   
           // Node OK for removal
 
-          if ((0.0f < ang) && (ang < M_PI))
+          if ((0.0f < ang) && (ang < pi))
             {
       
               bool intri = false;

@@ -1,4 +1,5 @@
 #include "glgrib_field_vector.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_program.h"
 #include "glgrib_palette.h"
 
@@ -152,7 +153,7 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
       values.push_back (data_d);
     }
 
-  d.vscale = opts.vector.scale * (M_PI / npts) / (meta_n.valmax || 1.0f);
+  d.vscale = opts.vector.scale * (pi / npts) / (meta_n.valmax || 1.0f);
 
   palette = glgrib_palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
   
@@ -255,8 +256,6 @@ void glgrib_field_vector::reSample (const glgrib_view & view)
   const glgrib_field_metadata & meta_n = meta[0];
   const glgrib_field_metadata & meta_d = meta[1];
 
-  const float deg2rad = M_PI / 180.0;
-
   const glgrib_options_view & view_opts = view.getOptions ();
   float w = view_opts.distance * deg2rad * view_opts.fov;
 
@@ -266,7 +265,7 @@ void glgrib_field_vector::reSample (const glgrib_view & view)
 
   geometry->sample (col_d, 0, npts);
 
-  d.vscale = opts.vector.scale * (M_PI / npts) / (meta_n.valmax || 1.0f);
+  d.vscale = opts.vector.scale * (pi / npts) / (meta_n.valmax || 1.0f);
 
   d.buffer_d->unmap ();
 

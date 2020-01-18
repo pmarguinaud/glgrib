@@ -1,4 +1,5 @@
 #include "glgrib_field.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_program.h"
 #include "glgrib_palette.h"
 #include "glgrib_field_scalar.h"
@@ -87,8 +88,6 @@ int hilo_count (const_glgrib_geometry_ptr geometry, glgrib_field_float_buffer_pt
 
 void glgrib_field::setupHilo (glgrib_field_float_buffer_ptr data)
 {
-  const double deg2rad = M_PI / 180.0;
-
   class hilo_t
   {
   public:

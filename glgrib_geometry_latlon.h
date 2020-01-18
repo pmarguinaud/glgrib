@@ -2,14 +2,13 @@
 #define _GLGRIB_GEOMETRY_LATLON_H
 
 #include "glgrib_geometry.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_options.h"
 #include "glgrib_handle.h"
 
 class glgrib_geometry_latlon : public glgrib_geometry
 {
 public:
-  static const double rad2deg;
-  static const double deg2rad;
   virtual bool isEqual (const glgrib_geometry &) const;
   virtual void getPointNeighbours (int, std::vector<int> *) const;
   virtual std::string md5 () const;

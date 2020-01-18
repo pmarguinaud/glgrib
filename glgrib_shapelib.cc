@@ -1,4 +1,5 @@
 #include "glgrib_shapelib.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_dbase.h"
 #include "glgrib_resolve.h"
 #include "glgrib_sqlite.h"
@@ -19,7 +20,6 @@ void glgrib_shapelib::read (const glgrib_options_lines & opts, int * numberOfPoi
                             std::vector<unsigned int> * ind, 
                             const std::string & selector)
 {
-  const float deg2rad = M_PI / 180.0f;
   bool lonlatsel = (opts.lonmin != 0.0f) 
                 || (opts.lonmax != 0.0f)
                 || (opts.latmax != 0.0f)

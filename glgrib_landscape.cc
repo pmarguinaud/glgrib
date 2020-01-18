@@ -1,4 +1,5 @@
 #include "glgrib_landscape.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_program.h"
 #include "glgrib_bitmap.h"
 #include "glgrib_png.h"
@@ -116,8 +117,6 @@ void glgrib_landscape::setup (glgrib_loader * ld, const glgrib_options_landscape
 
 void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  const float deg2rad = M_PI / 180.0;
-
   glgrib_program * program = glgrib_program::load (glgrib_program::FLAT_TEX);
   program->use ();
 
@@ -153,7 +152,7 @@ void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_li
       sscanf (path.c_str (), "WebMercator_%5d_%5d_%5d_%5d_%5d", &L, &IY0, &IX0, &IY1, &IX1);
 
       int N = 1;
-      float F = 2 * M_PI * a / 256;
+      float F = twopi * a / 256;
       for (int i = 0; i < L; i++)
         N = N * 2;
       program->set1i ("texproj", 1);

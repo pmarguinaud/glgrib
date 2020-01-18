@@ -1,4 +1,5 @@
 #include "glgrib_geometry_gaussian.h"
+#include "glgrib_trigonometry.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -119,9 +120,6 @@ void compute_latgauss (int kn, double * latgauss)
   delete [] zfnlat;
   delete [] zfn;
 }
-
-const double glgrib_geometry_gaussian::rad2deg = 180.0 / M_PI;
-const double glgrib_geometry_gaussian::deg2rad = M_PI / 180.0;
 
 #define MODULO(x, y) ((x)%(y))
 #define JDLON(JLON1, JLON2) (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1))
@@ -641,7 +639,7 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (int _Nj)
 
   for (int jlat = 1; jlat <= Nj; jlat++)
     {   
-      float lat = M_PI * (0.5 - (float)jlat / (float)(Nj + 1));
+      float lat = pi * (0.5 - (float)jlat / (float)(Nj + 1));
       float coslat = cos (lat);
       pl[jlat-1] = (2. * Nj * coslat);
     }   
@@ -914,7 +912,7 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
       for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
         {
 
-          float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
+          float coordx = twopi * (float)(jlon-1) / (float)pl[jlat-1];
           float lon = coordx;
 
 	  if (! rotated)
@@ -1014,7 +1012,7 @@ int glgrib_geometry_gaussian::latlon2jlatjlon (float lat, float lon, int & jlat,
   lat = lat * deg2rad;
   lon = lon * deg2rad;
 
-  jlat = round ((0.5 - coordy / M_PI) * (Nj + 1)); // First approximation
+  jlat = round ((0.5 - coordy / pi) * (Nj + 1)); // First approximation
   jlat = std::max (1, std::min (jlat, (int)Nj));
 
   float dlat = fabs (latgauss[jlat-1] - coordy);
@@ -1040,8 +1038,8 @@ int glgrib_geometry_gaussian::latlon2jlatjlon (float lat, float lon, int & jlat,
     }
 
   if (coordx < 0.0f)
-    coordx += 2.0f * M_PI;
-  jlon = round (pl[jlat-1] * (coordx / (2. * M_PI)));
+    coordx += twopi;
+  jlon = round (pl[jlat-1] * (coordx / twopi));
 
   jlat = jlat - 1; // Start at zero
 
@@ -1118,7 +1116,7 @@ void glgrib_geometry_gaussian::applyUVangle (float * angle) const
             {
               int jglo = jglooff[jlat] + jlon;
 
-              float coordx = 2. * M_PI * (float)jlon / (float)pl[jlat];
+              float coordx = twopi * (float)jlon / (float)pl[jlat];
               float lon = coordx;
               float coslon = cos (lon); float sinlon = sin (lon);
   
@@ -1151,7 +1149,7 @@ void glgrib_geometry_gaussian::sample (unsigned char * p, const unsigned char p0
 #pragma omp parallel for 
   for (int jlat = 0; jlat < Nj; jlat++)
     {
-      float lat = M_PI * (0.5 - (float)(jlat+1) / (float)(Nj + 1));
+      float lat = pi * (0.5 - (float)(jlat+1) / (float)(Nj + 1));
       int lon_stride = lat_stride / cos (lat);
       if (lon_stride == 0)
         lon_stride = 1;
@@ -1354,7 +1352,7 @@ int glgrib_geometry_gaussian::getTriangle (float lon, float lat) const
   lat = lat * deg2rad;
   lon = lon * deg2rad;
 
-  jlat = round ((0.5 - coordy / M_PI) * (Nj + 1)); // First approximation
+  jlat = round ((0.5 - coordy / pi) * (Nj + 1)); // First approximation
   jlat = std::max (1, std::min (jlat, (int)Nj));
 
   float dlat;
@@ -1390,8 +1388,8 @@ int glgrib_geometry_gaussian::getTriangle (float lon, float lat) const
   jlat++;
 
   if (coordx < 0.0f)
-    coordx += 2.0f * M_PI;
-  jlon = (int) (pl[jlat-1] * (coordx / (2. * M_PI)));
+    coordx += twopi;
+  jlon = (int) (pl[jlat-1] * (coordx / twopi));
 
   jlat = jlat - 1; // Start at zero
 
@@ -1407,13 +1405,13 @@ glm::vec2 glgrib_geometry_gaussian::xyz2conformal (const glm::vec3 & xyz) const
 {
   float lon = atan2 (xyz.y, xyz.x);
   float lat = asin (xyz.z);
-  return glm::vec2 (lon, log (tan (M_PI / 4.0f + lat / 2.0f)));
+  return glm::vec2 (lon, log (tan (pi / 4.0f + lat / 2.0f)));
 }
 
 glm::vec3 glgrib_geometry_gaussian::conformal2xyz (const glm::vec2 & merc) const
 {
   float coordx = merc.x;
-  float coordy = 2.0f * atan (exp (merc.y)) - M_PI / 2.0f;
+  float coordy = 2.0f * atan (exp (merc.y)) - halfpi;
   float sincoordy = sin (coordy);
 
   float lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
@@ -1438,7 +1436,7 @@ glm::vec3 glgrib_geometry_gaussian::conformal2xyz (const glm::vec2 & merc) const
 glm::vec2 glgrib_geometry_gaussian::conformal2latlon (const glm::vec2 & merc) const
 {
   float lon = merc.x;
-  float lat = 2.0f * atan (exp (merc.y)) - M_PI / 2.0f;
+  float lat = 2.0f * atan (exp (merc.y)) - halfpi;
   return glm::vec2 (glm::degrees (lon), glm::degrees (lat));
 }
 
@@ -1447,10 +1445,10 @@ void glgrib_geometry_gaussian::fixPeriodicity (const glm::vec2 & M, glm::vec2 * 
   // Fix periodicity issue
   for (int i = 0; i < n; i++)
     {
-      while (M.x - P[i].x > M_PI)
-        P[i].x += 2.0f * M_PI;
-      while (P[i].x - M.x > M_PI)
-        P[i].x -= 2.0f * M_PI;
+      while (M.x - P[i].x > pi)
+        P[i].x += twopi;
+      while (P[i].x - M.x > pi)
+        P[i].x -= twopi;
     }
 }
 
@@ -1522,7 +1520,7 @@ void glgrib_geometry_gaussian::getPointNeighbours (int jglo, std::vector<int> * 
 
 float glgrib_geometry_gaussian::getLocalMeshSize (int jglo) const
 {
-  float mesh = M_PI / Nj;
+  float mesh = pi / Nj;
 
   if (stretchingFactor == 1.0f)
     return mesh;

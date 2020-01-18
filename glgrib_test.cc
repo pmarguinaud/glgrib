@@ -1,4 +1,5 @@
 #include "glgrib_test.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_opengl.h"
 
 #include <stdlib.h>
@@ -32,10 +33,6 @@ void glgrib_test::clear ()
     glDeleteVertexArrays (1, &VertexArrayID);
   glgrib_object::clear ();
 }
-
-static const float rad2deg = 180.0f / M_PI;
-static const float deg2rad = M_PI / 180.0f;
-static const float halfpi  = M_PI / 2.0f;
 
 void glgrib_test::setup ()
 {

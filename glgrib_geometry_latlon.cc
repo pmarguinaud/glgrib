@@ -1,4 +1,5 @@
 #include "glgrib_geometry_latlon.h"
+#include "glgrib_trigonometry.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,9 +9,6 @@
 
 #include <iostream>
 #include <stdexcept>
-
-const double glgrib_geometry_latlon::rad2deg = 180.0 / M_PI;
-const double glgrib_geometry_latlon::deg2rad = M_PI / 180.0;
 
 int glgrib_geometry_latlon::size () const
 {
@@ -45,7 +43,7 @@ void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const glgrib_options_
   lat0 = deg2rad * latitudeOfFirstGridPointInDegrees;
   lon0 = deg2rad * longitudeOfFirstGridPointInDegrees;
 
-  double ddlon = Ni * dlon - 2 * M_PI;
+  double ddlon = Ni * dlon - 2 * pi;
     
   periodic = fabs (ddlon) < 1E-2 * dlon;
 
@@ -184,9 +182,9 @@ int glgrib_geometry_latlon::latlon2index (float lat, float lon) const
 
   float dl = lon - lon0;
   while (dl < 0.)
-    dl += 2 * M_PI;
-  while (dl >= 2 * M_PI)
-    dl -= 2 * M_PI;
+    dl += 2 * pi;
+  while (dl >= 2 * pi)
+    dl -= 2 * pi;
 
   int i = (int)(0.5 + dl / dlon);
   int j = (int)(0.5 + (lat0 - lat) / dlat);
@@ -254,7 +252,7 @@ void glgrib_geometry_latlon::sample (unsigned char * p, const unsigned char p0, 
   float dlat = Dlat / (Nj - 1);
   float lat0 = deg2rad * latitudeOfFirstGridPointInDegrees;
 
-  int lat_stride = (Nj * M_PI) / (level * Dlat);
+  int lat_stride = (Nj * pi) / (level * Dlat);
   lat_stride = std::max (1, lat_stride);
 
   for (int jlat = 0; jlat < Nj; jlat++)
@@ -364,17 +362,17 @@ void glgrib_geometry_latlon::getTriangleNeighbours (int it, int jglo[3], int itr
   float mlon0 = xlon0;
   float mlon1 = xlon1;
 
-  if (fabsf (xlat0 - M_PI / 2.0f) < 1e-06)
+  if (fabsf (xlat0 - pi / 2.0f) < 1e-06)
     xlat0 = xlat0 - fabsf (dlat) / 2.0f;
-  if (fabsf (xlat0 + M_PI / 2.0f) < 1e-06)
+  if (fabsf (xlat0 + pi / 2.0f) < 1e-06)
     xlat0 = xlat0 + fabsf (dlat) / 2.0f;
-  if (fabsf (xlat1 - M_PI / 2.0f) < 1e-06)
+  if (fabsf (xlat1 - pi / 2.0f) < 1e-06)
     xlat1 = xlat1 - fabsf (dlat) / 2.0f;
-  if (fabsf (xlat1 + M_PI / 2.0f) < 1e-06)
+  if (fabsf (xlat1 + pi / 2.0f) < 1e-06)
     xlat1 = xlat1 + fabsf (dlat) / 2.0f;
 
-  float mlat0 = log (tan (M_PI / 4.0f + xlat0 / 2.0f));
-  float mlat1 = log (tan (M_PI / 4.0f + xlat1 / 2.0f));
+  float mlat0 = log (tan (pi / 4.0f + xlat0 / 2.0f));
+  float mlat1 = log (tan (pi / 4.0f + xlat1 / 2.0f));
 
   if (t021)
     {
@@ -422,7 +420,7 @@ void glgrib_geometry_latlon::sampleTriangle (unsigned char * s, const unsigned c
   float dlat = Dlat / (Nj - 1);
   float lat0 = deg2rad * latitudeOfFirstGridPointInDegrees;
 
-  int lat_stride = abs (level * M_PI / Dlat);
+  int lat_stride = abs (level * pi / Dlat);
 
   int ntpr = periodic ? 2 * Ni : 2 * (Ni - 1);
 
@@ -430,9 +428,9 @@ void glgrib_geometry_latlon::sampleTriangle (unsigned char * s, const unsigned c
     {
       float lat = lat0 - dlat * (float)jlat;
 
-      if (fabsf (lat - M_PI / 2.0f) < 1e-6)
+      if (fabsf (lat - pi / 2.0f) < 1e-6)
         continue;
-      if (fabsf (lat + M_PI / 2.0f) < 1e-6)
+      if (fabsf (lat + pi / 2.0f) < 1e-6)
         continue;
 
       float coslat = cos (lat);
@@ -453,9 +451,9 @@ int glgrib_geometry_latlon::getTriangle (float lon, float lat) const
 
   float dl = lon - lon0;
   while (dl < 0.)
-    dl += 2 * M_PI;
-  while (dl >= 2 * M_PI)
-    dl -= 2 * M_PI;
+    dl += 2 * pi;
+  while (dl >= 2 * pi)
+    dl -= 2 * pi;
 
   int i = (int)(dl / dlon);
   int j = (int)((lat0 - lat) / dlat);
@@ -480,7 +478,7 @@ int glgrib_geometry_latlon::getTriangle (float lon, float lat) const
   int itri[3], jglo[3]; glm::vec3 xyz[3];
   getTriangleNeighbours (it, jglo, itri, xyz);
   
-  const float rad2deg = 180.0f / M_PI;
+  const float rad2deg = 180.0f / pi;
   float xlon = rad2deg * atan2 (xyz[0].y, xyz[0].x);
   float xlat = rad2deg * asin (xyz[0].z);
 
@@ -506,13 +504,13 @@ glm::vec2 glgrib_geometry_latlon::xyz2conformal (const glm::vec3 & xyz) const
 {
   float lon = atan2 (xyz.y, xyz.x);
   float lat = asin (xyz.z);
-  return glm::vec2 (lon, log (tan (M_PI / 4.0f + lat / 2.0f)));
+  return glm::vec2 (lon, log (tan (pi / 4.0f + lat / 2.0f)));
 }
 
 glm::vec3 glgrib_geometry_latlon::conformal2xyz (const glm::vec2 & merc) const
 {
   float lon = merc.x;
-  float lat = 2.0f * atan (exp (merc.y)) - M_PI / 2.0f;
+  float lat = 2.0f * atan (exp (merc.y)) - pi / 2.0f;
 
   float coslon = cos (lon), sinlon = sin (lon);
   float coslat = cos (lat), sinlat = sin (lat);
@@ -527,7 +525,7 @@ glm::vec3 glgrib_geometry_latlon::conformal2xyz (const glm::vec2 & merc) const
 glm::vec2 glgrib_geometry_latlon::conformal2latlon (const glm::vec2 & merc) const
 {
   float lon = merc.x;
-  float lat = 2.0f * atan (exp (merc.y)) - M_PI / 2.0f;
+  float lat = 2.0f * atan (exp (merc.y)) - pi / 2.0f;
   return glm::vec2 (glm::degrees (lon), glm::degrees (lat));
 }
 
@@ -536,10 +534,10 @@ void glgrib_geometry_latlon::fixPeriodicity (const glm::vec2 & M, glm::vec2 * P,
   // Fix periodicity issue
   for (int i = 0; i < n; i++)
     {
-      while (M.x - P[i].x > M_PI)
-        P[i].x += 2.0f * M_PI;
-      while (P[i].x - M.x > M_PI)
-        P[i].x -= 2.0f * M_PI;
+      while (M.x - P[i].x > pi)
+        P[i].x += 2.0f * pi;
+      while (P[i].x - M.x > pi)
+        P[i].x -= 2.0f * pi;
     }
 }
 
@@ -578,10 +576,10 @@ float glgrib_geometry_latlon::getLocalMeshSize (int) const
 
 static void latlon2xyz (float lat, float lon, glm::vec3 * xyz)
 {
-  float coslon = cos (glgrib_geometry_latlon::deg2rad * lon), 
-        sinlon = sin (glgrib_geometry_latlon::deg2rad * lon);
-  float coslat = cos (glgrib_geometry_latlon::deg2rad * lat), 
-        sinlat = sin (glgrib_geometry_latlon::deg2rad * lat);
+  float coslon = cos (deg2rad * lon), 
+        sinlon = sin (deg2rad * lon);
+  float coslat = cos (deg2rad * lat), 
+        sinlat = sin (deg2rad * lat);
   xyz->x = coslon * coslat;
   xyz->y = sinlon * coslat;
   xyz->z =          sinlat;

@@ -1,4 +1,5 @@
 #include "glgrib_cities.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_resolve.h"
 #include "glgrib_sqlite.h"
 
@@ -9,8 +10,6 @@
 
 void glgrib_cities::setup (const glgrib_options_cities & o)
 {
-  const double deg2rad = M_PI / 180.0;
-
   opts = o;
 
   std::vector<float> lon, lat, siz;

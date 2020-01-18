@@ -668,14 +668,24 @@ class glgrib_options_land : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (selector, "Shape selection");
-    DESC (path,     "Path to coastlines");
-    DESC (on,       "Enable");
-    DESC (scale,    "Scale");
+    DESC (selector,           "Shape selection");
+    DESC (path,               "Path to coastlines");
+    DESC (subdivision.angle,  "Angle max for subdivision");
+    DESC (subdivision.on,     "Enable subdivision");
+    DESC (on,                 "Enable");
+    DESC (scale,              "Scale");
+    DESC_H (debug,            "Debug");
   }
   std::string selector = "";
   std::string path     = "coastlines/shp/GSHHS_c_L1.shp";
   float scale          = 1.0f;
+  struct
+  {
+    float angle        = 1.0f;
+    bool on            = true;
+  } subdivision;
+  glgrib_option_color color = glgrib_option_color (0, 255, 0);
+  bool debug           = false;
   bool on              = false;
 };
 

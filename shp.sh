@@ -3,7 +3,7 @@
 set -x
 
 
-S=c
+S=h
 
 #/usr/bin/time -p perf record \
 gdb -ex="set confirm on" -ex=run -ex=quit --args \

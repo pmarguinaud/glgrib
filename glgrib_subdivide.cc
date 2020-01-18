@@ -1,4 +1,5 @@
 #include "glgrib_subdivide.h"
+#include "glgrib_trigonometry.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -16,12 +17,6 @@ float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2)
                std::min (+1.0f, 
                glm::dot (xyz1, xyz2))));
 }
-
-static const float rad2deg = 180.0f / M_PI;
-static const float deg2rad = M_PI / 180.0f;
-static const float twopi = 2.0f * M_PI;
-static const float pi = M_PI;
-static const float halfpi = M_PI / 2.0f;
 
 static
 glm::vec3 lonlat2xyz (const glm::vec2 & lonlat)

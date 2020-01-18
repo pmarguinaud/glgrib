@@ -663,9 +663,11 @@ public:
   } labels;
 };
 
-class glgrib_options_land : public glgrib_options_base
+class glgrib_options_land_layer : public glgrib_options_base
 {
 public:
+  glgrib_options_land_layer (const std::string & _path, float _scale, const glgrib_option_color & _color)
+                           :  path (_path), scale (_scale), color (_color) {}
   DEFINE
   {
     DESC (selector,           "Shape selection");
@@ -690,7 +692,31 @@ public:
   {
     bool on            = false;
   } debug;
-  bool on              = false;
+  bool on              = true;
+};
+
+class glgrib_options_land : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    INCLUDE   (layers[0]);
+    INCLUDE_H (layers[1]);
+    INCLUDE_H (layers[2]);
+    INCLUDE_H (layers[3]);
+    DESC (on, "Enable land");
+  }
+  
+  bool on = false;
+
+  std::vector<glgrib_options_land_layer> layers = 
+  {
+    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L1.shp", 1.000f, glgrib_option_color (  0, 255,   0)),
+    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L2.shp", 1.001f, glgrib_option_color (  0,   0, 255)),
+    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L3.shp", 1.002f, glgrib_option_color (  0, 255,   0)),
+    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L5.shp", 1.000f, glgrib_option_color (  0, 255,   0)) 
+  };
+
 };
 
 class glgrib_options_landscape_position : public glgrib_options_base

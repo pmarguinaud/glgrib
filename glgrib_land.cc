@@ -11,9 +11,18 @@
 #include <iostream>
 #include <omp.h>
 
-#include <glm/gtc/type_ptr.hpp>
-
-
+glgrib_land & glgrib_land::operator=(const glgrib_land & other)
+{
+  clear (); 
+  if ((this != &other) && other.isReady ()) 
+    {   
+      opts = other.opts;
+      d = other.d;
+      setupVertexAttributes (); 
+      setReady (); 
+    }   
+  return *this;
+}
 
 void glgrib_land::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
@@ -22,17 +31,25 @@ void glgrib_land::render (const glgrib_view & view, const glgrib_options_light &
 
   view.setMVP (program);
 
-  float scale0[3] = {opts.scale, opts.scale, opts.scale};
-  float color0[4] = {(float)opts.color.r/255.0f,(float)opts.color.g/255.0f,
-                     (float)opts.color.b/255.0f,(float)opts.color.a/255.0f};
-
-  program->set3fv ("scale0", scale0);
-  program->set4fv ("color0", color0);
-  program->set1i ("debug", opts.debug.on);
-
-  glBindVertexArray (VertexArrayID);
-  glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
-  glBindVertexArray (0);
+  for (int i = 0; i < d.size (); i++)
+  if (opts.layers[i].on)
+    {
+      float scale0[3] = {opts.layers[i].scale, 
+                         opts.layers[i].scale, 
+                         opts.layers[i].scale};
+      float color0[4] = {(float)opts.layers[i].color.r/255.0f,
+                         (float)opts.layers[i].color.g/255.0f,
+                         (float)opts.layers[i].color.b/255.0f,
+                         (float)opts.layers[i].color.a/255.0f};
+     
+      program->set3fv ("scale0", scale0);
+      program->set4fv ("color0", color0);
+      program->set1i ("debug", opts.layers[i].debug.on);
+     
+      glBindVertexArray (VertexArrayID[i]);
+      glDrawElements (GL_TRIANGLES, 3 * d[i].numberOfTriangles, GL_UNSIGNED_INT, NULL);
+      glBindVertexArray (0);
+    }
 
   view.delMVP (program);
 
@@ -41,7 +58,11 @@ void glgrib_land::render (const glgrib_view & view, const glgrib_options_light &
 void glgrib_land::clear ()
 {
   if (isReady ())
-    glDeleteVertexArrays (1, &VertexArrayID);
+    for (int i = 0; i < VertexArrayID.size (); i++)
+    if (opts.layers[i].on)
+      glDeleteVertexArrays (1, &VertexArrayID[i]);
+  VertexArrayID.clear ();
+  d.clear ();
   glgrib_object::clear ();
 }
 
@@ -143,12 +164,12 @@ void glgrib_land::subdivide (const std::vector<int> & ind_offset,
                              const std::vector<int> & pos_offset,
                              const std::vector<int> & pos_length,
                              std::vector<unsigned int> * _ind,
-                             std::vector<float> * _lonlat)
+                             std::vector<float> * _lonlat,
+                             const float angmax)
 {
   std::vector<unsigned int> & ind    = *_ind;
   std::vector<float>        & lonlat = *_lonlat;
 
-  const float angmax = deg2rad * opts.subdivision.angle;
   std::vector<int> ind_offset_sub;
   std::vector<int> ind_length_sub;
   std::vector<int> pos_offset_sub;
@@ -250,48 +271,81 @@ void glgrib_land::setup (const glgrib_options_land & o)
 {
   opts = o;
 
-  int numberOfPoints;
-  glgrib_options_lines lopts;
-  unsigned int numberOfLines; 
-  std::vector<float> lonlat;
-  std::vector<unsigned int> indl;
-  
-  lopts.path = opts.path; lopts.selector = opts.selector;
-  glgrib_shapelib::read (lopts, &numberOfPoints, &numberOfLines, &lonlat, 
-                         &indl, lopts.selector);
+  d.resize (opts.layers.size ());
+  for (int i = 0; i < opts.layers.size (); i++)
+  if (opts.layers[i].on)
+    {
+      int numberOfPoints;
+      glgrib_options_lines lopts;
+      unsigned int numberOfLines; 
+      std::vector<float> lonlat;
+      std::vector<unsigned int> indl;
+      
+      lopts.path = opts.layers[i].path; lopts.selector = opts.layers[i].selector;
+      glgrib_shapelib::read (lopts, &numberOfPoints, &numberOfLines, &lonlat, 
+                             &indl, lopts.selector);
+     
+     
+     
+      std::vector<int> pos_offset, pos_length;
+      std::vector<int> ord;
+      std::vector<int> ind_offset;
+      std::vector<int> ind_length;
+      std::vector<unsigned int> ind;
+     
+      triangulate (&pos_offset, &pos_length, &ind_offset, &ind_length,
+                   indl, &lonlat, &ord, &ind);
+     
+     
+      if (opts.layers[i].subdivision.on)
+        {
+          const float angmax = deg2rad * opts.layers[i].subdivision.angle;
+          glgrib_land::subdivide (ind_offset, ind_length, pos_offset, pos_length,
+                                  &ind, &lonlat, angmax);
+        }
+     
+     
+     
+      d[i].numberOfTriangles = ind.size () / 3;
+     
+      d[i].vertexbuffer = new_glgrib_opengl_buffer_ptr 
+                          (
+                            lonlat.size () * sizeof (lonlat[0]), 
+                            lonlat.data ()
+                          );
+      d[i].elementbuffer = new_glgrib_opengl_buffer_ptr 
+                           (
+                             ind.size () * sizeof (ind[0]), 
+                             ind.data ()
+                           );
 
+    }
 
-
-  std::vector<int> pos_offset, pos_length;
-  std::vector<int> ord;
-  std::vector<int> ind_offset;
-  std::vector<int> ind_length;
-  std::vector<unsigned int> ind;
-
-  triangulate (&pos_offset, &pos_length, &ind_offset, &ind_length,
-               indl, &lonlat, &ord, &ind);
-
-
-  if (opts.subdivision.on)
-    glgrib_land::subdivide (ind_offset, ind_length, pos_offset, pos_length,
-                            &ind, &lonlat);
-
-
-  numberOfTriangles = ind.size () / 3;
-
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (lonlat.size () * sizeof (lonlat[0]), lonlat.data ());
-  elementbuffer = new_glgrib_opengl_buffer_ptr (ind.size () * sizeof (ind[0]), ind.data ());
-
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
-
-  vertexbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-    
-  elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
-  glBindVertexArray (0); 
+  setupVertexAttributes ();
 
   setReady ();
 }
+
+void glgrib_land::setupVertexAttributes ()
+{
+  VertexArrayID.resize (d.size ());
+
+  for (int i = 0; i < d.size (); i++)
+  if (opts.layers[i].on)
+    {
+      glGenVertexArrays (1, &VertexArrayID[i]);
+
+      glBindVertexArray (VertexArrayID[i]);
+      
+      d[i].vertexbuffer->bind (GL_ARRAY_BUFFER);
+      glEnableVertexAttribArray (0); 
+      glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL); 
+     
+      d[i].elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+
+      glBindVertexArray (0);
+    }
+
+}
+
 

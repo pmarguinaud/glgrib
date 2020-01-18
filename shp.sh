@@ -2,14 +2,7 @@
 
 set -x
 
-
-S=h
-
 #/usr/bin/time -p perf record \
 gdb -ex="set confirm on" -ex=run -ex=quit --args \
-./glgrib.x --land.on  --land.path coastlines/shp/GSHHS_${S}_L1.shp \
---land.selector "rowid <= 40000" --land.scale 1.01 \
---coast.on --coast.lines.path coastlines/shp/GSHHS_${S}_L1.shp \
---coast.lines.format shp --view.lon 0 --view.lat 0 
+./glgrib.x --land.on  --land.layers[0].on  --land.layers[1].off  --land.layers[2].off  --land.layers[3].off  --land.layers[0].path ./coastlines/shp/GSHHS_i_L2.shp --land.layers[0].debug.on
 
-#--landscape.path landscape/black.bmp --landscape.on

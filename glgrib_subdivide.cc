@@ -337,27 +337,49 @@ void glgrib_subdivide::init (const std::vector<float> & lonlat,
   indp1 = indpb; indp2 = indpb + indpl; 
   indr1 = indrb; indr2 = indrb + indrl;
 
-  {
-    int pmin = *std::min_element (ind.begin () + indr1, ind.begin () + indr2);
-    int pmax = *std::max_element (ind.begin () + indr1, ind.begin () + indr2);
-    if ((pmin < indp1) || (pmin >= indp2))
-      abort ();
-    if ((pmax < indp1) || (pmax >= indp2))
-      abort ();
-  }
+  indt1 = indr1/3; 
+  indt2 = indr2/3;
+
+
+  if (1)
+    {
+      // Check for triangles validity : all points must lie 
+      // in the interval indp1 .. indp2, except for degenerate 
+      // triangles (those where all three points are equal)
+      for (int indt = indt1; indt < indt2; indt++)
+        {
+          unsigned int in[3] = {ind[3*indt+0], ind[3*indt+1], ind[3*indt+2]};
+          if ((in[0] == in[1]) && (in[1] == in[2]))
+            continue;
+          for (int i = 0; i < 3; i++)
+            if ((in[i] < indp1) || (in[i] > indp2))
+              abort ();
+        }
+    }
+  else
+    {
+      int pmin = *std::min_element (ind.begin () + indr1, ind.begin () + indr2);
+      int pmax = *std::max_element (ind.begin () + indr1, ind.begin () + indr2);
+      if ((pmin < indp1) || (pmin >= indp2))
+        abort ();
+      if ((pmax < indp1) || (pmax >= indp2))
+        abort ();
+    }
 
   xyz1.resize (indp2-indp1);
   ind1.resize (indr2-indr1);
-
-  indt1 = indr1/3; 
-  indt2 = indr2/3;
 
   for (int i = indp1; i < indp2; i++)
     xyz1[i-indp1] = lonlat2xyz (glm::vec2 (lonlat[2*i+0], lonlat[2*i+1]));
 
   // Change indices base index
   for (int i = indr1; i < indr2; i++)
-    ind1[i-indr1] = ind[i]-indp1;
+    {
+      if (ind[i] < indp1)
+        ind1[i-indr1] = 0;
+      else
+        ind1[i-indr1] = ind[i]-indp1;
+    }
 
   ind1_size = ind1.size (); 
   xyz1_size = xyz1.size (); 

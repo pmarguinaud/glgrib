@@ -10,49 +10,6 @@
 
 typedef void glgrib_diag_t (const glm::dmat2 &, glm::dmat2 *, glm::dvec2 *);
 
-#ifdef UNDEF
-#include <Eigen/Eigenvalues> 
-
-
-static
-void glgrib_diag1 (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
-{
-  Eigen::SelfAdjointEigenSolver<Eigen::Matrix2d> es;
-  Eigen::Matrix2d A_;
-
-  for (int i = 0; i < 2; i++)
-  for (int j = 0; j < 2; j++)
-    A_ (i, j) = A[i][j];
-
-  es.compute (A_);
-
-  for (int i = 0; i < 2; i++)
-  for (int j = 0; j < 2; j++)
-    (*Q)[i][j] = es.eigenvectors ().col (i) (j);
-
-  for (int i = 0; i < 2; i++) 
-    (*w)[i] = es.eigenvalues () (i);
-
-#ifdef UNDEF
-  for (int i = 0; i < 2; i++)
-    {
-      Eigen::Vector2d u_ = es.eigenvectors ().col (i);
-      Eigen::Vector2d q_ = A_ * u_;
-      glm::dvec2 u = (*Q)[i];
-      glm::dvec2 q = A * u;
-      printf (" ev    = %12.2e\n", (*w)[i]);
-      printf (" u_    = %12.2e %12.2e\n", u_ (0), u_ (1));
-      printf (" u     = %12.2e %12.2e\n", u  [0], u  [1]);
-      printf (" q_    = %12.2e %12.2e\n", q_ (0), q_ (1));
-      printf (" q     = %12.2e %12.2e\n", q  [0], q  [1]);
-      printf (" q_/u_ = %12.2e %12.2e\n", q_ (0) / u_ (0), q_ (1) / u_ (1));
-      printf (" q /u  = %12.2e %12.2e\n", q  [0] / u  [0], q  [1] / u  [1]);
-    }
-#endif
-
-}
-#endif
-
 static
 float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2) 
 {
@@ -63,8 +20,9 @@ float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2)
   return ang;
 }
 
+// Symmetric 2x2 matrix diagonalization
 static
-void glgrib_diag2 (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
+void glgrib_diag (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
 {
   double a = A[0][0], b = A[1][1], c = A[0][1];
   double D = sqrt ((a - b) * (a - b) + 4 * c * c);
@@ -87,17 +45,6 @@ class node_t
 public:
 
   node_t (int _rank, int _index) : rank (_rank), index (_index) {}
-
-  std::string asString () const
-  {
-    std::string angle = "            ";
-    
-    return "node{" 
-               + (prev ? std::to_string (prev->rank) : "NULL") + ", "
-               + std::to_string (rank) + ", " 
-               + (next ? std::to_string (next->rank) : "NULL") 
-               + "}";
-  }
 
   void setNext (node_t * _next) 
   {
@@ -130,6 +77,7 @@ public:
     return index;
   }
 
+  // Angle between two consecutive edges
   float getAngle (const std::vector<glm::vec3> & xyz) const 
   {
     if (dirty)
@@ -173,6 +121,7 @@ public:
     return xy[2*index+1];
   }
 
+  // Point inside triangle test
   bool inTriangle (const glm::vec3 & p, const std::vector<glm::vec3> & xyz) const
   {
     const glm::vec3 t[3] = {xyz[prev->index], xyz[index], xyz[next->index]};
@@ -202,6 +151,7 @@ public:
     return true;
   }
 
+  // Remove point from double linked list; choose another root; replace point by next point
   void cut (node_t ** x, node_t ** list)
   {
     node_t * n = next, * p = prev;
@@ -221,6 +171,7 @@ public:
     return (next != NULL) || (prev != NULL);
   }
 
+  // Number of points in double linked list
   int count () const
   {
     int c = 0;
@@ -243,6 +194,9 @@ private:
   mutable bool dirty = true;
   
 };
+
+
+// Longitude interval management
 
 static float in02pi (float x)
 {
@@ -268,6 +222,7 @@ static void xint (float & x1, float & x2)
     }
 }
 
+// This class is a longitude interval
 class inter_t
 {
 public:
@@ -340,6 +295,7 @@ public:
 };
         
 
+// Get longitude extent of a set of nodes
 static
 void getLonRange (const std::vector<node_t> & nodevec, 
                   const std::vector<float> & lonlat,
@@ -380,12 +336,6 @@ void getLonRange (const std::vector<node_t> & nodevec,
 
 }
 
-std::ostream & operator<< (std::ostream& os, const node_t & n)
-{
-  os << n.asString ();
-  return os;
-}
-
 static
 glm::vec3 lonlat2xyz (const glm::vec2 & lonlat)
 {
@@ -400,6 +350,9 @@ glm::vec2 xyz2lonlat (const glm::vec3 & xyz)
   return glm::vec2 (atan2 (xyz.y, xyz.x), asin (xyz.z));
 }
 
+
+// Get latitude extent of a pair of nodes, taking into account
+// the fact that latitudes may overshoot because of arc drawing
 static
 void getLatRange (const glm::vec2 & lonlat1, const glm::vec2 & lonlat2, 
                   float * latmin, float * latmax)
@@ -446,6 +399,7 @@ void getLatRange (const glm::vec2 & lonlat1, const glm::vec2 & lonlat2,
   *latmax = asin (zmax);
 }
 
+// Latitude extent of set of nodes
 static
 void getLatRange (const std::vector<node_t> & nodevec, 
                   const std::vector<float> & lonlat,
@@ -481,13 +435,11 @@ void getLatRange (const std::vector<node_t> & nodevec,
         break;
     }
 
-if(0)
-  std::cout << " latmin, latmax = " << rad2deg * *latmin 
-            << ", " << rad2deg * *latmax << std::endl;
-
 }
 
 
+// Node index : split the lon/lat domain spanned by nodes
+// into a nx x ny set of cells; index nodes whose angle is < 0
 class xy2node_t
 {
 public:
@@ -506,10 +458,6 @@ public:
     nx = std::max (2, (int)(rad2deg * (lonmax - lonmin)));
     ny = std::max (2, (int)(rad2deg * (latmax - latmin)));
 
-if(0)
-    printf (" lon = %12.2f .. %12.2f, lat = %12.2f .. %12.2f\n",
-            rad2deg * lonmin, rad2deg * lonmax, rad2deg * latmin, rad2deg * latmax);
-
     float ddy = std::max ((latmax - latmin) / ny, 0.1f * deg2rad);
 
     ymin = std::max (-pi, latmin - ddy);
@@ -524,9 +472,6 @@ if(0)
       xmin -= twopi;
 
     float ddx = std::max ((xmax - xmin) / nx, 0.1f * deg2rad);
-
-if(0)
-    printf (" ddx = %12.2e\n", ddx * rad2deg);
 
     xmin = xmin - ddx;
     xmax = xmax + ddx;
@@ -564,6 +509,7 @@ if(0)
       }
   }
 
+// Remove nodes whose angle is now > 0
   void update (const std::vector<glm::vec3> & xyz)
   {
 #pragma omp parallel for if (openmp)
@@ -578,6 +524,7 @@ if(0)
           }
   }
 
+// Convert coordinates to index pointer
   int xy2ind (float x, float y) const
   {
     while (x < xmin) x += twopi;
@@ -608,10 +555,11 @@ if(0)
     return ind;
   }
 
+// Iterator for index (traverse a lon/lat domain)
   class iterator 
   {
   public:
-    iterator (float _ymin, float _ymax, float _xmin, float _xmax, const xy2node_t * _ll2n, bool dbg = false) 
+    iterator (float _ymin, float _ymax, float _xmin, float _xmax, const xy2node_t * _ll2n) 
     : ymin (_ymin), ymax (_ymax), xmin (_xmin), xmax (_xmax), ll2n (_ll2n)
     {
 
@@ -627,10 +575,6 @@ if(0)
       if ((xmax < ll2n->xmin) || (ll2n->xmax < xmax))
         abort ();
 
-if (dbg){
-  printf (" ymin = %12.2f ymax = %12.2f\n", ymin * rad2deg, ymax * rad2deg);
-}
-
       iymin = floor ((ymin - ll2n->ymin) / ll2n->dy); 
       iymax = floor ((ymax - ll2n->ymin) / ll2n->dy);
       ixmin = floor ((xmin - ll2n->xmin) / ll2n->dx); 
@@ -645,21 +589,8 @@ if (dbg){
       if ((iymin < 0) || (ll2n->ny <= iymax))
         abort ();
 
-
-if(dbg){
-      std::cout << " iymin = " << iymin << " iymax = " << iymax << std::endl;
-      std::cout << " ixmin = " << ixmin << " ixmax = " << ixmax << std::endl;
-}
-
       xmin = ixmin * ll2n->dx         ; xmax = ixmax * ll2n->dx         ;
       ymin = iymin * ll2n->dy + ll2n->ymin; ymax = iymax * ll2n->dy + ll2n->ymin;
-
-if(dbg){
-      std::cout << "  ymin = " << rad2deg * ymin << "  ymax = " << rad2deg * ymax << std::endl;
-      std::cout << "  xmin = " << rad2deg * xmin << "  xmax = " << rad2deg * xmax << std::endl;
-}
-
-dbg = false;
 
       this->seek (0);
     }
@@ -714,26 +645,6 @@ dbg = false;
              (iy == rhs.iy) && (cur == rhs.cur);
     }
 
-    std::string asString () const
-    {
-      int ix1 = ind % ll2n->nx;
-      int iy1 = ind / ll2n->nx;
-      float x1 = ix1 * ll2n->dx,              x2 = x1 + ll2n->dx;
-      float y1 = iy1 * ll2n->dy + ll2n->ymin, y2 = y1 + ll2n->dy;
-      
-      return std::string ("iterator{") +
-             "ix  =" + std::to_string (ix) + "/" + std::to_string (nx)           + ", " +
-             "iy  =" + std::to_string (iy) + "/" + std::to_string (ny)           + ", " +
-             "cur =" + std::to_string (cur)  + "/" + std::to_string (ll2n->len[ind]) + ", " +
-             "ind =" + std::to_string (ind)  +                                         ", " +
-             "off =" + std::to_string (ll2n->off[ind])     + ", " +
-             "len =" + std::to_string (ll2n->len[ind])     + ", " +
-             "    =" + std::to_string (ll2n->off[ind]+cur) +
-             "[" + std::to_string (rad2deg * x1) + ".." + std::to_string (rad2deg * x2) + "]" +
-             "[" + std::to_string (rad2deg * y1) + ".." + std::to_string (rad2deg * y2) + "]" +
-             "}";
-    }
-
   private:
     int ind; // Current index in ll2n
     int cur; // Current index in nodes
@@ -744,19 +655,8 @@ dbg = false;
     const xy2node_t * ll2n = NULL;
   };
 
-  std::string asString (const std::vector<glm::vec3> & xyz) const
-  {
-    std::string t;
-    for (int i = 0; i < len.size (); i++)
-      for (int j = off[i]; j < off[i] + len[i]; j++)
-        {
-          t += std::to_string (nodes[j]->getRank ()) + " " + 
-               std::to_string (nodes[j]->getAngle (xyz) * rad2deg) + "\n";
-        }
-    return t;
-  }
 
-  iterator begin (const node_t & n, const std::vector<float> & xy, bool dbg = false) const
+  iterator begin (const node_t & n, const std::vector<float> & xy) const
   {
     const node_t * nn[3] = {n.getPrev (), &n, n.getNext ()};
 
@@ -772,12 +672,6 @@ dbg = false;
         getLatRange (glm::vec2 (xy[2*ri+0], xy[2*ri+1]), 
                      glm::vec2 (xy[2*rj+0], xy[2*rj+1]), 
                      &yymin, &yymax);
-
-if (dbg){
-  printf (" %8d > %12.2f %12.2f | %12.2f %12.2f | %12.2f %12.2f\n", i, 
-          rad2deg * xy[2*ri+0], rad2deg * xy[2*ri+1], rad2deg * xy[2*rj+0], rad2deg * xy[2*rj+1],
-          yymin * rad2deg, yymax * rad2deg);
-}
 
         ymin = std::min (ymin, yymin);
         ymax = std::max (ymax, yymax);
@@ -811,7 +705,7 @@ if (dbg){
     while (xmax - xmin > twopi) xmax -= twopi;
     while (xmin - xmax > twopi) xmin -= twopi;
 
-    return iterator (ymin, ymax, xmin, xmax, this, dbg);
+    return iterator (ymin, ymax, xmin, xmax, this);
   }
 
   iterator end (const node_t & n, const std::vector<float> & xy) const
@@ -842,14 +736,8 @@ private:
 };
 
 
-std::ostream & operator<< (std::ostream& os, const xy2node_t::iterator & it)
-{
-  os << it.asString ();
-  return os;
-}
-
-
-
+// Ear cutting algorithm, using an index to find nearby nodes 
+// with negative angle
 static 
 void earCut (node_t ** nodelist,  
              const std::vector<glm::vec3> & xyz,
@@ -865,6 +753,8 @@ void earCut (node_t ** nodelist,
   int count = (*nodelist)->count ();
   int pools;
 
+  // If the data are large enough and we are using OpenMP
+  // then split the ring 
   if ((count > 100) && openmp)
     {
 
@@ -892,13 +782,6 @@ void earCut (node_t ** nodelist,
       e.push_back ((*nodelist)->getPrev ());
     }
 
-  if (0)
-  for (int c = 0; c < pools; c++)
-    {
-      std::cout << c << " " << b[c]->getRank () << " ... " 
-                << e[c]->getRank () << std::endl;
-    }
-
   std::vector<unsigned int> ind1[pools];
 
 #pragma omp parallel for if (openmp)
@@ -908,13 +791,18 @@ void earCut (node_t ** nodelist,
       for (node_t * n = b[c]; n != e[c]; n = n->getNext ())
         {
           float ang = n->getAngle (xyz);
+  
+          // Node OK for removal
+
           if ((0.0f < ang) && (ang < M_PI))
             {
       
               bool intri = false;
 
+              // Look at all nodes near our point, and with an angle < 0
               xy2node_t::iterator it = ll2n.begin (*n, xy);
               xy2node_t::iterator it1 = ll2n.end (*n, xy);
+
               for ( ; it != it1; ++it)
                 {
                   const node_t * n1 = *it;
@@ -930,6 +818,7 @@ void earCut (node_t ** nodelist,
                     }
                 }
 
+              // No point inside the triangle: remove the node
               if (! intri)
                 {
                   ind->push_back (n            ->getRank ());
@@ -965,9 +854,14 @@ void earCut (node_t ** nodelist,
   (*indr) = offset[pools-1] + ind1[pools-1].size ();
 }
 
+
+// Find best coordinates for processing this ring :
+// X axis is chosen using average point
+// Y axis is chosen so that it matches maximum extent
 static 
 glm::mat3 getRotMat (glgrib_diag_t diag, const std::vector<glm::vec3> & xyz, bool openmp)
 {
+
   // Average point
 
   glm::dvec3 dxyzm (0.0f, 0.0f, 0.0f);
@@ -1039,58 +933,18 @@ glm::mat3 getRotMat (glgrib_diag_t diag, const std::vector<glm::vec3> & xyz, boo
   if (e[0] * e[1] == 0.0f) 
     return glm::mat3 (1.0f);
 
-#ifdef UNDEF
-  printf ("e =\n");
-  for (int i = 0; i < 2; i++)
-    printf (" %12.2e", e[i]);
-  printf ("\n");
-
-  printf ("Q =\n");
-  for (int i = 0; i < 2; i++)
-    {
-      for (int j = 0; j < 2; j++)
-        printf (" %18.8f", Q[j][i]);
-      printf ("\n");
-    }
-
-  for (int i = 0; i < 2; i++)
-  for (int j = 0; j < 2; j++)
-    printf (" %8d, %8d > %18.8e\n", i, j, glm::dot (Q[i], Q[j]));
-
-#endif
-
   glm::vec3 r_ = r;
   glm::vec3 s_ = (float)Q[1][0] * s + (float)Q[1][1] * t;
   glm::vec3 t_ = glm::cross (r_, s_);
 
   glm::mat3 RST (r_, s_, t_);
 
-#ifdef UNDEF
-  
-  const char * n = "XYZ";
-  for (int i = 0; i < 3; i++)
-    {
-      glm::vec2 lonlat = xyz2lonlat (RST[i]);
-      printf ("%c > %12.2f %12.2f\n", n[i], rad2deg * lonlat.x, rad2deg * lonlat.y);
-    }
-
-  for (int i = 0; i < 3; i++)
-  for (int j = 0; j < 3; j++)
-    printf (" %8d %8d | %12.2e\n", i, j, glm::dot (RST[i], RST[j]));
-
-  printf ("\n");
-  for (int i = 0; i < 3; i++)
-    {
-      for (int j = 0; j < 3; j++)
-        printf (" %30.20e", RST[j][i]);
-      printf ("\n");
-    }
-
-#endif
 
   return RST;
 }
 
+
+// Process a single ring
 void glgrib_earcut::processRing (const std::vector<float> & lonlat1, 
                                  int rankb, int rankl, 
 		                 int indrb, int * indrl,
@@ -1104,17 +958,6 @@ void glgrib_earcut::processRing (const std::vector<float> & lonlat1,
 
   int numberOfPoints1 = rank2-rank1;
 
-if(0)
-{
-  printf (" numberOfPoints1 = %d\n", numberOfPoints1);
-  printf (" first = %12.2f %12.2f\n", 
-          rad2deg * lonlat1[2*rank1+0], 
-          rad2deg * lonlat1[2*rank1+1]);
-  printf (" last  = %12.2f %12.2f\n", 
-          rad2deg * lonlat1[2*(rank2-1)+0], 
-          rad2deg * lonlat1[2*(rank2-1)+1]);
-}
-
   xyz1.resize (numberOfPoints1);
 
 #pragma omp parallel for if (openmp)
@@ -1127,25 +970,10 @@ if(0)
       xyz1[i] = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
     }
 
-if(0)
-  for (int i = 0; i < numberOfPoints1; i++)
-     printf (" %8d | %8d | %12.2e %12.2e %12.2e | %18.6f %18.6f\n", 
-             i, i+rank1, xyz1[i].x, xyz1[i].y, xyz1[i].z, 
-	     rad2deg * lonlat1[2*(i+rank1)+0], rad2deg * lonlat1[2*(i+rank1)+1]);
-
-
+  // Change coordinate system : choose an XYZ where most
+  // points are far enough from the poles
   glm::mat3 R;
-  R = getRotMat (glgrib_diag2, xyz1, openmp);
-
-if(0)
-  for (int i = 0; i < 3; i++)
-    {
-      for (int j = 0; j < 3; j++)
-        printf (" %12.2e", R[i][j]);
-      printf ("\n");
-    }
-
-
+  R = getRotMat (glgrib_diag, xyz1, openmp);
 
   std::vector<glm::vec3> xyz2;
   std::vector<float> lonlat2;
@@ -1161,15 +989,10 @@ if(0)
       lonlat2[2*i+1] = asin (xyz2[i].z);
     }
 
-if(0)
-  for (int i = 0; i < xyz1.size (); i++)
-     printf (" %8d | %12.2e %12.2e %12.2e | %18.6f %18.6f\n", 
-             i, xyz2[i].x, xyz2[i].y, xyz2[i].z, 
-	     rad2deg * lonlat2[2*i+0], rad2deg * lonlat2[2*i+1]);
-
   std::vector<glm::vec3> & xyz = xyz2;
   std::vector<float> & lonlat = lonlat2;
 
+  // Create nodes
   std::vector<node_t> nodevec;
 
   nodevec.reserve (numberOfPoints1);
@@ -1186,14 +1009,15 @@ if(0)
       nodevec[j].getAngle (xyz);
     }
 
+  // Create index for finding near points
   xy2node_t ll2n (nodevec, lonlat, xyz, openmp);
 
   node_t * nodelist = &nodevec[0];
 
+  // Iterative ear cutting
   int indr = indr1;
   for (int i = 0, k = -1; ; i++)
     {
-//    printf (" %8d, nodelist = %8d, ll2n = %8d\n", i, nodelist->count (), ll2n.size ());
       earCut (&nodelist, xyz, lonlat, ll2n, &indr, ind, indr2, openmp);
       ll2n.update (xyz);
 
@@ -1203,7 +1027,6 @@ if(0)
       k = count;
     }
 
-//printf (" %8s  nodelist = %8d, ll2n = %8d\n", "", nodelist->count (), ll2n.size ());
 
   *indrl = indr - indr1;
 }

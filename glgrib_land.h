@@ -23,7 +23,7 @@ public:
                     std::vector<unsigned int> *);
   void subdivide (const std::vector<int> &, const std::vector<int> &,
                   const std::vector<int> &, const std::vector<int> &,
-                  std::vector<unsigned int> &, std::vector<float> &);
+                  std::vector<unsigned int> *, std::vector<float> *);
 protected:
   glgrib_options_land opts;
   glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;

@@ -674,7 +674,8 @@ public:
     DESC (subdivision.on,     "Enable subdivision");
     DESC (on,                 "Enable");
     DESC (scale,              "Scale");
-    DESC_H (debug,            "Debug");
+    DESC (color,              "Land color");
+    DESC_H (debug.on,         "Debug");
   }
   std::string selector = "";
   std::string path     = "coastlines/shp/GSHHS_c_L1.shp";
@@ -685,7 +686,10 @@ public:
     bool on            = true;
   } subdivision;
   glgrib_option_color color = glgrib_option_color (0, 255, 0);
-  bool debug           = false;
+  struct
+  {
+    bool on            = false;
+  } debug;
   bool on              = false;
 };
 

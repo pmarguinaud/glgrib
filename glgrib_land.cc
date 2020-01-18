@@ -22,15 +22,16 @@ void glgrib_land::render (const glgrib_view & view, const glgrib_options_light &
   view.setMVP (program);
 
   float scale0[3] = {opts.scale, opts.scale, opts.scale};
-  program->set3fv ("scale0", scale0);
+  float color0[4] = {(float)opts.color.r/255.0f,(float)opts.color.g/255.0f,
+                     (float)opts.color.b/255.0f,(float)opts.color.a/255.0f};
 
-//glDisable (GL_CULL_FACE);
+  program->set3fv ("scale0", scale0);
+  program->set4fv ("color0", color0);
+  program->set1i ("debug", opts.debug.on);
 
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
   glBindVertexArray (0);
-
-//glEnable (GL_CULL_FACE);
 
   view.delMVP (program);
 
@@ -144,9 +145,12 @@ void glgrib_land::subdivide (const std::vector<int> & ind_offset,
                              const std::vector<int> & ind_length,
                              const std::vector<int> & pos_offset,
                              const std::vector<int> & pos_length,
-                             std::vector<unsigned int> & ind,
-                             std::vector<float> & lonlat)
+                             std::vector<unsigned int> * _ind,
+                             std::vector<float> * _lonlat)
 {
+  std::vector<unsigned int> & ind    = *_ind;
+  std::vector<float>        & lonlat = *_lonlat;
+
   const float angmax = deg2rad * opts.subdivision.angle;
   std::vector<int> ind_offset_sub;
   std::vector<int> ind_length_sub;
@@ -162,6 +166,8 @@ void glgrib_land::subdivide (const std::vector<int> & ind_offset,
     }
   else
     {
+      // Try to reduce the number of blocks we have to process
+      // by packing together smaller blocks
       int count = 100;
       int ntri = (ind_offset.back () + ind_length.back ()) / 3;
    
@@ -209,6 +215,7 @@ void glgrib_land::subdivide (const std::vector<int> & ind_offset,
   const int n = pos_offset_sub.size ();
   std::vector<glgrib_subdivide> sr (n);
 
+  // Subdivide information kept in subdivide objects
 #pragma omp parallel for
   for (int k = 0; k < n; k++)
     {
@@ -218,6 +225,7 @@ void glgrib_land::subdivide (const std::vector<int> & ind_offset,
       sr[k].subdivide (angmax);
     }
 
+  // Count the number of triangles & plan merging
   std::vector<int> pts_offset (n);
   std::vector<int> tri_offset (n);
 
@@ -233,6 +241,7 @@ void glgrib_land::subdivide (const std::vector<int> & ind_offset,
   lonlat.resize (lonlat.size () + 2 * (pts_offset.back () + sr.back ().getPtsLength ()));
   ind.resize (ind.size () + tri_offset.back () + sr.back ().getTriLength ());
 
+  // Merge indices vectors & coordinates
 #pragma omp parallel for
   for (int k = 0; k < n; k++)
     sr[k].append (lonlat, ind, pts_offset[k], tri_offset[k]);
@@ -268,7 +277,7 @@ void glgrib_land::setup (const glgrib_options_land & o)
 
   if (opts.subdivision.on)
     glgrib_land::subdivide (ind_offset, ind_length, pos_offset, pos_length,
-                            ind, lonlat);
+                            &ind, &lonlat);
 
 
   numberOfTriangles = ind.size () / 3;

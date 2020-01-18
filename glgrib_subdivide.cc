@@ -37,6 +37,8 @@ glm::vec2 xyz2lonlat (const glm::vec3 & xyz)
   return glm::vec2 (atan2 (xyz.y, xyz.x), asin (xyz.z));
 }
 
+
+// Triangle edge
 class edge_t
 {
 public:
@@ -80,6 +82,8 @@ public:
 
 };
 
+
+// Edge index : quickly find the edge object for a vertices pair
 class edge_idx_t : public std::map<std::pair<int,int>,edge_t>
 {
 public:
@@ -109,12 +113,14 @@ public:
   }
 };
 
+// Triangle object : manage edges, subdivide
 class triangle_t
 {
 public:
   int rank = -1;
   float count[3];
   
+  // Process edges which are too long : create an edge object and add it to the index
   int getLongEdges (const float anglemax, const std::vector<unsigned int> & ind, 
                     const std::vector<glm::vec3> & xyz, edge_idx_t * eidx) 
   {
@@ -159,6 +165,7 @@ public:
     return 0;
   }
 
+  // Subdivide triangle with two long edges
   void subdivide2 (edge_idx_t & eidx, std::vector<unsigned int> & ind, int * itrioff, int ord[3])
   {
     int k = ord[2];
@@ -210,6 +217,8 @@ public:
 
     *itrioff = n;
   }
+
+  // Subdivide triangle with a single long edge
   void subdivide1 (edge_idx_t & eidx, std::vector<unsigned int> & ind, int * itrioff, int ord[3])
   {
     int j = ord[0];
@@ -266,6 +275,7 @@ public:
 
 
 
+// Subdivide a single ring
 static
 void subdivideRing1 (std::vector<glm::vec3> & xyz,
                      std::vector<unsigned int> & ind,
@@ -280,6 +290,7 @@ void subdivideRing1 (std::vector<glm::vec3> & xyz,
   for (int i = indt1; i < indt2; i++)
     triangles[i-indt1].rank = i;
 
+  // Create edge index
   edge_idx_t eidx;
 
   int itri = 0;
@@ -314,6 +325,7 @@ void subdivideRing1 (std::vector<glm::vec3> & xyz,
 
   int jtri = ind_off / 3;
 
+  // Subdivide triangle
   for (int i = indt1; i < indt2; i++)
     if (triangles[i-indt1].getSubTriangles ())
       triangles[i-indt1].subdivide (eidx, ind, &jtri);
@@ -325,6 +337,8 @@ void glgrib_subdivide::init (const std::vector<float> & lonlat,
                              int indpb, int indpl,
                              int indrb, int indrl)
 {
+  // Init subdivider : copy coordinates and triangle indices
+
   indp1 = indpb; indp2 = indpb + indpl; 
   indr1 = indrb; indr2 = indrb + indrl;
 
@@ -332,21 +346,21 @@ void glgrib_subdivide::init (const std::vector<float> & lonlat,
     int pmin = *std::min_element (ind.begin () + indr1, ind.begin () + indr2);
     int pmax = *std::max_element (ind.begin () + indr1, ind.begin () + indr2);
     if ((pmin < indp1) || (pmin >= indp2))
-      {
-      printf (" pmin, pmax = %d, %d\n", pmin, pmax);
       abort ();
-      }
     if ((pmax < indp1) || (pmax >= indp2))
       abort ();
   }
 
   xyz1.resize (indp2-indp1);
   ind1.resize (indr2-indr1);
+
   indt1 = indr1/3; 
   indt2 = indr2/3;
+
   for (int i = indp1; i < indp2; i++)
     xyz1[i-indp1] = lonlat2xyz (glm::vec2 (lonlat[2*i+0], lonlat[2*i+1]));
 
+  // Change indices base index
   for (int i = indr1; i < indr2; i++)
     ind1[i-indr1] = ind[i]-indp1;
 
@@ -357,7 +371,11 @@ void glgrib_subdivide::init (const std::vector<float> & lonlat,
 
 void glgrib_subdivide::subdivide (float angmax)
 {
+  // Two steps
+
+  // 1- Perform 1 and 2-edge subdivisions
   subdivideRing1 (xyz1, ind1,         0, ind1.size (), angmax);
+  // 2- Perform third subdivision (ie along third long edge)
   subdivideRing1 (xyz1, ind1, ind1_size, ind1.size (), angmax);
 }
 

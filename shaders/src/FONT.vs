@@ -42,7 +42,7 @@ void main ()
 
   if (l3d) 
     {
-      if (proj == XYZ)
+      if (proj_vs == XYZ)
         {
           vec3 pos = scaleXYZ * letterXYZ;
           vec3 northPos  = vec3 (0., 0., 1.);

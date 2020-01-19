@@ -72,10 +72,10 @@ void main ()
       vec3 projedPos = compProjedPos (pos, normedPos);
       pos = scalePosition (projedPos, normedPos, scale0);
 
-      if (proj == XYZ)
+      if (proj_vs == XYZ)
         pos = pos * (1.0f + height_scale * vertexHeight);
 
-      if ((proj == LATLON) || (proj == MERCATOR))
+      if ((proj_vs == LATLON) || (proj_vs == MERCATOR))
       if ((pos.y < -posmax) || (+posmax < pos.y))
         {
           pos.x = -0.1;

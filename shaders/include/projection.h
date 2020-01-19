@@ -1,9 +1,6 @@
-const int XYZ=0;
-const int POLAR_NORTH=1;
-const int POLAR_SOUTH=2;
-const int MERCATOR=3;
-const int LATLON=4;
-uniform int proj = 0;
+#include "projection_kind.h"
+
+uniform int proj_vs = 0;
 uniform bool isflat = true;
 uniform float lon0vs = 180.0; // Longitude of right handside
 const float pi = 3.1415926;
@@ -30,7 +27,7 @@ vec3 compNormedPos (vec3 vertexPos)
 vec3 compProjedPos (vec3 vertexPos, vec3 normedPos)
 {
   vec3 pos;
-  switch (proj)
+  switch (proj_vs)
     {
       case XYZ:
         if (isflat)

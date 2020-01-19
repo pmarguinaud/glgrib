@@ -64,24 +64,24 @@ void main ()
 
   norm = alpha = min (norm0, norm1);
 
-  if (proj == XYZ)
+  if (proj_vs == XYZ)
     {
       pos = scalePosition (pos, normedPos, scale0);
     }
   else
     {
-      if ((proj == LATLON) || (proj == MERCATOR))
+      if ((proj_vs == LATLON) || (proj_vs == MERCATOR))
       if ((pos.y < -posmax) || (+posmax < pos.y))
         {
           pos.x = -0.1;
           if (do_alpha)
             alpha = 0.0;
 	}
-      if (proj == LATLON)
+      if (proj_vs == LATLON)
       if ((pos.z > +0.49) || (pos.z < -0.49))
         alpha = 0.0;
 
-      if (proj == POLAR_SOUTH)
+      if (proj_vs == POLAR_SOUTH)
         pos.x = pos.x - 0.005;
       else
         pos.x = pos.x + 0.005;

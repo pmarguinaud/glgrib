@@ -74,7 +74,7 @@ void main ()
 
   alpha = min (min (1.0f, length (vertexPos0)), min (1.0f, length (vertexPos1)));
 
-  if (proj == XYZ)
+  if (proj_vs == XYZ)
     {
       posB = scalePosition (posB, normedPosB, scale0);
     }
@@ -83,18 +83,18 @@ void main ()
       if ((gl_VertexID != 0) && (gl_VertexID != 1))
         posB = posA + width * 0.3 * normalize (posB - posA);
 
-      if ((proj == LATLON) || (proj == MERCATOR))
+      if ((proj_vs == LATLON) || (proj_vs == MERCATOR))
       if ((posB.y < -posmax) || (+posmax < posB.y))
         {
           posB.x = -0.1;
           if (do_alpha)
             alpha = 0.0;
 	}
-      if (proj == LATLON)
+      if (proj_vs == LATLON)
       if ((posB.z > +0.49) || (posB.z < -0.49))
         alpha = 0.0;
 
-      if (proj == POLAR_SOUTH)
+      if (proj_vs == POLAR_SOUTH)
         posB.x = posB.x - 0.005;
       else
         posB.x = posB.x + 0.005;

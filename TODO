@@ -3,7 +3,6 @@ Change names like toggle_transform_type into toggleTransformType
 Make a view below field and above ground, with XYZ movement
 Accessors for scene
 Better container than fieldlist
-Make geometry member of glgrib_world protected
 Add [] operator to glgrib_field_float_buffer_ptr
 Optimisations : 
 - use compressed lat/lon

@@ -20,9 +20,14 @@ void glgrib_view::setMVP (glgrib_program * program) const
 {
   program->setMatrix4fv ("MVP", &MVP[0][0]);
   program->set1i ("proj", ps.current ()->getType ());
+
   float lon0 = opts.lon + 180.0f;
+
   if (ps.current ()->setLon0 (lon0))
-    program->set1f ("lon0", lon0);
+    {
+      program->set1f ("lon0vs", lon0);
+      program->set1f ("lon0fs", lon0);
+    }
 
 
   if (opts.clip.on)

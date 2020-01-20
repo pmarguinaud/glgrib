@@ -22,7 +22,7 @@ void main()
   if ((proj_fs == LATLON) || (proj_fs == MERCATOR))
     {
       float lon = rad2deg * atan (fragmentPos.y, fragmentPos.x);  
-      float dlon = 6.0f;
+      float dlon = 10.0f;
      
       while (lon > lon0fs)
         lon = lon - 360.0;

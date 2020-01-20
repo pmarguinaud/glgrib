@@ -47,6 +47,7 @@ void glgrib_land::render (const glgrib_view & view, const glgrib_options_light &
       program->set1i ("debug", opts.layers[i].debug.on);
      
       glBindVertexArray (VertexArrayID[i]);
+
       glDrawElements (GL_TRIANGLES, 3 * d[i].numberOfTriangles, GL_UNSIGNED_INT, NULL);
       glBindVertexArray (0);
     }

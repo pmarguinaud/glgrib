@@ -253,9 +253,10 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
 ![](test.ref/guyane/TEST_0000.png)
 
 ```
-    --landscape.on --field[0].path testdata/aro_guyane/SURFTEMPERATURE.grb 
-    --field[0].palette.name cold_hot_temp --field[0].scale 1.01 --view.lat 
-    5 --view.lon -51 --view.fov 3 --coast.on --grid.on 
+    --landscape.on --field[0].user_pref.off --field[0].path 
+    testdata/aro_guyane/SURFTEMPERATURE.grb --field[0].palette.name 
+    cold_hot_temp --field[0].scale 1.01 --view.lat 5 --view.lon -51 
+    --view.fov 3 --coast.on --grid.on 
 ```
 ## Image on top of cloud fields                                      -- image
 ![](test.ref/image/TEST_0000.png)
@@ -759,4 +760,20 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --palette.linear.on }- --colorbar.on --coast.on --coast.lines.color 
     black --view.projection LATLON --window.width 1500 --view.lon 10 
     --view.lat 52 --view.fov 3 --view.clip.xmin 0.15 
+```
+## Display land surface                                              -- land
+![](test.ref/land/TEST_0000.png)
+
+```
+    --land.on 
+```
+## Display land surface (high resolution)                            -- land_high
+![](test.ref/land_high/TEST_0000.png)
+
+```
+    --land.on --land.layers[0].path coastlines/shp/GSHHS_h_L1.shp 
+    --land.layers[1].path coastlines/shp/GSHHS_h_L2.shp 
+    --land.layers[2].path coastlines/shp/GSHHS_h_L3.shp 
+    --land.layers[3].path coastlines/shp/GSHHS_h_L5.shp --view.lon 7 
+    --view.lat 60 --view.fov 2 
 ```

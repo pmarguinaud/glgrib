@@ -530,6 +530,57 @@ public:
   } color;
 };
 
+class glgrib_options_scalar : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (smooth.on,    Smooth scalar fields);
+    DESC (wireframe.on, Display field as wireframe);
+    DESC (points.on,    Display field as points);
+    DESC (points.size.value,  Field point size);
+    DESC (points.size.variable.on,  Variable field point size);
+    DESC (points.size.factor.on,  Apply scale factor to point size);
+    DESC (pack.bits,    Number of bytes used to pack field);
+    DESC (discrete.on,  Plot as a discrete field);
+    DESC (discrete.missing_color, Color for missing values);
+  }
+
+  struct 
+  {
+    bool on = false;
+  } smooth;
+  struct 
+  {
+    bool on = false;
+  } wireframe;
+  struct 
+  {
+    bool on = false;
+    struct
+    {
+      float value = 1.0f;
+      struct
+      {
+        bool on = false;
+      } variable;
+      struct
+      {
+        bool on = true;
+      } factor;
+    } size;
+  } points;
+  struct
+  {
+    int bits = 8;
+  } pack;
+  struct
+  {
+    bool on = false;
+    glgrib_option_color missing_color = glgrib_option_color (0, 0, 0, 0);
+  } discrete;
+};
+
 class glgrib_options_field : public glgrib_options_base
 {
 public:
@@ -541,19 +592,11 @@ public:
     DESC (scale,               Scales to be applied to fields);        
     DESC (no_value_pointer.on, Do not keep field values in memory);    
     DESC (diff.on,             Show field difference);
-    DESC (scalar.smooth.on,    Smooth scalar fields);
-    DESC (scalar.wireframe.on, Display field as wireframe);
-    DESC (scalar.points.on,    Display field as points);
-    DESC (scalar.points.size.value,  Field point size);
-    DESC (scalar.points.size.variable.on,  Variable field point size);
-    DESC (scalar.points.size.factor.on,  Apply scale factor to point size);
-    DESC (scalar.pack.bits,    Number of bytes used to pack field);
-    DESC (scalar.discrete.on,  Plot as a discrete field);
-    DESC (scalar.discrete.missing_color, Color for missing values);
     DESC (hilo.on,             Display low & high);
     DESC (hilo.radius,         High/low radius in degrees);
     INCLUDE (hilo.font);
     INCLUDE (palette);
+    INCLUDE (scalar);
     INCLUDE (vector);
     INCLUDE (contour);
     INCLUDE (stream);
@@ -574,42 +617,6 @@ public:
   {
     bool on = true;
   } user_pref;
-  struct
-  {
-    struct 
-    {
-      bool on = false;
-    } smooth;
-    struct 
-    {
-      bool on = false;
-    } wireframe;
-    struct 
-    {
-      bool on = false;
-      struct
-      {
-        float value = 1.0f;
-        struct
-        {
-          bool on = false;
-        } variable;
-        struct
-        {
-          bool on = true;
-        } factor;
-      } size;
-    } points;
-    struct
-    {
-      int bits = 8;
-    } pack;
-    struct
-    {
-      bool on = false;
-      glgrib_option_color missing_color = glgrib_option_color (0, 0, 0, 0);
-    } discrete;
-  } scalar;
   string_list  path;
   float scale   = 1.0f;
   struct
@@ -621,6 +628,7 @@ public:
     bool on = false;
   } diff;
   glgrib_options_palette palette;
+  glgrib_options_scalar scalar;
   glgrib_options_vector vector;
   glgrib_options_contour contour;
   glgrib_options_stream stream;

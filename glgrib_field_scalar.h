@@ -24,6 +24,7 @@ public:
     return (int)opts.path.size ();
   }
 private:
+  void setupMpiView (glgrib_loader *, const glgrib_options_field &, float = 0);
   template <typename T>
   void setupVertexAttributes ();
   template <typename T>

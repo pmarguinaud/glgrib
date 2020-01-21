@@ -777,3 +777,12 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --land.layers[3].path coastlines/shp/GSHHS_h_L5.shp --view.lon 7 
     --view.lat 60 --view.fov 2 
 ```
+## MPI view                                                          -- mpiview
+![](test.ref/mpiview/TEST_0000.png)
+
+```
+    --field[0].path testdata/discrete/SURFTEMPERATURE.grb 
+    --field[0].mpiview.on --field[0].mpiview.path 
+    testdata/discrete/MYPROC.grb --field[0].mpiview.scale 0.2 --view.lon 
+    31 --view.lat 41 
+```

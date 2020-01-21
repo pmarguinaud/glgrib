@@ -220,8 +220,9 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       program->set1f ("palmin", palette.getMin ());
       program->set1f ("palmax", palette.getMax ());
       program->set1f ("height_scale", opts.geometry.height.scale);
-      program->set1f ("Nmax", 255);
-      program->set1f ("discrete", false);
+      program->set1i ("Nmax", 255);
+      program->set1i ("discrete", false);
+      program->set1f ("mpiview_scale", 0.0f);
 
       glBindVertexArray (VertexArrayID);
       geometry->renderTriangles ();

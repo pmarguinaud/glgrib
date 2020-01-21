@@ -581,6 +581,21 @@ public:
   } discrete;
 };
 
+class glgrib_options_mpiview : public glgrib_options_base
+{
+public:
+  DEFINE
+  { 
+    DESC (path,  "Path to MPI distribution field");
+    DESC (on,    "Enable MPI view");
+    DESC (scale, "Displacement scale");
+  }
+
+  std::vector<std::string> path;
+  bool on = false;
+  float scale = 0.1f;
+};
+
 class glgrib_options_field : public glgrib_options_base
 {
 public:
@@ -601,7 +616,7 @@ public:
     INCLUDE (contour);
     INCLUDE (stream);
     INCLUDE (geometry);
-    
+    INCLUDE_H (mpiview);
   }
   std::set<std::string> seen;
 
@@ -634,6 +649,7 @@ public:
   glgrib_options_stream stream;
   bool parse_unseen (const char *);
   glgrib_options_geometry geometry;
+  glgrib_options_mpiview mpiview;
 };
 
 

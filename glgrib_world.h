@@ -13,7 +13,7 @@ public:
   const_glgrib_geometry_ptr getGeometry () const { return geometry; }
   virtual void clear ();
 protected:
-  glgrib_opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer, heightbuffer;
+  glgrib_opengl_buffer_ptr vertexbuffer, colorbuffer, elementbuffer, heightbuffer, mpivbuffer;
   const_glgrib_geometry_ptr geometry;
   int numberOfPoints;
   unsigned int numberOfTriangles;

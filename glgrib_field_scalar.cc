@@ -1,4 +1,5 @@
 #include "glgrib_field_scalar.h"
+#include "glgrib_trigonometry.h"
 #include "glgrib_program.h"
 #include "glgrib_palette.h"
 
@@ -88,6 +89,20 @@ void glgrib_field_scalar::setupVertexAttributes ()
 
   bindHeight <T> (2);
 
+  if (opts.mpiview.on)
+    {
+      mpivbuffer->bind (GL_ARRAY_BUFFER);
+      glEnableVertexAttribArray (3); 
+      glVertexAttribPointer (3, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+//    glVertexAttribDivisor (3, 1);
+    }
+  else
+    {
+      glDisableVertexAttribArray (3);
+      glVertexAttrib3f (3, 0.0f, 0.0f, 0.0f);
+    }
+
+
   glBindVertexArray (0); 
 
   // Points
@@ -115,6 +130,7 @@ void glgrib_field_scalar::setupVertexAttributes ()
       glVertexAttrib1f (2, 0.0f);
     }
 
+
   glBindVertexArray (0); 
 
   if (opts.geometry.frame.on)
@@ -140,6 +156,20 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
         throw std::runtime_error (std::string ("Wrong number of bits for packing field: ") +
                                   std::to_string (opts.scalar.pack.bits));
     }
+}
+
+static
+glm::vec3 lonlat2xyz (const glm::vec2 & lonlat)
+{
+  float coslon = cos (lonlat.x), sinlon = sin (lonlat.x);
+  float coslat = cos (lonlat.y), sinlat = sin (lonlat.y);
+  return glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
+}
+
+static
+glm::vec2 xyz2lonlat (const glm::vec3 & xyz)
+{
+  return glm::vec2 (atan2 (xyz.y, xyz.x), asin (xyz.z));
 }
 
 template <typename T>
@@ -169,6 +199,9 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
 
   loadHeight <T> (colorbuffer, ld);
 
+  if (opts.mpiview.on)
+    setupMpiView (ld, o, slot);
+
   setupVertexAttributes<T> ();
 
   if (opts.no_value_pointer.on)
@@ -179,9 +212,72 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
   setReady ();
 }
 
+void glgrib_field_scalar::setupMpiView (glgrib_loader * ld, const glgrib_options_field & o, float slot)
+{
+  int size = geometry->getNumberOfPoints ();
+
+  glgrib_field_metadata mpiview_meta;
+  glgrib_field_float_buffer_ptr mpiview;
+
+  ld->load (&mpiview, opts.mpiview.path, opts.geometry, slot, &mpiview_meta, 1, 0);
+
+  float * data = mpiview->data ();
+
+  float pmin = *std::min_element (data, data + size);
+  float pmax = *std::max_element (data, data + size);
+
+  int min = (int)pmin;
+  int max = (int)pmax;
+
+  glm::vec3 Disp[max];
+  glm::vec2 Disl[max];
+  int count[max];
+
+  for (int i = 0; i < max; i++)
+    {
+      Disp[i] = glm::vec3 (0.0f, 0.0f, 0.0f);
+      count[i] = 0;
+    }
+
+  for (int i = 0; i < size; i++)
+    {
+      float lon, lat;
+      geometry->index2latlon (i, &lat, &lon);
+
+      int j = (int)(*mpiview)[i]-1;
+
+      Disp[j] += lonlat2xyz (glm::vec2 (lon, lat));
+      count[j]++;
+    }
+
+  for (int i = 0; i < max; i++)
+    Disl[i] = xyz2lonlat (glm::normalize (Disp[i] / (float)count[i]));
+
+  if(0)
+  for (int i = 0; i < max; i++)
+    printf (" %8d | %12.2f, %12.2f\n", i, rad2deg * Disl[i].x, rad2deg * Disl[i].y);
+
+  mpivbuffer = new_glgrib_opengl_buffer_ptr (3 * size * sizeof (float));
+  float * mpiv = (float *)mpivbuffer->map ();
+  for (int i = 0; i < size; i++)
+    {
+      int j = (*mpiview)[i]-1;
+      mpiv[3*i+0] = (*mpiview)[i];
+      mpiv[3*i+1] = Disl[j].x;
+      mpiv[3*i+2] = Disl[j].y;
+    }
+  mpiv = NULL;
+  mpivbuffer->unmap ();
+
+}
+
 void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
   float scale0[3] = {opts.scale, opts.scale, opts.scale};
+
+  if (opts.mpiview.on)
+    for (int i = 0; i < 3; i++)
+      scale0[i] = scale0[i] / (1.0f + opts.mpiview.scale);
 
   glgrib_program * program = glgrib_program::load (opts.scalar.points.on 
                                                  ? glgrib_program::SCALAR_POINTS 
@@ -197,7 +293,8 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   program->set1f ("palmin", palette.getMin ());
   program->set1f ("palmax", palette.getMax ());
   program->set1f ("height_scale", opts.geometry.height.scale);
-  program->set1f ("discrete", opts.scalar.discrete.on);
+  program->set1i ("discrete", opts.scalar.discrete.on);
+  program->set1f ("mpiview_scale", opts.mpiview.on ? opts.mpiview.scale : 0.0f);
 
   float missing_color[4] = {(float)opts.scalar.discrete.missing_color.r / 255.0f, 
                             (float)opts.scalar.discrete.missing_color.g / 255.0f, 

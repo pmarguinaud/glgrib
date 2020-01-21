@@ -13,10 +13,10 @@ uniform mat4 MVP;
 void main()
 {
   vec3 vertexPos = posFromLonLat (vertexLonLat);
-  vertexPos = vertexPos * (1.0f + vertexHeight);
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);
   pos = scalePosition (pos, normedPos, scale0);
+  pos = pos * (1.0f + vertexHeight);
   gl_Position =  MVP * vec4 (pos, 1.);
   fragmentPos = normedPos;
 }

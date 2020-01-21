@@ -74,6 +74,7 @@ void glgrib_grid::setup (const glgrib_options_grid & o)
 
       labels.setup3D (font, L, X, Y, Z, A, opts.labels.font.scale, glgrib_string::C);
       labels.setForegroundColor (opts.labels.font.color.foreground);
+      labels.setBackgroundColor (opts.labels.font.color.background);
     }
 
 

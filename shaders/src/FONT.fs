@@ -52,4 +52,11 @@ void main ()
       color.b = color0.b;
       color.a = 1 - a;
     }
+
+  if ((color.r == 0.0f)
+   && (color.g == 0.0f)
+   && (color.b == 0.0f)
+   && (color.a == 0.0f))
+   discard;
+
 }

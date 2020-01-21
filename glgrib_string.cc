@@ -250,7 +250,6 @@ void glgrib_string::render (const glgrib_view & view) const
   program->set1f ("length10", length);
   program->set1f ("scaleXYZ", d.scaleXYZ);
 
-
   glBindVertexArray (VertexArrayID);
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0};
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, d.len);

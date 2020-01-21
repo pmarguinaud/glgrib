@@ -55,14 +55,15 @@ void glgrib_scene::display () const
   d.test.render (d.view, d.opts.scene.light);
   
   display_obj (&d.landscape);
+
+  for (int i = 0; i < fieldlist.size (); i++)
+    display_obj (fieldlist[i]);
+
   display_obj (&d.coast);
   display_obj (&d.border);
   display_obj (&d.rivers);
   display_obj (&d.departements);
   display_obj (&d.grid);
-
-  for (int i = 0; i < fieldlist.size (); i++)
-    display_obj (fieldlist[i]);
 
   const glgrib_field * fld = d.currentFieldRank < fieldlist.size () 
                            ? fieldlist[d.currentFieldRank] : NULL;

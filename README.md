@@ -811,3 +811,17 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     -9.5 --view.lat 46 --view.fov 1.3 --view.projection LATLON 
     --window.width 1200 
 ```
+## Wind on global lat/lon grid                                       -- windlatlon
+![](test.ref/windlatlon/TEST_0000.png)
+
+```
+    --field[0].path testdata/data_uv.grib%shortName="u" 
+    testdata/data_uv.grib%shortName="v" --field[0].type vector 
+    --field[0].vector.hide_arrow.on --field[0].palette.values 0 10 15 20 
+    25 30 40 50 60 80 100 --colorbar.on --field[0].palette.linear.on 
+    --field[0].palette-{ --min 0 --max 100 }- --field[0].palette.colors 
+    #ffffffff #ffff66ff #daff00ff #94ff00ff #6ca631ff #00734bff #005447ff 
+    #004247ff #003370ff #0033a3ff --coast.on --coast.lines.color black 
+    --grid.on --grid.color black --grid.resolution 18 --view.fov 10 
+    --view.projection LATLON --window.width 1650 --window.height 750 
+```

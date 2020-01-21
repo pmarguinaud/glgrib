@@ -65,25 +65,29 @@ void glgrib_landscape::setup (glgrib_loader * ld, const glgrib_options_landscape
 {
   opts = o;
 
-  unsigned char * rgb;
-  int w, h;
-
   geometry = glgrib_geometry::load (ld, opts.geometry_path, opts.geometry, opts.number_of_latitudes);
 
-  if (endsWith (opts.path, ".png"))
-    glgrib_read_png (glgrib_resolve (opts.path), &w, &h, &rgb);
-  else if (endsWith (opts.path, ".bmp"))
-    glgrib_bitmap (glgrib_resolve (opts.path), &rgb, &w, &h);
-  else
-    throw std::runtime_error (std::string ("Unknown image format :") + opts.path);
-
-  GLint sizemax;
-  glGetIntegerv (GL_MAX_TEXTURE_SIZE, &sizemax);
-  if ((sizemax < w) || (sizemax < h))
-    throw std::runtime_error (std::string ("Image is too large to be used as a texture :") + opts.path);
-
-  texture = new_glgrib_opengl_texture_ptr (w, h, rgb);
-  delete [] rgb;
+  if (opts.path != "")
+    {
+      unsigned char * rgb;
+      int w, h;
+     
+     
+      if (endsWith (opts.path, ".png"))
+        glgrib_read_png (glgrib_resolve (opts.path), &w, &h, &rgb);
+      else if (endsWith (opts.path, ".bmp"))
+        glgrib_bitmap (glgrib_resolve (opts.path), &rgb, &w, &h);
+      else
+        throw std::runtime_error (std::string ("Unknown image format :") + opts.path);
+     
+      GLint sizemax;
+      glGetIntegerv (GL_MAX_TEXTURE_SIZE, &sizemax);
+      if ((sizemax < w) || (sizemax < h))
+        throw std::runtime_error (std::string ("Image is too large to be used as a texture :") + opts.path);
+     
+      texture = new_glgrib_opengl_texture_ptr (w, h, rgb);
+      delete [] rgb;
+    }
 
   if (opts.geometry.height.on)
     {
@@ -126,13 +130,24 @@ void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_li
   program->setLight (light);
   program->set1i ("isflat", opts.flat.on);
 
-  // the texture selection process is a bit obscure
-  glActiveTexture (GL_TEXTURE0); 
-  glBindTexture (GL_TEXTURE_2D, texture->id ());
-  program->set1i ("texture", 0);
+  if (opts.path != "")
+    {
+      // the texture selection process is a bit obscure
+      glActiveTexture (GL_TEXTURE0); 
+      glBindTexture (GL_TEXTURE_2D, texture->id ());
+      program->set1i ("texture", 0);
+      program->set1i ("colored", 0);
+    }
+  else
+    {
+      float color0[4] = {opts.color.r/255.0f, opts.color.g/255.0f,
+                         opts.color.b/255.0f, opts.color.a/255.0f};
+      program->set4fv ("color0", color0);
+      program->set1i ("colored", 1);
+    }
+
   program->set3fv ("scale0", scale0);
 
-  
   if (opts.projection == "LONLAT")
     {
       program->set1i ("texproj", 0);

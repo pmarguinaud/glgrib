@@ -13,6 +13,8 @@ uniform vec3 lightDir = vec3 (0., 1., 0.);
 uniform vec3 lightCol = vec3 (1., 1., 1.);
 uniform bool light = false;
 uniform float frac = 0.1;
+uniform vec4 color0 = vec4 (0.0f, 0.0f, 0.0f, 0.0f);
+uniform bool colored = false;
 
 // LONLAT
 uniform float lonA = -180.0, lonB = +180.0, latA = -90, latB = +90;
@@ -31,78 +33,88 @@ const float PI = 3.141592653589793;
 const float a = 6378137;
 
 
+
+
 void main ()
 {
-  // All lat/lon in radians
-  float llon = atan (fragmentPos.y, fragmentPos.x);  
-  float llat = asin (fragmentPos.z);
-
   vec4 col;
 
-  if (texproj == LONLAT)
+  if (! colored)
     {
-      float llonA = lonA, llonB = lonB; 
-      float llatA = latA, llatB = latB;
+      // All lat/lon in radians
+      float llon = atan (fragmentPos.y, fragmentPos.x);  
+      float llat = asin (fragmentPos.z);
      
-      while (llonB < llonA)
+     
+      if (texproj == LONLAT)
         {
-          llonB = llonB + 2 * PI;
+          float llonA = lonA, llonB = lonB; 
+          float llatA = latA, llatB = latB;
+         
+          while (llonB < llonA)
+            {
+              llonB = llonB + 2 * PI;
+            }
+         
+          float s   = (llon - llonA)          / (llonB - llonA);
+          float sp1 = (llon - llonA + 2 * PI) / (llonB - llonA);
+          float sm1 = (llon - llonA - 2 * PI) / (llonB - llonA);
+          float t   = (llat - llatA)          / (llatB - llatA);
+     
+          if ((0 <= sp1) && (sp1 <= 1))
+            s = sp1;
+         
+          if ((0 <= sm1) && (sm1 <= 1))
+            s = sm1;
+         
+          if ((s < 0.0) || (1.0 < s))
+            discard;
+          if ((t < 0.0) || (1.0 < t))
+            discard;
+         
+          col = texture2D (texture, vec2 (s, t));
         }
+      else if (texproj == WEBMERCATOR)
+        {
      
-      float s   = (llon - llonA)          / (llonB - llonA);
-      float sp1 = (llon - llonA + 2 * PI) / (llonB - llonA);
-      float sm1 = (llon - llonA - 2 * PI) / (llonB - llonA);
-      float t   = (llat - llatA)          / (llatB - llatA);
-
-      if ((0 <= sp1) && (sp1 <= 1))
-        s = sp1;
+          float X = a * llon;
+          float Y = a * log (tan (PI / 4. + llat * 0.5));
+         
+          float Z = 256 * F / N;
+         
+          float DX = X - X0;
+          float DY = Y0 - Y;
+         
+          float IDX = 1 + IX1 - IX0;
+          float IDY = 1 + IY1 - IY0;
+         
+          int IX = int (DX / Z); 
+          int IY = int (DY / Z); 
+         
+          X = 0 + (DX - IX0 * Z) / (Z * IDX);
+          Y = 1 - (DY - IY0 * Z) / (Z * IDY);
+         
+          float XP1 = X + float (N) / float (IDX);
+          float XM1 = X - float (N) / float (IDX);
+         
+          if ((0 <= XM1) && (XM1 <= 1))
+            X = XM1;
+         
+          if ((0 <= XP1) && (XP1 <= 1))
+            X = XP1;
      
-      if ((0 <= sm1) && (sm1 <= 1))
-        s = sm1;
+          bool inl = (0 <= X) && (X <= 1) && (0 <= Y) && (Y <= 1);
      
-      if ((s < 0.0) || (1.0 < s))
-        discard;
-      if ((t < 0.0) || (1.0 < t))
-        discard;
+          if (! inl)
+            discard;
      
-      col = texture2D (texture, vec2 (s, t));
+          col = texture2D (texture, vec2 (X, Y));
+     
+        }
     }
-  else if (texproj == WEBMERCATOR)
+  else
     {
-
-      float X = a * llon;
-      float Y = a * log (tan (PI / 4. + llat * 0.5));
-     
-      float Z = 256 * F / N;
-     
-      float DX = X - X0;
-      float DY = Y0 - Y;
-     
-      float IDX = 1 + IX1 - IX0;
-      float IDY = 1 + IY1 - IY0;
-     
-      int IX = int (DX / Z); 
-      int IY = int (DY / Z); 
-     
-      X = 0 + (DX - IX0 * Z) / (Z * IDX);
-      Y = 1 - (DY - IY0 * Z) / (Z * IDY);
-     
-      float XP1 = X + float (N) / float (IDX);
-      float XM1 = X - float (N) / float (IDX);
-     
-      if ((0 <= XM1) && (XM1 <= 1))
-        X = XM1;
-     
-      if ((0 <= XP1) && (XP1 <= 1))
-        X = XP1;
-
-      bool inl = (0 <= X) && (X <= 1) && (0 <= Y) && (Y <= 1);
-
-      if (! inl)
-        discard;
-
-      col = texture2D (texture, vec2 (X, Y));
-
+      col = color0;
     }
 
   float total = 1.;

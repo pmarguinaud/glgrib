@@ -769,6 +769,7 @@ public:
     DESC (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
     DESC (wireframe.on,        Draw landscape in wireframe mode);
     DESC (scale,               Scale);
+    DESC (color,               Color);
     INCLUDE (lonlat.position);
     INCLUDE (geometry);
   }
@@ -792,6 +793,7 @@ public:
   } lonlat;
   glgrib_options_geometry geometry;
   float scale = 1.0f;
+  glgrib_option_color color;
 };
 
 class glgrib_options_lines : public glgrib_options_base

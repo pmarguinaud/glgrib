@@ -825,3 +825,26 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --grid.on --grid.color black --grid.resolution 18 --view.fov 10 
     --view.projection LATLON --window.width 1650 --window.height 750 
 ```
+## Z500, T850                                                        -- z500t850
+![](test.ref/z500t850/TEST_0000.png)
+
+```
+    --coast.lines.color black --coast.on --colorbar.font.color.foreground 
+    black --colorbar.on --field[0].palette.colors #ffffffff #0000ffff 
+    #0071ffff #00e3ffff #00ffaaff #00ff39ff #39ff00ff #aaff00ff #ffe300ff 
+    #ff7100ff #ff0000ff #ffffffff --field[0].palette.offset -273.15 
+    --field[0].palette.values 262.15 263.15 265.15 267.15 269.15 271.15 
+    273.15 275.15 277.15 279.15 281.15 283.15 284.15 --field[0].path 
+    testdata/t850.grb --field[1].contour.levels 47000 47500 48000 48500 
+    49000 49500 50000 50500 51000 51500 52000 52500 53000 53500 54000 
+    54500 55000 55500 56000 56500 57000 57500 --field[1].contour.widths 0 
+    0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0 
+    --field[1].hilo.font.color.foreground black --field[1].hilo.font.scale 
+    0.02 --field[1].hilo.on --field[1].palette.colors black 
+    --field[1].path testdata/z500.grb --field[1].type CONTOUR --grid.color 
+    black --grid.labels.font.color.background white 
+    --grid.labels.font.color.foreground black --grid.labels.font.scale 
+    0.02 --grid.labels.on --grid.on --grid.resolution 18 --view.fov 5 
+    --view.lat 49 --view.lon 2 --view.projection POLAR_NORTH 
+    --window.width 1200 
+```

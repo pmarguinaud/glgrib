@@ -441,9 +441,9 @@ void glgrib_geometry_lambert::sampleTriangle (unsigned char * s, const unsigned 
 
   int ntpr = 2 * (Nx - 1);
 
-  for (int jlat = 0; jlat < Ny; jlat++)
+  for (int jlat = 0; jlat < Ny-1; jlat++)
     {
-      for (int jlon = 0; jlon < Nx; jlon++)
+      for (int jlon = 0; jlon < Nx-1; jlon++)
         if ((jlat % lat_stride == 0) && (jlon % lon_stride == 0))
           s[jlat * ntpr + 2 * jlon] = s0;
     }

@@ -149,6 +149,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
   "Display land surface                                             " ,  land                => '--land.on',
   "Display land surface (high resolution)                           " ,  land_high           => '--land.on --land.layers[0].path coastlines/shp/GSHHS_h_L1.shp --land.layers[1].path coastlines/shp/GSHHS_h_L2.shp --land.layers[2].path coastlines/shp/GSHHS_h_L3.shp --land.layers[3].path coastlines/shp/GSHHS_h_L5.shp  --view.lon 7 --view.lat 60 --view.fov 2',
   "MPI view                                                         " ,  mpiview             => '--field[0].path testdata/discrete/SURFTEMPERATURE.grb  --field[0].mpiview.on  --field[0].mpiview.path testdata/discrete/MYPROC.grb  --field[0].mpiview.scale 0.2 --view.lon 31 --view.lat 41',
+  "Lat/lon streamlines                                              " ,  latlonstream        => '--field[0].path testdata/advection_850.grib%\'shortName="u"\' testdata/advection_850.grib%\'shortName="v"\' --field[0].type STREAM --field[0].palette.colors darkblue --land.on --land.layers[0].path coastlines/shp/GSHHS_i_L1.shp --land.layers[1].path coastlines/shp/GSHHS_i_L2.shp --land.layers[2].path coastlines/shp/GSHHS_i_L3.shp --land.layers[3].path coastlines/shp/GSHHS_i_L5.shp --land.layers[0].color grey --grid.on --grid.resolution 18  --grid.color black  --landscape.on --landscape.path landscape/white.bmp --landscape.scale 0.99 --view.lon -9.5 --view.lat 46 --view.fov 1.3 --view.projection LATLON  --window.width 1200',
 );
 
 

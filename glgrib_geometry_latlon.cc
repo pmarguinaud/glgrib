@@ -424,7 +424,7 @@ void glgrib_geometry_latlon::sampleTriangle (unsigned char * s, const unsigned c
 
   int ntpr = periodic ? 2 * Ni : 2 * (Ni - 1);
 
-  for (int jlat = 0; jlat < Nj; jlat++)
+  for (int jlat = 0; jlat < Nj-1; jlat++)
     {
       float lat = lat0 - dlat * (float)jlat;
 
@@ -437,7 +437,7 @@ void glgrib_geometry_latlon::sampleTriangle (unsigned char * s, const unsigned c
 
       int lon_stride = 2.0f * (level * 2.0f * Dlat) / (Dlon * coslat);
 
-      for (int jlon = 0; jlon < Ni; jlon++)
+      for (int jlon = 0; jlon < Ni-1; jlon++)
         if ((jlat % lat_stride == 0) && (jlon % lon_stride == 0))
           s[jlat * ntpr + 2 * jlon] = s0;
 

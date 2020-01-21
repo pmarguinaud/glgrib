@@ -768,6 +768,7 @@ public:
     DESC (geometry_path,       GRIB files to take geometry from);
     DESC (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
     DESC (wireframe.on,        Draw landscape in wireframe mode);
+    DESC (scale,               Scale);
     INCLUDE (lonlat.position);
     INCLUDE (geometry);
   }
@@ -790,6 +791,7 @@ public:
     glgrib_options_landscape_position position;
   } lonlat;
   glgrib_options_geometry geometry;
+  float scale = 1.0f;
 };
 
 class glgrib_options_lines : public glgrib_options_base

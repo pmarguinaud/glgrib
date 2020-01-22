@@ -6,7 +6,6 @@ layout(location = 1) in float vertexVal_n;
 layout(location = 2) in float vertexVal_d;
 layout(location = 3) in float vertexHeight;
 
-out vec3 fragmentPos;
 out float alpha;
 
 
@@ -33,6 +32,43 @@ uniform float head = 0.1;
 uniform float posmax = 0.97;
 
 uniform float height_scale = 0.05;
+uniform int arrow_kind = 1;
+
+vec3 getPos0 ()
+{
+  vec3 pos;
+       if (gl_VertexID == 0) pos = vec3 (+0.0     ,  +0.0, +0.0);
+  else if (gl_VertexID == 1) pos = vec3 (+1.0     ,  +0.0, +0.0);
+  else if (gl_VertexID == 2) pos = vec3 (+1.0-head, +head, +0.0);
+  else if (gl_VertexID == 3) pos = vec3 (+1.0-head, -head, +0.0);
+  else if (gl_VertexID == 4) pos = vec3 (+1.0     ,  +0.0, +0.0);
+  return pos;
+}
+
+vec3 getPos1 ()
+{
+  vec3 pos;
+       if (gl_VertexID == 0) pos = vec3 (+0.0     ,  +0.0, +0.0);
+  else if (gl_VertexID == 1) pos = vec3 (+0.0     , +head, +0.0);
+  else if (gl_VertexID == 2) pos = vec3 (+1.0     ,  +0.0, +0.0);
+  else if (gl_VertexID == 3) pos = vec3 (+1.0-head, +head, +0.0);
+  else if (gl_VertexID == 4) pos = vec3 (+1.0-head, -head, +0.0);
+  else if (gl_VertexID == 5) pos = vec3 (+1.0     ,  +0.0, +0.0);
+  else if (gl_VertexID == 6) pos = vec3 (+0.0     , -head, +0.0);
+  else if (gl_VertexID == 7) pos = vec3 (+0.0     ,  +0.0, +0.0);
+  return pos;
+}
+
+vec3 getPos2 ()
+{
+  vec3 pos;
+       if (gl_VertexID == 0) pos = vec3 (+0.0     ,  +0.0, +0.0);
+  else if (gl_VertexID == 1) pos = vec3 (+0.0     , +head, +0.0);
+  else if (gl_VertexID == 2) pos = vec3 (+1.0     ,  +0.0, +0.0);
+  else if (gl_VertexID == 3) pos = vec3 (+0.0     , -head, +0.0);
+  else if (gl_VertexID == 4) pos = vec3 (+0.0     ,  +0.0, +0.0);
+  return pos;
+}
 
 void main ()
 {
@@ -43,20 +79,18 @@ void main ()
 
   bool defined = vertexVal_d != 0;
   vec3 pos;
-  
-  if (! defined)
-    pos = vec3 (+0.0     ,  +0.0, +0.0);
-  else if (gl_VertexID == 0)
-    pos = vec3 (+0.0     ,  +0.0, +0.0);
-  else if (gl_VertexID == 1)
-    pos = vec3 (+1.0     ,  +0.0, +0.0);
-  else if (gl_VertexID == 2)
-    pos = vec3 (+1.0-head, +head, +0.0);
-  else if (gl_VertexID == 3)
-    pos = vec3 (+1.0-head, -head, +0.0);
-  else if (gl_VertexID == 4)
-    pos = vec3 (+1.0     ,  +0.0, +0.0);
 
+  if (! defined)
+    pos = vec3 (+0.0, +0.0, +0.0);
+  else if (arrow_kind == 0)
+    pos = getPos0 ();
+  else if (arrow_kind == 1)
+    pos = getPos1 ();
+  else if (arrow_kind == 2)
+    pos = getPos2 ();
+  else 
+    pos = getPos0 ();
+  
   alpha = 1.;
   if (defined)
     {

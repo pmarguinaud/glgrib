@@ -457,25 +457,32 @@ class glgrib_options_vector : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (hide_arrow.on,  Hide arrows);                
-    DESC (hide_norm.on,   Hide norm field);            
-    DESC (color,          Color for arrows);
-    DESC (density,        Vector density);
-    DESC (scale,          Vector scale);
-    DESC (head_size,      Vector head size);
+    DESC (arrow.on,        Show arrows);                
+    DESC (norm.on,         Show norm field);            
+    DESC (color,           Color for arrows);
+    DESC (density,         Vector density);
+    DESC (scale,           Vector scale);
+    DESC (arrow.head_size, Vector head size);
+    DESC (arrow.kind,      Arrow kind);
+    DESC (arrow.fill.on,   Fill arrow);
   }
   struct
   {
-    bool on = false;
-  } hide_arrow;
+    bool on = true;
+    float head_size = 0.1f;
+    int kind = 0;
+    struct
+    {
+      bool on = false;
+    } fill;
+  } arrow;
   struct
   {
-    bool on = false;
-  } hide_norm;
+    bool on = true;
+  } norm;
   glgrib_option_color color;
   float density = 50.0f;
   float scale = 1.0f;
-  float head_size = 0.1f;
 };
 
 class glgrib_options_palette : public glgrib_options_base

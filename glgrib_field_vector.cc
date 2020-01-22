@@ -92,7 +92,6 @@ void glgrib_field_vector::setupVertexAttributes ()
   bindHeight <unsigned char> (3);
   glVertexAttribDivisor (3, 1);  
 
-  geometry->bindTriangles ();
   glBindVertexArray (0); 
 
 }
@@ -171,7 +170,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 
 // Display vectors
 
-  if (! opts.vector.hide_arrow.on)
+  if (opts.vector.arrow.on)
     {
       program = glgrib_program::load (glgrib_program::GRADIENT_FLAT_SCALE_VECTOR);
       program->use ();
@@ -190,10 +189,30 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       float color0[3] = {opts.vector.color.r/255.0f, opts.vector.color.g/255.0f, opts.vector.color.b/255.0f};
       program->set3fv ("color0", color0);
       program->set1f ("vscale", d.vscale);
-      program->set1f ("head", opts.vector.head_size);
+      program->set1f ("head", opts.vector.arrow.head_size);
+
+      int kind = std::min (2, std::max (opts.vector.arrow.kind, 0));
+      program->set1i ("arrow_kind", kind);
+
 
       glBindVertexArray (VertexArrayIDvector);
-      glDrawArraysInstanced (GL_LINE_STRIP, 0, 5, numberOfPoints); 
+      if (opts.vector.arrow.fill.on)
+        {
+          std::vector<unsigned int> inds[3] =
+          {
+            {0, 0, 0},
+            {2, 1, 6, 2, 3, 4},
+            {0, 2, 1},
+	  };
+          glDrawElementsInstanced (GL_TRIANGLES, inds[kind].size (), 
+                                   GL_UNSIGNED_INT, &inds[kind][0], 
+                                   numberOfPoints);
+        }
+      else
+        {
+          int np[3] = {5, 8, 8}; // Number of points for each arrow kind
+          glDrawArraysInstanced (GL_LINE_STRIP, 0, np[kind], numberOfPoints); 
+        }
       glBindVertexArray (0);
 
       view.delMVP (program);
@@ -201,7 +220,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 
 // Display vector norm
 
-  if (! opts.vector.hide_norm.on)
+  if (opts.vector.norm.on)
     {
       program = glgrib_program::load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
       program->use ();

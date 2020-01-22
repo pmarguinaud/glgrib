@@ -20,8 +20,8 @@ public:
   virtual ~glgrib_field_vector ();
   void setupVertexAttributes ();
   void reSample (const glgrib_view &);
-  void toggleShowVector () { opts.vector.hide_arrow.on = ! opts.vector.hide_arrow.on; }
-  void toggleShowNorm () { opts.vector.hide_norm.on = ! opts.vector.hide_norm.on; }
+  void toggleShowVector () { opts.vector.arrow.on = ! opts.vector.arrow.on; }
+  void toggleShowNorm () { opts.vector.norm.on = ! opts.vector.norm.on; }
   virtual void resize (const glgrib_view &);
   virtual float getNormedMinValue () const
   {

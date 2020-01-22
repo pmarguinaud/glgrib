@@ -27,6 +27,7 @@ public:
     CONTOUR=1,
     VECTOR=2,
     STREAM=3,
+    ISOFILL=4,
   } kind;
 
   virtual kind getKind () const = 0;

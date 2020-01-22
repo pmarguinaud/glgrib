@@ -266,6 +266,8 @@ glgrib_field * glgrib_field::create (const glgrib_options_field & opts, float sl
     fld = new glgrib_field_contour ();
   else if (type == "SCALAR")
     fld = new glgrib_field_scalar ();
+  else if (type == "ISOFILL")
+    fld = new glgrib_field_isofill ();
   else
     throw std::runtime_error (std::string ("Unknown field type : ") + type);
 

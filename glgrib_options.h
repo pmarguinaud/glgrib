@@ -440,6 +440,18 @@ public:
   std::vector<float> lengths;
 };
 
+class glgrib_options_isofill : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (number,        Number of levels);
+    DESC (levels,        List of levels);
+  }
+  int number = 10;
+  std::vector<float> levels;
+};
+
 class glgrib_options_stream : public glgrib_options_base
 {
 public:
@@ -621,6 +633,7 @@ public:
     INCLUDE (scalar);
     INCLUDE (vector);
     INCLUDE (contour);
+    INCLUDE (isofill);
     INCLUDE (stream);
     INCLUDE (geometry);
     INCLUDE_H (mpiview);
@@ -653,6 +666,7 @@ public:
   glgrib_options_scalar scalar;
   glgrib_options_vector vector;
   glgrib_options_contour contour;
+  glgrib_options_isofill isofill;
   glgrib_options_stream stream;
   bool parse_unseen (const char *);
   glgrib_options_geometry geometry;

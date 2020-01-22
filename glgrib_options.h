@@ -459,7 +459,7 @@ public:
   {
     DESC (arrow.on,        Show arrows);                
     DESC (norm.on,         Show norm field);            
-    DESC (color,           Color for arrows);
+    DESC (arrow.color,     Color for arrows);
     DESC (density,         Vector density);
     DESC (scale,           Vector scale);
     DESC (arrow.head_size, Vector head size);
@@ -475,12 +475,12 @@ public:
     {
       bool on = false;
     } fill;
+    glgrib_option_color color;
   } arrow;
   struct
   {
     bool on = true;
   } norm;
-  glgrib_option_color color;
   float density = 50.0f;
   float scale = 1.0f;
 };

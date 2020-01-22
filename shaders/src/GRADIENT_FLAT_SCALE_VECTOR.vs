@@ -7,6 +7,8 @@ layout(location = 2) in float vertexVal_d;
 layout(location = 3) in float vertexHeight;
 
 out float alpha;
+out float fragmentVal;
+out vec3 fragmentPos;
 
 
 uniform float valmin_n, valmax_n;
@@ -17,13 +19,6 @@ uniform mat4 MVP;
 #include "projection.h"
 #include "scale.h"
 #include "unpack.h"
-
-vec3 vprod (vec3 u, vec3 v)
-{
-  return vec3 (u.y * v.z - u.z * v.y, 
-               u.z * v.x - u.x * v.z, 
-               u.x * v.y - u.y * v.x);
-}
 
 const float deg2rad = pi / 180.0;
 
@@ -75,7 +70,10 @@ void main ()
   vec3 vertexPos = posFromLonLat (vertexLonLat);
 
   vec3 u = normalize (vec3 (-vertexPos.y, +vertexPos.x, 0.));
-  vec3 v = vprod (vertexPos, u);
+  vec3 v = cross (vertexPos, u);
+
+  fragmentVal = vertexVal_n;
+  fragmentPos = vertexPos;
 
   bool defined = vertexVal_d != 0;
   vec3 pos;
@@ -94,7 +92,7 @@ void main ()
   alpha = 1.;
   if (defined)
     {
-      float N = unpack (vertexVal_d, valmin_n, valmax_n);
+      float N = unpack (vertexVal_n, valmin_n, valmax_n);
       float D = unpack (vertexVal_d, valmin_d, valmax_d);
       D = D * deg2rad;
       float X = vscale * N * cos (D) / valmax_n;

@@ -176,18 +176,23 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       program->use ();
       view.setMVP (program);
       program->setLight (light);
+      palette.setRGBA255 (program->programID);
 
       program->set3fv ("scale0", scale0);
+      program->set1f ("palmin", palette.getMin ());
+      program->set1f ("palmax", palette.getMax ());
       program->set1f ("valmin_n", valmin[0]);
       program->set1f ("valmax_n", valmax[0]);
       program->set1f ("valmin_d", valmin[1]);
       program->set1f ("valmax_d", valmax[1]);
       program->set1f ("valmin", valmin[0]);
       program->set1f ("valmax", valmax[0]);
+
       program->set1f ("height_scale", opts.geometry.height.scale);
 
-      float color0[3] = {opts.vector.color.r/255.0f, opts.vector.color.g/255.0f, opts.vector.color.b/255.0f};
-      program->set3fv ("color0", color0);
+      float color0[4] = {opts.vector.arrow.color.r/255.0f, opts.vector.arrow.color.g/255.0f, 
+	                 opts.vector.arrow.color.b/255.0f, opts.vector.arrow.color.a/255.0f};
+      program->set4fv ("color0", color0);
       program->set1f ("vscale", d.vscale);
       program->set1f ("head", opts.vector.arrow.head_size);
 
@@ -226,8 +231,6 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       program->use ();
       view.setMVP (program);
       program->setLight (light);
-
-
       palette.setRGBA255 (program->programID);
 
       for (int i = 0; i < 3; i++)

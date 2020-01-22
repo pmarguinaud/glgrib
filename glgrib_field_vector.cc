@@ -203,6 +203,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       glBindVertexArray (VertexArrayIDvector);
       if (opts.vector.arrow.fill.on)
         {
+          // Shapes of arrows
           std::vector<unsigned int> inds[3] =
           {
             {0, 0, 0},

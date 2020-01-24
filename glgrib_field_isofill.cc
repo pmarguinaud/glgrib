@@ -105,55 +105,7 @@ void glgrib_field_isofill::processTriangle2 (const float v[3], const glm::vec3 x
   ctx.v = v;
 
 
-  auto push_lonlat = [] (isoband_t & isoband, const glm::vec2 & lonlat)
-  {
-    isoband.lonlat2.push_back (lonlat.x);
-    isoband.lonlat2.push_back (lonlat.y);
-  };
-
-  auto new_quad = [push_lonlat] (isoband_t & ib, 
-		      const glm::vec2 & lonlat1, 
-		      const glm::vec2 & lonlat2, 
-		      const glm::vec2 & lonlat3, 
-		      const glm::vec2 & lonlat4,
-		      bool direct)
-  {
-    int ind0 = ib.lonlat2.size () / 2;
-
-    push_lonlat (ib, lonlat1);
-    push_lonlat (ib, lonlat2);
-    push_lonlat (ib, lonlat3);
-    push_lonlat (ib, lonlat4);
-    
-    int ord[6] = {0, 1, 2, 0, 2, 3};
-
-    if (! direct)
-      {
-        std::swap (ord[0], ord[1]);
-        std::swap (ord[3], ord[4]);
-      }
-
-    for (int i = 0; i < 6; i++)
-      ib.ind2.push_back (ind0+ord[i]);
-  };
-
-  auto new_tri = [push_lonlat] (isoband_t & ib, 
-		    const glm::vec2 & lonlat1, 
-		    const glm::vec2 & lonlat2, 
-		    const glm::vec2 & lonlat3)
-  {
-    int ind0 = ib.lonlat2.size () / 2;
-
-    push_lonlat (ib, lonlat1);
-    push_lonlat (ib, lonlat2);
-    push_lonlat (ib, lonlat3);
-
-    ib.ind2.push_back (ind0+0);
-    ib.ind2.push_back (ind0+1);
-    ib.ind2.push_back (ind0+2);
-  };
-
-  auto new_penta = [push_lonlat] (isoband_t & ib,
+  auto new_penta = [] (isoband_t & ib,
 		    const glm::vec2 & lonlat1, 
 		    const glm::vec2 & lonlat2, 
 		    const glm::vec2 & lonlat3,
@@ -162,11 +114,11 @@ void glgrib_field_isofill::processTriangle2 (const float v[3], const glm::vec3 x
   {
     int ind0 = ib.lonlat2.size () / 2;
 
-    push_lonlat (ib, lonlat1);
-    push_lonlat (ib, lonlat2);
-    push_lonlat (ib, lonlat3);
-    push_lonlat (ib, lonlat4);
-    push_lonlat (ib, lonlat5);
+    ib.push_lonlat (lonlat1);
+    ib.push_lonlat (lonlat2);
+    ib.push_lonlat (lonlat3);
+    ib.push_lonlat (lonlat4);
+    ib.push_lonlat (lonlat5);
 
     ib.ind2.push_back (ind0+0);
     ib.ind2.push_back (ind0+1);
@@ -181,22 +133,22 @@ void glgrib_field_isofill::processTriangle2 (const float v[3], const glm::vec3 x
     ib.ind2.push_back (ind0+4);
   };
 
-  auto close = [new_tri,new_quad,&ctx] (isoband_t & ib)
+  auto close = [&ctx] (isoband_t & ib)
   {
     int i = std::max_element (ctx.v, ctx.v + 3) - ctx.v;
     int j = (i + 1) % 3;
     int k = (j + 1) % 3;
     if (ctx.I == i)
       {
-        new_tri (ib, ctx.lonlat[i], ctx.lonlat_J, ctx.lonlat_K);
+        ib.new_tri (ctx.lonlat[i], ctx.lonlat_J, ctx.lonlat_K);
       }
     else if (ctx.I == j)
       {
-        new_quad (ib, ctx.lonlat[i], ctx.lonlat_K, ctx.lonlat_J, ctx.lonlat[k], true);
+        ib.new_quad (ctx.lonlat[i], ctx.lonlat_K, ctx.lonlat_J, ctx.lonlat[k], true);
       }
     else if (ctx.I == k)
       {
-        new_quad (ib, ctx.lonlat_K, ctx.lonlat_J, ctx.lonlat[i], ctx.lonlat[j], true);
+        ib.new_quad (ctx.lonlat_K, ctx.lonlat_J, ctx.lonlat[i], ctx.lonlat[j], true);
       }
   };
 
@@ -236,13 +188,9 @@ void glgrib_field_isofill::processTriangle2 (const float v[3], const glm::vec3 x
 	      if (ctx.I == -1)
                 {
                   if (b[i])
-                    {
-                      new_quad (ib, lonlat_j, ctx.lonlat[j], ctx.lonlat[k], lonlat_k, b[i]);
-                    }
+                    ib.new_quad (lonlat_j, ctx.lonlat[j], ctx.lonlat[k], lonlat_k, b[i]);
                   else
-                   {
-                     new_tri (ib, ctx.lonlat[i], lonlat_j, lonlat_k);
-                   }
+                    ib.new_tri (ctx.lonlat[i], lonlat_j, lonlat_k);
 
 		  ctx.I = i;
 		  ctx.lonlat_J = lonlat_j;
@@ -251,17 +199,11 @@ void glgrib_field_isofill::processTriangle2 (const float v[3], const glm::vec3 x
 	      else
                 {
                   if (i == ctx.I)
-                    {
-                      new_quad (ib, lonlat_j, ctx.lonlat_J, ctx.lonlat_K, lonlat_k, b[i]);
-		    }
+                    ib.new_quad (lonlat_j, ctx.lonlat_J, ctx.lonlat_K, lonlat_k, b[i]);
 		  else if (j == ctx.I)
-                    {
-		      new_penta (ib, ctx.lonlat[k], lonlat_k, lonlat_j, ctx.lonlat_K, ctx.lonlat_J);
-		    }
+		    new_penta (ib, ctx.lonlat[k], lonlat_k, lonlat_j, ctx.lonlat_K, ctx.lonlat_J);
 		  else if (k == ctx.I)
-                    {
-		      new_penta (ib, lonlat_j, ctx.lonlat[j], ctx.lonlat_K, ctx.lonlat_J, lonlat_k);
-		    }
+		    new_penta (ib, lonlat_j, ctx.lonlat[j], ctx.lonlat_K, ctx.lonlat_J, lonlat_k);
 
 		  ctx.I = i;
 		  ctx.lonlat_J = lonlat_j;

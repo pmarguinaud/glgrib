@@ -57,6 +57,46 @@ private:
       lonlat2.push_back (lonlat.x);
       lonlat2.push_back (lonlat.y);
     };
+    void new_quad (const glm::vec2 & lonlata, 
+          	   const glm::vec2 & lonlatb, 
+          	   const glm::vec2 & lonlatc, 
+          	   const glm::vec2 & lonlatd,
+          	   bool direct)
+    {
+      int ind0 = lonlat2.size () / 2;
+
+      push_lonlat (lonlata);
+      push_lonlat (lonlatb);
+      push_lonlat (lonlatc);
+      push_lonlat (lonlatd);
+      
+      int ord[6] = {0, 1, 2, 0, 2, 3};
+
+      if (! direct)
+        {
+          std::swap (ord[0], ord[1]);
+          std::swap (ord[3], ord[4]);
+        }
+
+      for (int i = 0; i < 6; i++)
+        ind2.push_back (ind0+ord[i]);
+    };
+    void new_tri (const glm::vec2 & lonlata, 
+          	  const glm::vec2 & lonlatb, 
+          	  const glm::vec2 & lonlatc)
+    {
+      int ind0 = lonlat2.size () / 2;
+
+      push_lonlat (lonlata);
+      push_lonlat (lonlatb);
+      push_lonlat (lonlatc);
+
+      ind2.push_back (ind0+0);
+      ind2.push_back (ind0+1);
+      ind2.push_back (ind0+2);
+    };
+
+
 
   };
   struct

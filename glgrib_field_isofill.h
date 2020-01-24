@@ -96,6 +96,33 @@ private:
       ind2.push_back (ind0+2);
     };
 
+    void new_penta (const glm::vec2 & lonlata, 
+          	    const glm::vec2 & lonlatb, 
+          	    const glm::vec2 & lonlatc,
+          	    const glm::vec2 & lonlatd,
+          	    const glm::vec2 & lonlate)
+    {
+      int ind0 = lonlat2.size () / 2;
+
+      push_lonlat (lonlata);
+      push_lonlat (lonlatb);
+      push_lonlat (lonlatc);
+      push_lonlat (lonlatd);
+      push_lonlat (lonlate);
+
+      ind2.push_back (ind0+0);
+      ind2.push_back (ind0+1);
+      ind2.push_back (ind0+2);
+
+      ind2.push_back (ind0+0);
+      ind2.push_back (ind0+2);
+      ind2.push_back (ind0+3);
+
+      ind2.push_back (ind0+0);
+      ind2.push_back (ind0+3);
+      ind2.push_back (ind0+4);
+    };
+
 
 
   };

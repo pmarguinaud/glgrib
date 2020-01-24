@@ -368,12 +368,10 @@ void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_option
       glBindVertexArray (0);
 
 
-//    glDisable (GL_CULL_FACE);
       glBindVertexArray (d.isoband[i].VertexArrayID2);
       program->set4fv ("color0", color0);
       glDrawElements (GL_TRIANGLES, d.isoband[i].size2, GL_UNSIGNED_INT, NULL);
       glBindVertexArray (0);
-//    glEnable (GL_CULL_FACE);
     }
 
 

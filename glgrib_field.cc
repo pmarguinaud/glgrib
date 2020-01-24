@@ -5,6 +5,7 @@
 #include "glgrib_field_scalar.h"
 #include "glgrib_field_vector.h"
 #include "glgrib_field_contour.h"
+#include "glgrib_field_isofill.h"
 #include "glgrib_field_stream.h"
 #include "glgrib_resolve.h"
 #include "glgrib_sqlite.h"

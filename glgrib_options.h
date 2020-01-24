@@ -443,13 +443,19 @@ public:
 class glgrib_options_isofill : public glgrib_options_base
 {
 public:
+  static float defaultMin;
+  static float defaultMax;
   DEFINE
   {
     DESC (number,        Number of levels);
     DESC (levels,        List of levels);
+    DESC (min,           Min level);
+    DESC (max,           Max level);
   }
   int number = 10;
   std::vector<float> levels;
+  float min = defaultMin;
+  float max = defaultMax;
 };
 
 class glgrib_options_stream : public glgrib_options_base

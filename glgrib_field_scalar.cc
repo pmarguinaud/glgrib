@@ -158,20 +158,6 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
     }
 }
 
-static
-glm::vec3 lonlat2xyz (const glm::vec2 & lonlat)
-{
-  float coslon = cos (lonlat.x), sinlon = sin (lonlat.x);
-  float coslat = cos (lonlat.y), sinlat = sin (lonlat.y);
-  return glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
-}
-
-static
-glm::vec2 xyz2lonlat (const glm::vec3 & xyz)
-{
-  return glm::vec2 (atan2 (xyz.y, xyz.x), asin (xyz.z));
-}
-
 template <typename T>
 void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field & o, float slot)
 {

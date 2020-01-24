@@ -18,21 +18,6 @@ float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2)
                glm::dot (xyz1, xyz2))));
 }
 
-static
-glm::vec3 lonlat2xyz (const glm::vec2 & lonlat)
-{
-  float coslon = cos (lonlat.x), sinlon = sin (lonlat.x);
-  float coslat = cos (lonlat.y), sinlat = sin (lonlat.y);
-  return glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
-}
-
-static
-glm::vec2 xyz2lonlat (const glm::vec3 & xyz)
-{
-  return glm::vec2 (atan2 (xyz.y, xyz.x), asin (xyz.z));
-}
-
-
 // Triangle edge
 class edge_t
 {

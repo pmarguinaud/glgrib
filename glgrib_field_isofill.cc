@@ -49,11 +49,13 @@ glgrib_field_isofill & glgrib_field_isofill::operator= (const glgrib_field_isofi
 void glgrib_field_isofill::clear ()
 {
   if (isReady ()) 
-    for (int i = 0; i < d.isoband.size (); i++)
-      {
-        glDeleteVertexArrays (1, &d.isoband[i].VertexArrayID1);
-        glDeleteVertexArrays (1, &d.isoband[i].VertexArrayID2);
-      }
+    {
+      glDeleteVertexArrays (1, &d.VertexArrayID1);
+      for (int i = 0; i < d.isoband.size (); i++)
+        {
+          glDeleteVertexArrays (1, &d.isoband[i].VertexArrayID2);
+        }
+    }
   glgrib_field::clear ();
 }
 
@@ -62,23 +64,28 @@ void glgrib_field_isofill::setupVertexAttributes ()
   numberOfPoints = geometry->getNumberOfPoints ();
   numberOfTriangles = geometry->getNumberOfTriangles ();
 
+  // Triangles from original geometry
+  glGenVertexArrays (1, &d.VertexArrayID1);
+  glBindVertexArray (d.VertexArrayID1);
+
+  // Elements
+  geometry->bindTriangles ();
+
+  // Coordinates
+  geometry->bindCoordinates (0);
+  glEnableVertexAttribArray (0);
+  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+
+  d.colorbuffer->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (1);
+
+  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_FALSE, 0,  NULL);
+
+  glBindVertexArray (0); 
+
   for (int i = 0; i < d.isoband.size (); i++)
     {
       // New triangles
-      glGenVertexArrays (1, &d.isoband[i].VertexArrayID1);
-      glBindVertexArray (d.isoband[i].VertexArrayID1);
-
-      // Elements
-      d.isoband[i].elementbuffer1->bind (GL_ELEMENT_ARRAY_BUFFER);
-
-      // Coordinates
-      geometry->bindCoordinates (0);
-      glEnableVertexAttribArray (0);
-      glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-
-      glBindVertexArray (0); 
-
-      // Triangles from original geometry
       glGenVertexArrays (1, &d.isoband[i].VertexArrayID2);
       glBindVertexArray (d.isoband[i].VertexArrayID2);
   
@@ -195,35 +202,27 @@ void glgrib_field_isofill::processTriangle1 (const float * val, int it, const st
 {
   int jglo[3];
   
+  
   geometry->getTriangleVertices (it, jglo);
 
   float v[3] = {val[jglo[0]], val[jglo[1]], val[jglo[2]]};
 
-  if ((v[0] <= levels.front ()) && (v[1] <= levels.front ()) && (v[2] <= levels.front ()))
+  if (it == 37554)
     {
-      d.isoband.front ().ind1.push_back (jglo[0]);
-      d.isoband.front ().ind1.push_back (jglo[1]);
-      d.isoband.front ().ind1.push_back (jglo[2]);
-      return;
+    printf (" j = %20d %20d %20d\n", jglo[0], jglo[1], jglo[2]);
+    printf (" v = %20.10f %20.10f %20.10f\n", v[0], v[1], v[2]);
     }
 
+  if ((v[0] <= levels.front ()) && (v[1] <= levels.front ()) && (v[2] <= levels.front ()))
+    return;
+
   if ((v[0] >= levels.back  ()) && (v[1] >= levels.back  ()) && (v[2] >= levels.back  ()))
-    {
-      d.isoband.back ().ind1.push_back (jglo[0]);
-      d.isoband.back ().ind1.push_back (jglo[1]);
-      d.isoband.back ().ind1.push_back (jglo[2]);
-      return;
-    }
+    return;
 
   for (int i = 0; i < levels.size ()-1; i++)
     if (((v[0] >= levels[i+0]) && (v[1] >= levels[i+0]) && (v[2] >= levels[i+0]))
      && ((v[0] <= levels[i+1]) && (v[1] <= levels[i+1]) && (v[2] <= levels[i+1])))
-      {
-        d.isoband[i+1].ind1.push_back (jglo[0]);
-        d.isoband[i+1].ind1.push_back (jglo[1]);
-        d.isoband[i+1].ind1.push_back (jglo[2]);
-        return;
-      }
+      return;
 
   glm::vec3 xyz[3];
 
@@ -276,17 +275,6 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
 
   d.isoband.resize (levels.size () + 1);
 
-  float * val = data->data ();
-
-  int nt = geometry->getNumberOfTriangles ();
-  std::cout << " nt = " << nt << std::endl;
-
-  for (int it = 0; it < nt; it++)
-    processTriangle1 (val, it, levels);
-
-  val = NULL;
-
-  int count = 0;
   for (int i = 0; i < d.isoband.size (); i++)
     {
       float v;
@@ -297,23 +285,48 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
       else
         v = (levels[i-1] + levels[i+0]) / 2.0f;
 
-      d.isoband[i].color = palette.getColor (v);
+      d.isoband[i].color       = palette.getColor      (v);
+      d.isoband[i].color_index = palette.getColorIndex (v);
+    }
 
-      d.isoband[i].elementbuffer1 = new_glgrib_opengl_buffer_ptr 
-                                    (d.isoband[i].ind1.size () * sizeof (unsigned int), 
-                                     d.isoband[i].ind1.data ());
 
-      d.isoband[i].size1 = d.isoband[i].ind1.size ();
+  float * val = data->data ();
 
-      printf (" %12.2f | %8d | %8d | #%2.2x%2.2x%2.2x%2.2x\n", 
-              v, i, d.isoband[i].ind1.size () / 3, 
-              d.isoband[i].color.r, d.isoband[i].color.g,
-              d.isoband[i].color.b, d.isoband[i].color.a);
+  int nt = geometry->getNumberOfTriangles ();
+  std::cout << " nt = " << nt << std::endl;
 
-      count += d.isoband[i].ind1.size () / 3;
+  for (int it = 0; it < nt; it++)
+    processTriangle1 (val, it, levels);
 
-      d.isoband[i].ind1.clear ();
 
+  {
+    unsigned char * color = new unsigned char[size];
+
+    for (int i = 0; i < size; i++)
+      {
+        float v = val[i];
+        if (v <= levels.front ())
+          color[i] = d.isoband.front ().color_index;
+        else if (v >= levels.back ())
+          color[i] = d.isoband.back  ().color_index;
+        else
+          for (int j = 0; j < levels.size ()-1; j++)
+            if ((levels[j] <= v) && (v <= levels[j+1]))
+              {
+                color[i] = d.isoband[j+1].color_index;
+                break;
+              }
+      }
+
+    d.colorbuffer  = new_glgrib_opengl_buffer_ptr (size * sizeof (unsigned char), color);
+    
+    delete [] color;
+  }
+
+  val = NULL;
+
+  for (int i = 0; i < d.isoband.size (); i++)
+    {
       d.isoband[i].elementbuffer2 = new_glgrib_opengl_buffer_ptr 
                                     (d.isoband[i].ind2.size () * sizeof (unsigned int), 
                                      d.isoband[i].ind2.data ());
@@ -325,8 +338,6 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
       d.isoband[i].size2 = d.isoband[i].ind2.size ();
 
     }
-
-  printf (" count = %d\n", count);
 
   setupVertexAttributes ();
 
@@ -345,14 +356,27 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
 
 void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  glgrib_program * program = glgrib_program::load (glgrib_program::ISOFILL);
-  program->use ();
+
   float scale0[3] = {opts.scale, opts.scale, opts.scale};
   const glgrib_palette & p = palette;
 
-  view.setMVP (program);
-  program->set3fv ("scale0", scale0);
-  program->set1f ("height_scale", opts.geometry.height.scale);
+  glgrib_program * program1 = glgrib_program::load (glgrib_program::ISOFILL1);
+  program1->use ();
+
+  view.setMVP (program1);
+  program1->set3fv ("scale0", scale0);
+  palette.setRGBA255 (program1->programID);
+
+  glBindVertexArray (d.VertexArrayID1);
+  geometry->renderTriangles ();
+  glBindVertexArray (0);
+  view.delMVP (program1);
+
+  glgrib_program * program2 = glgrib_program::load (glgrib_program::ISOFILL2);
+  program2->use ();
+
+  view.setMVP (program2);
+  program2->set3fv ("scale0", scale0);
 
   for (int i = 0; i < d.isoband.size (); i++)
     {
@@ -362,20 +386,14 @@ void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_option
                          d.isoband[i].color.a/255.0f};
 
 
-      glBindVertexArray (d.isoband[i].VertexArrayID1);
-      program->set4fv ("color0", color0);
-      glDrawElements (GL_TRIANGLES, d.isoband[i].size1, GL_UNSIGNED_INT, NULL);
-      glBindVertexArray (0);
-
-
       glBindVertexArray (d.isoband[i].VertexArrayID2);
-      program->set4fv ("color0", color0);
+      program2->set4fv ("color0", color0);
       glDrawElements (GL_TRIANGLES, d.isoband[i].size2, GL_UNSIGNED_INT, NULL);
       glBindVertexArray (0);
     }
 
 
-  view.delMVP (program);
+  view.delMVP (program2);
 
 }
 

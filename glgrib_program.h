@@ -28,7 +28,8 @@ public:
     SCALAR_POINTS,
     FRAME,
     LAND,
-    ISOFILL,
+    ISOFILL1,
+    ISOFILL2,
     TEST,
   } kind;
 

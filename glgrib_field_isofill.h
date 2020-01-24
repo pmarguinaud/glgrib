@@ -25,6 +25,7 @@ public:
     return (int)opts.path.size ();
   }
 private:
+
   void processTriangle1 (const float *, int, const std::vector<float> &);
   void processTriangle2 (const float [3], const glm::vec3 [3], const std::vector<float> &);
 
@@ -40,11 +41,7 @@ private:
   {
   public:
     glgrib_option_color color;
-
-    int size1;
-    GLuint VertexArrayID1 = 0;
-    glgrib_opengl_buffer_ptr elementbuffer1;
-    std::vector<unsigned int> ind1;
+    int color_index;
 
     int size2;
     GLuint VertexArrayID2 = 0;
@@ -124,6 +121,9 @@ private:
   };
   struct
   {
+    GLuint VertexArrayID1 = 0;
+    glgrib_opengl_buffer_ptr colorbuffer;
+
     std::vector<isoband_t> isoband;
   } d;
 };

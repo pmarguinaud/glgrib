@@ -112,15 +112,15 @@ void glgrib_field_isofill::processTriangle2 (const float v[3], const glm::vec3 x
     int k = (j + 1) % 3;
     if (ctx.I == i)
       {
-        ib.new_tri (ctx.lonlat[i], ctx.lonlat_J, ctx.lonlat_K);
+        ib.tri (ctx.lonlat[i], ctx.lonlat_J, ctx.lonlat_K);
       }
     else if (ctx.I == j)
       {
-        ib.new_quad (ctx.lonlat[i], ctx.lonlat_K, ctx.lonlat_J, ctx.lonlat[k], true);
+        ib.quad (ctx.lonlat[i], ctx.lonlat_K, ctx.lonlat_J, ctx.lonlat[k], true);
       }
     else if (ctx.I == k)
       {
-        ib.new_quad (ctx.lonlat_K, ctx.lonlat_J, ctx.lonlat[i], ctx.lonlat[j], true);
+        ib.quad (ctx.lonlat_K, ctx.lonlat_J, ctx.lonlat[i], ctx.lonlat[j], true);
       }
   };
 
@@ -160,9 +160,9 @@ void glgrib_field_isofill::processTriangle2 (const float v[3], const glm::vec3 x
 	      if (ctx.I == -1)
                 {
                   if (b[i])
-                    ib.new_quad (lonlat_j, ctx.lonlat[j], ctx.lonlat[k], lonlat_k, b[i]);
+                    ib.quad (lonlat_j, ctx.lonlat[j], ctx.lonlat[k], lonlat_k, b[i]);
                   else
-                    ib.new_tri (ctx.lonlat[i], lonlat_j, lonlat_k);
+                    ib.tri (ctx.lonlat[i], lonlat_j, lonlat_k);
 
 		  ctx.I = i;
 		  ctx.lonlat_J = lonlat_j;
@@ -171,11 +171,11 @@ void glgrib_field_isofill::processTriangle2 (const float v[3], const glm::vec3 x
 	      else
                 {
                   if (i == ctx.I)
-                    ib.new_quad (lonlat_j, ctx.lonlat_J, ctx.lonlat_K, lonlat_k, b[i]);
+                    ib.quad (lonlat_j, ctx.lonlat_J, ctx.lonlat_K, lonlat_k, b[i]);
 		  else if (j == ctx.I)
-		    ib.new_penta (ctx.lonlat[k], lonlat_k, lonlat_j, ctx.lonlat_K, ctx.lonlat_J);
+		    ib.penta (ctx.lonlat[k], lonlat_k, lonlat_j, ctx.lonlat_K, ctx.lonlat_J);
 		  else if (k == ctx.I)
-		    ib.new_penta (lonlat_j, ctx.lonlat[j], ctx.lonlat_K, ctx.lonlat_J, lonlat_k);
+		    ib.penta (lonlat_j, ctx.lonlat[j], ctx.lonlat_K, ctx.lonlat_J, lonlat_k);
 
 		  ctx.I = i;
 		  ctx.lonlat_J = lonlat_j;

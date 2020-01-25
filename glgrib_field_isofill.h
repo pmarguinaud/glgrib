@@ -58,16 +58,33 @@ private:
       lonlat2.push_back (lonlat.y);
     }
 
+    template <typename T, typename... Args>
+    void push_lonlat (const T & lonlat, Args... args)
+    {
+      push_lonlat (lonlat);
+      push_lonlat (args...);
+    }
+
+    void push_indice (int ind)
+    {
+      ind2.push_back (ind);
+    }
+
+    template <typename T, typename... Args>
+    void push_indice (T ind, Args... args)
+    {
+      push_indice (ind);
+      push_indice (args...);
+    }
+
     void quad (const glm::vec2 & lonlata, const glm::vec2 & lonlatb, 
                const glm::vec2 & lonlatc, const glm::vec2 & lonlatd,
                bool direct)
     {
       int ind0 = lonlat2.size () / 2;
 
-      push_lonlat (lonlata);
-      push_lonlat (lonlatb);
-      push_lonlat (lonlatc);
-      push_lonlat (lonlatd);
+      push_lonlat (lonlata, lonlatb, 
+                   lonlatc, lonlatd);
       
       int ord[6] = {0, 1, 2, 0, 2, 3};
 
@@ -77,8 +94,10 @@ private:
           std::swap (ord[3], ord[4]);
         }
 
-      for (int i = 0; i < 6; i++)
-        ind2.push_back (ind0+ord[i]);
+      push_indice (ind0+ord[0], ind0+ord[1], 
+                   ind0+ord[2], ind0+ord[3], 
+                   ind0+ord[4], ind0+ord[5]);
+
     }
 
     void tri (const glm::vec2 & lonlata, 
@@ -87,13 +106,8 @@ private:
     {
       int ind0 = lonlat2.size () / 2;
 
-      push_lonlat (lonlata);
-      push_lonlat (lonlatb);
-      push_lonlat (lonlatc);
-
-      ind2.push_back (ind0+0);
-      ind2.push_back (ind0+1);
-      ind2.push_back (ind0+2);
+      push_lonlat (lonlata, lonlatb, lonlatc);
+      push_indice (ind0+0, ind0+1, ind0+2);
     }
 
     void penta (const glm::vec2 & lonlata, const glm::vec2 & lonlatb, 
@@ -102,23 +116,12 @@ private:
     {
       int ind0 = lonlat2.size () / 2;
 
-      push_lonlat (lonlata);
-      push_lonlat (lonlatb);
-      push_lonlat (lonlatc);
-      push_lonlat (lonlatd);
-      push_lonlat (lonlate);
+      push_lonlat (lonlata, lonlatb, lonlatc,
+                   lonlatd, lonlate);
 
-      ind2.push_back (ind0+0);
-      ind2.push_back (ind0+1);
-      ind2.push_back (ind0+2);
-
-      ind2.push_back (ind0+0);
-      ind2.push_back (ind0+2);
-      ind2.push_back (ind0+3);
-
-      ind2.push_back (ind0+0);
-      ind2.push_back (ind0+3);
-      ind2.push_back (ind0+4);
+      push_indice (ind0+0, ind0+1, ind0+2,
+                   ind0+0, ind0+2, ind0+3,
+                   ind0+0, ind0+3, ind0+4);
     }
    
   private:

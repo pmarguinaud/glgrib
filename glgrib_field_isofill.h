@@ -2,6 +2,7 @@
 #define _GLGRIB_FIELD_ISOFILL_H
 
 #include "glgrib_field.h"
+#include <omp.h>
 
 class glgrib_field_isofill : public glgrib_field
 {
@@ -26,9 +27,6 @@ public:
   }
 private:
 
-  void processTriangle1 (const float *, int, const std::vector<float> &);
-  void processTriangle2 (const float [3], const glm::vec3 [3], const std::vector<float> &, bool);
-
   class processTriangle2_ctx_t
   {
   public:
@@ -37,23 +35,29 @@ private:
     glm::vec2 lonlat[3];
     const float * v = NULL;
   };
-  class isoband_t
+
+  class isoband_maker_t
   {
   public:
-    glgrib_option_color color;
-    int color_index;
+    isoband_maker_t () 
+    {
+      omp_init_lock (&lock);
+    }
+    ~isoband_maker_t ()
+    {
+      omp_destroy_lock (&lock);
+    }
 
-    int size2;
-    GLuint VertexArrayID2 = 0;
-    glgrib_opengl_buffer_ptr vertexbuffer2, elementbuffer2;
     std::vector<unsigned int> ind2;
     std::vector<float> lonlat2;
+    int color_index;
 
     void push_lonlat (const glm::vec2 & lonlat)
     {
       lonlat2.push_back (lonlat.x);
       lonlat2.push_back (lonlat.y);
-    };
+    }
+
     void quad (const glm::vec2 & lonlata, const glm::vec2 & lonlatb, 
                const glm::vec2 & lonlatc, const glm::vec2 & lonlatd,
                bool direct)
@@ -75,7 +79,8 @@ private:
 
       for (int i = 0; i < 6; i++)
         ind2.push_back (ind0+ord[i]);
-    };
+    }
+
     void tri (const glm::vec2 & lonlata, 
               const glm::vec2 & lonlatb, 
               const glm::vec2 & lonlatc)
@@ -89,7 +94,7 @@ private:
       ind2.push_back (ind0+0);
       ind2.push_back (ind0+1);
       ind2.push_back (ind0+2);
-    };
+    }
 
     void penta (const glm::vec2 & lonlata, const glm::vec2 & lonlatb, 
           	const glm::vec2 & lonlatc, const glm::vec2 & lonlatd,
@@ -114,11 +119,21 @@ private:
       ind2.push_back (ind0+0);
       ind2.push_back (ind0+3);
       ind2.push_back (ind0+4);
-    };
-
-
-
+    }
+   
+  private:
+    omp_lock_t lock;
   };
+
+  class isoband_t
+  {
+  public:
+    glgrib_option_color color;
+    GLuint VertexArrayID2 = 0;
+    glgrib_opengl_buffer_ptr vertexbuffer2, elementbuffer2;
+    int size2;
+  };
+
   struct
   {
     GLuint VertexArrayID1 = 0;
@@ -126,6 +141,12 @@ private:
 
     std::vector<isoband_t> isoband;
   } d;
+
+  void processTriangle1 (std::vector<isoband_maker_t> *, const float *, 
+                         int, const std::vector<float> &);
+  void processTriangle2 (std::vector<isoband_maker_t> *, const float [3], 
+                         const glm::vec3 [3], const std::vector<float> &, bool);
+
 };
 
 #endif

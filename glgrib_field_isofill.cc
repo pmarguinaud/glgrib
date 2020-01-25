@@ -101,7 +101,8 @@ void glgrib_field_isofill::setupVertexAttributes ()
 }
 
 
-void glgrib_field_isofill::processTriangle2 (const float v[3], const glm::vec3 xyz[3],
+void glgrib_field_isofill::processTriangle2 (std::vector<isoband_maker_t> * isomake, 
+                                             const float v[3], const glm::vec3 xyz[3],
                                              const std::vector<float> & levels, bool dbg)
 {
 
@@ -114,7 +115,7 @@ void glgrib_field_isofill::processTriangle2 (const float v[3], const glm::vec3 x
   ctx.v = v;
 
 
-  auto close = [&ctx] (isoband_t & ib)
+  auto close = [&ctx] (isoband_maker_t & ib)
   {
     int i = std::max_element (ctx.v, ctx.v + 3) - ctx.v;
     int j = (i + 1) % 3;
@@ -141,7 +142,7 @@ void glgrib_field_isofill::processTriangle2 (const float v[3], const glm::vec3 x
     {
       float lev = levels[ll];
 
-      isoband_t & ib = d.isoband[ll];
+      isoband_maker_t & ib = (*isomake)[ll];
 
       bool b[3];
       for (int i = 0; i < 3; i++)
@@ -202,13 +203,14 @@ if (dbg) printf ("close\n");
     }
 
 
-  close (d.isoband.back ());
+  close (isomake->back ());
 }
 
-void glgrib_field_isofill::processTriangle1 (const float * val, int it, const std::vector<float> & levels)
+void glgrib_field_isofill::processTriangle1 (std::vector<isoband_maker_t> * isomake, 
+                                             const float * val, int it, 
+                                             const std::vector<float> & levels)
 {
   int jglo[3];
-  
   
   geometry->getTriangleVertices (it, jglo);
 
@@ -253,7 +255,7 @@ void glgrib_field_isofill::processTriangle1 (const float * val, int it, const st
   {
 //printf (" jglo = %d, %d, %d\n", jglo[0], jglo[1], jglo[2]);
 //printf (" v    = %12.2f, %12.2f, %12.2f\n", v[0], v[1], v[2]);
-  processTriangle2 (v, xyz, levels, dbg);
+  processTriangle2 (isomake, v, xyz, levels, dbg);
   }
 
 
@@ -280,8 +282,10 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
 
   if (levels.size () == 0)
     {
-      float min = opts.isofill.min == glgrib_options_isofill::defaultMin ? meta1.valmin : opts.isofill.min;
-      float max = opts.isofill.max == glgrib_options_isofill::defaultMax ? meta1.valmax : opts.isofill.max;
+      float min = opts.isofill.min == glgrib_options_isofill::defaultMin 
+                ? meta1.valmin : opts.isofill.min;
+      float max = opts.isofill.max == glgrib_options_isofill::defaultMax 
+                ? meta1.valmax : opts.isofill.max;
       for (int i = 0; i < opts.isofill.number; i++)
         levels.push_back (min + (i + 1) * (max - min) / (opts.isofill.number + 1));
     }
@@ -290,6 +294,8 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
     printf (" %8d > %20.10f\n", i, levels[i]);
 
   d.isoband.resize (levels.size () + 1);
+ 
+  std::vector<isoband_maker_t> isomake (d.isoband.size ());
 
   for (int i = 0; i < d.isoband.size (); i++)
     {
@@ -301,8 +307,8 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
       else
         v = (levels[i-1] + levels[i+0]) / 2.0f;
 
-      d.isoband[i].color       = palette.getColor      (v);
-      d.isoband[i].color_index = palette.getColorIndex (v);
+      d.isoband[i].color     = palette.getColor      (v);
+      isomake[i].color_index = palette.getColorIndex (v);
     }
 
 
@@ -313,7 +319,7 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
 
 #pragma omp parallel for
   for (int it = 0; it < nt; it++)
-    processTriangle1 (val, it, levels);
+    processTriangle1 (&isomake, val, it, levels);
 
 
   {
@@ -324,14 +330,14 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
       {
         float v = val[i];
         if (v < levels.front ())
-          color[i] = d.isoband.front ().color_index;
+          color[i] = isomake.front ().color_index;
         else if (v > levels.back ())
-          color[i] = d.isoband.back  ().color_index;
+          color[i] = isomake.back  ().color_index;
         else
           for (int j = 0; j < levels.size ()-1; j++)
             if ((levels[j] < v) && (v < levels[j+1]))
               {
-                color[i] = d.isoband[j+1].color_index;
+                color[i] = isomake[j+1].color_index;
                 break;
               }
       }
@@ -346,14 +352,14 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
   for (int i = 0; i < d.isoband.size (); i++)
     {
       d.isoband[i].elementbuffer2 = new_glgrib_opengl_buffer_ptr 
-                                    (d.isoband[i].ind2.size () * sizeof (unsigned int), 
-                                     d.isoband[i].ind2.data ());
+                                    (isomake[i].ind2.size () * sizeof (unsigned int), 
+                                     isomake[i].ind2.data ());
 
       d.isoband[i].vertexbuffer2  = new_glgrib_opengl_buffer_ptr 
-                                    (d.isoband[i].lonlat2.size () * sizeof (float), 
-                                     d.isoband[i].lonlat2.data ());
+                                    (isomake[i].lonlat2.size () * sizeof (float), 
+                                     isomake[i].lonlat2.data ());
 
-      d.isoband[i].size2 = d.isoband[i].ind2.size ();
+      d.isoband[i].size2 = isomake[i].ind2.size ();
 
     }
 
@@ -370,6 +376,7 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
 
 
   setReady ();
+
 }
 
 void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_options_light & light) const

@@ -351,6 +351,9 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
 
   for (int i = 0; i < d.isoband.size (); i++)
     {
+
+//printf (" %8d > %8d\n", i, isomake[i].lonlat2.size ());
+
       d.isoband[i].elementbuffer2 = new_glgrib_opengl_buffer_ptr 
                                     (isomake[i].ind2.size () * sizeof (unsigned int), 
                                      isomake[i].ind2.data ());

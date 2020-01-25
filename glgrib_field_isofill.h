@@ -52,17 +52,26 @@ private:
     std::vector<float> lonlat2;
     int color_index;
 
-    void push_lonlat (const glm::vec2 & lonlat)
+    void _push_lonlat (int) {}
+    
+
+    template <typename T, typename... Args>
+    void _push_lonlat (int k, const T & lonlat, Args... args)
     {
-      lonlat2.push_back (lonlat.x);
-      lonlat2.push_back (lonlat.y);
+      lonlat2[k+0] = lonlat.x;
+      lonlat2[k+1] = lonlat.y;
+      _push_lonlat (k+2, args...);
     }
 
     template <typename T, typename... Args>
     void push_lonlat (const T & lonlat, Args... args)
     {
-      push_lonlat (lonlat);
-      push_lonlat (args...);
+      int m = lonlat2.size ();
+      int n = 1 + sizeof... (Args);
+      lonlat2.resize (m + 2 * n);
+      lonlat2[m+0] = lonlat.x;
+      lonlat2[m+1] = lonlat.y;
+      _push_lonlat (m + 2, args...);
     }
 
     void push_indice (int ind)

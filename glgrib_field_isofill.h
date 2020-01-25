@@ -27,7 +27,7 @@ public:
 private:
 
   void processTriangle1 (const float *, int, const std::vector<float> &);
-  void processTriangle2 (const float [3], const glm::vec3 [3], const std::vector<float> &);
+  void processTriangle2 (const float [3], const glm::vec3 [3], const std::vector<float> &, bool);
 
   class processTriangle2_ctx_t
   {

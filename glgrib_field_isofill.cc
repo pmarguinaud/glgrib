@@ -102,8 +102,10 @@ void glgrib_field_isofill::setupVertexAttributes ()
 
 
 void glgrib_field_isofill::processTriangle2 (const float v[3], const glm::vec3 xyz[3],
-                                             const std::vector<float> & levels)
+                                             const std::vector<float> & levels, bool dbg)
 {
+
+  if (dbg) std::cout << "processTriangle2" << std::endl;
 
   processTriangle2_ctx_t ctx;
 
@@ -117,7 +119,11 @@ void glgrib_field_isofill::processTriangle2 (const float v[3], const glm::vec3 x
     int i = std::max_element (ctx.v, ctx.v + 3) - ctx.v;
     int j = (i + 1) % 3;
     int k = (j + 1) % 3;
-    if (ctx.I == i)
+    if (ctx.I == -1)
+      {
+        ib.tri (ctx.lonlat[i], ctx.lonlat[j], ctx.lonlat[k]);
+      }
+    else if (ctx.I == i)
       {
         ib.tri (ctx.lonlat[i], ctx.lonlat_J, ctx.lonlat_K);
       }
@@ -141,10 +147,11 @@ void glgrib_field_isofill::processTriangle2 (const float v[3], const glm::vec3 x
       for (int i = 0; i < 3; i++)
         b[i] = lev <= v[i];
 
-//    printf (" ll = %8d, lev = %12.2f, b = %d, %d, %d\n", ll, lev, b[0], b[1], b[2]);
+      if (dbg) printf (" ll = %8d, lev = %12.2f, b = %d, %d, %d\n", ll, lev, b[0], b[1], b[2]);
 
       if ((! b[0]) && (! b[1]) && (! b[2]))
         {
+if (dbg) printf ("close\n");
           close (ib);
           return;
 	}
@@ -207,22 +214,29 @@ void glgrib_field_isofill::processTriangle1 (const float * val, int it, const st
 
   float v[3] = {val[jglo[0]], val[jglo[1]], val[jglo[2]]};
 
-  if (it == 37554)
+  bool dbg = it == 4770862;
+  if (dbg)
     {
     printf (" j = %20d %20d %20d\n", jglo[0], jglo[1], jglo[2]);
     printf (" v = %20.10f %20.10f %20.10f\n", v[0], v[1], v[2]);
     }
 
-  if ((v[0] <= levels.front ()) && (v[1] <= levels.front ()) && (v[2] <= levels.front ()))
+  if ((v[0] < levels.front ()) && (v[1] < levels.front ()) && (v[2] < levels.front ()))
     return;
 
-  if ((v[0] >= levels.back  ()) && (v[1] >= levels.back  ()) && (v[2] >= levels.back  ()))
+  if (dbg) printf ("%s:%d\n", __FILE__, __LINE__);
+
+  if ((v[0] > levels.back  ()) && (v[1] > levels.back  ()) && (v[2] > levels.back  ()))
     return;
+
+  if (dbg) printf ("%s:%d\n", __FILE__, __LINE__);
 
   for (int i = 0; i < levels.size ()-1; i++)
-    if (((v[0] >= levels[i+0]) && (v[1] >= levels[i+0]) && (v[2] >= levels[i+0]))
-     && ((v[0] <= levels[i+1]) && (v[1] <= levels[i+1]) && (v[2] <= levels[i+1])))
+    if (((v[0] > levels[i+0]) && (v[1] > levels[i+0]) && (v[2] > levels[i+0]))
+     && ((v[0] < levels[i+1]) && (v[1] < levels[i+1]) && (v[2] < levels[i+1])))
       return;
+
+  if (dbg) printf ("%s:%d\n", __FILE__, __LINE__);
 
   glm::vec3 xyz[3];
 
@@ -233,11 +247,13 @@ void glgrib_field_isofill::processTriangle1 (const float * val, int it, const st
       xyz[i] = lonlat2xyz (glm::vec2 (lon, lat));
     }
 
+
+#pragma omp critical
 //if ((it == 44540) || (it == 44541))
   {
 //printf (" jglo = %d, %d, %d\n", jglo[0], jglo[1], jglo[2]);
 //printf (" v    = %12.2f, %12.2f, %12.2f\n", v[0], v[1], v[2]);
-  processTriangle2 (v, xyz, levels);
+  processTriangle2 (v, xyz, levels, dbg);
   }
 
 
@@ -271,7 +287,7 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
     }
 
   for (int i = 0; i < levels.size (); i++)
-    printf (" %8d > %12.2f\n", i, levels[i]);
+    printf (" %8d > %20.10f\n", i, levels[i]);
 
   d.isoband.resize (levels.size () + 1);
 
@@ -295,6 +311,7 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
   int nt = geometry->getNumberOfTriangles ();
   std::cout << " nt = " << nt << std::endl;
 
+#pragma omp parallel for
   for (int it = 0; it < nt; it++)
     processTriangle1 (val, it, levels);
 
@@ -302,16 +319,17 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
   {
     unsigned char * color = new unsigned char[size];
 
+#pragma omp parallel for
     for (int i = 0; i < size; i++)
       {
         float v = val[i];
-        if (v <= levels.front ())
+        if (v < levels.front ())
           color[i] = d.isoband.front ().color_index;
-        else if (v >= levels.back ())
+        else if (v > levels.back ())
           color[i] = d.isoband.back  ().color_index;
         else
           for (int j = 0; j < levels.size ()-1; j++)
-            if ((levels[j] <= v) && (v <= levels[j+1]))
+            if ((levels[j] < v) && (v < levels[j+1]))
               {
                 color[i] = d.isoband[j+1].color_index;
                 break;
@@ -360,6 +378,10 @@ void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_option
   float scale0[3] = {opts.scale, opts.scale, opts.scale};
   const glgrib_palette & p = palette;
 
+  if (opts.scalar.wireframe.on)
+    glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+  
+
   glgrib_program * program1 = glgrib_program::load (glgrib_program::ISOFILL1);
   program1->use ();
 
@@ -368,6 +390,7 @@ void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_option
   palette.setRGBA255 (program1->programID);
 
   glBindVertexArray (d.VertexArrayID1);
+
   geometry->renderTriangles ();
   glBindVertexArray (0);
   view.delMVP (program1);
@@ -394,6 +417,9 @@ void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_option
 
 
   view.delMVP (program2);
+
+  if (opts.scalar.wireframe.on)
+    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 
 }
 

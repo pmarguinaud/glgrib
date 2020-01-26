@@ -26,6 +26,7 @@ public:
   }
 private:
 
+  // Single color band
   class isoband_t
   {
   public:
@@ -37,9 +38,11 @@ private:
 
   struct
   {
+    // Triangles with a single color
     GLuint VertexArrayID = 0;
     glgrib_opengl_buffer_ptr colorbuffer;
 
+    // Isoband
     std::vector<isoband_t> isoband;
   } d;
 

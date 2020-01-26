@@ -39,39 +39,22 @@ private:
   class isoband_maker_t
   {
   public:
-    isoband_maker_t () 
-    {
-      omp_init_lock (&lock);
-    }
-    ~isoband_maker_t ()
-    {
-      omp_destroy_lock (&lock);
-    }
 
     std::vector<unsigned int> ind2;
     std::vector<float> lonlat2;
     int color_index;
 
-    void _push_lonlat (int) {}
-    
-
-    template <typename T, typename... Args>
-    void _push_lonlat (int k, const T & lonlat, Args... args)
+    void push_lonlat (const glm::vec2 & lonlat)
     {
-      lonlat2[k+0] = lonlat.x;
-      lonlat2[k+1] = lonlat.y;
-      _push_lonlat (k+2, args...);
+      lonlat2.push_back (lonlat.x);
+      lonlat2.push_back (lonlat.y);
     }
 
     template <typename T, typename... Args>
     void push_lonlat (const T & lonlat, Args... args)
     {
-      int m = lonlat2.size ();
-      int n = 1 + sizeof... (Args);
-      lonlat2.resize (m + 2 * n);
-      lonlat2[m+0] = lonlat.x;
-      lonlat2[m+1] = lonlat.y;
-      _push_lonlat (m + 2, args...);
+      push_lonlat (lonlat);
+      push_lonlat (args...);
     }
 
     void push_indice (int ind)
@@ -133,8 +116,6 @@ private:
                    ind0+0, ind0+3, ind0+4);
     }
    
-  private:
-    omp_lock_t lock;
   };
 
   class isoband_t

@@ -2,7 +2,6 @@
 #define _GLGRIB_FIELD_ISOFILL_H
 
 #include "glgrib_field.h"
-#include <omp.h>
 
 class glgrib_field_isofill : public glgrib_field
 {
@@ -40,14 +39,16 @@ private:
   {
   public:
 
-    std::vector<unsigned int> ind2;
-    std::vector<float> lonlat2;
-    int color_index;
+    int offset_indice, length_indice;
+    int offset_lonlat, length_lonlat;
 
-    void push_lonlat (const glm::vec2 & lonlat)
+    std::vector<unsigned int> indice;
+    std::vector<float> lonlat;
+
+    void push_lonlat (const glm::vec2 & lonlat_)
     {
-      lonlat2.push_back (lonlat.x);
-      lonlat2.push_back (lonlat.y);
+      lonlat.push_back (lonlat_.x);
+      lonlat.push_back (lonlat_.y);
     }
 
     template <typename T, typename... Args>
@@ -59,7 +60,7 @@ private:
 
     void push_indice (int ind)
     {
-      ind2.push_back (ind);
+      indice.push_back (ind);
     }
 
     template <typename T, typename... Args>
@@ -73,7 +74,7 @@ private:
                const glm::vec2 & lonlatc, const glm::vec2 & lonlatd,
                bool direct)
     {
-      int ind0 = lonlat2.size () / 2;
+      int ind0 = lonlat.size () / 2;
 
       push_lonlat (lonlata, lonlatb, 
                    lonlatc, lonlatd);
@@ -96,7 +97,7 @@ private:
               const glm::vec2 & lonlatb, 
               const glm::vec2 & lonlatc)
     {
-      int ind0 = lonlat2.size () / 2;
+      int ind0 = lonlat.size () / 2;
 
       push_lonlat (lonlata, lonlatb, lonlatc);
       push_indice (ind0+0, ind0+1, ind0+2);
@@ -106,7 +107,7 @@ private:
           	const glm::vec2 & lonlatc, const glm::vec2 & lonlatd,
           	const glm::vec2 & lonlate)
     {
-      int ind0 = lonlat2.size () / 2;
+      int ind0 = lonlat.size () / 2;
 
       push_lonlat (lonlata, lonlatb, lonlatc,
                    lonlatd, lonlate);
@@ -123,7 +124,7 @@ private:
   public:
     glgrib_option_color color;
     GLuint VertexArrayID2 = 0;
-    glgrib_opengl_buffer_ptr vertexbuffer2, elementbuffer2;
+    glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
     int size2;
   };
 

@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include <glm/glm.hpp>
+#include <omp.h>
 
 
 glgrib_field_isofill::glgrib_field_isofill (const glgrib_field_isofill & field)
@@ -90,8 +91,8 @@ void glgrib_field_isofill::setupVertexAttributes ()
       glBindVertexArray (d.isoband[i].VertexArrayID2);
   
       // Elements
-      d.isoband[i].elementbuffer2->bind (GL_ELEMENT_ARRAY_BUFFER);
-      d.isoband[i].vertexbuffer2->bind (GL_ARRAY_BUFFER);
+      d.isoband[i].elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+      d.isoband[i].vertexbuffer->bind (GL_ARRAY_BUFFER);
   
       glEnableVertexAttribArray (0);
       glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
@@ -170,7 +171,7 @@ if (dbg) printf ("close\n");
 	      glm::vec2 lonlat_j = xyz2lonlat (xyz_j),
 	                lonlat_k = xyz2lonlat (xyz_k);
               
-	      int ind0 = ib.lonlat2.size () / 2;
+	      int ind0 = ib.lonlat.size () / 2;
 
 	      if (ctx.I == -1)
                 {
@@ -250,13 +251,7 @@ void glgrib_field_isofill::processTriangle1 (std::vector<isoband_maker_t> * isom
     }
 
 
-#pragma omp critical
-//if ((it == 44540) || (it == 44541))
-  {
-//printf (" jglo = %d, %d, %d\n", jglo[0], jglo[1], jglo[2]);
-//printf (" v    = %12.2f, %12.2f, %12.2f\n", v[0], v[1], v[2]);
   processTriangle2 (isomake, v, xyz, levels, dbg);
-  }
 
 
 }
@@ -295,7 +290,15 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
 
   d.isoband.resize (levels.size () + 1);
  
-  std::vector<isoband_maker_t> isomake (d.isoband.size ());
+
+  int nth = omp_get_max_threads ();
+  std::vector<isoband_maker_t> isomake[nth];
+
+  for (int ith = 0; ith < nth; ith++)
+    isomake[ith].resize (d.isoband.size ());
+
+
+  std::vector<int> color_index (d.isoband.size ());
 
   for (int i = 0; i < d.isoband.size (); i++)
     {
@@ -307,19 +310,19 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
       else
         v = (levels[i-1] + levels[i+0]) / 2.0f;
 
-      d.isoband[i].color     = palette.getColor      (v);
-      isomake[i].color_index = palette.getColorIndex (v);
+      d.isoband[i].color = palette.getColor      (v);
+      color_index[i]     = palette.getColorIndex (v);
     }
 
 
   float * val = data->data ();
 
-  int nt = geometry->getNumberOfTriangles ();
-  std::cout << " nt = " << nt << std::endl;
-
 #pragma omp parallel for
-  for (int it = 0; it < nt; it++)
-    processTriangle1 (&isomake, val, it, levels);
+  for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
+    {
+      int ith = omp_get_thread_num ();
+      processTriangle1 (&isomake[ith], val, it, levels);
+    }
 
 
   {
@@ -330,14 +333,14 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
       {
         float v = val[i];
         if (v < levels.front ())
-          color[i] = isomake.front ().color_index;
+          color[i] = color_index.front ();
         else if (v > levels.back ())
-          color[i] = isomake.back  ().color_index;
+          color[i] = color_index.back  ();
         else
           for (int j = 0; j < levels.size ()-1; j++)
             if ((levels[j] < v) && (v < levels[j+1]))
               {
-                color[i] = isomake[j+1].color_index;
+                color[i] = color_index[j+1];
                 break;
               }
       }
@@ -352,17 +355,67 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
   for (int i = 0; i < d.isoband.size (); i++)
     {
 
-//printf (" %8d > %8d\n", i, isomake[i].lonlat2.size ());
+      // Compute offset/length of each thread for the current band
+      int offset_lonlat = 0, 
+          offset_indice = 0;
 
-      d.isoband[i].elementbuffer2 = new_glgrib_opengl_buffer_ptr 
-                                    (isomake[i].ind2.size () * sizeof (unsigned int), 
-                                     isomake[i].ind2.data ());
+      for (int ith = 0; ith < nth; ith++)
+        {
+          isomake[ith][i].offset_indice = offset_indice;
+          isomake[ith][i].offset_lonlat = offset_lonlat;
+          isomake[ith][i].length_indice = isomake[ith][i].indice.size ();
+          isomake[ith][i].length_lonlat = isomake[ith][i].lonlat.size ();
+          offset_indice += isomake[ith][i].length_indice;
+          offset_lonlat += isomake[ith][i].length_lonlat;
+        }
 
-      d.isoband[i].vertexbuffer2  = new_glgrib_opengl_buffer_ptr 
-                                    (isomake[i].lonlat2.size () * sizeof (float), 
-                                     isomake[i].lonlat2.data ());
+      int length_lonlat = offset_lonlat, 
+          length_indice = offset_indice;
 
-      d.isoband[i].size2 = isomake[i].ind2.size ();
+
+      // Element buffer
+      d.isoband[i].elementbuffer = new_glgrib_opengl_buffer_ptr 
+                                    (length_indice * sizeof (unsigned int));
+
+      {
+        unsigned int * indice = (unsigned int *)d.isoband[i].elementbuffer->map ();
+
+        // Pack all indices into the buffer, after adding an offset
+#pragma omp parallel for
+        for (int ith = 0; ith < nth; ith++)
+          {
+            int offset = isomake[ith][i].offset_lonlat / 2;
+            for (int j = 0; j < isomake[ith][i].length_indice; j++)
+              indice[isomake[ith][i].offset_indice+j] = 
+                isomake[ith][i].indice[j] + offset;
+          }
+
+        indice = NULL;
+        d.isoband[i].elementbuffer->unmap ();
+      }
+
+
+      // Coordinate buffer
+      d.isoband[i].vertexbuffer  = new_glgrib_opengl_buffer_ptr 
+                                    (length_lonlat * sizeof (float));
+
+      {
+        float * lonlat = (float *)d.isoband[i].vertexbuffer->map ();
+
+        // Pack all lon/lat pairs into the buffer
+#pragma omp parallel for
+        for (int ith = 0; ith < nth; ith++)
+          {
+            for (int j = 0; j < isomake[ith][i].length_lonlat; j++)
+              lonlat[isomake[ith][i].offset_lonlat+j] = 
+                isomake[ith][i].lonlat[j];
+          }
+
+        lonlat = NULL;
+        d.isoband[i].vertexbuffer->unmap ();
+      }
+
+      d.isoband[i].size2 = length_indice;
 
     }
 

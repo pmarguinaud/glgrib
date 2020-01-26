@@ -101,13 +101,105 @@ void glgrib_field_isofill::setupVertexAttributes ()
     }
 }
 
+class isoband_maker_t
+{
+public:
 
-void glgrib_field_isofill::processTriangle2 (std::vector<isoband_maker_t> * isomake, 
-                                             const float v[3], const glm::vec3 xyz[3],
-                                             const std::vector<float> & levels, bool dbg)
+  int offset_indice, length_indice;
+  int offset_lonlat, length_lonlat;
+
+  std::vector<unsigned int> indice;
+  std::vector<float> lonlat;
+
+  void push_lonlat (const glm::vec2 & lonlat_)
+  {
+    lonlat.push_back (lonlat_.x);
+    lonlat.push_back (lonlat_.y);
+  }
+
+  template <typename T, typename... Args>
+  void push_lonlat (const T & lonlat, Args... args)
+  {
+    push_lonlat (lonlat);
+    push_lonlat (args...);
+  }
+
+  void push_indice (int ind)
+  {
+    indice.push_back (ind);
+  }
+
+  template <typename T, typename... Args>
+  void push_indice (T ind, Args... args)
+  {
+    push_indice (ind);
+    push_indice (args...);
+  }
+
+  void quad (const glm::vec2 & lonlata, const glm::vec2 & lonlatb, 
+             const glm::vec2 & lonlatc, const glm::vec2 & lonlatd,
+             bool direct)
+  {
+    int ind0 = lonlat.size () / 2;
+
+    push_lonlat (lonlata, lonlatb, 
+                 lonlatc, lonlatd);
+    
+    int ord[6] = {0, 1, 2, 0, 2, 3};
+
+    if (! direct)
+      {
+        std::swap (ord[0], ord[1]);
+        std::swap (ord[3], ord[4]);
+      }
+
+    push_indice (ind0+ord[0], ind0+ord[1], 
+                 ind0+ord[2], ind0+ord[3], 
+                 ind0+ord[4], ind0+ord[5]);
+
+  }
+
+  void tri (const glm::vec2 & lonlata, 
+            const glm::vec2 & lonlatb, 
+            const glm::vec2 & lonlatc)
+  {
+    int ind0 = lonlat.size () / 2;
+
+    push_lonlat (lonlata, lonlatb, lonlatc);
+    push_indice (ind0+0, ind0+1, ind0+2);
+  }
+
+  void penta (const glm::vec2 & lonlata, const glm::vec2 & lonlatb, 
+        	const glm::vec2 & lonlatc, const glm::vec2 & lonlatd,
+        	const glm::vec2 & lonlate)
+  {
+    int ind0 = lonlat.size () / 2;
+
+    push_lonlat (lonlata, lonlatb, lonlatc,
+                 lonlatd, lonlate);
+
+    push_indice (ind0+0, ind0+1, ind0+2,
+                 ind0+0, ind0+2, ind0+3,
+                 ind0+0, ind0+3, ind0+4);
+  }
+ 
+};
+
+
+static
+void processTriangle2 (std::vector<isoband_maker_t> * isomake, 
+                       const float v[3], const glm::vec3 xyz[3],
+                       const std::vector<float> & levels)
 {
 
-  if (dbg) std::cout << "processTriangle2" << std::endl;
+  class processTriangle2_ctx_t
+  {
+  public:
+    int I = -1;
+    glm::vec2 lonlat_J, lonlat_K;
+    glm::vec2 lonlat[3];
+    const float * v = NULL;
+  };
 
   processTriangle2_ctx_t ctx;
 
@@ -149,11 +241,8 @@ void glgrib_field_isofill::processTriangle2 (std::vector<isoband_maker_t> * isom
       for (int i = 0; i < 3; i++)
         b[i] = lev <= v[i];
 
-      if (dbg) printf (" ll = %8d, lev = %12.2f, b = %d, %d, %d\n", ll, lev, b[0], b[1], b[2]);
-
       if ((! b[0]) && (! b[1]) && (! b[2]))
         {
-if (dbg) printf ("close\n");
           close (ib);
           return;
 	}
@@ -207,9 +296,11 @@ if (dbg) printf ("close\n");
   close (isomake->back ());
 }
 
-void glgrib_field_isofill::processTriangle1 (std::vector<isoband_maker_t> * isomake, 
-                                             const float * val, int it, 
-                                             const std::vector<float> & levels)
+static
+void processTriangle1 (std::vector<isoband_maker_t> * isomake, 
+                       const_glgrib_geometry_ptr geometry,
+                       const float * val, int it, 
+                       const std::vector<float> & levels)
 {
   int jglo[3];
   
@@ -217,29 +308,20 @@ void glgrib_field_isofill::processTriangle1 (std::vector<isoband_maker_t> * isom
 
   float v[3] = {val[jglo[0]], val[jglo[1]], val[jglo[2]]};
 
-  bool dbg = it == 4770862;
-  if (dbg)
-    {
-    printf (" j = %20d %20d %20d\n", jglo[0], jglo[1], jglo[2]);
-    printf (" v = %20.10f %20.10f %20.10f\n", v[0], v[1], v[2]);
-    }
-
   if ((v[0] < levels.front ()) && (v[1] < levels.front ()) && (v[2] < levels.front ()))
     return;
 
-  if (dbg) printf ("%s:%d\n", __FILE__, __LINE__);
-
   if ((v[0] > levels.back  ()) && (v[1] > levels.back  ()) && (v[2] > levels.back  ()))
     return;
-
-  if (dbg) printf ("%s:%d\n", __FILE__, __LINE__);
 
   for (int i = 0; i < levels.size ()-1; i++)
     if (((v[0] > levels[i+0]) && (v[1] > levels[i+0]) && (v[2] > levels[i+0]))
      && ((v[0] < levels[i+1]) && (v[1] < levels[i+1]) && (v[2] < levels[i+1])))
       return;
 
-  if (dbg) printf ("%s:%d\n", __FILE__, __LINE__);
+
+  // At this point, we know the triangle will not have an homogeneous color;
+  // we will have to split it into subtriangles
 
   glm::vec3 xyz[3];
 
@@ -251,7 +333,7 @@ void glgrib_field_isofill::processTriangle1 (std::vector<isoband_maker_t> * isom
     }
 
 
-  processTriangle2 (isomake, v, xyz, levels, dbg);
+  processTriangle2 (isomake, v, xyz, levels);
 
 
 }
@@ -321,7 +403,7 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
   for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
     {
       int ith = omp_get_thread_num ();
-      processTriangle1 (&isomake[ith], val, it, levels);
+      processTriangle1 (&isomake[ith], geometry, val, it, levels);
     }
 
 

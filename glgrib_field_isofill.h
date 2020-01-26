@@ -26,99 +26,6 @@ public:
   }
 private:
 
-  class processTriangle2_ctx_t
-  {
-  public:
-    int I = -1;
-    glm::vec2 lonlat_J, lonlat_K;
-    glm::vec2 lonlat[3];
-    const float * v = NULL;
-  };
-
-  class isoband_maker_t
-  {
-  public:
-
-    int offset_indice, length_indice;
-    int offset_lonlat, length_lonlat;
-
-    std::vector<unsigned int> indice;
-    std::vector<float> lonlat;
-
-    void push_lonlat (const glm::vec2 & lonlat_)
-    {
-      lonlat.push_back (lonlat_.x);
-      lonlat.push_back (lonlat_.y);
-    }
-
-    template <typename T, typename... Args>
-    void push_lonlat (const T & lonlat, Args... args)
-    {
-      push_lonlat (lonlat);
-      push_lonlat (args...);
-    }
-
-    void push_indice (int ind)
-    {
-      indice.push_back (ind);
-    }
-
-    template <typename T, typename... Args>
-    void push_indice (T ind, Args... args)
-    {
-      push_indice (ind);
-      push_indice (args...);
-    }
-
-    void quad (const glm::vec2 & lonlata, const glm::vec2 & lonlatb, 
-               const glm::vec2 & lonlatc, const glm::vec2 & lonlatd,
-               bool direct)
-    {
-      int ind0 = lonlat.size () / 2;
-
-      push_lonlat (lonlata, lonlatb, 
-                   lonlatc, lonlatd);
-      
-      int ord[6] = {0, 1, 2, 0, 2, 3};
-
-      if (! direct)
-        {
-          std::swap (ord[0], ord[1]);
-          std::swap (ord[3], ord[4]);
-        }
-
-      push_indice (ind0+ord[0], ind0+ord[1], 
-                   ind0+ord[2], ind0+ord[3], 
-                   ind0+ord[4], ind0+ord[5]);
-
-    }
-
-    void tri (const glm::vec2 & lonlata, 
-              const glm::vec2 & lonlatb, 
-              const glm::vec2 & lonlatc)
-    {
-      int ind0 = lonlat.size () / 2;
-
-      push_lonlat (lonlata, lonlatb, lonlatc);
-      push_indice (ind0+0, ind0+1, ind0+2);
-    }
-
-    void penta (const glm::vec2 & lonlata, const glm::vec2 & lonlatb, 
-          	const glm::vec2 & lonlatc, const glm::vec2 & lonlatd,
-          	const glm::vec2 & lonlate)
-    {
-      int ind0 = lonlat.size () / 2;
-
-      push_lonlat (lonlata, lonlatb, lonlatc,
-                   lonlatd, lonlate);
-
-      push_indice (ind0+0, ind0+1, ind0+2,
-                   ind0+0, ind0+2, ind0+3,
-                   ind0+0, ind0+3, ind0+4);
-    }
-   
-  };
-
   class isoband_t
   {
   public:
@@ -136,10 +43,6 @@ private:
     std::vector<isoband_t> isoband;
   } d;
 
-  void processTriangle1 (std::vector<isoband_maker_t> *, const float *, 
-                         int, const std::vector<float> &);
-  void processTriangle2 (std::vector<isoband_maker_t> *, const float [3], 
-                         const glm::vec3 [3], const std::vector<float> &, bool);
 
 };
 

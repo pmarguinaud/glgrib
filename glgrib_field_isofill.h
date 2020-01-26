@@ -30,14 +30,14 @@ private:
   {
   public:
     glgrib_option_color color;
-    GLuint VertexArrayID2 = 0;
+    GLuint VertexArrayID = 0;
     glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
-    int size2;
+    int size;
   };
 
   struct
   {
-    GLuint VertexArrayID1 = 0;
+    GLuint VertexArrayID = 0;
     glgrib_opengl_buffer_ptr colorbuffer;
 
     std::vector<isoband_t> isoband;

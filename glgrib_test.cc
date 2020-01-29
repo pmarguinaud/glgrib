@@ -9,19 +9,19 @@
 
 void glgrib_test::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  return;
   glgrib_program * program = glgrib_program::load (glgrib_program::TEST);
   program->use (); 
+  program->set1i ("dd", 1);
 
   view.setMVP (program);
 
-  glDisable (GL_CULL_FACE);
+//glDisable (GL_CULL_FACE);
 
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
   glBindVertexArray (0);
 
-  glEnable (GL_CULL_FACE);
+//glEnable (GL_CULL_FACE);
 
   view.delMVP (program);
 
@@ -36,7 +36,6 @@ void glgrib_test::clear ()
 
 void glgrib_test::setup ()
 {
-  return;
   int numberOfPoints = 3;
 
   std::vector<unsigned int> ind {0, 1, 2};

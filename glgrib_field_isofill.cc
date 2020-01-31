@@ -303,21 +303,33 @@ void processTriangle1 (std::vector<isoband_maker_t> * isomake,
                        const std::vector<float> & levels)
 {
   int jglo[3];
+  bool dbg = it == 1701064;
   
   geometry->getTriangleVertices (it, jglo);
+
+  if (dbg)
+    {
+      printf (" jglo = %d, %d, %d\n", jglo[0], jglo[1], jglo[2]);
+    }
 
   float v[3] = {val[jglo[0]], val[jglo[1]], val[jglo[2]]};
 
   if ((v[0] < levels.front ()) && (v[1] < levels.front ()) && (v[2] < levels.front ()))
     return;
 
+  if (dbg) printf ("%s:%d\n", __FILE__, __LINE__);
+
   if ((v[0] > levels.back  ()) && (v[1] > levels.back  ()) && (v[2] > levels.back  ()))
     return;
+
+  if (dbg) printf ("%s:%d\n", __FILE__, __LINE__);
 
   for (int i = 0; i < levels.size ()-1; i++)
     if (((v[0] > levels[i+0]) && (v[1] > levels[i+0]) && (v[2] > levels[i+0]))
      && ((v[0] < levels[i+1]) && (v[1] < levels[i+1]) && (v[2] < levels[i+1])))
       return;
+
+  if (dbg) printf ("%s:%d\n", __FILE__, __LINE__);
 
   // At this point, we know the triangle will not have an homogeneous color;
   // we will have to split it into subtriangles
@@ -532,6 +544,7 @@ void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_option
   view.setMVP (program2);
   program2->set3fv ("scale0", scale0);
 
+if(1)
   for (int i = 0; i < d.isoband.size (); i++)
     {
       float color0[4] = {d.isoband[i].color.r/255.0f, 

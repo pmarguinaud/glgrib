@@ -13,6 +13,7 @@ public:
   virtual void clear ();
   virtual void setup ();
   virtual void resize (const glgrib_view &) {}
+  virtual float getScale () const { return 1; }
 protected:
   glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
   int numberOfPoints;

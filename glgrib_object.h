@@ -17,7 +17,7 @@ public:
   bool visible () const { return ! hidden; }
   void clear () { ready_ = false; }
   virtual void resize (const glgrib_view &) = 0;
-  virtual float getScale () const { return 1; }
+  virtual float getScale () const  = 0;
 private:
   bool ready_ = false;
   bool hidden = false;

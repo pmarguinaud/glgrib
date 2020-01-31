@@ -55,20 +55,30 @@ void glgrib_scene::display () const
   d.test.render (d.view, d.opts.scene.light);
   
 
-  std::vector<glgrib_object*> obj_list;
+  std::vector<const glgrib_object*> obj_list;
 
   obj_list.push_back (&d.landscape);
 
-  display_obj (&d.landscape);
-
   for (int i = 0; i < fieldlist.size (); i++)
-    display_obj (fieldlist[i]);
+    if (fieldlist[i] != NULL)
+      obj_list.push_back (fieldlist[i]);
 
-  display_obj (&d.coast);
-  display_obj (&d.border);
-  display_obj (&d.rivers);
-  display_obj (&d.departements);
-  display_obj (&d.grid);
+  obj_list.push_back (&d.coast);
+  obj_list.push_back (&d.border);
+  obj_list.push_back (&d.rivers);
+  obj_list.push_back (&d.departements);
+  obj_list.push_back (&d.grid);
+  obj_list.push_back (&d.cities);
+  obj_list.push_back (&d.land);
+
+
+  std::sort (obj_list.begin (), obj_list.end (), 
+             [] (const glgrib_object * a, const glgrib_object * b) 
+             { return a->getScale () < b->getScale (); });
+
+
+  for (int i = 0; i < obj_list.size (); i++)
+    display_obj (obj_list[i]);
 
   const glgrib_field * fld = d.currentFieldRank < fieldlist.size () 
                            ? fieldlist[d.currentFieldRank] : NULL;
@@ -98,11 +108,6 @@ void glgrib_scene::display () const
        it != d.str.end (); it++)
     it->render (d.MVP_R);
 
-  if (d.opts.cities.on)
-    display_obj (&d.cities);
-
-  if (d.opts.land.on)
-    display_obj (&d.land);
 }
 
 const glgrib_option_date * glgrib_scene::get_date ()

@@ -92,7 +92,7 @@ public:
   }
   const glgrib_options_field & getOptions () const;
   void setScale (float s) { opts.scale = s; hilo.setScaleXYZ (s); }
-  virtual float getScale () { return opts.scale; }
+  virtual float getScale () const { return opts.scale; }
   const glgrib_palette & getPalette () const;
   void toggle_wireframe () 
   {

@@ -54,6 +54,11 @@ void glgrib_scene::display () const
 
   d.test.render (d.view, d.opts.scene.light);
   
+
+  std::vector<glgrib_object*> obj_list;
+
+  obj_list.push_back (&d.landscape);
+
   display_obj (&d.landscape);
 
   for (int i = 0; i < fieldlist.size (); i++)
@@ -94,10 +99,10 @@ void glgrib_scene::display () const
     it->render (d.MVP_R);
 
   if (d.opts.cities.on)
-    d.cities.render (d.view);
+    display_obj (&d.cities);
 
   if (d.opts.land.on)
-    d.land.render (d.view, d.opts.scene.light);
+    display_obj (&d.land);
 }
 
 const glgrib_option_date * glgrib_scene::get_date ()

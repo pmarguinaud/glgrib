@@ -98,8 +98,8 @@ void glgrib_cities::clear ()
   d.labels.clear ();
 }
 
-void glgrib_cities::render (const glgrib_view & view) const
+void glgrib_cities::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  glgrib_points::render (view);
+  glgrib_points::render (view, light);
   d.labels.render (view);
 }

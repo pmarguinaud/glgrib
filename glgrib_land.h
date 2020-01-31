@@ -18,6 +18,7 @@ public:
   virtual void setup (const glgrib_options_land &);
   virtual void resize (const glgrib_view &) {}
   void setupVertexAttributes ();
+  virtual float getScale () const { return opts.layers[0].scale; }
 private:
   void triangulate (std::vector<int> *, std::vector<int> *,
                     std::vector<int> *, std::vector<int> *,

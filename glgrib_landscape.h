@@ -23,6 +23,7 @@ public:
   void toggle_wireframe () { opts.wireframe.on = ! opts.wireframe.on; }
   const glgrib_options_landscape & getOptions () const { return opts; }
   void setPositionOptions (const glgrib_options_landscape_position & o) { opts.lonlat.position = o; }
+  virtual float getScale () const { return opts.scale; }
 private:
   glgrib_options_landscape opts;
   glgrib_opengl_texture_ptr texture;

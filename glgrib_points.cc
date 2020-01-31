@@ -14,9 +14,10 @@ glgrib_points::~glgrib_points ()
 
 void glgrib_points::clear ()
 {
-  if (ready)
+  if (isReady ())
     {
       glDeleteVertexArrays (1, &VertexArrayID);
+      glgrib_object::clear ();
     }
 }
 
@@ -25,11 +26,11 @@ glgrib_points & glgrib_points::operator= (const glgrib_points & points)
   if (this != &points)
     {   
       clear (); 
-      if (points.ready)
+      if (points.isReady ())
         {
           d = points.d;
           setupVertexAttributes (); 
-          ready = true;
+          setReady ();
         }
     }   
   return *this;
@@ -77,12 +78,12 @@ void glgrib_points::setup (const glgrib_options_points & o,
     d.opts.palette.max = d.max;
 
   setupVertexAttributes ();
-  ready = true;
+  setReady ();
 }
 
-void glgrib_points::render (const glgrib_view & view) const
+void glgrib_points::render (const glgrib_view & view, const glgrib_options_light &) const
 {
-  if (! ready)
+  if (! isReady ())
     return;
 
   float length = view.pixel_to_dist_at_nadir (10);

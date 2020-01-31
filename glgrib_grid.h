@@ -23,6 +23,7 @@ public:
   }
   void clear ();
   ~glgrib_grid ();
+  virtual float getScale () const { return opts.scale; }
 private:
   glgrib_string labels;
   glgrib_options_grid opts;

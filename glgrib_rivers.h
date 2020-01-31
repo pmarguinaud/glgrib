@@ -9,6 +9,7 @@ class glgrib_rivers : public glgrib_lines
 public:
   void setup (const glgrib_options_rivers &);
   const glgrib_options_rivers & getOptions () const { return opts; }
+  virtual float getScale () const { return opts.lines.scale; }
 private:
   glgrib_options_rivers opts;
 };

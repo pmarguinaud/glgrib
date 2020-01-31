@@ -443,7 +443,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].type VECTOR --field[0].path 
     testdata/aro2.5/S090WIND.U.PHYS.grb 
     testdata/aro2.5/S090WIND.V.PHYS.grb --field[0].scale 1.00 
-    --field[0].vector.color green --view.lat 46.2 --view.lon 2.0 
+    --field[0].vector.arrow.color green --view.lat 46.2 --view.lon 2.0 
     --view.fov 5 --coast.on --grid.on 
 ```
 ## Display vector norm, global lat/lon geometry                      -- vector_glob25
@@ -516,7 +516,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].stream.density 1.0 --field[1].scale 1.01 --field[1].path 
     testdata/wind+temp/t1198c2.2/S105WIND.U.PHYS.grb 
     testdata/wind+temp/t1198c2.2/S105WIND.V.PHYS.grb --field[1].type 
-    VECTOR --field[1].vector.hide_norm.on --field[1].vector.color red 
+    VECTOR --field[1].vector.norm.off --field[1].vector.arrow.color red 
     --grid.on --grid.color red --grid.scale 1.02 --coast.lines.scale 1.02 
     --coast.on --coast.lines.color red --landscape.on --landscape.path 
     landscape/white.png 
@@ -530,10 +530,11 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].palette-{ --colors grey green --min 0. --max 40. --values 
     0. 40. }- --field[0].stream.width 1.0 --field[1].type VECTOR 
     --field[1].path testdata/wind+temp/glob025/P020WIND.U.PHYS.grb 
-    testdata/wind+temp/glob025/P020WIND.V.PHYS.grb --field[1].vector.color 
-    red --field[1].vector.scale 5 --field[1].scale 1.01 --grid.on 
-    --landscape.on --landscape.path landscape/white.bmp --field[0].scale 
-    1.01 --grid.color pink --coast.on --coast.lines.color pink 
+    testdata/wind+temp/glob025/P020WIND.V.PHYS.grb 
+    --field[1].vector.arrow.color red --field[1].vector.scale 5 
+    --field[1].scale 1.01 --grid.on --landscape.on --landscape.path 
+    landscape/white.bmp --field[0].scale 1.01 --grid.color pink --coast.on 
+    --coast.lines.color pink 
 ```
 ## Streamlines on EURAT01 (surface)                                  -- stream_eurat01
 ![](test.ref/stream_eurat01/TEST_0000.png)
@@ -544,11 +545,11 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].palette-{ --colors grey green --min 0. --max 40. --values 
     0. 40. }- --field[0].stream.width 1.0 --field[1].type VECTOR 
     --field[1].path testdata/wind+temp/eurat01/H020WIND.U.PHYS.grb 
-    testdata/wind+temp/eurat01/H020WIND.V.PHYS.grb --field[1].vector.color 
-    red --field[1].vector.scale 5 --field[1].scale 1.01 --grid.on 
-    --landscape.on --landscape.path landscape/white.bmp --field[0].scale 
-    1.01 --grid.color pink --coast.on --coast.lines.color pink --view.lat 
-    45 --view.lon 5 --view.fov 10 
+    testdata/wind+temp/eurat01/H020WIND.V.PHYS.grb 
+    --field[1].vector.arrow.color red --field[1].vector.scale 5 
+    --field[1].scale 1.01 --grid.on --landscape.on --landscape.path 
+    landscape/white.bmp --field[0].scale 1.01 --grid.color pink --coast.on 
+    --coast.lines.color pink --view.lat 45 --view.lon 5 --view.fov 10 
 ```
 ## Streamlines on AROME 2.5km (surface)                              -- stream_lambert
 ![](test.ref/stream_lambert/TEST_0000.png)
@@ -560,7 +561,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     0. 40. }- --field[0].stream.width 0.0 --field[0].stream.density 0.5 
     --field[0].stream.width 0.5 --field[1].type VECTOR --field[1].path 
     testdata/aro2.5/S090WIND.U.PHYS.grb 
-    testdata/aro2.5/S090WIND.V.PHYS.grb --field[1].vector.color red 
+    testdata/aro2.5/S090WIND.V.PHYS.grb --field[1].vector.arrow.color red 
     --field[1].vector.scale 1 --field[1].scale 1.01 --grid.on 
     --landscape.on --landscape.path landscape/white.bmp --field[0].scale 
     1.01 --grid.color pink --coast.on --coast.lines.color pink --view.lon 
@@ -641,7 +642,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     testdata/wind+temp/t0224/S105WIND.U.PHYS.grb 
     testdata/wind+temp/t0224/S105WIND.V.PHYS.grb 
     --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 
-    --field[0].vector.color red --field[0].palette.name summer 
+    --field[0].vector.arrow.color red --field[0].palette.name summer 
 ```
 ## Height = scalar norm value                                        -- height_scalar
 ![](test.ref/height_scalar/TEST_0000.png)
@@ -706,7 +707,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[1].scale 1.001 --field[1].path 
     testdata/wind4/wind.grib%shortName="u" 
     testdata/wind4/wind.grib%shortName="v" --field[1].type vector 
-    --field[1].vector.hide_norm.on --field[1].vector.color black 
+    --field[1].vector.norm.off --field[1].vector.arrow.color black 
     --colorbar.on --coast.on --coast.lines.color black --coast.on 
     --coast.lines.color black --grid.on --grid.color black --view.lat 50 
     --view.fov 3 --view.projection POLAR_NORTH --view.clip.xmin 0.15 
@@ -817,8 +818,8 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
 ```
     --field[0].path testdata/data_uv.grib%shortName="u" 
     testdata/data_uv.grib%shortName="v" --field[0].type vector 
-    --field[0].vector.hide_arrow.on --field[0].palette.values 0 10 15 20 
-    25 30 40 50 60 80 100 --colorbar.on --field[0].palette.linear.on 
+    --field[0].vector.arrow.off --field[0].palette.values 0 10 15 20 25 30 
+    40 50 60 80 100 --colorbar.on --field[0].palette.linear.on 
     --field[0].palette-{ --min 0 --max 100 }- --field[0].palette.colors 
     #ffffffff #ffff66ff #daff00ff #94ff00ff #6ca631ff #00734bff #005447ff 
     #004247ff #003370ff #0033a3ff --coast.on --coast.lines.color black 
@@ -847,4 +848,66 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     0.02 --grid.labels.on --grid.on --grid.resolution 18 --view.fov 5 
     --view.lat 49 --view.lon 2 --view.projection POLAR_NORTH 
     --window.width 1200 
+```
+## Joachim storm                                                     -- joachim
+![](test.ref/joachim/TEST_0000.png)
+
+```
+    --field[0].scale 1.0005 --field[0].path 
+    testdata/joachim_surf.grib%stepRange="18-24",shortName="10fg6" 
+    --field[0].palette.values 0 20 20.6 21.2 21.8 22.4 23 23.6 24.2 24.8 
+    25.4 26 27.5 29 30.5 32 33.5 35 36.5 38 --field[0].palette.colors 
+    #00000000 #88a8d6ff #819cd2ff #7a8fceff #7382caff #6c74c6ff #6666c2ff 
+    #6760bdff #6959b8ff #6b53b4ff #6e4fadff #9045b8ff #bf3bc2ff #cc319dff 
+    #d62869ff #e11e28ff #eb4e14ff #f5960aff #ffea01ff 
+    --field[0].palette.linear.on --colorbar.on --field[1].path 
+    testdata/joachim_surf.grib%stepRange=24,shortName="10u" 
+    testdata/joachim_surf.grib%stepRange=24,shortName="10v" 
+    --field[1].scale 1.001 --field[1].type vector 
+    --field[1].vector.norm.off --field[1].vector.arrow.color black 
+    --field[1].vector.density 20 --field[2].path 
+    testdata/joachim_surf.grib%stepRange=24,shortName="msl" 
+    --field[2].scale 1.001 --field[2].type contour 
+    --field[2].palette.colors black --field[2].contour.levels 97000 97500 
+    98000 98500 99000 99500 100000 100500 101000 101500 102000 
+    --field[2].contour.widths 3 3 3 3 1 1 1 1 1 1 3 --window.width 1200 
+    --grid.on --grid.color black --grid.resolution 18 --coast.on 
+    --coast.lines.color black --coast.lines.path 
+    coastlines/gshhg/GSHHS_bin/gshhs_i.b --border.on --border.lines.path 
+    coastlines/gshhg/WDBII_bin/wdb_borders_i.b --view.clip.xmin 0.15 
+    --view.projection POLAR_NORTH --land.on --land.layers[0].color 
+    #7c879cff --land.layers[0].path coastlines/shp/GSHHS_i_L1.shp 
+    --land.layers[1].path coastlines/shp/GSHHS_i_L2.shp 
+    --land.layers[2].path coastlines/shp/GSHHS_i_L3.shp 
+    --land.layers[3].path coastlines/shp/GSHHS_i_L5.shp --landscape.on 
+    --landscape.path  --landscape.color white --landscape.scale 0.999 
+    --view.lon 4 --view.lat 51 --view.fov 3 
+```
+## Isofill test                                                      -- isofill
+![](test.ref/isofill/TEST_0000.png)
+
+```
+    --field[0].path testdata/wind+temp/t1798/S105TEMPERATURE.grb 
+    --field[0].type ISOFILL --field[0]-{ --palette.min 294 --palette.max 
+    296 --user_pref.off --isofill.min 294 --isofill.max 296 --palette.name 
+    cold_hot_temp }- --view.lat 2.32 --view.lon 14.12 --view.fov 0.5 
+    --window.width 1200 
+```
+## Isofill test wireframe                                            -- isofillwire
+![](test.ref/isofillwire/TEST_0000.png)
+
+```
+    --field[0].path testdata/wind+temp/t1798/S105TEMPERATURE.grb 
+    --field[0].type ISOFILL --field[0]-{ --scalar.wireframe.on 
+    --palette.min 294 --palette.max 296 --user_pref.off --isofill.min 294 
+    --isofill.max 296 --palette.name cold_hot_temp }- --view.lat 2.32 
+    --view.lon 14.12 --view.fov 0.5 --window.width 1200 
+```
+## Isofill temperature                                               -- isofilltemp
+![](test.ref/isofilltemp/TEST_0000.png)
+
+```
+    --field[0].path testdata/wind+temp/t1798/S105TEMPERATURE.grb 
+    --field[0].type ISOFILL --field[0]-{ --palette.name cold_hot_temp }- 
+    --colorbar.on --window.width 1200 --coast.on --coast.lines.color black 
 ```

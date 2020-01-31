@@ -185,6 +185,7 @@ void process_lat (int jlat, int iloen1, int iloen2,
     *(inds_strip++) = ica-1;        \
     *(inds_strip++) = icb-1;        \
     *(inds_strip++) = icc-1;        \
+   if (ica-1 == 16491) printf (" ica-1,icb-1,icc-1 = %d, %d, %d\n", ica-1,icb-1,icc-1); \
   } while (0)
 
       if (idlonc == 0)

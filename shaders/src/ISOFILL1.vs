@@ -4,8 +4,10 @@
 layout(location = 0) in vec2  vertexLonLat;
 layout(location = 1) in float vertexColInd;
 
-out vec3 fragmentPos;
-out float geometryColInd;
+//out vec3 fragmentPos;
+//out float geometryColInd;
+out float fragmentColInd_;
+flat out float fragmentColInd_Flat;
 
 uniform mat4 MVP;
 
@@ -14,7 +16,9 @@ uniform mat4 MVP;
 
 void main ()
 {
-  geometryColInd = vertexColInd;
+//geometryColInd = vertexColInd;
+  fragmentColInd_Flat = vertexColInd;
+  fragmentColInd_     = vertexColInd;
 
   vec3 vertexPos = posFromLonLat (vertexLonLat);
   vec3 normedPos = compNormedPos (vertexPos);
@@ -23,6 +27,6 @@ void main ()
 
   gl_Position =  MVP * vec4 (pos, 1.);
 
-  fragmentPos = normedPos;
+//fragmentPos = normedPos;
 
 }

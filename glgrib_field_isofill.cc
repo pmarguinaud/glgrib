@@ -303,7 +303,7 @@ void processTriangle1 (std::vector<isoband_maker_t> * isomake,
                        const std::vector<float> & levels)
 {
   int jglo[3];
-  bool dbg = it == 1701064;
+  bool dbg = it == 32555;
   
   geometry->getTriangleVertices (it, jglo);
 
@@ -430,6 +430,12 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
               }
       }
 
+    {
+      int jglo[3] = {16083, 16490, 16491};
+      for (int i = 0; i < 3; i++) 
+        printf ("%8d > %3d\n", jglo[i], color[jglo[i]]);
+    }
+
     d.colorbuffer  = new_glgrib_opengl_buffer_ptr (size * sizeof (unsigned char), color);
     
     delete [] color;
@@ -544,7 +550,7 @@ void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_option
   view.setMVP (program2);
   program2->set3fv ("scale0", scale0);
 
-if(1)
+if(0)
   for (int i = 0; i < d.isoband.size (); i++)
     {
       float color0[4] = {d.isoband[i].color.r/255.0f, 

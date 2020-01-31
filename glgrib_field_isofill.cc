@@ -319,7 +319,6 @@ void processTriangle1 (std::vector<isoband_maker_t> * isomake,
      && ((v[0] < levels[i+1]) && (v[1] < levels[i+1]) && (v[2] < levels[i+1])))
       return;
 
-
   // At this point, we know the triangle will not have an homogeneous color;
   // we will have to split it into subtriangles
 
@@ -332,10 +331,7 @@ void processTriangle1 (std::vector<isoband_maker_t> * isomake,
       xyz[i] = lonlat2xyz (glm::vec2 (lon, lat));
     }
 
-
   processTriangle2 (isomake, v, xyz, levels);
-
-
 }
 
 void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field & o, float slot)
@@ -354,8 +350,6 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
   int size = geometry->size ();
 
   std::vector<float> levels = opts.isofill.levels;
-
-  std::cout << opts.isofill.min << ", " << opts.isofill.max << std::endl;
 
   if (levels.size () == 0)
     {

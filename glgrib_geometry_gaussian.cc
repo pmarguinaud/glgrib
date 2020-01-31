@@ -265,19 +265,16 @@ void compute_trigauss_strip (const long int Nj, const std::vector<long int> & pl
   
       if (iloen1 == iloen2) 
         {
-          *(inds_strip++) = jglooff1;
-          *(inds_strip++) = jglooff2;
-  
+          *(inds_strip++) = jglooff1; // A
           for (int jlon1 = 1; jlon1 <= iloen1; jlon1++)
             {
               int jlon2 = jlon1;
-              int ica = jglooff1 + jlon1;
-              int icb = jglooff2 + jlon2;
-              int icc = jglooff2 + JNEXT (jlon2, iloen2);
-              int icd = jglooff1 + JNEXT (jlon1, iloen1);
-              *(inds_strip++) = icd-1;
+              int icc = jglooff2 + JNEXT (jlon2, iloen2); // C
+              int icd = jglooff1 + JNEXT (jlon1, iloen1); // D
               *(inds_strip++) = icc-1;
+              *(inds_strip++) = icd-1;
             }
+          *(inds_strip++) = jglooff2 + 1; 
         }
       else if (iloen1 > iloen2)
         {

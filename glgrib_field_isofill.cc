@@ -550,7 +550,7 @@ void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_option
   view.setMVP (program2);
   program2->set3fv ("scale0", scale0);
 
-if(0)
+if(1)
   for (int i = 0; i < d.isoband.size (); i++)
     {
       float color0[4] = {d.isoband[i].color.r/255.0f, 

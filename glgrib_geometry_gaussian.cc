@@ -139,13 +139,15 @@ void process_lat (int jlat, int iloen1, int iloen2,
   int av1 = 0, av2 = 0;
 
   unsigned int * inds_strip = *p_inds_strip;
+
   
   for (;;)
     {
       int ica = 0, icb = 0, icc = 0;
+  bool dbg = (iloen1 == 30) && (iloen2 == 20) && (dir < 0);
   
-      int jlon1n = dir > 0 ? JNEXT (jlon1, iloen1) : JPREV (jlon1, iloen1);
-      int jlon2n = dir > 0 ? JNEXT (jlon2, iloen2) : JPREV (jlon2, iloen2);
+      int jlon1n = JNEXT (jlon1, iloen1);
+      int jlon2n = JNEXT (jlon2, iloen2);
 
 #define AV1 \
   do {                                                                        \
@@ -153,6 +155,8 @@ void process_lat (int jlat, int iloen1, int iloen2,
     jlon1 = jlon1n;                                                           \
     turn = turn || jlon1 == 1;                                                \
     av1++; av2 = 0;                                                           \
+    if (dbg) printf (" AV1 : ica-1,icb-1,icc-1 = %d, %d, %d\n", \
+                     ica-1,icb-1,icc-1); \
   } while (0)
 
 #define AV2 \
@@ -161,17 +165,19 @@ void process_lat (int jlat, int iloen1, int iloen2,
     jlon2 = jlon2n;                                                           \
     turn = turn || jlon2 == 1;                                                \
     av2++; av1 = 0;                                                           \
+    if (dbg) printf (" AV2 : ica-1,icb-1,icc-1 = %d, %d, %d\n", \
+                     ica-1,icb-1,icc-1); \
   } while (0)
 
-      int idlonc = dir * JDLON (jlon1, jlon2);
+      int idlonc = JDLON (jlon1, jlon2);
       int idlonn;
       if ((jlon1n == 1) && (jlon2n != 1))
         idlonn = +1;
       else if ((jlon1n != 1) && (jlon2n == 1))
         idlonn = -1;
       else 
-        idlonn = dir * JDLON (jlon1n, jlon2n);
-      
+        idlonn = JDLON (jlon1n, jlon2n);
+
       if (idlonn > 0 || ((idlonn == 0) && (idlonc > 0)))
         AV2;
       else if (idlonn < 0 || ((idlonn == 0) && (idlonc < 0))) 
@@ -185,53 +191,99 @@ void process_lat (int jlat, int iloen1, int iloen2,
     *(inds_strip++) = ica-1;        \
     *(inds_strip++) = icb-1;        \
     *(inds_strip++) = icc-1;        \
-   if (ica-1 == 16491) printf (" ica-1,icb-1,icc-1 = %d, %d, %d\n", ica-1,icb-1,icc-1); \
   } while (0)
 
-      if (idlonc == 0)
+  
+      if (dir > 0)
         {
-          if (av2)
+          if (idlonc == 0) 
+            {
+              if (av2)
+                {
+                  abort ();
+                }
+              else if (av1)
+                {
+                  RS2;
+                }
+            }
+          else if (av2 > 1)
             {
               abort ();
             }
-          else if (av1)
+          else if (av1 > 1)
             {
               RS2;
             }
-        }
-      else if (av2 > 1)
-        {
-          abort ();
-        }
-      else if (av1 > 1)
-        {
-          RS2;
+          else
+            {
+              if (inds_strip)
+                *(inds_strip++) = icc-1;
+            }
         }
       else
         {
-          if (inds_strip)
-          *(inds_strip++) = icc-1;
+          bool first = inds_strip == *p_inds_strip;
+          if (first) 
+            {
+              *(inds_strip++) = 0xffffffff;  
+              *(inds_strip++) = ica-1+iloen1-1;
+              *(inds_strip++) = ica-1;
+              *(inds_strip++) = icb-1;
+              *(inds_strip++) = icc-1;
+            }
+          else
+            {
+              if (av2 > 1)
+                {
+                  abort ();
+                }
+              else if (av1 > 1)
+                {
+if (dbg) printf (" jlon1, jlon2 = %d, %d\n", jlon1, jlon2);
+                  *(inds_strip++) = icc-1;
+                  *(inds_strip++) = 0xffffffff;  
+                  *(inds_strip++) = icb-1;
+                  *(inds_strip++) = icc-1;
+if (dbg) printf (" ica-1,icb-1,icc-1 = %d, %d, %d\n", ica-1,icb-1,icc-1);
+              //  RS2;
+                }
+              else
+                {
+                  if (inds_strip)
+                    *(inds_strip++) = icc-1;
+                }
+
+            }
         }
       
       if (turn)
         {
-          if (jlon1 == 1)
-            while (jlon2 != 1)
-              {
-                abort ();
-              }
-          else if (jlon2 == 1)
-            while (jlon1 != 1)
-              {
-                int jlon1n = dir > 0 ? JNEXT (jlon1, iloen1) : JPREV (jlon1, iloen1);
-                AV1;
-                RS2;
-              }
+if (dbg) printf ("turn : jlon1, jlon2 = %d, %d\n", jlon1, jlon2);
+          if (dir > 0)
+            {
+              if (jlon1 == 1)
+                while (jlon2 != 1)
+                  {
+                    abort ();
+                  }
+              else if (jlon2 == 1) 
+                while (jlon1 != 1)
+                  {
+if (dbg) printf ("turn : AV1\n");
+                    int jlon1n = JNEXT (jlon1, iloen1);
+                    AV1;
+                    RS2;
+                  }
+            }
           break;
         }
 
     }
 
+  if ((iloen1 == 30) && (iloen2 == 20) && (dir < 0))
+  for (int i = 0; i < inds_strip - *p_inds_strip; i++)
+    printf ("%u\n", (*p_inds_strip)[i]);
 
   *p_inds_strip = inds_strip;
 }
@@ -250,11 +302,12 @@ void compute_trigauss_strip (const long int Nj, const std::vector<long int> & pl
 {
   int iglooff[Nj];
   
+
   iglooff[0] = 0;
   for (int jlat = 2; jlat <= Nj; jlat++)
     iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
 
-#pragma omp parallel for 
+//#pragma omp parallel for 
   for (int jlat = 1; jlat <= Nj-1; jlat++)
     {
       int iloen1 = pl[jlat - 1];
@@ -392,7 +445,14 @@ void compute_trigauss (const long int Nj, const std::vector<long int> & pl, unsi
                 idlonn = JDLON (jlon1n, jlon2n);
 
               if (idlonn > 0 || ((idlonn == 0) && (idlonc > 0)))
+{
                 AV2;
+   if (ica-1 == 16083 && icb-1 == 16490 && icc-1 == 16491) 
+     {
+     printf ("AV2 ica-1,icb-1,icc-1 = %d, %d, %d\n", ica-1,icb-1,icc-1); \
+     printf (" idlonn = %d, idlonc = %d\n", idlonn, idlonc);
+     }
+}
               else if (idlonn < 0 || ((idlonn == 0) && (idlonc < 0))) 
                 AV1;
               else

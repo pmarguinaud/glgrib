@@ -139,7 +139,7 @@ glgrib_palette & glgrib_palette::create_by_name (const std::string & name)
 
   if ((found = st.fetch_row (&hexa)))
     {
-      for (int i = 0; i < 256; i++)
+      for (int i = 0; 8 * i + 7 < hexa.length (); i++)
         {
           int r, g, b, a;
           if (sscanf (&hexa[8*i], "%2x%2x%2x%2x", &r, &g, &b, &a) != 4)

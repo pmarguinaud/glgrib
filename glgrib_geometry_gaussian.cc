@@ -121,10 +121,22 @@ void compute_latgauss (int kn, double * latgauss)
   delete [] zfn;
 }
 
-#define MODULO(x, y) ((x)%(y))
+static int MODULO (int x, int y)
+{
+  return ((x)%(y));
+}
+
 #define JDLON(JLON1, JLON2) (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1))
-#define JNEXT(JLON, ILOEN) ((JLON) == (ILOEN) ? 1 : (JLON)+1)
-#define JPREV(JLON, ILOEN) ((JLON)-1 > 0 ? (JLON)-1 : (ILOEN))
+
+static int JNEXT (int JLON, int ILOEN)
+{
+  return ((JLON) == (ILOEN) ? 1 : (JLON)+1);
+}
+
+static int JPREV (int JLON, int ILOEN)
+{
+   return ((JLON)-1 > 0 ? (JLON)-1 : (ILOEN));
+}
 
 static 
 void process_lat (int jlat, int iloen1, int iloen2, 
@@ -132,6 +144,7 @@ void process_lat (int jlat, int iloen1, int iloen2,
 	          unsigned int ** p_inds_strip, int dir)  
 {
 // iloen1 > iloen2
+
 
   int jlon1 = 1;
   int jlon2 = 1;
@@ -148,21 +161,21 @@ void process_lat (int jlat, int iloen1, int iloen2,
       int jlon1n = JNEXT (jlon1, iloen1);
       int jlon2n = JNEXT (jlon2, iloen2);
 
-#define AV1 \
-  do {                                                                        \
-    ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff1 + jlon1n;  \
-    jlon1 = jlon1n;                                                           \
-    turn = turn || jlon1 == 1;                                                \
-    av1++; av2 = 0;                                                           \
-  } while (0)
+      auto AV1 = [&] ()
+      {
+        ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff1 + jlon1n;  
+        jlon1 = jlon1n;                                                           
+        turn = turn || jlon1 == 1;                                                
+        av1++; av2 = 0;                                                          
+      };
 
-#define AV2 \
-  do {                                                                        \
-    ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff2 + jlon2n;  \
-    jlon2 = jlon2n;                                                           \
-    turn = turn || jlon2 == 1;                                                \
-    av2++; av1 = 0;                                                           \
-  } while (0)
+      auto AV2 = [&] ()
+      {
+        ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff2 + jlon2n;  
+        jlon2 = jlon2n;                                                           
+        turn = turn || jlon2 == 1;                                                
+        av2++; av1 = 0;                                                           
+      };
 
       int idlonc = JDLON (jlon1, jlon2);
       int idlonn;
@@ -174,13 +187,13 @@ void process_lat (int jlat, int iloen1, int iloen2,
         idlonn = JDLON (jlon1n, jlon2n);
 
       if (idlonn > 0 || ((idlonn == 0) && (idlonc > 0)))
-        AV2;
+        AV2 ();
       else if (idlonn < 0 || ((idlonn == 0) && (idlonc < 0))) 
-        AV1;
+        AV1 ();
       else
         abort ();
       
-      auto RS2 = [&inds_strip,&ica,&icb,&icc] ()
+      auto RS2 = [&] ()
       {
         *(inds_strip++) = 0xffffffff;   
         *(inds_strip++) = ica-1;        
@@ -188,7 +201,7 @@ void process_lat (int jlat, int iloen1, int iloen2,
         *(inds_strip++) = icc-1;        
       };
 
-      auto ST1 = [&ica,&icb,&icc,iloen1,&inds_strip] () 
+      auto ST1 = [&] () 
       {
         *(inds_strip++) = 0xffffffff;  
         *(inds_strip++) = ica-1+iloen1-1;
@@ -197,7 +210,7 @@ void process_lat (int jlat, int iloen1, int iloen2,
         *(inds_strip++) = icc-1;
       };
   
-      auto RS1 = [&icc,&icb,&inds_strip] ()
+      auto RS1 = [&] ()
       {
         *(inds_strip++) = icc-1;
         *(inds_strip++) = 0xffffffff;  
@@ -271,7 +284,7 @@ void process_lat (int jlat, int iloen1, int iloen2,
                 while (jlon1 != 1)
                   {
                     int jlon1n = JNEXT (jlon1, iloen1);
-                    AV1;
+                    AV1 ();
                     RS2 ();
                   }
             }
@@ -283,11 +296,6 @@ void process_lat (int jlat, int iloen1, int iloen2,
   *p_inds_strip = inds_strip;
 }
   
-
-#undef AV1
-#undef AV2
-#undef RS1
-#undef RS2
 
 static 
 void compute_trigauss_strip (const long int Nj, const std::vector<long int> & pl, 
@@ -349,10 +357,6 @@ void compute_trigauss_strip (const long int Nj, const std::vector<long int> & pl
 
 }
 
-#define PRINT(a,b,c) \
-  do {                                                          \
-    ind[ik++] = (a)-1; ind[ik++] = (b) - 1; ind[ik++] = (c)-1;  \
-  } while (0)
 
 static 
 void compute_trigauss (const long int Nj, const std::vector<long int> & pl, unsigned int * ind, 
@@ -384,7 +388,11 @@ void compute_trigauss (const long int Nj, const std::vector<long int> & pl, unsi
       int jglooff1 = iglooff[jlat-1] + 0;
       int jglooff2 = iglooff[jlat-1] + iloen1;
      
-     
+      auto PRINT = [&] (int a,int b,int c) 
+      {
+        ind[ik++] = (a)-1; ind[ik++] = (b) - 1; ind[ik++] = (c)-1;  
+      };
+
       if (iloen1 == iloen2) 
         {
           for (int jlon1 = 1; jlon1 <= iloen1; jlon1++)
@@ -414,21 +422,21 @@ void compute_trigauss (const long int Nj, const std::vector<long int> & pl, unsi
               int jlon1n = JNEXT (jlon1, iloen1);
               int jlon2n = JNEXT (jlon2, iloen2);
 
-#define AV1 \
-  do {                                                                        \
-    ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff1 + jlon1n;  \
-    if (trid) trid[ica-1] = ik / 3;                                           \
-    jlon1 = jlon1n;                                                           \
-    turn = turn || jlon1 == 1;                                                \
-  } while (0)
+              auto AV1 = [&] ()
+              {
+                ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff1 + jlon1n;  
+                if (trid) trid[ica-1] = ik / 3;                                           
+                jlon1 = jlon1n;                                                           
+                turn = turn || jlon1 == 1;                                                
+              };
 
-#define AV2 \
-  do {                                                                        \
-    ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff2 + jlon2n;  \
-    if (triu) triu[icb-1] = ik / 3;                                           \
-    jlon2 = jlon2n;                                                           \
-    turn = turn || jlon2 == 1;                                                \
-  } while (0)
+              auto AV2 = [&] ()
+              {
+                ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff2 + jlon2n;  
+                if (triu) triu[icb-1] = ik / 3;                                           
+                jlon2 = jlon2n;                                                           
+                turn = turn || jlon2 == 1;                                                
+              };
 
               int idlonc = JDLON (jlon1, jlon2);
               int idlonn;
@@ -440,16 +448,9 @@ void compute_trigauss (const long int Nj, const std::vector<long int> & pl, unsi
                 idlonn = JDLON (jlon1n, jlon2n);
 
               if (idlonn > 0 || ((idlonn == 0) && (idlonc > 0)))
-{
-                AV2;
-   if (ica-1 == 16083 && icb-1 == 16490 && icc-1 == 16491) 
-     {
-     printf ("AV2 ica-1,icb-1,icc-1 = %d, %d, %d\n", ica-1,icb-1,icc-1); \
-     printf (" idlonn = %d, idlonc = %d\n", idlonn, idlonc);
-     }
-}
+                AV2 ();
               else if (idlonn < 0 || ((idlonn == 0) && (idlonc < 0))) 
-                AV1;
+                AV1 ();
               else
                 abort ();
          
@@ -461,14 +462,14 @@ void compute_trigauss (const long int Nj, const std::vector<long int> & pl, unsi
                     while (jlon2 != 1)
                       {
                         int jlon2n = JNEXT (jlon2, iloen2);
-                        AV2;
+                        AV2 ();
                         PRINT (ica, icb, icc);
                       }
                   else if (jlon2 == 1)
                     while (jlon1 != 1)
                       {
                         int jlon1n = JNEXT (jlon1, iloen1);
-                        AV1;
+                        AV1 ();
                        PRINT (ica, icb, icc);
                       }
                   break;
@@ -483,9 +484,6 @@ void compute_trigauss (const long int Nj, const std::vector<long int> & pl, unsi
 
 
     }
-
-#undef AV1
-#undef AV2
 
 }
 

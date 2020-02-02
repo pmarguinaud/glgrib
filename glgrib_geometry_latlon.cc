@@ -279,7 +279,7 @@ void glgrib_geometry_latlon::getTriangleVertices (int it, int jglo[3]) const
 
   if (t021)
     {
-      jglo[0] = ind0; jglo[1] = ind1; jglo[2] = ind2;
+      jglo[0] = ind0; jglo[1] = ind2; jglo[2] = ind1;
     }
   else
     {

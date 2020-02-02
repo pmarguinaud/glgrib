@@ -20,4 +20,4 @@ Draw contour labels
 
 Iso contour pleins (en couleur), avec un geometry shader
 Generate coordinates in shaders
-
+Change palette definition; get new palettes

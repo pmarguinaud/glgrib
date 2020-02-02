@@ -51,25 +51,43 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options
           {
             int ind0 = (j + 0) * Nx + (i + 0); int ind1 = (j + 0) * Nx + (i + 1); 
             int ind2 = (j + 1) * Nx + (i + 0); int ind3 = (j + 1) * Nx + (i + 1); 
-            ind[3*t+0] = ind2; ind[3*t+1] = ind0; ind[3*t+2] = ind1; t++;
-            ind[3*t+0] = ind2; ind[3*t+1] = ind1; ind[3*t+2] = ind3; t++;
+            ind[3*t+0] = ind1; ind[3*t+1] = ind3; ind[3*t+2] = ind2; t++;
+            ind[3*t+0] = ind0; ind[3*t+1] = ind1; ind[3*t+2] = ind2; t++;
           }
     }
   else
     {
-      ind_strip_size = (2 * Nx + 1) * (Ny - 1);
+      ind_strip_size = (2 * Nx + 5) * (Ny - 1);
       elementbuffer = new_glgrib_opengl_buffer_ptr (ind_strip_size * sizeof (unsigned int));
       unsigned int * ind_strip = (unsigned int *)elementbuffer->map ();
-      for (int j = 0, t = 0; j < Ny-1; j++)
+
+      auto ind0 = [=] (int i, int j) { return (j + 0) * Nx + (i + 0); };
+      auto ind2 = [=] (int i, int j) { return (j + 1) * Nx + (i + 0); };
+
+      int t = 0;
+      for (int j = 0; j < Ny-1; j++)
         {
-          for (int i = 0; i < Nx; i++)
+          // Control triangle culling : first triangle cannot be part of the strip
+          ind_strip[t++] = ind2 (0, j); 
+          ind_strip[t++] = ind0 (0, j);
+          ind_strip[t++] = ind0 (1, j);
+          ind_strip[t++] = 0xffffffff;
+          // Following triangles
+          for (int i = 0; i < Nx-1; i++)
             {
-              int ind0 = (j + 0) * Nx + (i + 0); 
-              int ind2 = (j + 1) * Nx + (i + 0); 
-              ind_strip[t++] = ind2; ind_strip[t++] = ind0;
+              ind_strip[t++] = ind2 (i, j); ind_strip[t++] = ind0 (i+1, j);
             }
+          // Last triangle
+          ind_strip[t++] = ind2 (Nx-1, j);
 	  ind_strip[t++] = 0xffffffff;
 	}
+
+      if (t >= ind_strip_size)
+        abort ();
+
+      for (; t < ind_strip_size; t++)
+	ind_strip[t] = 0xffffffff;
+      
     }
 
   elementbuffer->unmap ();
@@ -303,7 +321,7 @@ void glgrib_geometry_lambert::getTriangleVertices (int it, int jglo[3]) const
     }
   else
     {
-      jglo[0] = ind2; jglo[1] = ind3; jglo[2] = ind1;
+      jglo[0] = ind2; jglo[1] = ind1; jglo[2] = ind3;
     }
 }
 

@@ -144,7 +144,6 @@ void process_lat (int jlat, int iloen1, int iloen2,
   for (;;)
     {
       int ica = 0, icb = 0, icc = 0;
-  bool dbg = (iloen1 == 30) && (iloen2 == 20) && (dir < 0);
   
       int jlon1n = JNEXT (jlon1, iloen1);
       int jlon2n = JNEXT (jlon2, iloen2);
@@ -155,8 +154,6 @@ void process_lat (int jlat, int iloen1, int iloen2,
     jlon1 = jlon1n;                                                           \
     turn = turn || jlon1 == 1;                                                \
     av1++; av2 = 0;                                                           \
-    if (dbg) printf (" AV1 : ica-1,icb-1,icc-1 = %d, %d, %d\n", \
-                     ica-1,icb-1,icc-1); \
   } while (0)
 
 #define AV2 \
@@ -165,8 +162,6 @@ void process_lat (int jlat, int iloen1, int iloen2,
     jlon2 = jlon2n;                                                           \
     turn = turn || jlon2 == 1;                                                \
     av2++; av1 = 0;                                                           \
-    if (dbg) printf (" AV2 : ica-1,icb-1,icc-1 = %d, %d, %d\n", \
-                     ica-1,icb-1,icc-1); \
   } while (0)
 
       int idlonc = JDLON (jlon1, jlon2);
@@ -185,15 +180,31 @@ void process_lat (int jlat, int iloen1, int iloen2,
       else
         abort ();
       
-#define RS2 \
-  do { \
-    *(inds_strip++) = 0xffffffff;   \
-    *(inds_strip++) = ica-1;        \
-    *(inds_strip++) = icb-1;        \
-    *(inds_strip++) = icc-1;        \
-  } while (0)
+      auto RS2 = [&inds_strip,&ica,&icb,&icc] ()
+      {
+        *(inds_strip++) = 0xffffffff;   
+        *(inds_strip++) = ica-1;        
+        *(inds_strip++) = icb-1;        
+        *(inds_strip++) = icc-1;        
+      };
 
+      auto ST1 = [&ica,&icb,&icc,iloen1,&inds_strip] () 
+      {
+        *(inds_strip++) = 0xffffffff;  
+        *(inds_strip++) = ica-1+iloen1-1;
+        *(inds_strip++) = ica-1;
+        *(inds_strip++) = icb-1;
+        *(inds_strip++) = icc-1;
+      };
   
+      auto RS1 = [&icc,&icb,&inds_strip] ()
+      {
+        *(inds_strip++) = icc-1;
+        *(inds_strip++) = 0xffffffff;  
+        *(inds_strip++) = icb-1;
+        *(inds_strip++) = icc-1;
+      };
+
       if (dir > 0)
         {
           if (idlonc == 0) 
@@ -204,7 +215,7 @@ void process_lat (int jlat, int iloen1, int iloen2,
                 }
               else if (av1)
                 {
-                  RS2;
+                  RS2 ();
                 }
             }
           else if (av2 > 1)
@@ -213,7 +224,7 @@ void process_lat (int jlat, int iloen1, int iloen2,
             }
           else if (av1 > 1)
             {
-              RS2;
+              RS2 ();
             }
           else
             {
@@ -226,11 +237,7 @@ void process_lat (int jlat, int iloen1, int iloen2,
           bool first = inds_strip == *p_inds_strip;
           if (first) 
             {
-              *(inds_strip++) = 0xffffffff;  
-              *(inds_strip++) = ica-1+iloen1-1;
-              *(inds_strip++) = ica-1;
-              *(inds_strip++) = icb-1;
-              *(inds_strip++) = icc-1;
+              ST1 ();
             }
           else
             {
@@ -240,13 +247,7 @@ void process_lat (int jlat, int iloen1, int iloen2,
                 }
               else if (av1 > 1)
                 {
-if (dbg) printf (" jlon1, jlon2 = %d, %d\n", jlon1, jlon2);
-                  *(inds_strip++) = icc-1;
-                  *(inds_strip++) = 0xffffffff;  
-                  *(inds_strip++) = icb-1;
-                  *(inds_strip++) = icc-1;
-if (dbg) printf (" ica-1,icb-1,icc-1 = %d, %d, %d\n", ica-1,icb-1,icc-1);
-              //  RS2;
+                  RS1 ();
                 }
               else
                 {
@@ -259,7 +260,6 @@ if (dbg) printf (" ica-1,icb-1,icc-1 = %d, %d, %d\n", ica-1,icb-1,icc-1);
       
       if (turn)
         {
-if (dbg) printf ("turn : jlon1, jlon2 = %d, %d\n", jlon1, jlon2);
           if (dir > 0)
             {
               if (jlon1 == 1)
@@ -270,20 +270,15 @@ if (dbg) printf ("turn : jlon1, jlon2 = %d, %d\n", jlon1, jlon2);
               else if (jlon2 == 1) 
                 while (jlon1 != 1)
                   {
-if (dbg) printf ("turn : AV1\n");
                     int jlon1n = JNEXT (jlon1, iloen1);
                     AV1;
-                    RS2;
+                    RS2 ();
                   }
             }
           break;
         }
 
     }
-
-  if ((iloen1 == 30) && (iloen2 == 20) && (dir < 0))
-  for (int i = 0; i < inds_strip - *p_inds_strip; i++)
-    printf ("%u\n", (*p_inds_strip)[i]);
 
   *p_inds_strip = inds_strip;
 }
@@ -307,7 +302,7 @@ void compute_trigauss_strip (const long int Nj, const std::vector<long int> & pl
   for (int jlat = 2; jlat <= Nj; jlat++)
     iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
 
-//#pragma omp parallel for 
+#pragma omp parallel for 
   for (int jlat = 1; jlat <= Nj-1; jlat++)
     {
       int iloen1 = pl[jlat - 1];

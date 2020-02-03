@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <algorithm>
+#include <iterator>
 
 
 glgrib_field_contour::glgrib_field_contour (const glgrib_field_contour & field)
@@ -111,27 +112,37 @@ void glgrib_field_contour::setupLabels (isoline_t * iso, const isoline_data_t & 
 {
   glgrib_font_ptr font = new_glgrib_font_ptr (opts.contour.labels.font);
 
+static int count = 0;
+
   std::string label = std::to_string (iso->level);
-  label = "X";
+  label = 'A' + count++;
 
   // Start indices
-  std::vector<int> ind = {0};
+  std::vector<int> ind;
   
   for (int i = 0; i < iso_data.size (); i++)
     if (iso_data.length[i] == 0.0f)
       ind.push_back (i);
 
+
   // Middle points
-  std::vector<int> jnd (ind.size ()-1);
+  std::vector<int> mnd (ind.size ());
 
 #pragma omp parallel for
   for (int i = 0; i < ind.size ()-1; i++)
-    for (int j = ind[i]; j < ind[i+1]; j++)
-      if (iso_data.length[j] > iso_data.length[ind[i+1]-1])
+    for (int j = ind[i]+1; j < ind[i+1]; j++)
+      if ((iso_data.length[j] - iso_data.length[ind[i]+1]) > 
+          (iso_data.length[ind[i+1]-1] - iso_data.length[ind[i]+1]) / 2)
         {
-          jnd[i] = j;
+          if (iso_data.length[ind[i+1]-1] - iso_data.length[ind[i]+1] > opts.contour.labels.distmin * deg2rad)
+            mnd[i] = j;
+          else
+            mnd[i] = 0;
           break;
         }
+
+  std::vector<int> jnd;
+  std::copy_if (mnd.begin (), mnd.end (), std::back_inserter (jnd), [] (const int & x) { return x != 0; });
    
   int nlab = jnd.size ();
 
@@ -141,8 +152,8 @@ void glgrib_field_contour::setupLabels (isoline_t * iso, const isoline_data_t & 
 #pragma omp parallel for
   for (int i = 0; i < nlab; i++)
     {
-      float lon = iso_data.lonlat[2*i+0];
-      float lat = iso_data.lonlat[2*i+1];
+      float lon = iso_data.lonlat[2*jnd[i]+0];
+      float lat = iso_data.lonlat[2*jnd[i]+1];
       float coslon = cos (lon), sinlon = sin (lon);
       float coslat = cos (lat), sinlat = sin (lat);
       X[i] = coslon * coslat; 

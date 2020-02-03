@@ -2,6 +2,7 @@
 #define _GLGRIB_FIELD_CONTOUR_H
 
 #include "glgrib_field.h"
+#include "glgrib_string.h"
 
 class glgrib_field_contour : public glgrib_field
 {
@@ -76,7 +77,7 @@ private:
       height.clear (); 
       length.clear (); 
     }
-    int size ()
+    int size () const
     {
       return length.size ();
     }
@@ -84,6 +85,7 @@ private:
   class isoline_t
   {
   public:
+    glgrib_string labels;
     float level;
     bool wide = false;
     float width = 0.0f;
@@ -97,7 +99,9 @@ private:
   };
 
   std::vector<isoline_t> iso;
+
   void processTriangle (int, float *, float, float *, float, float, float, bool *, isoline_data_t *);
+  void setupLabels (isoline_t *, const isoline_data_t &);
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include "glgrib_field_contour.h"
 #include "glgrib_program.h"
 #include "glgrib_palette.h"
+#include "glgrib_trigonometry.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -105,6 +106,59 @@ void glgrib_field_contour::setupVertexAttributes ()
     }
 }
 
+
+void glgrib_field_contour::setupLabels (isoline_t * iso, const isoline_data_t & iso_data)
+{
+  glgrib_font_ptr font = new_glgrib_font_ptr (opts.contour.labels.font);
+
+  std::string label = std::to_string (iso->level);
+  label = "X";
+
+  // Start indices
+  std::vector<int> ind = {0};
+  
+  for (int i = 0; i < iso_data.size (); i++)
+    if (iso_data.length[i] == 0.0f)
+      ind.push_back (i);
+
+  // Middle points
+  std::vector<int> jnd (ind.size ()-1);
+
+#pragma omp parallel for
+  for (int i = 0; i < ind.size ()-1; i++)
+    for (int j = ind[i]; j < ind[i+1]; j++)
+      if (iso_data.length[j] > iso_data.length[ind[i+1]-1])
+        {
+          jnd[i] = j;
+          break;
+        }
+   
+  int nlab = jnd.size ();
+
+  std::vector<std::string> L (nlab);
+  std::vector<float> X (nlab), Y (nlab), Z (nlab), A (nlab);
+
+#pragma omp parallel for
+  for (int i = 0; i < nlab; i++)
+    {
+      float lon = iso_data.lonlat[2*i+0];
+      float lat = iso_data.lonlat[2*i+1];
+      float coslon = cos (lon), sinlon = sin (lon);
+      float coslat = cos (lat), sinlat = sin (lat);
+      X[i] = coslon * coslat; 
+      Y[i] = sinlon * coslat; 
+      Z[i] = sinlat;
+      A[i] = 0.0f; L[i] = label; 
+    }
+
+  iso->labels.setup3D (font, L, X, Y, Z, A, opts.contour.labels.font.scale, 
+                       glgrib_string::C);
+  iso->labels.setForegroundColor (opts.contour.labels.font.color.foreground);
+  iso->labels.setBackgroundColor (opts.contour.labels.font.color.background);
+  iso->labels.setScaleXYZ (opts.scale);
+
+}
+
 void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field & o, float slot)
 {
   opts = o;
@@ -202,6 +256,9 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
         }
 
       iso[i].color = palette.getColor (levels[i]);
+
+      if (opts.contour.labels.on)
+        setupLabels (&iso[i], iso_data[i]);
 
       iso_data[i].clear ();
 
@@ -394,6 +451,10 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
   view.delMVP (program);
 
   renderHilo (view);
+
+  if (opts.contour.labels.on)
+    for (int i = 0; i < iso.size (); i++)
+      iso[i].labels.render (view);
 
 }
 

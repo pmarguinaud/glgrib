@@ -416,6 +416,27 @@ public:
   } frame;
 };
 
+class glgrib_options_font : public glgrib_options_base
+{
+public:
+  glgrib_options_font (const std::string & b, float s) : bitmap (b), scale (s) {}
+  glgrib_options_font () {}
+  DEFINE
+  {
+    DESC (bitmap,     Bitmap path);
+    DESC (scale,      Bitmap scale);
+    DESC (color.foreground, Foreground color);
+    DESC (color.background, Background color);
+  }
+  std::string bitmap = "fonts/08.bmp";
+  float scale = 0.05f;
+  struct
+  {
+    glgrib_option_color foreground = glgrib_option_color (255, 255, 255, 255);
+    glgrib_option_color background = glgrib_option_color (  0,   0,   0,   0);
+  } color;
+};
+
 class glgrib_options_contour : public glgrib_options_base
 {
 public:
@@ -430,6 +451,8 @@ public:
     DESC (widths,        List of widths);
     DESC (patterns,      List of dash patterns);
     DESC (lengths,       List of dash lengths);
+    DESC (labels.on,     Enable labels);
+    INCLUDE (labels.font);
   }
   int number = 10;
   std::vector<float> levels;
@@ -438,6 +461,11 @@ public:
   std::vector<float> widths;
   std::vector<std::string> patterns;
   std::vector<float> lengths;
+  struct
+  {
+    bool on = false;
+    glgrib_options_font font;
+  } labels;
 };
 
 class glgrib_options_isofill : public glgrib_options_base
@@ -532,27 +560,6 @@ public:
   } linear;
   float scale = 1.0f;
   float offset = 0.0f;
-};
-
-class glgrib_options_font : public glgrib_options_base
-{
-public:
-  glgrib_options_font (const std::string & b, float s) : bitmap (b), scale (s) {}
-  glgrib_options_font () {}
-  DEFINE
-  {
-    DESC (bitmap,     Bitmap path);
-    DESC (scale,      Bitmap scale);
-    DESC (color.foreground, Foreground color);
-    DESC (color.background, Background color);
-  }
-  std::string bitmap = "fonts/08.bmp";
-  float scale = 0.05f;
-  struct
-  {
-    glgrib_option_color foreground = glgrib_option_color (255, 255, 255, 255);
-    glgrib_option_color background = glgrib_option_color (  0,   0,   0,   0);
-  } color;
 };
 
 class glgrib_options_scalar : public glgrib_options_base

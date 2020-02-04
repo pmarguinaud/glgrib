@@ -155,9 +155,6 @@ void glgrib_field_contour::setupLabels (isoline_t * iso, const isoline_data_t & 
   while (label.length () && label[0] == ' ')
     label = label.substr (1);
 
-//label = 'A' + count++;
-//label = "####" + label + "####";
-
   // Start indices
   std::vector<int> ind;
   

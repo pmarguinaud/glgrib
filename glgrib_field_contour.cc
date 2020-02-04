@@ -8,6 +8,7 @@
 #include <iostream>
 #include <algorithm>
 #include <iterator>
+#include <numeric>
 
 
 glgrib_field_contour::glgrib_field_contour (const glgrib_field_contour & field)
@@ -107,15 +108,51 @@ void glgrib_field_contour::setupVertexAttributes ()
     }
 }
 
+static
+float getLabelAngle (const std::vector<float> & lonlat, const std::vector<float> & length, int j, int width = 2)
+{
+  const glm::vec3 N = glm::vec3 (0.0f, 0.0f, 1.0f);
+
+  float lon = lonlat[2*j+0], lat = lonlat[2*j+1];
+
+  glm::vec3 P = lonlat2xyz (glm::vec2 (lonlat[2*j+0], lonlat[2*j+1]));
+  std::vector<glm::vec3> V (2 * width);
+
+  for (int i = -width; i < 0; i++)
+    V[width+i+0] = glm::normalize (P - lonlat2xyz (glm::vec2 (lonlat[2*(j+i)+0], lonlat[2*(j+i)+1])));
+
+  for (int i = 1; i <= width; i++)
+    V[width+i-1] = glm::normalize (lonlat2xyz (glm::vec2 (lonlat[2*(j+i)+0], lonlat[2*(j+i)+1])) - P);
+
+  auto A = glm::normalize (std::accumulate (V.begin (), V.end (), glm::vec3 (0.0f, 0.0f, 0.0f)));
+
+  glm::vec3 u = glm::cross (N, P);
+  glm::vec3 v = glm::cross (P, u);
+
+  float x = glm::dot (u, A);
+  float y = glm::dot (v, A);
+
+  float angle = rad2deg * atan2 (y, x);
+
+  if (fabs (angle - 180.0f) < fabs (angle))
+    angle = angle - 180.0f;
+
+  return angle;
+}
+
 
 void glgrib_field_contour::setupLabels (isoline_t * iso, const isoline_data_t & iso_data)
 {
   glgrib_font_ptr font = new_glgrib_font_ptr (opts.contour.labels.font);
+  char tmp[256];
 
-static int count = 0;
+  sprintf (tmp, opts.contour.labels.format.c_str (), iso->level);
 
-  std::string label = std::to_string (iso->level);
-  label = 'A' + count++;
+  static int count = 0;
+
+  std::string label = tmp;
+//label = 'A' + count++;
+//label = "####" + label + "####";
 
   // Start indices
   std::vector<int> ind;
@@ -131,6 +168,7 @@ static int count = 0;
 #pragma omp parallel for
   for (int i = 0; i < ind.size ()-1; i++)
     for (int j = ind[i]+1; j < ind[i+1]; j++)
+      if (ind[i+1] - ind[i] > 5)
       if ((iso_data.length[j] - iso_data.length[ind[i]+1]) > 
           (iso_data.length[ind[i+1]-1] - iso_data.length[ind[i]+1]) / 2)
         {
@@ -142,7 +180,7 @@ static int count = 0;
         }
 
   std::vector<int> jnd;
-  std::copy_if (mnd.begin (), mnd.end (), std::back_inserter (jnd), [] (const int & x) { return x != 0; });
+  std::copy_if (mnd.begin (), mnd.end (), std::back_inserter (jnd), [] (int i) { return i != 0; });
    
   int nlab = jnd.size ();
 
@@ -152,21 +190,17 @@ static int count = 0;
 #pragma omp parallel for
   for (int i = 0; i < nlab; i++)
     {
-      float lon = iso_data.lonlat[2*jnd[i]+0];
-      float lat = iso_data.lonlat[2*jnd[i]+1];
-      float coslon = cos (lon), sinlon = sin (lon);
-      float coslat = cos (lat), sinlat = sin (lat);
-      X[i] = coslon * coslat; 
-      Y[i] = sinlon * coslat; 
-      Z[i] = sinlat;
-      A[i] = 0.0f; L[i] = label; 
+      int j = jnd[i];
+      lonlat2xyz (iso_data.lonlat[2*j+0], iso_data.lonlat[2*j+1], &X[i], &Y[i], &Z[i]);
+      A[i] = getLabelAngle (iso_data.lonlat, iso_data.length, j);
+      L[i] = label; 
     }
 
   iso->labels.setup3D (font, L, X, Y, Z, A, opts.contour.labels.font.scale, 
                        glgrib_string::C);
   iso->labels.setForegroundColor (opts.contour.labels.font.color.foreground);
   iso->labels.setBackgroundColor (opts.contour.labels.font.color.background);
-  iso->labels.setScaleXYZ (opts.scale);
+  iso->labels.setScaleXYZ (opts.scale * 1.001);
 
 }
 

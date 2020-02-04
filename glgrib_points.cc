@@ -96,6 +96,7 @@ void glgrib_points::render (const glgrib_view & view, const glgrib_options_light
   program->set1f ("length10", length);
   program->set1f ("valmin", d.min);
   program->set1f ("valmax", d.max);
+  program->set1f ("ratio", view.getRatio ());
 
   program->set1f ("palmin", d.opts.palette.min);
   program->set1f ("palmax", d.opts.palette.max);

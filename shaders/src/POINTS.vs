@@ -14,6 +14,7 @@ uniform float valmax;
 uniform float pointSiz;
 uniform bool lpointSiz;
 uniform bool lpointZoo = false;
+uniform float ratio = 1.0f;
 
 out float pointVal;
 out vec3 centerVec;
@@ -78,7 +79,7 @@ void main()
       centerVec.xy = pointRad * pos2;
       centerVec.z = 0.0f;
 
-      gl_Position.x = gl_Position.x + centerVec.x;
+      gl_Position.x = gl_Position.x + centerVec.x / ratio;
       gl_Position.y = gl_Position.y + centerVec.y;
       gl_Position.z = 0.0f;
 

@@ -26,4 +26,22 @@ glm::vec2 xyz2lonlat (const glm::vec3 & xyz)
 }
 
 
+static
+void lonlat2xyz (float lon, float lat, float * x, float * y, float * z)
+{
+  float coslon = cos (lon), sinlon = sin (lon);
+  float coslat = cos (lat), sinlat = sin (lat);
+  *x = coslon * coslat; 
+  *y = sinlon * coslat; 
+  *z = sinlat;
+}
+
+static
+void xyz2lonlat (float x, float y, float z, float * lon, float * lat)
+{
+  *lon = atan2 (y, x);
+  *lat = asin (z);
+}
+
+
 #endif

@@ -57,6 +57,7 @@ public:
 
   const glgrib_options_view & getOptions () const { return opts; }
   void setOptions (const glgrib_options_view & o) { opts = o; }
+  float getRatio () const { return (float)width/(float)height; }
 private:
   glgrib_options_view opts;
   int width, height;

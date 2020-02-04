@@ -14,6 +14,7 @@ uniform mat4 MVP;
 uniform bool l3d = false;
 uniform float length10;
 uniform float scaleXYZ = 1.0f;
+uniform float ratio = 1.0f;
 
 #include "projection.h"
 #include "scale.h"
@@ -66,9 +67,14 @@ void main ()
           pos = scalePosition (pos, normedPos, scale0);
 
           gl_Position =  MVP * vec4 (pos, 1.);
-       
-          gl_Position.x = gl_Position.x + 10. * (+ cosA * pos2.x + sinA * pos2.y);
-          gl_Position.y = gl_Position.y + 10. * (- sinA * pos2.x + cosA * pos2.y);
+
+          if ((proj_vs == POLAR_NORTH) || (proj_vs == POLAR_SOUTH))
+            {
+              cosA = 1.0f; sinA = 0.0f;
+            }
+
+          gl_Position.x = gl_Position.x + 10. * (+ cosA * pos2.x - sinA * pos2.y) / ratio;
+          gl_Position.y = gl_Position.y + 10. * (+ sinA * pos2.x + cosA * pos2.y);
           gl_Position.z = 0.0f;
         }
     }

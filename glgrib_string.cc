@@ -244,7 +244,8 @@ void glgrib_string::render (const glgrib_view & view) const
 
   program->set1f ("scale", d.scale);
   program->set1i ("texture", 0);
-  program->set1i ("l3d", 2);
+  program->set1i ("l3d", 1);
+  program->set1f ("ratio", view.getRatio ());
   program->set4fv ("color0", d.color0);
   program->set4fv ("color1", d.color1);
   program->set1f ("length10", length);

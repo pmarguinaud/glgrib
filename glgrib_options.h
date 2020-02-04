@@ -454,6 +454,7 @@ public:
     DESC (labels.on,     Enable labels);
     INCLUDE (labels.font);
     DESC (labels.distmin, Minimal length in degrees for labelled lines);
+    DESC (labels.format,  Format to print labels);
   }
   int number = 10;
   std::vector<float> levels;
@@ -467,6 +468,7 @@ public:
     bool on = false;
     glgrib_options_font font;
     float distmin = 3.0f;
+    std::string format = "%12.2f";
   } labels;
 };
 

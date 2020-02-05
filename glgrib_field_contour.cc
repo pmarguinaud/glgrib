@@ -148,8 +148,6 @@ void glgrib_field_contour::setupLabels (isoline_t * iso, const isoline_data_t & 
 
   sprintf (tmp, opts.contour.labels.format.c_str (), iso->level);
 
-  static int count = 0;
-
   std::string label = tmp;
 
   while (label.length () && label[0] == ' ')

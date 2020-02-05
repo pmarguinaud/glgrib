@@ -98,7 +98,9 @@ void main ()
       float X = vscale * N * cos (D) / valmax_n;
       float Y = vscale * N * sin (D) / valmax_n;
      
-      pos = vertexPos + (pos.x * X - pos.y * Y) * u + (pos.x * Y + pos.y * X) * v;
+      float s = scalingFactor (compNormedPos (vertexPos));
+
+      pos = vertexPos + ((pos.x * X - pos.y * Y) * u + (pos.x * Y + pos.y * X) * v) / s;
      
       vec3 normedPos = compNormedPos (pos);
       vec3 projedPos = compProjedPos (pos, normedPos);

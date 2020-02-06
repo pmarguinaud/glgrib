@@ -15,13 +15,13 @@ public:
   glgrib_field_contour & operator= (const glgrib_field_contour &);
   glgrib_field_contour () { }
   glgrib_field_contour (const glgrib_field_contour &);
-  virtual void setup (glgrib_loader *, const glgrib_options_field &, float = 0) override;
-  virtual void render (const glgrib_view &, const glgrib_options_light &) const override;
+  void setup (glgrib_loader *, const glgrib_options_field &, float = 0) override;
+  void render (const glgrib_view &, const glgrib_options_light &) const override;
   virtual ~glgrib_field_contour ();
   void setupVertexAttributes ();
-  virtual void clear () override; 
-  virtual bool useColorBar () const override { return false; }
-  virtual int getSlotMax () const override
+  void clear () override; 
+  bool useColorBar () const override { return false; }
+  int getSlotMax () const override
   {
     return (int)opts.path.size ();
   }

@@ -12,13 +12,13 @@ class glgrib_land : public glgrib_object
 {
 public:
   glgrib_land & operator=(const glgrib_land &);
-  virtual void render (const glgrib_view &, const glgrib_options_light &) const override;
+  void render (const glgrib_view &, const glgrib_options_light &) const override;
   virtual ~glgrib_land () { clear (); }
   virtual void clear ();
   virtual void setup (const glgrib_options_land &);
-  virtual void resize (const glgrib_view &) override {}
+  void resize (const glgrib_view &) override {}
   void setupVertexAttributes ();
-  virtual float getScale () const override { return opts.layers[0].scale; }
+  float getScale () const override { return opts.layers[0].scale; }
 private:
   void triangulate (std::vector<int> *, std::vector<int> *,
                     std::vector<int> *, std::vector<int> *,

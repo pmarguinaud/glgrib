@@ -14,12 +14,12 @@ public:
   glgrib_field_scalar & operator= (const glgrib_field_scalar &);
   glgrib_field_scalar () { }
   glgrib_field_scalar (const glgrib_field_scalar &);
-  virtual void setup (glgrib_loader *, const glgrib_options_field &, float = 0) override;
-  virtual void render (const glgrib_view &, const glgrib_options_light &) const override;
+  void setup (glgrib_loader *, const glgrib_options_field &, float = 0) override;
+  void render (const glgrib_view &, const glgrib_options_light &) const override;
   virtual ~glgrib_field_scalar ();
   void setupVertexAttributes ();
-  virtual bool useColorBar () const override { return true; }
-  virtual int getSlotMax () const override
+  bool useColorBar () const override { return true; }
+  int getSlotMax () const override
   {
     return (int)opts.path.size ();
   }
@@ -30,7 +30,7 @@ private:
   template <typename T>
   void setup (glgrib_loader *, const glgrib_options_field &, float = 0);
   GLuint VertexArrayIDpoints = 0;
-  virtual void clear () override;
+  void clear () override;
 };
 
 #endif

@@ -19,11 +19,11 @@ public:
   void set_flat (bool f) { opts.flat.on = f; }
   void toggle_flat () { opts.flat.on = ! opts.flat.on; }
   void setupVertexAttributes ();
-  virtual void resize (const glgrib_view &) override {}
+  void resize (const glgrib_view &) override {}
   void toggle_wireframe () { opts.wireframe.on = ! opts.wireframe.on; }
   const glgrib_options_landscape & getOptions () const { return opts; }
   void setPositionOptions (const glgrib_options_landscape_position & o) { opts.lonlat.position = o; }
-  virtual float getScale () const override { return opts.scale; }
+  float getScale () const override { return opts.scale; }
 private:
   glgrib_options_landscape opts;
   glgrib_opengl_texture_ptr texture;

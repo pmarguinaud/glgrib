@@ -11,8 +11,8 @@ public:
     frames = opts.window.offscreen.frames;
     glgrib_window::create (opts);
   }
-  virtual void run (class glgrib_shell * shell = NULL) override;
-  virtual void setHints () override;
+  void run (class glgrib_shell * shell = NULL) override;
+  void setHints () override;
 private:
   int frames;
 };

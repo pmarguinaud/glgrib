@@ -21,9 +21,9 @@ public:
   virtual void clear ();
 
   void setup (const glgrib_options_points &, const std::vector<float> &, const std::vector<float> &, const std::vector<float> &);
-  virtual void render (const glgrib_view &, const glgrib_options_light &) const override;
+  void render (const glgrib_view &, const glgrib_options_light &) const override;
   const glgrib_options_points & getOptions () const { return d.opts; }
-  virtual void resize (const glgrib_view &) override {}
+  void resize (const glgrib_view &) override {}
 private:
   struct
   {

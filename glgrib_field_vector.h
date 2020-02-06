@@ -15,26 +15,26 @@ public:
   glgrib_field_vector & operator= (const glgrib_field_vector &);
   glgrib_field_vector () { }
   glgrib_field_vector (const glgrib_field_vector &);
-  virtual void setup (glgrib_loader *, const glgrib_options_field &, float = 0) override;
-  virtual void render (const glgrib_view &, const glgrib_options_light &) const override;
+  void setup (glgrib_loader *, const glgrib_options_field &, float = 0) override;
+  void render (const glgrib_view &, const glgrib_options_light &) const override;
   virtual ~glgrib_field_vector ();
   void setupVertexAttributes ();
   void reSample (const glgrib_view &);
   void toggleShowVector () { opts.vector.arrow.on = ! opts.vector.arrow.on; }
   void toggleShowNorm () { opts.vector.norm.on = ! opts.vector.norm.on; }
-  virtual void resize (const glgrib_view &) override;
-  virtual float getNormedMinValue () const override
+  void resize (const glgrib_view &) override;
+  float getNormedMinValue () const override
   {
     std::vector<float> val = getMinValue ();
     return val[0];
   }
-  virtual float getNormedMaxValue () const override
+  float getNormedMaxValue () const override
   {
     std::vector<float> val = getMaxValue ();
     return val[0];
   }
-  virtual bool useColorBar () const override { return true; }
-  virtual int getSlotMax () const override
+  bool useColorBar () const override { return true; }
+  int getSlotMax () const override
   {
     return (int)opts.path.size () / 2;
   }
@@ -46,7 +46,7 @@ private:
       float vscale;
     } d;
 protected:
-  virtual void clear () override;
+  void clear () override;
 };
 
 #endif

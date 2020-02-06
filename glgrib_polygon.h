@@ -9,7 +9,7 @@ class glgrib_polygon : public glgrib_object
 {
 public:
   void setupVertexAttributes ();
-  virtual void render (const glgrib_view &, const glgrib_options_light &) const;
+  virtual void render (const glgrib_view &, const glgrib_options_light &) const override;
   virtual ~glgrib_polygon ();
   virtual void clear ();
 protected:

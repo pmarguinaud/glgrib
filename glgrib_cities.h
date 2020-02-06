@@ -17,7 +17,7 @@ public:
   void clear ();
   void setup (const glgrib_options_cities &);
   const glgrib_options_cities & getOptions () const { return opts; }
-  virtual float getScale () const { return opts.points.scale; }
+  virtual float getScale () const override { return opts.points.scale; }
 private:
   glgrib_options_cities opts;
   struct

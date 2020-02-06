@@ -84,15 +84,15 @@ public:
       n += val[i] * val[i];
     return sqrt (n);
   }
-  virtual void clear ();
-  virtual void resize (const glgrib_view &) {}
+  virtual void clear () override;
+  virtual void resize (const glgrib_view &) override {}
   const std::vector<glgrib_field_metadata> & getMeta () const
   {
     return meta;
   }
   const glgrib_options_field & getOptions () const;
   void setScale (float s) { opts.scale = s; hilo.setScaleXYZ (s); }
-  virtual float getScale () const { return opts.scale; }
+  virtual float getScale () const override { return opts.scale; }
   const glgrib_palette & getPalette () const;
   void toggle_wireframe () 
   {

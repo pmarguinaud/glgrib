@@ -10,8 +10,8 @@ class glgrib_grid : public glgrib_object
 public:
   glgrib_grid & operator=(const glgrib_grid &);
   void setup (const glgrib_options_grid &);
-  virtual void render (const glgrib_view &, const glgrib_options_light &) const;
-  virtual void resize (const glgrib_view &) {}
+  virtual void render (const glgrib_view &, const glgrib_options_light &) const override;
+  virtual void resize (const glgrib_view &) override {}
   const glgrib_options_grid & getOptions () const { return opts; }
   void setColorOptions (const glgrib_option_color & o)
   {
@@ -23,7 +23,7 @@ public:
   }
   void clear ();
   ~glgrib_grid ();
-  virtual float getScale () const { return opts.scale; }
+  virtual float getScale () const override { return opts.scale; }
 private:
   glgrib_string labels;
   glgrib_options_grid opts;

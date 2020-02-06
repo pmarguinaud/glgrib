@@ -27,21 +27,21 @@ public:
 class glgrib_projection_xyz : public glgrib_projection
 {
 public:
-  virtual glm::vec3 project (const glm::vec3 &) const;
-  virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const;
-  virtual glm::mat4 getView (const glm::vec3 &, const float) const;
-  virtual int getType () const { return glgrib_projection::XYZ; }
-  virtual bool setLon0 (const float &) const { return false; }
+  virtual glm::vec3 project (const glm::vec3 &) const override;
+  virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const override;
+  virtual glm::mat4 getView (const glm::vec3 &, const float) const override;
+  virtual int getType () const override { return glgrib_projection::XYZ; }
+  virtual bool setLon0 (const float &) const override { return false; }
 };
 
 class glgrib_projection_latlon : public glgrib_projection
 {
 public:
-  virtual glm::vec3 project (const glm::vec3 &) const;
-  virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const;
-  virtual glm::mat4 getView (const glm::vec3 &, const float) const;
-  virtual int getType () const { return glgrib_projection::LATLON; }
-  virtual bool setLon0 (const float & lon) const { lon0 = lon; return true; }
+  virtual glm::vec3 project (const glm::vec3 &) const override;
+  virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const override;
+  virtual glm::mat4 getView (const glm::vec3 &, const float) const override;
+  virtual int getType () const override { return glgrib_projection::LATLON; }
+  virtual bool setLon0 (const float & lon) const override { lon0 = lon; return true; }
 private:
   mutable float lon0 = 180.0; // Latitude of right handside
 };
@@ -49,11 +49,11 @@ private:
 class glgrib_projection_mercator : public glgrib_projection
 {
 public:
-  virtual glm::vec3 project (const glm::vec3 &) const;
-  virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const;
-  virtual glm::mat4 getView (const glm::vec3 &, const float) const;
-  virtual int getType () const { return glgrib_projection::MERCATOR; }
-  virtual bool setLon0 (const float & lon) const { lon0 = lon; return true; }
+  virtual glm::vec3 project (const glm::vec3 &) const override;
+  virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const override;
+  virtual glm::mat4 getView (const glm::vec3 &, const float) const override;
+  virtual int getType () const override { return glgrib_projection::MERCATOR; }
+  virtual bool setLon0 (const float & lon) const override { lon0 = lon; return true; }
 private:
   mutable float lon0 = 180.0; // Latitude of right handside
 };
@@ -61,21 +61,21 @@ private:
 class glgrib_projection_polar_north : public glgrib_projection
 {
 public:
-  virtual glm::vec3 project (const glm::vec3 &) const;
-  virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const;
-  virtual glm::mat4 getView (const glm::vec3 &, const float) const;
-  virtual int getType () const { return glgrib_projection::POLAR_NORTH; }
-  virtual bool setLon0 (const float &) const { return false; }
+  virtual glm::vec3 project (const glm::vec3 &) const override;
+  virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const override;
+  virtual glm::mat4 getView (const glm::vec3 &, const float) const override;
+  virtual int getType () const override { return glgrib_projection::POLAR_NORTH; }
+  virtual bool setLon0 (const float &) const override { return false; }
 };
 
 class glgrib_projection_polar_south : public glgrib_projection
 {
 public:
-  virtual glm::vec3 project (const glm::vec3 &) const;
-  virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const;
-  virtual glm::mat4 getView (const glm::vec3 &, const float) const;
-  virtual int getType () const { return glgrib_projection::POLAR_SOUTH; }
-  virtual bool setLon0 (const float &) const { return false; }
+  virtual glm::vec3 project (const glm::vec3 &) const override;
+  virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const override;
+  virtual glm::mat4 getView (const glm::vec3 &, const float) const override;
+  virtual int getType () const override { return glgrib_projection::POLAR_SOUTH; }
+  virtual bool setLon0 (const float &) const override { return false; }
 };
 
 class glgrib_projection_set 

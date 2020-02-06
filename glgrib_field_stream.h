@@ -15,13 +15,13 @@ public:
   glgrib_field_stream & operator= (const glgrib_field_stream &);
   glgrib_field_stream () { }
   glgrib_field_stream (const glgrib_field_stream &);
-  virtual void setup (glgrib_loader *, const glgrib_options_field &, float = 0);
-  virtual void render (const glgrib_view &, const glgrib_options_light &) const;
+  virtual void setup (glgrib_loader *, const glgrib_options_field &, float = 0) override;
+  virtual void render (const glgrib_view &, const glgrib_options_light &) const override;
   virtual ~glgrib_field_stream ();
   void setupVertexAttributes ();
-  virtual void clear ();
-  virtual bool useColorBar () const { return true; }
-  virtual int getSlotMax () const  
+  virtual void clear () override;
+  virtual bool useColorBar () const override { return true; }
+  virtual int getSlotMax () const override
   {
     return (int)opts.path.size () / 2;
   }

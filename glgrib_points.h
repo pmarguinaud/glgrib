@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_POINTS_H
-#define _GLGRIB_POINTS_H
+#pragma once
 
 #include "glgrib_view.h"
 #include "glgrib_opengl.h"
@@ -35,4 +34,3 @@ private:
   GLuint VertexArrayID = 0;
 };
 
-#endif

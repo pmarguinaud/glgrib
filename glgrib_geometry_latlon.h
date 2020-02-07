@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_GEOMETRY_LATLON_H
-#define _GLGRIB_GEOMETRY_LATLON_H
+#pragma once
 
 #include "glgrib_geometry.h"
 #include "glgrib_trigonometry.h"
@@ -50,4 +49,3 @@ private:
   bool periodic = false;
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_LOADER_H
-#define _GLGRIB_LOADER_H
+#pragma once
 
 #include <string>
 #include <list>
@@ -44,4 +43,3 @@ private:
 };
 
 
-#endif

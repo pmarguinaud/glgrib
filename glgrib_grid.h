@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_GRID_H
-#define _GLGRIB_GRID_H
+#pragma once
 
 #include "glgrib_object.h"
 #include "glgrib_options.h"
@@ -31,4 +30,3 @@ private:
   int numberOfPoints;
 };
 
-#endif

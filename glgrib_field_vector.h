@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_FIELD_VECTOR_H
-#define _GLGRIB_FIELD_VECTOR_H
+#pragma once
 
 #include "glgrib_field.h"
 #include "glgrib_view.h"
@@ -49,4 +48,3 @@ protected:
   void clear () override;
 };
 
-#endif

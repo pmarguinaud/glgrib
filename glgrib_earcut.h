@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_EARCUT_H
-#define _GLGRIB_EARCUT_H
+#pragma once
 
 #include <vector>
 
@@ -10,4 +9,3 @@ void processRing (const std::vector<float> &,
                   std::vector<unsigned int> *, bool);
 }
 
-#endif

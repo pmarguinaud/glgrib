@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_SCENE_H
-#define _GLGRIB_SCENE_H
+#pragma once
 
 #include <vector>
 #include <set>
@@ -143,4 +142,3 @@ public:
 
 };
 
-#endif

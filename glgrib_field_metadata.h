@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_FIELD_METADATA
-#define _GLGRIB_FIELD_METADATA
+#pragma once
 
 #include "glgrib_options.h"
 #include <string>
@@ -37,4 +36,3 @@ private:
   mutable std::string name;
 };
 
-#endif

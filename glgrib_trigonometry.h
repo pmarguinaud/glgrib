@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_TRIGONOMETRY_H
-#define _GLGRIB_TRIGONOMETRY_H
+#pragma once
 
 #include <math.h>
 
@@ -44,4 +43,3 @@ void xyz2lonlat (float x, float y, float z, float * lon, float * lat)
 }
 
 
-#endif

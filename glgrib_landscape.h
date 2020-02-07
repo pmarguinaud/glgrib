@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_LANDSCAPE_H
-#define _GLGRIB_LANDSCAPE_H
+#pragma once
 
 #include "glgrib_world.h"
 #include "glgrib_options.h"
@@ -30,4 +29,3 @@ private:
   glgrib_opengl_buffer_ptr heightbuffer;
 };
 
-#endif

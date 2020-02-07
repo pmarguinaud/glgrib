@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_SHELL
-#define _GLGRIB_SHELL
+#pragma once
 
 #include "glgrib_window.h"
 #include "glgrib_options.h"
@@ -43,4 +42,3 @@ private:
 
 extern glgrib_shell Shell;
 
-#endif

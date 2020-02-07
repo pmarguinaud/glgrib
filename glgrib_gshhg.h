@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_GSHHG_H
-#define _GLGRIB_GSHHG_H
+#pragma once
 
 #include "glgrib_options.h"
 
@@ -14,4 +13,3 @@ extern void read (const glgrib_options_lines &, int *, unsigned int *,
                   const std::vector<unsigned int> & = {0x00000000});
 };
 
-#endif

@@ -1,8 +1,6 @@
-#ifndef _GLGRIB_RESOLVE_H
-#define _GLGRIB_RESOLVE_H
+#pragma once
 
 #include <string>
 
 extern std::string glgrib_resolve (const std::string &);
 
-#endif

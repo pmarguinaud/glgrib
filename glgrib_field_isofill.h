@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_FIELD_ISOFILL_H
-#define _GLGRIB_FIELD_ISOFILL_H
+#pragma once
 
 #include "glgrib_field.h"
 
@@ -49,4 +48,3 @@ private:
 
 };
 
-#endif

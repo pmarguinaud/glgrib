@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_PROGRAM_H
-#define _GLGRIB_PROGRAM_H
+#pragma once
 
 #include "glgrib_opengl.h"
 #include "glgrib_options.h"
@@ -66,4 +65,3 @@ public:
 };
 
 
-#endif

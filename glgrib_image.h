@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_IMAGE_H
-#define _GLGRIB_IMAGE_H
+#pragma once
 
 #include "glgrib_view.h"
 #include <glm/glm.hpp>
@@ -53,4 +52,3 @@ private:
   GLuint VertexArrayID = 0;
 };
 
-#endif

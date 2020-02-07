@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_PALETTE_H
-#define _GLGRIB_PALETTE_H
+#pragma once
 
 #include "glgrib_opengl.h"
 #include "glgrib_options.h"
@@ -112,4 +111,3 @@ extern glgrib_palette palette_cloud_auto;
 
 
 
-#endif

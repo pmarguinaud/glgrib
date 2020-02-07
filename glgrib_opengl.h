@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_OPENGL_H
-#define _GLGRIB_OPENGL_H
+#pragma once
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -51,4 +50,3 @@ template <> GLenum getOpenglType<unsigned short> ();
 template <> GLenum getOpenglType<unsigned int  > ();
 template <> GLenum getOpenglType<float         > ();
 
-#endif

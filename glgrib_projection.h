@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_PROJECTION_H
-#define _GLGRIB_PROJECTION_H
+#pragma once
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -136,4 +135,3 @@ private:
 };
 
 
-#endif

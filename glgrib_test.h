@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_TEST_H
-#define _GLGRIB_TEST_H
+#pragma once
 
 #include "glgrib_object.h"
 #include "glgrib_opengl.h"
@@ -21,4 +20,3 @@ protected:
   GLuint VertexArrayID = 0;
 };
 
-#endif

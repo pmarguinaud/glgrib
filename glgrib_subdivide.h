@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_SUBDIVIDE_H
-#define _GLGRIB_SUBDIVIDE_H
+#pragma once
 
 #include <vector>
 
@@ -41,4 +40,3 @@ private:
   
 };
 
-#endif

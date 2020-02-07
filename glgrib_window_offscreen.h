@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_WINDOW_OFFSCREEN
-#define _GLGRIB_WINDOW_OFFSCREEN
+#pragma once
 
 #include "glgrib_window.h"
 
@@ -17,4 +16,3 @@ private:
   int frames;
 };
 
-#endif

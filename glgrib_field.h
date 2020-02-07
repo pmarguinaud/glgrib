@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_FIELD_H
-#define _GLGRIB_FIELD_H
+#pragma once
 
 #include "glgrib_world.h"
 #include "glgrib_options.h"
@@ -141,4 +140,3 @@ protected:
   glgrib_string hilo;
 };
 
-#endif

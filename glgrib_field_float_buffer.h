@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_FIELD_FLOAT_BUFFER_H
-#define _GLGRIB_FIELD_FLOAT_BUFFER_H
+#pragma once
 
 #include <memory>
 
@@ -20,4 +19,3 @@ typedef std::shared_ptr<glgrib_field_float_buffer> glgrib_field_float_buffer_ptr
 extern glgrib_field_float_buffer_ptr new_glgrib_field_float_buffer_ptr (size_t);
 extern glgrib_field_float_buffer_ptr new_glgrib_field_float_buffer_ptr (float *);
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_FIELD_SCALAR_H
-#define _GLGRIB_FIELD_SCALAR_H
+#pragma once
 
 #include "glgrib_field.h"
 
@@ -33,4 +32,3 @@ private:
   void clear () override;
 };
 
-#endif

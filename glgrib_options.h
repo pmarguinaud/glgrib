@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_OPTIONS_H
-#define _GLGRIB_OPTIONS_H
+#pragma once
 
 #include <map>
 #include <set>
@@ -1382,6 +1381,4 @@ public:
 };
 
 
-
-#endif
 

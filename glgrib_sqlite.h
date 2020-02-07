@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_SQLITE_H
-#define _GLGRIB_SQLITE_H
+#pragma once
 
 #include <sqlite3.h>
 #include <string>
@@ -164,4 +163,3 @@ private:
 };
 
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_FIELD_CONTOUR_H
-#define _GLGRIB_FIELD_CONTOUR_H
+#pragma once
 
 #include "glgrib_field.h"
 #include "glgrib_string.h"
@@ -104,4 +103,3 @@ private:
   void setupLabels (isoline_t *, const isoline_data_t &);
 };
 
-#endif

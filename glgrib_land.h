@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_LAND_H
-#define _GLGRIB_LAND_H
+#pragma once
 
 #include "glgrib_object.h"
 #include "glgrib_opengl.h"
@@ -40,4 +39,3 @@ private:
   std::vector<GLuint> VertexArrayID;
 };
 
-#endif

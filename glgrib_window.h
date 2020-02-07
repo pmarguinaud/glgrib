@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_WINDOW_H
-#define _GLGRIB_WINDOW_H
+#pragma once
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -199,4 +198,3 @@ public:
   void close ();
 };
 
-#endif

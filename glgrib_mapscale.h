@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_MAPSCALE_H
-#define _GLGRIB_MAPSCALE_H
+#pragma once
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -33,4 +32,3 @@ private:
   mutable std::string label_str;
 };
 
-#endif

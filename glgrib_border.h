@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_BORDER_H
-#define _GLGRIB_BORDER_H
+#pragma once
 
 #include "glgrib_options.h"
 #include "glgrib_lines.h"
@@ -15,4 +14,3 @@ private:
 };
 
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_CITIES_H
-#define _GLGRIB_CITIES_H
+#pragma once
 
 #include "glgrib_points.h"
 #include "glgrib_view.h"
@@ -26,4 +25,3 @@ private:
   } d;
 };
 
-#endif

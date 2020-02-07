@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_VIEW_H
-#define _GLGRIB_VIEW_H
+#pragma once
 
 #include "glgrib_opengl.h"
 #include "glgrib_program.h"
@@ -66,4 +65,3 @@ private:
   mutable glm::vec4 Viewport;
 };
 
-#endif

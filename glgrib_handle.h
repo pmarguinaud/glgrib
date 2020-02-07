@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_HANDLE_H
-#define _GLGRIB_HANDLE_H
+#pragma once
 
 #include <memory>
 #include <eccodes.h>
@@ -30,4 +29,3 @@ private:
 typedef std::shared_ptr<glgrib_handle> glgrib_handle_ptr;
 
 
-#endif

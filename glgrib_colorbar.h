@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_COLORBAR_H
-#define _GLGRIB_COLORBAR_H
+#pragma once
 
 #include "glgrib_palette.h"
 #include <glm/glm.hpp>
@@ -34,4 +33,3 @@ private:
   mutable glgrib_palette pref;
 };
 
-#endif

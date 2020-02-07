@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_FIELD_STREAM_H
-#define _GLGRIB_FIELD_STREAM_H
+#pragma once
 
 #include "glgrib_field.h"
 #include <bits/stdc++.h> 
@@ -131,4 +130,3 @@ private:
                              std::vector<glm::vec3> &);
 };
 
-#endif

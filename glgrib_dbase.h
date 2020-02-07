@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_DBASE
-#define _GLGRIB_DBASE
+#pragma once
 
 #include <map>
 #include <stdint.h>
@@ -116,4 +115,3 @@ private:
   int count = 0;
 };
  
-#endif

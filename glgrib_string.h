@@ -1,5 +1,5 @@
-#ifndef _GLGRIB_STRING_H
-#define _GLGRIB_STRING_H
+
+#pragma once
 
 #include "glgrib_font.h"
 #include "glgrib_view.h"
@@ -111,5 +111,3 @@ private:
     const_glgrib_font_ptr font = NULL; 
   } d;
 };
-
-#endif

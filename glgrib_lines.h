@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_LINES_H
-#define _GLGRIB_LINES_H
+#pragma once
 
 #include "glgrib_polygon.h"
 #include "glgrib_options.h"
@@ -19,4 +18,3 @@ private:
   glgrib_options_lines opts;
 };
 
-#endif

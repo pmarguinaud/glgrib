@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_OBJECT_H
-#define _GLGRIB_OBJECT_H
+#pragma once
 
 #include "glgrib_opengl.h"
 #include "glgrib_view.h"
@@ -24,4 +23,3 @@ private:
 };
 
 
-#endif

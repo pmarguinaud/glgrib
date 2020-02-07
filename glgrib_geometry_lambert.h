@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_GEOMETRY_LAMBERT_H
-#define _GLGRIB_GEOMETRY_LAMBERT_H
+#pragma once
 
 #include "glgrib_geometry.h"
 #include "glgrib_trigonometry.h"
@@ -217,4 +216,3 @@ private:
   xy_t center_xy;
 };
 
-#endif

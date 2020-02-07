@@ -1,5 +1,4 @@
-#ifndef _GLGRIB_GEOMETRY_H
-#define _GLGRIB_GEOMETRY_H
+#pragma once
 
 #include "glgrib_opengl.h"
 #include "glgrib_handle.h"
@@ -100,4 +99,3 @@ protected:
   std::string md5string (const unsigned char []) const;
 };
 
-#endif

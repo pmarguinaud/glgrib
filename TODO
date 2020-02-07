@@ -21,3 +21,16 @@ Draw contour labels
 Iso contour pleins (en couleur), avec un geometry shader
 Generate coordinates in shaders
 Change palette definition; get new palettes
+
+
+Use blocks for passing data from/to shaders, with included files :
+
+out VS_OUT
+{
+    vec2 TexCoords;
+} vs_out;
+
+in VS_OUT
+{
+    vec2 TexCoords;
+} fs_in;

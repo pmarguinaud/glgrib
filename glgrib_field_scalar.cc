@@ -8,6 +8,8 @@
 #include <iostream>
 #include <algorithm>
 
+static GLuint ssbo = 0;
+
 glgrib_field_scalar::glgrib_field_scalar (const glgrib_field_scalar & field)
 {
   if (field.isReady ())
@@ -272,7 +274,6 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   program->use ();
 
 
-  static GLuint ssbo = 0;
 
   if (ssbo == 0)
     {

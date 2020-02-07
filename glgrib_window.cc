@@ -695,9 +695,9 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
               std::vector<float> value = field->getValue (jglo);
               sprintf (tmp, "%6.2f %6.2f %8d", lat, lon, jglo);
               title_ = std::string (tmp);
-              for (int i = 0; i < value.size (); i++)
+	      for (auto v : value)
                 {
-                  sprintf (tmp, " %8.3g", value[i]);
+                  sprintf (tmp, " %8.3g", v);
                   title_ = title_ + std::string (tmp);
                 }
 	    }
@@ -993,30 +993,20 @@ void glgrib_window_set::run (glgrib_shell * shell)
   while (! empty ())
     {
       const glgrib_window * wl = NULL;
-      for (glgrib_window_set::iterator it = begin (); 
-           it != end (); it++)
-        {
-          glgrib_window * w = *it;
-	  if (w->isMaster ())
-            {
-              if (wl != NULL)
-                w->unsetMaster ();
-	      else
-                wl = w;
-	    }
-	}
-      if (wl != NULL)
-        for (glgrib_window_set::iterator it = begin (); 
-             it != end (); it++)
-          {
-            glgrib_window * w = *it;
-            w->scene.d.view.setOptions (wl->scene.d.view.getOptions ());
-          }
-      for (glgrib_window_set::iterator it = begin (); 
-           it != end (); it++)
-        {
-          glgrib_window * w = *it;
 
+      for (auto w : *this)
+	if (w->isMaster ())
+          {
+            if (wl != NULL)
+              w->unsetMaster ();
+	    else
+              wl = w;
+	  }
+      if (wl != NULL)
+        for (auto w : *this)
+          w->scene.d.view.setOptions (wl->scene.d.view.getOptions ());
+      for (auto w : *this)
+        {
 	  if ((! shell) && (w->getStartShell ()))
             {
 	      Shell.setup (w->scene.getOptions ().shell);
@@ -1046,19 +1036,16 @@ void glgrib_window_set::run (glgrib_shell * shell)
 
 glgrib_window * glgrib_window_set::getWindowById (int id)
 {
-  for (glgrib_window_set::iterator it = begin (); it != end (); it++)
-    if ((*it)->id () == id)
-      return *it;
+  for (auto w : *this)
+    if (w->id () == id)
+      return w;
   return NULL;
 }
 
 void glgrib_window_set::close ()
 {
-  for (glgrib_window_set::iterator it = begin (); it != end (); it++)
-    {
-      glgrib_window * win = *it;
-      win->shouldClose ();
-    }
+  for (auto win : *this)
+    win->shouldClose ();
 }
 
 #define GLMESS(x) case GL_DEBUG_SOURCE_##x: return #x

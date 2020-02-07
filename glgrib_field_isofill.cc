@@ -52,10 +52,8 @@ void glgrib_field_isofill::clear ()
   if (isReady ()) 
     {
       glDeleteVertexArrays (1, &d.VertexArrayID);
-      for (int i = 0; i < d.isoband.size (); i++)
-        {
-          glDeleteVertexArrays (1, &d.isoband[i].VertexArrayID);
-        }
+      for (auto & ib : d.isoband)
+        glDeleteVertexArrays (1, &ib.VertexArrayID);
     }
   glgrib_field::clear ();
 }
@@ -84,15 +82,15 @@ void glgrib_field_isofill::setupVertexAttributes ()
 
   glBindVertexArray (0); 
 
-  for (int i = 0; i < d.isoband.size (); i++)
+  for (auto & ib : d.isoband)
     {
       // New triangles
-      glGenVertexArrays (1, &d.isoband[i].VertexArrayID);
-      glBindVertexArray (d.isoband[i].VertexArrayID);
+      glGenVertexArrays (1, &ib.VertexArrayID);
+      glBindVertexArray (ib.VertexArrayID);
   
       // Elements
-      d.isoband[i].elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
-      d.isoband[i].vertexbuffer->bind (GL_ARRAY_BUFFER);
+      ib.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+      ib.vertexbuffer->bind (GL_ARRAY_BUFFER);
   
       glEnableVertexAttribArray (0);
       glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
@@ -532,17 +530,17 @@ void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_option
   view.setMVP (program2);
   program2->set3fv ("scale0", scale0);
 
-  for (int i = 0; i < d.isoband.size (); i++)
+  for (const auto & ib : d.isoband)
     {
-      float color0[4] = {d.isoband[i].color.r/255.0f, 
-                         d.isoband[i].color.g/255.0f, 
-                         d.isoband[i].color.b/255.0f,
-                         d.isoband[i].color.a/255.0f};
+      float color0[4] = {ib.color.r/255.0f, 
+                         ib.color.g/255.0f, 
+                         ib.color.b/255.0f,
+                         ib.color.a/255.0f};
 
 
-      glBindVertexArray (d.isoband[i].VertexArrayID);
+      glBindVertexArray (ib.VertexArrayID);
       program2->set4fv ("color0", color0);
-      glDrawElements (GL_TRIANGLES, d.isoband[i].size, GL_UNSIGNED_INT, NULL);
+      glDrawElements (GL_TRIANGLES, ib.size, GL_UNSIGNED_INT, NULL);
       glBindVertexArray (0);
     }
 

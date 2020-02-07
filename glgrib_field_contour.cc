@@ -49,10 +49,8 @@ glgrib_field_contour & glgrib_field_contour::operator= (const glgrib_field_conto
 void glgrib_field_contour::clear ()
 {
   if (isReady ()) 
-    for (int i = 0; i < iso.size (); i++)
-      {
-        glDeleteVertexArrays (1, &iso[i].VertexArrayID);
-      }
+    for (auto & is : iso)
+      glDeleteVertexArrays (1, &is.VertexArrayID);
   glgrib_field::clear ();
 }
 
@@ -61,12 +59,12 @@ void glgrib_field_contour::setupVertexAttributes ()
   numberOfPoints = geometry->getNumberOfPoints ();
   numberOfTriangles = geometry->getNumberOfTriangles ();
 
-  for (int i = 0; i < iso.size (); i++)
+  for (auto & is : iso)
     {
-      glGenVertexArrays (1, &iso[i].VertexArrayID);
-      glBindVertexArray (iso[i].VertexArrayID);
+      glGenVertexArrays (1, &is.VertexArrayID);
+      glBindVertexArray (is.VertexArrayID);
 
-      iso[i].vertexbuffer->bind (GL_ARRAY_BUFFER);
+      is.vertexbuffer->bind (GL_ARRAY_BUFFER);
 
       for (int j = 0; j < 3; j++)
         {
@@ -77,7 +75,7 @@ void glgrib_field_contour::setupVertexAttributes ()
 
       if (opts.geometry.height.on)
         {
-          iso[i].heightbuffer->bind (GL_ARRAY_BUFFER);
+          is.heightbuffer->bind (GL_ARRAY_BUFFER);
 
           for (int j = 0; j < 2; j++)
             {
@@ -95,7 +93,7 @@ void glgrib_field_contour::setupVertexAttributes ()
             }
 	}
 
-      iso[i].distancebuffer->bind (GL_ARRAY_BUFFER);
+      is.distancebuffer->bind (GL_ARRAY_BUFFER);
 
       for (int j = 0; j < 2; j++)
         {
@@ -458,35 +456,35 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
   program->set3fv ("scale0", scale0);
   program->set1f ("height_scale", opts.geometry.height.scale);
 
-  for (int i = 0; i < iso.size (); i++)
+  for (const auto & is : iso)
     {
-      glBindVertexArray (iso[i].VertexArrayID);
+      glBindVertexArray (is.VertexArrayID);
 
-      program->set1i ("dash", iso[i].dash);
+      program->set1i ("dash", is.dash);
 
-      float color0[3] = {iso[i].color.r/255.0f, 
-                         iso[i].color.g/255.0f, 
-                         iso[i].color.b/255.0f};
+      float color0[3] = {is.color.r/255.0f, 
+                         is.color.g/255.0f, 
+                         is.color.b/255.0f};
       program->set3fv ("color0", color0);
 
 
-      if (iso[i].dash)
+      if (is.dash)
         {
-          float length = view.pixel_to_dist_at_nadir (iso[i].length);
+          float length = view.pixel_to_dist_at_nadir (is.length);
           program->set1f ("length", length);
-          program->set1i ("N", iso[i].pattern.size ());
-          program->set1iv ("pattern", iso[i].pattern.data (), iso[i].pattern.size ());
+          program->set1i ("N", is.pattern.size ());
+          program->set1iv ("pattern", is.pattern.data (), is.pattern.size ());
         }
-      if (iso[i].wide)
+      if (is.wide)
         {
-          float width = view.pixel_to_dist_at_nadir (iso[i].width);
+          float width = view.pixel_to_dist_at_nadir (is.width);
           program->set1f ("width", width);
           unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
-          glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, iso[i].size);
+          glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, is.size);
         }
       else
         {
-          glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, iso[i].size);
+          glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, is.size);
         }
       glBindVertexArray (0);
     }
@@ -497,8 +495,8 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
   renderHilo (view);
 
   if (opts.contour.labels.on)
-    for (int i = 0; i < iso.size (); i++)
-      iso[i].labels.render (view);
+    for (auto is : iso)
+      is.labels.render (view);
 
 }
 

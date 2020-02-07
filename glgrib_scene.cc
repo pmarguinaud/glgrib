@@ -13,26 +13,26 @@ glgrib_scene & glgrib_scene::operator= (const glgrib_scene & other)
     {
       d = other.d;
      
-      for (int i = 0; i < fieldlist.size (); i++)
-        if (fieldlist[i] != NULL)
-          delete fieldlist[i];
+      for (auto f : fieldlist)
+        if (f != NULL)
+          delete f;
      
       fieldlist.clear ();
      
-      for (int i = 0; i < other.fieldlist.size (); i++)
-        if (other.fieldlist[i] == NULL)
+      for (auto f : other.fieldlist)
+        if (f == NULL)
           fieldlist.push_back (NULL);
         else
-          fieldlist.push_back (other.fieldlist[i]->clone ());
+          fieldlist.push_back (f->clone ());
    }
   return *this;
 }
 
 glgrib_scene::~glgrib_scene () 
 {
-  for (int i = 0; i < fieldlist.size (); i++)
-    if (fieldlist[i] != NULL)
-      delete fieldlist[i];
+  for (auto f : fieldlist)
+    if (f != NULL)
+      delete f;
 }
 
 void glgrib_scene::display_obj (const glgrib_object * obj) const
@@ -59,9 +59,9 @@ void glgrib_scene::display () const
 
   obj_list.push_back (&d.landscape);
 
-  for (int i = 0; i < fieldlist.size (); i++)
-    if (fieldlist[i] != NULL)
-      obj_list.push_back (fieldlist[i]);
+  for (auto f : fieldlist)
+    if (f != NULL)
+      obj_list.push_back (f);
 
   obj_list.push_back (&d.coast);
   obj_list.push_back (&d.border);
@@ -77,8 +77,8 @@ void glgrib_scene::display () const
              { return a->getScale () < b->getScale (); });
 
 
-  for (int i = 0; i < obj_list.size (); i++)
-    display_obj (obj_list[i]);
+  for (auto obj : obj_list)
+    display_obj (obj);
 
   const glgrib_field * fld = d.currentFieldRank < fieldlist.size () 
                            ? fieldlist[d.currentFieldRank] : NULL;
@@ -104,25 +104,21 @@ void glgrib_scene::display () const
   if (d.opts.scene.test_strxyz.on)
     d.strxyz.render (d.view);
 
-  for (std::vector<glgrib_string>::const_iterator it = d.str.begin ();
-       it != d.str.end (); it++)
-    it->render (d.MVP_R);
+  for (auto str : d.str)
+    str.render (d.MVP_R);
 
 }
 
 const glgrib_option_date * glgrib_scene::get_date ()
 {
-  for (int i = 0; i < fieldlist.size (); i++)
-    {
-    if (fieldlist[i])
-      if (fieldlist[i]->isReady ())
+  for (auto fld : fieldlist)
+    if (fld)
+      if (fld->isReady ())
         {
-          glgrib_field * fld = fieldlist[i];
           const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
 	  if (meta.size () >= 1)
             return &meta[0].term;
         }
-    }
   return NULL;
 }
 
@@ -227,11 +223,9 @@ void glgrib_scene::update_interpolation ()
     {
       int slotmax = 0;
 
-      for (int i = 0; i < fieldlist.size (); i++)
-        {
-	  if (fieldlist[i] != NULL)
-            slotmax = std::max (slotmax, fieldlist[i]->getSlotMax ());
-	}
+      for (auto f : fieldlist)
+        if (f != NULL)
+          slotmax = std::max (slotmax, f->getSlotMax ());
 
       slotmax--;
 
@@ -323,9 +317,9 @@ void glgrib_scene::setup (const glgrib_options & o)
   if (d.opts.scene.interpolation.on)
     {
       int size = 0;
-      for (int i = 0; i < d.opts.field.size (); i++)
+      for (auto f : d.opts.field)
         {
-          bool defined = d.opts.field[i].path.size () != 0;
+          bool defined = f.path.size () != 0;
 	  if (! defined)
             continue;
           size += 4;
@@ -341,7 +335,7 @@ void glgrib_scene::setup (const glgrib_options & o)
   setDepartementsOptions (d.opts.departements);
   setViewOptions (d.opts.view);
 
-  for (int i = 0; i < d.opts.field.size (); i++)
+  for (auto f : d.opts.field)
     fieldlist.push_back ((glgrib_field *)NULL);
 
   for (int i = 0; i < d.opts.field.size (); i++)
@@ -408,9 +402,9 @@ void glgrib_scene::resize ()
   d.rivers.resize (d.view);
   d.departements.resize (d.view);
   d.grid.resize (d.view);
-  for (int i = 0; i < fieldlist.size (); i++)
-    if (fieldlist[i])
-      fieldlist[i]->resize (d.view);
+  for (auto f : fieldlist)
+    if (f)
+      f->resize (d.view);
 }
 
 glgrib_options glgrib_scene::getOptions () const

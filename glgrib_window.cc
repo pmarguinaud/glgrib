@@ -465,16 +465,16 @@ void glgrib_window::toggle_hide_field ()
 
 void glgrib_window::hide_all_fields ()
 {
-  for (int i = 0; i < scene.fieldlist.size (); i++)
-    if (scene.fieldlist[i] != NULL)
-      scene.fieldlist[i]->hide ();
+  for (auto f : scene.fieldlist)
+    if (f != NULL)
+      f->hide ();
 }
 
 void glgrib_window::show_all_fields ()
 {
-  for (int i = 0; i < scene.fieldlist.size (); i++)
-    if (scene.fieldlist[i] != NULL)
-      scene.fieldlist[i]->show ();
+  for (auto f : scene.fieldlist)
+    if (f != NULL)
+      f->show ();
 }
 
 int glgrib_window::get_latlon_from_cursor (float * lat, float * lon)

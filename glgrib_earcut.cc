@@ -301,7 +301,6 @@ void getLonRange (const std::vector<node_t> & nodevec,
 
   for (int i = 0; i < nodevec.size (); i++)
     {
-
       const node_t * n1 = &nodevec[i];
       const node_t * n2 = n1->getNext ();
 
@@ -396,8 +395,6 @@ void getLatRange (const std::vector<node_t> & nodevec,
   *latmax = *latmin = lonlat[2*0+1];
   for (const node_t * n = &nodevec[0]; ; )
     {
-
- 
       float ri = n            ->getIndex ();
       float rj = n->getNext ()->getIndex ();
 

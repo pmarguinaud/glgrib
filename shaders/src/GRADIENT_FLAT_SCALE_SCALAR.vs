@@ -1,5 +1,5 @@
 
-#version 330 core
+#version 430 core
 
 layout(location = 0) in vec2  vertexLonLat;
 layout(location = 1) in float vertexVal;
@@ -23,9 +23,19 @@ uniform float mpiview_scale = 0.0f;
 const float rad2deg = 180.0 / pi;
 const float deg2rad = pi / 180.0;
 
+layout (std430, binding=2) buffer layoutName
+{
+  int data_SSBO[];
+};
+
 void main ()
 {
   vec3 vertexDisp = vec3 (0.0f, 0.0f, 0.0f);
+
+  bool tt = true;
+ if ((data_SSBO[0] != 0) || (data_SSBO[1] != 1)
+  || (data_SSBO[2] != 2) || (data_SSBO[3] != 3))
+    tt = false;
 
   if (mpiview_scale > 0.0f)
     {
@@ -42,6 +52,9 @@ void main ()
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);
   pos = scalePosition (pos, normedPos, scale0);
+
+  if (! tt)
+    pos = pos * 0.5;
 
   if (proj_vs == XYZ)
     {

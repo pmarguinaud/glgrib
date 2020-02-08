@@ -693,6 +693,18 @@ void glgrib_geometry_gaussian::setParameters (glgrib_program * program) const
   program->set1f ("glgrib_geometry_gaussian_omc2", omc2);
   program->set1f ("glgrib_geometry_gaussian_opc2", opc2);
   program->set1i ("glgrib_geometry_gaussian_rotated", rotated);
+  
+  if(0){
+  printf ("-----------\n");
+  for (int i = 0; i < 4; i++)
+    {
+      for (int j = 0; j < 4; j++)
+        printf (" %12.2e", rot[i][j]);
+      printf ("\n");
+    }
+  }
+  
+
   program->setMatrix4fv ("glgrib_geometry_gaussian_rot", &rot[0][0]);             
 }
 

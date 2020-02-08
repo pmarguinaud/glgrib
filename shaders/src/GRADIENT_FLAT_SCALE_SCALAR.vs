@@ -49,14 +49,47 @@ uniform int   glgrib_geometry_gaussian_Nj;
 uniform float glgrib_geometry_gaussian_stretchingFactor = 1.0f;
 uniform mat4  glgrib_geometry_gaussian_rot;
 uniform bool  glgrib_geometry_gaussian_rotated;
+uniform float glgrib_geometry_gaussian_omc2;
+uniform float glgrib_geometry_gaussian_opc2;
 
 vec2 getVertexLonlat (int jglo) // gl_VertexID
 {
   const float twopi = 2.0f * pi;
   int jlat = glgrib_geometry_gaussian_jlat[jglo];
   int jlon = jglo - glgrib_geometry_gaussian_jglooff[jlat];
-  float lon = (twopi * float (jlon)) / float (glgrib_geometry_gaussian_pl[jlat]);
-  float lat = glgrib_geometry_gaussian_latgauss[jlat];
+
+  float coordy = glgrib_geometry_gaussian_latgauss[jlat];
+  float coordx = (twopi * float (jlon)) / float (glgrib_geometry_gaussian_pl[jlat]);
+
+  float lon, lat;
+
+  if (! glgrib_geometry_gaussian_rotated)
+    {
+      lon = coordx;
+      lat = coordy;
+    }
+  else
+    {
+      float sincoordy = sin (coordy);
+      lat = asin ((glgrib_geometry_gaussian_omc2 + sincoordy * glgrib_geometry_gaussian_opc2) 
+                / (glgrib_geometry_gaussian_opc2 + sincoordy * glgrib_geometry_gaussian_omc2));
+      float lon = coordx;
+
+      float coslat = cos (lat), sinlat = sin (lat);
+      float coslon = cos (lon), sinlon = sin (lon);
+
+      float X = coslon * coslat;
+      float Y = sinlon * coslat;
+      float Z =          sinlat;
+
+      vec4 XYZ = vec4 (X, Y, Z, 0.0f);
+      XYZ = glgrib_geometry_gaussian_rot * XYZ;
+      
+      lon = atan (XYZ.y, XYZ.x);
+      lat = asin (XYZ.z);
+
+    }
+
   return vec2 (lon, lat);
 }
 
@@ -68,10 +101,7 @@ void main ()
   vec3 vertexDisp = vec3 (0.0f, 0.0f, 0.0f);
 
   vec2 vertexLonLat_ = getVertexLonlat (gl_VertexID);
-
-  bool tt = true;
-  if (glgrib_geometry_gaussian_jglooff[2] != 48)
-  tt = false;
+  vertexLonLat_ = vertexLonLat;
 
   if (mpiview_scale > 0.0f)
     {
@@ -88,9 +118,6 @@ void main ()
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);
   pos = scalePosition (pos, normedPos, scale0);
-
-  if (! tt)
-    pos = 0.5 * pos;
 
   if (proj_vs == XYZ)
     {

@@ -14,9 +14,12 @@ void gl_init ()
   glEnable (GL_MULTISAMPLE);
 }
   
-void glgrib_opengl_buffer::bind (GLenum target) const 
+void glgrib_opengl_buffer::bind (GLenum target, GLuint index) const 
 {
-  glBindBuffer (target, id_);
+  if (index == 0)
+    glBindBuffer (target, id_);
+  else
+    glBindBufferBase (target, index, id_);
 }
 
 glgrib_opengl_buffer::glgrib_opengl_buffer (size_t size, const void * data)

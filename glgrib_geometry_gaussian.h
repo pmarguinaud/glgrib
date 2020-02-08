@@ -4,6 +4,7 @@
 #include "glgrib_trigonometry.h"
 #include "glgrib_options.h"
 #include "glgrib_handle.h"
+#include "glgrib_opengl.h"
 
 #include <glm/glm.hpp>
 #include <vector>
@@ -36,6 +37,7 @@ public:
   void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const override;
   float getLocalMeshSize (int) const override;
   void getView (glgrib_view *) const override;
+  void setParameters (glgrib_program *) const override;
 
 private:
 
@@ -110,6 +112,7 @@ private:
   int computeUpperTriangle (int, int) const;
   void computeTriangleVertices (int, int [3]) const;
   void checkTriangleComputation () const;
+  void setupSSBO ();
   
 
 private:
@@ -132,5 +135,6 @@ private:
   int * triu = NULL;          // Rank of triangle above
   int * trid = NULL;          // Rank of triangle below
   double * latgauss = NULL;
+  glgrib_opengl_buffer_ptr ssbo_jglo, ssbo_jlat, ssbo_glat, ssbo_pl;
 };
 

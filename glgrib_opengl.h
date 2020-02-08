@@ -12,7 +12,7 @@ public:
   ~glgrib_opengl_buffer ();
   GLuint id () { return id_; }
   bool allocated () const { return allocated_; }
-  void bind (GLenum) const;
+  void bind (GLenum, GLuint = 0) const;
   size_t buffersize () const { return size_; }
   void * map ();
   void unmap ();

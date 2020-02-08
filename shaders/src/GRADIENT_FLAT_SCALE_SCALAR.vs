@@ -23,19 +23,55 @@ uniform float mpiview_scale = 0.0f;
 const float rad2deg = 180.0 / pi;
 const float deg2rad = pi / 180.0;
 
-layout (std430, binding=2) buffer layoutName
+// Start geometry
+
+layout (std430, binding=1) buffer glgrib_geometry_gaussian1
 {
-  int data_SSBO[];
+  int glgrib_geometry_gaussian_jlat[];
 };
+
+layout (std430, binding=2) buffer glgrib_geometry_gaussian2
+{
+  int glgrib_geometry_gaussian_jglooff[];
+};
+
+layout (std430, binding=3) buffer glgrib_geometry_gaussian3
+{
+  float glgrib_geometry_gaussian_latgauss[];
+};
+
+layout (std430, binding=4) buffer glgrib_geometry_gaussian4
+{
+  int glgrib_geometry_gaussian_pl[];
+};
+
+uniform int   glgrib_geometry_gaussian_Nj;
+uniform float glgrib_geometry_gaussian_stretchingFactor = 1.0f;
+uniform mat4  glgrib_geometry_gaussian_rot;
+uniform bool  glgrib_geometry_gaussian_rotated;
+
+vec2 getVertexLonlat (int jglo) // gl_VertexID
+{
+  const float twopi = 2.0f * pi;
+  int jlat = glgrib_geometry_gaussian_jlat[jglo];
+  int jlon = jglo - glgrib_geometry_gaussian_jglooff[jlat];
+  float lon = (twopi * float (jlon)) / float (glgrib_geometry_gaussian_pl[jlat]);
+  float lat = glgrib_geometry_gaussian_latgauss[jlat];
+  return vec2 (lon, lat);
+}
+
+// End geometry
+
 
 void main ()
 {
   vec3 vertexDisp = vec3 (0.0f, 0.0f, 0.0f);
 
+  vec2 vertexLonLat_ = getVertexLonlat (gl_VertexID);
+
   bool tt = true;
- if ((data_SSBO[0] != 0) || (data_SSBO[1] != 1)
-  || (data_SSBO[2] != 2) || (data_SSBO[3] != 3))
-    tt = false;
+  if (glgrib_geometry_gaussian_jglooff[2] != 48)
+  tt = false;
 
   if (mpiview_scale > 0.0f)
     {
@@ -48,13 +84,13 @@ void main ()
   fragmentValFlat = vertexVal;
   fragmentMPIFlat = vertexMPIView.x;
 
-  vec3 vertexPos = posFromLonLat (vertexLonLat);
+  vec3 vertexPos = posFromLonLat (vertexLonLat_);
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);
   pos = scalePosition (pos, normedPos, scale0);
 
   if (! tt)
-    pos = pos * 0.5;
+    pos = 0.5 * pos;
 
   if (proj_vs == XYZ)
     {

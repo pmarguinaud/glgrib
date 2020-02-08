@@ -682,6 +682,64 @@ int glgrib_geometry_gaussian::size () const
   return jglooff[Nj-1] + pl[Nj-1];
 }
 
+void glgrib_geometry_gaussian::setParameters (glgrib_program * program) const 
+{
+  ssbo_jlat->bind (GL_SHADER_STORAGE_BUFFER, 1);
+  ssbo_jglo->bind (GL_SHADER_STORAGE_BUFFER, 2);
+  ssbo_glat->bind (GL_SHADER_STORAGE_BUFFER, 3);
+  ssbo_pl  ->bind (GL_SHADER_STORAGE_BUFFER, 4);
+  program->set1i ("glgrib_geometry_gaussian_Nj", Nj);
+  program->set1f ("glgrib_geometry_gaussian_stretchingFactor", stretchingFactor);
+  program->set1f ("glgrib_geometry_gaussian_omc2", omc2);
+  program->set1f ("glgrib_geometry_gaussian_opc2", opc2);
+  program->set1i ("glgrib_geometry_gaussian_rotated", rotated);
+  program->setMatrix4fv ("glgrib_geometry_gaussian_rot", &rot[0][0]);             
+}
+
+void glgrib_geometry_gaussian::setupSSBO ()
+{
+  // jlat
+
+  ssbo_jlat = new_glgrib_opengl_buffer_ptr (numberOfPoints * sizeof (int));
+  int * jlat = (int *)ssbo_jlat->map ();
+
+#pragma omp parallel for
+  for (int ilat = 0; ilat < Nj; ilat++)
+  for (int ilon = 0; ilon < pl[ilat]; ilon++)
+    jlat[jglooff[ilat]+ilon] = ilat;
+
+  jlat = NULL;
+  ssbo_jlat->unmap ();
+
+  // jglooff
+
+  ssbo_jglo = new_glgrib_opengl_buffer_ptr (jglooff.size () * sizeof (jglooff[0]),
+                                            jglooff.data ());
+
+  // Gaussian latitudes
+ 
+  ssbo_glat = new_glgrib_opengl_buffer_ptr (Nj * sizeof (float));
+  float * glat = (float *)ssbo_glat->map ();
+
+  for (int i = 0; i < Nj; i++)
+    glat[i] = latgauss[i];
+
+  glat = NULL;
+  ssbo_glat->unmap ();
+
+  // pl
+
+  ssbo_pl = new_glgrib_opengl_buffer_ptr (Nj * sizeof (int));
+  int * _pl = (int *)ssbo_pl->map ();
+
+  for (int i = 0; i < Nj; i++)
+    _pl[i] = pl[i];
+
+  _pl = NULL;
+  ssbo_pl->unmap ();
+
+}
+
 glgrib_geometry_gaussian::glgrib_geometry_gaussian (int _Nj)
 {
   Nj = _Nj;
@@ -698,6 +756,7 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (int _Nj)
   numberOfPoints  = 0;
   for (int i = 0; i < Nj; i++)
     numberOfPoints += pl[i];
+
 }
 
 glgrib_geometry_gaussian::glgrib_geometry_gaussian (glgrib_handle_ptr ghp)
@@ -751,6 +810,7 @@ glgrib_geometry_gaussian::glgrib_geometry_gaussian (glgrib_handle_ptr ghp)
   numberOfPoints  = 0;
   for (int i = 0; i < Nj; i++)
     numberOfPoints += pl[i];
+
 }
 
 static
@@ -1000,9 +1060,9 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
     jglooff[jlat-1] = jglooff[jlat-2] + pl[jlat-2];
 
   if (opts.check.on)
-    {
-      checkTriangleComputation ();
-    }
+    checkTriangleComputation ();
+
+  setupSSBO ();
 }
 
 glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()
@@ -1025,6 +1085,7 @@ glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()
   latgauss = NULL;
   indoff_per_lat = NULL;
   indcnt_per_lat = NULL;
+
 }
 
 void glgrib_geometry_gaussian::latlon2coordxy (float lat, float lon, 

@@ -4,6 +4,7 @@
 #include "glgrib_handle.h"
 #include "glgrib_options.h"
 #include "glgrib_view.h"
+#include "glgrib_program.h"
 
 #include <glm/glm.hpp>
 #include <eccodes.h>
@@ -89,6 +90,11 @@ public:
   {
     return numberOfPoints_frame;
   }
+
+  virtual void setParameters (glgrib_program * program) const 
+  {
+  }
+
 protected:
   unsigned int ind_strip_size = 0;
   int numberOfPoints = 0;

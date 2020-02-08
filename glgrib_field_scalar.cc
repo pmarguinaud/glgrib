@@ -8,8 +8,6 @@
 #include <iostream>
 #include <algorithm>
 
-static GLuint ssbo = 0;
-
 glgrib_field_scalar::glgrib_field_scalar (const glgrib_field_scalar & field)
 {
   if (field.isReady ())
@@ -275,15 +273,6 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
 
 
 
-  if (ssbo == 0)
-    {
-      int data[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-      glGenBuffers (1, &ssbo);
-      glBindBuffer (GL_SHADER_STORAGE_BUFFER, ssbo);
-      glBufferData (GL_SHADER_STORAGE_BUFFER, sizeof (data), data, GL_STATIC_DRAW);
-      glBindBuffer (GL_SHADER_STORAGE_BUFFER, 0); 
-    }
-  glBindBufferBase (GL_SHADER_STORAGE_BUFFER, 2, ssbo);
 
 
   view.setMVP (program);
@@ -304,6 +293,8 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
                             (float)opts.scalar.discrete.missing_color.a / 255.0f};
 
   program->set4fv ("RGBAM", missing_color);
+ 
+  geometry->setParameters (program);
 
   unsigned int Nmax = 1;
   for (int i = 0; i < opts.scalar.pack.bits; i++)

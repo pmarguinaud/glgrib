@@ -25,7 +25,6 @@ const float deg2rad = pi / 180.0;
 
 #include "geometry/gaussian.h"
 
-
 void main ()
 {
   vec3 vertexDisp = vec3 (0.0f, 0.0f, 0.0f);

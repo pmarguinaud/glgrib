@@ -687,25 +687,12 @@ void glgrib_geometry_gaussian::setParameters (glgrib_program * program) const
   ssbo_jlat->bind (GL_SHADER_STORAGE_BUFFER, 1);
   ssbo_jglo->bind (GL_SHADER_STORAGE_BUFFER, 2);
   ssbo_glat->bind (GL_SHADER_STORAGE_BUFFER, 3);
-  ssbo_pl  ->bind (GL_SHADER_STORAGE_BUFFER, 4);
-  program->set1i ("glgrib_geometry_gaussian_Nj", Nj);
-  program->set1f ("glgrib_geometry_gaussian_stretchingFactor", stretchingFactor);
-  program->set1f ("glgrib_geometry_gaussian_omc2", omc2);
-  program->set1f ("glgrib_geometry_gaussian_opc2", opc2);
-  program->set1i ("glgrib_geometry_gaussian_rotated", rotated);
-  
-  if(0){
-  printf ("-----------\n");
-  for (int i = 0; i < 4; i++)
-    {
-      for (int j = 0; j < 4; j++)
-        printf (" %12.2e", rot[i][j]);
-      printf ("\n");
-    }
-  }
-  
-
-  program->setMatrix4fv ("glgrib_geometry_gaussian_rot", &rot[0][0]);             
+  program->set1i ("geometry_gaussian_Nj", Nj);
+  program->set1f ("geometry_gaussian_stretchingFactor", stretchingFactor);
+  program->set1f ("geometry_gaussian_omc2", omc2);
+  program->set1f ("geometry_gaussian_opc2", opc2);
+  program->set1i ("geometry_gaussian_rotated", rotated);
+  program->setMatrix4fv ("geometry_gaussian_rot", &rot[0][0]);             
 }
 
 glgrib_geometry_gaussian::glgrib_geometry_gaussian (int _Nj)
@@ -914,17 +901,6 @@ void glgrib_geometry_gaussian::setupSSBO ()
 
   glat = NULL;
   ssbo_glat->unmap ();
-
-  // pl
-
-  ssbo_pl = new_glgrib_opengl_buffer_ptr (Nj * sizeof (int));
-  int * _pl = (int *)ssbo_pl->map ();
-
-  for (int i = 0; i < Nj; i++)
-    _pl[i] = pl[i];
-
-  _pl = NULL;
-  ssbo_pl->unmap ();
 
 }
 

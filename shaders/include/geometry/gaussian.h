@@ -1,44 +1,39 @@
 
-layout (std430, binding=1) buffer glgrib_geometry_gaussian1
+layout (std430, binding=1) buffer geometry_gaussian1
 {
-  int glgrib_geometry_gaussian_jlat[];
+  int geometry_gaussian_jlat[];
 };
 
-layout (std430, binding=2) buffer glgrib_geometry_gaussian2
+layout (std430, binding=2) buffer geometry_gaussian2
 {
-  int glgrib_geometry_gaussian_jglooff[];
+  int geometry_gaussian_jglooff[];
 };
 
-layout (std430, binding=3) buffer glgrib_geometry_gaussian3
+layout (std430, binding=3) buffer geometry_gaussian3
 {
-  float glgrib_geometry_gaussian_latgauss[];
+  float geometry_gaussian_latgauss[];
 };
 
-layout (std430, binding=4) buffer glgrib_geometry_gaussian4
-{
-  int glgrib_geometry_gaussian_pl[];
-};
-
-uniform int   glgrib_geometry_gaussian_Nj;
-uniform float glgrib_geometry_gaussian_stretchingFactor = 1.0f;
-uniform mat4  glgrib_geometry_gaussian_rot;
-uniform bool  glgrib_geometry_gaussian_rotated;
-uniform float glgrib_geometry_gaussian_omc2;
-uniform float glgrib_geometry_gaussian_opc2;
+uniform int   geometry_gaussian_Nj;
+uniform float geometry_gaussian_stretchingFactor = 1.0f;
+uniform mat4  geometry_gaussian_rot;
+uniform bool  geometry_gaussian_rotated;
+uniform float geometry_gaussian_omc2;
+uniform float geometry_gaussian_opc2;
 
 vec2 getVertexLonlat (int jglo) 
 {
   const float twopi = 2.0f * pi;
-  int jlat = glgrib_geometry_gaussian_jlat[jglo];
-  int jlon = jglo - glgrib_geometry_gaussian_jglooff[jlat];
+  int jlat = geometry_gaussian_jlat[jglo];
+  int jlon = jglo - geometry_gaussian_jglooff[jlat];
 
-  float coordy = glgrib_geometry_gaussian_latgauss[jlat];
-  float coordx = (twopi * float (jlon)) / float (glgrib_geometry_gaussian_pl[jlat]);
+  float coordy = geometry_gaussian_latgauss[jlat];
+  int pl = geometry_gaussian_jglooff[jlat+1] - geometry_gaussian_jglooff[jlat];
+  float coordx = (twopi * float (jlon)) / float (pl);
 
   float lon, lat;
 
-
-  if (! glgrib_geometry_gaussian_rotated)
+  if (! geometry_gaussian_rotated)
     {
       lon = coordx;
       lat = coordy;
@@ -46,8 +41,8 @@ vec2 getVertexLonlat (int jglo)
   else
     {
       float sincoordy = sin (coordy);
-      lat = asin ((glgrib_geometry_gaussian_omc2 + sincoordy * glgrib_geometry_gaussian_opc2) 
-                / (glgrib_geometry_gaussian_opc2 + sincoordy * glgrib_geometry_gaussian_omc2));
+      lat = asin ((geometry_gaussian_omc2 + sincoordy * geometry_gaussian_opc2) 
+                / (geometry_gaussian_opc2 + sincoordy * geometry_gaussian_omc2));
       lon = coordx;
 
       float coslat = cos (lat), sinlat = sin (lat);
@@ -58,7 +53,7 @@ vec2 getVertexLonlat (int jglo)
       float Z =          sinlat;
   
       vec4 XYZ = vec4 (X, Y, Z, 0.0f);
-      XYZ = glgrib_geometry_gaussian_rot * XYZ;
+      XYZ = geometry_gaussian_rot * XYZ;
   
       lon = atan (XYZ.y, XYZ.x);
       lat = asin (XYZ.z);

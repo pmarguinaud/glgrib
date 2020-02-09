@@ -1006,10 +1006,8 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
     iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
 
 
-  FILE * fp1 = fopen ("gaussian.XYZ1.dat", "w");
-  FILE * fp2 = fopen ("gaussian.XYZ2.dat", "w");
-  // OpenMP generation of coordinates
-//#pragma omp parallel for 
+  // Generation of coordinates
+#pragma omp parallel for 
   for (int jlat = 1; jlat <= Nj; jlat++)
     {
       float coordy = latgauss[jlat-1];
@@ -1055,9 +1053,7 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
               float Z =          sinlat;
 
               glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
-       fprintf (fp1, " %8d | %9.5f %9.5f %9.5f\n", jglo, XYZ.x, XYZ.y, XYZ.z);
               XYZ = rot * XYZ;
-       fprintf (fp2, " %8d | %9.5f %9.5f %9.5f\n", jglo, XYZ.x, XYZ.y, XYZ.z);
 
               lonlat[2*jglo+0] = atan2 (XYZ.y, XYZ.x);
               lonlat[2*jglo+1] = asin (XYZ.z);
@@ -1066,9 +1062,6 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
 
         }
     }
-
-  fclose (fp1);
-  fclose (fp2);
 
   lonlat = NULL;
   vertexbuffer->unmap ();

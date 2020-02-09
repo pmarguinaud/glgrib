@@ -689,7 +689,6 @@ void glgrib_geometry_gaussian::setParameters (glgrib_program * program) const
   ssbo_jglo->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_jglo_idx);
   ssbo_glat->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_glat_idx);
   program->set1i ("geometry_gaussian_Nj", Nj);
-  program->set1f ("geometry_gaussian_stretchingFactor", stretchingFactor);
   program->set1f ("geometry_gaussian_omc2", omc2);
   program->set1f ("geometry_gaussian_opc2", opc2);
   program->set1i ("geometry_gaussian_rotated", rotated);

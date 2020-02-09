@@ -11,6 +11,23 @@
 
 const double glgrib_geometry_lambert::a = 6371229.0;
 
+void glgrib_geometry_lambert::setParameters (glgrib_program * program) const 
+{
+  program->set1f ("geometry_lambert_p_pj_ref_pt_lon",   p_pj.ref_pt.lon);
+  program->set1f ("geometry_lambert_p_pj_ref_pt_lat",   p_pj.ref_pt.lat);
+  program->set1f ("geometry_lambert_p_pj_pole",         p_pj.pole      );
+  program->set1f ("geometry_lambert_p_pj_r_equateur",   p_pj.r_equateur);
+  program->set1f ("geometry_lambert_p_pj_kl",           p_pj.kl        );
+  program->set1i ("geometry_lambert_Nx",                Nx             );
+  program->set1i ("geometry_lambert_Ny",                Ny             );
+  program->set1i ("geometry_lambert_Nux",               Nux            );
+  program->set1i ("geometry_lambert_Nuy",               Nuy            );
+  program->set1f ("geometry_lambert_DxInMetres",        DxInMetres     );
+  program->set1f ("geometry_lambert_DyInMetres",        DyInMetres     );
+  program->set1f ("geometry_lambert_center_xy_x",       center_xy.x    );
+  program->set1f ("geometry_lambert_center_xy_y",       center_xy.y    );
+}
+
 int glgrib_geometry_lambert::size () const
 {
   return Nx * Ny;

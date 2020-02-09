@@ -1,5 +1,4 @@
 
-#include "geometry/buffer_index.h"
 
 layout (std430, binding=geometry_gaussian_jlat_idx) buffer geometry_gaussian1
 {
@@ -17,13 +16,12 @@ layout (std430, binding=geometry_gaussian_glat_idx) buffer geometry_gaussian3
 };
 
 uniform int   geometry_gaussian_Nj;
-uniform float geometry_gaussian_stretchingFactor = 1.0f;
 uniform mat4  geometry_gaussian_rot;
 uniform bool  geometry_gaussian_rotated;
 uniform float geometry_gaussian_omc2;
 uniform float geometry_gaussian_opc2;
 
-vec2 getVertexLonlat (int jglo) 
+vec2 getGaussianVertexLonlat (int jglo) 
 {
   const float twopi = 2.0f * pi;
   int jlat = geometry_gaussian_jlat[jglo];

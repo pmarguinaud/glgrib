@@ -23,13 +23,18 @@ uniform float mpiview_scale = 0.0f;
 const float rad2deg = 180.0 / pi;
 const float deg2rad = pi / 180.0;
 
+#include "geometry/buffer_index.h"
 #include "geometry/gaussian.h"
+#include "geometry/lambert.h"
 
 void main ()
 {
   vec3 vertexDisp = vec3 (0.0f, 0.0f, 0.0f);
 
-  vec2 vertexLonLat_ = getVertexLonlat (gl_VertexID);
+  vec2 vertexLonLat_;
+//vertexLonLat_ = getGaussianVertexLonlat (gl_VertexID);
+  vertexLonLat_ = getLambertVertexLonlat (gl_VertexID);
+//vertexLonLat_ = vertexLonLat;
 
   if (mpiview_scale > 0.0f)
     {

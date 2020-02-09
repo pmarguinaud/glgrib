@@ -1,5 +1,5 @@
 
-#version 430 core
+#version 440 core
 
 layout(location = 0) in vec2  vertexLonLat;
 layout(location = 1) in float vertexVal;

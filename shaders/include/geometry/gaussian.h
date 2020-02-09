@@ -1,15 +1,17 @@
 
-layout (std430, binding=1) buffer geometry_gaussian1
+#include "geometry/buffer_index.h"
+
+layout (std430, binding=geometry_gaussian_jlat_idx) buffer geometry_gaussian1
 {
   int geometry_gaussian_jlat[];
 };
 
-layout (std430, binding=2) buffer geometry_gaussian2
+layout (std430, binding=geometry_gaussian_jglo_idx) buffer geometry_gaussian2
 {
   int geometry_gaussian_jglooff[];
 };
 
-layout (std430, binding=3) buffer geometry_gaussian3
+layout (std430, binding=geometry_gaussian_glat_idx) buffer geometry_gaussian3
 {
   float geometry_gaussian_latgauss[];
 };

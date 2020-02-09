@@ -684,9 +684,10 @@ int glgrib_geometry_gaussian::size () const
 
 void glgrib_geometry_gaussian::setParameters (glgrib_program * program) const 
 {
-  ssbo_jlat->bind (GL_SHADER_STORAGE_BUFFER, 1);
-  ssbo_jglo->bind (GL_SHADER_STORAGE_BUFFER, 2);
-  ssbo_glat->bind (GL_SHADER_STORAGE_BUFFER, 3);
+#include "shaders/include/geometry/buffer_index.h"
+  ssbo_jlat->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_jlat_idx);
+  ssbo_jglo->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_jglo_idx);
+  ssbo_glat->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_glat_idx);
   program->set1i ("geometry_gaussian_Nj", Nj);
   program->set1f ("geometry_gaussian_stretchingFactor", stretchingFactor);
   program->set1f ("geometry_gaussian_omc2", omc2);

@@ -37,7 +37,7 @@ public:
   void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const override;
   float getLocalMeshSize (int) const override;
   void getView (glgrib_view *) const override;
-  void setParameters (glgrib_program *) const override;
+  void setProgramParameters (glgrib_program *) const override;
 
 private:
 

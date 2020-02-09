@@ -208,7 +208,7 @@ public:
   void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const override {}
   float getLocalMeshSize (int) const override;
   void getView (glgrib_view *) const override;
-  void setParameters (glgrib_program *) const override;
+  void setProgramParameters (glgrib_program *) const override;
 private:
   void getTriangleNeighboursXY (int, int [3], int [3], xy_t [4]) const;
   long int Nx, Ny, Nux, Nuy, projectionCentreFlag;

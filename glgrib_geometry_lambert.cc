@@ -11,7 +11,7 @@
 
 const double glgrib_geometry_lambert::a = 6371229.0;
 
-void glgrib_geometry_lambert::setParameters (glgrib_program * program) const 
+void glgrib_geometry_lambert::setProgramParameters (glgrib_program * program) const 
 {
   program->set1f ("geometry_lambert_p_pj_ref_pt_lon",   p_pj.ref_pt.lon);
   program->set1f ("geometry_lambert_p_pj_ref_pt_lat",   p_pj.ref_pt.lat);

@@ -294,7 +294,7 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
 
   program->set4fv ("RGBAM", missing_color);
  
-  geometry->setParameters (program);
+  geometry->setProgramParameters (program);
 
   unsigned int Nmax = 1;
   for (int i = 0; i < opts.scalar.pack.bits; i++)

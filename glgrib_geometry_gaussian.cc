@@ -682,7 +682,7 @@ int glgrib_geometry_gaussian::size () const
   return jglooff[Nj-1] + pl[Nj-1];
 }
 
-void glgrib_geometry_gaussian::setParameters (glgrib_program * program) const 
+void glgrib_geometry_gaussian::setProgramParameters (glgrib_program * program) const 
 {
 #include "shaders/include/geometry/buffer_index.h"
   ssbo_jlat->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_jlat_idx);

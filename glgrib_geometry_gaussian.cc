@@ -708,50 +708,6 @@ void glgrib_geometry_gaussian::setParameters (glgrib_program * program) const
   program->setMatrix4fv ("glgrib_geometry_gaussian_rot", &rot[0][0]);             
 }
 
-void glgrib_geometry_gaussian::setupSSBO ()
-{
-  // jlat
-
-  ssbo_jlat = new_glgrib_opengl_buffer_ptr (numberOfPoints * sizeof (int));
-  int * jlat = (int *)ssbo_jlat->map ();
-
-#pragma omp parallel for
-  for (int ilat = 0; ilat < Nj; ilat++)
-  for (int ilon = 0; ilon < pl[ilat]; ilon++)
-    jlat[jglooff[ilat]+ilon] = ilat;
-
-  jlat = NULL;
-  ssbo_jlat->unmap ();
-
-  // jglooff
-
-  ssbo_jglo = new_glgrib_opengl_buffer_ptr (jglooff.size () * sizeof (jglooff[0]),
-                                            jglooff.data ());
-
-  // Gaussian latitudes
- 
-  ssbo_glat = new_glgrib_opengl_buffer_ptr (Nj * sizeof (float));
-  float * glat = (float *)ssbo_glat->map ();
-
-  for (int i = 0; i < Nj; i++)
-    glat[i] = latgauss[i];
-
-  glat = NULL;
-  ssbo_glat->unmap ();
-
-  // pl
-
-  ssbo_pl = new_glgrib_opengl_buffer_ptr (Nj * sizeof (int));
-  int * _pl = (int *)ssbo_pl->map ();
-
-  for (int i = 0; i < Nj; i++)
-    _pl[i] = pl[i];
-
-  _pl = NULL;
-  ssbo_pl->unmap ();
-
-}
-
 glgrib_geometry_gaussian::glgrib_geometry_gaussian (int _Nj)
 {
   Nj = _Nj;
@@ -928,6 +884,50 @@ end:
   return;
 }
 
+void glgrib_geometry_gaussian::setupSSBO ()
+{
+  // jlat
+
+  ssbo_jlat = new_glgrib_opengl_buffer_ptr (numberOfPoints * sizeof (int));
+  int * jlat = (int *)ssbo_jlat->map ();
+
+#pragma omp parallel for
+  for (int ilat = 0; ilat < Nj; ilat++)
+  for (int ilon = 0; ilon < pl[ilat]; ilon++)
+    jlat[jglooff[ilat]+ilon] = ilat;
+
+  jlat = NULL;
+  ssbo_jlat->unmap ();
+
+  // jglooff
+
+  ssbo_jglo = new_glgrib_opengl_buffer_ptr (jglooff.size () * sizeof (jglooff[0]),
+                                            jglooff.data ());
+
+  // Gaussian latitudes
+ 
+  ssbo_glat = new_glgrib_opengl_buffer_ptr (Nj * sizeof (float));
+  float * glat = (float *)ssbo_glat->map ();
+
+  for (int i = 0; i < Nj; i++)
+    glat[i] = latgauss[i];
+
+  glat = NULL;
+  ssbo_glat->unmap ();
+
+  // pl
+
+  ssbo_pl = new_glgrib_opengl_buffer_ptr (Nj * sizeof (int));
+  int * _pl = (int *)ssbo_pl->map ();
+
+  for (int i = 0; i < Nj; i++)
+    _pl[i] = pl[i];
+
+  _pl = NULL;
+  ssbo_pl->unmap ();
+
+}
+
 void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts)
 {
   codes_handle * h = ghp ? ghp->getCodesHandle () : NULL;
@@ -1005,8 +1005,11 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
   for (int jlat = 2; jlat <= Nj; jlat++)
     iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
 
+
+  FILE * fp1 = fopen ("gaussian.XYZ1.dat", "w");
+  FILE * fp2 = fopen ("gaussian.XYZ2.dat", "w");
   // OpenMP generation of coordinates
-#pragma omp parallel for 
+//#pragma omp parallel for 
   for (int jlat = 1; jlat <= Nj; jlat++)
     {
       float coordy = latgauss[jlat-1];
@@ -1052,7 +1055,9 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
               float Z =          sinlat;
 
               glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
+       fprintf (fp1, " %8d | %9.5f %9.5f %9.5f\n", jglo, XYZ.x, XYZ.y, XYZ.z);
               XYZ = rot * XYZ;
+       fprintf (fp2, " %8d | %9.5f %9.5f %9.5f\n", jglo, XYZ.x, XYZ.y, XYZ.z);
 
               lonlat[2*jglo+0] = atan2 (XYZ.y, XYZ.x);
               lonlat[2*jglo+1] = asin (XYZ.z);
@@ -1061,6 +1066,9 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
 
         }
     }
+
+  fclose (fp1);
+  fclose (fp2);
 
   lonlat = NULL;
   vertexbuffer->unmap ();

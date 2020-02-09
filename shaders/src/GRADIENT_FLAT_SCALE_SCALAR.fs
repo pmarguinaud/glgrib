@@ -7,6 +7,7 @@ in vec3 fragmentPos;
 in float missingFlag;
 flat in float fragmentValFlat;
 flat in float fragmentMPIFlat;
+
 out vec4 color;
 
 #include "unpack.h"
@@ -15,8 +16,6 @@ out vec4 color;
 void main ()
 {
   if (fragmentMPI != fragmentMPIFlat)
-    {
-      discard;
-    }
+    discard;
   color = enlightFragment (fragmentPos, fragmentVal, missingFlag);
 }

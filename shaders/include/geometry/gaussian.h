@@ -21,7 +21,7 @@ uniform bool  geometry_gaussian_rotated;
 uniform float geometry_gaussian_omc2;
 uniform float geometry_gaussian_opc2;
 
-vec2 getGaussianVertexLonlat (int jglo) 
+vec2 getGaussianVertexLonLat (int jglo) 
 {
   const float twopi = 2.0f * pi;
   int jlat = geometry_gaussian_jlat[jglo];

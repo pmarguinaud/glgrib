@@ -13,6 +13,8 @@ const double glgrib_geometry_lambert::a = 6371229.0;
 
 void glgrib_geometry_lambert::setProgramParameters (glgrib_program * program) const 
 {
+#include "shaders/include/geometry/types.h"
+  program->set1i ("geometry_type", geometry_lambert);
   program->set1f ("geometry_lambert_p_pj_ref_pt_lon",   p_pj.ref_pt.lon);
   program->set1f ("geometry_lambert_p_pj_ref_pt_lat",   p_pj.ref_pt.lat);
   program->set1f ("geometry_lambert_p_pj_pole",         p_pj.pole      );

@@ -163,4 +163,10 @@ void glgrib_geometry::renderTriangles () const
     }
 }
 
+void glgrib_geometry::setProgramParameters (glgrib_program * program) const 
+{
+#include "shaders/include/geometry/types.h"
+  program->set1i ("geometry_type", geometry_none);
+}
+
 

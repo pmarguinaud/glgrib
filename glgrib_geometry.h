@@ -91,9 +91,7 @@ public:
     return numberOfPoints_frame;
   }
 
-  virtual void setProgramParameters (glgrib_program * program) const 
-  {
-  }
+  virtual void setProgramParameters (glgrib_program * program) const;
 
 protected:
   unsigned int ind_strip_size = 0;

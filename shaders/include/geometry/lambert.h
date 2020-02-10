@@ -100,7 +100,7 @@ latlon_t xy_to_latlon (proj_t proj, xy_t pt_xy)
   return rtheta_to_latlon (proj, xy_to_rtheta (proj, pt_xy));
 }
 
-vec2 getLambertVertexLonlat (int jglo)
+vec2 getLambertVertexLonLat (int jglo)
 {
   int i = jglo % geometry_lambert_Nx;
   int j = jglo / geometry_lambert_Nx;

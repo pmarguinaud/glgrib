@@ -10,6 +10,18 @@
 #include <iostream>
 #include <stdexcept>
 
+void glgrib_geometry_latlon::setProgramParameters (glgrib_program * program) const 
+{
+#include "shaders/include/geometry/types.h"
+  program->set1i ("geometry_type", geometry_latlon);
+  program->set1f ("geometry_latlon_lat0", lat0);
+  program->set1f ("geometry_latlon_lon0", lon0);
+  program->set1f ("geometry_latlon_dlat", dlat);
+  program->set1f ("geometry_latlon_dlon", dlon);
+  program->set1i ("geometry_latlon_Ni",   Ni);
+  program->set1i ("geometry_latlon_Nj",   Nj);
+}
+
 int glgrib_geometry_latlon::size () const
 {
   return Ni * Nj;

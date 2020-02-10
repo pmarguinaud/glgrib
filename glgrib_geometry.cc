@@ -169,4 +169,22 @@ void glgrib_geometry::setProgramParameters (glgrib_program * program) const
   program->set1i ("geometry_type", geometry_none);
 }
 
+void glgrib_geometry::bindCoordinates (int attr) const
+{
+  if (vertexbuffer != nullptr)
+    {
+      vertexbuffer->bind (GL_ARRAY_BUFFER);
+      if (attr >= 0)
+        {
+          glEnableVertexAttribArray (attr);
+          glVertexAttribPointer (attr, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+        }
+    }
+  else
+    {
+      glDisableVertexAttribArray (attr);
+      glVertexAttrib2f (attr, 0.0f, 0.0f);
+    }
+}
+
 

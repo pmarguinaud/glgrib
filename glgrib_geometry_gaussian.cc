@@ -686,15 +686,23 @@ void glgrib_geometry_gaussian::setProgramParameters (glgrib_program * program) c
 {
 #include "shaders/include/geometry/buffer_index.h"
 #include "shaders/include/geometry/types.h"
-  program->set1i ("geometry_type", geometry_gaussian);
-  ssbo_jlat->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_jlat_idx);
-  ssbo_jglo->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_jglo_idx);
-  ssbo_glat->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_glat_idx);
-  program->set1i ("geometry_gaussian_Nj", Nj);
-  program->set1f ("geometry_gaussian_omc2", omc2);
-  program->set1f ("geometry_gaussian_opc2", opc2);
-  program->set1i ("geometry_gaussian_rotated", rotated);
-  program->setMatrix4fv ("geometry_gaussian_rot", &rot[0][0]);             
+
+  if (vertexbuffer != nullptr)
+    {
+      program->set1i ("geometry_type", geometry_none);
+    }
+  else
+    {
+      program->set1i ("geometry_type", geometry_gaussian);
+      ssbo_jlat->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_jlat_idx);
+      ssbo_jglo->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_jglo_idx);
+      ssbo_glat->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_glat_idx);
+      program->set1i ("geometry_gaussian_Nj", Nj);
+      program->set1f ("geometry_gaussian_omc2", omc2);
+      program->set1f ("geometry_gaussian_opc2", opc2);
+      program->set1i ("geometry_gaussian_rotated", rotated);
+      program->setMatrix4fv ("geometry_gaussian_rot", &rot[0][0]);             
+   }
 }
 
 glgrib_geometry_gaussian::glgrib_geometry_gaussian (int _Nj)
@@ -906,6 +914,78 @@ void glgrib_geometry_gaussian::setupSSBO ()
 
 }
 
+void glgrib_geometry_gaussian::setupCoordinates ()
+{
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (float));
+  float * lonlat = (float *)vertexbuffer->map ();
+  
+  int iglooff[Nj];
+  iglooff[0] = 0;
+  for (int jlat = 2; jlat <= Nj; jlat++)
+    iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
+
+
+  // Generation of coordinates
+#pragma omp parallel for 
+  for (int jlat = 1; jlat <= Nj; jlat++)
+    {
+      float coordy = latgauss[jlat-1];
+      float lat;
+  
+      if (rotated)
+        {
+          float sincoordy = sin (coordy);
+          lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
+        }
+      else
+        {
+          lat = coordy;
+        }
+  
+      float coslat, sinlat;
+  
+      if (rotated)
+        {
+          coslat = cos (lat); 
+          sinlat = sin (lat);
+        }
+  
+      int jglo = iglooff[jlat-1];
+  
+      for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
+        {
+  
+          float coordx = twopi * (float)(jlon-1) / (float)pl[jlat-1];
+          float lon = coordx;
+  
+          if (! rotated)
+            {
+              lonlat[2*jglo+0] = lon;
+              lonlat[2*jglo+1] = lat;
+            }
+          else
+            {
+              float coslon = cos (lon); float sinlon = sin (lon);
+  
+              float X = coslon * coslat;
+              float Y = sinlon * coslat;
+              float Z =          sinlat;
+  
+              glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
+              XYZ = rot * XYZ;
+  
+              lonlat[2*jglo+0] = atan2 (XYZ.y, XYZ.x);
+              lonlat[2*jglo+1] = asin (XYZ.z);
+  
+            }
+  
+        }
+    }
+  
+  lonlat = NULL;
+  vertexbuffer->unmap ();
+}
+
 void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts)
 {
   codes_handle * h = ghp ? ghp->getCodesHandle () : NULL;
@@ -975,74 +1055,9 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
   // Compute Gaussian latitudes
   compute_latgauss (Nj, latgauss);
       
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (float));
-  float * lonlat = (float *)vertexbuffer->map ();
 
-  int iglooff[Nj];
-  iglooff[0] = 0;
-  for (int jlat = 2; jlat <= Nj; jlat++)
-    iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
-
-
-  // Generation of coordinates
-#pragma omp parallel for 
-  for (int jlat = 1; jlat <= Nj; jlat++)
-    {
-      float coordy = latgauss[jlat-1];
-      float lat;
-
-      if (rotated)
-        {
-          float sincoordy = sin (coordy);
-          lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
-        }
-      else
-        {
-          lat = coordy;
-        }
-
-      float coslat, sinlat;
-
-      if (rotated)
-        {
-          coslat = cos (lat); 
-	  sinlat = sin (lat);
-	}
-
-      int jglo = iglooff[jlat-1];
-
-      for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
-        {
-
-          float coordx = twopi * (float)(jlon-1) / (float)pl[jlat-1];
-          float lon = coordx;
-
-	  if (! rotated)
-            {
-              lonlat[2*jglo+0] = lon;
-              lonlat[2*jglo+1] = lat;
-            }
-          else
-            {
-              float coslon = cos (lon); float sinlon = sin (lon);
-
-              float X = coslon * coslat;
-              float Y = sinlon * coslat;
-              float Z =          sinlat;
-
-              glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
-              XYZ = rot * XYZ;
-
-              lonlat[2*jglo+0] = atan2 (XYZ.y, XYZ.x);
-              lonlat[2*jglo+1] = asin (XYZ.z);
-
-	    }
-
-        }
-    }
-
-  lonlat = NULL;
-  vertexbuffer->unmap ();
+  if (! opts.gencoords.on)
+    setupCoordinates ();
 
   jglooff.resize (Nj + 1);
 
@@ -1050,10 +1065,11 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
   for (int jlat = 2; jlat <= Nj + 1; jlat++)
     jglooff[jlat-1] = jglooff[jlat-2] + pl[jlat-2];
 
+  if (opts.gencoords.on)
+    setupSSBO ();
+
   if (opts.check.on)
     checkTriangleComputation ();
-
-  setupSSBO ();
 }
 
 glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()

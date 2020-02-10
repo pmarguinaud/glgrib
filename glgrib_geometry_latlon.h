@@ -40,6 +40,8 @@ public:
   void getView (glgrib_view *) const override;
   void setProgramParameters (glgrib_program *) const override;
 private:
+  void setupCoordinates ();
+  void setupFrame ();
   void getTriangleNeighboursLatLon (int, int [3], int [3], float &, float &, float &, float &) const;
   long int Ni, Nj;
   double latitudeOfFirstGridPointInDegrees;

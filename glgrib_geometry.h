@@ -58,28 +58,15 @@ public:
   {
     return numberOfTriangles;
   }
-  void bindCoordinates (int attr = -1) const
-  {
-    if (vertexbuffer->allocated ())
-      {
-        vertexbuffer->bind (GL_ARRAY_BUFFER);
-        if (attr >= 0)
-          {
-            glEnableVertexAttribArray (attr);
-            glVertexAttribPointer (attr, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-          }
-      }
-    else
-      {
-        glDisableVertexAttribArray (attr);
-	glVertexAttrib2f (attr, 0.0f, 0.0f);
-      }
-  }
+
   void bindTriangles () const
   {
     elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
   }
   virtual void getView (glgrib_view *) const = 0;
+
+  void bindCoordinates (int) const;
+
   void bindFrame (int attr = -1) const
   {
     vertexbuffer_frame->bind (GL_ARRAY_BUFFER);

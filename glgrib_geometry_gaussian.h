@@ -113,6 +113,7 @@ private:
   void computeTriangleVertices (int, int [3]) const;
   void checkTriangleComputation () const;
   void setupSSBO ();
+  void setupCoordinates ();
   
 
 private:

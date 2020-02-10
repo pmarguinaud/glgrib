@@ -11,23 +11,56 @@
 
 const double glgrib_geometry_lambert::a = 6371229.0;
 
+void glgrib_geometry_lambert::setupCoordinates ()
+{
+  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (float));
+
+  float * lonlat = (float *)vertexbuffer->map ();
+
+  // Generation of coordinates
+#pragma omp parallel for
+  for (int j = 0; j < Ny; j++)
+    for (int i = 0; i < Nx; i++)
+      {
+        xy_t pt_xy ((i - Nux / 2) * DxInMetres, (j - Nuy / 2) * DyInMetres);
+        pt_xy = pt_xy + center_xy;
+
+        latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
+
+        int p = j * Nx + i;
+	lonlat[2*p+0] = latlon.lon;
+	lonlat[2*p+1] = latlon.lat;
+      }
+      
+
+  lonlat = NULL;
+  vertexbuffer->unmap ();
+}
+
 void glgrib_geometry_lambert::setProgramParameters (glgrib_program * program) const 
 {
 #include "shaders/include/geometry/types.h"
-  program->set1i ("geometry_type", geometry_lambert);
-  program->set1f ("geometry_lambert_p_pj_ref_pt_lon",   p_pj.ref_pt.lon);
-  program->set1f ("geometry_lambert_p_pj_ref_pt_lat",   p_pj.ref_pt.lat);
-  program->set1f ("geometry_lambert_p_pj_pole",         p_pj.pole      );
-  program->set1f ("geometry_lambert_p_pj_r_equateur",   p_pj.r_equateur);
-  program->set1f ("geometry_lambert_p_pj_kl",           p_pj.kl        );
-  program->set1i ("geometry_lambert_Nx",                Nx             );
-  program->set1i ("geometry_lambert_Ny",                Ny             );
-  program->set1i ("geometry_lambert_Nux",               Nux            );
-  program->set1i ("geometry_lambert_Nuy",               Nuy            );
-  program->set1f ("geometry_lambert_DxInMetres",        DxInMetres     );
-  program->set1f ("geometry_lambert_DyInMetres",        DyInMetres     );
-  program->set1f ("geometry_lambert_center_xy_x",       center_xy.x    );
-  program->set1f ("geometry_lambert_center_xy_y",       center_xy.y    );
+  if (vertexbuffer != nullptr)
+    {
+      program->set1i ("geometry_type", geometry_none);
+    }
+  else
+    {
+      program->set1i ("geometry_type", geometry_lambert);
+      program->set1f ("geometry_lambert_p_pj_ref_pt_lon",   p_pj.ref_pt.lon);
+      program->set1f ("geometry_lambert_p_pj_ref_pt_lat",   p_pj.ref_pt.lat);
+      program->set1f ("geometry_lambert_p_pj_pole",         p_pj.pole      );
+      program->set1f ("geometry_lambert_p_pj_r_equateur",   p_pj.r_equateur);
+      program->set1f ("geometry_lambert_p_pj_kl",           p_pj.kl        );
+      program->set1i ("geometry_lambert_Nx",                Nx             );
+      program->set1i ("geometry_lambert_Ny",                Ny             );
+      program->set1i ("geometry_lambert_Nux",               Nux            );
+      program->set1i ("geometry_lambert_Nuy",               Nuy            );
+      program->set1f ("geometry_lambert_DxInMetres",        DxInMetres     );
+      program->set1f ("geometry_lambert_DyInMetres",        DyInMetres     );
+      program->set1f ("geometry_lambert_center_xy_x",       center_xy.x    );
+      program->set1f ("geometry_lambert_center_xy_y",       center_xy.y    );
+    }
 }
 
 int glgrib_geometry_lambert::size () const
@@ -49,6 +82,48 @@ glgrib_geometry_lambert::glgrib_geometry_lambert (glgrib_handle_ptr ghp)
   codes_get_double (h, "DyInMetres", &DyInMetres);
   
 }
+
+void glgrib_geometry_lambert::setupFrame ()
+{
+  numberOfPoints_frame = 2 * (Nx + Ny - 2);
+  vertexbuffer_frame = new_glgrib_opengl_buffer_ptr (3 * (numberOfPoints_frame + 2) 
+                                                     * sizeof (float));
+  
+  float * lonlat = (float *)vertexbuffer_frame->map ();
+  
+  int p = 0;
+  
+  auto push = [lonlat, &p, this] (int i, int j, int latcst)
+  {
+    xy_t pt_xy ((i - Nux / 2) * DxInMetres, (j - Nuy / 2) * DyInMetres);
+    pt_xy = pt_xy + center_xy;
+  
+    latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
+  
+    lonlat[3*p+0] = latlon.lon;
+    lonlat[3*p+1] = latlon.lat;
+    lonlat[3*p+2] = latcst == 0 ? 1.0f : 0.0f;
+    p++;
+  };
+   
+  for (int j = 0; j < Ny-1; j++)
+    push (0, j, 1);
+  
+  for (int i = 0; i < Nx-1; i++)
+    push (i, Ny-1, 0);
+  
+  for (int j = Ny-1; j >= 1; j--)
+    push (Nx-1, j, 1);
+  
+  for (int i = Nx-1; i >= 1; i--)
+    push (i, 0, 0);
+  
+  for (int j = 0; j < 2; j++)
+    push (0, j, 1);
+  
+  vertexbuffer_frame->unmap ();
+}
+
 
 void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts)
 {
@@ -112,72 +187,16 @@ void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options
   elementbuffer->unmap ();
 
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (float));
 
-  float * lonlat = (float *)vertexbuffer->map ();
 
   p_pj = proj_t (deg2rad * LoVInDegrees, deg2rad * LaDInDegrees, projectionCentreFlag == 128 ? -1.0 : +1.0);
   center_xy = p_pj.latlon_to_xy (p_pj.ref_pt);
 
-  // Generation of coordinates
-#pragma omp parallel for
-  for (int j = 0; j < Ny; j++)
-    for (int i = 0; i < Nx; i++)
-      {
-        xy_t pt_xy ((i - Nux / 2) * DxInMetres, (j - Nuy / 2) * DyInMetres);
-        pt_xy = pt_xy + center_xy;
-
-        latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
-
-        int p = j * Nx + i;
-	lonlat[2*p+0] = latlon.lon;
-	lonlat[2*p+1] = latlon.lat;
-      }
-      
-
-  lonlat = NULL;
-  vertexbuffer->unmap ();
+  if (! opts.gencoords.on)
+    setupCoordinates ();
 
   if (opts.frame.on)
-    {
-      numberOfPoints_frame = 2 * (Nx + Ny - 2);
-      vertexbuffer_frame = new_glgrib_opengl_buffer_ptr (3 * (numberOfPoints_frame + 2) 
-                                                         * sizeof (float));
-
-      float * lonlat = (float *)vertexbuffer_frame->map ();
-
-      int p = 0;
-
-      auto push = [lonlat, &p, this] (int i, int j, int latcst)
-      {
-        xy_t pt_xy ((i - Nux / 2) * DxInMetres, (j - Nuy / 2) * DyInMetres);
-        pt_xy = pt_xy + center_xy;
-
-        latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
-
-        lonlat[3*p+0] = latlon.lon;
-        lonlat[3*p+1] = latlon.lat;
-        lonlat[3*p+2] = latcst == 0 ? 1.0f : 0.0f;
-        p++;
-      };
-       
-      for (int j = 0; j < Ny-1; j++)
-        push (0, j, 1);
-      
-      for (int i = 0; i < Nx-1; i++)
-        push (i, Ny-1, 0);
-
-      for (int j = Ny-1; j >= 1; j--)
-        push (Nx-1, j, 1);
-      
-      for (int i = Nx-1; i >= 1; i--)
-        push (i, 0, 0);
-      
-      for (int j = 0; j < 2; j++)
-        push (0, j, 1);
-      
-      vertexbuffer_frame->unmap ();
-    }
+    setupFrame ();
 
 }
 

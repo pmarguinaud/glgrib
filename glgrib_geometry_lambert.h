@@ -209,8 +209,10 @@ public:
   float getLocalMeshSize (int) const override;
   void getView (glgrib_view *) const override;
   void setProgramParameters (glgrib_program *) const override;
+  void setupFrame ();
 private:
   void getTriangleNeighboursXY (int, int [3], int [3], xy_t [4]) const;
+  void setupCoordinates ();
   long int Nx, Ny, Nux, Nuy, projectionCentreFlag;
   double LaDInDegrees, LoVInDegrees, DxInMetres, DyInMetres;
   proj_t p_pj;

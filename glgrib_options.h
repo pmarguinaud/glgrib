@@ -389,7 +389,12 @@ public:
     DESC (frame.width,        Frame width);
     DESC (frame.dlon,         Longitude interval);
     DESC (frame.dlat,         Latitude interval);
+    DESC (gencoords.on,       Generate coordinates on GPU when possible);
   }
+  struct
+  {
+    bool on = false;
+  } gencoords;
   struct
   {
     bool on = true;

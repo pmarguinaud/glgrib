@@ -267,7 +267,7 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
 
   glgrib_program * program = glgrib_program::load (opts.scalar.points.on 
                                                  ? glgrib_program::SCALAR_POINTS 
-                                                 : glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
+                                                 : glgrib_program::SCALAR);
 
   program->use ();
 

@@ -172,7 +172,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 
   if (opts.vector.arrow.on)
     {
-      program = glgrib_program::load (glgrib_program::GRADIENT_FLAT_SCALE_VECTOR);
+      program = glgrib_program::load (glgrib_program::VECTOR);
       program->use ();
       view.setMVP (program);
       program->setLight (light);
@@ -228,7 +228,7 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 
   if (opts.vector.norm.on)
     {
-      program = glgrib_program::load (glgrib_program::GRADIENT_FLAT_SCALE_SCALAR);
+      program = glgrib_program::load (glgrib_program::SCALAR);
       program->use ();
       view.setMVP (program);
       program->setLight (light);

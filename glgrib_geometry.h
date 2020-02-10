@@ -60,11 +60,19 @@ public:
   }
   void bindCoordinates (int attr = -1) const
   {
-    vertexbuffer->bind (GL_ARRAY_BUFFER);
-    if (attr >= 0)
+    if (vertexbuffer->allocated ())
       {
-        glEnableVertexAttribArray (attr);
-        glVertexAttribPointer (attr, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+        vertexbuffer->bind (GL_ARRAY_BUFFER);
+        if (attr >= 0)
+          {
+            glEnableVertexAttribArray (attr);
+            glVertexAttribPointer (attr, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+          }
+      }
+    else
+      {
+        glDisableVertexAttribArray (attr);
+	glVertexAttrib2f (attr, 0.0f, 0.0f);
       }
   }
   void bindTriangles () const

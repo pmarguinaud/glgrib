@@ -1,5 +1,5 @@
 
-#version 330 core
+#version 440 core
 
 layout(location = 0) in vec2 vertexLonLat;
 layout(location = 1) in float vertexVal_n;
@@ -19,6 +19,7 @@ uniform mat4 MVP;
 #include "projection.h"
 #include "scale.h"
 #include "unpack.h"
+#include "geometry.h"
 
 const float deg2rad = pi / 180.0;
 
@@ -67,7 +68,8 @@ vec3 getPos2 ()
 
 void main ()
 {
-  vec3 vertexPos = posFromLonLat (vertexLonLat);
+  vec2 vertexLonLat_ = getVertexLonLat (gl_InstanceID);
+  vec3 vertexPos = posFromLonLat (vertexLonLat_);
 
   vec3 u = normalize (vec3 (-vertexPos.y, +vertexPos.x, 0.));
   vec3 v = cross (vertexPos, u);

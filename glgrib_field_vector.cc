@@ -161,8 +161,6 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
 
 void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  glgrib_program * program;
-  
   float scale0[3] = {opts.scale, opts.scale, opts.scale};
 
   std::vector<float> valmax = getMaxValue ();
@@ -172,8 +170,11 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 
   if (opts.vector.arrow.on)
     {
-      program = glgrib_program::load (glgrib_program::VECTOR);
+      glgrib_program * program = glgrib_program::load (glgrib_program::VECTOR);
       program->use ();
+
+      geometry->setProgramParameters (program);
+
       view.setMVP (program);
       program->setLight (light);
       palette.setRGBA255 (program->programID);
@@ -228,8 +229,11 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 
   if (opts.vector.norm.on)
     {
-      program = glgrib_program::load (glgrib_program::SCALAR);
+      glgrib_program * program = glgrib_program::load (glgrib_program::SCALAR);
       program->use ();
+
+      geometry->setProgramParameters (program);
+
       view.setMVP (program);
       program->setLight (light);
       palette.setRGBA255 (program->programID);

@@ -114,9 +114,11 @@ private:
   void checkTriangleComputation () const;
   void setupSSBO ();
   void setupCoordinates ();
+  void setupFitLatitudes ();
   
 
 private:
+  std::vector<float> latfitcoeff;
   std::vector<long int> pl;
   long int Nj;
   std::vector<int> jglooff;

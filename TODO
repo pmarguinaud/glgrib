@@ -34,3 +34,5 @@ in VS_OUT
 {
     vec2 TexCoords;
 } fs_in;
+
+Make VAOs object with automatic destruction.

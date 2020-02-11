@@ -390,6 +390,7 @@ public:
     DESC (frame.dlon,         Longitude interval);
     DESC (frame.dlat,         Latitude interval);
     DESC (gencoords.on,       Generate coordinates on GPU when possible);
+    DESC (gaussian.fit.on,    Fit Gaussian latitude retrieval);
   }
   struct
   {
@@ -418,6 +419,13 @@ public:
     float dlon = 10.0f;
     float dlat = 10.0f;
   } frame;
+  struct
+  {
+    struct
+    {
+      bool on = false;
+    } fit;
+  } gaussian;
 };
 
 class glgrib_options_font : public glgrib_options_base

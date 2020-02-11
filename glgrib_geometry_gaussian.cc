@@ -1,5 +1,6 @@
 #include "glgrib_geometry_gaussian.h"
 #include "glgrib_trigonometry.h"
+#include "glgrib_fitpolynomial.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -986,6 +987,60 @@ void glgrib_geometry_gaussian::setupCoordinates ()
   vertexbuffer->unmap ();
 }
 
+
+static
+double guess_lat_lin (int jglo, int ngptotg)
+{
+  return asin (1.0 - 2.0 * double (jglo) / double (ngptotg));
+}
+
+static
+int guess_jlat (int jglo, int ndglg, int ngptotg)
+{
+  double lat = guess_lat_lin (jglo, ngptotg);
+  return int ((0.5 - lat / pi) * (ndglg + 1) - 1);
+}
+
+void glgrib_geometry_gaussian::setupFitLatitudes ()
+{
+
+  std::cout << "setupFitLatitudes" << std::endl;
+
+  FILE * fp;
+ 
+  fp = fopen ("y.txt", "w");
+
+  std::vector<double> y (Nj / 2), x (Nj / 2);
+  for (int jlat = 0; jlat < Nj / 2; jlat++)
+    {
+      x[jlat] = jlat;
+      y[jlat] = double (jlat - guess_jlat (jglooff[jlat], Nj, numberOfPoints));
+    }
+
+  for (int i = 0; i < y.size (); i++)
+    fprintf (fp, " %8d %12.2f\n", i, y[i]);
+
+  fclose (fp);
+
+  std::vector<double> coeff;
+
+  const int deg = 4;
+  glgrib_fitpolynomial (x, y, deg, coeff);
+
+  fp = fopen ("diff.txt", "w");
+  for (int jlat = 0; jlat < Nj / 2; jlat++)
+    {
+      int ilat0 = guess_jlat (jglooff[jlat], Nj, numberOfPoints);
+      int ilat1 = ilat0 + int (glgrib_evalpolynomial (coeff, double (ilat0)));
+      fprintf (fp, " %8d %8d %8d %12d %12d\n", jlat, ilat0, ilat1, jlat-ilat0, jlat-ilat1);
+    }
+  fclose (fp);
+
+  for (auto c : coeff)
+    latfitcoeff.push_back (c);
+
+}
+
 void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts)
 {
   codes_handle * h = ghp ? ghp->getCodesHandle () : NULL;
@@ -1070,6 +1125,9 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
 
   if (opts.check.on)
     checkTriangleComputation ();
+
+  if (opts.gaussian.fit.on)
+    setupFitLatitudes ();
 }
 
 glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()

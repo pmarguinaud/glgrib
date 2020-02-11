@@ -703,6 +703,10 @@ void glgrib_geometry_gaussian::setProgramParameters (glgrib_program * program) c
       program->set1f ("geometry_gaussian_opc2", opc2);
       program->set1i ("geometry_gaussian_rotated", rotated);
       program->setMatrix4fv ("geometry_gaussian_rot", &rot[0][0]);             
+      program->set1fv ("geometry_gaussian_latfit_coeff", 
+                       latfitcoeff.data (), latfitcoeff.size ());
+      program->set1i ("geometry_gaussian_latfit_degre", latfitcoeff.size ()-1);
+      program->set1i ("geometry_gaussian_numberOfPoints", numberOfPoints);
    }
 }
 
@@ -1024,8 +1028,8 @@ void glgrib_geometry_gaussian::setupFitLatitudes ()
 
   std::vector<double> coeff;
 
-  const int deg = 4;
-  glgrib_fitpolynomial (x, y, deg, coeff);
+  const int degree = 3;
+  glgrib_fitpolynomial (x, y, degree, coeff);
 
   fp = fopen ("diff.txt", "w");
   for (int jlat = 0; jlat < Nj / 2; jlat++)
@@ -1038,6 +1042,53 @@ void glgrib_geometry_gaussian::setupFitLatitudes ()
 
   for (auto c : coeff)
     latfitcoeff.push_back (c);
+
+  auto geometry_gaussian_latfit_eval  = [&] (int jlat)
+  {
+    float x = float (jlat);
+    if (degree == 4)
+      return latfitcoeff[0] + x *
+            (latfitcoeff[1] + x *
+            (latfitcoeff[2] + x *
+            (latfitcoeff[3] + x *
+            (latfitcoeff[4]))));
+    float y = 0;
+    for (int i = degree; i >= 0; i--)
+       y = y * x + latfitcoeff[i];
+    return y;
+  };
+
+  auto geometry_gaussian_guess_jlat = [&] (int jglo)
+  {
+    bool south = jglo > numberOfPoints / 2;
+    int iglo = south ? numberOfPoints - 1 - jglo : jglo;
+    float lat = guess_lat_lin (iglo, numberOfPoints);
+    int ilat0 = int ((0.5 - lat / pi) * (Nj + 1) - 1);
+    int ilat1 = int (geometry_gaussian_latfit_eval (ilat0));
+    int jlat = ilat0 + ilat1;
+    
+    jlat = std::max (std::min (jlat, int (Nj-1)), 0);
+     
+
+    while (iglo < jglooff[jlat])
+      jlat = jlat - 1;
+
+    while (iglo >= jglooff[jlat+1])
+      jlat = jlat + 1;
+
+    jlat = south ? Nj - 1 - jlat : jlat;
+
+    return jlat;
+  };
+
+  for (int jlat = 0; jlat < Nj; jlat++)
+  for (int jlon = 0; jlon < pl[jlat]; jlon++)
+    {
+      int jglo = jglooff[jlat] + jlon;
+      int ilat = geometry_gaussian_guess_jlat (jglo);
+      if (ilat != jlat)
+        printf (" %8d > %8d ; %8d\n", jglo, jlat, ilat);
+    }
 
 }
 

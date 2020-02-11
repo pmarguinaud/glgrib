@@ -1,5 +1,5 @@
 
-#version 330 core
+#version 440 core
 
 layout(location = 0) in vec2 vertexLonLat;
 layout(location = 1) in float vertexVal;
@@ -13,6 +13,7 @@ uniform mat4 MVP;
 
 #include "projection.h"
 #include "scale.h"
+#include "geometry.h"
 
 out float pointVal;
 out vec3 centerVec;
@@ -28,9 +29,11 @@ uniform float height_scale = 0.05;
 
 void main ()
 {
+  vec2 vertexLonLat_ = getVertexLonLat (gl_InstanceID);
+
   fragmentValFlat = vertexVal;
 
-  vec3 vertexPos = posFromLonLat (vertexLonLat);
+  vec3 vertexPos = posFromLonLat (vertexLonLat_);
   vec3 pos = vertexPos;
 
   vec2 pos2; 

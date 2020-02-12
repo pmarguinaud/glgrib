@@ -708,6 +708,7 @@ void glgrib_geometry_gaussian::setProgramParameters (glgrib_program * program) c
                        latfitcoeff.data (), latfitcoeff.size ());
       program->set1i ("geometry_gaussian_latfit_degre", latfitcoeff.size ()-1);
       program->set1i ("geometry_gaussian_numberOfPoints", numberOfPoints);
+      program->set1i ("geometry_gaussian_fitlat", opts.gaussian.fit.on);
    }
 }
 

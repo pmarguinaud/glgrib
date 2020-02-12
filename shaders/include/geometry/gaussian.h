@@ -23,6 +23,7 @@ uniform float geometry_gaussian_opc2;
 uniform float geometry_gaussian_latfit_coeff[10];
 uniform int   geometry_gaussian_latfit_degre;
 uniform int   geometry_gaussian_numberOfPoints;
+uniform bool  geometry_gaussian_fitlat;
 
 
 float geometry_gaussian_guess_lat_lin (int jglo)
@@ -70,8 +71,16 @@ int geometry_gaussian_guess_jlat (int jglo)
 vec2 getGaussianVertexLonLat (int jglo) 
 {
   const float twopi = 2.0f * pi;
-//int jlat = geometry_gaussian_jlat[jglo];
-  int jlat = geometry_gaussian_guess_jlat (jglo);
+  int jlat;
+
+  if (geometry_gaussian_fitlat)
+    {
+      jlat = geometry_gaussian_guess_jlat (jglo);
+    }
+  else
+    {
+      jlat = geometry_gaussian_jlat[jglo];
+    }
 
   int jlon = jglo - geometry_gaussian_jglooff[jlat];
 

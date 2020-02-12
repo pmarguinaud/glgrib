@@ -1070,6 +1070,7 @@ void glgrib_geometry_gaussian::tryFitLatitudes (int _kind, latfit_t * latfit)
   gj.geometry_gaussian_jglooff           = jglooff;
 
 
+  // Prepare data for fitting residual
   std::vector<double> y (Nj / 2), x (Nj / 2);
   for (int jlat = 0; jlat < Nj / 2; jlat++)
     {

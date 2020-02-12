@@ -709,6 +709,7 @@ void glgrib_geometry_gaussian::setProgramParameters (glgrib_program * program) c
       program->set1i ("geometry_gaussian_latfit_degre", latfitcoeff.size ()-1);
       program->set1i ("geometry_gaussian_numberOfPoints", numberOfPoints);
       program->set1i ("geometry_gaussian_fitlat", opts.gaussian.fit.on);
+      program->set1i ("geometry_gaussian_kind", kind);
    }
 }
 
@@ -996,7 +997,6 @@ void glgrib_geometry_gaussian::setupCoordinates ()
   vertexbuffer->unmap ();
 }
 
-
 static
 double guess_lat_lin (int jglo, int ngptotg)
 {
@@ -1004,62 +1004,92 @@ double guess_lat_lin (int jglo, int ngptotg)
 }
 
 static
-int guess_jlat (int jglo, int ndglg, int ngptotg)
+double guess_lat_oct (int jglo, int ngptotg)      
 {
-  double lat = guess_lat_lin (jglo, ngptotg);
+  return 0.5 * pi * (1 - sqrt (2 * double (jglo) / double (ngptotg)));
+}
+
+static
+double guess_lat (int jglo, int ngptotg, int kind)      
+{
+#include "shaders/include/geometry/gaussian/kinds.h"
+  double lat;
+  switch (kind)
+    {
+      case geometry_gaussian_kind_lin:
+        lat = guess_lat_lin (jglo, ngptotg);
+        break;
+      case geometry_gaussian_kind_oct:
+        lat = guess_lat_oct (jglo, ngptotg);
+        break;
+      case geometry_gaussian_kind_unk:
+        throw std::runtime_error ("Unknown grid kind");
+        break;
+    }
+  return lat;
+}
+
+static
+int guess_jlat (int jglo, int ndglg, int ngptotg, int kind)
+{
+  double lat = guess_lat (jglo, ngptotg, kind);
   return int ((0.5 - lat / pi) * (ndglg + 1) - 1);
 }
 
 void glgrib_geometry_gaussian::setupFitLatitudes ()
 {
+#include "shaders/include/geometry/gaussian/kinds.h"
+  latfit_t latfit[2];
 
-  std::cout << "setupFitLatitudes" << std::endl;
+  tryFitLatitudes (geometry_gaussian_kind_lin, &latfit[0]);
+  tryFitLatitudes (geometry_gaussian_kind_oct, &latfit[1]);
 
-  FILE * fp;
- 
-  fp = fopen ("y.txt", "w");
+  std::sort (latfit, latfit+2, [] (const latfit_t & a, const latfit_t & b)
+  {
+    return a.error < b.error;
+  });
+
+  kind = latfit[0].kind;
+  latfitcoeff = latfit[0].coeff;
+
+  if (0)
+  std::cout << " kind, error = " << latfit[0].kind 
+            << ", " << latfit[0].error << std::endl;
+}
+
+void glgrib_geometry_gaussian::tryFitLatitudes (int _kind, latfit_t * latfit)
+{
+#include "shaders/include/geometry/gaussian/kinds.h"
+
+  latfit->kind  = _kind;
 
   std::vector<double> y (Nj / 2), x (Nj / 2);
   for (int jlat = 0; jlat < Nj / 2; jlat++)
     {
       x[jlat] = jlat;
-      y[jlat] = double (jlat - guess_jlat (jglooff[jlat], Nj, numberOfPoints));
+      y[jlat] = double (jlat - guess_jlat (jglooff[jlat], Nj, numberOfPoints, _kind));
     }
-
-  for (int i = 0; i < y.size (); i++)
-    fprintf (fp, " %8d %12.2f\n", i, y[i]);
-
-  fclose (fp);
 
   std::vector<double> coeff;
 
   const int degree = 3;
   glgrib_fitpolynomial (x, y, degree, coeff);
 
-  fp = fopen ("diff.txt", "w");
-  for (int jlat = 0; jlat < Nj / 2; jlat++)
-    {
-      int ilat0 = guess_jlat (jglooff[jlat], Nj, numberOfPoints);
-      int ilat1 = ilat0 + int (glgrib_evalpolynomial (coeff, double (ilat0)));
-      fprintf (fp, " %8d %8d %8d %12d %12d\n", jlat, ilat0, ilat1, jlat-ilat0, jlat-ilat1);
-    }
-  fclose (fp);
-
   for (auto c : coeff)
-    latfitcoeff.push_back (c);
+    latfit->coeff.push_back (c);
 
   auto geometry_gaussian_latfit_eval  = [&] (int jlat)
   {
     float x = float (jlat);
     if (degree == 4)
-      return latfitcoeff[0] + x *
-            (latfitcoeff[1] + x *
-            (latfitcoeff[2] + x *
-            (latfitcoeff[3] + x *
-            (latfitcoeff[4]))));
+      return latfit->coeff[0] + x *
+            (latfit->coeff[1] + x *
+            (latfit->coeff[2] + x *
+            (latfit->coeff[3] + x *
+            (latfit->coeff[4]))));
     float y = 0;
     for (int i = degree; i >= 0; i--)
-       y = y * x + latfitcoeff[i];
+       y = y * x + latfit->coeff[i];
     return y;
   };
 
@@ -1070,7 +1100,7 @@ void glgrib_geometry_gaussian::setupFitLatitudes ()
   {
     bool south = jglo > numberOfPoints / 2;
     int iglo = south ? numberOfPoints - 1 - jglo : jglo;
-    float lat = guess_lat_lin (iglo, numberOfPoints);
+    float lat = guess_lat (iglo, numberOfPoints, _kind);
     int ilat0 = int ((0.5 - lat / pi) * (Nj + 1) - 1);
     int ilat1 = int (geometry_gaussian_latfit_eval (ilat0));
     int jlat = ilat0 + ilat1;
@@ -1106,10 +1136,14 @@ void glgrib_geometry_gaussian::setupFitLatitudes ()
       int jglo = jglooff[jlat] + jlon;
       int ilat = geometry_gaussian_guess_jlat (jglo);
       if (ilat != jlat)
-        printf (" %8d > %8d ; %8d\n", jglo, jlat, ilat);
+        {
+          printf (" %8d > %8d ; %8d\n", jglo, jlat, ilat);
+          throw std::runtime_error ("Latitude fit mismatch");
+	}
     }
 
-  printf (" avg, max = %8.1f, %8.1f\n", count_avg / count, count_max);
+  latfit->error = count_max;
+
 }
 
 void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & o)

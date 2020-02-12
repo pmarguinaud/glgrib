@@ -115,9 +115,20 @@ private:
   void setupSSBO ();
   void setupCoordinates ();
   void setupFitLatitudes ();
-  
+
+  class latfit_t
+  {
+  public:
+    int kind = 0;
+    std::vector<float> coeff;
+    float error = 0;
+  };
+
+  void tryFitLatitudes (int, latfit_t *);
 
 private:
+
+  int kind = 0;
   std::vector<float> latfitcoeff;
   std::vector<long int> pl;
   long int Nj;

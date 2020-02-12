@@ -1,4 +1,5 @@
 
+#include "geometry/gaussian/kinds.h"
 
 layout (std430, binding=geometry_gaussian_jlat_idx) buffer geometry_gaussian1
 {
@@ -24,12 +25,19 @@ uniform float geometry_gaussian_latfit_coeff[10];
 uniform int   geometry_gaussian_latfit_degre;
 uniform int   geometry_gaussian_numberOfPoints;
 uniform bool  geometry_gaussian_fitlat;
+uniform int   geometry_gaussian_kind;
 
 
 float geometry_gaussian_guess_lat_lin (int jglo)
 {
   return asin (1.0 - 2.0 * float (jglo) / float (geometry_gaussian_numberOfPoints));
 }
+
+float geometry_gaussian_guess_lat_oct (int jglo)
+{
+  return 0.5 * pi * (1.0 - sqrt (2.0 * float (jglo) / float (geometry_gaussian_numberOfPoints)));
+}
+
 
 float geometry_gaussian_latfit_eval (int jlat)
 {
@@ -50,7 +58,18 @@ int geometry_gaussian_guess_jlat (int jglo)
 {
   bool south = jglo > geometry_gaussian_numberOfPoints / 2;
   int iglo = south ? geometry_gaussian_numberOfPoints - 1 - jglo : jglo;
-  float lat = geometry_gaussian_guess_lat_lin (iglo);
+  float lat;
+  
+  switch (geometry_gaussian_kind)
+    {
+      case geometry_gaussian_kind_lin:
+        lat = geometry_gaussian_guess_lat_lin (iglo);
+	break;
+      case geometry_gaussian_kind_oct:
+        lat = geometry_gaussian_guess_lat_oct (iglo);
+	break;
+    }
+
   int ilat0 = int ((0.5 - lat / pi) * (geometry_gaussian_Nj + 1) - 1);
   int ilat1 = int (geometry_gaussian_latfit_eval (ilat0));
   int jlat = ilat0 + ilat1;

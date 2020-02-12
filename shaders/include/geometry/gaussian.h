@@ -70,7 +70,8 @@ int geometry_gaussian_guess_jlat (int jglo)
 vec2 getGaussianVertexLonLat (int jglo) 
 {
   const float twopi = 2.0f * pi;
-  int jlat = geometry_gaussian_jlat[jglo];
+//int jlat = geometry_gaussian_jlat[jglo];
+  int jlat = geometry_gaussian_guess_jlat (jglo);
 
   int jlon = jglo - geometry_gaussian_jglooff[jlat];
 

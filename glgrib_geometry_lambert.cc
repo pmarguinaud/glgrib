@@ -125,8 +125,10 @@ void glgrib_geometry_lambert::setupFrame ()
 }
 
 
-void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts)
+void glgrib_geometry_lambert::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & o)
 {
+  opts = o;
+
   codes_handle * h = ghp->getCodesHandle ();
 
   // Compute number of triangles

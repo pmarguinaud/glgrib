@@ -89,6 +89,7 @@ public:
   virtual void setProgramParameters (glgrib_program * program) const;
 
 protected:
+  glgrib_options_geometry opts;
   unsigned int ind_strip_size = 0;
   int numberOfPoints = 0;
   unsigned int numberOfTriangles = 0;

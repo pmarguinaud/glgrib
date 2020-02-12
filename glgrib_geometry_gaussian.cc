@@ -695,7 +695,8 @@ void glgrib_geometry_gaussian::setProgramParameters (glgrib_program * program) c
   else
     {
       program->set1i ("geometry_type", geometry_gaussian);
-      ssbo_jlat->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_jlat_idx);
+      if (! opts.gaussian.fit.on)
+        ssbo_jlat->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_jlat_idx);
       ssbo_jglo->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_jglo_idx);
       ssbo_glat->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_glat_idx);
       program->set1i ("geometry_gaussian_Nj", Nj);
@@ -890,16 +891,19 @@ void glgrib_geometry_gaussian::setupSSBO ()
 {
   // jlat
 
-  ssbo_jlat = new_glgrib_opengl_buffer_ptr (numberOfPoints * sizeof (int));
-  int * jlat = (int *)ssbo_jlat->map ();
+  if (! opts.gaussian.fit.on)
+    {
+      ssbo_jlat = new_glgrib_opengl_buffer_ptr (numberOfPoints * sizeof (int));
+      int * jlat = (int *)ssbo_jlat->map ();
 
 #pragma omp parallel for
-  for (int ilat = 0; ilat < Nj; ilat++)
-  for (int ilon = 0; ilon < pl[ilat]; ilon++)
-    jlat[jglooff[ilat]+ilon] = ilat;
+      for (int ilat = 0; ilat < Nj; ilat++)
+      for (int ilon = 0; ilon < pl[ilat]; ilon++)
+        jlat[jglooff[ilat]+ilon] = ilat;
 
-  jlat = NULL;
-  ssbo_jlat->unmap ();
+      jlat = NULL;
+      ssbo_jlat->unmap ();
+    }
 
   // jglooff
 
@@ -1058,6 +1062,9 @@ void glgrib_geometry_gaussian::setupFitLatitudes ()
     return y;
   };
 
+  float count_avg = 0, count_max = 0;
+  int count = 0;
+
   auto geometry_gaussian_guess_jlat = [&] (int jglo)
   {
     bool south = jglo > numberOfPoints / 2;
@@ -1069,12 +1076,23 @@ void glgrib_geometry_gaussian::setupFitLatitudes ()
     
     jlat = std::max (std::min (jlat, int (Nj-1)), 0);
      
+    int c = 0;
 
     while (iglo < jglooff[jlat])
-      jlat = jlat - 1;
+      {
+        jlat = jlat - 1;
+	c++;
+      }
 
     while (iglo >= jglooff[jlat+1])
-      jlat = jlat + 1;
+      {
+        jlat = jlat + 1;
+	c++;
+      }
+
+    count_avg += c;
+    count_max = std::max (count_max, float (c));
+    count++;
 
     jlat = south ? Nj - 1 - jlat : jlat;
 
@@ -1090,10 +1108,13 @@ void glgrib_geometry_gaussian::setupFitLatitudes ()
         printf (" %8d > %8d ; %8d\n", jglo, jlat, ilat);
     }
 
+  printf (" avg, max = %8.1f, %8.1f\n", count_avg / count, count_max);
 }
 
-void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts)
+void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & o)
 {
+  opts = o;
+
   codes_handle * h = ghp ? ghp->getCodesHandle () : NULL;
 
   // Compute number of triangles

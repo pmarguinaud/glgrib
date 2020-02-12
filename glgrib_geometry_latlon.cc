@@ -70,8 +70,10 @@ void glgrib_geometry_latlon::setupCoordinates ()
   vertexbuffer->unmap ();
 }
 
-void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & opts)
+void glgrib_geometry_latlon::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & o)
 {
+  opts = o;
+
   codes_handle * h = ghp->getCodesHandle ();
   periodic = false;
 

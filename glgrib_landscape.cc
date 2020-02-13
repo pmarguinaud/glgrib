@@ -67,7 +67,7 @@ void glgrib_landscape::setup (glgrib_loader * ld, const glgrib_options_landscape
 
   geometry = glgrib_geometry::load (ld, opts.geometry_path, opts.geometry, opts.number_of_latitudes);
 
-  if (opts.path != "")
+  if (opts.color == glgrib_option_color ("#00000000"))
     {
       unsigned char * rgb;
       int w, h;
@@ -130,7 +130,7 @@ void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_li
   program->setLight (light);
   program->set1i ("isflat", opts.flat.on);
 
-  if (opts.path != "")
+  if (opts.color == glgrib_option_color ("#00000000"))
     {
       // the texture selection process is a bit obscure
       glActiveTexture (GL_TEXTURE0); 

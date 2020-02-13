@@ -26,6 +26,8 @@ public:
 
   glgrib_option_color () {}
   glgrib_option_color (int _r, int _g, int _b, int _a = 255) : r (_r), g (_g), b (_b), a (_a) {}
+  glgrib_option_color (const std::string &);
+
   int r = 255, g = 255, b = 255, a = 255;
   std::string asString () const 
   {
@@ -761,7 +763,7 @@ public:
     float angle        = 1.0f;
     bool on            = true;
   } subdivision;
-  glgrib_option_color color = glgrib_option_color (0, 255, 0);
+  glgrib_option_color color = glgrib_option_color ("#ffe2ab");
   struct
   {
     bool on            = false;
@@ -785,10 +787,10 @@ public:
 
   std::vector<glgrib_options_land_layer> layers = 
   {
-    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L1.shp", 1.000f, glgrib_option_color (  0, 255,   0)),
-    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L2.shp", 1.001f, glgrib_option_color (  0,   0, 255)),
-    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L3.shp", 1.002f, glgrib_option_color (  0, 255,   0)),
-    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L5.shp", 1.000f, glgrib_option_color (  0, 255,   0)) 
+    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L1.shp", 1.000f, glgrib_option_color ("#ffe2ab")),
+    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L2.shp", 1.001f, glgrib_option_color ("#0000ff")),
+    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L3.shp", 1.002f, glgrib_option_color ("#ffe2ab")),
+    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L5.shp", 1.000f, glgrib_option_color ("#ffe2ab")) 
   };
 
 };
@@ -843,7 +845,7 @@ public:
   } lonlat;
   glgrib_options_geometry geometry;
   float scale = 1.0f;
-  glgrib_option_color color;
+  glgrib_option_color color = glgrib_option_color ("#00000000");
 };
 
 class glgrib_options_lines : public glgrib_options_base
@@ -1082,7 +1084,6 @@ public:
     DESC (rotate_earth.on,     Make earth rotate);
     INCLUDE (light);
     INCLUDE (travelling);
-    DESC (test_strxyz.on,      Test XYZ string);
     INCLUDE (interpolation);
     INCLUDE (text);
     INCLUDE (image);
@@ -1098,10 +1099,6 @@ public:
   float   lon_at_hour = -1.0f;
   glgrib_options_light light;  
   glgrib_options_travelling travelling;
-  struct
-  {
-    bool on = false;
-  } test_strxyz;
   glgrib_options_interpolation interpolation;
   glgrib_options_date date;
   glgrib_options_text text;

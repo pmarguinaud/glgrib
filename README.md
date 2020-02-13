@@ -398,14 +398,6 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].scale 1.01 --field[0].path testdata/t49/SFX.CLAY.grb 
     --coast.on --grid.on --field[0].user_pref.off 
 ```
-## 3D strings on the sphere                                          -- strxyz
-![](test.ref/strxyz/TEST_0000.png)
-
-```
-    --field[0].path testdata/t1198c2.2/N.grb --field[0].scale 0.99 
-    --colorbar.on --colorbar.font.color.foreground green --window.width 
-    1000 --view.projection XYZ --scene.test_strxyz.on 
-```
 ## Display text                                                      -- text
 ![](test.ref/text/TEST_0000.png)
 
@@ -980,4 +972,31 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     -17.63 --view.lon -149.5 --view.fov 0.2 --coast.lines.color green 
     --coast.on --field[0].scalar.points.on --colorbar.on --window.width 
     1200 --colorbar.font.color.background black 
+```
+## Wind Australia                                                    -- windaustralia
+![](test.ref/windaustralia/TEST_0000.png)
+
+```
+    --field[0].path testdata/uv200.grib%paramId=131 
+    testdata/uv200.grib%paramId=132 --field[0].type VECTOR --coast.on 
+    --view.lat -25 --view.lon 140 --view.fov 8 --field[0].vector.norm.off 
+    --land.on --field[0].vector.arrow.color blue --landscape.on 
+    --landscape.color white --landscape.scale 0.999 --coast.on 
+    --coast.lines.color black --coast.lines.path 
+    coastlines/gshhg/GSHHS_bin/gshhs_i.b --field[0].vector.density 100 
+    --field[0].vector.scale 10 --window.width 1200 --field[0].scale 1.001 
+```
+## Wind Australia                                                    -- windaustralia2
+![](test.ref/windaustralia2/TEST_0000.png)
+
+```
+    --field[0].path testdata/uv200.grib%paramId=131 
+    testdata/uv200.grib%paramId=132 --field[0].type VECTOR --coast.on 
+    --view.lat -25 --view.lon 140 --view.fov 2 --field[0].vector.norm.off 
+    --land.on --field[0].vector.arrow.color darkgreen --landscape.on 
+    --landscape.color white --landscape.scale 0.999 --coast.on 
+    --coast.lines.color black --coast.lines.path 
+    coastlines/gshhg/GSHHS_bin/gshhs_i.b --field[0].vector.scale 5 
+    --window.width 1200 --field[0].scale 1.001 --view.projection LATLON 
+    --field[0].vector.density 10 
 ```

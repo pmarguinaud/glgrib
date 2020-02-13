@@ -101,9 +101,6 @@ void glgrib_scene::display () const
   if (d.opts.scene.title.on)
     d.strtitle.render (d.MVP_L);
 
-  if (d.opts.scene.test_strxyz.on)
-    d.strxyz.render (d.view);
-
   for (auto str : d.str)
     str.render (d.MVP_R);
 
@@ -329,6 +326,7 @@ void glgrib_scene::setup (const glgrib_options & o)
 
   setLandscapeOptions (d.opts.landscape);
   setGridOptions (d.opts.grid);
+  setLandOptions (d.opts.land);
   setCoastOptions (d.opts.coast);
   setBorderOptions (d.opts.border);
   setRiversOptions (d.opts.rivers);
@@ -348,20 +346,6 @@ void glgrib_scene::setup (const glgrib_options & o)
   setColorBarOptions (d.opts.colorbar);
   setMapScaleOptions (d.opts.mapscale);
 
-  if (d.opts.scene.test_strxyz.on)
-    {
-      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.scene.date.font);
-      d.strxyz.setShared (true);
-      d.strxyz.setChange (false);
-      d.strxyz.setup3D (font, std::vector<std::string>{"ABCD","EFGH","IJKL","MNOP"},
-                       std::vector<float>{+1.01f,-1.01f,+0.00f,+0.707*1.010f},
-                       std::vector<float>{+0.00f,+0.00f,+1.01f,+0.707*0.000f},
-                       std::vector<float>{+0.00f,+0.00f,+0.00f,+0.707*1.010f},
-                       std::vector<float>{+0.0f,+0.0f,+90.0f,+0.0f},
-                       d.opts.scene.date.font.scale, glgrib_string::C);
-      d.strxyz.setForegroundColor (d.opts.scene.date.font.color.foreground);
-    }
-
   d.currentFieldRank = d.opts.scene.select.field;
 
 
@@ -374,9 +358,6 @@ void glgrib_scene::setup (const glgrib_options & o)
           geometry->getView (&d.view);
         }
     }
-
-  if (o.land.on)
-    d.land.setup (o.land);
 
   resize ();
 }
@@ -438,6 +419,13 @@ void glgrib_scene::setLandscapeOptions (const glgrib_options_landscape & o)
   d.landscape.clear ();
   if (o.on)
     d.landscape.setup (&ld, o);
+}
+
+void glgrib_scene::setLandOptions (const glgrib_options_land & o)
+{
+  d.land.clear ();
+  if (o.on)
+    d.land.setup (o);
 }
 
 void glgrib_scene::setGridOptions (const glgrib_options_grid & o)

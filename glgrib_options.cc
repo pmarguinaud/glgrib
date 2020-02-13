@@ -175,6 +175,11 @@ void glgrib_option_color::parse (glgrib_option_color * value, const std::string 
     }
 }
 
+glgrib_option_color::glgrib_option_color (const std::string & str)
+{
+  parse (this, str);
+}
+
 glgrib_option_color glgrib_option_color::color_by_hexa (const std::string & name)
 {
   glgrib_option_color color;

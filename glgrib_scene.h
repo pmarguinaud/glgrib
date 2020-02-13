@@ -96,7 +96,6 @@ public:
       glgrib_mapscale mapscale;
       glgrib_string strmess;
       glgrib_string strdate;
-      glgrib_string strxyz;
       glgrib_string strtitle;
       std::vector<glgrib_string> str;
       int nupdate = 0;
@@ -119,6 +118,7 @@ public:
   void setViewOptions (const glgrib_options_view &);
   void setLandscapeOptions (const glgrib_options_landscape &);
   void setGridOptions (const glgrib_options_grid &);
+  void setLandOptions (const glgrib_options_land &);
   void setGridColorOptions (const glgrib_option_color &);
   void setGridScaleOptions (float);
   void setCoastOptions (const glgrib_options_coast &);

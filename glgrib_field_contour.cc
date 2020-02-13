@@ -496,7 +496,7 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
   renderHilo (view);
 
   if (opts.contour.labels.on)
-    for (auto is : iso)
+    for (const auto & is : iso)
       is.labels.render (view);
 
 }

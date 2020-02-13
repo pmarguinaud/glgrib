@@ -962,3 +962,22 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --font.color.foreground white --font.color.background black 
     --font.scale 0.04 --format %.0f }- --coast.on --coast.lines.color pink 
 ```
+## AROME 1.3km                                                       -- arome13
+![](test.ref/arome13/TEST_0000.png)
+
+```
+    --field[0].path testdata/aro1.3/CLSVENT.ZONAL.grb 
+    testdata/aro1.3/CLSVENT.MERIDIEN.grb --field[0].type VECTOR --view-{ 
+    --lon 2 --lat 46.2 --fov 3 }- --field[0].palette.colors black green 
+    --field[0].palette.values 0. 20. --field[0].vector.arrow.color red 
+    --coast.lines.color cyan --coast.on 
+```
+## Polynesie                                                         -- polynesie
+![](test.ref/polynesie/TEST_0000.png)
+
+```
+    --field[0].path testdata/polynesie/SURFTEMPERATURE.grb --view.lat 
+    -17.63 --view.lon -149.5 --view.fov 0.2 --coast.lines.color green 
+    --coast.on --field[0].scalar.points.on --colorbar.on --window.width 
+    1200 --colorbar.font.color.background black 
+```

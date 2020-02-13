@@ -197,6 +197,7 @@ void glgrib_field_contour::setupLabels (isoline_t * iso, const isoline_data_t & 
                        glgrib_string::C);
   iso->labels.setForegroundColor (opts.contour.labels.font.color.foreground);
   iso->labels.setBackgroundColor (opts.contour.labels.font.color.background);
+
   iso->labels.setScaleXYZ (opts.scale * 1.001);
 
 }

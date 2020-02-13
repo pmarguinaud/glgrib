@@ -1000,3 +1000,58 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --window.width 1200 --field[0].scale 1.001 --view.projection LATLON 
     --field[0].vector.density 10 
 ```
+## Wind Australia                                                    -- windaustralia3
+![](test.ref/windaustralia3/TEST_0000.png)
+
+```
+    --field[0].path testdata/uv200.grib%paramId=131 
+    testdata/uv200.grib%paramId=132 --field[0].type VECTOR --coast.on 
+    --view.lat -37 --view.lon 140 --view.fov 3 --field[0].vector.norm.off 
+    --land.on --landscape.on --landscape.color #333333 --landscape.scale 
+    0.999 --coast.on --coast.lines.color black --coast.lines.path 
+    coastlines/gshhg/GSHHS_bin/gshhs_i.b --field[0].vector.scale 1 
+    --window.width 1200 --field[0].scale 1.001 --view.projection LATLON 
+    --field[0].vector.density 10 --field[0].palette.colors #1cb8a6 #19c25c 
+    #24cb15 #80d511 #e0d50d #ea7209 #f50408 #ff007f 
+    --field[0].palette.values 20 30 40 50 60 70 80 90 100 
+    --field[0].vector.arrow.color #00000000 
+    --field[0].vector.arrow.fixed.on --field[0].vector.arrow.min 10 
+    --land.layers[0].color black --coast.on --coast.lines.color #555555 
+    --colorbar.on --field[0].vector.density 20 --field[0].vector.scale 2 
+```
+## Precipitations Europe                                             -- precipeurope
+![](test.ref/precipeurope/TEST_0000.png)
+
+```
+    --field[0].path testdata/total_precipitation.grib --coast.on 
+    --coast.lines.color black --landscape.color white --landscape.scale 
+    0.999 --landscape.on --field[0].palette.colors #00000000 #00ffff 
+    #0080ff #0000ff #da00ff #ff00ff #ff8000 #ff0000 
+    --field[0].palette.values 0. 0.0005 0.002 0.004 0.010 0.025 0.050 
+    0.100 0.250 --colorbar.on --field[0].palette.linear.on --field[0].type 
+    ISOFILL --window.width 1200 --field[0].isofill.levels 0. 0.0005 0.002 
+    0.004 0.010 0.025 0.050 0.100 0.250 --field[1].type CONTOUR 
+    --field[1].path testdata/total_precipitation.grib --field[1].scale 
+    1.001 --field[1].contour.levels 0. 0.0005 0.002 0.004 0.010 0.025 
+    0.050 0.100 0.250 --field[1].palette.colors black 
+    --colorbar.font.color.foreground white --view.lon 2 --view.lat 46.2 
+    --view.fov 5 --view.projection POLAR_NORTH --grid.on --grid.color 
+    black --grid.labels.on --grid.labels.font.color.foreground black 
+    --grid.labels.font.scale 0.03 --grid.resolution 18 
+    --field[0].palette.scale 1000 --colorbar.font.color.background black 
+    --view.clip.xmin 0.15 
+```
+## Z500                                                              -- z500europe
+![](test.ref/z500europe/TEST_0000.png)
+
+```
+    --field[0]-{ --contour.labels.format %5.0f --contour.widths 1 2 1 1 2 
+    1 1 2 1 1 2 --path testdata/z500.grb --type CONTOUR --palette.colors 
+    black --contour.labels.on --contour.labels.font.color.foreground black 
+    --contour.labels.font.color.background white --contour.levels 51000 
+    51600 52200 52800 53400 54000 54600 55200 55800 56400 57000 }- 
+    --landscape.on --landscape.scale 0.999 --landscape.color white 
+    --coast.on --coast.lines.color black --view.lat 46.2 --view.lon 2 
+    --view.fov 5 --grid.on --grid.color black --grid.resolution 18 
+    --view.projection POLAR_NORTH 
+```

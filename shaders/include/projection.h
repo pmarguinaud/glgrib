@@ -1,4 +1,4 @@
-#include "projection_kind.h"
+#include "projection/kind.h"
 
 uniform int proj_vs = 0;
 uniform bool isflat = true;

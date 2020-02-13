@@ -1,7 +1,7 @@
 
 #version 330 core
 
-#include "projection_kind.h"
+#include "projection/kind.h"
 
 in vec3 fragmentPos;
 out vec4 color;

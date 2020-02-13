@@ -10,7 +10,7 @@ use Data::Dumper;
 sub load
 {
   my $f = shift;
-  my @text = do { my $fh = 'FileHandle'->new ("<$f"); <$fh> };
+  my @text = do { my $fh = 'FileHandle'->new ("<$f"); $fh or die ("Cannot find $f\n"); <$fh> };
   return @text;
 }
 

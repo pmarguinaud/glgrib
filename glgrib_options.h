@@ -529,6 +529,8 @@ public:
     DESC (arrow.head_size, Vector head size);
     DESC (arrow.kind,      Arrow kind);
     DESC (arrow.fill.on,   Fill arrow);
+    DESC (arrow.fixed.on,  Fixed sized arrow);
+    DESC (arrow.min,       Vector min value);
   }
   struct
   {
@@ -540,6 +542,11 @@ public:
       bool on = false;
     } fill;
     glgrib_option_color color;
+    struct
+    {
+      bool on = false;
+    } fixed;
+    float min = 0.0f;
   } arrow;
   struct
   {

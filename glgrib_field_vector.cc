@@ -195,6 +195,8 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 	                 opts.vector.arrow.color.b/255.0f, opts.vector.arrow.color.a/255.0f};
       program->set4fv ("color0", color0);
       program->set1f ("vscale", d.vscale);
+      program->set1i ("arrow_fixed", opts.vector.arrow.fixed.on);
+      program->set1f ("arrow_min", opts.vector.arrow.min);
       program->set1f ("head", opts.vector.arrow.head_size);
 
       int kind = std::min (2, std::max (opts.vector.arrow.kind, 0));

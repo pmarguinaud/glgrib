@@ -24,11 +24,13 @@ uniform mat4 MVP;
 const float deg2rad = pi / 180.0;
 
 uniform float vscale = 0.01;
+uniform bool  arrow_fixed = false;
 uniform float head = 0.1;
 uniform float posmax = 0.97;
 
 uniform float height_scale = 0.05;
 uniform int arrow_kind = 1;
+uniform float arrow_min = 0.;
 
 vec3 getPos0 ()
 {
@@ -77,7 +79,10 @@ void main ()
   fragmentVal = vertexVal_n;
   fragmentPos = vertexPos;
 
-  bool defined = vertexVal_d != 0;
+  float N = unpack (vertexVal_n, valmin_n, valmax_n);
+  float D = unpack (vertexVal_d, valmin_d, valmax_d);
+
+  bool defined = (vertexVal_d != 0) && (N > arrow_min);
   vec3 pos;
 
   if (! defined)
@@ -90,15 +95,25 @@ void main ()
     pos = getPos2 ();
   else 
     pos = getPos0 ();
-  
+    
+
   alpha = 1.;
   if (defined)
     {
-      float N = unpack (vertexVal_n, valmin_n, valmax_n);
-      float D = unpack (vertexVal_d, valmin_d, valmax_d);
       D = D * deg2rad;
-      float X = vscale * N * cos (D) / valmax_n;
-      float Y = vscale * N * sin (D) / valmax_n;
+
+      float X, Y;
+
+      if (arrow_fixed)
+        {
+          X = vscale * cos (D);
+          Y = vscale * sin (D);
+        }
+      else
+        {
+          X = vscale * N * cos (D) / valmax_n;
+          Y = vscale * N * sin (D) / valmax_n;
+        }
      
       float s = scalingFactor (compNormedPos (vertexPos));
 

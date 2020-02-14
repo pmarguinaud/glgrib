@@ -548,16 +548,7 @@ glm::vec3 glgrib_geometry_lambert::conformal2xyz (const glm::vec2 & xy) const
 
   latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
 
-  float coslon = cos (latlon.lon), sinlon = sin (latlon.lon);
-  float coslat = cos (latlon.lat), sinlat = sin (latlon.lat);
-
-  glm::vec3 xyz;
-
-  xyz.x = coslon * coslat;
-  xyz.y = sinlon * coslat;
-  xyz.z =          sinlat;
-
-  return xyz;
+  return lonlat2xyz (latlon.lon, latlon.lat);
 }
 
 
@@ -617,11 +608,7 @@ void glgrib_geometry_lambert::getView (glgrib_view * view) const
         xy_t pt_xy ((i * (Nx-1) - Nux / 2) * DxInMetres, (j * (Ny-1) - Nuy / 2) * DyInMetres);
         pt_xy = pt_xy + center_xy;
 	latlon_t latlon = p_pj.xy_to_latlon (pt_xy);
-        float coslon = cos (latlon.lon), sinlon = sin (latlon.lon);
-        float coslat = cos (latlon.lat), sinlat = sin (latlon.lat);
-        xyz[i][j].x = coslon * coslat;
-        xyz[i][j].y = sinlon * coslat;
-        xyz[i][j].z =          sinlat;
+	xyz[i][j] = lonlat2xyz (latlon.lon, latlon.lat);
       }
 
   float angmax = acos (glm::dot (xyz[0][0], xyz[1][1]));

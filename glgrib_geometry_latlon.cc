@@ -361,22 +361,17 @@ void glgrib_geometry_latlon::getTriangleNeighbours (int it, int jglo[3], int itr
 
   getTriangleNeighboursLatLon (it, jglo, itri, xlon0, xlat0, xlon1, xlat1);
 
-  float coslon0 = cos (xlon0), sinlon0 = sin (xlon0);
-  float coslon1 = cos (xlon1), sinlon1 = sin (xlon1);
-  float coslat0 = cos (xlat0), sinlat0 = sin (xlat0);
-  float coslat1 = cos (xlat1), sinlat1 = sin (xlat1);
-
   if (t021)
     {
-      xyz[0] = glm::vec3 (coslon0 * coslat0, sinlon0 * coslat0, sinlat0);
-      xyz[1] = glm::vec3 (coslon1 * coslat0, sinlon1 * coslat0, sinlat0);
-      xyz[2] = glm::vec3 (coslon0 * coslat1, sinlon0 * coslat1, sinlat1);
+      xyz[0] = lonlat2xyz (xlon0, xlat0); 
+      xyz[1] = lonlat2xyz (xlon1, xlat0); 
+      xyz[2] = lonlat2xyz (xlon0, xlat1); 
     }
   else
     {
-      xyz[0] = glm::vec3 (coslon0 * coslat1, sinlon0 * coslat1, sinlat1);
-      xyz[1] = glm::vec3 (coslon1 * coslat1, sinlon1 * coslat1, sinlat1);
-      xyz[2] = glm::vec3 (coslon1 * coslat0, sinlon1 * coslat0, sinlat0);
+      xyz[0] = lonlat2xyz (xlon0, xlat1);
+      xyz[1] = lonlat2xyz (xlon1, xlat1);
+      xyz[2] = lonlat2xyz (xlon1, xlat0);
     }
 }
 
@@ -540,14 +535,7 @@ glm::vec3 glgrib_geometry_latlon::conformal2xyz (const glm::vec2 & merc) const
   float lon = merc.x;
   float lat = 2.0f * atan (exp (merc.y)) - pi / 2.0f;
 
-  float coslon = cos (lon), sinlon = sin (lon);
-  float coslat = cos (lat), sinlat = sin (lat);
-
-  float X = coslon * coslat;
-  float Y = sinlon * coslat;
-  float Z =          sinlat;
-
-  return glm::vec3 (X, Y, Z);
+  return lonlat2xyz (lon, lat);
 }
 
 glm::vec2 glgrib_geometry_latlon::conformal2latlon (const glm::vec2 & merc) const
@@ -602,17 +590,6 @@ float glgrib_geometry_latlon::getLocalMeshSize (int) const
 }
 
 
-static void latlon2xyz (float lat, float lon, glm::vec3 * xyz)
-{
-  float coslon = cos (deg2rad * lon), 
-        sinlon = sin (deg2rad * lon);
-  float coslat = cos (deg2rad * lat), 
-        sinlat = sin (deg2rad * lat);
-  xyz->x = coslon * coslat;
-  xyz->y = sinlon * coslat;
-  xyz->z =          sinlat;
-}
-
 void glgrib_geometry_latlon::getView (glgrib_view * view) const
 {
   if (periodic)
@@ -622,10 +599,10 @@ void glgrib_geometry_latlon::getView (glgrib_view * view) const
 
   glm::vec3 xyz[2][2];
 
-  latlon2xyz (latitudeOfFirstGridPointInDegrees, longitudeOfFirstGridPointInDegrees, &xyz[0][0]);
-  latlon2xyz (latitudeOfLastGridPointInDegrees,  longitudeOfFirstGridPointInDegrees, &xyz[0][1]);
-  latlon2xyz (latitudeOfFirstGridPointInDegrees, longitudeOfLastGridPointInDegrees,  &xyz[1][0]);
-  latlon2xyz (latitudeOfLastGridPointInDegrees,  longitudeOfLastGridPointInDegrees,  &xyz[1][1]);
+  xyz[0][0] = lonlat2xyz (deg2rad * longitudeOfFirstGridPointInDegrees, deg2rad * latitudeOfFirstGridPointInDegrees);
+  xyz[0][1] = lonlat2xyz (deg2rad * longitudeOfFirstGridPointInDegrees, deg2rad * latitudeOfLastGridPointInDegrees );
+  xyz[1][0] = lonlat2xyz (deg2rad * longitudeOfLastGridPointInDegrees , deg2rad * latitudeOfFirstGridPointInDegrees);
+  xyz[1][1] = lonlat2xyz (deg2rad * longitudeOfLastGridPointInDegrees , deg2rad * latitudeOfLastGridPointInDegrees );
 
   glm::vec3 xyz0 = (xyz[0][0] + xyz[0][1] + xyz[1][0] + xyz[1][1]) / 4.0f;
 

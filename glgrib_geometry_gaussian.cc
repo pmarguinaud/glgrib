@@ -1233,11 +1233,9 @@ void glgrib_geometry_gaussian::latlon2coordxy (float lat, float lon,
   lat = lat * deg2rad;
   lon = lon * deg2rad;
 
-  float coslat = cos (lat), sinlat = sin (lat);
-  float coslon = cos (lon), sinlon = sin (lon);
-  float x = coslon * coslat;
-  float y = sinlon * coslat;
-  float z =          sinlat;
+  float x, y, z;
+
+  lonlat2xyz (lon, lat, &x, &y, &z);
 
   glm::vec4 xyz = glm::vec4 (x, y, z, 0.0f);
   glm::vec4 XYZ = glm::inverse (rot) * xyz;
@@ -1250,7 +1248,7 @@ void glgrib_geometry_gaussian::latlon2coordxy (float lat, float lon,
   lat = asin (Z);
 
   coordx = lon;
-  sinlat = sin (lat);
+  float sinlat = sin (lat);
   coordy = asin ((-omc2 + sinlat * opc2) / (opc2 - sinlat * omc2));
 }
 
@@ -1668,12 +1666,9 @@ glm::vec3 glgrib_geometry_gaussian::conformal2xyz (const glm::vec2 & merc) const
   float lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
   float lon = coordx;
 
-  float coslon = cos (lon), sinlon = sin (lon);
-  float coslat = cos (lat), sinlat = sin (lat);
+  float X, Y, Z;
 
-  float X = coslon * coslat;
-  float Y = sinlon * coslat;
-  float Z =          sinlat;
+  lonlat2xyz (lon, lat, &X, &Y, &Z);
 
   if (! rotated)
     return glm::vec3 (X, Y, Z);

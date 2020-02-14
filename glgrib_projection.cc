@@ -1,8 +1,7 @@
 #include "glgrib_projection.h"
+#include "glgrib_trigonometry.h"
 
 #include <iostream>
-
-static const float pi = 3.1415926;
 
 static glm::vec3 intersect_plane (const glm::vec3 & xa, const glm::vec3 & xb,
                                   const glm::vec3 & p, const glm::vec3 & v) 
@@ -79,9 +78,7 @@ int glgrib_projection_latlon::unproject (const glm::vec3 & xa, const glm::vec3 &
   glm::vec3 pos = intersect_plane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
   float lon = pos.y * pi + lon0 * pi / 180.0f + pi;
   float lat = pos.z * pi;
-  float coslat = glm::cos (lat), sinlat = glm::sin (lat);
-  float coslon = glm::cos (lon), sinlon = glm::sin (lon);
-  *xyz = glm::vec3 (coslat * coslon, coslat * sinlon, sinlat);
+  *xyz = lonlat2xyz (glm::vec2 (lon, lat));
   return 1;
 }
 
@@ -106,9 +103,7 @@ int glgrib_projection_mercator::unproject (const glm::vec3 & xa, const glm::vec3
   glm::vec3 pos = intersect_plane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
   float lon = pos.y * pi + lon0 * pi / 180.0f + pi;
   float lat = 2.0f * glm::atan (glm::exp (pos.z * pi)) - pi / 2.0f;
-  float coslat = glm::cos (lat), sinlat = glm::sin (lat);
-  float coslon = glm::cos (lon), sinlon = glm::sin (lon);
-  *xyz = glm::vec3 (coslat * coslon, coslat * sinlon, sinlat);
+  *xyz = lonlat2xyz (glm::vec2 (lon, lat));
   return 1;
 }
 

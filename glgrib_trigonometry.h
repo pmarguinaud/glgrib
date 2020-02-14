@@ -10,7 +10,7 @@ static const float halfpi = M_PI / 2.0f;
 
 #include <glm/glm.hpp>
 
-static
+static inline
 void lonlat2xyz (float lon, float lat, float * x, float * y, float * z)
 {
   float coslon = cos (lon), sinlon = sin (lon);
@@ -20,14 +20,14 @@ void lonlat2xyz (float lon, float lat, float * x, float * y, float * z)
   *z = sinlat;
 }
 
-static
+static inline
 void xyz2lonlat (float x, float y, float z, float * lon, float * lat)
 {
   *lon = atan2 (y, x);
   *lat = asin (z);
 }
 
-static
+static inline
 glm::vec3 lonlat2xyz (const glm::vec2 & lonlat)
 {
   float x, y, z;
@@ -35,7 +35,7 @@ glm::vec3 lonlat2xyz (const glm::vec2 & lonlat)
   return glm::vec3 (x, y, z);
 }
 
-static
+static inline
 glm::vec2 xyz2lonlat (const glm::vec3 & xyz)
 {
   float lon, lat;
@@ -43,16 +43,27 @@ glm::vec2 xyz2lonlat (const glm::vec3 & xyz)
   return glm::vec2 (lon, lat);
 }
 
-static
+static inline
 glm::vec3 lonlat2xyz (float lon, float lat)
 {
   return lonlat2xyz (glm::vec2 (lon, lat));
 }
 
-static
+static inline
 glm::vec2 xyz2lonlat (float x, float y, float z)
 {
   return xyz2lonlat (glm::vec3 (x, y, z));
 }
 
+static inline
+void xyz2lonlat (const glm::vec3 & xyz, float * lon, float * lat)
+{
+  xyz2lonlat (xyz.x, xyz.y, xyz.z, lon, lat);
+}
+
+static inline
+void lonlat2xyz (const glm::vec2 & lonlat, float * x, float * y, float * z)
+{
+  lonlat2xyz (lonlat.x, lonlat.y, x, y, z);
+}
 

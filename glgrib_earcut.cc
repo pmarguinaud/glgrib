@@ -942,9 +942,7 @@ void glgrib_earcut::processRing (const std::vector<float> & lonlat1,
     {
       int j = i + rank1;
       float lon = lonlat1[2*j+0], lat = lonlat1[2*j+1];
-      float coslon = cos (lon), sinlon = sin (lon);
-      float coslat = cos (lat), sinlat = sin (lat);
-      xyz1[i] = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
+      xyz1[i] = lonlat2xyz (lon, lat);
     }
 
   // Change coordinate system : choose an XYZ where most

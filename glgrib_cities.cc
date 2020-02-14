@@ -40,14 +40,11 @@ void glgrib_cities::setup (const glgrib_options_cities & o)
       if ((siz_ > 1000000) && (opts.labels.on))
         {
           Str.push_back (std::string (name));
-          float coslon = cos (deg2rad * lon_), sinlon = sin (deg2rad * lon_);
-          float coslat = cos (deg2rad * lat_), sinlat = sin (deg2rad * lat_);
-          float x = coslon * coslat * opts.points.scale * 1.01;
-          float y = sinlon * coslat * opts.points.scale * 1.01;
-          float z =          sinlat * opts.points.scale * 1.01;
-          X.push_back (x);
-          Y.push_back (y);
-          Z.push_back (z);
+	  float x, y, z;
+	  lonlat2xyz (deg2rad * lon_, deg2rad * lat_, &x, &y, &z);
+          X.push_back (x * opts.points.scale * 1.01);
+          Y.push_back (y * opts.points.scale * 1.01);
+          Z.push_back (z * opts.points.scale * 1.01);
           A.push_back (0.0f);
        }
     }
@@ -60,19 +57,10 @@ void glgrib_cities::setup (const glgrib_options_cities & o)
 
   glgrib_font_ptr font = new_glgrib_font_ptr (opts.labels.font);
 
-#ifdef UNDEF
-  d.labels.setup3D (font, std::vector<std::string>{"ABCD","EFGH","IJKL","MNOP"},
-                   std::vector<float>{+1.01f,-1.01f,+0.00f,+0.707*1.010f},
-                   std::vector<float>{+0.00f,+0.00f,+1.01f,+0.707*0.000f},
-                   std::vector<float>{+0.00f,+0.00f,+0.00f,+0.707*1.010f},
-                   std::vector<float>{+0.0f,+0.0f,+90.0f,+0.0f},
-                   opts.labels.font.scale, glgrib_string::C);
-#else
   d.labels.setup3D (font, Str, X, Y, Z, A,
                    opts.labels.font.scale, glgrib_string::C);
   d.labels.setForegroundColor (opts.labels.font.color.foreground);
   d.labels.setBackgroundColor (opts.labels.font.color.background);
-#endif
 
 
 }

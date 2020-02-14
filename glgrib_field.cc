@@ -128,11 +128,8 @@ void glgrib_field::setupHilo (glgrib_field_float_buffer_ptr data)
         {
           float lon, lat;
           geometry->index2latlon (jglo, &lat, &lon);
-          float coslon = cos (lon), sinlon = sin (lon);
-          float coslat = cos (lat), sinlat = sin (lat);
-          x = coslon * coslat; 
-          y = sinlon * coslat; 
-          z = sinlat;
+	  float x, y, z;
+          lonlat2xyz (lon, lat, &x, &y, &z);
 #pragma omp critical
           {
             lhilo.push (lhi ? "H" : "L", x, y, z);

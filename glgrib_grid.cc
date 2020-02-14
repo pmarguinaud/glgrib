@@ -45,10 +45,9 @@ void glgrib_grid::setup (const glgrib_options_grid & o)
 
       auto push = [&X, &Y, &Z, &A, &L, this] (float lon, float lat, const std::string & l)
       {
-	float coslon = cos (deg2rad * lon), sinlon = sin (deg2rad * lon);
-	float coslat = cos (deg2rad * lat), sinlat = sin (deg2rad * lat);
-        float x = coslon * coslat, y = sinlon * coslat, z = sinlat;
+        float x, y, z; 
         float a = opts.labels.angle;
+        lonlat2xyz (deg2rad * lon, deg2rad * lat, &x, &y, &z);
         X.push_back (x); Y.push_back (y);
 	Z.push_back (z); A.push_back (a);
 	L.push_back (l);

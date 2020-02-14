@@ -112,7 +112,7 @@ int glgrib_view::get_screen_coords_from_latlon (float * xpos, float * ypos, floa
   float coslon = glm::cos (lon), sinlon = glm::sin (lon);
   float coslat = glm::cos (lat), sinlat = glm::sin (lat);
 
-  glm::vec3 pos = glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
+  glm::vec3 pos = lonlat2xyz (lon, lat); 
 
   return get_screen_coords_from_xyz (xpos, ypos, pos);
 }

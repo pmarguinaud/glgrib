@@ -65,9 +65,9 @@ glm::mat4 glgrib_projection_xyz::getView (const glm::vec3 & p, const float dist)
 
 glm::vec3 glgrib_projection_latlon::project (const glm::vec3 & xyz) const
 {
-  glm::vec3 normedPos = compNormedPos (xyz);
-  float lat = glm::asin (normedPos.z);
-  float lon = glm::mod (glm::atan (normedPos.y, normedPos.x), 2.0f * pi);
+  float lat, lon;
+  xyz2lonlat (compNormedPos (xyz), &lon, &lat);
+  lon = glm::mod (lon, 2.0f * pi);
   float X = (glm::mod (lon - lon0 * pi / 180.0f, 2.0f * pi) - pi) / pi;
   float Y = lat / pi;
   return glm::vec3 (0.0f, X, Y);
@@ -90,9 +90,9 @@ glm::mat4 glgrib_projection_latlon::getView (const glm::vec3 & p, const float di
 
 glm::vec3 glgrib_projection_mercator::project (const glm::vec3 & xyz) const
 {
-  glm::vec3 normedPos = compNormedPos (xyz);
-  float lat = glm::asin (normedPos.z);
-  float lon = glm::mod (glm::atan (normedPos.y, normedPos.x), 2.0f * pi);
+  float lon, lat;
+  xyz2lonlat (compNormedPos (xyz), &lon, &lat);
+  lon = glm::mod (lon, 2.0f * pi);
   float X = (glm::mod (lon - lon0 * pi / 180.0f, 2.0f * pi) - pi) / pi;
   float Y = log (glm::tan (pi / 4.0f + lat / 2.0f)) / pi;
   return glm::vec3 (0.0f, X, Y);

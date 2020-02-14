@@ -2,7 +2,7 @@
 
 uniform int proj = 0;
 uniform bool isflat = true;
-uniform float lon0vs = 180.0; // Longitude of right handside
+uniform float lon0 = 180.0; // Longitude of right handside
 const float pi = 3.1415926;
 
 vec3 posFromLonLat (vec2 vertexLonLat)
@@ -47,7 +47,7 @@ vec3 compProjedPos (vec3 vertexPos, vec3 normedPos)
         {
           float lat = asin (normedPos.z);
           float lon = mod (atan (normedPos.y, normedPos.x), 2 * pi);
-          float X = (mod (lon - lon0vs * pi / 180.0, 2 * pi) - pi) / pi;
+          float X = (mod (lon - lon0 * pi / 180.0, 2 * pi) - pi) / pi;
           float Y = log (tan (pi / 4. + lat / 2.)) / pi;
           pos = vec3 (0., X, Y);
         }
@@ -56,7 +56,7 @@ vec3 compProjedPos (vec3 vertexPos, vec3 normedPos)
         {
           float lat = asin (normedPos.z);
           float lon = mod (atan (normedPos.y, normedPos.x), 2 * pi);
-          float X = (mod (lon - lon0vs * pi / 180.0, 2 * pi) - pi) / pi;
+          float X = (mod (lon - lon0 * pi / 180.0, 2 * pi) - pi) / pi;
           float Y = lat / pi;
           pos = vec3 (0., X, Y);
         }

@@ -8,7 +8,7 @@ out vec4 color;
 
 uniform vec4 color0 = vec4 (0.0f, 1.0f, 0.0f, 1.0f);
 uniform bool debug = false;
-uniform float lon0fs = 180.0f;
+uniform float lon0 = 180.0f;
 uniform int proj = 0;
 
 const float pi = 3.1415926;
@@ -24,16 +24,16 @@ void main()
       float lon = rad2deg * atan (fragmentPos.y, fragmentPos.x);  
       float dlon = 10.0f;
      
-      while (lon > lon0fs)
+      while (lon > lon0)
         lon = lon - 360.0;
-      while (lon < lon0fs)
+      while (lon < lon0)
         lon = lon + 360.0;
      
-      if (abs (lon - lon0fs) < dlon)
+      if (abs (lon - lon0) < dlon)
         discard;
-      if (abs (lon - 360.0 - lon0fs) < dlon)
+      if (abs (lon - 360.0 - lon0) < dlon)
         discard;
-      if (abs (lon + 360.0 - lon0fs) < dlon)
+      if (abs (lon + 360.0 - lon0) < dlon)
         discard;
     }
 

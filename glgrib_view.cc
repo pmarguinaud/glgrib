@@ -25,8 +25,7 @@ void glgrib_view::setMVP (glgrib_program * program) const
 
   if (ps.current ()->setLon0 (lon0))
     {
-      program->set1f ("lon0vs", lon0);
-      program->set1f ("lon0fs", lon0);
+      program->set1f ("lon0", lon0);
     }
 
 

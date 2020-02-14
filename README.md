@@ -1055,3 +1055,22 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.fov 5 --grid.on --grid.color black --grid.resolution 18 
     --view.projection POLAR_NORTH 
 ```
+## Temperature, contour, colors                                      -- tempcontour
+![](test.ref/tempcontour/TEST_0000.png)
+
+```
+    --field[0].scale 1.001 --field[0].path testdata/t850.grib 
+    --field[0].palette.colors #0000ff #003cff #0078ff #00b4ff #00f0ff 
+    #00ffd2 #00ff96 #00ff5a #00ff1e #1eff00 #5aff00 #96ff00 #d2ff00 
+    #fff000 #ffb400 #ff7800 #ff3c00 #ff0000 --field[0].palette.values 
+    259.15 261.15 263.15 265.15 267.15 269.15 271.15 273.15 275.15 277.15 
+    279.15 281.15 283.15 285.15 287.15 289.15 291.15 --colorbar.on 
+    --window.width 1200 --field[0].type CONTOUR --field[0].contour.levels 
+    259.15 261.15 263.15 265.15 267.15 269.15 271.15 273.15 275.15 277.15 
+    279.15 281.15 283.15 285.15 287.15 289.15 --landscape.on 
+    --landscape.color black --landscape.scale 0.999 --land.on --view.lon 2 
+    --view.lat 46.2 --view.fov 4 --field[0].contour.widths 3 3 3 3 3 3 3 3 
+    3 3 3 3 3 3 3 3 --land.layers[0].path coastlines/shp/GSHHS_h_L1.shp 
+    --land.layers[0].color #404040 --view.clip.xmin 0.15 --grid.color grey 
+    --grid.resolution 18 --grid.on 
+```

@@ -19,7 +19,7 @@ public:
   virtual ~glgrib_field_contour ();
   void setupVertexAttributes ();
   void clear () override; 
-  bool useColorBar () const override { return false; }
+  bool useColorBar () const override { return true; }
   int getSlotMax () const override
   {
     return (int)opts.path.size ();

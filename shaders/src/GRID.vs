@@ -50,7 +50,7 @@ void main()
 
   vertexPos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
 
-  if (proj_vs == XYZ)
+  if (proj == XYZ)
     {
       pos = scale * vertexPos;
     }
@@ -59,13 +59,13 @@ void main()
       vec3 normedPos = compNormedPos (vertexPos);
       pos = compProjedPos (vertexPos, normedPos);
 
-      if ((proj_vs == LATLON) || (proj_vs == MERCATOR))
+      if ((proj == LATLON) || (proj == MERCATOR))
       if ((pos.y < -posmax) || (+posmax < pos.y))
         {
           pos.x = -0.1;
 	}
 
-      if (proj_vs == POLAR_SOUTH)
+      if (proj == POLAR_SOUTH)
         pos.x = pos.x - 0.005;
       else
         pos.x = pos.x + 0.005;

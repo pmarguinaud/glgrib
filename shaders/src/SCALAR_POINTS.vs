@@ -74,7 +74,7 @@ void main ()
   pos = compProjedPos (vertexPos, normedPos);
   pos = scalePosition (pos, normedPos, scale0);
 
-  if (proj_vs == XYZ)
+  if (proj == XYZ)
     pos = pos * (1.0f + height_scale * vertexHeight);
 
 

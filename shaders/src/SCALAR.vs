@@ -47,7 +47,7 @@ void main ()
   vec3 pos = compProjedPos (vertexPos, normedPos);
   pos = scalePosition (pos, normedPos, scale0);
 
-  if (proj_vs == XYZ)
+  if (proj == XYZ)
     {
       pos = pos * (1.0f + height_scale * vertexHeight);
       if (mpiview_scale > 0.0f)

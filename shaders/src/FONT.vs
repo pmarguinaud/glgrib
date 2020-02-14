@@ -42,7 +42,7 @@ void main ()
 
   if (l3d) 
     {
-      if (proj_vs == XYZ)
+      if (proj == XYZ)
         {
           float cosA = cos (A), sinA = sin (A);
           vec3 pos = scaleXYZ * letterXYZ;
@@ -68,9 +68,9 @@ void main ()
 
           gl_Position =  MVP * vec4 (pos, 1.0f);
 
-          if ((proj_vs == POLAR_NORTH) || (proj_vs == POLAR_SOUTH))
+          if ((proj == POLAR_NORTH) || (proj == POLAR_SOUTH))
             {
-              float p = proj_vs == POLAR_NORTH ? +1.0f : -1.0f;
+              float p = proj == POLAR_NORTH ? +1.0f : -1.0f;
               vec3 posPole = scalePosition (vec3 (+0.0f, +0.0f, +0.0f), 
                                             vec3 (+0.0f, +0.0f,     p),
                                             scale0);

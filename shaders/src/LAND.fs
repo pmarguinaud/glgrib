@@ -9,7 +9,7 @@ out vec4 color;
 uniform vec4 color0 = vec4 (0.0f, 1.0f, 0.0f, 1.0f);
 uniform bool debug = false;
 uniform float lon0fs = 180.0f;
-uniform int proj_fs = 0;
+uniform int proj = 0;
 
 const float pi = 3.1415926;
 const float deg2rad = pi / 180.0;
@@ -19,7 +19,7 @@ const float rad2deg = 180.0 / pi;
 
 void main()
 {
-  if ((proj_fs == LATLON) || (proj_fs == MERCATOR))
+  if ((proj == LATLON) || (proj == MERCATOR))
     {
       float lon = rad2deg * atan (fragmentPos.y, fragmentPos.x);  
       float dlon = 10.0f;

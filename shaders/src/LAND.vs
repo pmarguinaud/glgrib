@@ -19,7 +19,7 @@ void main()
   vec3 pos = compProjedPos (vertexPos, normedPos);
   pos = scalePosition (pos, normedPos, scale0);
 
-  if ((proj_vs == LATLON) || (proj_vs == MERCATOR))
+  if ((proj == LATLON) || (proj == MERCATOR))
   if ((pos.y < -posmax) || (+posmax < pos.y))
     {
       pos.x = -0.1;

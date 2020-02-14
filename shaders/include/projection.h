@@ -1,6 +1,6 @@
 #include "projection/kind.h"
 
-uniform int proj_vs = 0;
+uniform int proj = 0;
 uniform bool isflat = true;
 uniform float lon0vs = 180.0; // Longitude of right handside
 const float pi = 3.1415926;
@@ -27,7 +27,7 @@ vec3 compNormedPos (vec3 vertexPos)
 vec3 compProjedPos (vec3 vertexPos, vec3 normedPos)
 {
   vec3 pos;
-  switch (proj_vs)
+  switch (proj)
     {
       case XYZ:
         if (isflat)

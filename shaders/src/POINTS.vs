@@ -47,7 +47,7 @@ void main()
   vec3 pos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
   pos = pos * scale0;
 
-  if (proj_vs == XYZ)
+  if (proj == XYZ)
     {
       vec3 northPos  = vec3 (0., 0., 1.);
       vec3 vx = normalize (cross (northPos, pos));

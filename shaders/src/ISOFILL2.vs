@@ -1,5 +1,5 @@
 
-#version 330 core
+#include "version.h"
 
 layout(location = 0) in vec2  vertexLonLat;
 

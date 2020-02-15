@@ -1,5 +1,4 @@
-
-#version 440 core
+#include "version.h"
 
 layout(location = 0) in vec2 vertexLonLat;
 layout(location = 1) in float vertexVal_n;
@@ -68,14 +67,41 @@ vec3 getPos2 ()
   return pos;
 }
 
-vec3 getPos3 ()
+
+const float barbangle = 60.0;
+const float barlength = 0.25;
+const float barbxleng = barlength * cos (barbangle * deg2rad);
+const float barbyleng = barlength * sin (barbangle * deg2rad);
+const float barbdleng = 0.1;
+
+const float barbthres[6] = {0., 5., 10., 15., 20., 25.};
+uniform float barbthres_[6];
+
+vec3 getPos3 (float N)
 {
-  vec3 pos;
-       if (gl_VertexID == 0) pos = vec3 (+0.0     ,  +0.0, +0.0);
-  else if (gl_VertexID == 1) pos = vec3 (+1.0     ,  +0.0, +0.0);
-  else if (gl_VertexID == 2) pos = vec3 (+1.0-head, +head, +0.0);
-  else if (gl_VertexID == 3) pos = vec3 (+1.0-head, -head, +0.0);
-  else if (gl_VertexID == 4) pos = vec3 (+1.0     ,  +0.0, +0.0);
+
+  vec3 pos = vec3 (0.0f, 0.0f, 0.0f);
+
+  if ((gl_InstanceID > 200000) || (gl_InstanceID < 100000))
+    return pos;
+
+
+  if ((0 <= gl_VertexID) && (gl_VertexID <= 1))
+    {
+      pos = vec3 (-gl_VertexID, +0.0, +0.0);
+    }
+  else if ((2 <= gl_VertexID) && (gl_VertexID <= 11))
+    {
+      int barbind = (gl_VertexID-2) / 2;
+      int barbext = (gl_VertexID-2) % 2;
+
+      float n = min (max (0, N - barbthres[barbind]), barbthres[barbind+1])
+              / (barbthres[barbind+1] - barbthres[barbind+0]);
+
+      pos = vec3 (-1.0 + barbind * barbdleng - n * barbxleng * barbext, 
+                  n * barbyleng * barbext, +0.0);
+    }
+
   return pos;
 }
 
@@ -105,7 +131,7 @@ void main ()
   else if (arrow_kind == 2)
     pos = getPos2 ();
   else if (arrow_kind == 3)
-    pos = getPos3 ();
+    pos = getPos3 (N);
   else 
     pos = getPos0 ();
     

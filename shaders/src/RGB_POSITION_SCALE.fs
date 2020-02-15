@@ -1,5 +1,5 @@
 
-#version 330 core
+#include "version.h"
 
 in vec3 fragmentCol;
 

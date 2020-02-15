@@ -1,5 +1,5 @@
 
-#version 330 core
+#include "version.h"
 
 in float fragmentColInd;
 out vec4 color;

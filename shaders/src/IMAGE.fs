@@ -1,5 +1,5 @@
 
-#version 330 core
+#include "version.h"
 
 in vec2 fragmentTex;
 out vec4 color;

@@ -1,6 +1,6 @@
 
 
-#version 330 core
+#include "version.h"
 
 layout (location = 0) in vec4  letterPos;
 layout (location = 1) in float letterVal;

@@ -1,6 +1,6 @@
 
 
-#version 330 core
+#include "version.h"
 
 out vec2 fragmentTex;
 

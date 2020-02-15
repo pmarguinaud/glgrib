@@ -15,6 +15,8 @@ public:
   glgrib_field_vector () { }
   glgrib_field_vector (const glgrib_field_vector &);
   void setup (glgrib_loader *, const glgrib_options_field &, float = 0) override;
+  void renderArrow (const glgrib_view &, const glgrib_options_light &) const;
+  void renderNorms (const glgrib_view &, const glgrib_options_light &) const;
   void render (const glgrib_view &, const glgrib_options_light &) const override;
   virtual ~glgrib_field_vector ();
   void setupVertexAttributes ();

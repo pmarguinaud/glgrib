@@ -1,5 +1,5 @@
 
-#version 330 core
+#include "version.h"
 
 #include "projection/kind.h"
 

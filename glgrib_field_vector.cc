@@ -159,7 +159,48 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
   setReady ();
 }
 
-void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options_light & light) const
+void glgrib_field_vector::renderNorms (const glgrib_view & view, 
+                                       const glgrib_options_light & light) 
+const
+{
+  float scale0[3] = {opts.scale, opts.scale, opts.scale};
+
+  std::vector<float> valmax = getMaxValue ();
+  std::vector<float> valmin = getMinValue ();
+
+  glgrib_program * program = glgrib_program::load (glgrib_program::SCALAR);
+  program->use ();
+
+  geometry->setProgramParameters (program);
+
+  view.setMVP (program);
+  program->setLight (light);
+  palette.setRGBA255 (program->programID);
+
+  for (int i = 0; i < 3; i++)
+    scale0[i] *= 0.99;
+
+  program->set3fv ("scale0", scale0);
+  program->set1f ("valmin", valmin[0]);
+  program->set1f ("valmax", valmax[0]);
+  program->set1f ("palmin", palette.getMin ());
+  program->set1f ("palmax", palette.getMax ());
+  program->set1f ("height_scale", opts.geometry.height.scale);
+  program->set1i ("Nmax", 255);
+  program->set1i ("discrete", false);
+  program->set1f ("mpiview_scale", 0.0f);
+
+  glBindVertexArray (VertexArrayID);
+  geometry->renderTriangles ();
+  glBindVertexArray (0);
+
+  view.delMVP (program);
+
+}
+
+void glgrib_field_vector::renderArrow (const glgrib_view & view, 
+                                       const glgrib_options_light & light) 
+const
 {
   float scale0[3] = {opts.scale, opts.scale, opts.scale};
 
@@ -168,117 +209,88 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
 
 // Display vectors
 
+  glgrib_program * program = glgrib_program::load (glgrib_program::VECTOR);
+  program->use ();
+
+  geometry->setProgramParameters (program);
+
+  view.setMVP (program);
+  program->setLight (light);
+  palette.setRGBA255 (program->programID);
+
+  program->set3fv ("scale0", scale0);
+  program->set1f ("palmin", palette.getMin ());
+  program->set1f ("palmax", palette.getMax ());
+  program->set1f ("valmin_n", valmin[0]);
+  program->set1f ("valmax_n", valmax[0]);
+  program->set1f ("valmin_d", valmin[1]);
+  program->set1f ("valmax_d", valmax[1]);
+  program->set1f ("valmin", valmin[0]);
+  program->set1f ("valmax", valmax[0]);
+
+  program->set1f ("height_scale", opts.geometry.height.scale);
+
+  float color0[4] = {opts.vector.arrow.color.r/255.0f, opts.vector.arrow.color.g/255.0f, 
+                     opts.vector.arrow.color.b/255.0f, opts.vector.arrow.color.a/255.0f};
+  program->set4fv ("color0", color0);
+  program->set1f ("vscale", d.vscale);
+  program->set1i ("arrow_fixed", opts.vector.arrow.fixed.on);
+  program->set1f ("arrow_min", opts.vector.arrow.min);
+  program->set1f ("head", opts.vector.arrow.head_size);
+
+
+  class arrow_t
+  {
+  public:
+    arrow_t (int _numPoints, const std::vector<unsigned int> & _ind) 
+        : ind (_ind), numPoints (_numPoints), fillable (true) {}
+    arrow_t (int _numPoints, GLenum _linemode = GL_LINE_STRIP) 
+        : numPoints (_numPoints), fillable (false), linemode (_linemode) {}
+    arrow_t (const std::vector<unsigned int> & _ind) 
+        : ind (_ind), fillable (false), linemode (GL_LINES), numPoints (_ind.size ()) {}
+    // Shapes of arrows
+    std::vector<unsigned int> ind = {0, 0, 0};
+    // Number of points for each arrow kind
+    int numPoints;
+    bool fillable;
+    GLenum linemode = GL_LINE_STRIP;
+    void render (int numberOfPoints, bool fill) const
+    {
+      if (fillable && fill)
+        glDrawElementsInstanced (GL_TRIANGLES, ind.size (), GL_UNSIGNED_INT, &ind[0], numberOfPoints);
+      else if (linemode == GL_LINE_STRIP) 
+        glDrawArraysInstanced (GL_LINE_STRIP, 0, numPoints, numberOfPoints); 
+      else if (linemode == GL_LINES)
+        glDrawElementsInstanced (GL_LINES, numPoints, GL_UNSIGNED_INT, &ind[0], numberOfPoints);
+    }
+  };
+
+  static const std::vector<arrow_t> arrows =
+  {
+    arrow_t (5),
+    arrow_t (8, {2, 1, 6, 2, 3, 4}),
+    arrow_t (8, {0, 2, 1}),
+    arrow_t ({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+  };
+
+  int kind = std::min (int (arrows.size ()), std::max (opts.vector.arrow.kind, 0));
+  program->set1i ("arrow_kind", kind);
+
+  glBindVertexArray (VertexArrayIDvector);
+
+  arrows[kind].render (numberOfPoints, opts.vector.arrow.fill.on);
+
+  glBindVertexArray (0);
+
+  view.delMVP (program);
+}
+
+void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options_light & light) const
+{
   if (opts.vector.arrow.on)
-    {
-      glgrib_program * program = glgrib_program::load (glgrib_program::VECTOR);
-      program->use ();
-
-      geometry->setProgramParameters (program);
-
-      view.setMVP (program);
-      program->setLight (light);
-      palette.setRGBA255 (program->programID);
-
-      program->set3fv ("scale0", scale0);
-      program->set1f ("palmin", palette.getMin ());
-      program->set1f ("palmax", palette.getMax ());
-      program->set1f ("valmin_n", valmin[0]);
-      program->set1f ("valmax_n", valmax[0]);
-      program->set1f ("valmin_d", valmin[1]);
-      program->set1f ("valmax_d", valmax[1]);
-      program->set1f ("valmin", valmin[0]);
-      program->set1f ("valmax", valmax[0]);
-
-      program->set1f ("height_scale", opts.geometry.height.scale);
-
-      float color0[4] = {opts.vector.arrow.color.r/255.0f, opts.vector.arrow.color.g/255.0f, 
-	                 opts.vector.arrow.color.b/255.0f, opts.vector.arrow.color.a/255.0f};
-      program->set4fv ("color0", color0);
-      program->set1f ("vscale", d.vscale);
-      program->set1i ("arrow_fixed", opts.vector.arrow.fixed.on);
-      program->set1f ("arrow_min", opts.vector.arrow.min);
-      program->set1f ("head", opts.vector.arrow.head_size);
-
-
-      class arrow_t
-      {
-      public:
-        arrow_t (int _numPoints, const std::vector<unsigned int> & _ind) 
-            : ind (_ind), numPoints (_numPoints), fillable (true) {}
-        arrow_t (int _numPoints, GLenum _linemode = GL_LINE_STRIP) 
-            : numPoints (_numPoints), fillable (false), linemode (_linemode) {}
-        arrow_t (const std::vector<unsigned int> & _ind) 
-            : ind (_ind), fillable (false), linemode (GL_LINES), numPoints (_ind.size ()) {}
-        // Shapes of arrows
-        std::vector<unsigned int> ind = {0, 0, 0};
-        // Number of points for each arrow kind
-        int numPoints;
-        bool fillable;
-        GLenum linemode = GL_LINE_STRIP;
-        void render (int numberOfPoints, bool fill) const
-        {
-          if (fillable && fill)
-            glDrawElementsInstanced (GL_TRIANGLES, ind.size (), GL_UNSIGNED_INT, &ind[0], numberOfPoints);
-          else if (linemode == GL_LINE_STRIP) 
-            glDrawArraysInstanced (GL_LINE_STRIP, 0, numPoints, numberOfPoints); 
-          else if (linemode == GL_LINES)
-            glDrawElementsInstanced (GL_LINES, numPoints, GL_UNSIGNED_INT, &ind[0], numberOfPoints);
-        }
-      };
-
-      static const std::vector<arrow_t> arrows =
-      {
-        arrow_t (5),
-        arrow_t (8, {2, 1, 6, 2, 3, 4}),
-        arrow_t (8, {0, 2, 1}),
-        arrow_t ({0, 1, 1, 2, 2, 3, 3, 1}),
-      };
-
-      int kind = std::min (int (arrows.size ()), std::max (opts.vector.arrow.kind, 0));
-      program->set1i ("arrow_kind", kind);
-
-      glBindVertexArray (VertexArrayIDvector);
-
-      arrows[kind].render (numberOfPoints, opts.vector.arrow.fill.on);
-
-      glBindVertexArray (0);
-
-      view.delMVP (program);
-    }
-
-// Display vector norm
-
+    renderArrow (view, light);
   if (opts.vector.norm.on)
-    {
-      glgrib_program * program = glgrib_program::load (glgrib_program::SCALAR);
-      program->use ();
-
-      geometry->setProgramParameters (program);
-
-      view.setMVP (program);
-      program->setLight (light);
-      palette.setRGBA255 (program->programID);
-
-      for (int i = 0; i < 3; i++)
-        scale0[i] *= 0.99;
-
-      program->set3fv ("scale0", scale0);
-      program->set1f ("valmin", valmin[0]);
-      program->set1f ("valmax", valmax[0]);
-      program->set1f ("palmin", palette.getMin ());
-      program->set1f ("palmax", palette.getMax ());
-      program->set1f ("height_scale", opts.geometry.height.scale);
-      program->set1i ("Nmax", 255);
-      program->set1i ("discrete", false);
-      program->set1f ("mpiview_scale", 0.0f);
-
-      glBindVertexArray (VertexArrayID);
-      geometry->renderTriangles ();
-      glBindVertexArray (0);
-
-      view.delMVP (program);
-    }
-
+    renderNorms (view, light);
 }
 
 glgrib_field_vector::~glgrib_field_vector ()

@@ -1,4 +1,4 @@
-#version 330 core
+#include "version.h"
 
 in vec2 fragmentPos;
 in vec2 fletterPos;

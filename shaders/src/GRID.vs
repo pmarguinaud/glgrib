@@ -1,5 +1,5 @@
 
-#version 330 core
+#include "version.h"
 
 out float dashed;
 out vec3 vertexPos;

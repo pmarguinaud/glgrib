@@ -1,5 +1,5 @@
 
-#version 330 core
+#include "version.h"
 in float pointVal;
 in vec3 centerVec;
 flat in float pointRad;

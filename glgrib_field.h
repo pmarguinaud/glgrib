@@ -48,7 +48,8 @@ public:
   { 
     std::vector<float> val;
     for (int i = 0; i < values.size (); i++)
-      val.push_back (values[i] != NULL ? values[i]->data ()[index] : 9999.0f);
+      if (values[i]->data () != NULL)
+        val.push_back (values[i]->data ()[index]);
     return val;
   }
   virtual std::vector<float> getMaxValue () const 

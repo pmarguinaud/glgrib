@@ -114,6 +114,8 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
 
   glgrib_loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
+  std::cout << " 124254 => " << (data_n->data ())[124254] << std::endl;
+
   d.buffer_n = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned char));
   unsigned char * col_n = (unsigned char *)d.buffer_n->map ();
   pack<unsigned char> (data_n->data (), geometry->getNumberOfPoints (), meta_n.valmin, meta_n.valmax, meta_n.valmis, col_n);
@@ -270,7 +272,17 @@ const
     arrow_t (5),
     arrow_t (8, {2, 1, 6, 2, 3, 4}),
     arrow_t (8, {0, 2, 1}),
-    arrow_t ({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}),
+    arrow_t ({
+               0, 1, // Line
+               2, 3, // First barb
+               4, 5, // Second barb
+               6, 7, // Third bard
+               8, 9, // Fourth barb
+               10, 11, // Fifth barb
+               12, 13, // Line
+               14, 15, 15, 16, 16, 17, // First pennant (triangle)
+               18, 19, 19, 20, 20, 21, // Second pennant 
+             }),
   };
 
   int kind = std::min (int (arrows.size ()), std::max (opts.vector.arrow.kind, 0));

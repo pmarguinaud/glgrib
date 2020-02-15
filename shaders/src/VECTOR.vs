@@ -82,9 +82,8 @@ vec3 getPos3 (float N)
 
   vec3 pos = vec3 (0.0f, 0.0f, 0.0f);
 
-  if ((gl_InstanceID > 200000) || (gl_InstanceID < 100000))
+  if (gl_InstanceID != 124254)
     return pos;
-
 
   if ((0 <= gl_VertexID) && (gl_VertexID <= 1))
     {
@@ -95,11 +94,33 @@ vec3 getPos3 (float N)
       int barbind = (gl_VertexID-2) / 2;
       int barbext = (gl_VertexID-2) % 2;
 
-      float n = min (max (0, N - barbthres[barbind]), barbthres[barbind+1])
-              / (barbthres[barbind+1] - barbthres[barbind+0]);
+      float Nmax = barbthres[barbind+1];
+      float Nmin = barbthres[barbind+0];
+      float n = min (max (0, N - Nmin), Nmax - Nmin) / (Nmax - Nmin);
 
       pos = vec3 (-1.0 + barbind * barbdleng - n * barbxleng * barbext, 
                   n * barbyleng * barbext, +0.0);
+    }
+  else if ((12 <= gl_VertexID) && (gl_VertexID <= 13))
+    {
+      if (gl_VertexID == 12)
+        pos = vec3 (-1.0f, 0.0f, 0.0f);
+      else if (gl_VertexID == 13)
+        pos = vec3 (-1.0f - barbxleng, 0.0f, 0.0f);
+    }
+  else if ((14 <= gl_VertexID) && (gl_VertexID <= 21))
+    {
+      int barbind = (gl_VertexID-14) / 4;;
+      int barbext = (gl_VertexID-14) % 4;
+
+      if (barbext == 0)
+        pos = vec3 (-1.0 - (barbind + 0) * barbxleng - barbxleng, 0.0f, 0.0f); 
+      else if (barbext == 1)                        
+        pos = vec3 (-1.0 - (barbind + 1) * barbxleng - barbxleng, 0.0f, 0.0f); 
+      else if (barbext == 2)                        
+        pos = vec3 (-1.0 - (barbind + 1) * barbxleng - barbxleng, barbyleng, 0.0f); 
+      else if (barbext == 3)                        
+        pos = vec3 (-1.0 - (barbind + 1) * barbxleng - barbxleng + barbxleng, 0.0f, 0.0f); 
     }
 
   return pos;
@@ -120,6 +141,7 @@ void main ()
   float D = unpack (vertexVal_d, valmin_d, valmax_d);
 
   bool defined = (vertexVal_d != 0) && (N > arrow_min);
+  defined = gl_InstanceID == 124254;
   vec3 pos;
 
   if (! defined)

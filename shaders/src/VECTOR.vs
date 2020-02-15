@@ -89,6 +89,7 @@ vec3 getPos3 (float N)
   const int linevertexmax = linevertexmin + 1;
   const int pennvertexmin = linevertexmax + 1;
   const int pennvertexmax = pennvertexmin + pennthresmax * 4 - 1;
+  const int vertexmax = pennvertexmax;
 
   vec3 pos = vec3 (0.0f, 0.0f, 0.0f);
 
@@ -100,7 +101,7 @@ vec3 getPos3 (float N)
     {
       int k = gl_VertexID;
       k = k + (k % 2);
-      float ang = float (k) * pi / 10.;
+      float ang = float (k) * pi / (0.5f * (vertexmax - 1));
       pos = barbdleng * vec3 (cos (ang), sin (ang), 0.0f);
       return pos;
     }

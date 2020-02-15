@@ -68,6 +68,17 @@ vec3 getPos2 ()
   return pos;
 }
 
+vec3 getPos3 ()
+{
+  vec3 pos;
+       if (gl_VertexID == 0) pos = vec3 (+0.0     ,  +0.0, +0.0);
+  else if (gl_VertexID == 1) pos = vec3 (+1.0     ,  +0.0, +0.0);
+  else if (gl_VertexID == 2) pos = vec3 (+1.0-head, +head, +0.0);
+  else if (gl_VertexID == 3) pos = vec3 (+1.0-head, -head, +0.0);
+  else if (gl_VertexID == 4) pos = vec3 (+1.0     ,  +0.0, +0.0);
+  return pos;
+}
+
 void main ()
 {
   vec2 vertexLonLat_ = getVertexLonLat (gl_InstanceID);
@@ -93,6 +104,8 @@ void main ()
     pos = getPos1 ();
   else if (arrow_kind == 2)
     pos = getPos2 ();
+  else if (arrow_kind == 3)
+    pos = getPos3 ();
   else 
     pos = getPos0 ();
     

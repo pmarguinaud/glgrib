@@ -199,29 +199,48 @@ void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options
       program->set1f ("arrow_min", opts.vector.arrow.min);
       program->set1f ("head", opts.vector.arrow.head_size);
 
-      int kind = std::min (2, std::max (opts.vector.arrow.kind, 0));
+
+      class arrow_t
+      {
+      public:
+        arrow_t (int _numPoints, const std::vector<unsigned int> & _ind) 
+            : ind (_ind), numPoints (_numPoints), fillable (true) {}
+        arrow_t (int _numPoints, GLenum _linemode = GL_LINE_STRIP) 
+            : numPoints (_numPoints), fillable (false), linemode (_linemode) {}
+        arrow_t (const std::vector<unsigned int> & _ind) 
+            : ind (_ind), fillable (false), linemode (GL_LINES), numPoints (_ind.size ()) {}
+        // Shapes of arrows
+        std::vector<unsigned int> ind = {0, 0, 0};
+        // Number of points for each arrow kind
+        int numPoints;
+        bool fillable;
+        GLenum linemode = GL_LINE_STRIP;
+        void render (int numberOfPoints, bool fill) const
+        {
+          if (fillable && fill)
+            glDrawElementsInstanced (GL_TRIANGLES, ind.size (), GL_UNSIGNED_INT, &ind[0], numberOfPoints);
+          else if (linemode == GL_LINE_STRIP) 
+            glDrawArraysInstanced (GL_LINE_STRIP, 0, numPoints, numberOfPoints); 
+          else if (linemode == GL_LINES)
+            glDrawElementsInstanced (GL_LINES, numPoints, GL_UNSIGNED_INT, &ind[0], numberOfPoints);
+        }
+      };
+
+      static const std::vector<arrow_t> arrows =
+      {
+        arrow_t (5),
+        arrow_t (8, {2, 1, 6, 2, 3, 4}),
+        arrow_t (8, {0, 2, 1}),
+        arrow_t ({0, 1, 1, 2, 2, 3, 3, 1}),
+      };
+
+      int kind = std::min (int (arrows.size ()), std::max (opts.vector.arrow.kind, 0));
       program->set1i ("arrow_kind", kind);
 
-
       glBindVertexArray (VertexArrayIDvector);
-      if (opts.vector.arrow.fill.on)
-        {
-          // Shapes of arrows
-          std::vector<unsigned int> inds[3] =
-          {
-            {0, 0, 0},
-            {2, 1, 6, 2, 3, 4},
-            {0, 2, 1},
-	  };
-          glDrawElementsInstanced (GL_TRIANGLES, inds[kind].size (), 
-                                   GL_UNSIGNED_INT, &inds[kind][0], 
-                                   numberOfPoints);
-        }
-      else
-        {
-          int np[3] = {5, 8, 8}; // Number of points for each arrow kind
-          glDrawArraysInstanced (GL_LINE_STRIP, 0, np[kind], numberOfPoints); 
-        }
+
+      arrows[kind].render (numberOfPoints, opts.vector.arrow.fill.on);
+
       glBindVertexArray (0);
 
       view.delMVP (program);

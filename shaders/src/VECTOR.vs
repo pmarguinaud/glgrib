@@ -74,25 +74,56 @@ const float barbxleng = barlength * cos (barbangle * deg2rad);
 const float barbyleng = barlength * sin (barbangle * deg2rad);
 const float barbdleng = 0.1;
 
+const float circthres = 1.0f;
+const int barbthresmax = 5;
 const float barbthres[6] = {0., 5., 10., 15., 20., 25.};
-uniform float barbthres_[6];
+const int pennthresmax = 2;
+const float pennthres[4] = {0., 25., 50., 75.};
 
 vec3 getPos3 (float N)
 {
 
+  const int barbvertexmin = 2;
+  const int barbvertexmax = barbvertexmin + barbthresmax * 2 - 1;
+  const int linevertexmin = barbvertexmax + 1;
+  const int linevertexmax = linevertexmin + 1;
+  const int pennvertexmin = linevertexmax + 1;
+  const int pennvertexmax = pennvertexmin + pennthresmax * 4 - 1;
+
   vec3 pos = vec3 (0.0f, 0.0f, 0.0f);
 
-  if (gl_InstanceID != 124254)
-    return pos;
+//if (gl_InstanceID != 124254)
+//  return pos;
+
+
+  if (N < circthres)
+    {
+      int k = gl_VertexID;
+      k = k + (k % 2);
+      float ang = float (k) * pi / 10.;
+      pos = barbdleng * vec3 (cos (ang), sin (ang), 0.0f);
+      return pos;
+    }
+
+
+  int npenn = 0;
+
+  for (int i = 0; i < pennthresmax; i++)
+    if (N >= pennthres[i])
+      npenn = i;  
+    else
+      break;
+
+  N = N - pennthres[npenn];
 
   if ((0 <= gl_VertexID) && (gl_VertexID <= 1))
     {
       pos = vec3 (-gl_VertexID, +0.0, +0.0);
     }
-  else if ((2 <= gl_VertexID) && (gl_VertexID <= 11))
+  else if ((barbvertexmin <= gl_VertexID) && (gl_VertexID <= barbvertexmax))
     {
-      int barbind = (gl_VertexID-2) / 2;
-      int barbext = (gl_VertexID-2) % 2;
+      int barbind = (gl_VertexID-barbvertexmin) / 2;
+      int barbext = (gl_VertexID-barbvertexmin) % 2;
 
       float Nmax = barbthres[barbind+1];
       float Nmin = barbthres[barbind+0];
@@ -101,26 +132,30 @@ vec3 getPos3 (float N)
       pos = vec3 (-1.0 + barbind * barbdleng - n * barbxleng * barbext, 
                   n * barbyleng * barbext, +0.0);
     }
-  else if ((12 <= gl_VertexID) && (gl_VertexID <= 13))
+  else if ((linevertexmin <= gl_VertexID) && (gl_VertexID <= linevertexmax) && (npenn > 0))
     {
       if (gl_VertexID == 12)
         pos = vec3 (-1.0f, 0.0f, 0.0f);
       else if (gl_VertexID == 13)
         pos = vec3 (-1.0f - barbxleng, 0.0f, 0.0f);
     }
-  else if ((14 <= gl_VertexID) && (gl_VertexID <= 21))
+  else if ((pennvertexmin <= gl_VertexID) && (gl_VertexID <= pennvertexmax))
     {
-      int barbind = (gl_VertexID-14) / 4;;
-      int barbext = (gl_VertexID-14) % 4;
+      int pennind = (gl_VertexID-pennvertexmin) / 4;
+      int pennext = (gl_VertexID-pennvertexmin) % 4;
 
-      if (barbext == 0)
-        pos = vec3 (-1.0 - (barbind + 0) * barbxleng - barbxleng, 0.0f, 0.0f); 
-      else if (barbext == 1)                        
-        pos = vec3 (-1.0 - (barbind + 1) * barbxleng - barbxleng, 0.0f, 0.0f); 
-      else if (barbext == 2)                        
-        pos = vec3 (-1.0 - (barbind + 1) * barbxleng - barbxleng, barbyleng, 0.0f); 
-      else if (barbext == 3)                        
-        pos = vec3 (-1.0 - (barbind + 1) * barbxleng - barbxleng + barbxleng, 0.0f, 0.0f); 
+      if (pennind < npenn)
+        {
+          if (pennext == 0)
+            pos = vec3 (-1.0 - (pennind + 0) * barbxleng - barbxleng, 0.0f, 0.0f); 
+          else if (pennext == 1)                        
+            pos = vec3 (-1.0 - (pennind + 1) * barbxleng - barbxleng, 0.0f, 0.0f); 
+          else if (pennext == 2)                        
+            pos = vec3 (-1.0 - (pennind + 1) * barbxleng - barbxleng, barbyleng, 0.0f); 
+          else if (pennext == 3)                        
+            pos = vec3 (-1.0 - (pennind + 1) * barbxleng - barbxleng + barbxleng, 
+                        0.0f, 0.0f); 
+        }
     }
 
   return pos;
@@ -141,7 +176,7 @@ void main ()
   float D = unpack (vertexVal_d, valmin_d, valmax_d);
 
   bool defined = (vertexVal_d != 0) && (N > arrow_min);
-  defined = gl_InstanceID == 124254;
+//defined = gl_InstanceID == 124254;
   vec3 pos;
 
   if (! defined)

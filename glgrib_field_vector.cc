@@ -114,8 +114,6 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
 
   glgrib_loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
-  std::cout << " 124254 => " << (data_n->data ())[124254] << std::endl;
-
   d.buffer_n = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned char));
   unsigned char * col_n = (unsigned char *)d.buffer_n->map ();
   pack<unsigned char> (data_n->data (), geometry->getNumberOfPoints (), meta_n.valmin, meta_n.valmax, meta_n.valmis, col_n);

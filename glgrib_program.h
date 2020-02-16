@@ -11,10 +11,7 @@ public:
 
   typedef enum 
   {
-    RGBA,
-    RGB,
     MONO,
-    RGB_FLAT,
     SCALAR,
     FLAT_TEX,
     VECTOR,

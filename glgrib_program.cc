@@ -22,10 +22,7 @@ static
 std::string kind2name (glgrib_program::kind kind)
 {
 #define KIND(k) do { if (kind == glgrib_program::k) return #k; } while (0)
-  KIND (RGBA);
-  KIND (RGB);
   KIND (MONO);
-  KIND (RGB_FLAT);
   KIND (SCALAR);
   KIND (FLAT_TEX);
   KIND (VECTOR);

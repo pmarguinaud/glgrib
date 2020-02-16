@@ -53,8 +53,8 @@ void glgrib_lines::render (const glgrib_view & view, const glgrib_options_light 
   view.setMVP (program);
   program->set (light);
   program->set ("color0", opts.color);
-  program->set1i ("do_alpha", 1);
-  program->set1f ("scale", opts.scale);
+  program->set ("do_alpha", 1);
+  program->set ("scale", opts.scale);
 
   glgrib_polygon::render (view, light);
 

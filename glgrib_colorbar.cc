@@ -171,10 +171,10 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
   program.set ("MVP", MVP);
   program.set1iv ("rank2rgba", rank2rgba, 256);
 
-  program.set1f ("xmin", opts.position.xmin);
-  program.set1f ("xmax", opts.position.xmax);
-  program.set1f ("ymin", opts.position.ymin);
-  program.set1f ("ymax", opts.position.ymax);
+  program.set ("xmin", opts.position.xmin);
+  program.set ("xmax", opts.position.xmax);
+  program.set ("ymin", opts.position.ymin);
+  program.set ("ymax", opts.position.ymax);
 
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);

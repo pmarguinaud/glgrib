@@ -19,14 +19,12 @@ void glgrib_view::delMVP (glgrib_program * program) const
 void glgrib_view::setMVP (glgrib_program * program) const
 {
   program->set ("MVP", MVP);
-  program->set1i ("proj", ps.current ()->getType ());
+  program->set ("proj", ps.current ()->getType ());
 
   float lon0 = opts.lon + 180.0f;
 
   if (ps.current ()->setLon0 (lon0))
-    {
-      program->set1f ("lon0", lon0);
-    }
+    program->set ("lon0", lon0);
 
 
   if (opts.clip.on)

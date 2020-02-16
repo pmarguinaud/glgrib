@@ -69,16 +69,16 @@ void glgrib_image::render (const glm::mat4 & MVP) const
   program->use ();
 
   program->set ("MVP", MVP);
-  program->set1f ("x0", opts.x0);
-  program->set1f ("y0", opts.y0);
-  program->set1f ("x1", opts.x1);
-  program->set1f ("y1", opts.y1);
+  program->set ("x0", opts.x0);
+  program->set ("y0", opts.y0);
+  program->set ("x1", opts.x1);
+  program->set ("y1", opts.y1);
 
   glBindVertexArray (VertexArrayID);
 
   glActiveTexture (GL_TEXTURE0); 
   glBindTexture (GL_TEXTURE_2D, texture->id ());
-  program->set1i ("texture", 0); 
+  program->set ("texture", 0); 
 
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0};
   glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind);

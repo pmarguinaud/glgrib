@@ -31,14 +31,14 @@ void glgrib_font::select () const
 {
   glgrib_program * program = glgrib_program::load (glgrib_program::FONT);
   program->use ();
-  program->set1fv ("xoff", xoff.data (), xoff.size ());
-  program->set1fv ("yoff", yoff.data (), yoff.size ());
-  program->set1i ("nx", nx);
-  program->set1i ("ny", ny);
-  program->set1f ("aspect", aspect);
+  program->set ("xoff", xoff);
+  program->set ("yoff", yoff);
+  program->set ("nx", nx);
+  program->set ("ny", ny);
+  program->set ("aspect", aspect);
   glActiveTexture (GL_TEXTURE0); 
   glBindTexture (GL_TEXTURE_2D, texture);
-  program->set1i ("texture", 0);
+  program->set ("texture", 0);
 
 }
 

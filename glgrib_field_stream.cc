@@ -430,20 +430,19 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
 {
   glgrib_program * program = glgrib_program::load (glgrib_program::STREAM);
   program->use ();
-  float scale0[3] = {opts.scale, opts.scale, opts.scale};
   const glgrib_palette & p = palette;
 
   view.setMVP (program);
-  program->set3fv ("scale0", scale0);
+  program->set ("scale0", opts.scale, opts.scale, opts.scale);
 
   palette.setRGBA255 (program->programID);
 
   std::vector<float> valmin = getMinValue ();
   std::vector<float> valmax = getMaxValue ();
 
-  program->set1f ("valmin", valmin[0]);
-  program->set1f ("valmax", valmax[0]);
-  program->set1f ("normmax", valmax[0]);
+  program->set ("valmin", valmin[0]);
+  program->set ("valmax", valmax[0]);
+  program->set ("normmax", valmax[0]);
 
   bool wide = opts.stream.width > 0.0f;
   float Width = 5.0f * opts.stream.width;
@@ -454,7 +453,7 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
       if (wide)
         {
           float width = view.pixel_to_dist_at_nadir (Width);
-          program->set1f ("width", width);
+          program->set ("width", width);
           unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
           glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, stream[i].size);
         }

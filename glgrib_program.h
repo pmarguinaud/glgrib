@@ -35,34 +35,98 @@ public:
 
   static glgrib_program * load (glgrib_program::kind);
 
-  void set (const std::string &, double);
-  void set (const std::string &, float);
-  void set (const std::string &, const std::vector<float> &);
-  void set (const std::string &, const std::vector<int> &);
-  void set (const std::string &, int);
-  void set (const std::string &, long int);
-  void set (const std::string &, size_t);
-  void set (const std::string &, bool);
-  void set (const std::string &, const std::vector<glm::vec3> &);
-  void set (const std::string &, const glm::vec3 &);
-  void set (const std::string &, const std::vector<glm::vec4> &);
-  void set (const std::string &, const glm::vec4 &);
-  void set (const std::string &, const glm::mat4 &);
-  void set (const std::string &, float, float, float);
-  void set (const std::string &, float, float, float, float);
-  void set (const std::string &, const glgrib_option_color &);
-
-  void set1f (const std::string &, float);
-  void set1fv (const std::string &, const float *, int = 1);
-  void set1iv (const std::string &, const int *, int = 1);
-  void set1i (const std::string &, int);
-  void set3fv (const std::string &, const float *, int = 1);
-  void set4fv (const std::string &, const float *, int = 1);
-  void setMatrix4fv (const std::string &, const float *, int = 1);
-
-  void compile ();
+  void set (const std::string & key, bool b)
+  {
+    set (key, b ? 1 : 0);
+  }
+  
+  void set (const std::string & key, const glgrib_option_color & color)
+  {
+    set (key, float (color.r) / 255.0f, float (color.g) / 255.0f,
+              float (color.b) / 255.0f, float (color.a) / 255.0f);
+  }
+  
+  void set (const std::string & key, float val)
+  {
+    int id = glGetUniformLocation (programID, key.c_str ());
+    if (id != -1)
+      glUniform1f (id, val);
+  }
+  
+  void set (const std::string & key, double val)
+  {
+    set (key, float (val));
+  }
+  
+  void set (const std::string & key, const std::vector<float> & val)
+  {
+    int id = glGetUniformLocation (programID, key.c_str ());
+    if (id != -1)
+      glUniform1fv (id, val.size (), val.data ());
+  }
+  
+  void set (const std::string & key, const std::vector<int> & val)
+  {
+    int id = glGetUniformLocation (programID, key.c_str ());
+    if (id != -1)
+      glUniform1iv (id, val.size (), val.data ());
+  }
+  
+  void set (const std::string & key, long int val)
+  {
+    set (key, int (val));
+  }
+  
+  void set (const std::string & key, size_t val)
+  {
+    set (key, int (val));
+  }
+  
+  void set (const std::string & key, int val)
+  {
+    int id = glGetUniformLocation (programID, key.c_str ());
+    if (id != -1)
+      glUniform1i (id, val);
+  }
+  
+  void set (const std::string & key, const glm::vec3 & val)
+  {
+    int id = glGetUniformLocation (programID, key.c_str ());
+    if (id != -1)
+      glUniform3f (id, val.x, val.y, val.z);
+  }
+  
+  void set (const std::string & key, float x, float y, float z)
+  {
+    int id = glGetUniformLocation (programID, key.c_str ());
+    if (id != -1)
+      glUniform3f (id, x, y, z);
+  }
+  
+  void set (const std::string & key, const glm::vec4 & val)
+  {
+    int id = glGetUniformLocation (programID, key.c_str ());
+    if (id != -1)
+      glUniform4f (id, val.x, val.y, val.z, val.w);
+  }
+  
+  void set (const std::string & key, float x, float y, float z, float w)
+  {
+    int id = glGetUniformLocation (programID, key.c_str ());
+    if (id != -1)
+      glUniform4f (id, x, y, z, w);
+  }
+  
+  void set (const std::string & key, const glm::mat4 & mat)
+  {
+    int id = glGetUniformLocation (programID, key.c_str ());
+    if (id != -1)
+      glUniformMatrix4fv (id, 1, GL_FALSE, &mat[0][0]);
+  }
 
   void set (const glgrib_options_light &);
+
+  void compile ();
 
   glgrib_program () {}
   glgrib_program (const std::string & fsc, const std::string & vsc, const std::string & gsc)

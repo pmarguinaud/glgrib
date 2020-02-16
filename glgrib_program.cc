@@ -135,6 +135,17 @@ void glgrib_program::setLight (const glgrib_options_light & light)
     }
 }
 
+void glgrib_program::set (const std::string & key, bool b)
+{
+  set (key, b ? 1 : 0);
+}
+
+void glgrib_program::set (const std::string & key, const glgrib_option_color & color)
+{
+  set (key, float (color.r) / 255.0f, float (color.g) / 255.0f,
+            float (color.b) / 255.0f, float (color.a) / 255.0f);
+}
+
 void glgrib_program::set1f (const std::string & key, float val)
 {
   int id = glGetUniformLocation (programID, key.c_str ());
@@ -170,6 +181,13 @@ void glgrib_program::set1i (const std::string & key, int val)
     glUniform1i (id, val);
 }
 
+void glgrib_program::set (const std::string & key, int val)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniform1i (id, val);
+}
+
 void glgrib_program::set3fv (const std::string & key, const float * val, int size)
 {
   int id = glGetUniformLocation (programID, key.c_str ());
@@ -177,11 +195,39 @@ void glgrib_program::set3fv (const std::string & key, const float * val, int siz
     glUniform3fv (id, size, val);
 }
 
+void glgrib_program::set (const std::string & key, const glm::vec3 & val)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniform3f (id, val.x, val.y, val.z);
+}
+
+void glgrib_program::set (const std::string & key, float x, float y, float z)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniform3f (id, x, y, z);
+}
+
 void glgrib_program::set4fv (const std::string & key, const float * val, int size)
 {
   int id = glGetUniformLocation (programID, key.c_str ());
   if (id != -1)
     glUniform4fv (id, size, val);
+}
+
+void glgrib_program::set (const std::string & key, const glm::vec4 & val)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniform4f (id, val.x, val.y, val.z, val.w);
+}
+
+void glgrib_program::set (const std::string & key, float x, float y, float z, float w)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniform4f (id, x, y, z, w);
 }
 
 void glgrib_program::setMatrix4fv (const std::string & key, const float * val, int size)

@@ -34,17 +34,10 @@ void glgrib_land::render (const glgrib_view & view, const glgrib_options_light &
   for (int i = 0; i < d.size (); i++)
   if (opts.layers[i].on)
     {
-      float scale0[3] = {opts.layers[i].scale, 
-                         opts.layers[i].scale, 
-                         opts.layers[i].scale};
-      float color0[4] = {(float)opts.layers[i].color.r/255.0f,
-                         (float)opts.layers[i].color.g/255.0f,
-                         (float)opts.layers[i].color.b/255.0f,
-                         (float)opts.layers[i].color.a/255.0f};
      
-      program->set3fv ("scale0", scale0);
-      program->set4fv ("color0", color0);
-      program->set1i ("debug", opts.layers[i].debug.on);
+      program->set ("scale0", opts.layers[i].scale, opts.layers[i].scale, opts.layers[i].scale);
+      program->set ("color0", opts.layers[i].color);
+      program->set ("debug", opts.layers[i].debug.on);
      
       glBindVertexArray (VertexArrayID[i]);
 

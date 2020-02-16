@@ -450,36 +450,31 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
 {
   glgrib_program * program = glgrib_program::load (glgrib_program::CONTOUR);
   program->use ();
-  float scale0[3] = {opts.scale, opts.scale, opts.scale};
   const glgrib_palette & p = palette;
 
   view.setMVP (program);
-  program->set3fv ("scale0", scale0);
-  program->set1f ("height_scale", opts.geometry.height.scale);
+  program->set ("scale0", opts.scale, opts.scale, opts.scale);
+  program->set ("height_scale", opts.geometry.height.scale);
 
   for (const auto & is : iso)
     {
       glBindVertexArray (is.VertexArrayID);
 
-      program->set1i ("dash", is.dash);
-
-      float color0[3] = {is.color.r/255.0f, 
-                         is.color.g/255.0f, 
-                         is.color.b/255.0f};
-      program->set3fv ("color0", color0);
+      program->set ("dash", is.dash);
+      program->set ("color0", is.color);
 
 
       if (is.dash)
         {
           float length = view.pixel_to_dist_at_nadir (is.length);
-          program->set1f ("length", length);
-          program->set1i ("N", is.pattern.size ());
+          program->set ("length", length);
+          program->set ("N", (int)is.pattern.size ());
           program->set1iv ("pattern", is.pattern.data (), is.pattern.size ());
         }
       if (is.wide)
         {
           float width = view.pixel_to_dist_at_nadir (is.width);
-          program->set1f ("width", width);
+          program->set ("width", width);
           unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
           glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, is.size);
         }

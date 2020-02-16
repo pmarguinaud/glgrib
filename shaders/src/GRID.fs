@@ -6,7 +6,7 @@ in vec3 vertexPos;
 
 out vec4 color;
 
-uniform vec3 color0; 
+uniform vec4 color0; 
 uniform int frag_resolution = 10;
 uniform int frag_nn = 100;
 uniform int frag_do_lat = 0;
@@ -44,9 +44,6 @@ void main()
     }
 
 
-  color.r = color0.r;
-  color.g = color0.g;
-  color.b = color0.b;
-  color.a = 1.0f;
+  color = color0;
 
 }

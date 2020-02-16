@@ -5,7 +5,7 @@ in float alpha;
 in float dist;
 out vec4 color;
 
-uniform vec3 color0;
+uniform vec4 color0;
 uniform int N = 0;
 uniform bool pattern[256];
 uniform float length;
@@ -17,10 +17,7 @@ void main ()
     discard;
   if(! dash)
     {
-      color.r = color0.r;
-      color.g = color0.g;
-      color.b = color0.b;
-      color.a = 1.;
+      color = color0;
     }
   else
     {
@@ -32,26 +29,9 @@ void main ()
       color.b = color0.b;
 
       if (pattern[k])
-        color.a = 1.;
+        color.a = color0.a;
       else
         color.a = 0.;
-
-if(false){
-      if (r > 0.5f)
-        {
-          color.r = 1.;
-          color.g = 0.;
-          color.b = 0.;
-        }
-      else
-        {
-          color.r = 0.;
-          color.g = 1.;
-          color.b = 0.;
-        }
-      color.a = 1.;
-}
-      
-  }
+   }
 }
 

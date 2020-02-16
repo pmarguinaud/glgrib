@@ -419,24 +419,18 @@ void glgrib_field::renderFrame (const glgrib_view & view) const
   program->use ();
   view.setMVP (program);
   
-  float scale0[3] = {opts.scale * 1.001f, opts.scale * 1.001f, opts.scale * 1.001f};
-  float colorb[4] = {opts.geometry.frame.color1.r/255.0f, opts.geometry.frame.color1.g/255.0f,
-                     opts.geometry.frame.color1.b/255.0f, opts.geometry.frame.color1.a/255.0f};
-  float colorw[4] = {opts.geometry.frame.color2.r/255.0f, opts.geometry.frame.color2.g/255.0f,
-                     opts.geometry.frame.color2.b/255.0f, opts.geometry.frame.color2.a/255.0f};
-
-  program->set3fv ("scale0", scale0);
-  program->set4fv ("colorb", colorb);
-  program->set4fv ("colorw", colorw);
-  program->set1f ("dlon", opts.geometry.frame.dlon);
-  program->set1f ("dlat", opts.geometry.frame.dlat);
+  program->set ("scale0", opts.scale * 1.001f, opts.scale * 1.001f, opts.scale * 1.001f);
+  program->set ("colorb", opts.geometry.frame.color1);
+  program->set ("colorw", opts.geometry.frame.color2);
+  program->set ("dlon", opts.geometry.frame.dlon);
+  program->set ("dlat", opts.geometry.frame.dlat);
 
   glBindVertexArray (VertexArrayID_frame);
 
   if (opts.geometry.frame.width > 0.0f)
     {
       float width = view.pixel_to_dist_at_nadir (opts.geometry.frame.width);
-      program->set1f ("width", width);
+      program->set ("width", width);
       unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
       glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, 
                                geometry->getFrameNumberOfPoints ());

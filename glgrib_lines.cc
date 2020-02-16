@@ -50,16 +50,11 @@ void glgrib_lines::render (const glgrib_view & view, const glgrib_options_light 
 {
   glgrib_program * program = glgrib_program::load (glgrib_program::MONO);
   program->use ();
-  float color[3] = {(float)opts.color.r / 255.0f, 
-                    (float)opts.color.g / 255.0f, 
-                    (float)opts.color.b / 255.0f};
-
   view.setMVP (program);
   program->setLight (light);
-  program->set3fv ("color0", color);
+  program->set ("color0", opts.color);
   program->set1i ("do_alpha", 1);
   program->set1f ("scale", opts.scale);
-
 
   glgrib_polygon::render (view, light);
 

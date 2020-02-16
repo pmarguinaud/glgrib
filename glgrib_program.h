@@ -45,6 +45,9 @@ public:
   void set (const std::string &, const std::vector<glm::vec4> &);
   void set (const std::string &, const glm::vec4 &);
   void set (const std::string &, const glm::mat4 &);
+  void set (const std::string &, float, float, float);
+  void set (const std::string &, float, float, float, float);
+  void set (const std::string &, const glgrib_option_color &);
 
   void set1f (const std::string &, float);
   void set1fv (const std::string &, const float *, int = 1);

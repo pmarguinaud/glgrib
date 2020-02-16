@@ -97,12 +97,9 @@ void glgrib_grid::render (const glgrib_view & view, const glgrib_options_light &
 {
   glgrib_program * program = glgrib_program::load (glgrib_program::GRID);
   program->use ();
-  float color[3] = {(float)opts.color.r / 255.0f, 
-                    (float)opts.color.g / 255.0f, 
-                    (float)opts.color.b / 255.0f};
 
   view.setMVP (program);
-  program->set3fv ("color0", color);
+  program->set ("color0", opts.color);
   program->set1i ("do_alpha", 0);
   program->set1f ("scale", opts.scale);
 

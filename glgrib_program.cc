@@ -174,6 +174,13 @@ void glgrib_program::set1iv (const std::string & key, const int * val, int size)
     glUniform1iv (id, size, val);
 }
 
+void glgrib_program::set (const std::string & key, const std::vector<int> & val)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniform1iv (id, val.size (), val.data ());
+}
+
 void glgrib_program::set1i (const std::string & key, int val)
 {
   int id = glGetUniformLocation (programID, key.c_str ());

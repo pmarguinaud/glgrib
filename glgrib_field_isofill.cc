@@ -503,8 +503,6 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
 
 void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-
-  float scale0[3] = {opts.scale, opts.scale, opts.scale};
   const glgrib_palette & p = palette;
 
   if (opts.scalar.wireframe.on)
@@ -515,7 +513,7 @@ void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_option
   program1->use ();
 
   view.setMVP (program1);
-  program1->set3fv ("scale0", scale0);
+  program1->set ("scale0", opts.scale, opts.scale, opts.scale);
   palette.setRGBA255 (program1->programID);
 
   glBindVertexArray (d.VertexArrayID);
@@ -528,18 +526,12 @@ void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_option
   program2->use ();
 
   view.setMVP (program2);
-  program2->set3fv ("scale0", scale0);
+  program2->set ("scale0", opts.scale, opts.scale, opts.scale);
 
   for (const auto & ib : d.isoband)
     {
-      float color0[4] = {ib.color.r/255.0f, 
-                         ib.color.g/255.0f, 
-                         ib.color.b/255.0f,
-                         ib.color.a/255.0f};
-
-
       glBindVertexArray (ib.VertexArrayID);
-      program2->set4fv ("color0", color0);
+      program2->set ("color0", ib.color);
       glDrawElements (GL_TRIANGLES, ib.size, GL_UNSIGNED_INT, NULL);
       glBindVertexArray (0);
     }

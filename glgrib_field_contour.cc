@@ -469,7 +469,7 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
           float length = view.pixel_to_dist_at_nadir (is.length);
           program->set ("length", length);
           program->set ("N", (int)is.pattern.size ());
-          program->set1iv ("pattern", is.pattern.data (), is.pattern.size ());
+          program->set ("pattern", is.pattern);
         }
       if (is.wide)
         {

@@ -59,22 +59,12 @@ public:
   void render (const glgrib_view &) const;
   void setForegroundColor (const glgrib_option_color & color)
   {
-    d.color0[0] = color.r / 255.0f; 
-    d.color0[1] = color.g / 255.0f; 
-    d.color0[2] = color.b / 255.0f;
-    d.color0[3] = color.a / 255.0f;
+    d.color0 = color;
   }
   void setBackgroundColor (const glgrib_option_color & color)
   {
-    d.color1[0] = color.r / 255.0f; 
-    d.color1[1] = color.g / 255.0f; 
-    d.color1[2] = color.b / 255.0f;
-    d.color1[3] = color.a / 255.0f;
+    d.color1 = color;
   }
-  void setForegroundColor (float r, float g, float b, float a = 1.0f) 
-    { d.color0[0] = r; d.color0[1] = g; d.color0[2] = b; d.color0[3] = a; }
-  void setBackgroundColor (float r, float g, float b, float a = 1.0f) 
-    { d.color1[0] = r; d.color1[1] = g; d.color1[2] = b; d.color1[3] = a; }
   ~glgrib_string ();
   void update (const std::vector<std::string> &);
   void update (const std::string &);
@@ -102,8 +92,8 @@ private:
     std::vector<float> x, y;       // Position of letters vertices
     std::vector<float> X, Y, Z, A; // Position & angle of each letter on the sphere
     align_t align;
-    float color0[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-    float color1[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    glgrib_option_color color0 = glgrib_option_color (255, 255, 255, 255);
+    glgrib_option_color color1 = glgrib_option_color (  0,   0,   0,   0);
     float scale;
     float scaleXYZ = 1.0f;
     int len;    // Total number of characters

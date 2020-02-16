@@ -21,10 +21,8 @@ glgrib_string & glgrib_string::operator= (const glgrib_string & str)
             {
               setup (str.d.font, str.d.data, str.d.x, str.d.y, str.d.scale, 
                     str.d.align, str.d.X, str.d.Y, str.d.Z, str.d.A);
-              for (int i =0; i < 4; i++)
-                d.color0[i] = str.d.color0[i];
-              for (int i =0; i < 4; i++)
-                d.color1[i] = str.d.color1[i];
+              d.color0 = str.d.color0;
+              d.color1 = str.d.color1;
 	      d.shared = str.d.shared;
 	      d.change = str.d.change;
 	    }
@@ -99,14 +97,8 @@ void glgrib_string::setup (const_glgrib_font_ptr ff, const std::vector<std::stri
   let.reserve (d.len);
   xyz.reserve (3 * d.len);
   
-  for (int i = 0; i < 4; i++)
-    d.color0[i] = 1.;
-  for (int i = 0; i < 4; i++)
-    d.color1[i] = 0.;
-
   d.font = ff;
   d.scale = s;
-     
 
   float dx = d.scale * d.font->getAspect ();
   float dy = d.scale;
@@ -246,8 +238,8 @@ void glgrib_string::render (const glgrib_view & view) const
   program->set ("texture", 0);
   program->set ("l3d", 1);
   program->set ("ratio", view.getRatio ());
-  program->set4fv ("color0", d.color0);
-  program->set4fv ("color1", d.color1);
+  program->set ("color0", d.color0);
+  program->set ("color1", d.color1);
   program->set ("length10", length);
   program->set ("scaleXYZ", d.scaleXYZ);
 
@@ -271,8 +263,8 @@ void glgrib_string::render (const glm::mat4 & MVP) const
   program->set ("scaleXYZ", 1.0f);
   program->set ("texture", 0);
   program->set ("l3d", 0);
-  program->set4fv ("color0", d.color0);
-  program->set4fv ("color1", d.color1);
+  program->set ("color0", d.color0);
+  program->set ("color1", d.color1);
 
   glBindVertexArray (VertexArrayID);
   unsigned int ind[12] = {0, 1, 2, 2, 3, 0};

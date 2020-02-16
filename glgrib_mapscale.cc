@@ -42,9 +42,8 @@ void glgrib_mapscale::setup (const glgrib_options_mapscale & o)
   glgrib_font_ptr font = new_glgrib_font_ptr (opts.font);
 
   label.setup2D (font, std::string (15, ' '), opts.position.xmin, opts.position.ymax + 0.01, opts.font.scale, glgrib_string::SW);
-  label.setForegroundColor (opts.font.color.foreground.r / 255.0f, 
-                            opts.font.color.foreground.g / 255.0f, 
-                            opts.font.color.foreground.b / 255.0f);
+  label.setForegroundColor (opts.font.color.foreground);
+  label.setBackgroundColor (opts.font.color.background);
 
   ready = true;
 }

@@ -51,7 +51,7 @@ void glgrib_lines::render (const glgrib_view & view, const glgrib_options_light 
   glgrib_program * program = glgrib_program::load (glgrib_program::MONO);
   program->use ();
   view.setMVP (program);
-  program->setLight (light);
+  program->set (light);
   program->set ("color0", opts.color);
   program->set1i ("do_alpha", 1);
   program->set1f ("scale", opts.scale);

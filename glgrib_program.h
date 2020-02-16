@@ -35,10 +35,13 @@ public:
 
   static glgrib_program * load (glgrib_program::kind);
 
+  void set (const std::string &, double);
   void set (const std::string &, float);
   void set (const std::string &, const std::vector<float> &);
   void set (const std::string &, const std::vector<int> &);
   void set (const std::string &, int);
+  void set (const std::string &, long int);
+  void set (const std::string &, size_t);
   void set (const std::string &, bool);
   void set (const std::string &, const std::vector<glm::vec3> &);
   void set (const std::string &, const glm::vec3 &);
@@ -59,7 +62,7 @@ public:
 
   void compile ();
 
-  void setLight (const glgrib_options_light &);
+  void set (const glgrib_options_light &);
 
   glgrib_program () {}
   glgrib_program (const std::string & fsc, const std::string & vsc, const std::string & gsc)

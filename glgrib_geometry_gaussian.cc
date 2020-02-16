@@ -690,26 +690,25 @@ void glgrib_geometry_gaussian::setProgramParameters (glgrib_program * program) c
 
   if (vertexbuffer != nullptr)
     {
-      program->set1i ("geometry_type", geometry_none);
+      program->set ("geometry_type", geometry_none);
     }
   else
     {
-      program->set1i ("geometry_type", geometry_gaussian);
+      program->set ("geometry_type", geometry_gaussian);
       if (! opts.gaussian.fit.on)
         ssbo_jlat->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_jlat_idx);
       ssbo_jglo->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_jglo_idx);
       ssbo_glat->bind (GL_SHADER_STORAGE_BUFFER, geometry_gaussian_glat_idx);
-      program->set1i ("geometry_gaussian_Nj", Nj);
-      program->set1f ("geometry_gaussian_omc2", omc2);
-      program->set1f ("geometry_gaussian_opc2", opc2);
-      program->set1i ("geometry_gaussian_rotated", rotated);
+      program->set ("geometry_gaussian_Nj", Nj);
+      program->set ("geometry_gaussian_omc2", omc2);
+      program->set ("geometry_gaussian_opc2", opc2);
+      program->set ("geometry_gaussian_rotated", rotated);
       program->set ("geometry_gaussian_rot", rot);             
-      program->set1fv ("geometry_gaussian_latfit_coeff", 
-                       latfitcoeff.data (), latfitcoeff.size ());
-      program->set1i ("geometry_gaussian_latfit_degre", latfitcoeff.size ()-1);
-      program->set1i ("geometry_gaussian_numberOfPoints", numberOfPoints);
-      program->set1i ("geometry_gaussian_fitlat", opts.gaussian.fit.on);
-      program->set1i ("geometry_gaussian_kind", kind);
+      program->set ("geometry_gaussian_latfit_coeff", latfitcoeff);
+      program->set ("geometry_gaussian_latfit_degre", latfitcoeff.size ()-1);
+      program->set ("geometry_gaussian_numberOfPoints", numberOfPoints);
+      program->set ("geometry_gaussian_fitlat", opts.gaussian.fit.on);
+      program->set ("geometry_gaussian_kind", kind);
    }
 }
 

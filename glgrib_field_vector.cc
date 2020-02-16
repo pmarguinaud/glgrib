@@ -174,21 +174,21 @@ const
   geometry->setProgramParameters (program);
 
   view.setMVP (program);
-  program->setLight (light);
+  program->set (light);
   palette.setRGBA255 (program->programID);
 
   for (int i = 0; i < 3; i++)
     scale0[i] *= 0.99;
 
-  program->set3fv ("scale0", scale0);
-  program->set1f ("valmin", valmin[0]);
-  program->set1f ("valmax", valmax[0]);
-  program->set1f ("palmin", palette.getMin ());
-  program->set1f ("palmax", palette.getMax ());
-  program->set1f ("height_scale", opts.geometry.height.scale);
-  program->set1i ("Nmax", 255);
-  program->set1i ("discrete", false);
-  program->set1f ("mpiview_scale", 0.0f);
+  program->set ("scale0", scale0[0], scale0[1], scale0[2]);
+  program->set ("valmin", valmin[0]);
+  program->set ("valmax", valmax[0]);
+  program->set ("palmin", palette.getMin ());
+  program->set ("palmax", palette.getMax ());
+  program->set ("height_scale", opts.geometry.height.scale);
+  program->set ("Nmax", 255);
+  program->set ("discrete", false);
+  program->set ("mpiview_scale", 0.0f);
 
   glBindVertexArray (VertexArrayID);
   geometry->renderTriangles ();
@@ -202,8 +202,6 @@ void glgrib_field_vector::renderArrow (const glgrib_view & view,
                                        const glgrib_options_light & light) 
 const
 {
-  float scale0[3] = {opts.scale, opts.scale, opts.scale};
-
   std::vector<float> valmax = getMaxValue ();
   std::vector<float> valmin = getMinValue ();
 
@@ -215,28 +213,24 @@ const
   geometry->setProgramParameters (program);
 
   view.setMVP (program);
-  program->setLight (light);
+  program->set (light);
   palette.setRGBA255 (program->programID);
 
-  program->set3fv ("scale0", scale0);
-  program->set1f ("palmin", palette.getMin ());
-  program->set1f ("palmax", palette.getMax ());
-  program->set1f ("valmin_n", valmin[0]);
-  program->set1f ("valmax_n", valmax[0]);
-  program->set1f ("valmin_d", valmin[1]);
-  program->set1f ("valmax_d", valmax[1]);
-  program->set1f ("valmin", valmin[0]);
-  program->set1f ("valmax", valmax[0]);
-
-  program->set1f ("height_scale", opts.geometry.height.scale);
-
-  float color0[4] = {opts.vector.arrow.color.r/255.0f, opts.vector.arrow.color.g/255.0f, 
-                     opts.vector.arrow.color.b/255.0f, opts.vector.arrow.color.a/255.0f};
-  program->set4fv ("color0", color0);
-  program->set1f ("vscale", d.vscale);
-  program->set1i ("arrow_fixed", opts.vector.arrow.fixed.on);
-  program->set1f ("arrow_min", opts.vector.arrow.min);
-  program->set1f ("head", opts.vector.arrow.head_size);
+  program->set ("scale0", opts.scale, opts.scale, opts.scale);
+  program->set ("palmin", palette.getMin ());
+  program->set ("palmax", palette.getMax ());
+  program->set ("valmin_n", valmin[0]);
+  program->set ("valmax_n", valmax[0]);
+  program->set ("valmin_d", valmin[1]);
+  program->set ("valmax_d", valmax[1]);
+  program->set ("valmin", valmin[0]);
+  program->set ("valmax", valmax[0]);
+  program->set ("height_scale", opts.geometry.height.scale);
+  program->set ("color0", opts.vector.arrow.color);
+  program->set ("vscale", d.vscale);
+  program->set ("arrow_fixed", opts.vector.arrow.fixed.on);
+  program->set ("arrow_min", opts.vector.arrow.min);
+  program->set ("head", opts.vector.arrow.head_size);
 
 
   class arrow_t
@@ -284,7 +278,7 @@ const
   };
 
   int kind = std::min (int (arrows.size ()), std::max (opts.vector.arrow.kind, 0));
-  program->set1i ("arrow_kind", kind);
+  program->set ("arrow_kind", kind);
 
   glBindVertexArray (VertexArrayIDvector);
 

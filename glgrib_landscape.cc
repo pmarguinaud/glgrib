@@ -121,40 +121,36 @@ void glgrib_landscape::setup (glgrib_loader * ld, const glgrib_options_landscape
 
 void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  float scale0[3] = {opts.scale, opts.scale, opts.scale};
-
   glgrib_program * program = glgrib_program::load (glgrib_program::FLAT_TEX);
   program->use ();
 
   view.setMVP (program);
-  program->setLight (light);
-  program->set1i ("isflat", opts.flat.on);
+  program->set (light);
+  program->set ("isflat", opts.flat.on);
 
   if (opts.color == glgrib_option_color ("#00000000"))
     {
       // the texture selection process is a bit obscure
       glActiveTexture (GL_TEXTURE0); 
       glBindTexture (GL_TEXTURE_2D, texture->id ());
-      program->set1i ("texture", 0);
-      program->set1i ("colored", 0);
+      program->set ("texture", 0);
+      program->set ("colored", 0);
     }
   else
     {
-      float color0[4] = {opts.color.r/255.0f, opts.color.g/255.0f,
-                         opts.color.b/255.0f, opts.color.a/255.0f};
-      program->set4fv ("color0", color0);
-      program->set1i ("colored", 1);
+      program->set ("color0", opts.color);
+      program->set ("colored", 1);
     }
 
-  program->set3fv ("scale0", scale0);
+  program->set ("scale0", opts.scale, opts.scale, opts.scale);
 
   if (opts.projection == "LONLAT")
     {
-      program->set1i ("texproj", 0);
-      program->set1f ("lonA", opts.lonlat.position.lon1 * deg2rad);
-      program->set1f ("lonB", opts.lonlat.position.lon2 * deg2rad);
-      program->set1f ("latA", opts.lonlat.position.lat1 * deg2rad);
-      program->set1f ("latB", opts.lonlat.position.lat2 * deg2rad);
+      program->set ("texproj", 0);
+      program->set ("lonA", opts.lonlat.position.lon1 * deg2rad);
+      program->set ("lonB", opts.lonlat.position.lon2 * deg2rad);
+      program->set ("latA", opts.lonlat.position.lat1 * deg2rad);
+      program->set ("latB", opts.lonlat.position.lat2 * deg2rad);
     }
   else if (opts.projection == "WEBMERCATOR")
     {
@@ -173,13 +169,13 @@ void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_li
       float F = twopi * a / 256;
       for (int i = 0; i < L; i++)
         N = N * 2;
-      program->set1i ("texproj", 1);
-      program->set1f ("F", F);
-      program->set1i ("N", N);
-      program->set1i ("IX0", IX0);
-      program->set1i ("IY0", IY0);
-      program->set1i ("IX1", IX1);
-      program->set1i ("IY1", IY1);
+      program->set ("texproj", 1);
+      program->set ("F", F);
+      program->set ("N", N);
+      program->set ("IX0", IX0);
+      program->set ("IY0", IY0);
+      program->set ("IX1", IX1);
+      program->set ("IY1", IY1);
     }
 
   glBindVertexArray (VertexArrayID);

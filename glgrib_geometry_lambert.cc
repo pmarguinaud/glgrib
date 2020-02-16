@@ -42,24 +42,24 @@ void glgrib_geometry_lambert::setProgramParameters (glgrib_program * program) co
 #include "shaders/include/geometry/types.h"
   if (vertexbuffer != nullptr)
     {
-      program->set1i ("geometry_type", geometry_none);
+      program->set ("geometry_type", geometry_none);
     }
   else
     {
-      program->set1i ("geometry_type", geometry_lambert);
-      program->set1f ("geometry_lambert_p_pj_ref_pt_lon",   p_pj.ref_pt.lon);
-      program->set1f ("geometry_lambert_p_pj_ref_pt_lat",   p_pj.ref_pt.lat);
-      program->set1f ("geometry_lambert_p_pj_pole",         p_pj.pole      );
-      program->set1f ("geometry_lambert_p_pj_r_equateur",   p_pj.r_equateur);
-      program->set1f ("geometry_lambert_p_pj_kl",           p_pj.kl        );
-      program->set1i ("geometry_lambert_Nx",                Nx             );
-      program->set1i ("geometry_lambert_Ny",                Ny             );
-      program->set1i ("geometry_lambert_Nux",               Nux            );
-      program->set1i ("geometry_lambert_Nuy",               Nuy            );
-      program->set1f ("geometry_lambert_DxInMetres",        DxInMetres     );
-      program->set1f ("geometry_lambert_DyInMetres",        DyInMetres     );
-      program->set1f ("geometry_lambert_center_xy_x",       center_xy.x    );
-      program->set1f ("geometry_lambert_center_xy_y",       center_xy.y    );
+      program->set ("geometry_type", geometry_lambert);
+      program->set ("geometry_lambert_p_pj_ref_pt_lon",   p_pj.ref_pt.lon);
+      program->set ("geometry_lambert_p_pj_ref_pt_lat",   p_pj.ref_pt.lat);
+      program->set ("geometry_lambert_p_pj_pole",         p_pj.pole      );
+      program->set ("geometry_lambert_p_pj_r_equateur",   p_pj.r_equateur);
+      program->set ("geometry_lambert_p_pj_kl",           p_pj.kl        );
+      program->set ("geometry_lambert_Nx",                Nx             );
+      program->set ("geometry_lambert_Ny",                Ny             );
+      program->set ("geometry_lambert_Nux",               Nux            );
+      program->set ("geometry_lambert_Nuy",               Nuy            );
+      program->set ("geometry_lambert_DxInMetres",        DxInMetres     );
+      program->set ("geometry_lambert_DyInMetres",        DyInMetres     );
+      program->set ("geometry_lambert_center_xy_x",       center_xy.x    );
+      program->set ("geometry_lambert_center_xy_y",       center_xy.y    );
     }
 }
 

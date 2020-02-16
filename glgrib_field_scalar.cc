@@ -276,7 +276,7 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
 
 
   view.setMVP (program);
-  program->setLight (light);
+  program->set (light);
   palette.setRGBA255 (program->programID);
   program->set ("scale0", scale0[0], scale0[1], scale0[2]);
   program->set ("valmin", getNormedMinValue ());

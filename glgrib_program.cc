@@ -115,7 +115,7 @@ void glgrib_program::use () const
     }
 }
 
-void glgrib_program::setLight (const glgrib_options_light & light)
+void glgrib_program::set (const glgrib_options_light & light)
 {
   int lightid = glGetUniformLocation (programID, "light");
 
@@ -160,11 +160,23 @@ void glgrib_program::set (const std::string & key, float val)
     glUniform1f (id, val);
 }
 
+void glgrib_program::set (const std::string & key, double val)
+{
+  set (key, float (val));
+}
+
 void glgrib_program::set1fv (const std::string & key, const float * val, int size)
 {
   int id = glGetUniformLocation (programID, key.c_str ());
   if (id != -1)
     glUniform1fv (id, size, val);
+}
+
+void glgrib_program::set (const std::string & key, const std::vector<float> & val)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniform1fv (id, val.size (), val.data ());
 }
 
 void glgrib_program::set1iv (const std::string & key, const int * val, int size)
@@ -186,6 +198,16 @@ void glgrib_program::set1i (const std::string & key, int val)
   int id = glGetUniformLocation (programID, key.c_str ());
   if (id != -1)
     glUniform1i (id, val);
+}
+
+void glgrib_program::set (const std::string & key, long int val)
+{
+  set (key, int (val));
+}
+
+void glgrib_program::set (const std::string & key, size_t val)
+{
+  set (key, int (val));
 }
 
 void glgrib_program::set (const std::string & key, int val)

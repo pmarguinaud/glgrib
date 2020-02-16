@@ -91,8 +91,7 @@ void glgrib_points::render (const glgrib_view & view, const glgrib_options_light
   glgrib_program * program = glgrib_program::load (glgrib_program::POINTS);
   program->use ();
 
-  glm::vec3 scale0 = glm::vec3 (d.opts.scale, d.opts.scale, d.opts.scale);
-  program->set ("scale0", scale0);
+  program->set ("scale0", d.opts.scale);
   program->set ("length10", length);
   program->set ("valmin", d.min);
   program->set ("valmax", d.max);

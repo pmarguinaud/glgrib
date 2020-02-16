@@ -513,7 +513,7 @@ void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_option
   program1->use ();
 
   view.setMVP (program1);
-  program1->set ("scale0", opts.scale, opts.scale, opts.scale);
+  program1->set ("scale0", opts.scale);
   palette.setRGBA255 (program1->programID);
 
   glBindVertexArray (d.VertexArrayID);
@@ -526,7 +526,7 @@ void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_option
   program2->use ();
 
   view.setMVP (program2);
-  program2->set ("scale0", opts.scale, opts.scale, opts.scale);
+  program2->set ("scale0", opts.scale);
 
   for (const auto & ib : d.isoband)
     {

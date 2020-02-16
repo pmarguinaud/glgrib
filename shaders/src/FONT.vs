@@ -59,8 +59,7 @@ void main ()
         }
       else 
         {
-          float scale00 = length (letterXYZ);
-          vec3 scale0 = vec3 (scale00, scale00, scale00);
+          float scale0 = length (letterXYZ);
           vec3 vertexPos = letterXYZ;
           vec3 normedPos = compNormedPos (vertexPos);
           vec3 pos = compProjedPos (vertexPos, normedPos);

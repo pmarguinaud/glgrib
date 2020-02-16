@@ -453,7 +453,7 @@ void glgrib_field_contour::render (const glgrib_view & view, const glgrib_option
   const glgrib_palette & p = palette;
 
   view.setMVP (program);
-  program->set ("scale0", opts.scale, opts.scale, opts.scale);
+  program->set ("scale0", opts.scale);
   program->set ("height_scale", opts.geometry.height.scale);
 
   for (const auto & is : iso)

@@ -433,7 +433,7 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
   const glgrib_palette & p = palette;
 
   view.setMVP (program);
-  program->set ("scale0", opts.scale, opts.scale, opts.scale);
+  program->set ("scale0", opts.scale);
 
   palette.setRGBA255 (program->programID);
 

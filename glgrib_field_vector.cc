@@ -163,7 +163,7 @@ void glgrib_field_vector::renderNorms (const glgrib_view & view,
                                        const glgrib_options_light & light) 
 const
 {
-  float scale0[3] = {opts.scale, opts.scale, opts.scale};
+  float scale0 = opts.scale;
 
   std::vector<float> valmax = getMaxValue ();
   std::vector<float> valmin = getMinValue ();
@@ -177,10 +177,9 @@ const
   program->set (light);
   palette.setRGBA255 (program->programID);
 
-  for (int i = 0; i < 3; i++)
-    scale0[i] *= 0.99;
+  scale0 *= 0.99;
 
-  program->set ("scale0", scale0[0], scale0[1], scale0[2]);
+  program->set ("scale0", scale0);
   program->set ("valmin", valmin[0]);
   program->set ("valmax", valmax[0]);
   program->set ("palmin", palette.getMin ());
@@ -216,7 +215,7 @@ const
   program->set (light);
   palette.setRGBA255 (program->programID);
 
-  program->set ("scale0", opts.scale, opts.scale, opts.scale);
+  program->set ("scale0", opts.scale);
   program->set ("palmin", palette.getMin ());
   program->set ("palmax", palette.getMax ());
   program->set ("valmin_n", valmin[0]);

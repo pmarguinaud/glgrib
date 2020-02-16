@@ -1,20 +1,20 @@
-uniform vec3 scale0 = vec3 (1.0, 1.0, 1.0);
+uniform float scale0 = 1.0f;
 
-vec3 scalePosition (vec3 pos, vec3 normedPos, vec3 scale0)
+vec3 scalePosition (vec3 pos, vec3 normedPos, float scale0)
 {
   if (proj == XYZ)
     {
-      pos.x = scale0.x * normedPos.x;
-      pos.y = scale0.y * normedPos.y;
-      pos.z = scale0.z * normedPos.z;
+      pos.x = scale0 * normedPos.x;
+      pos.y = scale0 * normedPos.y;
+      pos.z = scale0 * normedPos.z;
     }
   else if (proj == POLAR_SOUTH)
     {
-      pos.x = pos.x - (scale0.x - 1.0f);
+      pos.x = pos.x - (scale0 - 1.0f);
     }
   else
     {
-      pos.x = pos.x + (scale0.x - 1.0f);
+      pos.x = pos.x + (scale0 - 1.0f);
     }
 
   return pos;

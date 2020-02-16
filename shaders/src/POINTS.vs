@@ -66,8 +66,7 @@ void main()
     }
   else
     {
-      float scale00 = length (pos);
-      vec3 scale0 = vec3 (scale00, scale00, scale00);
+      float scale0 = length (pos);
       vec3 vertexPos = pos;
       vec3 normedPos = compNormedPos (vertexPos);
       vec3 pos = compProjedPos (vertexPos, normedPos);

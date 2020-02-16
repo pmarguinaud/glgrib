@@ -26,7 +26,6 @@ std::string kind2name (glgrib_program::kind kind)
   KIND (RGB);
   KIND (MONO);
   KIND (RGB_FLAT);
-  KIND (RGB_POSITION_SCALE);
   KIND (SCALAR);
   KIND (FLAT_TEX);
   KIND (VECTOR);

@@ -142,7 +142,7 @@ void glgrib_landscape::render (const glgrib_view & view, const glgrib_options_li
       program->set ("colored", 1);
     }
 
-  program->set ("scale0", opts.scale, opts.scale, opts.scale);
+  program->set ("scale0", opts.scale);
 
   if (opts.projection == "LONLAT")
     {

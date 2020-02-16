@@ -35,7 +35,7 @@ void glgrib_land::render (const glgrib_view & view, const glgrib_options_light &
   if (opts.layers[i].on)
     {
      
-      program->set ("scale0", opts.layers[i].scale, opts.layers[i].scale, opts.layers[i].scale);
+      program->set ("scale0", opts.layers[i].scale);
       program->set ("color0", opts.layers[i].color);
       program->set ("debug", opts.layers[i].debug.on);
      

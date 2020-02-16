@@ -259,11 +259,10 @@ void glgrib_field_scalar::setupMpiView (glgrib_loader * ld, const glgrib_options
 
 void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  float scale0[3] = {opts.scale, opts.scale, opts.scale};
+  float scale0 = opts.scale;
 
   if (opts.mpiview.on)
-    for (int i = 0; i < 3; i++)
-      scale0[i] = scale0[i] / (1.0f + opts.mpiview.scale);
+    scale0 = scale0 / (1.0f + opts.mpiview.scale);
 
   glgrib_program * program = glgrib_program::load (opts.scalar.points.on 
                                                  ? glgrib_program::SCALAR_POINTS 
@@ -278,7 +277,7 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   view.setMVP (program);
   program->set (light);
   palette.setRGBA255 (program->programID);
-  program->set ("scale0", scale0[0], scale0[1], scale0[2]);
+  program->set ("scale0", scale0);
   program->set ("valmin", getNormedMinValue ());
   program->set ("valmax", getNormedMaxValue ());
   program->set ("palmin", palette.getMin ());

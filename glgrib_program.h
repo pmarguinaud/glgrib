@@ -15,7 +15,6 @@ public:
     RGB,
     MONO,
     RGB_FLAT,
-    RGB_POSITION_SCALE,
     SCALAR,
     FLAT_TEX,
     VECTOR,

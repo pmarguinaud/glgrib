@@ -419,7 +419,7 @@ void glgrib_field::renderFrame (const glgrib_view & view) const
   program->use ();
   view.setMVP (program);
   
-  program->set ("scale0", opts.scale * 1.001f, opts.scale * 1.001f, opts.scale * 1.001f);
+  program->set ("scale0", opts.scale * 1.001f);
   program->set ("colorb", opts.geometry.frame.color1);
   program->set ("colorw", opts.geometry.frame.color2);
   program->set ("dlon", opts.geometry.frame.dlon);

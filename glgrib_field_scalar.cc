@@ -278,38 +278,33 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
   view.setMVP (program);
   program->setLight (light);
   palette.setRGBA255 (program->programID);
-  program->set3fv ("scale0", scale0);
-  program->set1f ("valmin", getNormedMinValue ());
-  program->set1f ("valmax", getNormedMaxValue ());
-  program->set1f ("palmin", palette.getMin ());
-  program->set1f ("palmax", palette.getMax ());
-  program->set1f ("height_scale", opts.geometry.height.scale);
-  program->set1i ("discrete", opts.scalar.discrete.on);
-  program->set1f ("mpiview_scale", opts.mpiview.on ? opts.mpiview.scale : 0.0f);
+  program->set ("scale0", scale0[0], scale0[1], scale0[2]);
+  program->set ("valmin", getNormedMinValue ());
+  program->set ("valmax", getNormedMaxValue ());
+  program->set ("palmin", palette.getMin ());
+  program->set ("palmax", palette.getMax ());
+  program->set ("height_scale", opts.geometry.height.scale);
+  program->set ("discrete", opts.scalar.discrete.on);
+  program->set ("mpiview_scale", opts.mpiview.on ? opts.mpiview.scale : 0.0f);
 
-  float missing_color[4] = {(float)opts.scalar.discrete.missing_color.r / 255.0f, 
-                            (float)opts.scalar.discrete.missing_color.g / 255.0f, 
-                            (float)opts.scalar.discrete.missing_color.b / 255.0f,
-                            (float)opts.scalar.discrete.missing_color.a / 255.0f};
-
-  program->set4fv ("RGBAM", missing_color);
+  program->set ("RGBAM", opts.scalar.discrete.missing_color);
  
   geometry->setProgramParameters (program);
 
-  unsigned int Nmax = 1;
+  int Nmax = 1;
   for (int i = 0; i < opts.scalar.pack.bits; i++)
     Nmax = Nmax * 2;
 
-  program->set1i ("Nmax", Nmax-1);
+  program->set ("Nmax", Nmax-1);
     
   if (opts.scalar.points.on)
     {
       float length = view.pixel_to_dist_at_nadir (10);
     
-      program->set1f ("length10", length);
-      program->set1f ("pointSiz", opts.scalar.points.size.value);
-      program->set1i ("lpointZoo", opts.scalar.points.size.variable.on);
-      program->set1i ("factor", opts.scalar.points.size.factor.on);
+      program->set ("length10", length);
+      program->set ("pointSiz", opts.scalar.points.size.value);
+      program->set ("lpointZoo", opts.scalar.points.size.variable.on);
+      program->set ("factor", opts.scalar.points.size.factor.on);
     
       glBindVertexArray (VertexArrayIDpoints);
     
@@ -320,7 +315,7 @@ void glgrib_field_scalar::render (const glgrib_view & view, const glgrib_options
     }
   else
     {
-      program->set1i ("smoothed", opts.scalar.smooth.on);
+      program->set ("smoothed", opts.scalar.smooth.on);
     
       if (opts.scalar.wireframe.on)
         glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);

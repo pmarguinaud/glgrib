@@ -142,6 +142,13 @@ void glgrib_program::set1f (const std::string & key, float val)
     glUniform1f (id, val);
 }
 
+void glgrib_program::set (const std::string & key, float val)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniform1f (id, val);
+}
+
 void glgrib_program::set1fv (const std::string & key, const float * val, int size)
 {
   int id = glGetUniformLocation (programID, key.c_str ());
@@ -182,6 +189,13 @@ void glgrib_program::setMatrix4fv (const std::string & key, const float * val, i
   int id = glGetUniformLocation (programID, key.c_str ());
   if (id != -1)
     glUniformMatrix4fv (id, size, GL_FALSE, val);
+}
+
+void glgrib_program::set (const std::string & key, const glm::mat4 & mat)
+{
+  int id = glGetUniformLocation (programID, key.c_str ());
+  if (id != -1)
+    glUniformMatrix4fv (id, 1, GL_FALSE, &mat[0][0]);
 }
 
 

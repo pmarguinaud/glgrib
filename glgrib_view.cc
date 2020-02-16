@@ -18,7 +18,7 @@ void glgrib_view::delMVP (glgrib_program * program) const
 
 void glgrib_view::setMVP (glgrib_program * program) const
 {
-  program->setMatrix4fv ("MVP", &MVP[0][0]);
+  program->set ("MVP", MVP);
   program->set1i ("proj", ps.current ()->getType ());
 
   float lon0 = opts.lon + 180.0f;

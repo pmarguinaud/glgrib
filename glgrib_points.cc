@@ -93,14 +93,14 @@ void glgrib_points::render (const glgrib_view & view, const glgrib_options_light
 
   float scale0[3] = {d.opts.scale, d.opts.scale, d.opts.scale};
   program->set3fv ("scale0", scale0);
-  program->set1f ("length10", length);
-  program->set1f ("valmin", d.min);
-  program->set1f ("valmax", d.max);
-  program->set1f ("ratio", view.getRatio ());
+  program->set ("length10", length);
+  program->set ("valmin", d.min);
+  program->set ("valmax", d.max);
+  program->set ("ratio", view.getRatio ());
 
-  program->set1f ("palmin", d.opts.palette.min);
-  program->set1f ("palmax", d.opts.palette.max);
-  program->set1f ("pointSiz", d.opts.size.value);
+  program->set ("palmin", d.opts.palette.min);
+  program->set ("palmax", d.opts.palette.max);
+  program->set ("pointSiz", d.opts.size.value);
 
   program->set1i ("lpointSiz", d.opts.size.variable.on ? 1 : 0);
 
@@ -108,14 +108,14 @@ void glgrib_points::render (const glgrib_view & view, const glgrib_options_light
     {
       glgrib_palette palette = glgrib_palette::create (d.opts.palette);
       palette.setRGBA255 (program->programID);
-      program->set1f ("lcolor0", 0);
+      program->set1i ("lcolor0", false);
     }
   else
     {
       float color0[4] = {(float)d.opts.color.r/255.0f,(float)d.opts.color.g/255.0f,
                          (float)d.opts.color.b/255.0f,(float)d.opts.color.a/255.0f};
       program->set4fv ("color0", color0);
-      program->set1f ("lcolor0", 1);
+      program->set1i ("lcolor0", true);
     }
 
   view.setMVP (program);

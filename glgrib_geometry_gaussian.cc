@@ -703,7 +703,7 @@ void glgrib_geometry_gaussian::setProgramParameters (glgrib_program * program) c
       program->set1f ("geometry_gaussian_omc2", omc2);
       program->set1f ("geometry_gaussian_opc2", opc2);
       program->set1i ("geometry_gaussian_rotated", rotated);
-      program->setMatrix4fv ("geometry_gaussian_rot", &rot[0][0]);             
+      program->set ("geometry_gaussian_rot", rot);             
       program->set1fv ("geometry_gaussian_latfit_coeff", 
                        latfitcoeff.data (), latfitcoeff.size ());
       program->set1i ("geometry_gaussian_latfit_degre", latfitcoeff.size ()-1);

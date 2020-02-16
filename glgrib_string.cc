@@ -266,7 +266,7 @@ void glgrib_string::render (const glm::mat4 & MVP) const
   d.font->select ();
 
   glgrib_program * program = d.font->getProgram ();
-  program->setMatrix4fv ("MVP", &MVP[0][0]);
+  program->set ("MVP", MVP);
   program->set1f ("scale", d.scale);
   program->set1f ("scaleXYZ", 1.0f);
   program->set1i ("texture", 0);

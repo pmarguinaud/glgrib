@@ -168,7 +168,7 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
 
   pref.setRGBA255 (program.programID);
 
-  program.setMatrix4fv ("MVP", &MVP[0][0]);
+  program.set ("MVP", MVP);
   program.set1iv ("rank2rgba", rank2rgba, 256);
 
   program.set1f ("xmin", opts.position.xmin);

@@ -68,7 +68,7 @@ void glgrib_image::render (const glm::mat4 & MVP) const
   glgrib_program * program = glgrib_program::load (glgrib_program::IMAGE);
   program->use ();
 
-  program->setMatrix4fv ("MVP", &MVP[0][0]);
+  program->set ("MVP", MVP);
   program->set1f ("x0", opts.x0);
   program->set1f ("y0", opts.y0);
   program->set1f ("x1", opts.x1);

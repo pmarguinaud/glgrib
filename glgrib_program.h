@@ -3,6 +3,7 @@
 #include "glgrib_opengl.h"
 #include "glgrib_options.h"
 #include <string>
+#include <glm/glm.hpp>
 
 class glgrib_program
 {
@@ -33,6 +34,17 @@ public:
   } kind;
 
   static glgrib_program * load (glgrib_program::kind);
+
+  void set (const std::string &, float);
+  void set (const std::string &, const std::vector<float> &);
+  void set (const std::string &, const std::vector<int> &);
+  void set (const std::string &, int);
+  void set (const std::string &, bool);
+  void set (const std::string &, const std::vector<glm::vec3> &);
+  void set (const std::string &, const glm::vec3 &);
+  void set (const std::string &, const std::vector<glm::vec4> &);
+  void set (const std::string &, const glm::vec4 &);
+  void set (const std::string &, const glm::mat4 &);
 
   void set1f (const std::string &, float);
   void set1fv (const std::string &, const float *, int = 1);

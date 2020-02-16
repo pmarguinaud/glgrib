@@ -108,7 +108,7 @@ void glgrib_mapscale::render (const glm::mat4 & MVP, const glgrib_view & view) c
   label.render (MVP);
   program.use ();
 
-  program.setMatrix4fv ("MVP", &MVP[0][0]);
+  program.set ("MVP", MVP);
   program.set1f ("xmin", opts.position.xmin);
   program.set1f ("xmax", opts.position.xmin + frac1);
   program.set1f ("ymin", opts.position.ymin);

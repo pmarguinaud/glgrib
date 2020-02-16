@@ -65,6 +65,7 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
   if (! ready)
     return;
 
+  rank2rgba.resize (256);
 
   glgrib_palette p1 = p;
   if (! p1.hasMin ())
@@ -169,7 +170,7 @@ void glgrib_colorbar::render (const glm::mat4 & MVP, const glgrib_palette & p,
   pref.setRGBA255 (program.programID);
 
   program.set ("MVP", MVP);
-  program.set1iv ("rank2rgba", rank2rgba, 256);
+  program.set ("rank2rgba", rank2rgba);
 
   program.set ("xmin", opts.position.xmin);
   program.set ("xmax", opts.position.xmax);

@@ -28,7 +28,7 @@ private:
   bool ready = false;
   bool hidden = false;
   int nt;
-  mutable int rank2rgba[256];
+  mutable std::vector<int> rank2rgba;
   mutable glgrib_string label;
   mutable glgrib_palette pref;
 };

@@ -100,24 +100,24 @@ void glgrib_grid::render (const glgrib_view & view, const glgrib_options_light &
 
   view.setMVP (program);
   program->set ("color0", opts.color);
-  program->set1i ("do_alpha", 0);
-  program->set1f ("scale", opts.scale);
+  program->set ("do_alpha", 0);
+  program->set ("scale", opts.scale);
 
-  program->set1i ("resolution", opts.resolution);
-  program->set1i ("nn", opts.points);
-  program->set1i ("frag_resolution", opts.resolution);
-  program->set1i ("frag_nn", opts.points);
-  program->set1i ("interval", opts.interval);
-  program->set1f ("dash_length", opts.dash_length);
+  program->set ("resolution", opts.resolution);
+  program->set ("nn", opts.points);
+  program->set ("frag_resolution", opts.resolution);
+  program->set ("frag_nn", opts.points);
+  program->set ("interval", opts.interval);
+  program->set ("dash_length", opts.dash_length);
 
   glBindVertexArray (VertexArrayID);
 
-  program->set1i ("do_lat", 0);
-  program->set1i ("frag_do_lat", 0);
+  program->set ("do_lat", 0);
+  program->set ("frag_do_lat", 0);
   glDrawArrays (GL_LINE_STRIP, 0, (opts.resolution - 1) * (opts.points + 1));
 
-  program->set1i ("do_lat", 1);
-  program->set1i ("frag_do_lat", 1);
+  program->set ("do_lat", 1);
+  program->set ("frag_do_lat", 1);
   glDrawArrays (GL_LINE_STRIP, 0, 2 * opts.resolution * (opts.points / 2 + 1));
 
   glBindVertexArray (0);

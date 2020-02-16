@@ -242,14 +242,14 @@ void glgrib_string::render (const glgrib_view & view) const
 
   float length = view.pixel_to_dist_at_nadir (10);
 
-  program->set1f ("scale", d.scale);
-  program->set1i ("texture", 0);
-  program->set1i ("l3d", 1);
-  program->set1f ("ratio", view.getRatio ());
+  program->set ("scale", d.scale);
+  program->set ("texture", 0);
+  program->set ("l3d", 1);
+  program->set ("ratio", view.getRatio ());
   program->set4fv ("color0", d.color0);
   program->set4fv ("color1", d.color1);
-  program->set1f ("length10", length);
-  program->set1f ("scaleXYZ", d.scaleXYZ);
+  program->set ("length10", length);
+  program->set ("scaleXYZ", d.scaleXYZ);
 
   glBindVertexArray (VertexArrayID);
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0};
@@ -267,10 +267,10 @@ void glgrib_string::render (const glm::mat4 & MVP) const
 
   glgrib_program * program = d.font->getProgram ();
   program->set ("MVP", MVP);
-  program->set1f ("scale", d.scale);
-  program->set1f ("scaleXYZ", 1.0f);
-  program->set1i ("texture", 0);
-  program->set1i ("l3d", 0);
+  program->set ("scale", d.scale);
+  program->set ("scaleXYZ", 1.0f);
+  program->set ("texture", 0);
+  program->set ("l3d", 0);
   program->set4fv ("color0", d.color0);
   program->set4fv ("color1", d.color1);
 

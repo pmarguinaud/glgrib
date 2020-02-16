@@ -15,17 +15,17 @@ void glgrib_geometry_latlon::setProgramParameters (glgrib_program * program) con
 #include "shaders/include/geometry/types.h"
   if (vertexbuffer != nullptr)
     {
-      program->set1i ("geometry_type", geometry_none);
+      program->set ("geometry_type", geometry_none);
     }
   else
     {
-      program->set1i ("geometry_type", geometry_latlon);
-      program->set1f ("geometry_latlon_lat0", lat0);
-      program->set1f ("geometry_latlon_lon0", lon0);
-      program->set1f ("geometry_latlon_dlat", dlat);
-      program->set1f ("geometry_latlon_dlon", dlon);
-      program->set1i ("geometry_latlon_Ni",   Ni);
-      program->set1i ("geometry_latlon_Nj",   Nj);
+      program->set ("geometry_type", geometry_latlon);
+      program->set ("geometry_latlon_lat0", lat0);
+      program->set ("geometry_latlon_lon0", lon0);
+      program->set ("geometry_latlon_dlat", dlat);
+      program->set ("geometry_latlon_dlon", dlon);
+      program->set ("geometry_latlon_Ni",   Ni);
+      program->set ("geometry_latlon_Nj",   Nj);
     }
 }
 

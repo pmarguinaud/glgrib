@@ -1074,3 +1074,18 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --land.layers[0].color #404040 --view.clip.xmin 0.15 --grid.color grey 
     --grid.resolution 18 --grid.on 
 ```
+## Wind Australia                                                    -- windaustralia4
+![](test.ref/windaustralia4/TEST_0000.png)
+
+```
+    --field[0].path testdata/uv200.grib%paramId=131 
+    testdata/uv200.grib%paramId=132 --field[0].type VECTOR --coast.on 
+    --view.lat -25 --view.lon 140 --view.fov 8 --field[0].vector.norm.off 
+    --land.on --landscape.on --landscape.color white --landscape.scale 
+    0.999 --coast.on --coast.lines.color black --coast.lines.path 
+    coastlines/gshhg/GSHHS_bin/gshhs_i.b --field[0].vector.density 20 
+    --field[0].vector.scale 0.5 --window.width 1200 --field[0].scale 1.001 
+    --field[0].vector.arrow.off --field[0].vector.barb.on 
+    --field[0].vector.barb.color brown --field[0].vector.barb.circle.level 
+    15 
+```

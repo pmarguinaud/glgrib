@@ -78,9 +78,8 @@ uniform float barbthres[10];
 uniform int pennthresmax;
 uniform float pennthres[10];
 
-vec3 getPos3 (float N)
+vec3 getPos3 (float N, vec2 vertexLonLat)
 {
-
   const int barbvertexmin = 2;
   const int barbvertexmax = barbvertexmin + barbthresmax * 2 - 1;
   const int linevertexmin = barbvertexmax + 1;
@@ -89,9 +88,10 @@ vec3 getPos3 (float N)
   const int pennvertexmax = pennvertexmin + pennthresmax * 4 - 1;
   const int vertexmax = pennvertexmax;
 
+
   vec3 pos = vec3 (0.0f, 0.0f, 0.0f);
 
-//if (gl_InstanceID != 124254)
+//if (gl_InstanceID != 830859)
 //  return pos;
 
 
@@ -109,7 +109,7 @@ vec3 getPos3 (float N)
   // Number of pennants
   int npenn = 0;
 
-  for (int i = 0; i < pennthresmax; i++)
+  for (int i = 0; i < pennthresmax + 1; i++)
     if (N >= pennthres[i])
       npenn = i;  
     else
@@ -170,6 +170,8 @@ vec3 getPos3 (float N)
         }
     }
 
+  pos.y = pos.y * (vertexLonLat.y > 0.0f ? +1 : -1);
+
   return pos;
 }
 
@@ -188,7 +190,7 @@ void main ()
   float D = unpack (vertexVal_d, valmin_d, valmax_d);
 
   bool defined = (vertexVal_d != 0) && (N > arrow_min);
-//defined = gl_InstanceID == 124254;
+//defined = gl_InstanceID == 830859;
   vec3 pos;
 
   if (! defined)
@@ -200,7 +202,7 @@ void main ()
   else if (arrow_kind == 2)
     pos = getPos2 ();
   else if (arrow_kind == 3)
-    pos = getPos3 (N);
+    pos = getPos3 (N, vertexLonLat_);
   else 
     pos = getPos0 ();
     

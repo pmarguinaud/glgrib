@@ -7,6 +7,7 @@
 #include <fstream>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 const float glgrib_palette::defaultMin = std::numeric_limits<float>::max();
 const float glgrib_palette::defaultMax = std::numeric_limits<float>::min();
@@ -29,6 +30,85 @@ glgrib_palette palette_white_black
       0,   0,   0, 255,
     255, 255, 255, 255
   );
+
+class hsva_t
+{
+public:
+  hsva_t (float _h, float _s, float _v, float _a) 
+     : h (_h), s (_s), v (_v), a (_a) {}
+  float h, s, v, a;
+  friend std::ostream & operator << (std::ostream & os, const hsva_t & hsva)
+  {
+    os << " h = " << hsva.h << " s = " << hsva.s 
+       << " v = " << hsva.v << " a = " << hsva.a 
+       << std::endl;
+    return os;
+  }
+};
+
+static
+hsva_t rgba2hsva (const glgrib_option_color & rgba)
+{
+  float r = float (rgba.r) / 255.0f, g = float (rgba.g) / 255.0f;
+  float b = float (rgba.b) / 255.0f, a = float (rgba.a) / 255.0f;
+
+  float h, s, v;
+  float min = std::min (std::min (r, g), b);
+  float max = std::max (std::max (r, g), b);
+
+  if (max == min)
+    h = 0.0f;
+  else if (max == r)
+    h = fmod (60.0f * (g - b) / (max - min) + 360.0f, 360.0f);
+  else if (max == g)
+    h =       60.0f * (b - r) / (max - min) + 120.0f;
+  else if (max == b)
+    h =       60.0f * (r - g) / (max - min) + 240.0f;
+
+  if (max == 0.0f)
+    s = 0.;
+  else
+    s = 1.0f - min / max;
+  
+  v = max;
+
+  return hsva_t (h, s, v, a);
+}
+
+static
+glgrib_option_color hsva2rgba (const hsva_t & hsva)
+{
+  float h = hsva.h, s = hsva.s, v = hsva.v, a = hsva.a;
+
+  int hi = int (h / 60.0f) % 6;
+  float f = h / 60 - float (hi);
+
+  float l = v * (1.0f - s);
+  float m = v * (1.0f - f * s);
+  float n = v * (1.0f - (1.0f - f) * s);
+
+  float r, g, b;
+
+  std::cout << " hi = " << hi << " n = " << n
+	    << " l = " << l << " v = " << v 
+	    << " m = " << m << std::endl;
+
+  switch (hi)
+    {
+      case 0: r = v; g = n; b = l; break;
+      case 1: r = m; g = v; b = l; break;
+      case 2: r = l; g = v; b = n; break;
+      case 3: r = l; g = m; b = v; break;
+      case 4: r = n; g = l; b = v; break;
+      case 5: r = v; g = l; b = m; break;
+    }
+
+  std::cout << " r = " << r << " g = " << g << " b = " << b;
+
+  return glgrib_option_color (int (255.0f * r), int (255.0f * g), 
+		              int (255.0f * b), int (255.0f * a));
+}
+
 
 glgrib_palette glgrib_palette::create 
         (const glgrib_options_palette & o,  
@@ -57,6 +137,66 @@ glgrib_palette glgrib_palette::create
         p.opts.max = o.values.back ();
 
       p.rgba_mis = glgrib_option_color (0, 0, 0, 0);
+
+      
+      if (true)
+        {
+          hsva_t hsva1 = rgba2hsva (p.opts.colors.front ());
+          hsva_t hsva2 = rgba2hsva (p.opts.colors.back  ());
+
+	  std::vector<glgrib_option_color> colors;
+
+	  colors.push_back (p.opts.colors.front ());
+
+	  float h1, h2;
+
+	  bool rot = false;
+	  if (rot)
+            {
+              h1 = hsva1.h; h2 = hsva2.h;
+	      while (h2 < h1)
+                h2 += 360.f;
+	    }
+	  else
+            {
+              h1 = hsva1.h; h2 = hsva2.h;
+          std::cout << " h1, h2 = " << h1 << ", " << h2 << std::endl;
+              while (h2 > h1)
+                h2 -= 360.0f;
+          std::cout << " h1, h2 = " << h1 << ", " << h2 << std::endl;
+	      std::swap (h1, h2);
+	    }
+
+
+          std::cout << " h1, h2 = " << h1 << ", " << h2 << std::endl;
+
+	  const int n = p.opts.values.size ();
+	  for (int i = 1; i < n-2; i++)
+            {
+              std::cout << "-----------" << std::endl;
+              float c = float (i) / float (n-2);
+              float h = rot 
+                      ? fmod (h1 * (1.0f - c) + h2 * c, 360.0f) 
+                      : fmod (h1 * c + h2 * (1.0f - c), 360.0f);
+	      std::cout << " h = " << h;
+              float s = hsva1.s * (1.0f - c) + hsva2.s * c;
+	      float v = hsva1.v * (1.0f - c) + hsva2.v * c;
+	      float a = hsva1.a * (1.0f - c) + hsva2.a * c;
+	      hsva_t hsva (h, s, v, a);
+	      std::cout << " hsva = " << hsva;
+	      glgrib_option_color color = hsva2rgba (hsva);
+	      colors.push_back (color);
+	      std::cout << " color = " << color << std::endl;
+	    }
+
+          colors.push_back (p.opts.colors.back ());
+
+	  std::cout << " colors = " << std::endl;
+	  for (const auto & c : colors)
+            std::cout << c << std::endl;
+
+	  p.opts.colors = colors;
+	}
 
       if (p.opts.values.size () == p.opts.colors.size ())
         {

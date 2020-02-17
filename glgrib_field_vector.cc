@@ -197,6 +197,32 @@ const
 
 }
 
+class arrow_t
+{
+public:
+  arrow_t (int _numPoints, const std::vector<unsigned int> & _ind) 
+      : ind (_ind), numPoints (_numPoints), fillable (true) {}
+  arrow_t (int _numPoints, GLenum _linemode = GL_LINE_STRIP) 
+      : numPoints (_numPoints), fillable (false), linemode (_linemode) {}
+  arrow_t (const std::vector<unsigned int> & _ind) 
+      : ind (_ind), fillable (false), linemode (GL_LINES), numPoints (_ind.size ()) {}
+  // Shapes of arrows
+  std::vector<unsigned int> ind = {0, 0, 0};
+  // Number of points for each arrow kind
+  int numPoints;
+  bool fillable;
+  GLenum linemode = GL_LINE_STRIP;
+  void render (int numberOfPoints, bool fill) const
+  {
+    if (fillable && fill)
+      glDrawElementsInstanced (GL_TRIANGLES, ind.size (), GL_UNSIGNED_INT, &ind[0], numberOfPoints);
+    else if (linemode == GL_LINE_STRIP) 
+      glDrawArraysInstanced (GL_LINE_STRIP, 0, numPoints, numberOfPoints); 
+    else if (linemode == GL_LINES)
+      glDrawElementsInstanced (GL_LINES, numPoints, GL_UNSIGNED_INT, &ind[0], numberOfPoints);
+  }
+};
+
 void glgrib_field_vector::renderArrow (const glgrib_view & view, 
                                        const glgrib_options_light & light) 
 const
@@ -224,64 +250,59 @@ const
   program->set ("valmax_d", valmax[1]);
   program->set ("valmin", valmin[0]);
   program->set ("valmax", valmax[0]);
-  program->set ("height_scale", opts.geometry.height.scale);
-  program->set ("color0", opts.vector.arrow.color);
   program->set ("vscale", d.vscale);
-  program->set ("arrow_fixed", opts.vector.arrow.fixed.on);
-  program->set ("arrow_min", opts.vector.arrow.min);
-  program->set ("head", opts.vector.arrow.head_size);
+  program->set ("height_scale", opts.geometry.height.scale);
 
+  const arrow_t * arrow = NULL;
 
-  class arrow_t
-  {
-  public:
-    arrow_t (int _numPoints, const std::vector<unsigned int> & _ind) 
-        : ind (_ind), numPoints (_numPoints), fillable (true) {}
-    arrow_t (int _numPoints, GLenum _linemode = GL_LINE_STRIP) 
-        : numPoints (_numPoints), fillable (false), linemode (_linemode) {}
-    arrow_t (const std::vector<unsigned int> & _ind) 
-        : ind (_ind), fillable (false), linemode (GL_LINES), numPoints (_ind.size ()) {}
-    // Shapes of arrows
-    std::vector<unsigned int> ind = {0, 0, 0};
-    // Number of points for each arrow kind
-    int numPoints;
-    bool fillable;
-    GLenum linemode = GL_LINE_STRIP;
-    void render (int numberOfPoints, bool fill) const
+  if (opts.vector.arrow.on)
     {
-      if (fillable && fill)
-        glDrawElementsInstanced (GL_TRIANGLES, ind.size (), GL_UNSIGNED_INT, &ind[0], numberOfPoints);
-      else if (linemode == GL_LINE_STRIP) 
-        glDrawArraysInstanced (GL_LINE_STRIP, 0, numPoints, numberOfPoints); 
-      else if (linemode == GL_LINES)
-        glDrawElementsInstanced (GL_LINES, numPoints, GL_UNSIGNED_INT, &ind[0], numberOfPoints);
+      program->set ("color0", opts.vector.arrow.color);
+      program->set ("arrow_fixed", opts.vector.arrow.fixed.on);
+      program->set ("arrow_min", opts.vector.arrow.min);
+      program->set ("head", opts.vector.arrow.head_size);
+     
+      static const std::vector<arrow_t> arrows =
+      {
+        arrow_t (5),
+        arrow_t (8, {2, 1, 6, 2, 3, 4}),
+        arrow_t (8, {0, 2, 1}),
+      };
+     
+      int kind = std::min (int (arrows.size () - 1), std::max (opts.vector.arrow.kind, 0));
+
+      program->set ("arrow_kind", kind);
+
+      arrow = &arrows[kind];
     }
-  };
+  else if (opts.vector.barb.on)
+    {
+      program->set ("arrow_fixed", true);
+      program->set ("color0", opts.vector.barb.color);
 
-  static const std::vector<arrow_t> arrows =
-  {
-    arrow_t (5),
-    arrow_t (8, {2, 1, 6, 2, 3, 4}),
-    arrow_t (8, {0, 2, 1}),
-    arrow_t ({
-               0, 1, // Line
-               2, 3, // First barb
-               4, 5, // Second barb
-               6, 7, // Third bard
-               8, 9, // Fourth barb
-               10, 11, // Fifth barb
-               12, 13, // Line
-               14, 15, 15, 16, 16, 17, // First pennant (triangle)
-               18, 19, 19, 20, 20, 21, // Second pennant 
-             }),
-  };
+      static const std::vector<arrow_t> arrows =
+      {
+        arrow_t ({
+                   0, 1, // Line
+                   2, 3, // First barb
+                   4, 5, // Second barb
+                   6, 7, // Third bard
+                   8, 9, // Fourth barb
+                   10, 11, // Fifth barb
+                   12, 13, // Line
+                   14, 15, 15, 16, 16, 17, // First pennant (triangle)
+                   18, 19, 19, 20, 20, 21, // Second pennant 
+                 }),
+      };
 
-  int kind = std::min (int (arrows.size ()), std::max (opts.vector.arrow.kind, 0));
-  program->set ("arrow_kind", kind);
+      program->set ("arrow_kind", 3);
+      arrow = &arrows[0];
+
+    }
 
   glBindVertexArray (VertexArrayIDvector);
 
-  arrows[kind].render (numberOfPoints, opts.vector.arrow.fill.on);
+  arrow->render (numberOfPoints, opts.vector.arrow.fill.on);
 
   glBindVertexArray (0);
 
@@ -290,7 +311,7 @@ const
 
 void glgrib_field_vector::render (const glgrib_view & view, const glgrib_options_light & light) const
 {
-  if (opts.vector.arrow.on)
+  if (opts.vector.arrow.on || opts.vector.barb.on)
     renderArrow (view, light);
   if (opts.vector.norm.on)
     renderNorms (view, light);

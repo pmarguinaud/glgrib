@@ -531,6 +531,14 @@ public:
     DESC (arrow.fill.on,   Fill arrow);
     DESC (arrow.fixed.on,  Fixed sized arrow);
     DESC (arrow.min,       Vector min value);
+    DESC (barb.on,         Enable barbs);
+    DESC (barb.color,      Barbs color);
+    DESC (barb.angle,      Barbs angle);
+    DESC (barb.length,     Barbs length);
+    DESC (barb.dleng,      Barbs length);
+    DESC (barb.levels,     Barbs levels);
+    DESC (barb.circle.level,   Value under which we draw a circle);
+    DESC (barb.pennant.levels, Pennants levels);
   }
   struct
   {
@@ -548,6 +556,23 @@ public:
     } fixed;
     float min = 0.0f;
   } arrow;
+  struct
+  {
+    bool on = false;
+    glgrib_option_color color;
+    float angle  = 60.0;
+    float length = 0.25;
+    float dleng  = 0.1;
+    std::vector<float> levels = {0., 5., 10., 15., 20., 25.};
+    struct
+    {
+      float level = 1.0f;
+    } circle;
+    struct
+    {
+      std::vector<float> levels = {0., 25., 50., 75.};
+    } pennant;
+  } barb;
   struct
   {
     bool on = true;

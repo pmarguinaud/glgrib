@@ -97,6 +97,7 @@ vec3 getPos3 (float N)
 //  return pos;
 
 
+  // Circle
   if (N < circthres)
     {
       int k = gl_VertexID;
@@ -107,6 +108,7 @@ vec3 getPos3 (float N)
     }
 
 
+  // Number of pennants
   int npenn = 0;
 
   for (int i = 0; i < pennthresmax; i++)
@@ -117,22 +119,29 @@ vec3 getPos3 (float N)
 
   N = N - pennthres[npenn];
 
+  // Barb line
   if ((0 <= gl_VertexID) && (gl_VertexID <= 1))
     {
       pos = vec3 (-gl_VertexID, +0.0, +0.0);
     }
+  // Barb
   else if ((barbvertexmin <= gl_VertexID) && (gl_VertexID <= barbvertexmax))
     {
+      // Barb rank
       int barbind = (gl_VertexID-barbvertexmin) / 2;
+      // Point id (=0, or =1)
       int barbext = (gl_VertexID-barbvertexmin) % 2;
 
       float Nmax = barbthres[barbind+1];
       float Nmin = barbthres[barbind+0];
+
+      // Barb length
       float n = min (max (0, N - Nmin), Nmax - Nmin) / (Nmax - Nmin);
 
       pos = vec3 (-1.0 + barbind * barbdleng - n * barbxleng * barbext, 
                   n * barbyleng * barbext, +0.0);
     }
+  // Extend barb line
   else if ((linevertexmin <= gl_VertexID) && (gl_VertexID <= linevertexmax) && (npenn > 0))
     {
       if (gl_VertexID == 12)
@@ -140,11 +149,15 @@ vec3 getPos3 (float N)
       else if (gl_VertexID == 13)
         pos = vec3 (-1.0f - barbxleng, 0.0f, 0.0f);
     }
+  // Pennants
   else if ((pennvertexmin <= gl_VertexID) && (gl_VertexID <= pennvertexmax))
     {
+      // Pennant rank
       int pennind = (gl_VertexID-pennvertexmin) / 4;
+      // Point id (0 <= ... <= 3)
       int pennext = (gl_VertexID-pennvertexmin) % 4;
 
+      // If pennant visible
       if (pennind < npenn)
         {
           if (pennext == 0)

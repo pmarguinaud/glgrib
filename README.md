@@ -1089,3 +1089,20 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].vector.barb.color brown --field[0].vector.barb.circle.level 
     15 
 ```
+## Wind + geopotential                                               -- windgeop
+![](test.ref/windgeop/TEST_0000.png)
+
+```
+    --field[0].palette.colors black --field[0].contour.widths 1 2 1 1 2 1 
+    1 2 1 1 2 --field[0].contour.levels 89000 89500 90000 90500 91000 
+    91500 92000 92500 93000 93500 94000 94500 95000 95500 96000 96500 
+    97000 97500 98000 98500 99000 99500 --field[0].path 
+    testdata/ghtuv.grib%shortName="z" --field[0].type CONTOUR --land.on 
+    --landscape.on --landscape.color white --landscape.scale 0.999 
+    --field[1]-{ --type vector --path testdata/ghtuv.grib%shortName="u" 
+    testdata/ghtuv.grib%shortName="v" --vector-{ --norm.off --arrow.off 
+    --barb.on --barb.color blue --density 20 --scale 0.4 }- --scale 1.001 
+    }- --window.width 1200 --view.lat 46.2 --view.lon -10 --view.fov 5 
+    --view.projection POLAR_NORTH --grid.on --grid.color black 
+    --grid.resolution 18 
+```

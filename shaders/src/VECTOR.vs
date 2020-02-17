@@ -68,17 +68,15 @@ vec3 getPos2 ()
 }
 
 
-const float barbangle = 60.0;
-const float barlength = 0.25;
-const float barbxleng = barlength * cos (barbangle * deg2rad);
-const float barbyleng = barlength * sin (barbangle * deg2rad);
-const float barbdleng = 0.1;
+uniform float barbxleng;
+uniform float barbyleng;
+uniform float barbdleng;
 
-const float circthres = 1.0f;
-const int barbthresmax = 5;
-const float barbthres[6] = {0., 5., 10., 15., 20., 25.};
-const int pennthresmax = 2;
-const float pennthres[4] = {0., 25., 50., 75.};
+uniform float circthres;
+uniform int barbthresmax;
+uniform float barbthres[10];
+uniform int pennthresmax;
+uniform float pennthres[10];
 
 vec3 getPos3 (float N)
 {

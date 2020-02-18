@@ -598,6 +598,10 @@ public:
     DESC (linear.on,   Linear colorbar display);
     DESC (scale,       Scale for colorbar figures);
     DESC (offset,      Offset for colorbar figures);
+    DESC (rainbow.on,  Generate rainbow palette);
+    DESC (rainbow.direct.on,  Direct/indirect rainbow);
+    DESC (generate.on,        Generate values);
+    DESC (generate.levels,    Number of values to generate);
   }
   string name = "default";
   float min = defaultMin;
@@ -608,6 +612,19 @@ public:
   {
     bool on = false;
   } linear;
+  struct
+  {
+    bool on = false;
+    struct
+    {
+      bool on = false;
+    } direct;
+  } rainbow;
+  struct
+  {
+    bool on = false;
+    int levels = 10;
+  } generate;
   float scale = 1.0f;
   float offset = 0.0f;
 };

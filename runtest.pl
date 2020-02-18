@@ -172,6 +172,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
   "Wind Australia                                                   " ,  windaustralia4      => '--field[0].path testdata/uv200.grib%paramId=131 testdata/uv200.grib%paramId=132 --field[0].type VECTOR --coast.on --view.lat -25 --view.lon 140 --view.fov 8 --field[0].vector.norm.off --land.on --landscape.on --landscape.color white --landscape.scale 0.999 --coast.on --coast.lines.color black --coast.lines.path coastlines/gshhg/GSHHS_bin/gshhs_i.b --field[0].vector.density 20 --field\[0\].vector.scale 0.5 --window.width 1200 --field\[0\].scale 1.001 --field[0].vector.arrow.off --field[0].vector.barb.on  --field[0].vector.barb.color brown  --field[0].vector.barb.circle.level 15',
   "Wind + geopotential                                              " ,  windgeop            => '--field[0].palette.colors black --field[0].contour.widths 1 2 1 1 2 1 1 2 1 1 2 --field[0].contour.levels 89000 89500 90000 90500 91000 91500 92000 92500 93000 93500 94000 94500 95000 95500 96000 96500 97000 97500 98000 98500 99000 99500  --field[0].path testdata/ghtuv.grib%\'shortName="z"\' --field[0].type CONTOUR --land.on  --landscape.on --landscape.color white --landscape.scale 0.999  --field[1]-{ --type vector --path testdata/ghtuv.grib%\'shortName="u"\' testdata/ghtuv.grib%\'shortName="v"\' --vector-{ --norm.off --arrow.off --barb.on --barb.color blue --density 20 --scale 0.4 }- --scale 1.001 }-  --window.width 1200 --view.lat 46.2 --view.lon -10  --view.fov 5 --view.projection POLAR_NORTH  --grid.on  --grid.color black --grid.resolution 18',
   "Simple shading                                                   " ,  shading             => '--field[0].path testdata/t850.grb  --field[0].palette.values 245.15 297.15 --field[0].palette.generate.on --field[0].palette.generate.levels 53 --field[0].palette.colors blue red  --colorbar.on --window.width 1200  --field[0].palette.rainbow.on --field[0].palette.rainbow.direct.off --field[0].palette.offset -273.15 --coast.on  --coast.lines.color black  --grid.on --grid.color black  --grid.labels.on --grid.labels.font.color.foreground black --grid.labels.font.color.background white  --grid.labels.font.scale 0.04 --window.width 1200 --view.lat 34 --view.lon 20',
+  "Coastlines                                                       " ,  coastlines          => '--landscape.on --landscape.scale 0.999  --land.on  --landscape.color white --rivers.on --rivers.lines.color blue --border.on --border.lines.color red --coast.on --coast.lines.color black  --coast.lines.path "coastlines/gshhg/GSHHS_bin/gshhs_i.b" --land.layers[0].path coastlines/shp/GSHHS_i_L1.shp --land.layers[1].path coastlines/shp/GSHHS_i_L2.shp  --view.fov 5  --view.lat 44.5394 --view.lon    27.5924  --window.width 1200',
 );
 
 
@@ -179,6 +180,7 @@ my @t = @test;
 while (my ($desc, $name, $opts) = splice (@t, 0, 3))
   {
     $desc =~ s/\s*$//o;
+    $test{$name} && die ("Duplicate test: $name\n");
     $test{$name} = [$desc, [&quotewords ('\s+', 0, $opts)]];
   }
 

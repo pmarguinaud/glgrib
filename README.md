@@ -1120,3 +1120,15 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --grid.labels.font.color.background white --grid.labels.font.scale 
     0.04 --window.width 1200 --view.lat 34 --view.lon 20 
 ```
+## Coastlines                                                        -- coastlines
+![](test.ref/coastlines/TEST_0000.png)
+
+```
+    --landscape.on --landscape.scale 0.999 --land.on --landscape.color 
+    white --rivers.on --rivers.lines.color blue --border.on 
+    --border.lines.color red --coast.on --coast.lines.color black 
+    --coast.lines.path coastlines/gshhg/GSHHS_bin/gshhs_i.b 
+    --land.layers[0].path coastlines/shp/GSHHS_i_L1.shp 
+    --land.layers[1].path coastlines/shp/GSHHS_i_L2.shp --view.fov 5 
+    --view.lat 44.5394 --view.lon 27.5924 --window.width 1200 
+```

@@ -132,6 +132,7 @@ glgrib_palette glgrib_palette::create
 
       p.rgba_mis = glgrib_option_color (0, 0, 0, 0);
 
+      // Generate values
       if (p.opts.generate.on)
         {
           const int n = p.opts.generate.levels;
@@ -147,6 +148,7 @@ glgrib_palette glgrib_palette::create
 	  p.opts.values = values;
         }
       
+      // Generate rainbow (HSV rotation)
       if (p.opts.rainbow.on)
         {
           hsva_t hsva1 = rgba2hsva (p.opts.colors.front ());
@@ -156,21 +158,14 @@ glgrib_palette glgrib_palette::create
 
 	  colors.push_back (p.opts.colors.front ());
 
-	  float h1, h2;
+          float h1 = hsva1.h, h2 = hsva2.h;
 
-	  bool direct = p.opts.rainbow.direct.on;
-	  if (direct)
-            {
-              h1 = hsva1.h; h2 = hsva2.h;
-	      while (h2 < h1)
-                h2 += 360.f;
-	    }
+	  if (p.opts.rainbow.direct.on)
+	    while (h2 < h1)
+              h2 += 360.f;
 	  else
-            {
-              h1 = hsva1.h; h2 = hsva2.h;
-              while (h2 > h1)
-                h2 -= 360.0f;
-	    }
+            while (h2 > h1)
+              h2 -= 360.0f;
 
 
 	  const int n = p.opts.values.size ();
@@ -191,6 +186,7 @@ glgrib_palette glgrib_palette::create
 	  p.opts.colors = colors;
 	}
 
+      // Generate radient
       if (p.opts.values.size () == p.opts.colors.size ())
         {
           for (int i = 1, j = 0; i < 256; i++)
@@ -220,6 +216,7 @@ glgrib_palette glgrib_palette::create
                 }
             }
         }
+      // Discrete
       else
         {
           for (int i = 1, j = 0; i < 256; i++)

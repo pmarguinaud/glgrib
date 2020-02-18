@@ -1132,3 +1132,16 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --land.layers[1].path coastlines/shp/GSHHS_i_L2.shp --view.fov 5 
     --view.lat 44.5394 --view.lon 27.5924 --window.width 1200 
 ```
+## Rain, southern America                                            -- southamerica
+![](test.ref/southamerica/TEST_0000.png)
+
+```
+    --field[0].path testdata/total_precipitation.grib --field[0].palette-{ 
+    --values 0. 0.0005 0.001 0.002 0.005 0.010 0.020 0.050 0.100 0.200 
+    0.250 --colors white #ffffd9 #edf8b1 #c7e9b4 #7fcdbb #41b6c4 #1d91c0 
+    #225ea8 #253494 #081d58 }- --coast.on --coast.lines.color black 
+    --field[0].palette.linear.on 1000. --colorbar.on --window.width 1200 
+    --colorbar.font.color.foreground black --view.projection LATLON 
+    --view.fov 4 --view.lat -20.1373 --view.lon -60.4499 --grid.on 
+    --grid.color black 
+```

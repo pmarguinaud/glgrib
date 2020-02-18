@@ -186,7 +186,7 @@ glgrib_palette glgrib_palette::create
 	  p.opts.colors = colors;
 	}
 
-      // Generate radient
+      // Generate gradient
       if (p.opts.values.size () == p.opts.colors.size ())
         {
           for (int i = 1, j = 0; i < 256; i++)

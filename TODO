@@ -37,3 +37,13 @@ in VS_OUT
 
 Make VAOs object with automatic destruction.
 Use nullptr
+
+Coordinates on edges of window.
+
+Start with multiple windows. 
+
+Position windows.
+
+Diff mode on FA.
+
+

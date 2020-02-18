@@ -1106,3 +1106,17 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.projection POLAR_NORTH --grid.on --grid.color black 
     --grid.resolution 18 
 ```
+## Simple shading                                                    -- shading
+![](test.ref/shading/TEST_0000.png)
+
+```
+    --field[0].path testdata/t850.grb --field[0].palette.values 245.15 
+    297.15 --field[0].palette.generate.on 
+    --field[0].palette.generate.levels 53 --field[0].palette.colors blue 
+    red --colorbar.on --window.width 1200 --field[0].palette.rainbow.on 
+    --field[0].palette.rainbow.direct.off --field[0].palette.offset 
+    -273.15 --coast.on --coast.lines.color black --grid.on --grid.color 
+    black --grid.labels.on --grid.labels.font.color.foreground black 
+    --grid.labels.font.color.background white --grid.labels.font.scale 
+    0.04 --window.width 1200 --view.lat 34 --view.lon 20 
+```

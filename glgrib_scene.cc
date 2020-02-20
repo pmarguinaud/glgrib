@@ -101,6 +101,9 @@ void glgrib_scene::display () const
   if (d.opts.scene.title.on)
     d.strtitle.render (d.MVP_L);
 
+  if (d.opts.ticks.on)
+    d.ticks.render (d.MVP_L);
+
   for (auto str : d.str)
     str.render (d.MVP_R);
 
@@ -211,7 +214,9 @@ void glgrib_scene::update_view ()
           o.lon = lon;
         }
     }
+
   d.view.setOptions (o);
+  d.ticks.resize (d.view);
 }
 
 void glgrib_scene::update_interpolation ()
@@ -326,6 +331,7 @@ void glgrib_scene::setup (const glgrib_options & o)
 
   setLandscapeOptions (d.opts.landscape);
   setGridOptions (d.opts.grid);
+  setTicksOptions (d.opts.ticks);
   setLandOptions (d.opts.land);
   setCoastOptions (d.opts.coast);
   setBorderOptions (d.opts.border);
@@ -383,6 +389,7 @@ void glgrib_scene::resize ()
   d.rivers.resize (d.view);
   d.departements.resize (d.view);
   d.grid.resize (d.view);
+  d.ticks.resize (d.view);
   for (auto f : fieldlist)
     if (f)
       f->resize (d.view);
@@ -395,6 +402,7 @@ glgrib_options glgrib_scene::getOptions () const
   o.view           = d.view.getOptions ();
   o.landscape      = d.landscape.getOptions ();
   o.grid           = d.grid.getOptions ();
+  o.ticks          = d.ticks.getOptions ();
   o.coast          = d.coast.getOptions ();
   o.border         = d.border.getOptions ();
   o.rivers         = d.rivers.getOptions ();
@@ -433,6 +441,13 @@ void glgrib_scene::setGridOptions (const glgrib_options_grid & o)
   d.grid.clear ();
   if (o.on)
     d.grid.setup (o);
+}
+
+void glgrib_scene::setTicksOptions (const glgrib_options_ticks & o)
+{
+  d.ticks.clear ();
+  if (o.on)
+    d.ticks.setup (o);
 }
 
 void glgrib_scene::setCoastOptions (const glgrib_options_coast & o)

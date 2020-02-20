@@ -11,6 +11,7 @@
 #include "glgrib_program.h"
 #include "glgrib_landscape.h"
 #include "glgrib_grid.h"
+#include "glgrib_ticks.h"
 #include "glgrib_field.h"
 #include "glgrib_coast.h"
 #include "glgrib_border.h"
@@ -86,6 +87,7 @@ public:
       glgrib_border border;
       glgrib_rivers rivers;
       glgrib_grid grid;
+      glgrib_ticks ticks;
       glgrib_departements departements;
       glgrib_cities cities;
       glgrib_test test;
@@ -118,6 +120,7 @@ public:
   void setViewOptions (const glgrib_options_view &);
   void setLandscapeOptions (const glgrib_options_landscape &);
   void setGridOptions (const glgrib_options_grid &);
+  void setTicksOptions (const glgrib_options_ticks &);
   void setLandOptions (const glgrib_options_land &);
   void setGridColorOptions (const glgrib_option_color &);
   void setGridScaleOptions (float);

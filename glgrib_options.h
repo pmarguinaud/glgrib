@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <string.h>
 #include <time.h>
+#include <string.h>
 
 namespace glgrib_options_util
 {
@@ -754,6 +755,24 @@ public:
 };
 
 
+class glgrib_options_ticks : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on,                Display ticks);
+    DESC (format,            Format for tick labels);
+    DESC (dlon,              Longitude interval);
+    DESC (dlat,              Latitude interval);
+    INCLUDE (font);
+  }
+  bool on = false;
+  glgrib_options_font font;
+  std::string format = "%+06.2f";
+  float dlon = 10.0f;
+  float dlat = 10.0f;
+};
+
 class glgrib_options_grid : public glgrib_options_base
 {
 public:
@@ -1200,6 +1219,14 @@ public:
     float xmin = 0.0f, xmax = 1.0f, ymin = 0.0f, ymax = 1.0f;
     bool on = true;
   } clip;
+
+  friend bool operator== (const glgrib_options_view & v1, const glgrib_options_view & v2)
+  {
+#define EQ(a) (v1.a == v2.a)
+#define EQ1(a) (memcmp ((const void *)&v1.a, (const void *)&v2.a, sizeof (v1.a)) == 0)
+    return EQ (projection) && EQ (transformation) && EQ (distance) 
+        && EQ (lat) && EQ (lon) && EQ (fov) && EQ1 (center) && EQ1 (clip);
+  }
 };
 
 
@@ -1407,6 +1434,7 @@ public:
     INCLUDE (window);
     INCLUDE (landscape);
     INCLUDE (grid);
+    INCLUDE (ticks);
     INCLUDE (scene);
     INCLUDE (view);
     INCLUDE (colorbar);
@@ -1431,6 +1459,7 @@ public:
   glgrib_options_window window;
   glgrib_options_landscape landscape;
   glgrib_options_grid grid;
+  glgrib_options_ticks ticks;
   glgrib_options_scene scene;
   glgrib_options_view view;
   glgrib_options_font font;

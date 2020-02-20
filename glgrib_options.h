@@ -1222,10 +1222,23 @@ public:
 
   friend bool operator== (const glgrib_options_view & v1, const glgrib_options_view & v2)
   {
-#define EQ(a) (v1.a == v2.a)
-#define EQ1(a) (memcmp ((const void *)&v1.a, (const void *)&v2.a, sizeof (v1.a)) == 0)
-    return EQ (projection) && EQ (transformation) && EQ (distance) 
-        && EQ (lat) && EQ (lon) && EQ (fov) && EQ1 (center) && EQ1 (clip);
+#define EQ(a) if (v1.a != v2.a) return false;
+    EQ (projection);
+    EQ (transformation);
+    EQ (lon);
+    EQ (lat);
+    EQ (fov);
+    EQ (distance);
+    EQ (center.on);
+    EQ (clip.on);
+    EQ (clip.dlon);
+    EQ (clip.dlat);
+    EQ (clip.xmin);
+    EQ (clip.xmax);
+    EQ (clip.ymin);
+    EQ (clip.ymax);
+#undef EQ
+    return true;
   }
 };
 
@@ -1469,4 +1482,6 @@ public:
 };
 
 
-
+#undef DESC
+#undef INCLUDE
+#undef INCLUDE_H

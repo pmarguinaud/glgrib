@@ -41,9 +41,9 @@ void glgrib_ticks::render (const glm::mat4 & MVP) const
   if (! ready)
     return;
 
-//labels_e.render (MVP);
+  labels_e.render (MVP);
 //labels_w.render (MVP);
-  labels_n.render (MVP);
+//labels_n.render (MVP);
   labels_s.render (MVP);
 }
 
@@ -69,9 +69,22 @@ void glgrib_ticks::createStr (glgrib_string::align_t align, const glgrib_view & 
 
   std::vector<xyllv_t> xyllv;
 
-  for (int i = 0; i < ny; i++)
+  const float dyminf = 0.00f, dymaxf = 0.00f;
+
+  int nxy;
+
+  switch (align)
     {
-      float x, y, lon, lat;
+      case glgrib_string::E: nxy = ny; break;
+      case glgrib_string::W: nxy = ny; break;
+      case glgrib_string::N: nxy = nx; break;
+      case glgrib_string::S: nxy = nx; break;
+    }
+         
+
+  for (int i = 0; i < nxy; i++)
+    {
+      float x, y, lon = 0.0f, lat = 0.0f;
 
       auto cy = [&] () 
       {
@@ -89,8 +102,8 @@ void glgrib_ticks::createStr (glgrib_string::align_t align, const glgrib_view & 
         {
           case glgrib_string::E: x = vopts.clip.xmax; y = cy (); break;
           case glgrib_string::W: x = vopts.clip.xmin; y = cy (); break;
-          case glgrib_string::N: x = cx (); y = vopts.clip.ymax; break;
-          case glgrib_string::S: x = cx (); y = vopts.clip.ymin; break;
+          case glgrib_string::N: x = cx (); y = vopts.clip.ymax - dymaxf; break;
+          case glgrib_string::S: x = cx (); y = vopts.clip.ymin + dyminf; break;
         }
          
       int c = view.get_latlon_from_screen_coords (x, y, &lat, &lon);
@@ -103,7 +116,7 @@ void glgrib_ticks::createStr (glgrib_string::align_t align, const glgrib_view & 
   label->clear ();
 
   std::vector<std::string> S;
-  std::vector<float> X, Y;
+  std::vector<float> X, Y, A;
 
   for (int i = 0; i < xyllv.size ()-1; i++)
     if (xyllv[i+0].valid && xyllv[i+1].valid)
@@ -131,6 +144,7 @@ void glgrib_ticks::createStr (glgrib_string::align_t align, const glgrib_view & 
                 	S.push_back (s);
                 	X.push_back (x * ratio);
                 	Y.push_back ((y0 * (1.0f - a) + y1 * a) / height);
+                        A.push_back (0.0f);
                       }
                   }
 	      }
@@ -164,11 +178,12 @@ void glgrib_ticks::createStr (glgrib_string::align_t align, const glgrib_view & 
                       {
                         char tmp[32];
                 	float a = (lon - lon0) / (lon1 - lon0);
-                	sprintf (tmp, opts.format.c_str (), fmod (lon, 360.0f));
+                	sprintf (tmp, opts.format.c_str (), fmod (lon + 180.0f, 360.0f) - 180.0f);
                 	std::string s (tmp);
                 	S.push_back (s);
                 	X.push_back ((x0 * (1.0f - a) + x1 * a) / width * ratio);
                 	Y.push_back (y);
+                        A.push_back (0.0f);
 			std::cout << " S, X, Y = " << S.back () << ", " << X.back () << ", " << Y.back () << std::endl;
                       }
                   }
@@ -178,7 +193,7 @@ void glgrib_ticks::createStr (glgrib_string::align_t align, const glgrib_view & 
 
       }
 
-  label->setup2D (font, S, X, Y, opts.font.scale, align);
+  label->setup2D (font, S, X, Y, opts.font.scale, align, A);
 
   label->setForegroundColor (opts.font.color.foreground);
   label->setBackgroundColor (opts.font.color.background);
@@ -198,7 +213,7 @@ void glgrib_ticks::resize (const glgrib_view & view)
   width = view.getWidth (); 
   height = view.getHeight ();
 
-//createStr (glgrib_string::E, view, &labels_e);
+  createStr (glgrib_string::E, view, &labels_e);
 //createStr (glgrib_string::W, view, &labels_w);
 //createStr (glgrib_string::N, view, &labels_n);
   createStr (glgrib_string::S, view, &labels_s);

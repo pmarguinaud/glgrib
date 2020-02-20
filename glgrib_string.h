@@ -43,7 +43,7 @@ public:
   void setup2D (const_glgrib_font_ptr, const std::vector<std::string> &, 
 	       const std::vector<float> & = std::vector<float>{}, 
 	       const std::vector<float> & = std::vector<float>{}, 
-	       float = 1.0f, align_t = SW);
+	       float = 1.0f, align_t = SW, const std::vector<float> & = std::vector<float>{});
   void setup3D (const_glgrib_font_ptr, const std::vector<std::string> &, 
 	       const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
 	       const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},

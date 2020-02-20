@@ -70,9 +70,11 @@ void glgrib_string::setup2D (const_glgrib_font_ptr ff, const std::vector<std::st
 }
 
 void glgrib_string::setup2D (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
-                            const std::vector<float> & x, const std::vector<float> & y, float s, align_t align)
+                            const std::vector<float> & x, const std::vector<float> & y, float s, align_t align,
+                            const std::vector<float> & a)
 {
-  setup (ff, str, x, y, s, align);
+  setup (ff, str, x, y, s, align,
+         std::vector<float>{}, std::vector<float>{}, std::vector<float>{}, a);
 }
 
 void glgrib_string::setup (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
@@ -143,10 +145,23 @@ void glgrib_string::setup (const_glgrib_font_ptr ff, const std::vector<std::stri
       else if (d.align & NY)
         yy = yy - dym;
      
-      float X = j < _X.size () ?  _X[j] : 0.0f;
-      float Y = j < _Y.size () ?  _Y[j] : 0.0f;
-      float Z = j < _Z.size () ?  _Z[j] : 0.0f;
-      float A = j < _A.size () ?  _A[j] : 0.0f;
+      float X = 0.0f, Y = 0.0f, Z = 0.0f, A = 0.0f;
+      
+      // 2D setup : average position
+      if (j < _X.size ())
+        X = _X[j];
+      else
+        X = xx + dx * len / 2;
+
+      if (j < _Y.size ())
+        Y = _Y[j];
+      else
+        Y = yy + dym / 2;
+
+      if (j < _Z.size ())
+        Z = _Z[j];
+
+      A = j < _A.size () ?  _A[j] : 0.0f;
 
       for (int i = 0; i < len; i++, ii++)
         {

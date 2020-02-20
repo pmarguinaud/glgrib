@@ -365,6 +365,7 @@ void glgrib_scene::setup (const glgrib_options & o)
         }
     }
 
+  d.view.calcMVP ();
   resize ();
 }
 

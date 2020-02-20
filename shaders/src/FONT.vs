@@ -88,7 +88,14 @@ void main ()
     }
   else 
     {
-      gl_Position =  MVP * vec4 (0., pos2.x, pos2.y, 1.);
+      float cosA = cos (A), sinA = sin (A);
+      float Xr = letterXYZ.x, Yr = letterXYZ.y;
+      vec2 rpos2 = vec2
+      (
+        Xr + (+ cosA * (pos2.x - Xr) - sinA * (pos2.y - Yr)),
+        Yr + (+ sinA * (pos2.x - Xr) + cosA * (pos2.y - Yr)) 
+      );
+      gl_Position =  MVP * vec4 (0., rpos2.x, rpos2.y, 1.);
     }
   fragmentPos = pos2;
   fletterVal  = letterVal;

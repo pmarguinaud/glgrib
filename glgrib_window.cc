@@ -899,6 +899,9 @@ void glgrib_window::create (const glgrib_options & o)
       PR (GL_VERSION);
       PR (GL_EXTENSIONS);
     }
+
+  if ((opts.position.x != -1) && (opts.position.y != -1))
+    glfwSetWindowPos (window, opts.position.x, opts.position.y);
 }
 
 void glgrib_window::createGFLWwindow (GLFWwindow * context)

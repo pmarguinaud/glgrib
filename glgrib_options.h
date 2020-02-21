@@ -1012,9 +1012,15 @@ public:
     INCLUDE (offscreen);
     DESC (info.on,               Show hardware info);
     DESC_H (fix_landscape.on,    Fix landscape position);
+    DESC (position.x,            Window x position);
+    DESC (position.y,            Window y position);
   }
   int     width   = 800;
   int     height  = 800;
+  struct
+  {
+    int x = -1, y = -1;
+  } position;
   struct
   {
     bool on = true;

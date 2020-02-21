@@ -48,8 +48,6 @@ void glgrib_scene::display_obj (const glgrib_object * obj) const
 
 void glgrib_scene::display () const
 {
-  d.view.calcMVP ();  
-
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   d.test.render (d.view, d.opts.scene.light);
@@ -162,7 +160,6 @@ static float ffmod (float x, float y)
 void glgrib_scene::update_view ()
 {
   glgrib_options_view o = d.view.getOptions ();
-  d.view.calcMVP ();  
 
   if (d.opts.scene.rotate_earth.on)
     o.lon += 1.;
@@ -216,6 +213,7 @@ void glgrib_scene::update_view ()
     }
 
   d.view.setOptions (o);
+
   d.ticks.resize (d.view);
 }
 
@@ -313,6 +311,7 @@ void glgrib_scene::setup (const glgrib_options & o)
   d.test.setup ();
 
   setViewport (d.opts.window.width, d.opts.window.height);
+  setViewOptions (d.opts.view);
   setLightOptions (d.opts.scene.light);
   setImageOptions (d.opts.scene.image);
 
@@ -337,7 +336,6 @@ void glgrib_scene::setup (const glgrib_options & o)
   setBorderOptions (d.opts.border);
   setRiversOptions (d.opts.rivers);
   setDepartementsOptions (d.opts.departements);
-  setViewOptions (d.opts.view);
 
   for (auto f : d.opts.field)
     fieldlist.push_back ((glgrib_field *)NULL);
@@ -365,7 +363,6 @@ void glgrib_scene::setup (const glgrib_options & o)
         }
     }
 
-  d.view.calcMVP ();
   resize ();
 }
 

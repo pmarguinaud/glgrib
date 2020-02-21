@@ -766,7 +766,6 @@ void glgrib_window::centerViewAtCursorPos ()
   if (get_latlon_from_cursor (&o.lat, &o.lon))
     {
       scene.d.view.setOptions (o);
-      scene.d.view.calcMVP ();
       float xpos, ypos;
       scene.d.view.get_screen_coords_from_latlon (&xpos, &ypos, o.lat, o.lon);
       glfwSetCursorPos (window, xpos, ypos);

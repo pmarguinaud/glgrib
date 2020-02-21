@@ -51,7 +51,7 @@ void glgrib_view::setMVP (glgrib_program * program) const
     }
 }
 
-void glgrib_view::calcMVP () const
+void glgrib_view::calcMVP () 
 {
   glgrib_projection::type pt = glgrib_projection::typeFromString (opts.projection);
   ps.setType (pt);
@@ -100,6 +100,7 @@ void glgrib_view::setViewport (int w, int h)
 {
   width = w;
   height = h;
+  calcMVP ();
 }
 
 int glgrib_view::get_screen_coords_from_latlon (float * xpos, float * ypos, float lat, float lon) const
@@ -189,6 +190,7 @@ float glgrib_view::pixel_to_dist_at_nadir (float pixels) const
 void glgrib_view::setup (const glgrib_options_view & o)
 {
   opts = o;
+  calcMVP ();
 }
 
 glgrib_view::transform_type glgrib_view::typeFromString (std::string str)

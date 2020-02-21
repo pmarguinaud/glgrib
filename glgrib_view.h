@@ -22,7 +22,7 @@ public:
 
   void setMVP (glgrib_program *) const;
   void delMVP (glgrib_program *) const;
-  void calcMVP () const;
+  void calcMVP ();
   void setViewport (int, int);
   glm::vec3 project (const glm::vec3 & xyz) const
   {
@@ -55,13 +55,13 @@ public:
   const glm::mat4 & getMVP () const { return MVP; }
 
   const glgrib_options_view & getOptions () const { return opts; }
-  void setOptions (const glgrib_options_view & o) { opts = o; }
+  void setOptions (const glgrib_options_view & o) { opts = o; calcMVP (); }
   float getRatio () const { return (float)width/(float)height; }
 private:
   glgrib_options_view opts;
   int width, height;
-  mutable glgrib_projection_set ps;
-  mutable glm::mat4 Model, View, Projection, MVP;
-  mutable glm::vec4 Viewport;
+  glgrib_projection_set ps;
+  glm::mat4 Model, View, Projection, MVP;
+  glm::vec4 Viewport;
 };
 

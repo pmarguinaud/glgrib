@@ -99,8 +99,7 @@ void glgrib_scene::display () const
   if (d.opts.scene.title.on)
     d.strtitle.render (d.MVP_L);
 
-  if (d.opts.ticks.on)
-    d.ticks.render (d.MVP_L);
+  d.ticks.render (d.MVP_L);
 
   for (auto str : d.str)
     str.render (d.MVP_R);
@@ -444,8 +443,7 @@ void glgrib_scene::setGridOptions (const glgrib_options_grid & o)
 void glgrib_scene::setTicksOptions (const glgrib_options_ticks & o)
 {
   d.ticks.clear ();
-  if (o.on)
-    d.ticks.setup (o);
+  d.ticks.setup (o);
 }
 
 void glgrib_scene::setCoastOptions (const glgrib_options_coast & o)

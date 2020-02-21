@@ -26,6 +26,8 @@ public:
     LAND,
     ISOFILL1,
     ISOFILL2,
+    TICKS,
+    FTICKS,
     TEST,
   } kind;
 

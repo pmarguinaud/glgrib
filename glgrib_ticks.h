@@ -3,6 +3,7 @@
 #include "glgrib_object.h"
 #include "glgrib_options.h"
 #include "glgrib_string.h"
+#include "glgrib_opengl.h"
 
 class glgrib_ticks 
 {
@@ -35,5 +36,9 @@ private:
   int width = 0, height = 0;
   glgrib_options_view vopts;
   bool ready = false;
+  GLuint VertexArrayID = 0;
+  GLuint VertexArrayID_frame = 0;
+  glgrib_opengl_buffer_ptr vertexbuffer;
+  unsigned int numberOfTicks;
 };
 

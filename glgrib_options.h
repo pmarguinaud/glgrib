@@ -774,17 +774,42 @@ class glgrib_options_ticks : public glgrib_options_base
 public:
   DEFINE
   {
-    DESC (on,                Display ticks);
-    DESC (format,            Format for tick labels);
-    INCLUDE (font);
+    DESC (lines.on,                Display ticks);
+    DESC (lines.color,             Tick color);
+    DESC (lines.length,            Tick length);
+    DESC (lines.width,             Tick width);
+    DESC (lines.kind,              Tick kind);
+    DESC (labels.on,               Display tick labels);
+    DESC (labels.format,           Format for tick labels);
+    INCLUDE (labels.font);
+    DESC (frame.on,                Enable frame);
+    DESC (frame.width,             Frame width);
+    DESC (frame.color,             Frame color);
     INCLUDE (N);
     INCLUDE (S);
     INCLUDE (W);
     INCLUDE (E);
   }
-  bool on = false;
-  glgrib_options_font font;
-  std::string format = "%+06.2f";
+  struct 
+  {
+    bool on = false;
+    glgrib_options_font font;
+    std::string format = "%+06.2f";
+  } labels;
+  struct
+  {
+    bool on = false;
+    float width = 0.01f;
+    glgrib_option_color color = glgrib_option_color (255,   0,   0);
+  } frame;
+  struct
+  {
+    bool on = false;
+    glgrib_option_color color = glgrib_option_color (255, 255, 255);
+    float length = 0.025f;
+    float width  = 0.010f;
+    int kind     = 0;
+  } lines;
   glgrib_options_ticks_side N, S, W, E;
 };
 

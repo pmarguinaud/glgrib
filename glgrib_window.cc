@@ -785,6 +785,7 @@ void glgrib_window::debugTriangleNumber ()
 
 void glgrib_window::scroll (double xoffset, double yoffset)
 {
+  makeCurrent ();
   glgrib_options_view o = scene.d.view.getOptions ();
   if (yoffset > 0)
     {
@@ -810,12 +811,13 @@ void glgrib_window::renderFrame ()
 {
   nframes++;
 
+  makeCurrent ();
+
   scene.update ();
 
   if (Shell.started ())
     Shell.lock ();
 
-  makeCurrent ();
   scene.display (); 
 
   glfwSwapBuffers (window);
@@ -963,8 +965,6 @@ glgrib_window::~glgrib_window ()
 glgrib_window * glgrib_window::clone ()
 {
   glgrib_window * w = new glgrib_window ();
-
-  w->scene.operator= (scene);
 
 #define COPY(x) do { w->x = x; } while (0)
   COPY (opts);

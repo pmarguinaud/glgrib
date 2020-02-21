@@ -10,11 +10,10 @@
 
 glgrib_ticks & glgrib_ticks::operator= (const glgrib_ticks & other)
 {
-  clear ();
   if ((this != &other) && other.isReady ())
     {
+      clear ();
       opts = other.opts;
-      setup (opts);
       setReady ();
     }
   return *this;
@@ -28,6 +27,13 @@ void glgrib_ticks::setup (const glgrib_options_ticks & o)
 
 void glgrib_ticks::clear ()
 {
+  labels.clear ();
+  if (isReady ())
+    {
+      glDeleteVertexArrays (1, &VertexArrayID);
+      glDeleteVertexArrays (1, &VertexArrayID_frame);
+    }
+  ready = false;
 }
 
 glgrib_ticks::~glgrib_ticks ()
@@ -37,12 +43,72 @@ glgrib_ticks::~glgrib_ticks ()
 
 void glgrib_ticks::render (const glm::mat4 & MVP) const
 {
-
   if (! ready)
     return;
 
-  labels.render (MVP);
+  if (opts.lines.on)
+    {
+      glgrib_program * program = glgrib_program::load (glgrib_program::TICKS);
+      program->use ();
+
+      int kind = std::min (1, std::max (0, opts.lines.kind));
+
+      program->set ("MVP", MVP);
+      program->set ("N", float (glgrib_string::N));
+      program->set ("S", float (glgrib_string::S));
+      program->set ("W", float (glgrib_string::W));
+      program->set ("E", float (glgrib_string::E));
+      program->set ("color0", opts.lines.color);
+      program->set ("length", opts.lines.length);
+      program->set ("width", opts.lines.width);
+      program->set ("kind", kind);
+
+      glBindVertexArray (VertexArrayID);
+
+      if (kind == 0)
+        {
+          unsigned int ind[6] = {0, 1, 2, 0, 2, 3};
+          glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, numberOfTicks);
+        }
+      else if (kind == 1)
+        {
+          unsigned int ind[3] = {0, 1, 2};
+          glDrawElementsInstanced (GL_TRIANGLES, 3, GL_UNSIGNED_INT, ind, numberOfTicks);
+        }
+
+      glBindVertexArray (0);
+    }
+
+  if (opts.frame.on)
+    {
+      glgrib_program * program = glgrib_program::load (glgrib_program::FTICKS);
+      program->use ();
+
+
+      program->set ("MVP", MVP);
+  
+      float ratio = float (width) / float (height);
+
+      program->set ("xmin", vopts.clip.xmin * ratio);
+      program->set ("xmax", vopts.clip.xmax * ratio);
+      program->set ("ymin", vopts.clip.ymin);
+      program->set ("ymax", vopts.clip.ymax);
+      program->set ("width", opts.frame.width);
+      program->set ("color0", opts.frame.color);
+
+
+      glBindVertexArray (VertexArrayID_frame);
+      unsigned int ind[6] = {0, 1, 2, 0, 2, 3};
+      glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, 4);
+      glBindVertexArray (0);
+    }
+
+
+  if (opts.labels.on)
+    labels.render (MVP);
+
 }
+
 
 void glgrib_ticks::createStr 
 (const glgrib_options_ticks_side & sopts,
@@ -81,6 +147,7 @@ void glgrib_ticks::createStr
       case glgrib_string::S: nxy = nx; break;
     }
          
+  // Start at 1, finish at nxy-1 : avoid corners
   for (int i = 1; i < nxy-1; i++)
     {
       float x, y, lon = 0.0f, lat = 0.0f;
@@ -139,7 +206,7 @@ void glgrib_ticks::createStr
                       {
                         char tmp[32];
                 	float a = (lat - lat0) / (lat1 - lat0);
-                	sprintf (tmp, opts.format.c_str (), lat);
+                	sprintf (tmp, opts.labels.format.c_str (), lat);
                 	std::string s (tmp);
 			while ((s.length () > 0) && (s[0] == ' '))
                           s = s.substr (1);
@@ -181,7 +248,7 @@ void glgrib_ticks::createStr
                       {
                         char tmp[32];
                 	float a = (lon - lon0) / (lon1 - lon0);
-                	sprintf (tmp, opts.format.c_str (), fmod (lon + 180.0f, 360.0f) - 180.0f);
+                	sprintf (tmp, opts.labels.format.c_str (), fmod (lon + 180.0f, 360.0f) - 180.0f);
                 	std::string s (tmp);
                 	S.push_back (s);
                 	X.push_back ((x0 * (1.0f - a) + x1 * a) / width * ratio);
@@ -201,6 +268,12 @@ void glgrib_ticks::createStr
 
 void glgrib_ticks::resize (const glgrib_view & view)
 {
+  if ((! opts.labels.on) && (! opts.lines.on) && (! opts.frame.on))
+    return;
+
+  if (! ready)
+    return;
+
   if ((vopts == view.getOptions ()) && 
       (width == view.getWidth ()) && 
       (height == view.getHeight ()))
@@ -210,6 +283,7 @@ void glgrib_ticks::resize (const glgrib_view & view)
   width = view.getWidth (); 
   height = view.getHeight ();
 
+  // Create ticks labels
   std::vector<std::string> S; 
   std::vector<float> X, Y, A;
   std::vector<glgrib_string::align_t> align;
@@ -219,13 +293,52 @@ void glgrib_ticks::resize (const glgrib_view & view)
   createStr (opts.N, glgrib_string::N, view, S, X, Y, A, align);
   createStr (opts.S, glgrib_string::S, view, S, X, Y, A, align);
 
-  labels.clear ();
+  if (opts.labels.on)
+    {
+      labels.clear ();
+      labels.setShared (false);
+      labels.setChange (false);
 
-  glgrib_font_ptr font = new_glgrib_font_ptr (opts.font); 
+      glgrib_font_ptr font = new_glgrib_font_ptr (opts.labels.font); 
 
-  labels.setup2D (font, S, X, Y, opts.font.scale, align, A);
-  labels.setForegroundColor (opts.font.color.foreground);
-  labels.setBackgroundColor (opts.font.color.background);
+      labels.setup2D (font, S, X, Y, opts.labels.font.scale, align, A);
+      labels.setForegroundColor (opts.labels.font.color.foreground);
+      labels.setBackgroundColor (opts.labels.font.color.background);
+    }
+
+
+  if (opts.lines.on)
+    {
+      // Coordinates of ticks
+      std::vector<glm::vec3> XYa (S.size ());
+
+      for (int i = 0; i < XYa.size (); i++)
+        {
+          XYa[i].x = X[i];
+          XYa[i].y = Y[i];
+          XYa[i].z = align[i];
+        }
+
+      vertexbuffer = new_glgrib_opengl_buffer_ptr (XYa.size () * sizeof (XYa[0]), XYa.data ());
+
+      glGenVertexArrays (1, &VertexArrayID);
+      glBindVertexArray (VertexArrayID);
+      
+      vertexbuffer->bind (GL_ARRAY_BUFFER);
+      glEnableVertexAttribArray (0); 
+      glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+      glVertexAttribDivisor (0, 1);
+
+      glBindVertexArray (0);
+
+      numberOfTicks = XYa.size ();
+    }
+
+  if (opts.frame.on)
+    {
+      // Needed to use a shader
+      glGenVertexArrays (1, &VertexArrayID_frame);
+    }
 }
 
 

@@ -44,13 +44,16 @@ public:
 	       const std::vector<float> & = std::vector<float>{}, 
 	       const std::vector<float> & = std::vector<float>{}, 
 	       float = 1.0f, align_t = SW, const std::vector<float> & = std::vector<float>{});
+  void setup2D (const_glgrib_font_ptr, const std::vector<std::string> &, 
+                const std::vector<float> &, const std::vector<float> &, 
+                float, const std::vector<align_t> &, const std::vector<float> &);
   void setup3D (const_glgrib_font_ptr, const std::vector<std::string> &, 
 	       const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
 	       const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
 	       float = 1.0f, align_t = SW);
   void setup (const_glgrib_font_ptr, const std::vector<std::string> &, 
              const std::vector<float> &, const std::vector<float> &, 
-	     float = 1.0f, align_t = SW,
+	     float = 1.0f, const std::vector<align_t> & = std::vector<align_t>{SW},
 	     const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
 	     const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{});
   void setup2D (const_glgrib_font_ptr, const std::vector<std::string> &, float, 
@@ -91,7 +94,7 @@ private:
     std::vector<std::string> data;
     std::vector<float> x, y;       // Position of letters vertices
     std::vector<float> X, Y, Z, A; // Position & angle of each letter on the sphere
-    align_t align;
+    std::vector<align_t> align;
     glgrib_option_color color0 = glgrib_option_color (255, 255, 255, 255);
     glgrib_option_color color1 = glgrib_option_color (  0,   0,   0,   0);
     float scale;

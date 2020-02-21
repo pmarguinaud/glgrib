@@ -41,13 +41,14 @@ void glgrib_ticks::render (const glm::mat4 & MVP) const
   if (! ready)
     return;
 
-  labels_e.render (MVP);
-//labels_w.render (MVP);
-//labels_n.render (MVP);
-//labels_s.render (MVP);
+  labels.render (MVP);
 }
 
-void glgrib_ticks::createStr (glgrib_string::align_t align, const glgrib_view & view, glgrib_string * label)
+void glgrib_ticks::createStr 
+(glgrib_string::align_t _align, const glgrib_view & view, 
+ std::vector<std::string> & S, std::vector<float> & X, 
+ std::vector<float> & Y, std::vector<float> & A,
+ std::vector<glgrib_string::align_t> & align)
 {
   float ratio = float (width) / float (height);
 
@@ -71,7 +72,7 @@ void glgrib_ticks::createStr (glgrib_string::align_t align, const glgrib_view & 
 
   int nxy;
 
-  switch (align)
+  switch (_align)
     {
       case glgrib_string::E: nxy = ny; break;
       case glgrib_string::W: nxy = ny; break;
@@ -95,7 +96,7 @@ void glgrib_ticks::createStr (glgrib_string::align_t align, const glgrib_view & 
                       * (vopts.clip.xmax - vopts.clip.xmin));
       };
 
-      switch (align)
+      switch (_align)
         {
           case glgrib_string::E: 
             x = width * vopts.clip.xmax; y = cy ();                               
@@ -116,17 +117,12 @@ void glgrib_ticks::createStr (glgrib_string::align_t align, const glgrib_view & 
 
     }
 
-  glgrib_font_ptr font = new_glgrib_font_ptr (opts.font); 
 
-  label->clear ();
-
-  std::vector<std::string> S;
-  std::vector<float> X, Y, A;
 
   for (int i = 0; i < xyllv.size ()-1; i++)
     if (xyllv[i+0].valid && xyllv[i+1].valid)
       {
-        switch (align)
+        switch (_align)
           {
             case glgrib_string::E:
             case glgrib_string::W:
@@ -150,6 +146,7 @@ void glgrib_ticks::createStr (glgrib_string::align_t align, const glgrib_view & 
                 	X.push_back (x * ratio / width);
                 	Y.push_back ((y0 * (1.0f - a) + y1 * a) / height);
                         A.push_back (0.0f);
+			align.push_back (_align);
                       }
                   }
 	      }
@@ -189,6 +186,7 @@ void glgrib_ticks::createStr (glgrib_string::align_t align, const glgrib_view & 
                 	X.push_back ((x0 * (1.0f - a) + x1 * a) / width * ratio);
                 	Y.push_back (y / height);
                         A.push_back (0.0f);
+			align.push_back (_align);
                       }
                   }
 	      }
@@ -197,10 +195,6 @@ void glgrib_ticks::createStr (glgrib_string::align_t align, const glgrib_view & 
 
       }
 
-  label->setup2D (font, S, X, Y, opts.font.scale, align, A);
-
-  label->setForegroundColor (opts.font.color.foreground);
-  label->setBackgroundColor (opts.font.color.background);
 }
 
 
@@ -215,11 +209,22 @@ void glgrib_ticks::resize (const glgrib_view & view)
   width = view.getWidth (); 
   height = view.getHeight ();
 
-  createStr (glgrib_string::E, view, &labels_e);
-  createStr (glgrib_string::W, view, &labels_w);
-  createStr (glgrib_string::N, view, &labels_n);
-  createStr (glgrib_string::S, view, &labels_s);
+  std::vector<std::string> S; 
+  std::vector<float> X, Y, A;
+  std::vector<glgrib_string::align_t> align;
 
+  createStr (glgrib_string::E, view, S, X, Y, A, align);
+  createStr (glgrib_string::W, view, S, X, Y, A, align);
+  createStr (glgrib_string::N, view, S, X, Y, A, align);
+  createStr (glgrib_string::S, view, S, X, Y, A, align);
+
+  labels.clear ();
+
+  glgrib_font_ptr font = new_glgrib_font_ptr (opts.font); 
+
+  labels.setup2D (font, S, X, Y, opts.font.scale, align, A);
+  labels.setForegroundColor (opts.font.color.foreground);
+  labels.setBackgroundColor (opts.font.color.background);
 }
 
 

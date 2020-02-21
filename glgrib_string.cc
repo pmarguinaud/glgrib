@@ -60,26 +60,36 @@ void glgrib_string::setup3D (const_glgrib_font_ptr ff, const std::vector<std::st
       _x.push_back (0.0f);
       _y.push_back (0.0f);
     }
-  setup (ff, str, _x, _y, s, _align, _X, _Y, _Z, _A);
+  setup (ff, str, _x, _y, s, std::vector<align_t>{_align}, _X, _Y, _Z, _A);
 }
 
 void glgrib_string::setup2D (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
                             float x, float y, float s, align_t align)
 {
-  setup (ff, str, std::vector<float>{x}, std::vector<float>{y}, s, align);
+  setup (ff, str, std::vector<float>{x}, std::vector<float>{y}, s, std::vector<align_t>{align});
 }
 
 void glgrib_string::setup2D (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
-                            const std::vector<float> & x, const std::vector<float> & y, float s, align_t align,
+                            const std::vector<float> & x, const std::vector<float> & y, 
+			    float s, align_t align,
                             const std::vector<float> & a)
 {
-  setup (ff, str, x, y, s, align,
+  setup (ff, str, x, y, s, std::vector<align_t>{align},
+         std::vector<float>{}, std::vector<float>{}, std::vector<float>{}, a);
+}
+
+void glgrib_string::setup2D (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
+                            const std::vector<float> & x, const std::vector<float> & y, 
+			    float s, const std::vector<align_t> & align,
+                            const std::vector<float> & a)
+{
+  setup (ff, str, x, y, s, align, 
          std::vector<float>{}, std::vector<float>{}, std::vector<float>{}, a);
 }
 
 void glgrib_string::setup (const_glgrib_font_ptr ff, const std::vector<std::string> & str, 
                           const std::vector<float> & _x, const std::vector<float> & _y, 
-                          float s, align_t _align,
+                          float s, const std::vector<align_t> & _align,
 			  const std::vector<float> & _X, const std::vector<float> & _Y,
 			  const std::vector<float> & _Z, const std::vector<float> & _A)
 {
@@ -135,14 +145,21 @@ void glgrib_string::setup (const_glgrib_font_ptr ff, const std::vector<std::stri
 
       yy = yy - posb;
      
-      if (d.align & CX)
+      align_t _align;
+
+      if (j < d.align.size ())
+        _align = d.align[j];
+      else
+        _align = d.align[0];
+
+      if (_align & CX)
         xx = xx - (len * dx / 2);
-      else if (d.align & EX)
+      else if (_align & EX)
         xx = xx - len * dx;
      
-      if (d.align & CY)
+      if (_align & CY)
         yy = yy - dym / 2;
-      else if (d.align & NY)
+      else if (_align & NY)
         yy = yy - dym;
      
       float X = 0.0f, Y = 0.0f, Z = 0.0f, A = 0.0f;
@@ -233,7 +250,7 @@ void glgrib_string::setup2D (const_glgrib_font_ptr ff, const std::string & str,
   std::vector<std::string> _str = {str};
   std::vector<float>       _x   = {x};
   std::vector<float>       _y   = {y};
-  setup (ff, _str, _x, _y, s, align);
+  setup (ff, _str, _x, _y, s, std::vector<align_t>{align});
 }
 
 void glgrib_string::render (const glgrib_view & view) const

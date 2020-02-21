@@ -24,8 +24,12 @@ public:
     return ready;
   }
 private:
-  void createStr (glgrib_string::align_t, const glgrib_view &, glgrib_string *);
-  glgrib_string labels_n, labels_s, labels_e, labels_w;
+  void createStr 
+    (glgrib_string::align_t, const glgrib_view &, 
+     std::vector<std::string> &, std::vector<float> &, 
+     std::vector<float> &, std::vector<float> &,
+     std::vector<glgrib_string::align_t> &);
+  glgrib_string labels;
   glgrib_options_ticks opts;
   int width = 0, height = 0;
   glgrib_options_view vopts;

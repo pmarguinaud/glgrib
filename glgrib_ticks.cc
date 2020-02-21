@@ -45,7 +45,8 @@ void glgrib_ticks::render (const glm::mat4 & MVP) const
 }
 
 void glgrib_ticks::createStr 
-(glgrib_string::align_t _align, const glgrib_view & view, 
+(const glgrib_options_ticks_side & sopts,
+ glgrib_string::align_t _align, const glgrib_view & view, 
  std::vector<std::string> & S, std::vector<float> & X, 
  std::vector<float> & Y, std::vector<float> & A,
  std::vector<glgrib_string::align_t> & align)
@@ -80,7 +81,7 @@ void glgrib_ticks::createStr
       case glgrib_string::S: nxy = nx; break;
     }
          
-  for (int i = 0; i < nxy; i++)
+  for (int i = 1; i < nxy-1; i++)
     {
       float x, y, lon = 0.0f, lat = 0.0f;
 
@@ -129,11 +130,11 @@ void glgrib_ticks::createStr
               {
                 float y0 = xyllv[i+0].y, y1 = xyllv[i+1].y, x = xyllv[i].x;
                 float lat0 = xyllv[i+0].lat, lat1 = xyllv[i+1].lat;
-                int ilat0 = (lat0 + 90.0f) / opts.dlat;
-                int ilat1 = (lat1 + 90.0f) / opts.dlat;
+                int ilat0 = (lat0 + 90.0f) / sopts.dlat;
+                int ilat1 = (lat1 + 90.0f) / sopts.dlat;
                 for (int ilat = ilat0; ilat <= ilat1; ilat++)
                   {
-                    float lat = ilat * opts.dlat - 90.0f;
+                    float lat = ilat * sopts.dlat - 90.0f;
                     if ((lat0 <= lat) && (lat <= lat1))
                       {
                         char tmp[32];
@@ -171,11 +172,11 @@ void glgrib_ticks::createStr
                       lon1 += 360.0f;
 		  }
 
-                int ilon0 = lon0 / opts.dlon;
-                int ilon1 = lon1 / opts.dlon;
+                int ilon0 = lon0 / sopts.dlon;
+                int ilon1 = lon1 / sopts.dlon;
                 for (int ilon = ilon0; ilon <= ilon1; ilon++)
                   {
-                    float lon = ilon * opts.dlon;
+                    float lon = ilon * sopts.dlon;
                     if ((lon0 <= lon) && (lon <= lon1))
                       {
                         char tmp[32];
@@ -213,10 +214,10 @@ void glgrib_ticks::resize (const glgrib_view & view)
   std::vector<float> X, Y, A;
   std::vector<glgrib_string::align_t> align;
 
-  createStr (glgrib_string::E, view, S, X, Y, A, align);
-  createStr (glgrib_string::W, view, S, X, Y, A, align);
-  createStr (glgrib_string::N, view, S, X, Y, A, align);
-  createStr (glgrib_string::S, view, S, X, Y, A, align);
+  createStr (opts.E, glgrib_string::E, view, S, X, Y, A, align);
+  createStr (opts.W, glgrib_string::W, view, S, X, Y, A, align);
+  createStr (opts.N, glgrib_string::N, view, S, X, Y, A, align);
+  createStr (opts.S, glgrib_string::S, view, S, X, Y, A, align);
 
   labels.clear ();
 

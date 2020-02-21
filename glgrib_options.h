@@ -755,6 +755,20 @@ public:
 };
 
 
+class glgrib_options_ticks_side : public glgrib_options_base
+{
+public:
+  DEFINE
+  {
+    DESC (on, Enable side);
+    DESC (dlon, Longitude interval);
+    DESC (dlat, Latitude interval);
+  }
+  bool on = true;
+  float dlon = 10.0f;
+  float dlat = 10.0f;
+};
+
 class glgrib_options_ticks : public glgrib_options_base
 {
 public:
@@ -762,15 +776,16 @@ public:
   {
     DESC (on,                Display ticks);
     DESC (format,            Format for tick labels);
-    DESC (dlon,              Longitude interval);
-    DESC (dlat,              Latitude interval);
     INCLUDE (font);
+    INCLUDE (N);
+    INCLUDE (S);
+    INCLUDE (W);
+    INCLUDE (E);
   }
   bool on = false;
   glgrib_options_font font;
   std::string format = "%+06.2f";
-  float dlon = 10.0f;
-  float dlat = 10.0f;
+  glgrib_options_ticks_side N, S, W, E;
 };
 
 class glgrib_options_grid : public glgrib_options_base

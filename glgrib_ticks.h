@@ -25,7 +25,8 @@ public:
   }
 private:
   void createStr 
-    (glgrib_string::align_t, const glgrib_view &, 
+    (const glgrib_options_ticks_side &,
+     glgrib_string::align_t, const glgrib_view &, 
      std::vector<std::string> &, std::vector<float> &, 
      std::vector<float> &, std::vector<float> &,
      std::vector<glgrib_string::align_t> &);

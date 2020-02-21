@@ -1100,11 +1100,20 @@ void glgrib_window::debug (unsigned int source, unsigned int type, GLuint id,
 void glgrib_window::setOptions (const glgrib_options_window & o)
 {
   if ((o.width != opts.width) || (o.height != opts.height))
-    glfwSetWindowSize(window, o.width, o.height);
+    {
+      glfwSetWindowSize(window, o.width, o.height);
+      opts.width = o.width;
+      opts.height = o.height;
+    }
   if (o.title != opts.title)
     {
       opts.title = o.title;
       glfwSetWindowTitle (window, opts.title.c_str ());
+    }
+  if ((o.position.x != opts.position.x) || (o.position.y != opts.position.y))
+    {
+      opts.position = o.position;
+      glfwSetWindowPos (window, opts.position.x, opts.position.y);
     }
 }
 

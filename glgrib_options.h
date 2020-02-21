@@ -435,6 +435,7 @@ class glgrib_options_font : public glgrib_options_base
 {
 public:
   glgrib_options_font (const std::string & b, float s) : bitmap (b), scale (s) {}
+  glgrib_options_font (float s) : scale (s) {}
   glgrib_options_font () {}
   DEFINE
   {
@@ -793,7 +794,7 @@ public:
   struct 
   {
     bool on = false;
-    glgrib_options_font font;
+    glgrib_options_font font = glgrib_options_font (0.02f);
     std::string format = "%+06.2f";
   } labels;
   struct

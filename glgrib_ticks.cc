@@ -33,6 +33,8 @@ void glgrib_ticks::clear ()
       glDeleteVertexArrays (1, &VertexArrayID);
       glDeleteVertexArrays (1, &VertexArrayID_frame);
     }
+  width = 0;
+  height = 0;
   ready = false;
 }
 

@@ -444,6 +444,7 @@ void glgrib_scene::setTicksOptions (const glgrib_options_ticks & o)
 {
   d.ticks.clear ();
   d.ticks.setup (o);
+  d.ticks.resize (d.view);
 }
 
 void glgrib_scene::setCoastOptions (const glgrib_options_coast & o)

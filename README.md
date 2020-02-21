@@ -1145,3 +1145,12 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.fov 4 --view.lat -20.1373 --view.lon -60.4499 --grid.on 
     --grid.color black 
 ```
+## Grid ticks & labels                                               -- tickslabels
+![](test.ref/tickslabels/TEST_0000.png)
+
+```
+    --landscape-{ --on --scale 0.999 }- --grid-{ --on --resolution 18 }- 
+    --ticks-{ --labels.on --labels.font.scale 0.02 --labels.format %.0f 
+    --lines.on --lines.color blue --lines.width 0.03 --lines.kind 1 }- 
+    --view.fov 7 --view.lat 50 --view.lon 0 
+```

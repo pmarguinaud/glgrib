@@ -15,15 +15,15 @@ public:
   }
   ~glgrib_handle () 
   {
-    if (h != NULL)
+    if (h != nullptr)
       codes_handle_delete (h);
   }
   codes_handle * getCodesHandle () 
   {
-    return this == NULL ? NULL : h;
+    return this == nullptr ? nullptr : h;
   }
 private:
-  codes_handle * h = NULL;
+  codes_handle * h = nullptr;
 };
 
 typedef std::shared_ptr<glgrib_handle> glgrib_handle_ptr;

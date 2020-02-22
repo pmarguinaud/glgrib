@@ -101,6 +101,6 @@ private:
     float scaleXYZ = 1.0f;
     int len;    // Total number of characters
     glgrib_opengl_buffer_ptr xyzbuffer, vertexbuffer, letterbuffer;
-    const_glgrib_font_ptr font = NULL; 
+    const_glgrib_font_ptr font = nullptr; 
   } d;
 };

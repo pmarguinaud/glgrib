@@ -18,13 +18,13 @@ public:
   virtual void setHints ();
   virtual ~glgrib_window ();
   virtual void renderFrame ();
-  virtual void run (class glgrib_shell * = NULL);
+  virtual void run (class glgrib_shell * = nullptr);
   void makeCurrent () { glfwMakeContextCurrent (window); }
   void debug (unsigned int, unsigned int, GLuint, unsigned int, int, const char *);
   int snapshot_cnt = 0;
   glgrib_scene scene;
   bool cursorpos = false;
-  GLFWwindow * window = NULL;
+  GLFWwindow * window = nullptr;
 
   void toggle_cursorpos_display ();
   void framebuffer              (const std::string & = "snapshot_%N.png");
@@ -169,7 +169,7 @@ public:
 
   const glgrib_options_window & getOptions () const { return opts; }
 protected:
-  void createGFLWwindow (GLFWwindow * = NULL);
+  void createGFLWwindow (GLFWwindow * = nullptr);
   bool closed = false;
   bool cloned = false;
   bool master = false;
@@ -185,7 +185,7 @@ private:
 class glgrib_window_set : public std::set<glgrib_window*> 
 {
 public:
-  void run (glgrib_shell * = NULL);
+  void run (glgrib_shell * = nullptr);
   glgrib_window * getWindowById (int);
   glgrib_window * getFirstWindow () 
     { 
@@ -193,7 +193,7 @@ public:
       if (it != end ())
         return *it;
       else
-        return NULL;
+        return nullptr;
     }
   void close ();
 };

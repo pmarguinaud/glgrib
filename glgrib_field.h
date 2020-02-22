@@ -48,7 +48,7 @@ public:
   { 
     std::vector<float> val;
     for (int i = 0; i < values.size (); i++)
-      if (values[i]->data () != NULL)
+      if (values[i]->data () != nullptr)
         val.push_back (values[i]->data ()[index]);
     return val;
   }

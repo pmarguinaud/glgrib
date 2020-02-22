@@ -78,7 +78,7 @@ public:
       return (*this)[map->at (key)];
     }
   private:
-    map_t * map = NULL;
+    map_t * map = nullptr;
     friend class glgrib_dbase;
   };
 
@@ -95,10 +95,10 @@ public:
 
   void close ()
   {
-    if (fp != NULL)
+    if (fp != nullptr)
       fclose (fp);
     count = 0;
-    fp = NULL;
+    fp = nullptr;
   }
 
   header_t header;
@@ -106,12 +106,12 @@ public:
 
   bool opened () const 
   {
-    return fp != NULL;
+    return fp != nullptr;
   }
 
 private:
   map_t map;
-  FILE * fp = NULL;
+  FILE * fp = nullptr;
   int count = 0;
 };
  

@@ -8,7 +8,7 @@
 class glgrib_opengl_buffer
 {
 public:
-  glgrib_opengl_buffer (size_t, const void * = NULL);
+  glgrib_opengl_buffer (size_t, const void * = nullptr);
   ~glgrib_opengl_buffer ();
   GLuint id () { return id_; }
   bool allocated () const { return allocated_; }
@@ -23,7 +23,7 @@ private:
 };
 
 typedef std::shared_ptr<glgrib_opengl_buffer> glgrib_opengl_buffer_ptr;
-extern glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (size_t, const void * = NULL);
+extern glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (size_t, const void * = nullptr);
 extern glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (const glgrib_opengl_buffer_ptr &);
 
 class glgrib_opengl_texture

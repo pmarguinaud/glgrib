@@ -11,7 +11,7 @@ public:
   float * data () { return data_; }
   float & operator[] (int i) { return data_[i]; }
 private:
-  float * data_ = NULL;
+  float * data_ = nullptr;
 };
 
 typedef std::shared_ptr<glgrib_field_float_buffer> glgrib_field_float_buffer_ptr;

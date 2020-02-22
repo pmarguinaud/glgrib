@@ -103,8 +103,8 @@ namespace glgrib_options_parser_detail
   class option_tmpl : public option_base
   {
   public:
-    option_tmpl (const std::string & n, const std::string & d, T * v = NULL) : option_base (n, d), value (v) {}
-    T * value = NULL;
+    option_tmpl (const std::string & n, const std::string & d, T * v = nullptr) : option_base (n, d), value (v) {}
+    T * value = nullptr;
     std::string asString () const { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
     std::string asOption () const { return name + " " + glgrib_options_util::escape (asString ()); }
     void set ()
@@ -128,7 +128,7 @@ namespace glgrib_options_parser_detail
     int has_arg () const { return 1; }
     bool isEqual (const option_base * _o) const
     {
-      const option_tmpl<T> * o = NULL;
+      const option_tmpl<T> * o = nullptr;
       try
         {
           o = dynamic_cast<const option_tmpl<T>*>(_o);
@@ -145,8 +145,8 @@ namespace glgrib_options_parser_detail
   class option_tmpl_list : public option_base
   {
   public:
-    option_tmpl_list (const std::string & n, const std::string & d, std::vector<T> * v = NULL) : option_base (n, d), value (v) {}
-    std::vector<T> * value = NULL;
+    option_tmpl_list (const std::string & n, const std::string & d, std::vector<T> * v = nullptr) : option_base (n, d), value (v) {}
+    std::vector<T> * value = nullptr;
     std::string asOption () const 
     { 
       std::string str = name;
@@ -184,7 +184,7 @@ namespace glgrib_options_parser_detail
     std::string type () { return std::string ("UNKNOWN"); }
     bool isEqual (const option_base * _o) const 
     {
-      const option_tmpl_list<T> * o = NULL;
+      const option_tmpl_list<T> * o = nullptr;
       try
         {
           o = dynamic_cast<const option_tmpl_list<T>*>(_o);
@@ -235,7 +235,7 @@ public:
 
 #define DEF_APPLY(T) \
   virtual void apply (const std::string & path, const std::string & name, glgrib_options_base *, \
-                      const std::string & desc, T * data, const opt * = NULL) {}
+                      const std::string & desc, T * data, const opt * = nullptr) {}
   DEF_APPLY (float);
   DEF_APPLY (bool);
   DEF_APPLY (int);
@@ -255,7 +255,7 @@ class glgrib_options_parser : public glgrib_options_callback
 public:
   virtual std::string asOption (glgrib_options_parser &);
   static void print (class glgrib_options &);
-  bool parse (int, const char * [], const std::set<std::string> * = NULL);
+  bool parse (int, const char * [], const std::set<std::string> * = nullptr);
   void show_help ();
   void display (const std::string &, bool = false);
   ~glgrib_options_parser ()
@@ -283,7 +283,7 @@ public:
     name2option_t::iterator it = name2option.find (name);
     if (it != name2option.end ())
       return it->second;
-    return NULL;
+    return nullptr;
   }
 
   class opt : public glgrib_options_callback::opt
@@ -319,7 +319,7 @@ private:
                      const glgrib_options_callback::opt * _o)
   {
     const opt * o = dynamic_cast<const opt*>(_o);
-    if (o != NULL)
+    if (o != nullptr)
       option->hidden = o->hidden;
     name2option.insert (opt_name, option);
   }
@@ -327,7 +327,7 @@ private:
 #define DEF_APPLY(T,C) \
   void apply (const std::string & path, const std::string & name,                      \
               glgrib_options_base *, const std::string & desc, T * data,               \
-              const glgrib_options_callback::opt * o = NULL)                           \
+              const glgrib_options_callback::opt * o = nullptr)                           \
   {                                                                                    \
     std::string opt_name = get_opt_name (path, name);                                  \
     createOption (opt_name, new C (opt_name, desc, data), o);                          \
@@ -355,9 +355,9 @@ public:
   typedef std::vector<float> float_list;
   typedef std::string string;
   virtual void traverse (const std::string &, glgrib_options_callback *, 
-                         const glgrib_options_callback::opt * = NULL) {}
-  virtual bool parse (int, const char * [], const std::set<std::string> * = NULL);
-  virtual bool parse (const char *, const std::set<std::string> * = NULL);
+                         const glgrib_options_callback::opt * = nullptr) {}
+  virtual bool parse (int, const char * [], const std::set<std::string> * = nullptr);
+  virtual bool parse (const char *, const std::set<std::string> * = nullptr);
   virtual std::string asOption (glgrib_options_base &);
 };
 
@@ -374,7 +374,7 @@ public:
        name.traverse (p + ( p == "" ? "" : ".") + #name, cb, &o); } while (0)
 
 #define DEFINE virtual void traverse (const std::string & p, glgrib_options_callback * cb, \
-                                      const glgrib_options_callback::opt * o = NULL)
+                                      const glgrib_options_callback::opt * o = nullptr)
 
 class glgrib_options_geometry : public glgrib_options_base
 {
@@ -1525,7 +1525,7 @@ public:
   glgrib_options_font font;
   glgrib_options_shell shell;
   glgrib_options_land land;
-  virtual bool parse (int, const char * [], const std::set<std::string> * = NULL);
+  virtual bool parse (int, const char * [], const std::set<std::string> * = nullptr);
 };
 
 

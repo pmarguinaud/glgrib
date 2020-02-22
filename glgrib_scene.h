@@ -40,7 +40,7 @@ public:
 
   glgrib_field * getCurrentField () 
     { 
-      return d.currentFieldRank < fieldlist.size () ? fieldlist[d.currentFieldRank] : NULL; 
+      return d.currentFieldRank < fieldlist.size () ? fieldlist[d.currentFieldRank] : nullptr; 
     }
 
   void getLightPos (float * lon, float * lat) const

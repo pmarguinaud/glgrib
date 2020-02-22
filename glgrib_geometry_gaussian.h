@@ -141,14 +141,14 @@ private:
   glm::mat4 rot = glm::mat4 (1.0f);
   bool rotated = false;
   // Keep the following as pointers for performance
-  unsigned int * ind = NULL;
+  unsigned int * ind = nullptr;
 
-  int * indcnt_per_lat = NULL;
-  int * indoff_per_lat = NULL;
+  int * indcnt_per_lat = nullptr;
+  int * indoff_per_lat = nullptr;
 
-  int * triu = NULL;          // Rank of triangle above
-  int * trid = NULL;          // Rank of triangle below
-  double * latgauss = NULL;
+  int * triu = nullptr;          // Rank of triangle above
+  int * trid = nullptr;          // Rank of triangle below
+  double * latgauss = nullptr;
   glgrib_opengl_buffer_ptr ssbo_jglo, ssbo_jlat, ssbo_glat;
 };
 

@@ -24,13 +24,13 @@ public:
   int windowid = 0;
   void lock () { pthread_mutex_lock (&mutex); }
   void unlock () { pthread_mutex_unlock (&mutex); }
-  void wait () { if (wset) pthread_join (thread, NULL); }
-  bool started () { return wset != NULL; }
+  void wait () { if (wset) pthread_join (thread, nullptr); }
+  bool started () { return wset != nullptr; }
   char * option_generator (const char *, int);
   const glgrib_options_shell & getOptions () const { return opts; }
 private:
   glgrib_options_shell opts;
-  glgrib_window_set * wset = NULL;
+  glgrib_window_set * wset = nullptr;
   pthread_t thread;
   pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   std::vector<std::string> getsetoptions;

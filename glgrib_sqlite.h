@@ -17,11 +17,11 @@ namespace glgrib_sqlite_detail
   public:
     ~_sqlite3 () 
     {
-      if (data != NULL)
+      if (data != nullptr)
         sqlite3_close (data);
-      data = NULL;
+      data = nullptr;
     }
-    sqlite3 * data = NULL;
+    sqlite3 * data = nullptr;
   };
 
   typedef std::shared_ptr<_sqlite3> sqlite3_ptr;
@@ -31,11 +31,11 @@ namespace glgrib_sqlite_detail
   public:
     ~_sqlite3_stmt () 
     {
-      if (data != NULL)
+      if (data != nullptr)
         sqlite3_finalize (data);
-      data = NULL;
+      data = nullptr;
     }
-    sqlite3_stmt * data = NULL;
+    sqlite3_stmt * data = nullptr;
   };
 
   typedef std::shared_ptr<_sqlite3_stmt> sqlite3_stmt_ptr;

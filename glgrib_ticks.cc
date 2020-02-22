@@ -67,15 +67,23 @@ void glgrib_ticks::render (const glm::mat4 & MVP) const
 
       glBindVertexArray (VertexArrayID);
 
-      if (kind == 0)
+      if (opts.lines.width == 0.0f)
         {
-          unsigned int ind[6] = {0, 1, 2, 0, 2, 3};
-          glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, numberOfTicks);
+          unsigned int ind[2] = {1, 2};
+          glDrawElementsInstanced (GL_LINES, 2, GL_UNSIGNED_INT, ind, numberOfTicks);
         }
-      else if (kind == 1)
+      else
         {
-          unsigned int ind[3] = {0, 1, 2};
-          glDrawElementsInstanced (GL_TRIANGLES, 3, GL_UNSIGNED_INT, ind, numberOfTicks);
+          if (kind == 0)
+            {
+              unsigned int ind[6] = {0, 1, 2, 0, 2, 3};
+              glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, numberOfTicks);
+            }
+          else if (kind == 1)
+            {
+              unsigned int ind[3] = {0, 1, 2};
+              glDrawElementsInstanced (GL_TRIANGLES, 3, GL_UNSIGNED_INT, ind, numberOfTicks);
+            }
         }
 
       glBindVertexArray (0);

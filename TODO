@@ -14,13 +14,9 @@ Template for openGL buffers depending on type being allocated ?
 
 
 Compress data for contour
-Frame with latitudes/longitudes
 Allow for errors in field creation
-Draw contour labels
 
 Iso contour pleins (en couleur), avec un geometry shader
-Generate coordinates in shaders
-Change palette definition; get new palettes
 
 
 Use blocks for passing data from/to shaders, with included files :

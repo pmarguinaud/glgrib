@@ -33,7 +33,7 @@ void glgrib_geometry_lambert::setupCoordinates ()
       }
       
 
-  lonlat = NULL;
+  lonlat = nullptr;
   vertexbuffer->unmap ();
 }
 

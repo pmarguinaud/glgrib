@@ -208,7 +208,7 @@ void glgrib_field::getUserPref (glgrib_options_field * opts, glgrib_loader * ld)
   glgrib_options_field opts_ref;
   
   glgrib_field_metadata meta;
-  ld->load (NULL, opts_sql.path, opts->geometry, 0, &meta);
+  ld->load (nullptr, opts_sql.path, opts->geometry, 0, &meta);
 
   glgrib_sqlite db (glgrib_resolve ("glgrib.db"));
   
@@ -243,14 +243,14 @@ glgrib_field * glgrib_field::create (const glgrib_options_field & opts, float sl
 {
 
   if (opts.path.size () == 0)
-    return NULL;
+    return nullptr;
 
   glgrib_options_field opts1 = opts;
 
   if (opts.user_pref.on)
     getUserPref (&opts1, ld);
 
-  glgrib_field * fld = NULL;
+  glgrib_field * fld = nullptr;
 
   std::string type = opts1.type;
 
@@ -344,7 +344,7 @@ void glgrib_field::bindHeight (int attr)
     {
       heightbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (attr);
-      glVertexAttribPointer (attr, 1, getOpenglType<T> (), GL_TRUE, 0, NULL);
+      glVertexAttribPointer (attr, 1, getOpenglType<T> (), GL_TRUE, 0, nullptr);
     }
   else
     {

@@ -41,7 +41,7 @@ void glgrib_landscape::setupVertexAttributes ()
     {   
       heightbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (1);
-      glVertexAttribPointer (1, 1, GL_FLOAT, GL_FALSE, 0, NULL);
+      glVertexAttribPointer (1, 1, GL_FLOAT, GL_FALSE, 0, nullptr);
     }   
   else
     {   

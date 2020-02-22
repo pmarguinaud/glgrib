@@ -43,7 +43,7 @@ void glgrib_points::setupVertexAttributes ()
   d.llsbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
 
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
   glVertexAttribDivisor (0, 1);
 
   glBindVertexArray (0);

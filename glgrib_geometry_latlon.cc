@@ -66,7 +66,7 @@ void glgrib_geometry_latlon::setupCoordinates ()
         }
     }
 
-  lonlat = NULL;
+  lonlat = nullptr;
   vertexbuffer->unmap ();
 }
 

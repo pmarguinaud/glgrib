@@ -28,8 +28,8 @@ void glgrib_field_scalar::clear ()
 
 glgrib_field_scalar * glgrib_field_scalar::clone () const
 {
-  if (this == NULL)
-    return NULL;
+  if (this == nullptr)
+    return nullptr;
   glgrib_field_scalar * fld = new glgrib_field_scalar ();
   *fld = *this;
   return fld;
@@ -83,7 +83,7 @@ void glgrib_field_scalar::setupVertexAttributes ()
   colorbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
 
-  glVertexAttribPointer (1, 1, getOpenglType<T> (), GL_TRUE, 0,  NULL); 
+  glVertexAttribPointer (1, 1, getOpenglType<T> (), GL_TRUE, 0,  nullptr); 
 
   geometry->bindTriangles ();
 
@@ -93,7 +93,7 @@ void glgrib_field_scalar::setupVertexAttributes ()
     {
       mpivbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (3); 
-      glVertexAttribPointer (3, 3, GL_FLOAT, GL_FALSE, 0, NULL); 
+      glVertexAttribPointer (3, 3, GL_FLOAT, GL_FALSE, 0, nullptr); 
 //    glVertexAttribDivisor (3, 1);
     }
   else
@@ -114,14 +114,14 @@ void glgrib_field_scalar::setupVertexAttributes ()
   
   colorbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, 1, getOpenglType<T> (), GL_TRUE, 0, NULL); 
+  glVertexAttribPointer (1, 1, getOpenglType<T> (), GL_TRUE, 0, nullptr); 
   glVertexAttribDivisor (1, 1);
 
   if (heightbuffer)
     {
       heightbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (2);
-      glVertexAttribPointer (2, 1, getOpenglType<T> (), GL_TRUE, 0, NULL);
+      glVertexAttribPointer (2, 1, getOpenglType<T> (), GL_TRUE, 0, nullptr);
       glVertexAttribDivisor (2, 1);
     }
   else
@@ -180,7 +180,7 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
   T * col = (T *)colorbuffer->map ();
   pack<T>  (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
             meta1.valmax, meta1.valmis, col);
-  col = NULL;
+  col = nullptr;
   colorbuffer->unmap ();
 
   loadHeight <T> (colorbuffer, ld);
@@ -191,7 +191,7 @@ void glgrib_field_scalar::setup (glgrib_loader * ld, const glgrib_options_field 
   setupVertexAttributes<T> ();
 
   if (opts.no_value_pointer.on)
-    values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
+    values.push_back (new_glgrib_field_float_buffer_ptr ((float*)nullptr));
   else
     values.push_back (data);
 
@@ -252,7 +252,7 @@ void glgrib_field_scalar::setupMpiView (glgrib_loader * ld, const glgrib_options
       mpiv[3*i+1] = Disl[j].x;
       mpiv[3*i+2] = Disl[j].y;
     }
-  mpiv = NULL;
+  mpiv = nullptr;
   mpivbuffer->unmap ();
 
 }

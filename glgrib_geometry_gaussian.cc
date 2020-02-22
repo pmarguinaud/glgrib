@@ -902,7 +902,7 @@ void glgrib_geometry_gaussian::setupSSBO ()
       for (int ilon = 0; ilon < pl[ilat]; ilon++)
         jlat[jglooff[ilat]+ilon] = ilat;
 
-      jlat = NULL;
+      jlat = nullptr;
       ssbo_jlat->unmap ();
     }
 
@@ -919,7 +919,7 @@ void glgrib_geometry_gaussian::setupSSBO ()
   for (int i = 0; i < Nj; i++)
     glat[i] = latgauss[i];
 
-  glat = NULL;
+  glat = nullptr;
   ssbo_glat->unmap ();
 
 }
@@ -992,7 +992,7 @@ void glgrib_geometry_gaussian::setupCoordinates ()
         }
     }
   
-  lonlat = NULL;
+  lonlat = nullptr;
   vertexbuffer->unmap ();
 }
 
@@ -1116,7 +1116,7 @@ void glgrib_geometry_gaussian::setup (glgrib_handle_ptr ghp, const glgrib_option
 {
   opts = o;
 
-  codes_handle * h = ghp ? ghp->getCodesHandle () : NULL;
+  codes_handle * h = ghp ? ghp->getCodesHandle () : nullptr;
 
   // Compute number of triangles
   numberOfTriangles = 0;
@@ -1217,12 +1217,12 @@ glgrib_geometry_gaussian::~glgrib_geometry_gaussian ()
     delete [] indoff_per_lat;
   if (indcnt_per_lat)
     delete [] indcnt_per_lat;
-  ind = NULL;
-  triu = NULL;
-  trid = NULL;
-  latgauss = NULL;
-  indoff_per_lat = NULL;
-  indcnt_per_lat = NULL;
+  ind = nullptr;
+  triu = nullptr;
+  trid = nullptr;
+  latgauss = nullptr;
+  indoff_per_lat = nullptr;
+  indcnt_per_lat = nullptr;
 
 }
 

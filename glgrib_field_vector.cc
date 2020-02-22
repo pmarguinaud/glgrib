@@ -19,8 +19,8 @@ glgrib_field_vector::glgrib_field_vector (const glgrib_field_vector & field)
 
 glgrib_field_vector * glgrib_field_vector::clone () const
 {
-  if (this == NULL)
-    return NULL;
+  if (this == nullptr)
+    return nullptr;
   glgrib_field_vector * fld = new glgrib_field_vector ();
   *fld = *this;
   return fld;
@@ -57,7 +57,7 @@ void glgrib_field_vector::setupVertexAttributes ()
   // Norm
   d.buffer_n->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), NULL); 
+  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), nullptr); 
 
 
   geometry->bindTriangles ();
@@ -79,14 +79,14 @@ void glgrib_field_vector::setupVertexAttributes ()
   // Norm
   d.buffer_n->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), NULL); 
+  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), nullptr); 
   glVertexAttribDivisor (1, 1);  
 
 
   // Direction
   d.buffer_d->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (2); 
-  glVertexAttribPointer (2, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), NULL); 
+  glVertexAttribPointer (2, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), nullptr); 
   glVertexAttribDivisor (2, 1);  
 
   bindHeight <unsigned char> (3);
@@ -117,7 +117,7 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
   d.buffer_n = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned char));
   unsigned char * col_n = (unsigned char *)d.buffer_n->map ();
   pack<unsigned char> (data_n->data (), geometry->getNumberOfPoints (), meta_n.valmin, meta_n.valmax, meta_n.valmis, col_n);
-  col_n = NULL;
+  col_n = nullptr;
   d.buffer_n->unmap ();
 
   loadHeight <unsigned char> (d.buffer_n, ld);
@@ -130,7 +130,7 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
   const int npts = opts.vector.density;
   geometry->sample (col_d, 0, npts);
 
-  col_d = NULL;
+  col_d = nullptr;
   d.buffer_d->unmap ();
 
   meta.push_back (meta_n);
@@ -143,8 +143,8 @@ void glgrib_field_vector::setup (glgrib_loader * ld, const glgrib_options_field 
 
   if (opts.no_value_pointer.on)
     {
-      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
-      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
+      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)nullptr));
+      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)nullptr));
     }
   else
     {
@@ -253,7 +253,7 @@ const
   program->set ("vscale", d.vscale);
   program->set ("height_scale", opts.geometry.height.scale);
 
-  const arrow_t * arrow = NULL;
+  const arrow_t * arrow = nullptr;
 
   if (opts.vector.arrow.on)
     {
@@ -344,7 +344,7 @@ void glgrib_field_vector::reSample (const glgrib_view & view)
 
   float * data_d = values[1]->data ();
 
-  if (data_d == NULL)
+  if (data_d == nullptr)
     return; 
 
   const glgrib_field_metadata & meta_n = meta[0];

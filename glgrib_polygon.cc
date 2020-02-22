@@ -11,7 +11,7 @@ void glgrib_polygon::setupVertexAttributes ()
   
   vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL); 
+  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr); 
 
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 
@@ -23,7 +23,7 @@ void glgrib_polygon::render (const glgrib_view & view, const glgrib_options_ligh
   glBindVertexArray (VertexArrayID);
   glEnable (GL_PRIMITIVE_RESTART);
   glPrimitiveRestartIndex (0xffffffff);
-  glDrawElements (GL_LINE_STRIP, numberOfLines, GL_UNSIGNED_INT, NULL);
+  glDrawElements (GL_LINE_STRIP, numberOfLines, GL_UNSIGNED_INT, nullptr);
   glDisable (GL_PRIMITIVE_RESTART);
   glBindVertexArray (0);
 

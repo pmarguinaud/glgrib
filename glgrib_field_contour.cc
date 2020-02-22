@@ -23,8 +23,8 @@ glgrib_field_contour::glgrib_field_contour (const glgrib_field_contour & field)
 
 glgrib_field_contour * glgrib_field_contour::clone () const
 {
-  if (this == NULL)
-    return NULL;
+  if (this == nullptr)
+    return nullptr;
   glgrib_field_contour * fld = new glgrib_field_contour ();
   *fld = *this;
   return fld;
@@ -270,7 +270,7 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
       delete [] seen;
     }
 
-  val = NULL;
+  val = nullptr;
 
   iso.resize (levels.size ());
 
@@ -313,7 +313,7 @@ void glgrib_field_contour::setup (glgrib_loader * ld, const glgrib_options_field
 
   if (opts.no_value_pointer.on)
     {
-      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
+      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)nullptr));
     }
   else
     {

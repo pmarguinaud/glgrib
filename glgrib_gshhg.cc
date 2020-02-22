@@ -102,7 +102,7 @@ void glgrib_gshhg::read (const glgrib_options_lines & opts, int * numberOfPoints
 
   FILE * fp = fopen (path.c_str (), "r");
 
-  if (fp == NULL)
+  if (fp == nullptr)
     throw std::runtime_error (std::string ("Cannot open GSHHG data"));
   
   auto restart = [ind] 
@@ -176,7 +176,7 @@ void glgrib_gshhg::read (const glgrib_options_lines & opts, int * numberOfPoints
   *numberOfLines = ind->size ();
 
   fclose (fp);
-  fp = NULL;
+  fp = nullptr;
       
 }
 

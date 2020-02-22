@@ -18,7 +18,7 @@ static cache_t cache;
 glgrib_geometry_ptr glgrib_geometry::load (glgrib_loader * ld, const std::string & file, const glgrib_options_geometry & opts, const int Nj)
 {
   glgrib_handle_ptr ghp;
-  codes_handle * h = NULL;
+  codes_handle * h = nullptr;
  
   if (file != "")
     {
@@ -28,7 +28,7 @@ glgrib_geometry_ptr glgrib_geometry::load (glgrib_loader * ld, const std::string
 
   long int gridDefinitionTemplateNumber = -1;
 
-  if (h != NULL)
+  if (h != nullptr)
     codes_get_long (h, "gridDefinitionTemplateNumber", &gridDefinitionTemplateNumber);
 
   glgrib_geometry_ptr geom;
@@ -154,12 +154,12 @@ void glgrib_geometry::renderTriangles () const
     {
       glEnable (GL_PRIMITIVE_RESTART);
       glPrimitiveRestartIndex (0xffffffff);
-      glDrawElements (GL_TRIANGLE_STRIP, ind_strip_size, GL_UNSIGNED_INT, NULL);
+      glDrawElements (GL_TRIANGLE_STRIP, ind_strip_size, GL_UNSIGNED_INT, nullptr);
       glDisable (GL_PRIMITIVE_RESTART);
     }
   else
     {
-      glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
+      glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, nullptr);
     }
 }
 
@@ -177,7 +177,7 @@ void glgrib_geometry::bindCoordinates (int attr) const
       if (attr >= 0)
         {
           glEnableVertexAttribArray (attr);
-          glVertexAttribPointer (attr, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+          glVertexAttribPointer (attr, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
         }
     }
   else

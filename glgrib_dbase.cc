@@ -25,7 +25,7 @@ static std::string trim (const std::string & str)
 bool glgrib_dbase::open (const std::string & path)
 {
   fp = fopen ((path + ".dbf").c_str (), "r");
-  if (fp == NULL)
+  if (fp == nullptr)
     return false;
   header.read (fp);
   int n = (header.length - 1)/32 - 1;
@@ -48,7 +48,7 @@ bool glgrib_dbase::read (record_t * record)
 {
   record->clear ();
 
-  if (fp == NULL)
+  if (fp == nullptr)
     return false;
 
   count++;
@@ -66,7 +66,7 @@ bool glgrib_dbase::read (record_t * record)
   if (count == header.count)
     {
       fclose (fp);
-      fp = NULL;
+      fp = nullptr;
       count = 0;
     }
 

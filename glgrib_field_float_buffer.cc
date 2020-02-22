@@ -15,7 +15,7 @@ glgrib_field_float_buffer::~glgrib_field_float_buffer ()
 {
   if (data_)
     delete [] data_;
-  data_ = NULL;
+  data_ = nullptr;
 }
 
 glgrib_field_float_buffer_ptr new_glgrib_field_float_buffer_ptr (size_t size)

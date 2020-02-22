@@ -15,7 +15,7 @@ static GLuint compileShader (const std::string & code, GLuint type)
   GLuint id = glCreateShader (type);
   const char * str = code.c_str ();
 
-  glShaderSource (id, 1, &str, NULL);
+  glShaderSource (id, 1, &str, nullptr);
   glCompileShader (id);
 
   glGetShaderiv (id, GL_COMPILE_STATUS, &res);
@@ -23,7 +23,7 @@ static GLuint compileShader (const std::string & code, GLuint type)
   if (len > 0)
     {
       char mess[len+1];
-      glGetShaderInfoLog (id, len, NULL, &mess[0]);
+      glGetShaderInfoLog (id, len, nullptr, &mess[0]);
       throw std::runtime_error (std::string ("Error compiling shader : ") + std::string (mess));
     }
 
@@ -61,7 +61,7 @@ GLuint glgrib_load_shader (const std::string & FragmentShaderCode,
   if (len > 0)
     {
       char mess[len+1];
-      glGetProgramInfoLog (ProgramID, len, NULL, &mess[0]);
+      glGetProgramInfoLog (ProgramID, len, nullptr, &mess[0]);
       throw std::runtime_error (std::string ("Error linking program : ") + std::string (mess));
     }
   

@@ -32,7 +32,7 @@ char * glgrib_shell::option_generator (const char * text, int state)
     if (getsetoptions[og.list_index].substr (0, og.text_len) == tt)
       return strdup (getsetoptions[og.list_index++].c_str ());  // Note the ++
 
-  return NULL;
+  return nullptr;
 }
 
 char * shell_option_generator (const char * text, int state)
@@ -45,7 +45,7 @@ char ** shell_completion (const char * text, int start, int end)
   char * line = rl_line_buffer;
   if ((strncmp (line, "set ", 4) == 0) || (strncmp (line, "get ", 4) == 0))
     return rl_completion_matches (text, shell_option_generator);
-  return NULL;
+  return nullptr;
 }
 
 glgrib_shell::glgrib_shell ()
@@ -316,14 +316,14 @@ void * _run (void * data)
 {
   glgrib_shell * shell = (glgrib_shell *)data;
   shell->run ();
-  return NULL;
+  return nullptr;
 }
 
 
 void glgrib_shell::start (glgrib_window_set * ws)
 {
   wset = ws;
-  pthread_create(&thread, NULL, _run, this);
+  pthread_create(&thread, nullptr, _run, this);
 }
 
 
@@ -335,7 +335,7 @@ void glgrib_shell::run_int ()
     {
       char * line = readline ("glgrib> ");
 
-      if (line == NULL)
+      if (line == nullptr)
         {
           lock ();
           wset->close ();
@@ -351,9 +351,9 @@ void glgrib_shell::run_int ()
         if (wset->size ())
           {
             glgrib_window * gwindow = wset->getWindowById (windowid);
-	    if (gwindow == NULL)
+	    if (gwindow == nullptr)
               gwindow = wset->getFirstWindow ();
-            if (gwindow != NULL)
+            if (gwindow != nullptr)
               execute (line, gwindow);
 	  }
       }
@@ -382,9 +382,9 @@ void glgrib_shell::run_off ()
             break;
           lock ();
           glgrib_window * gwindow = wset->getWindowById (windowid);
-          if (gwindow == NULL)
+          if (gwindow == nullptr)
             gwindow = wset->getFirstWindow ();
-          if (gwindow != NULL)
+          if (gwindow != nullptr)
             execute (line, gwindow);
           unlock ();
         }

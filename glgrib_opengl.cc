@@ -58,7 +58,7 @@ glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (size_t size, const void *
 glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (const glgrib_opengl_buffer_ptr & oldptr)
 {
   size_t size = oldptr->buffersize ();
-  glgrib_opengl_buffer_ptr newptr = new_glgrib_opengl_buffer_ptr (size, NULL);
+  glgrib_opengl_buffer_ptr newptr = new_glgrib_opengl_buffer_ptr (size, nullptr);
   oldptr->bind (GL_COPY_READ_BUFFER);
   newptr->bind (GL_COPY_WRITE_BUFFER);
 

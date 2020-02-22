@@ -41,7 +41,7 @@ void glgrib_land::render (const glgrib_view & view, const glgrib_options_light &
      
       glBindVertexArray (VertexArrayID[i]);
 
-      glDrawElements (GL_TRIANGLES, 3 * d[i].numberOfTriangles, GL_UNSIGNED_INT, NULL);
+      glDrawElements (GL_TRIANGLES, 3 * d[i].numberOfTriangles, GL_UNSIGNED_INT, nullptr);
       glBindVertexArray (0);
     }
 
@@ -333,7 +333,7 @@ void glgrib_land::setupVertexAttributes ()
       
       d[i].vertexbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (0); 
-      glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL); 
+      glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr); 
      
       d[i].elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 

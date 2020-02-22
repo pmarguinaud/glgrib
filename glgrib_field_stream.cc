@@ -22,8 +22,8 @@ glgrib_field_stream::glgrib_field_stream (const glgrib_field_stream & field)
 
 glgrib_field_stream * glgrib_field_stream::clone () const
 {
-  if (this == NULL)
-    return NULL;
+  if (this == nullptr)
+    return nullptr;
   glgrib_field_stream * fld = new glgrib_field_stream ();
   *fld = *this;
   return fld;
@@ -169,8 +169,8 @@ void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field 
 
   if (opts.no_value_pointer.on)
     {
-      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
-      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
+      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)nullptr));
+      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)nullptr));
     }
   else
     {

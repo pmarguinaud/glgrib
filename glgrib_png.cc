@@ -15,12 +15,12 @@ void glgrib_read_png (const std::string & filename, int * pwidth, int * pheight,
   int width, height;
   png_byte color_type;
   png_byte bit_depth;
-  png_bytep * png_rows = NULL;
+  png_bytep * png_rows = nullptr;
 
-  if (fp == NULL)
+  if (fp == nullptr)
     throw std::runtime_error (std::string ("Cannot open file :") + filename);
 
-  png_structp png = png_create_read_struct (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  png_structp png = png_create_read_struct (PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 
   if (! png) 
     abort();
@@ -90,7 +90,7 @@ void glgrib_read_png (const std::string & filename, int * pwidth, int * pheight,
         pixels[3*(width*j+i)+2] = png_rows[height-j-1][4*i+2];
       }
 
-  png_destroy_read_struct (&png, &info, NULL);
+  png_destroy_read_struct (&png, &info, nullptr);
 
   delete [] png_bytes;
   delete [] png_rows;
@@ -103,8 +103,8 @@ void glgrib_read_png (const std::string & filename, int * pwidth, int * pheight,
 
 void glgrib_write_png (const std::string & filename, int width, int height, unsigned char * pixels) 
 {
-  png_byte * png_bytes = NULL;
-  png_byte ** png_rows = NULL;
+  png_byte * png_bytes = nullptr;
+  png_byte ** png_rows = nullptr;
   const size_t format_nchannels = 3;
   size_t nvals = format_nchannels * width * height;
   FILE * fp = fopen (filename.c_str (), "w");
@@ -118,7 +118,7 @@ void glgrib_write_png (const std::string & filename, int width, int height, unsi
   for (int i = 0; i < height; i++)
      png_rows[height-i-1] = &png_bytes[i*width*format_nchannels];
 
-  png_structp png = png_create_write_struct (PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  png_structp png = png_create_write_struct (PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 
   if (! png)  
     abort ();
@@ -138,7 +138,7 @@ void glgrib_write_png (const std::string & filename, int width, int height, unsi
 
   png_write_info (png, info);
   png_write_image (png, png_rows);
-  png_write_end (png, NULL);
+  png_write_end (png, nullptr);
   png_destroy_write_struct (&png, &info);
 
   fclose (fp);

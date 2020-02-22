@@ -114,7 +114,7 @@ void glgrib_mapscale::render (const glm::mat4 & MVP, const glgrib_view & view) c
   program.set ("ymax", opts.position.ymax);
 
   glBindVertexArray (VertexArrayID);
-  glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, NULL);
+  glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, nullptr);
 
 }
 

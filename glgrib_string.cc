@@ -225,17 +225,17 @@ void glgrib_string::setupVertexAttributes ()
   
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 4, GL_FLOAT, GL_FALSE, 0, NULL); 
+  glVertexAttribPointer (0, 4, GL_FLOAT, GL_FALSE, 0, nullptr); 
   glVertexAttribDivisor (0, 1);
   
   d.letterbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, 1, GL_FLOAT, GL_FALSE, 0, NULL); 
+  glVertexAttribPointer (1, 1, GL_FLOAT, GL_FALSE, 0, nullptr); 
   glVertexAttribDivisor (1, 1);
   
   d.xyzbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (2); 
-  glVertexAttribPointer (2, 4, GL_FLOAT, GL_FALSE, 0, NULL); 
+  glVertexAttribPointer (2, 4, GL_FLOAT, GL_FALSE, 0, nullptr); 
   glVertexAttribDivisor (2, 1);
   glBindVertexArray (0);
   

@@ -155,7 +155,7 @@ public:
 
     *x = next;
 
-    next = prev = NULL; 
+    next = prev = nullptr; 
 
     if (this == *list)
       *list = *x;
@@ -163,7 +163,7 @@ public:
 
   bool linked () const
   {
-    return (next != NULL) || (prev != NULL);
+    return (next != nullptr) || (prev != nullptr);
   }
 
   // Number of points in double linked list
@@ -183,7 +183,7 @@ public:
 
 private:
   int rank = -1, index = -1;
-  node_t * prev = NULL, * next = NULL;
+  node_t * prev = nullptr, * next = nullptr;
 
   mutable float ang = 0.0f;
   mutable bool dirty = true;
@@ -629,7 +629,7 @@ public:
     int ny, nx;
     float  ymin,  ymax,  xmin,  xmax;
     int   iymin, iymax, ixmin, ixmax;
-    const xy2node_t * ll2n = NULL;
+    const xy2node_t * ll2n = nullptr;
   };
 
 

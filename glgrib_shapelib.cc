@@ -34,7 +34,7 @@ void glgrib_shapelib::read (const glgrib_options_lines & opts, int * numberOfPoi
   glgrib_dbase d;
   d.convert2sqlite (path);
 
-  if (fp == NULL)
+  if (fp == nullptr)
     throw std::runtime_error (std::string ("Cannot open Shapefile data : ") + path);
 
   double minb[4], maxb[4];
@@ -75,7 +75,7 @@ void glgrib_shapelib::read (const glgrib_options_lines & opts, int * numberOfPoi
 
       SHPObject * shape = SHPReadObject(fp, i);
 
-      if (shape == NULL)
+      if (shape == nullptr)
         throw std::runtime_error (std::string ("Cannot read record Shapefile data : ") + path);
       
 

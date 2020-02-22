@@ -24,8 +24,8 @@ glgrib_field_isofill::glgrib_field_isofill (const glgrib_field_isofill & field)
 
 glgrib_field_isofill * glgrib_field_isofill::clone () const
 {
-  if (this == NULL)
-    return NULL;
+  if (this == nullptr)
+    return nullptr;
   glgrib_field_isofill * fld = new glgrib_field_isofill ();
   *fld = *this;
   return fld;
@@ -73,12 +73,12 @@ void glgrib_field_isofill::setupVertexAttributes ()
   // Coordinates
   geometry->bindCoordinates (0);
   glEnableVertexAttribArray (0);
-  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 
   d.colorbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1);
 
-  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_FALSE, 0,  NULL);
+  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_FALSE, 0,  nullptr);
 
   glBindVertexArray (0); 
 
@@ -93,7 +93,7 @@ void glgrib_field_isofill::setupVertexAttributes ()
       ib.vertexbuffer->bind (GL_ARRAY_BUFFER);
   
       glEnableVertexAttribArray (0);
-      glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+      glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
   
       glBindVertexArray (0); 
     }
@@ -196,7 +196,7 @@ void processTriangle2 (std::vector<isoband_maker_t> * isomake,
     int I = -1;
     glm::vec2 lonlat_J, lonlat_K;
     glm::vec2 lonlat[3];
-    const float * v = NULL;
+    const float * v = nullptr;
   };
 
   processTriangle2_ctx_t ctx;
@@ -421,7 +421,7 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
     delete [] color;
   }
 
-  val = NULL;
+  val = nullptr;
 
   for (int i = 0; i < d.isoband.size (); i++)
     {
@@ -461,7 +461,7 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
                 isomake[ith][i].indice[j] + offset;
           }
 
-        indice = NULL;
+        indice = nullptr;
         d.isoband[i].elementbuffer->unmap ();
       }
 
@@ -482,7 +482,7 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
                 isomake[ith][i].lonlat[j];
           }
 
-        lonlat = NULL;
+        lonlat = nullptr;
         d.isoband[i].vertexbuffer->unmap ();
       }
 
@@ -493,7 +493,7 @@ void glgrib_field_isofill::setup (glgrib_loader * ld, const glgrib_options_field
   setupVertexAttributes ();
 
   if (opts.no_value_pointer.on)
-    values.push_back (new_glgrib_field_float_buffer_ptr ((float*)NULL));
+    values.push_back (new_glgrib_field_float_buffer_ptr ((float*)nullptr));
   else
     values.push_back (data);
 
@@ -532,7 +532,7 @@ void glgrib_field_isofill::render (const glgrib_view & view, const glgrib_option
     {
       glBindVertexArray (ib.VertexArrayID);
       program2->set ("color0", ib.color);
-      glDrawElements (GL_TRIANGLES, ib.size, GL_UNSIGNED_INT, NULL);
+      glDrawElements (GL_TRIANGLES, ib.size, GL_UNSIGNED_INT, nullptr);
       glBindVertexArray (0);
     }
 

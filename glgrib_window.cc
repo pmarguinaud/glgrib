@@ -207,7 +207,7 @@ void glgrib_window::toggle_wireframe ()
 { 
   glgrib_field * f = scene.getCurrentField ();
 
-  if (f == NULL)
+  if (f == nullptr)
     {
       scene.d.landscape.toggle_wireframe (); 
       return;
@@ -256,10 +256,10 @@ static glgrib_field_vector * get_vector (glgrib_scene & scene)
 {
   glgrib_field * f = scene.getCurrentField ();
 
-  if (f == NULL) 
-    return NULL;
+  if (f == nullptr) 
+    return nullptr;
 
-  glgrib_field_vector * v = NULL;
+  glgrib_field_vector * v = nullptr;
 
   try
     {
@@ -267,7 +267,7 @@ static glgrib_field_vector * get_vector (glgrib_scene & scene)
     }
   catch (const std::bad_cast & e)
     {
-      v = NULL;
+      v = nullptr;
     }
 
   return v;
@@ -292,10 +292,10 @@ void glgrib_window::resample_current_field ()
 {
   glgrib_field * f = scene.getCurrentField ();
 
-  if (f == NULL) 
+  if (f == nullptr) 
     return;
 
-  glgrib_field_vector * v = NULL;
+  glgrib_field_vector * v = nullptr;
 
   try
     {
@@ -306,7 +306,7 @@ void glgrib_window::resample_current_field ()
       return;
     }
 
-  if (v == NULL)
+  if (v == nullptr)
     return;
 
   v->reSample (scene.d.view);
@@ -316,17 +316,17 @@ void glgrib_window::resample_current_field ()
 void glgrib_window::save_current_palette ()
 {
   glgrib_field * f = scene.getCurrentField ();
-  if (f == NULL)
+  if (f == nullptr)
     return;
   f->saveOptions ();
 }
 
 void glgrib_window::remove_field (int rank)
 {
-  glgrib_field * f = NULL;
+  glgrib_field * f = nullptr;
   if ((rank < 0) || (rank > scene.fieldlist.size ()-1))
     return;
-  if (scene.fieldlist[rank] != NULL)
+  if (scene.fieldlist[rank] != nullptr)
     delete scene.fieldlist[rank];
   scene.fieldlist[rank] = f;
 }
@@ -407,14 +407,14 @@ void glgrib_window::toggle_light ()
 void glgrib_window::next_palette ()
 {
   glgrib_field * f = scene.getCurrentField ();
-  if (f != NULL)
+  if (f != nullptr)
     f->setNextPalette ();
 }
 
 void glgrib_window::scale_palette_up ()
 {
   glgrib_field * fld  = scene.getCurrentField ();
-  if (fld == NULL)
+  if (fld == nullptr)
     return;
   fld->scalePaletteUp ();
 }
@@ -422,7 +422,7 @@ void glgrib_window::scale_palette_up ()
 void glgrib_window::scale_palette_down ()
 {
   glgrib_field * fld  = scene.getCurrentField ();
-  if (fld == NULL)
+  if (fld == nullptr)
     return;
   fld->scalePaletteDown ();
 }
@@ -435,7 +435,7 @@ void glgrib_window::select_field (int ifield)
 void glgrib_window::scale_field_down ()
 {
   glgrib_field * f = scene.getCurrentField ();
-  if (f != NULL)
+  if (f != nullptr)
     {
       const glgrib_options_field & o = f->getOptions ();
       f->setScale (o.scale - 0.01);
@@ -445,7 +445,7 @@ void glgrib_window::scale_field_down ()
 void glgrib_window::scale_field_up ()
 {
   glgrib_field * f = scene.getCurrentField ();
-  if (f != NULL)
+  if (f != nullptr)
     {
       const glgrib_options_field & o = f->getOptions ();
       f->setScale (o.scale + 0.01);
@@ -455,7 +455,7 @@ void glgrib_window::scale_field_up ()
 void glgrib_window::toggle_hide_field ()
 {
   glgrib_field * fld = scene.getCurrentField ();
-  if (fld == NULL)
+  if (fld == nullptr)
     return;
   if (fld->visible ())
     fld->hide ();
@@ -466,14 +466,14 @@ void glgrib_window::toggle_hide_field ()
 void glgrib_window::hide_all_fields ()
 {
   for (auto f : scene.fieldlist)
-    if (f != NULL)
+    if (f != nullptr)
       f->hide ();
 }
 
 void glgrib_window::show_all_fields ()
 {
   for (auto f : scene.fieldlist)
-    if (f != NULL)
+    if (f != nullptr)
       f->show ();
 }
 
@@ -606,7 +606,7 @@ void glgrib_window::framebuffer (const std::string & format)
       glGenTextures (1, &texturebufferPOST);
       glBindTexture (GL_TEXTURE_2D, texturebufferPOST);
       glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, opts.width, opts.height, 
-                    0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+                    0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
       glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
@@ -648,7 +648,7 @@ void glgrib_window::framebuffer (const std::string & format)
       glGenTextures (1, &texturebuffer);
       glBindTexture (GL_TEXTURE_2D, texturebuffer);
       glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, opts.width, 
-                    opts.height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+                    opts.height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
      
       glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -718,7 +718,7 @@ void glgrib_window::display_cursor_position (double xpos, double ypos)
 void glgrib_window::toggle_cursorpos_display ()
 {
   if (cursorpos)
-    glfwSetCursorPosCallback (window, NULL);
+    glfwSetCursorPosCallback (window, nullptr);
   else
     glfwSetCursorPosCallback (window, cursor_position_callback);
   cursorpos = ! cursorpos;
@@ -776,7 +776,7 @@ void glgrib_window::debugTriangleNumber ()
 {
   glgrib_field * f = scene.getCurrentField ();
   float lon, lat;
-  if (get_latlon_from_cursor (&lat, &lon) && (f != NULL))
+  if (get_latlon_from_cursor (&lat, &lon) && (f != nullptr))
     {
       const_glgrib_geometry_ptr geometry = f->getGeometry ();
       std::cout << " getTriangle = " << geometry->getTriangle (lon, lat) << std::endl;
@@ -886,7 +886,7 @@ void glgrib_window::create (const glgrib_options & o)
     title = opts.title;
 
 
-  createGFLWwindow (NULL);
+  createGFLWwindow (nullptr);
 
   t0 = current_time ();
 
@@ -908,10 +908,10 @@ void glgrib_window::createGFLWwindow (GLFWwindow * context)
 {
   setHints ();
   
-  window = glfwCreateWindow (opts.width, opts.height, title.c_str (), NULL, context);
+  window = glfwCreateWindow (opts.width, opts.height, title.c_str (), nullptr, context);
   glfwSetWindowUserPointer (window, this);
 
-  if (window == NULL)
+  if (window == nullptr)
     {
       fprintf (stderr, "Failed to open GLFW window. "
                        "If you have an Intel GPU, they are not 3.3 compatible. "
@@ -940,7 +940,7 @@ void glgrib_window::createGFLWwindow (GLFWwindow * context)
          glEnable (GL_DEBUG_OUTPUT);
          glEnable (GL_DEBUG_OUTPUT_SYNCHRONOUS); 
          glDebugMessageCallback (debug_callback, this);
-         glDebugMessageControl (GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+         glDebugMessageControl (GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
        }
    }
 
@@ -994,17 +994,17 @@ void glgrib_window_set::run (glgrib_shell * shell)
 {
   while (! empty ())
     {
-      const glgrib_window * wl = NULL;
+      const glgrib_window * wl = nullptr;
 
       for (auto w : *this)
 	if (w->isMaster ())
           {
-            if (wl != NULL)
+            if (wl != nullptr)
               w->unsetMaster ();
 	    else
               wl = w;
 	  }
-      if (wl != NULL)
+      if (wl != nullptr)
         for (auto w : *this)
           w->scene.d.view.setOptions (wl->scene.d.view.getOptions ());
       for (auto w : *this)
@@ -1041,7 +1041,7 @@ glgrib_window * glgrib_window_set::getWindowById (int id)
   for (auto w : *this)
     if (w->id () == id)
       return w;
-  return NULL;
+  return nullptr;
 }
 
 void glgrib_window_set::close ()

@@ -51,7 +51,7 @@ glgrib_font::~glgrib_font ()
 void glgrib_font::setup (const glgrib_options_font & o)
 {
   opts = o;
-  unsigned char * rgb = NULL;
+  unsigned char * rgb = nullptr;
   int w, h;
   std::vector<int> ioff, joff;
 

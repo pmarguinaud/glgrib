@@ -23,12 +23,12 @@ void glgrib_sqlite_detail::iset (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank,
 
 void glgrib_sqlite_detail::iset (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, const char * t) 
 {
-  ok (db, sqlite3_bind_text (req->data, 1 + rank, t, strlen (t), NULL));
+  ok (db, sqlite3_bind_text (req->data, 1 + rank, t, strlen (t), nullptr));
 }
 
 void glgrib_sqlite_detail::iset (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, const std::string * t) 
 {
-  ok (db, sqlite3_bind_text (req->data, 1 + rank, t->c_str (), strlen (t->c_str ()), NULL));
+  ok (db, sqlite3_bind_text (req->data, 1 + rank, t->c_str (), strlen (t->c_str ()), nullptr));
 }
 
 void glgrib_sqlite_detail::iset_list (sqlite3_ptr, sqlite3_stmt_ptr, int) {}

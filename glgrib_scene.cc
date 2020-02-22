@@ -14,14 +14,14 @@ glgrib_scene & glgrib_scene::operator= (const glgrib_scene & other)
       d = other.d;
      
       for (auto f : fieldlist)
-        if (f != NULL)
+        if (f != nullptr)
           delete f;
      
       fieldlist.clear ();
      
       for (auto f : other.fieldlist)
-        if (f == NULL)
-          fieldlist.push_back (NULL);
+        if (f == nullptr)
+          fieldlist.push_back (nullptr);
         else
           fieldlist.push_back (f->clone ());
    }
@@ -31,13 +31,13 @@ glgrib_scene & glgrib_scene::operator= (const glgrib_scene & other)
 glgrib_scene::~glgrib_scene () 
 {
   for (auto f : fieldlist)
-    if (f != NULL)
+    if (f != nullptr)
       delete f;
 }
 
 void glgrib_scene::display_obj (const glgrib_object * obj) const
 {
-  if (obj == NULL)
+  if (obj == nullptr)
     return;
   if (! obj->isReady ())
     return;
@@ -58,7 +58,7 @@ void glgrib_scene::display () const
   obj_list.push_back (&d.landscape);
 
   for (auto f : fieldlist)
-    if (f != NULL)
+    if (f != nullptr)
       obj_list.push_back (f);
 
   obj_list.push_back (&d.coast);
@@ -79,10 +79,10 @@ void glgrib_scene::display () const
     display_obj (obj);
 
   const glgrib_field * fld = d.currentFieldRank < fieldlist.size () 
-                           ? fieldlist[d.currentFieldRank] : NULL;
+                           ? fieldlist[d.currentFieldRank] : nullptr;
   d.image.render (d.MVP_L);
 
-  if ((fld != NULL) && (! d.colorbar.getHidden ()))
+  if ((fld != nullptr) && (! d.colorbar.getHidden ()))
     if (fld->useColorBar ())
       d.colorbar.render (d.MVP_L, 
                          fld->getPalette (), 
@@ -116,7 +116,7 @@ const glgrib_option_date * glgrib_scene::get_date ()
 	  if (meta.size () >= 1)
             return &meta[0].term;
         }
-  return NULL;
+  return nullptr;
 }
 
 
@@ -125,14 +125,14 @@ void glgrib_scene::update_light ()
   if (d.opts.scene.light.rotate.on)
     d.opts.scene.light.lon -= 1.;
 
-  const glgrib_option_date * date = NULL;
+  const glgrib_option_date * date = nullptr;
 
   if (d.opts.scene.light.date_from_grib.on)
     date = get_date ();
   else if (d.opts.scene.light.date.year != 0)
     date = &d.opts.scene.light.date;
 
-  if (date != NULL)
+  if (date != nullptr)
     {
       const int nday[12] = {31, 28, 31, 30, 31, 30, 
                             31, 31, 30, 31, 30, 31};
@@ -195,7 +195,7 @@ void glgrib_scene::update_view ()
            (d.opts.scene.lon_at_hour <= 24.0f))
     {
       const glgrib_option_date * date = get_date ();
-      if (date != NULL)
+      if (date != nullptr)
         {
           float hh = d.opts.scene.lon_at_hour - (date->hour + date->minute / 60.0f);
 	  if (hh > 24.0f) 
@@ -223,7 +223,7 @@ void glgrib_scene::update_interpolation ()
       int slotmax = 0;
 
       for (auto f : fieldlist)
-        if (f != NULL)
+        if (f != nullptr)
           slotmax = std::max (slotmax, f->getSlotMax ());
 
       slotmax--;
@@ -242,10 +242,10 @@ void glgrib_scene::update_date ()
 {
   if (d.opts.scene.date.on)
     {
-      const glgrib_option_date * date = NULL;
+      const glgrib_option_date * date = nullptr;
 
       glgrib_field * fld = getCurrentField ();
-      if (fld != NULL)
+      if (fld != nullptr)
         {
           const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
           date = &meta[0].term;
@@ -255,7 +255,7 @@ void glgrib_scene::update_date ()
           date = get_date ();
 	}
 
-      if (date != NULL)
+      if (date != nullptr)
         {
           if (strdate != date->asString ())
             {
@@ -272,7 +272,7 @@ void glgrib_scene::update_title ()
     {
       std::string title = d.opts.scene.title.text;
       glgrib_field * fld = getCurrentField ();
-      if ((fld != NULL) && (title == ""))
+      if ((fld != nullptr) && (title == ""))
         {
           const std::vector<glgrib_field_metadata> & meta = fld->getMeta ();
           title = meta[0].getName ();
@@ -337,7 +337,7 @@ void glgrib_scene::setup (const glgrib_options & o)
   setDepartementsOptions (d.opts.departements);
 
   for (auto f : d.opts.field)
-    fieldlist.push_back ((glgrib_field *)NULL);
+    fieldlist.push_back ((glgrib_field *)nullptr);
 
   for (int i = 0; i < d.opts.field.size (); i++)
     setFieldOptions (i, d.opts.field[i]);
@@ -355,7 +355,7 @@ void glgrib_scene::setup (const glgrib_options & o)
   if (d.opts.scene.center.on)
     {
       glgrib_field * field = getCurrentField ();
-      if (field != NULL)
+      if (field != nullptr)
         {
           const_glgrib_geometry_ptr geometry = field->getGeometry ();
           geometry->getView (&d.view);
@@ -408,7 +408,7 @@ glgrib_options glgrib_scene::getOptions () const
   o.mapscale       = d.mapscale.getOptions ();
 
   for (int i = 0; i < fieldlist.size (); i++)
-    if (fieldlist[i] != NULL)
+    if (fieldlist[i] != nullptr)
       o.field[i] = fieldlist[i]->getOptions ();
 
   return o;
@@ -477,7 +477,7 @@ void glgrib_scene::setDepartementsOptions (const glgrib_options_departements & o
 
 void glgrib_scene::setFieldOptions (int j, const glgrib_options_field & o, float slot)
 {
-  if (fieldlist[j] != NULL)
+  if (fieldlist[j] != nullptr)
     delete fieldlist[j];
 
   fieldlist[j] = glgrib_field::create (o, slot, &ld);
@@ -567,7 +567,7 @@ void glgrib_scene::setGridScaleOptions (float scale)
 void glgrib_scene::setFieldPaletteOptions (int j, const glgrib_options_palette & opts)
 {
   glgrib_field * fld = fieldlist[j];
-  if (fld == NULL)
+  if (fld == nullptr)
     return;
   fld->setPaletteOptions (opts);
 }

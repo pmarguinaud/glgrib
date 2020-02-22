@@ -37,7 +37,7 @@ glgrib_handle_ptr glgrib_loader::handle_from_file (const std::string & f)
 	return e.ghp;
       }
 
-  codes_handle * h = NULL;
+  codes_handle * h = nullptr;
 
   int k = f.find_last_of ('%');
 
@@ -62,7 +62,7 @@ glgrib_handle_ptr glgrib_loader::handle_from_file (const std::string & f)
         {
           int err = 0;
           FILE * in = fopen (file.c_str (), "r");
-          if (in == NULL)
+          if (in == nullptr)
             throw std::runtime_error (std::string ("Could not open ") + 
                                       file + std::string (" for reading"));
           while ((h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err)))
@@ -138,11 +138,11 @@ glgrib_handle_ptr glgrib_loader::handle_from_file (const std::string & f)
 next:
 	      // Free GRIB handle
               codes_handle_delete (h);
-	      h = NULL;
+	      h = nullptr;
 	    }
           fclose (in);
 
-          if (h == NULL)
+          if (h == nullptr)
             throw std::runtime_error (std::string ("No match for ") + ext + std::string (" in file ") + file);
          
 	}
@@ -160,11 +160,11 @@ next:
 		    * CLSTTC = (character*)"KEEP", * CLNOMA = (character*)ext.c_str ();
 	  character_len CLNOMF_len = file.length (), CLSTTO_len = 3, CLSTTC_len = 4, 
 			CLNOMA_len = ext.length ();
-	  integer64 * ITAB = NULL;
+	  integer64 * ITAB = nullptr;
           
 
 	  strncpy (lficomm.cmagic, "LFI_FORT", 8);
-	  lficomm.lfihl = NULL;
+	  lficomm.lfihl = nullptr;
 
           lfiouv_mt64_ (LFI, &IREP, &INUMER, &LLNOMM, CLNOMF, CLSTTO, &LLERFA, &LLIMST, 
 			&INIMES, &INBARP, &INBARI, CLNOMF_len, CLSTTO_len);
@@ -193,7 +193,7 @@ next:
           h = codes_handle_new_from_message_copy (0, ITAB + 3, 8 * (ILONG - 3));
 	  delete [] ITAB;
 
-          if (h == NULL)
+          if (h == nullptr)
             throw std::runtime_error (std::string ("Article ") + ext + std::string (" of file ") + file +
                                       std::string (" does not contain a GRIB message"));
          
@@ -251,9 +251,9 @@ void glgrib_loader::load (glgrib_field_float_buffer_ptr * ptr, const std::vector
 
   glgrib_field_metadata meta1, meta2;
 
-  if (ptr == NULL)
+  if (ptr == nullptr)
     {
-      load (NULL, file1, opts_geom, &meta1);
+      load (nullptr, file1, opts_geom, &meta1);
       *meta = meta1;
     }
   else
@@ -337,7 +337,7 @@ void glgrib_loader::load (glgrib_field_float_buffer_ptr * ptr, const std::string
   codes_get_double (h, "minimum",      &vmin);
   codes_get_double (h, "maximum",      &vmax);
 
-  if (ptr != NULL)
+  if (ptr != nullptr)
     {
       double * v = new double[v_len];
       codes_get_double_array (h, "values", v, &v_len);

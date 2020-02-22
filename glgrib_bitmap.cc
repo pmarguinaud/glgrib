@@ -15,7 +15,7 @@ void glgrib_bitmap (const std::string & file, unsigned char ** rgb, int * width,
   unsigned char h[54];
   FILE * fp = fopen (file.c_str (), "r");
 
-  if (fp == NULL)
+  if (fp == nullptr)
     std::runtime_error (std::string ("Cannot open BMP file : ") + file);
 
   if (fread (h, sizeof (h), 1, fp) != 1)

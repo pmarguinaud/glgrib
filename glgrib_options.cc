@@ -64,7 +64,7 @@ template <> void option_tmpl_list<std::string>::set (const std::string & v)
 
 template <> void option_tmpl<bool>::clear ()
 {
-  if (value != NULL) 
+  if (value != nullptr) 
     *value = false; 
 }
 
@@ -348,7 +348,7 @@ bool glgrib_options_parser::parse (int _argc, const char * _argv[],
     argv.push_back (_argv[i]);
   try
     {
-      glgrib_options_parser_detail::option_base * opt = NULL;
+      glgrib_options_parser_detail::option_base * opt = nullptr;
 
       while (argv.size () > 0)
         {
@@ -450,7 +450,7 @@ bool glgrib_options_parser::parse (int _argc, const char * _argv[],
                     throw std::runtime_error (std::string ("Unknown option ") + arg);
                 }
             }
-          else if (opt == NULL)
+          else if (opt == nullptr)
             {
               throw std::runtime_error (std::string ("Error parsing options: no valid option for `") + arg + std::string ("'"));
             }

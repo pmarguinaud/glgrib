@@ -18,7 +18,7 @@ void glgrib_test::render (const glgrib_view & view, const glgrib_options_light &
   glDisable (GL_CULL_FACE);
 
   glBindVertexArray (VertexArrayID);
-  glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, NULL);
+  glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, nullptr);
   glBindVertexArray (0);
 
   glEnable (GL_CULL_FACE);
@@ -53,7 +53,7 @@ void glgrib_test::setup ()
 
   vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
   glBindVertexArray (0); 

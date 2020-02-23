@@ -11,18 +11,26 @@ uniform float palmin;
 uniform float palmax;
 uniform float valmin;
 uniform float valmax;
+uniform float timea;
+uniform float width; // From linevertex.h
+uniform bool motion = true;
 
 void main ()
 {
   if (alpha == 0.0f)
     discard;
 
-  vec3 grey = vec3 (0.3f, 0.3f, 0.3f);
-  vec3 green= vec3 (0.0f, 1.0f, 0.0f);
+  float y = (1 + sin (3000 * dist - 10.0 * timea)) / 2;
 
   float n = norm / valmax;
   int k = min (255, 1 + int (n * 254.0));
-  color = RGBA0[k];
+  
+  vec4 r = vec4 (1.0, 0.0, 0.0, 1.0);
+  vec4 b = vec4 (0.0, 0.0, 1.0, 1.0);
+  
+//color =  y * RGBA0[k];
+
+  color = y * r + (1 - y) * b;
 
 }
 

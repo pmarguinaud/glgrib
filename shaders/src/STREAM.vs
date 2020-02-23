@@ -17,6 +17,7 @@ out float norm;
 
 uniform mat4 MVP;
 uniform float normmax;
+uniform bool scalenorm = false;
 
 #include "projection.h"
 #include "scale.h"
@@ -24,7 +25,7 @@ uniform float normmax;
 
 void main ()
 {
-  float c0 = max (0.5f, 2.0f * norm0 / normmax);
+  float c0 = scalenorm ? max (0.5f, 2.0f * norm0 / normmax) : 1.0f;
 
   vec3 pos;
 

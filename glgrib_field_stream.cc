@@ -444,6 +444,28 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
   program->set ("valmax", valmax[0]);
   program->set ("normmax", valmax[0]);
 
+
+  auto getTime = [] ()
+  {
+    struct timeval tv;
+    struct timezone tz;
+    gettimeofday (&tv, &tz);
+    return double (tv.tv_sec) + 0.000001 * double (tv.tv_usec);
+  };
+
+  static double time0;
+  
+  static bool first = true;
+  if (first)
+    {
+      first = false;
+      time0 = getTime ();
+    }
+
+  double tt = getTime ();
+  double timea = tt - time0;
+  program->set ("timea", float (timea));
+
   bool wide = opts.stream.width > 0.0f;
   float Width = 5.0f * opts.stream.width;
 

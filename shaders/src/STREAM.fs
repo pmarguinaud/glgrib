@@ -13,7 +13,7 @@ uniform float valmin;
 uniform float valmax;
 uniform float timea;
 uniform float width; // From linevertex.h
-uniform bool motion = true;
+uniform bool motion = false;
 
 void main ()
 {

@@ -317,16 +317,17 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     1.03 --field[0].palette.name cloud_auto --field[0].no_value_pointer.on 
 ```
 ## Display field in offscreen mode                                   -- offscreen
-![](test.ref/offscreen/TEST_0000.png)
+![](test.ref/offscreen/TEST.gif)
 
 ```
     --landscape.on --landscape.geometry_path testdata/t1198c2.2/Z.grb 
-    --window.offscreen.on --window.offscreen.frames 10 
+    --window.offscreen.on --window.offscreen.frames 36 
     --scene.light.rotate.on --scene.light.on --field[0].path 
     testdata/t1198c2.2/SURFNEBUL.BASSE.grb 
     testdata/t1198c2.2/SURFNEBUL.MOYENN.grb 
     testdata/t1198c2.2/SURFNEBUL.HAUTE.grb --field[0].scale 1.03 1.03 1.03 
     --field[0].palette.name cloud_auto cloud_auto cloud_auto 
+    --scene.light.rotate.rate 10 
 ```
 ## Display field with options in file                                -- optionsfile
 ![](test.ref/optionsfile/TEST_0000.png)

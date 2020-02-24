@@ -123,7 +123,7 @@ const glgrib_option_date * glgrib_scene::get_date ()
 void glgrib_scene::update_light ()
 {
   if (d.opts.scene.light.rotate.on)
-    d.opts.scene.light.lon -= 1.;
+    d.opts.scene.light.lon -= d.opts.scene.light.rotate.rate;
 
   const glgrib_option_date * date = nullptr;
 
@@ -161,7 +161,7 @@ void glgrib_scene::update_view ()
   glgrib_options_view o = d.view.getOptions ();
 
   if (d.opts.scene.rotate_earth.on)
-    o.lon += 1.;
+    o.lon += d.opts.scene.rotate_earth.rate;
   if (d.opts.scene.travelling.on)
     {
       float frames = d.opts.scene.travelling.frames;

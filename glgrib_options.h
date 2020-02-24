@@ -1068,6 +1068,7 @@ public:
     DESC (lon,               Light longitude);
     DESC (lat,               Light latitude);
     DESC (rotate.on,         Make sunlight move);
+    DESC (rotate.rate,       Rate of rotation : angle/frame);
     DESC (date,              Date for sunlight position);
     DESC (night,             Fraction of light during for night);
   }
@@ -1080,6 +1081,7 @@ public:
   struct
   {
     bool on = false;
+    float rate = 1.0f;
   } rotate;
   float  lon  = 0.0f;
   float  lat  = 0.0f;
@@ -1206,6 +1208,7 @@ public:
   {
     DESC (lon_at_hour,         Set longitude at solar time);
     DESC (rotate_earth.on,     Make earth rotate);
+    DESC (rotate_earth.rate,   Rate of rotation : angle/frame);
     INCLUDE (light);
     INCLUDE (travelling);
     INCLUDE (interpolation);
@@ -1219,6 +1222,7 @@ public:
   struct
   {
     bool on  = false;
+    float rate = 1.0f;
   } rotate_earth;
   float   lon_at_hour = -1.0f;
   glgrib_options_light light;  

@@ -42,7 +42,16 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     {
       next unless ($opts =~ m/^--/o);
       print "## $desc -- $name\n";
-      print "![](test.ref/$name/TEST_0000.png)\n";
+
+      if (-f "test.ref/$name/TEST.gif")
+        {
+          print "![](test.ref/$name/TEST.gif)\n";
+        }
+      else
+        {
+          print "![](test.ref/$name/TEST_0000.png)\n";
+        }
+
       print "\n";
 
       my @o = @{ $test{$name}[1] };
@@ -103,7 +112,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
   "Display contour field using Mercator projection                  " ,  mercator            => '--field[0].diff.on --field[0].type CONTOUR --field[0].path testdata/glob01/lfpw_0_3_1_sfc_0_prmsl+0000.grib2 testdata/glob01/lfpw_0_3_1_sfc_0_prmsl+0102.grib2 --field[0].scale 1.01 --view.projection MERCATOR --landscape.on',
   "Display field with missing values                                " ,  missingvalue        => '--field[0].path testdata/t49/SFX.CLAY.grb --coast.on --grid.on --field[0].user_pref.off',
   "Display field with keeping field values in RAM                   " ,  novalue             => '--landscape.on --landscape.geometry_path testdata/t1798/Z.grb --field[0].path testdata/t1798/SURFNEBUL.BASSE.grb --field[0].scale 1.03 --field[0].palette.name cloud_auto --field[0].no_value_pointer.on',
-  "Display field in offscreen mode                                  " ,  offscreen           => '--landscape.on --landscape.geometry_path testdata/t1198c2.2/Z.grb --window.offscreen.on --window.offscreen.frames 10 --scene.light.rotate.on --scene.light.on --field[0].path testdata/t1198c2.2/SURFNEBUL.BASSE.grb testdata/t1198c2.2/SURFNEBUL.MOYENN.grb testdata/t1198c2.2/SURFNEBUL.HAUTE.grb --field[0].scale 1.03 1.03 1.03 --field[0].palette.name cloud_auto cloud_auto cloud_auto',
+  "Display field in offscreen mode                                  " ,  offscreen           => '--landscape.on --landscape.geometry_path testdata/t1198c2.2/Z.grb --window.offscreen.on --window.offscreen.frames 36 --scene.light.rotate.on --scene.light.on --field[0].path testdata/t1198c2.2/SURFNEBUL.BASSE.grb testdata/t1198c2.2/SURFNEBUL.MOYENN.grb testdata/t1198c2.2/SURFNEBUL.HAUTE.grb --field[0].scale 1.03 1.03 1.03 --field[0].palette.name cloud_auto cloud_auto cloud_auto --scene.light.rotate.rate 10',
   "Display field with options in file                               " ,  optionsfile         => '--{testdata/options.list}',
   "Display field with palette gradient color                        " ,  palette_values_grad => '--landscape.on --landscape.geometry_path testdata/t1198c2.2/Z.grb --field[0].path testdata/t1198c2.2/N.grb --field[0].scale 1.03 --field[0].palette-{ --colors "#00000000" "#008bff" "#01f8e9" "#05cf66" "#34c00c" "#b6e904" "#ffe600" "#ffb500" "#ff6900" "#ff0f00" "#b3003e" "#570088" --values 0 2 6 10 14 18 22 26 30 34 38 42 --min 0 --max 46 }- --colorbar.on --window.width 1200',
   "Display field with discrete palette                              " ,  palette_values      => '--landscape.on --landscape.geometry_path testdata/t1198c2.2/Z.grb --field[0].path testdata/t1198c2.2/N.grb --field[0].scale 1.03 --field[0].palette-{ --colors "#00000000" "#008bff" "#01f8e9" "#05cf66" "#34c00c" "#b6e904" "#ffe600" "#ffb500" "#ff6900" "#ff0f00" "#b3003e" "#570088" --values 0 2 6 10 14 18 22 26 30 34 38 42 46 --min 0 --max 46 }- --colorbar.on --window.width 1200',
@@ -250,7 +259,15 @@ for my $name (@name)
       {
         &mkpath ("test.run/$name");
         
-        for my $png (<TEST*.png>)
+	my @img = <TEST*.png>;
+
+	if (scalar (@img) > 1)
+	  {
+            system ('convert', -delay => 20, -loop => 0, @img, 'TEST.gif');
+	    rename ('TEST.gif', "test.run/$name/TEST.gif");
+	  }
+
+        for my $png (@img)
           {
             my $new = "test.run/$name/$png";
             my $thumb = "test.run/$name/thumb_$png";
@@ -263,19 +280,19 @@ for my $name (@name)
                 'FileHandle'->new (">>test.run/test.log")->print ("$name\n");
                 my @cmd = ('compare', '-metric', 'MAE', $ref, $new, $dif);
                 print "@cmd\n";
-		if (my $pid = fork ())
-		  {
+        	if (my $pid = fork ())
+        	  {
                     waitpid ($pid, 0);
-		  }
-		else
-		  {
+        	  }
+        	else
+        	  {
                     open (STDOUT, ">>test.run/test.log");
                     open (STDERR, ">>test.run/test.log");
                     exec (@cmd);
-		  }
+        	  }
                 print "\n";
                 'FileHandle'->new (">>test.run/test.log")->print ("\n");
-    	      }
+              }
           }
     
       }

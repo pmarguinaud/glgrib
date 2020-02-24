@@ -7,8 +7,8 @@ Add [] operator to glgrib_field_float_buffer_ptr
 Optimisations : 
 - use compressed lat/lon
 - reduce CPU usage
-Remove unused shaders
-Optimize coordinates latlon->XYZ in shaders
+
+
 Temp object for unmapping buffers ?
 Template for openGL buffers depending on type being allocated ?
 
@@ -32,9 +32,6 @@ in VS_OUT
 } fs_in;
 
 Make VAOs object with automatic destruction.
-Use nullptr
-
-Coordinates on edges of window.
 
 Start with multiple windows. 
 

@@ -513,9 +513,14 @@ public:
   {
     DESC (width,         Stream lines width);          
     DESC (density,       Stream lines density);          
+    DESC (motion.on,     Enable stream lines motion);
   }
   float width = 0.0f;
   float density = 1.0f;
+  struct
+  {
+    bool on = false;
+  } motion;
 };
 
 class glgrib_options_vector : public glgrib_options_base

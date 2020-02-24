@@ -97,26 +97,27 @@ private:
 
   std::vector<streamline_t> stream;
   float normmax;
+  double time0 = 0.0f;
 
   class stream_seen_t : public std::set<int>
   {
   public:
-  bool has (const int & k)
-  {
-    return end () != find (k);
-  }
-  bool operator[] (const int & k)
-  {
-    return has (k);
-  }
-  void add (const int & k)
-  {
-    insert (k);
-  }
-  void del (const int & k)
-  {
-    erase (k);
-  }
+    bool has (const int & k)
+    {
+      return end () != find (k);
+    }
+    bool operator[] (const int & k)
+    {
+      return has (k);
+    }
+    void add (const int & k)
+    {
+      insert (k);
+    }
+    void del (const int & k)
+    {
+      erase (k);
+    }
   };
 
   void getFirstPoint (int, const float *, const float *, 

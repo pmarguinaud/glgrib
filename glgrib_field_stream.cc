@@ -10,6 +10,15 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
+static
+double getTime ()
+{
+  struct timeval tv;
+  struct timezone tz;
+  gettimeofday (&tv, &tz);
+  return double (tv.tv_sec) + 0.000001 * double (tv.tv_usec);
+}
+
 glgrib_field_stream::glgrib_field_stream (const glgrib_field_stream & field)
 {
   if (field.isReady ())
@@ -38,6 +47,7 @@ glgrib_field_stream & glgrib_field_stream::operator= (const glgrib_field_stream 
         {
           glgrib_field::operator= (field);
           stream = field.stream;
+	  time0  = field.time0;
           setupVertexAttributes ();
           setReady ();
         }
@@ -99,6 +109,8 @@ void glgrib_field_stream::setupVertexAttributes ()
 void glgrib_field_stream::setup (glgrib_loader * ld, const glgrib_options_field & o, float slot)
 {
   opts = o;
+
+  time0 = getTime ();
 
   glgrib_field_metadata meta_u, meta_v;
   glgrib_field_metadata meta_n, meta_d;
@@ -444,30 +456,15 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
   program->set ("valmax", valmax[0]);
   program->set ("normmax", valmax[0]);
 
-
-  auto getTime = [] ()
-  {
-    struct timeval tv;
-    struct timezone tz;
-    gettimeofday (&tv, &tz);
-    return double (tv.tv_sec) + 0.000001 * double (tv.tv_usec);
-  };
-
-  static double time0;
-  
-  static bool first = true;
-  if (first)
-    {
-      first = false;
-      time0 = getTime ();
-    }
-
-  double tt = getTime ();
-  double timea = tt - time0;
+  double timea = getTime () - time0;
   program->set ("timea", float (timea));
 
   bool wide = opts.stream.width > 0.0f;
   float Width = 5.0f * opts.stream.width;
+
+  program->set ("motion", opts.stream.motion.on);
+  if (opts.stream.motion.on)
+    program->set ("scalenorm", false);
 
   for (int i = 0; i < stream.size (); i++)
     {

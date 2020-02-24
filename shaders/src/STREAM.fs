@@ -14,6 +14,8 @@ uniform float valmax;
 uniform float timea;
 uniform float width; // From linevertex.h
 uniform bool motion = false;
+uniform float accelt = 10000.0f;
+uniform float nwaves = 10.0f;       // 10 waves over 1000km
 
 void main ()
 {
@@ -24,9 +26,12 @@ void main ()
 
   if (motion)
     {
-//    float y = (1 + sin (3000 * dist - 10.0 * timea)) / 2;
-      float y = (1 + sin (6000000 * (dist - timea))) / 2;
-      k = int (255 * min (1, max (0, y)));
+      const float ra = 6000000.0f;
+      const float distref = 1000000.0f; // = 1000 km
+      float distrefovervalmax = distref / valmax;
+      float tscale = distrefovervalmax / nwaves;
+      float y = (1 + sin ((ra * dist - timea * accelt) / tscale)) / 2;
+      k = 1 + int (254 * min (1, max (0, y)));
     }
   else
     {

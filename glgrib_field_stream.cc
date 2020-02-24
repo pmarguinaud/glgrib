@@ -455,6 +455,8 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
   program->set ("valmin", valmin[0]);
   program->set ("valmax", valmax[0]);
   program->set ("normmax", valmax[0]);
+  program->set ("accelt", opts.stream.motion.timeaccel);
+  program->set ("nwaves", opts.stream.motion.nwaves);
 
   double timea = getTime () - time0;
   program->set ("timea", float (timea));
@@ -463,8 +465,7 @@ void glgrib_field_stream::render (const glgrib_view & view, const glgrib_options
   float Width = 5.0f * opts.stream.width;
 
   program->set ("motion", opts.stream.motion.on);
-  if (opts.stream.motion.on)
-    program->set ("scalenorm", false);
+  program->set ("scalenorm", ! opts.stream.motion.on);
 
   for (int i = 0; i < stream.size (); i++)
     {

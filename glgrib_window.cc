@@ -346,7 +346,7 @@ void glgrib_window::load_field (const glgrib_options_field & opts, int rank)
     scene.fieldlist.push_back (f);
   else
     scene.fieldlist[rank] = f;
-  
+
 }
 
 void glgrib_window::toggle_transform_type ()
@@ -785,8 +785,11 @@ void glgrib_window::debugTriangleNumber ()
 
 void glgrib_window::scroll (double xoffset, double yoffset)
 {
+
   makeCurrent ();
+
   glgrib_options_view o = scene.d.view.getOptions ();
+
   if (yoffset > 0)
     {
       if (o.fov < 1.0f)
@@ -805,10 +808,12 @@ void glgrib_window::scroll (double xoffset, double yoffset)
     }
   scene.d.view.setOptions (o);
   scene.resize ();
+
 }
 
 void glgrib_window::renderFrame ()
 {
+
   nframes++;
 
   makeCurrent ();
@@ -841,11 +846,15 @@ void glgrib_window::run (glgrib_shell * shell)
 
 void glgrib_window::resize (int w, int h)
 {
+
   opts.width = w;
   opts.height = h;
+
   makeCurrent ();
+
   glViewport (0, 0, opts.width, opts.height);
   scene.setViewport (opts.width, opts.height);
+
 }
 
 void glgrib_window::setHints ()

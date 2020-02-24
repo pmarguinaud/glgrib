@@ -20,17 +20,20 @@ void main ()
   if (alpha == 0.0f)
     discard;
 
-  float y = (1 + sin (3000 * dist - 10.0 * timea)) / 2;
+  int k;
 
-  float n = norm / valmax;
-  int k = min (255, 1 + int (n * 254.0));
+  if (motion)
+    {
+      float y = (1 + sin (3000 * dist - 10.0 * timea)) / 2;
+      k = int (255 * min (1, max (0, y)));
+    }
+  else
+    {
+      float n = norm / valmax;
+      k = min (255, 1 + int (n * 254.0));
+    }
   
-  vec4 r = vec4 (1.0, 0.0, 0.0, 1.0);
-  vec4 b = vec4 (0.0, 0.0, 1.0, 1.0);
-  
-//color =  y * RGBA0[k];
-
-  color = y * r + (1 - y) * b;
+  color = RGBA0[k];
 
 }
 

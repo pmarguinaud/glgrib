@@ -24,7 +24,8 @@ void main ()
 
   if (motion)
     {
-      float y = (1 + sin (3000 * dist - 10.0 * timea)) / 2;
+//    float y = (1 + sin (3000 * dist - 10.0 * timea)) / 2;
+      float y = (1 + sin (6000000 * (dist - timea))) / 2;
       k = int (255 * min (1, max (0, y)));
     }
   else

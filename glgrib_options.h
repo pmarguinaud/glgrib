@@ -773,10 +773,15 @@ public:
     DESC (on, Enable side);
     DESC (dlon, Longitude interval);
     DESC (dlat, Latitude interval);
+    DESC (nswe.on, North/South/West/East labels instead of +/-);
   }
   bool on = true;
   float dlon = 10.0f;
   float dlat = 10.0f;
+  struct
+  {
+    bool on = false;
+  } nswe;
 };
 
 class glgrib_options_ticks : public glgrib_options_base

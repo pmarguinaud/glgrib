@@ -196,6 +196,7 @@ void glgrib_ticks::createStr
     }
 
 
+  const bool NSWE = sopts.nswe.on;
 
   for (int i = 0; i < xyllv.size ()-1; i++)
     if (xyllv[i+0].valid && xyllv[i+1].valid)
@@ -216,8 +217,18 @@ void glgrib_ticks::createStr
                       {
                         char tmp[32];
                 	float a = (lat - lat0) / (lat1 - lat0);
-                	sprintf (tmp, opts.labels.format.c_str (), lat);
-                	std::string s (tmp);
+                	std::string s;
+			if (NSWE)
+                          {
+                            std::string L = lat >= 0 ? "N" : "S";
+                	    sprintf (tmp, opts.labels.format.c_str (), fabs (lat));
+			    s = std::string (tmp) + L;
+			  }
+			else
+                          {
+                	    sprintf (tmp, opts.labels.format.c_str (), lat);
+			    s = std::string (tmp);
+			  }
 			while ((s.length () > 0) && (s[0] == ' '))
                           s = s.substr (1);
                 	S.push_back (s);
@@ -258,8 +269,19 @@ void glgrib_ticks::createStr
                       {
                         char tmp[32];
                 	float a = (lon - lon0) / (lon1 - lon0);
-                	sprintf (tmp, opts.labels.format.c_str (), fmod (lon + 180.0f, 360.0f) - 180.0f);
-                	std::string s (tmp);
+                	std::string s;
+			lon = fmod (lon + 180.0f, 360.0f) - 180.0f;
+			if (NSWE)
+                          {
+                            std::string L = lon >= 0 ? "E" : "W";
+                	    sprintf (tmp, opts.labels.format.c_str (), fabs (lon));
+			    s = std::string (tmp) + L;
+			  }
+			else
+                          {
+                	    sprintf (tmp, opts.labels.format.c_str (), lon);
+			    s = std::string (tmp);
+			  }
                 	S.push_back (s);
                 	X.push_back ((x0 * (1.0f - a) + x1 * a) / width * ratio);
                 	Y.push_back (y / height);

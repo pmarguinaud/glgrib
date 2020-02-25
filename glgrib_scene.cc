@@ -326,6 +326,14 @@ void glgrib_scene::setup (const glgrib_options & o)
 	}
       ld.setSize (size);
     }
+  else
+    {
+      int size = 0;
+      for (auto f : d.opts.field)
+        if (f.path.size () != 0)
+          size++;
+      ld.setSize (size);
+    }
 
   setLandscapeOptions (d.opts.landscape);
   setGridOptions (d.opts.grid);

@@ -45,14 +45,6 @@ public:
   codes_handle * getHandleByExt (const std::string &) override;
 };
 
-class gribContainerFA : public gribContainer
-{
-public:
-  gribContainerFA (const std::string & file) : gribContainer (file) {}
-  codes_handle * getHandleByExt (const std::string &) override;
-};
-
-
 codes_handle * gribContainerPlain::getHandleByExt (const std::string & ext)
 {
   int err = 0;
@@ -146,36 +138,105 @@ next:
   return h;
 }
 
-codes_handle * gribContainerFA::getHandleByExt (const std::string & ext)
+class gribContainerFA : public gribContainer
 {
-  codes_handle * h = NULL;
+public:
+  gribContainerFA (const std::string & file) : gribContainer (file) {}
+  codes_handle * getHandleByExt (const std::string &) override;
+private:
+  void buildIndex ();
+  std::vector<std::string> names;
+  integer64 INUMER = 77;
+  void * LFI;
   lficom_t lficomm;
-  void * LFI = &lficomm;
+  void open ();
+  void close ();
+};
 
-  integer64 IREP, INUMER = 77, INIMES = 0, INBARP = 0, INBARI = 0,
-	    ILONG = 0, IPOSEX = 0;
-  logical LLNOMM = fort_TRUE, LLERFA = fort_TRUE, LLIMST = fort_FALSE;
-  character * CLNOMF = (character*)getFile ().c_str (), * CLSTTO = (character*)"OLD", 
-	    * CLSTTC = (character*)"KEEP", * CLNOMA = (character*)ext.c_str ();
-  character_len CLNOMF_len = getFile ().length (), CLSTTO_len = 3, CLSTTC_len = 4, 
-		CLNOMA_len = ext.length ();
-  integer64 * ITAB = nullptr;
-  
-
+void gribContainerFA::open () 
+{
+  LFI = &lficomm;
   strncpy (lficomm.cmagic, "LFI_FORT", 8);
   lficomm.lfihl = nullptr;
 
+  integer64 IREP, INUMER = 77, INIMES = 0, INBARP = 0, INBARI = 0;
+  logical LLNOMM = fort_TRUE, LLERFA = fort_TRUE, LLIMST = fort_FALSE;
+  character * CLNOMF = (character*)getFile ().c_str (), * CLSTTO = (character*)"OLD";
+  character_len CLNOMF_len = getFile ().length (), CLSTTO_len = 3;
   lfiouv_mt64_ (LFI, &IREP, &INUMER, &LLNOMM, CLNOMF, CLSTTO, &LLERFA, &LLIMST, 
-		&INIMES, &INBARP, &INBARI, CLNOMF_len, CLSTTO_len);
-
+      	  &INIMES, &INBARP, &INBARI, CLNOMF_len, CLSTTO_len);
   if (IREP != 0)
     throw std::runtime_error (std::string ("Error opening file ") + getFile ());
+
+}
+void gribContainerFA::close ()
+{
+  integer64 IREP;
+  character * CLSTTC = (character*)"KEEP"; 
+  character_len CLSTTC_len = 4;
+  lfifer_mt64_ (LFI, &IREP, &INUMER, CLSTTC, CLSTTC_len);
+}
+
+void gribContainerFA::buildIndex ()
+{
+  if (names.size () != 0)
+    return;
+
+  logical LLAVAN = fort_TRUE;
+  integer64 IREP, ILONG, IPOSEX;
+
+  this->open ();
+
+  lfipos_mt64_ (LFI, &IREP, &INUMER);
+  
+  while (1)
+    {
+      std::string clnoma (17, '\0');
+      lficas_mt64_ (LFI, &IREP, &INUMER, (character*)clnoma.c_str (), 
+    		    &ILONG, &IPOSEX, &LLAVAN, clnoma.length ());
+      if (ILONG == 0)
+        break;
+      names.push_back (clnoma);
+    } 
+
+  this->close ();
+}
+
+codes_handle * gribContainerFA::getHandleByExt (const std::string & ext)
+{
+  codes_handle * h = NULL;
+
+  character * CLNOMA;
+  character_len CLNOMA_len;
+
+  try
+    {
+      int rank = std::stoi (ext);
+      buildIndex ();
+      if (rank >= names.size ())
+        throw std::runtime_error (std::string ("File ") + getFile () + 
+		                  std::string (" does not contains ") + ext);
+      const std::string & clnoma = names[rank];
+      CLNOMA = (character*)clnoma.c_str ();
+      CLNOMA_len = clnoma.length ();
+    }
+  catch (...)
+    {
+      CLNOMA = (character*)ext.c_str ();
+      CLNOMA_len = ext.length ();
+    }
+
+  integer64 IREP = 0, ILONG = 0, IPOSEX = 0;
+  integer64 * ITAB = nullptr;
+
+  this->open ();
+
 
   lfinfo_mt64_ (LFI, &IREP, &INUMER, CLNOMA, &ILONG, &IPOSEX, CLNOMA_len);
 
   if (IREP != 0)
     throw std::runtime_error (std::string ("File ") + getFile () + 
-		    std::string (" does not contains ") + ext);
+		              std::string (" does not contains ") + ext);
 
   ITAB = new integer64[ILONG];
   lfilec_mt64_ (LFI, &IREP, &INUMER, CLNOMA, ITAB, &ILONG, CLNOMA_len);
@@ -184,7 +245,7 @@ codes_handle * gribContainerFA::getHandleByExt (const std::string & ext)
     throw std::runtime_error (std::string ("Reading ") + ext + 
 		    std::string (" in ") + getFile () + std::string (" failed"));
 
-  lfifer_mt64_ (LFI, &IREP, &INUMER, CLSTTC, CLSTTC_len);
+  this->close ();
 
   if (IREP != 0)
     throw std::runtime_error (std::string ("Closing ") + getFile () + std::string (" failed"));

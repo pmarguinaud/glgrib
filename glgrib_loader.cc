@@ -23,6 +23,180 @@ extern void lfiouv_mt64_ (LFIOUV_ARGS_DECL);
 extern void lfinfo_mt64_ (LFINFO_ARGS_DECL);
 extern void lfilec_mt64_ (LFILEC_ARGS_DECL);
 extern void lfifer_mt64_ (LFIFER_ARGS_DECL);
+extern void lfipos_mt64_ (LFIPOS_ARGS_DECL);
+extern void lficas_mt64_ (LFICAS_ARGS_DECL);
+}
+
+
+class gribContainer
+{
+public:
+  gribContainer (const std::string & _file) : file (_file) {}
+  virtual codes_handle * getHandleByExt (const std::string &) = 0;
+  const std::string getFile () const { return file; }
+private:
+  std::string file;
+};
+
+class gribContainerPlain : public gribContainer
+{
+public:
+  gribContainerPlain (const std::string & file) : gribContainer (file) {}
+  codes_handle * getHandleByExt (const std::string &) override;
+};
+
+class gribContainerFA : public gribContainer
+{
+public:
+  gribContainerFA (const std::string & file) : gribContainer (file) {}
+  codes_handle * getHandleByExt (const std::string &) override;
+};
+
+
+codes_handle * gribContainerPlain::getHandleByExt (const std::string & ext)
+{
+  int err = 0;
+  codes_handle * h = NULL;
+  FILE * in = fopen (getFile ().c_str (), "r");
+
+  if (in == nullptr)
+    throw std::runtime_error (std::string ("Could not open ") + 
+                              getFile () + std::string (" for reading"));
+
+  while ((h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err)))
+    {
+      std::string e = ext;
+
+      // Parse GRIB selector and see if current handle complies
+      while (e.length ())
+        {
+          int p;
+	  p = e.find_first_of (',');
+	  std::string m;
+
+	  if (p == std::string::npos)
+            {
+              m = e;
+	      e = "";
+	    }
+	  else
+	    {
+	      m = e.substr (0, p);
+	      e = e.substr (p+1);
+	    }
+
+          p = m.find_first_of ('=');
+
+          if (p == std::string::npos)
+            throw std::runtime_error (std::string ("Malformed GRIB selector ") + ext);
+
+	  // Key, value
+	  std::string key = m.substr (0, p), val0 = m.substr (p+1);
+          
+          if (! codes_is_defined (h, key.c_str ()))
+            goto next;
+
+	  // Handle string & integer values
+	  bool string = (val0[0] == '"') && (val0[val0.length ()-1] == '"');
+
+	  if (string)
+            val0 = val0.substr (1, val0.length () - 2);
+
+	  if (string)
+            {
+	      size_t len = 128;
+              char tmp[len];
+	      grib_get_string (h, key.c_str (), tmp, &len);
+	      std::string val1 = std::string (tmp);
+	      if (val0 != val1)
+                goto next;
+	    }
+	  else
+	    {
+	      long int v0, v1;
+
+	      try
+                {
+	          v0 = std::stoi (val0);
+	        }
+	      catch (...)
+	        {
+                  throw std::runtime_error (std::string ("Malformed GRIB selector ") + ext);
+	        }
+
+              codes_get_long (h, key.c_str (), &v1);
+	      if (v0 != v1)
+	        goto next;
+	    }
+        }
+
+      // If we got here, then the GRIB message complies with the selector : keep GRIB handle and exit the loop
+      
+      break;
+next:
+      // Free GRIB handle
+      codes_handle_delete (h);
+      h = nullptr;
+    }
+  fclose (in);
+
+  if (h == nullptr)
+    throw std::runtime_error (std::string ("No match for ") + ext + std::string (" in file ") + getFile ());
+ 
+  return h;
+}
+
+codes_handle * gribContainerFA::getHandleByExt (const std::string & ext)
+{
+  codes_handle * h = NULL;
+  lficom_t lficomm;
+  void * LFI = &lficomm;
+
+  integer64 IREP, INUMER = 77, INIMES = 0, INBARP = 0, INBARI = 0,
+	    ILONG = 0, IPOSEX = 0;
+  logical LLNOMM = fort_TRUE, LLERFA = fort_TRUE, LLIMST = fort_FALSE;
+  character * CLNOMF = (character*)getFile ().c_str (), * CLSTTO = (character*)"OLD", 
+	    * CLSTTC = (character*)"KEEP", * CLNOMA = (character*)ext.c_str ();
+  character_len CLNOMF_len = getFile ().length (), CLSTTO_len = 3, CLSTTC_len = 4, 
+		CLNOMA_len = ext.length ();
+  integer64 * ITAB = nullptr;
+  
+
+  strncpy (lficomm.cmagic, "LFI_FORT", 8);
+  lficomm.lfihl = nullptr;
+
+  lfiouv_mt64_ (LFI, &IREP, &INUMER, &LLNOMM, CLNOMF, CLSTTO, &LLERFA, &LLIMST, 
+		&INIMES, &INBARP, &INBARI, CLNOMF_len, CLSTTO_len);
+
+  if (IREP != 0)
+    throw std::runtime_error (std::string ("Error opening file ") + getFile ());
+
+  lfinfo_mt64_ (LFI, &IREP, &INUMER, CLNOMA, &ILONG, &IPOSEX, CLNOMA_len);
+
+  if (IREP != 0)
+    throw std::runtime_error (std::string ("File ") + getFile () + 
+		    std::string (" does not contains ") + ext);
+
+  ITAB = new integer64[ILONG];
+  lfilec_mt64_ (LFI, &IREP, &INUMER, CLNOMA, ITAB, &ILONG, CLNOMA_len);
+
+  if (IREP != 0)
+    throw std::runtime_error (std::string ("Reading ") + ext + 
+		    std::string (" in ") + getFile () + std::string (" failed"));
+
+  lfifer_mt64_ (LFI, &IREP, &INUMER, CLSTTC, CLSTTC_len);
+
+  if (IREP != 0)
+    throw std::runtime_error (std::string ("Closing ") + getFile () + std::string (" failed"));
+
+  h = codes_handle_new_from_message_copy (0, ITAB + 3, 8 * (ILONG - 3));
+  delete [] ITAB;
+
+  if (h == nullptr)
+    throw std::runtime_error (std::string ("Article ") + ext + std::string (" of file ") + getFile () +
+                              std::string (" does not contain a GRIB message"));
+ 
+  return h;
 }
 
 glgrib_handle_ptr glgrib_loader::handle_from_file (const std::string & f)
@@ -55,151 +229,27 @@ glgrib_handle_ptr glgrib_loader::handle_from_file (const std::string & f)
 
   lfi_grok_t type = lfi_grok (file.c_str (), file.length ());
 
+  gribContainer * cont = NULL;
+
   switch (type)
     {
       case LFI_NONE:
+        throw std::runtime_error (std::string ("Could not open ") + 
+                                  file + std::string (" for reading"));
+        break;
       case LFI_UNKN:
-        {
-          int err = 0;
-          FILE * in = fopen (file.c_str (), "r");
-          if (in == nullptr)
-            throw std::runtime_error (std::string ("Could not open ") + 
-                                      file + std::string (" for reading"));
-          while ((h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err)))
-            {
-	      std::string e = ext;
-
-	      // Parse GRIB selector and see if current handle complies
-	      while (e.length ())
-	        {
-                  int p;
-		  p = e.find_first_of (',');
-		  std::string m;
-
-		  if (p == std::string::npos)
-                    {
-                      m = e;
-		      e = "";
-		    }
-		  else
-		    {
-		      m = e.substr (0, p);
-		      e = e.substr (p+1);
-		    }
-
-                  p = m.find_first_of ('=');
-
-                  if (p == std::string::npos)
-                    throw std::runtime_error (std::string ("Malformed GRIB selector ") + ext);
-
-		  // Key, value
-		  std::string key = m.substr (0, p), val0 = m.substr (p+1);
-                  
-                  if (! codes_is_defined (h, key.c_str ()))
-                    goto next;
-
-		  // Handle string & integer values
-		  bool string = (val0[0] == '"') && (val0[val0.length ()-1] == '"');
-
-		  if (string)
-                    val0 = val0.substr (1, val0.length () - 2);
-      
-		  if (string)
-                    {
-		      size_t len = 128;
-                      char tmp[len];
-		      grib_get_string (h, key.c_str (), tmp, &len);
-		      std::string val1 = std::string (tmp);
-		      if (val0 != val1)
-                        goto next;
-		    }
-		  else
-		    {
-		      long int v0, v1;
-
-		      try
-                        {
-		          v0 = std::stoi (val0);
-		        }
-		      catch (...)
-		        {
-                          throw std::runtime_error (std::string ("Malformed GRIB selector ") + ext);
-		        }
-
-                      codes_get_long (h, key.c_str (), &v1);
-		      if (v0 != v1)
-		        goto next;
-		    }
-	        }
-
-	      // If we got here, then the GRIB message complies with the selector : keep GRIB handle and exit the loop
-	      
-	      break;
-next:
-	      // Free GRIB handle
-              codes_handle_delete (h);
-	      h = nullptr;
-	    }
-          fclose (in);
-
-          if (h == nullptr)
-            throw std::runtime_error (std::string ("No match for ") + ext + std::string (" in file ") + file);
-         
-	}
+	cont = new gribContainerPlain (file);
 	break;
       case LFI_NETW:
       case LFI_PURE:
       case LFI_ALTM:
-        {
-          lficom_t lficomm;
-          void * LFI = &lficomm;
-	  integer64 IREP, INUMER = 77, INIMES = 0, INBARP = 0, INBARI = 0,
-		    ILONG = 0, IPOSEX = 0;
-          logical LLNOMM = fort_TRUE, LLERFA = fort_TRUE, LLIMST = fort_FALSE;
-	  character * CLNOMF = (character*)file.c_str (), * CLSTTO = (character*)"OLD", 
-		    * CLSTTC = (character*)"KEEP", * CLNOMA = (character*)ext.c_str ();
-	  character_len CLNOMF_len = file.length (), CLSTTO_len = 3, CLSTTC_len = 4, 
-			CLNOMA_len = ext.length ();
-	  integer64 * ITAB = nullptr;
-          
-
-	  strncpy (lficomm.cmagic, "LFI_FORT", 8);
-	  lficomm.lfihl = nullptr;
-
-          lfiouv_mt64_ (LFI, &IREP, &INUMER, &LLNOMM, CLNOMF, CLSTTO, &LLERFA, &LLIMST, 
-			&INIMES, &INBARP, &INBARI, CLNOMF_len, CLSTTO_len);
-
-          if (IREP != 0)
-            throw std::runtime_error (std::string ("Error opening file ") + file);
-
-	  lfinfo_mt64_ (LFI, &IREP, &INUMER, CLNOMA, &ILONG, &IPOSEX, CLNOMA_len);
-
-          if (IREP != 0)
-            throw std::runtime_error (std::string ("File ") + file + 
-			    std::string (" does not contains ") + ext);
-
-	  ITAB = new integer64[ILONG];
-	  lfilec_mt64_ (LFI, &IREP, &INUMER, CLNOMA, ITAB, &ILONG, CLNOMA_len);
-
-          if (IREP != 0)
-            throw std::runtime_error (std::string ("Reading ") + ext + 
-			    std::string (" in ") + f + std::string (" failed"));
-
-	  lfifer_mt64_ (LFI, &IREP, &INUMER, CLSTTC, CLSTTC_len);
-
-          if (IREP != 0)
-            throw std::runtime_error (std::string ("Closing ") + f + std::string (" failed"));
-
-          h = codes_handle_new_from_message_copy (0, ITAB + 3, 8 * (ILONG - 3));
-	  delete [] ITAB;
-
-          if (h == nullptr)
-            throw std::runtime_error (std::string ("Article ") + ext + std::string (" of file ") + file +
-                                      std::string (" does not contain a GRIB message"));
-         
-	}
+	cont = new gribContainerFA (file);
 	break;
     }
+
+  h = cont->getHandleByExt (ext);
+
+  delete cont;
 
   glgrib_handle_ptr ghp = std::make_shared<glgrib_handle>(h);
 

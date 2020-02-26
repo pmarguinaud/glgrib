@@ -25,37 +25,271 @@ extern void lfilec_mt64_ (LFILEC_ARGS_DECL);
 extern void lfifer_mt64_ (LFIFER_ARGS_DECL);
 extern void lfipos_mt64_ (LFIPOS_ARGS_DECL);
 extern void lficas_mt64_ (LFICAS_ARGS_DECL);
+extern void lfierf_mt64_ (LFIERF_ARGS_DECL);
 }
 
-
-class gribContainer
+class glgrib_containerPlain : public glgrib_container
 {
 public:
-  gribContainer (const std::string & _file) : file (_file) {}
-  virtual codes_handle * getHandleByExt (const std::string &) = 0;
-  const std::string getFile () const { return file; }
-private:
-  std::string file;
-};
-
-class gribContainerPlain : public gribContainer
-{
-public:
-  gribContainerPlain (const std::string & file) : gribContainer (file) {}
+  glgrib_containerPlain (const std::string & file) : glgrib_container (file) {}
   codes_handle * getHandleByExt (const std::string &) override;
+  iterator begin () override
+  {
+    _iteratorPlain * it = new _iteratorPlain ();
+    it->cont = this;
+    this->buildIndex ();
+    it->rank = 0;
+    return it;
+  }
+  iterator end () override
+  {
+    return iterator ();
+  }
+  void open ()
+  {
+    fp = fopen (getFile ().c_str (), "r");
+    if (fp == nullptr)
+      throw std::runtime_error (std::string ("Could not open ") + 
+                                getFile () + std::string (" for reading"));
+  }
+  void close ()
+  {
+    fclose (fp);
+    fp = nullptr;
+  }
+private:
+  codes_handle * searchHandleByExt (const std::string &);
+
+  void buildIndex ();
+
+  class index_elt_t
+  {
+  public:
+    index_elt_t (const std::string & _ext, long _off) : ext (_ext), off (_off) {}
+    std::string ext;
+    long off = -1;
+  };
+  class index_t : public std::vector<index_elt_t>
+  {
+  public:
+    void add (const std::string & ext, long offset)
+    {
+      push_back (index_elt_t (ext, offset));
+    }
+  };
+
+  class _iteratorPlain : public _iterator
+  {
+  public:
+    _iteratorPlain () 
+    {
+    }
+    void incr () override
+    {
+      rank++;
+    }
+    const std::string str () override
+    {
+      return cont->index[rank].ext;
+    }
+    bool isEqual (const _iterator * _other) const override
+    {
+      // Both at end
+      if ((this == nullptr) && (_other == nullptr))
+        return true;
+
+      // At end or not
+      if (_other == nullptr)
+        return rank == cont->index.size ();
+
+      const _iteratorPlain * other = dynamic_cast<const _iteratorPlain *>(_other);
+
+      // At end ?
+      if (this == nullptr)
+        return other->rank == other->cont->index.size ();
+
+      // Do we operate on same container
+      if (cont != other->cont)
+        return false;
+
+      return rank == other->rank;
+    }
+    glgrib_containerPlain * cont = nullptr;
+    int rank = 0;
+  };
+
+  friend class _iteratorPlain;
+  std::vector<std::string> keys = {"discipline", "parameterCategory", "parameterNumber", 
+                                   "level", "indicatorOfParameter", "indicatorOfTypeOfLevel",
+                                   "table2Version"};
+  FILE * fp = nullptr;
+  index_t index;
+  long offset = 0;
 };
 
-codes_handle * gribContainerPlain::getHandleByExt (const std::string & ext)
+class glgrib_containerFA : public glgrib_container
+{
+public:
+  glgrib_containerFA (const std::string & file) : glgrib_container (file) {}
+  codes_handle * getHandleByExt (const std::string &) override;
+  iterator begin () override
+  {
+    _iteratorFA * it = new _iteratorFA ();
+    it->cont = this;
+    this->buildIndex ();
+    return iterator (it);
+  }
+  iterator end () override
+  {
+    return iterator ();
+  }
+private:
+  class _iteratorFA : public _iterator
+  {
+  public:
+    void incr () override
+    {
+      rank++;
+    }
+    const std::string str () override
+    {
+      return cont->names[rank];
+    }
+    bool isEqual (const _iterator * _other) const override
+    {
+      // Both at end
+      if ((this == nullptr) && (_other == nullptr))
+        return true;
+
+      // At end or not
+      if (_other == nullptr)
+        return rank == cont->names.size ();
+
+      const _iteratorFA * other = dynamic_cast<const _iteratorFA *>(_other);
+     
+      // At end ?
+      if (this == nullptr)
+        return other->rank == other->cont->names.size (); 
+
+      // Do we operate on same container
+      if (cont != other->cont)
+        return false;
+
+      return rank == other->rank;
+    }
+    glgrib_containerFA * cont = nullptr;
+    int rank = 0;
+  };
+  friend class _iteratorFA;
+  void buildIndex ();
+  std::vector<std::string> names;
+  integer64 INUMER = 77;
+  void * LFI;
+  lficom_t lficomm;
+  void open ();
+  void close ();
+};
+
+class container_cache_t : public std::map<std::string,glgrib_container *>
+{
+public:
+   void add (const std::string & file, glgrib_container * cont)
+   {
+     insert (std::pair<std::string,glgrib_container *>(file, cont));
+   }
+   glgrib_container * get (const std::string & file)
+   {
+     auto it = find (file);
+     if (it == end ())
+       return nullptr;
+     return it->second;
+   }
+};
+
+static container_cache_t contCache;
+
+glgrib_container * glgrib_container::create (const std::string & file, bool keep)
+{
+  glgrib_container * cont = contCache.get (file);
+
+  if (cont == nullptr)
+    {
+      lfi_grok_t type = lfi_grok (file.c_str (), file.length ());
+      switch (type)
+        {
+          case LFI_NONE:
+            throw std::runtime_error (std::string ("Could not open ") + 
+                                      file + std::string (" for reading"));
+            break;
+          case LFI_UNKN:
+            cont = new glgrib_containerPlain (file);
+            break;
+          case LFI_NETW:
+          case LFI_PURE:
+          case LFI_ALTM:
+            cont = new glgrib_containerFA (file);
+            break;
+        }
+      if (keep)
+        contCache.add (file, cont);
+    }
+
+  return cont;
+}
+
+void glgrib_container::clear ()
+{
+  contCache.clear ();
+}
+
+void glgrib_containerPlain::buildIndex ()
+{
+  if (index.size () > 0)
+    return;
+
+  int err = 0;
+  
+  this->open ();
+
+  fseek (fp, offset, SEEK_SET);
+
+  while (1)
+    {
+      long off = ftell (fp);
+      codes_handle * h = codes_handle_new_from_file (0, fp, PRODUCT_GRIB, &err);
+      if (h == nullptr)
+        break;
+      std::string ext;
+      for (const auto & k : keys)
+        {
+	  size_t len = 256;
+          char tmp[len];
+          if (ext != "")
+            ext += ",";
+          if (codes_is_defined (h, k.c_str ()))
+            {
+              codes_get_string (h, k.c_str (), tmp, &len);
+	      ext += k + "=\"" + std::string (tmp) + "\"";
+	    }
+	}
+      index.add (ext, off);
+      codes_handle_delete (h);
+      h = nullptr;
+    }
+
+  offset = ftell (fp);
+
+  this->close ();
+}
+
+codes_handle * glgrib_containerPlain::searchHandleByExt (const std::string & ext)
 {
   int err = 0;
-  codes_handle * h = NULL;
-  FILE * in = fopen (getFile ().c_str (), "r");
+  codes_handle * h = nullptr;
 
-  if (in == nullptr)
-    throw std::runtime_error (std::string ("Could not open ") + 
-                              getFile () + std::string (" for reading"));
+  this->open ();
 
-  while ((h = codes_handle_new_from_file (0, in, PRODUCT_GRIB, &err)))
+  while ((h = codes_handle_new_from_file (0, fp, PRODUCT_GRIB, &err)))
     {
       std::string e = ext;
 
@@ -130,7 +364,30 @@ next:
       codes_handle_delete (h);
       h = nullptr;
     }
-  fclose (in);
+
+  this->close ();
+
+  return h;
+}
+
+codes_handle * glgrib_containerPlain::getHandleByExt (const std::string & ext)
+{
+  int err = 0;
+  codes_handle * h = nullptr;
+
+  if (index.size () > 0)
+    for (const auto & e : index)
+      if (e.ext == ext)
+        {
+          int err = 0;
+          this->open ();
+          fseek (fp, e.off, SEEK_SET);
+          h = codes_handle_new_from_file (0, fp, PRODUCT_GRIB, &err);
+          this->close ();
+	}
+
+  if (h == nullptr)
+    h = searchHandleByExt (ext);
 
   if (h == nullptr)
     throw std::runtime_error (std::string ("No match for ") + ext + std::string (" in file ") + getFile ());
@@ -138,22 +395,7 @@ next:
   return h;
 }
 
-class gribContainerFA : public gribContainer
-{
-public:
-  gribContainerFA (const std::string & file) : gribContainer (file) {}
-  codes_handle * getHandleByExt (const std::string &) override;
-private:
-  void buildIndex ();
-  std::vector<std::string> names;
-  integer64 INUMER = 77;
-  void * LFI;
-  lficom_t lficomm;
-  void open ();
-  void close ();
-};
-
-void gribContainerFA::open () 
+void glgrib_containerFA::open () 
 {
   LFI = &lficomm;
   strncpy (lficomm.cmagic, "LFI_FORT", 8);
@@ -169,7 +411,7 @@ void gribContainerFA::open ()
     throw std::runtime_error (std::string ("Error opening file ") + getFile ());
 
 }
-void gribContainerFA::close ()
+void glgrib_containerFA::close ()
 {
   integer64 IREP;
   character * CLSTTC = (character*)"KEEP"; 
@@ -177,7 +419,7 @@ void gribContainerFA::close ()
   lfifer_mt64_ (LFI, &IREP, &INUMER, CLSTTC, CLSTTC_len);
 }
 
-void gribContainerFA::buildIndex ()
+void glgrib_containerFA::buildIndex ()
 {
   if (names.size () != 0)
     return;
@@ -188,6 +430,7 @@ void gribContainerFA::buildIndex ()
   this->open ();
 
   lfipos_mt64_ (LFI, &IREP, &INUMER);
+  std::vector<std::string> nn;
   
   while (1)
     {
@@ -196,15 +439,29 @@ void gribContainerFA::buildIndex ()
     		    &ILONG, &IPOSEX, &LLAVAN, clnoma.length ());
       if (ILONG == 0)
         break;
-      names.push_back (clnoma);
+      nn.push_back (clnoma);
     } 
+
+  logical LLERFA = fort_FALSE;
+  lfierf_mt64_ (LFI, &IREP, &INUMER, &LLERFA);
+
+  for (const auto & n : nn)
+    {
+      character * CLNOMA = (character*)n.c_str ();
+      character_len CLNOMA_len = n.length ();
+      integer64 ILONGD = 3;
+      integer64 ITAB[3] = {0, 0, 0};
+      lfilec_mt64_ (LFI, &IREP, &INUMER, CLNOMA, ITAB, &ILONGD, CLNOMA_len);
+      if ((ITAB[0] == 120) && (ITAB[1] == 0)) // Grid-point GRIB2
+        names.push_back (n);
+    }
 
   this->close ();
 }
 
-codes_handle * gribContainerFA::getHandleByExt (const std::string & ext)
+codes_handle * glgrib_containerFA::getHandleByExt (const std::string & ext)
 {
-  codes_handle * h = NULL;
+  codes_handle * h = nullptr;
 
   character * CLNOMA;
   character_len CLNOMA_len;
@@ -288,25 +545,8 @@ glgrib_handle_ptr glgrib_loader::handle_from_file (const std::string & f)
       file = f;
     }
 
-  lfi_grok_t type = lfi_grok (file.c_str (), file.length ());
 
-  gribContainer * cont = NULL;
-
-  switch (type)
-    {
-      case LFI_NONE:
-        throw std::runtime_error (std::string ("Could not open ") + 
-                                  file + std::string (" for reading"));
-        break;
-      case LFI_UNKN:
-	cont = new gribContainerPlain (file);
-	break;
-      case LFI_NETW:
-      case LFI_PURE:
-      case LFI_ALTM:
-	cont = new gribContainerFA (file);
-	break;
-    }
+  glgrib_container * cont = glgrib_container::create (file);
 
   h = cont->getHandleByExt (ext);
 

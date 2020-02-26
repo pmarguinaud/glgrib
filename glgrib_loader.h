@@ -14,6 +14,7 @@
 class glgrib_loader 
 {
 public:
+
   static void uv2nd (const_glgrib_geometry_ptr,
                      const glgrib_field_float_buffer_ptr, 
                      const glgrib_field_float_buffer_ptr,
@@ -42,4 +43,55 @@ private:
   cache_t cache;
 };
 
+class glgrib_container
+{
+public:
+  static glgrib_container * create (const std::string &, bool = false);
+  static void clear ();
+  glgrib_container (const std::string & _file) : file (_file) {}
+  virtual codes_handle * getHandleByExt (const std::string &) = 0;
+  const std::string getFile () const { return file; }
+protected:
+  class _iterator 
+  {
+  public:
+    virtual void incr () = 0;
+    virtual const std::string str () = 0;
+    virtual bool isEqual (const _iterator *) const = 0;
+  };
+public:
+  class iterator
+  {
+  public:
+    iterator () {}
+    iterator (_iterator * _it) : it (_it) {}
+    iterator & operator++ ()
+    {
+      it->incr ();
+      return *this;
+    }
+    ~iterator ()
+    {
+      delete it;
+    }
+    const std::string operator* ()
+    {    
+      return it->str ();
+    }    
+    bool operator!= (const iterator & rhs) const
+    {    
+      return ! operator== (rhs);
+    }    
+    bool operator== (const iterator & rhs) const
+    {    
+      return it->isEqual (rhs.it);
+    }    
+  private:
+    _iterator * it = nullptr;
+  };
+  virtual iterator begin () = 0;
+  virtual iterator end () = 0;
+private:
+  std::string file;
+};
 

@@ -57,10 +57,10 @@ public:
     fclose (fp);
     fp = nullptr;
   }
+  void buildIndex () override;
 private:
   codes_handle * searchHandleByExt (const std::string &);
 
-  void buildIndex ();
 
   class index_elt_t
   {
@@ -88,7 +88,7 @@ private:
     {
       rank++;
     }
-    const std::string str () override
+    const std::string & str () override
     {
       return cont->index[rank].ext;
     }
@@ -143,6 +143,7 @@ public:
   {
     return iterator ();
   }
+  void buildIndex () override;
 private:
   class _iteratorFA : public _iterator
   {
@@ -151,7 +152,7 @@ private:
     {
       rank++;
     }
-    const std::string str () override
+    const std::string & str () override
     {
       return cont->names[rank];
     }
@@ -181,7 +182,6 @@ private:
     int rank = 0;
   };
   friend class _iteratorFA;
-  void buildIndex ();
   std::vector<std::string> names;
   integer64 INUMER = 77;
   void * LFI;
@@ -463,25 +463,8 @@ codes_handle * glgrib_containerFA::getHandleByExt (const std::string & ext)
 {
   codes_handle * h = nullptr;
 
-  character * CLNOMA;
-  character_len CLNOMA_len;
-
-  try
-    {
-      int rank = std::stoi (ext);
-      buildIndex ();
-      if (rank >= names.size ())
-        throw std::runtime_error (std::string ("File ") + getFile () + 
-		                  std::string (" does not contains ") + ext);
-      const std::string & clnoma = names[rank];
-      CLNOMA = (character*)clnoma.c_str ();
-      CLNOMA_len = clnoma.length ();
-    }
-  catch (...)
-    {
-      CLNOMA = (character*)ext.c_str ();
-      CLNOMA_len = ext.length ();
-    }
+  character * CLNOMA = (character*)ext.c_str ();
+  character_len CLNOMA_len = ext.length ();
 
   integer64 IREP = 0, ILONG = 0, IPOSEX = 0;
   integer64 * ITAB = nullptr;

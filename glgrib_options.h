@@ -1520,7 +1520,14 @@ public:
     INCLUDE (departements);
     INCLUDE (shell);
     INCLUDE (land);
+    DESC (diff.on, "Enable difference mode");
+    DESC (diff.path, "Files to show in diff mode");
   }
+  struct
+  {
+    std::vector<std::string> path;
+    bool on = false;
+  } diff;
   std::vector<glgrib_options_field> field =
     {glgrib_options_field (), glgrib_options_field (), 
      glgrib_options_field (), glgrib_options_field (), 

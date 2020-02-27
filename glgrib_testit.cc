@@ -15,6 +15,7 @@ int main (int argc, const char * argv[])
 
   glgrib_container * cont = glgrib_container::create (argv[1]);
 
+  cont->buildIndex ();
   for (auto it = cont->begin (); it != cont->end (); ++it)
     {
       std::cout << *it << std::endl;

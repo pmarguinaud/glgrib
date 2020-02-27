@@ -51,12 +51,13 @@ public:
   glgrib_container (const std::string & _file) : file (_file) {}
   virtual codes_handle * getHandleByExt (const std::string &) = 0;
   const std::string getFile () const { return file; }
+  virtual void buildIndex () = 0;
 protected:
   class _iterator 
   {
   public:
     virtual void incr () = 0;
-    virtual const std::string str () = 0;
+    virtual const std::string & str () = 0;
     virtual bool isEqual (const _iterator *) const = 0;
   };
 public:
@@ -74,7 +75,7 @@ public:
     {
       delete it;
     }
-    const std::string operator* ()
+    const std::string & operator* ()
     {    
       return it->str ();
     }    

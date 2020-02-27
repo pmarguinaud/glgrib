@@ -9,6 +9,7 @@
 #include "glgrib_window_offscreen.h"
 #include "glgrib_options.h"
 #include "glgrib_geometry.h"
+#include "glgrib_loader.h"
 
 #include <iostream>
 
@@ -65,16 +66,43 @@ void startDiffMode (glgrib_window_set * wset, const glgrib_options & _opts)
 
 //opts1.field[0].path = _opts.diff.path;
 //opts1.field[0].diff.on = true;
-//opts2.field[1].path.push_back (opts.diff.path[0]);
+//opts2.field[1].path.push_back (_opts.diff.path[0]);
 
-  opts1.field[0].path.push_back (_opts.diff.path[0]);
-  opts2.field[0].path.push_back (_opts.diff.path[1]);
 
+  opts1.window.position.x = 0;
+  opts1.window.position.y = 0;
+
+  opts2.window.position.x = opts1.window.position.x + opts1.window.width;
+  opts2.window.position.y = 0;
+
+  glgrib_container * cont1 = glgrib_container::create (_opts.diff.path[0], true);
+  glgrib_container * cont2 = glgrib_container::create (_opts.diff.path[1], true);
+
+  cont1->buildIndex ();
+  cont2->buildIndex ();
+
+  std::string ext;
+  for (auto it = cont1->begin (); it != cont1->end (); ++it)
+    {
+      ext = *it;
+      if (cont2->hasExt (ext))
+        break;
+      ext = "";
+    }
+
+  std::cout << " ext = " << ext << std::endl;
+
+  opts1.field[0].path.push_back (_opts.diff.path[0] + "%" + ext);
+  opts2.field[0].path.push_back (_opts.diff.path[1] + "%" + ext);
 
   glgrib_window * gwindow1 = create_window (opts1, wset);
   glgrib_window * gwindow2 = gwindow1->clone ();
 
+  gwindow2->setOptions (opts2.window);
+
   gwindow2->scene.setup (opts2);
+
+  gwindow1->setMaster ();
 
   wset->insert (gwindow2);
   

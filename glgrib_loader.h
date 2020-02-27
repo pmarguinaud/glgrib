@@ -50,7 +50,8 @@ public:
   static void clear ();
   glgrib_container (const std::string & _file) : file (_file) {}
   virtual codes_handle * getHandleByExt (const std::string &) = 0;
-  const std::string getFile () const { return file; }
+  virtual bool hasExt (const std::string &) const = 0;
+  const std::string & getFile () const { return file; }
   virtual void buildIndex () = 0;
 protected:
   class _iterator 

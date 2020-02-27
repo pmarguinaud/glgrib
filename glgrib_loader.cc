@@ -33,6 +33,11 @@ class glgrib_containerPlain : public glgrib_container
 public:
   glgrib_containerPlain (const std::string & file) : glgrib_container (file) {}
   codes_handle * getHandleByExt (const std::string &) override;
+  bool hasExt (const std::string & ext) const override
+  {
+    return std::any_of (index.cbegin (), index.cend (), 
+                        [&ext](const index_elt_t & e) { return e.ext == ext; });
+  }
   iterator begin () override
   {
     _iteratorPlain * it = new _iteratorPlain ();
@@ -132,6 +137,11 @@ class glgrib_containerFA : public glgrib_container
 public:
   glgrib_containerFA (const std::string & file) : glgrib_container (file) {}
   codes_handle * getHandleByExt (const std::string &) override;
+  bool hasExt (const std::string & ext) const override
+  {
+    return std::any_of (names.cbegin (), names.cend (), 
+                        [&ext](const std::string & e) { return e == ext; });
+  }
   iterator begin () override
   {
     _iteratorFA * it = new _iteratorFA ();

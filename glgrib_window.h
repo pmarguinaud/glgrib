@@ -10,6 +10,13 @@
 
 #include <string>
 
+class glgrib_window_modifier
+{
+public:
+  virtual void next () = 0;
+  virtual void prev () = 0;
+};
+
 class glgrib_window
 {
 public:
@@ -168,6 +175,13 @@ public:
   void fix_landscape (float, float, float, float);
 
   const glgrib_options_window & getOptions () const { return opts; }
+
+  void setModifier (glgrib_window_modifier * _modify) 
+  {
+    modify = _modify;
+  }
+  void delModifier () { modify = nullptr; }
+
 protected:
   void createGFLWwindow (GLFWwindow * = nullptr);
   bool closed = false;
@@ -180,6 +194,7 @@ private:
   double t0;
   int nframes = 0;
   std::string title = "";
+  glgrib_window_modifier * modify = nullptr;
 };
 
 class glgrib_window_set : public std::set<glgrib_window*> 

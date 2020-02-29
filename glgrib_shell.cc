@@ -1,4 +1,5 @@
 #include "glgrib_shell.h"
+#include "glgrib_window_set.h"
 
 #include <iostream>
 #include <exception>

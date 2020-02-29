@@ -67,7 +67,7 @@ void key_callback (GLFWwindow * window, int key, int scancode, int action, int m
   gwindow->onkey (key, scancode, action, mods);
 }
 
-static void showHelpItem (const char * mm, const char * k, const char * desc, const char * action)
+void glgrib_window::showHelpItem (const char * mm, const char * k, const char * desc, const char * action)
 {
   char line[strlen (desc) + strlen (action) + 64];
   char key[32];
@@ -90,117 +90,95 @@ static void showHelpItem (const char * mm, const char * k, const char * desc, co
 
 void glgrib_window::onkey (int key, int scancode, int action, int mods, bool help)
 {
-  enum
-  {
-    NONE    = 0,
-    SHIFT   = GLFW_MOD_SHIFT,
-    CONTROL = GLFW_MOD_CONTROL,
-    ALT     = GLFW_MOD_ALT
-  };
-
-#define if_key(mm, k, desc, action) \
-do { \
-if (help)                                       \
-  {                                             \
-    showHelpItem (#mm, #k, #desc, #action);     \
-  }                                             \
-else if ((key == GLFW_KEY_##k) && (mm == mods)) \
-  {                                             \
-    action;                                     \
-    return;                                     \
-  }                                             \
-} while (0)
-
 
   if ((action == GLFW_PRESS || action == GLFW_REPEAT) || help)
     {
-      if_key (NONE,    T     ,  Hide/show location & field value at cursor position  , toggle_cursorpos_display ());
-      if_key (NONE,    TAB   ,  Enable/disable earth rotation                        , toggle_rotate            ());
-      if_key (CONTROL, TAB   ,  Enable/disable light rotation                        , toggle_rotate_light      ());
-      if_key (NONE,    Y     ,  Display landscape or current field as wireframe      , toggle_wireframe         ());
-      if_key (NONE,    D     ,  Use a framebuffer and generate a snapshot            , framebuffer              ());
-      if_key (NONE,    W     ,  Increase field of view                               , widen_fov                ());
-      if_key (NONE,    S     ,  Write a snapshot (PNG format)                        , snapshot                 ()); 
-      if_key (NONE,    Q     ,  Decrease field of view                               , shrink_fov               ());
-      if_key (NONE,    P     ,  Make earth flat/show orography                       , toggle_flat              ());
-      if_key (NONE,    6     ,  Increase size of current field                       , increase_radius          ());
-      if_key (NONE,    EQUAL ,  Decrease size of current field                       , decrease_radius          ());
-      if_key (NONE,    SPACE ,  Reset view                                           , reset_view               ());
-      if_key (NONE,    UP    ,  Move northwards                                      , rotate_north             ());
-      if_key (NONE,    DOWN  ,  Move southwards                                      , rotate_south             ());
-      if_key (NONE,    LEFT  ,  Move westwards                                       , rotate_west              ());
-      if_key (NONE,    RIGHT ,  Move eastwards                                       , rotate_east              ());
+      glgrib_window_if_key (NONE,    T     ,  Hide/show location & field value at cursor position  , toggle_cursorpos_display ());
+      glgrib_window_if_key (NONE,    TAB   ,  Enable/disable earth rotation                        , toggle_rotate            ());
+      glgrib_window_if_key (CONTROL, TAB   ,  Enable/disable light rotation                        , toggle_rotate_light      ());
+      glgrib_window_if_key (NONE,    Y     ,  Display landscape or current field as wireframe      , toggle_wireframe         ());
+      glgrib_window_if_key (NONE,    D     ,  Use a framebuffer and generate a snapshot            , framebuffer              ());
+      glgrib_window_if_key (NONE,    W     ,  Increase field of view                               , widen_fov                ());
+      glgrib_window_if_key (NONE,    S     ,  Write a snapshot (PNG format)                        , snapshot                 ()); 
+      glgrib_window_if_key (NONE,    Q     ,  Decrease field of view                               , shrink_fov               ());
+      glgrib_window_if_key (NONE,    P     ,  Make earth flat/show orography                       , toggle_flat              ());
+      glgrib_window_if_key (NONE,    6     ,  Increase size of current field                       , increase_radius          ());
+      glgrib_window_if_key (NONE,    EQUAL ,  Decrease size of current field                       , decrease_radius          ());
+      glgrib_window_if_key (NONE,    SPACE ,  Reset view                                           , reset_view               ());
+      glgrib_window_if_key (NONE,    UP    ,  Move northwards                                      , rotate_north             ());
+      glgrib_window_if_key (NONE,    DOWN  ,  Move southwards                                      , rotate_south             ());
+      glgrib_window_if_key (NONE,    LEFT  ,  Move westwards                                       , rotate_west              ());
+      glgrib_window_if_key (NONE,    RIGHT ,  Move eastwards                                       , rotate_east              ());
 
-      if_key (NONE,    F1    ,  Select field #1                                      , select_field           ( 0));
-      if_key (NONE,    F2    ,  Select field #2                                      , select_field           ( 1));
-      if_key (NONE,    F3    ,  Select field #3                                      , select_field           ( 2));
-      if_key (NONE,    F4    ,  Select field #4                                      , select_field           ( 3));
-      if_key (NONE,    F5    ,  Select field #5                                      , select_field           ( 4));
-      if_key (NONE,    F6    ,  Select field #6                                      , select_field           ( 5));
-      if_key (NONE,    F7    ,  Select field #7                                      , select_field           ( 6));
-      if_key (NONE,    F8    ,  Select field #8                                      , select_field           ( 7));
-      if_key (NONE,    F9    ,  Select field #9                                      , select_field           ( 8));
-      if_key (NONE,    F10   ,  Select field #10                                     , select_field           ( 9));
-      if_key (NONE,    F11   ,  Select field #11                                     , select_field           (10));
-      if_key (NONE,    F12   ,  Select field #12                                     , select_field           (11));
+      glgrib_window_if_key (NONE,    F1    ,  Select field #1                                      , select_field           ( 0));
+      glgrib_window_if_key (NONE,    F2    ,  Select field #2                                      , select_field           ( 1));
+      glgrib_window_if_key (NONE,    F3    ,  Select field #3                                      , select_field           ( 2));
+      glgrib_window_if_key (NONE,    F4    ,  Select field #4                                      , select_field           ( 3));
+      glgrib_window_if_key (NONE,    F5    ,  Select field #5                                      , select_field           ( 4));
+      glgrib_window_if_key (NONE,    F6    ,  Select field #6                                      , select_field           ( 5));
+      glgrib_window_if_key (NONE,    F7    ,  Select field #7                                      , select_field           ( 6));
+      glgrib_window_if_key (NONE,    F8    ,  Select field #8                                      , select_field           ( 7));
+      glgrib_window_if_key (NONE,    F9    ,  Select field #9                                      , select_field           ( 8));
+      glgrib_window_if_key (NONE,    F10   ,  Select field #10                                     , select_field           ( 9));
+      glgrib_window_if_key (NONE,    F11   ,  Select field #11                                     , select_field           (10));
+      glgrib_window_if_key (NONE,    F12   ,  Select field #12                                     , select_field           (11));
 
-      if_key (CONTROL, F1    ,  Show only field #1                                   , { hide_all_fields (); select_field ( 0); toggle_hide_field (); });
-      if_key (CONTROL, F2    ,  Show only field #2                                   , { hide_all_fields (); select_field ( 1); toggle_hide_field (); });
-      if_key (CONTROL, F3    ,  Show only field #3                                   , { hide_all_fields (); select_field ( 2); toggle_hide_field (); });
-      if_key (CONTROL, F4    ,  Show only field #4                                   , { hide_all_fields (); select_field ( 3); toggle_hide_field (); });
-      if_key (CONTROL, F5    ,  Show only field #5                                   , { hide_all_fields (); select_field ( 4); toggle_hide_field (); });
-      if_key (CONTROL, F6    ,  Show only field #6                                   , { hide_all_fields (); select_field ( 5); toggle_hide_field (); });
-      if_key (CONTROL, F7    ,  Show only field #7                                   , { hide_all_fields (); select_field ( 6); toggle_hide_field (); });
-      if_key (CONTROL, F8    ,  Show only field #8                                   , { hide_all_fields (); select_field ( 7); toggle_hide_field (); });
-      if_key (CONTROL, F9    ,  Show only field #9                                   , { hide_all_fields (); select_field ( 8); toggle_hide_field (); });
-      if_key (CONTROL, F10   ,  Show only field #10                                  , { hide_all_fields (); select_field ( 9); toggle_hide_field (); });
-      if_key (CONTROL, F11   ,  Show only field #11                                  , { hide_all_fields (); select_field (10); toggle_hide_field (); });
-      if_key (CONTROL, F12   ,  Show only field #12                                  , { hide_all_fields (); select_field (11); toggle_hide_field (); });
-      if_key (CONTROL, H     ,  Show all fields                                      , show_all_fields          ());
-      if_key (ALT,     H     ,  Show help                                            , showHelp                 ());
+      glgrib_window_if_key (CONTROL, F1    ,  Show only field #1                                   , { hide_all_fields (); select_field ( 0); toggle_hide_field (); });
+      glgrib_window_if_key (CONTROL, F2    ,  Show only field #2                                   , { hide_all_fields (); select_field ( 1); toggle_hide_field (); });
+      glgrib_window_if_key (CONTROL, F3    ,  Show only field #3                                   , { hide_all_fields (); select_field ( 2); toggle_hide_field (); });
+      glgrib_window_if_key (CONTROL, F4    ,  Show only field #4                                   , { hide_all_fields (); select_field ( 3); toggle_hide_field (); });
+      glgrib_window_if_key (CONTROL, F5    ,  Show only field #5                                   , { hide_all_fields (); select_field ( 4); toggle_hide_field (); });
+      glgrib_window_if_key (CONTROL, F6    ,  Show only field #6                                   , { hide_all_fields (); select_field ( 5); toggle_hide_field (); });
+      glgrib_window_if_key (CONTROL, F7    ,  Show only field #7                                   , { hide_all_fields (); select_field ( 6); toggle_hide_field (); });
+      glgrib_window_if_key (CONTROL, F8    ,  Show only field #8                                   , { hide_all_fields (); select_field ( 7); toggle_hide_field (); });
+      glgrib_window_if_key (CONTROL, F9    ,  Show only field #9                                   , { hide_all_fields (); select_field ( 8); toggle_hide_field (); });
+      glgrib_window_if_key (CONTROL, F10   ,  Show only field #10                                  , { hide_all_fields (); select_field ( 9); toggle_hide_field (); });
+      glgrib_window_if_key (CONTROL, F11   ,  Show only field #11                                  , { hide_all_fields (); select_field (10); toggle_hide_field (); });
+      glgrib_window_if_key (CONTROL, F12   ,  Show only field #12                                  , { hide_all_fields (); select_field (11); toggle_hide_field (); });
+      glgrib_window_if_key (CONTROL, H     ,  Show all fields                                      , show_all_fields          ());
+      glgrib_window_if_key (ALT,     H     ,  Show help                                            , showHelp                 ());
 
-      if_key (NONE,    H     ,  Show/hide selected field                             , toggle_hide_field        ());
-      if_key (NONE,    G     ,  Increase size of current field                       , scale_field_up           ());
-      if_key (CONTROL, G     ,  Decrease size of current field                       , scale_field_down         ());
-      if_key (NONE,    F     ,  Increase palette range                               , scale_palette_up         ());
-      if_key (CONTROL, F     ,  Decrease palette range                               , scale_palette_down       ());
-      if_key (NONE,    J     ,  Try next palette                                     , next_palette             ());
-      if_key (NONE,    L     ,  Turn on/off the light                                , toggle_light             ());
-      if_key (CONTROL, L     ,  Make current window master window                    , toggleMaster             ());
+      glgrib_window_if_key (NONE,    H     ,  Show/hide selected field                             , toggle_hide_field        ());
+      glgrib_window_if_key (NONE,    G     ,  Increase size of current field                       , scale_field_up           ());
+      glgrib_window_if_key (CONTROL, G     ,  Decrease size of current field                       , scale_field_down         ());
+      glgrib_window_if_key (NONE,    F     ,  Increase palette range                               , scale_palette_up         ());
+      glgrib_window_if_key (CONTROL, F     ,  Decrease palette range                               , scale_palette_down       ());
+      glgrib_window_if_key (NONE,    J     ,  Try next palette                                     , next_palette             ());
+      glgrib_window_if_key (NONE,    L     ,  Turn on/off the light                                , toggle_light             ());
+      glgrib_window_if_key (CONTROL, L     ,  Make current window master window                    , toggleMaster             ());
 
       if (opts.fix_landscape.on)
       {
-      if_key (CONTROL, UP    ,                                                       , fix_landscape (+1,  0,  0,  0));
-      if_key (CONTROL, DOWN  ,                                                       , fix_landscape (-1,  0,  0,  0));
-      if_key (CONTROL, LEFT  ,                                                       , fix_landscape ( 0, -1,  0,  0));
-      if_key (CONTROL, RIGHT ,                                                       , fix_landscape ( 0, +1,  0,  0));
-      if_key (ALT,     UP    ,                                                       , fix_landscape ( 0,  0, +1,  0));
-      if_key (ALT,     DOWN  ,                                                       , fix_landscape ( 0,  0, -1,  0));
-      if_key (ALT,     LEFT  ,                                                       , fix_landscape ( 0,  0,  0, -1));
-      if_key (ALT,     RIGHT ,                                                       , fix_landscape ( 0,  0,  0, +1));
+      glgrib_window_if_key (CONTROL, UP    ,                                                       , fix_landscape (+1,  0,  0,  0));
+      glgrib_window_if_key (CONTROL, DOWN  ,                                                       , fix_landscape (-1,  0,  0,  0));
+      glgrib_window_if_key (CONTROL, LEFT  ,                                                       , fix_landscape ( 0, -1,  0,  0));
+      glgrib_window_if_key (CONTROL, RIGHT ,                                                       , fix_landscape ( 0, +1,  0,  0));
+      glgrib_window_if_key (ALT,     UP    ,                                                       , fix_landscape ( 0,  0, +1,  0));
+      glgrib_window_if_key (ALT,     DOWN  ,                                                       , fix_landscape ( 0,  0, -1,  0));
+      glgrib_window_if_key (ALT,     LEFT  ,                                                       , fix_landscape ( 0,  0,  0, -1));
+      glgrib_window_if_key (ALT,     RIGHT ,                                                       , fix_landscape ( 0,  0,  0, +1));
       }
       else
       {
-      if_key (CONTROL, UP    ,  Move light northwards                                , rotate_light_north       ());
-      if_key (CONTROL, DOWN  ,  Move light southwards                                , rotate_light_south       ());
-      if_key (CONTROL, LEFT  ,  Move light westwards                                 , rotate_light_west        ());
-      if_key (CONTROL, RIGHT ,  Move light eastwards                                 , rotate_light_east        ());
+      glgrib_window_if_key (CONTROL, UP    ,  Move light northwards                                , rotate_light_north       ());
+      glgrib_window_if_key (CONTROL, DOWN  ,  Move light southwards                                , rotate_light_south       ());
+      glgrib_window_if_key (CONTROL, LEFT  ,  Move light westwards                                 , rotate_light_west        ());
+      glgrib_window_if_key (CONTROL, RIGHT ,  Move light eastwards                                 , rotate_light_east        ());
       }
 
-      if_key (CONTROL, C     ,  Clone current window                                 , duplicate                ());
-      if_key (ALT,     C     ,  Show/hide colorbar                                   , toggleColorBar           ());
-      if_key (CONTROL, P     ,  Try next projection                                  , next_projection          ());
-      if_key (SHIFT,   P     ,  Try next transformation                              , toggle_transform_type    ());
-      if_key (CONTROL, S     ,  Save current palette                                 , save_current_palette     ());
-      if_key (ALT,     S     ,  Resample current field                               , resample_current_field   ());
-      if_key (NONE,    V     ,  Hide/show vector arrows                              , toggle_show_vector       ());
-      if_key (CONTROL, V     ,  Hide/show vector norm                                , toggle_show_norm         ());
-      if_key (NONE,    U     ,  Start shell                                          , startShell               ());
+      glgrib_window_if_key (CONTROL, C     ,  Clone current window                                 , duplicate                ());
+      glgrib_window_if_key (ALT,     C     ,  Show/hide colorbar                                   , toggleColorBar           ());
+      glgrib_window_if_key (CONTROL, P     ,  Try next projection                                  , next_projection          ());
+      glgrib_window_if_key (SHIFT,   P     ,  Try next transformation                              , toggle_transform_type    ());
+      glgrib_window_if_key (CONTROL, S     ,  Save current palette                                 , save_current_palette     ());
+      glgrib_window_if_key (ALT,     S     ,  Resample current field                               , resample_current_field   ());
+      glgrib_window_if_key (NONE,    V     ,  Hide/show vector arrows                              , toggle_show_vector       ());
+      glgrib_window_if_key (CONTROL, V     ,  Hide/show vector norm                                , toggle_show_norm         ());
+      glgrib_window_if_key (NONE,    U     ,  Start shell                                          , startShell               ());
 
 
     }
 
-#undef if_key
 }
 
 void glgrib_window::toggle_wireframe () 
@@ -999,66 +977,6 @@ glgrib_window * glgrib_window::clone ()
   return w;
 }
 
-void glgrib_window_set::run (glgrib_shell * shell)
-{
-  while (! empty ())
-    {
-      const glgrib_window * wl = nullptr;
-
-      for (auto w : *this)
-	if (w->isMaster ())
-          {
-            if (wl != nullptr)
-              w->unsetMaster ();
-	    else
-              wl = w;
-	  }
-      if (wl != nullptr)
-        for (auto w : *this)
-          w->scene.d.view.setOptions (wl->scene.d.view.getOptions ());
-      for (auto w : *this)
-        {
-	  if ((! shell) && (w->getStartShell ()))
-            {
-	      Shell.setup (w->scene.getOptions ().shell);
-	      Shell.start (this);
-              shell = &Shell;
-	    }
-
-          w->run (shell);
-
-          if (w->isClosed ())
-            {
-              erase (w);
-    	      delete w;
-              break;
-            }
-
-          if (w->isCloned ())
-            {
-              glgrib_window * w1 = w->clone ();
-    	      insert (w1);
-              break;
-	    }
-
-	}
-    }
-}
-
-glgrib_window * glgrib_window_set::getWindowById (int id)
-{
-  for (auto w : *this)
-    if (w->id () == id)
-      return w;
-  return nullptr;
-}
-
-void glgrib_window_set::close ()
-{
-  for (auto win : *this)
-    win->shouldClose ();
-}
-
 #define GLMESS(x) case GL_DEBUG_SOURCE_##x: return #x
 static const char * debug_source (unsigned int source)
 {
@@ -1125,7 +1043,3 @@ void glgrib_window::setOptions (const glgrib_options_window & o)
       glfwSetWindowPos (window, opts.position.x, opts.position.y);
     }
 }
-
-
-
-

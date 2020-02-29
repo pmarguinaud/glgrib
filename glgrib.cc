@@ -6,7 +6,7 @@
 #include "glgrib_scene.h"
 #include "glgrib_shell.h"
 #include "glgrib_window.h"
-#include "glgrib_window_offscreen.h"
+#include "glgrib_window_set.h"
 #include "glgrib_options.h"
 #include "glgrib_geometry.h"
 #include "glgrib_loader.h"
@@ -21,32 +21,18 @@ static void error_callback (int c, const char * desc)
 }
 
 static
-glgrib_window * create_window (const glgrib_options & opts, glgrib_window_set * wset = nullptr)
+glgrib_window_set * startRegularMode (const glgrib_options & opts)
 {
-  glgrib_window * gwindow = nullptr;
-
-  if (opts.window.offscreen.on)
-    gwindow = new glgrib_window_offscreen (opts);
-  else
-    gwindow = new glgrib_window (opts);
-
-  gwindow->scene.setup (opts);
-
-  if (wset != nullptr)
-    wset->insert (gwindow);
-  
-  return gwindow;
+  glgrib_window_set * wset = new glgrib_window_set ();
+  wset->create (opts);
+  return wset;
 }
 
 static
-void startRegularMode (glgrib_window_set * wset, const glgrib_options & opts)
+glgrib_window_set * startDiffMode (const glgrib_options & _opts)
 {
-  glgrib_window * gwindow = create_window (opts, wset);
-}
+  glgrib_window_set * wset = new glgrib_window_set ();
 
-static
-void startDiffMode (glgrib_window_set * wset, const glgrib_options & _opts)
-{
   glgrib_options opts1 = _opts, opts2 = _opts;
 
   if (_opts.diff.path.size () != 2)
@@ -95,7 +81,7 @@ void startDiffMode (glgrib_window_set * wset, const glgrib_options & _opts)
   opts1.field[0].path.push_back (_opts.diff.path[0] + "%" + ext);
   opts2.field[0].path.push_back (_opts.diff.path[1] + "%" + ext);
 
-  glgrib_window * gwindow1 = create_window (opts1, wset);
+  glgrib_window * gwindow1 = wset->create (opts1);
   glgrib_window * gwindow2 = gwindow1->clone ();
 
   gwindow2->setOptions (opts2.window);
@@ -106,6 +92,7 @@ void startDiffMode (glgrib_window_set * wset, const glgrib_options & _opts)
 
   wset->insert (gwindow2);
   
+  return wset;
 }
 
 int main (int argc, const char * argv[])
@@ -128,25 +115,27 @@ int main (int argc, const char * argv[])
       exit (EXIT_FAILURE);
     }
 
-  glgrib_window_set wset;
+  glgrib_window_set * wset;
   
   if (opts.diff.on)
-    startDiffMode (&wset, opts);
+    wset = startDiffMode (opts);
   else
-    startRegularMode (&wset, opts);
+    wset = startRegularMode (opts);
 
   if (opts.shell.on)
     {
       Shell.setup (opts.shell);
-      Shell.start (&wset);
-      wset.run (&Shell);
+      Shell.start (wset);
+      wset->run (&Shell);
     }
   else
     {
-      wset.run ();
+      wset->run ();
     }
 
   Shell.wait ();
+
+  delete wset;
 
   glfwTerminate ();
 

@@ -10,16 +10,18 @@
 
 #include <string>
 
-class glgrib_window_modifier
-{
-public:
-  virtual void next () = 0;
-  virtual void prev () = 0;
-};
-
 class glgrib_window
 {
 public:
+
+  enum
+  {
+    NONE    = 0,
+    SHIFT   = GLFW_MOD_SHIFT,
+    CONTROL = GLFW_MOD_CONTROL,
+    ALT     = GLFW_MOD_ALT
+  };
+
   glgrib_window ();
   glgrib_window (const glgrib_options &);
   virtual void setHints ();
@@ -176,13 +178,8 @@ public:
 
   const glgrib_options_window & getOptions () const { return opts; }
 
-  void setModifier (glgrib_window_modifier * _modify) 
-  {
-    modify = _modify;
-  }
-  void delModifier () { modify = nullptr; }
-
 protected:
+  void showHelpItem (const char *, const char *, const char *, const char *);
   void createGFLWwindow (GLFWwindow * = nullptr);
   bool closed = false;
   bool cloned = false;
@@ -194,22 +191,18 @@ private:
   double t0;
   int nframes = 0;
   std::string title = "";
-  glgrib_window_modifier * modify = nullptr;
 };
 
-class glgrib_window_set : public std::set<glgrib_window*> 
-{
-public:
-  void run (glgrib_shell * = nullptr);
-  glgrib_window * getWindowById (int);
-  glgrib_window * getFirstWindow () 
-    { 
-      glgrib_window_set::iterator it = begin ();
-      if (it != end ())
-        return *it;
-      else
-        return nullptr;
-    }
-  void close ();
-};
+#define glgrib_window_if_key(mm, k, desc, action) \
+do { \
+if (help)                                       \
+  {                                             \
+    showHelpItem (#mm, #k, #desc, #action);     \
+  }                                             \
+else if ((key == GLFW_KEY_##k) && (glgrib_window::mm == mods)) \
+  {                                             \
+    action;                                     \
+    return;                                     \
+  }                                             \
+} while (0)
 

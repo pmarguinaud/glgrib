@@ -1,6 +1,7 @@
 #pragma once
 
 #include "glgrib_window.h"
+#include "glgrib_shell.h"
 
 class glgrib_window_set : public std::set<glgrib_window*> 
 {
@@ -17,5 +18,7 @@ public:
     }
   void close ();
   virtual glgrib_window * create (const glgrib_options &);
+  void runShell (glgrib_shell **);
+  void handleMasterWindow ();
 };
 

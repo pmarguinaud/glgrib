@@ -116,7 +116,7 @@ public:
   void resize (int, int);
   void scroll (double, double);
   void onclick (int, int, int);
-  void onkey (int, int, int, int, bool = false);
+  virtual void onkey (int, int, int, int, bool = false);
   void display_cursor_position (double, double);
   int get_latlon_from_cursor (float *, float *);
   void centerViewAtCursorPos ();
@@ -169,14 +169,18 @@ public:
   {
     start_shell = true;
   }
-  bool getStartShell () const
+  bool getStartShell ()
   {
-    return start_shell;
+    bool _start_shell = start_shell;
+    start_shell = false;
+    return _start_shell;
   }
 
   void fix_landscape (float, float, float, float);
 
   const glgrib_options_window & getOptions () const { return opts; }
+
+  static void getScreenSize (int *, int *);
 
 protected:
   void showHelpItem (const char *, const char *, const char *, const char *);

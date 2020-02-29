@@ -1043,3 +1043,9 @@ void glgrib_window::setOptions (const glgrib_options_window & o)
       glfwSetWindowPos (window, opts.position.x, opts.position.y);
     }
 }
+
+void glgrib_window::getScreenSize (int * w, int * h)
+{
+  GLFWmonitor * mon = glfwGetPrimaryMonitor ();
+  glfwGetMonitorPhysicalSize (mon, w, h);
+}

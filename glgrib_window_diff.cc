@@ -22,6 +22,20 @@ glgrib_window_diff * glgrib_window_diff_set::create_diff (const glgrib_options &
   return gwindow;
 }
 
+static
+void setDiffOptions (glgrib_options_field & opts1, glgrib_options_field & opts2, 
+                     const std::string & path1, const std::string & path2)
+{
+  opts1.diff.on = true;
+  opts1.path.clear ();
+  opts1.path.push_back (path1);
+  opts1.path.push_back (path2);
+  opts1.palette.name = "cold_hot";
+  opts1.user_pref.on = false;
+  opts2.path.clear ();
+  opts2.path.push_back (path2);
+}
+
 glgrib_window_diff_set::glgrib_window_diff_set (const glgrib_options & o)
 {
   opts = o;
@@ -43,10 +57,6 @@ glgrib_window_diff_set::glgrib_window_diff_set (const glgrib_options & o)
   fixOpts (&opts1);
   fixOpts (&opts2);
 
-//opts1.field[0].path = opts.diff.path;
-//opts1.field[0].diff.on = true;
-//opts2.field[1].path.push_back (opts.diff.path[0]);
-
 
   opts1.window.position.x = 0;
   opts1.window.position.y = 0;
@@ -63,8 +73,9 @@ glgrib_window_diff_set::glgrib_window_diff_set (const glgrib_options & o)
 
   ext = getNextExt ();
 
-  opts1.field[0].path.push_back (opts.diff.path[0] + "%" + ext);
-  opts2.field[0].path.push_back (opts.diff.path[1] + "%" + ext);
+  setDiffOptions (opts1.field[0], opts2.field[0], 
+                  opts.diff.path[0] + "%" + ext, 
+                  opts.diff.path[1] + "%" + ext);
 
   glgrib_window * gwindow1 = create_diff (opts1);
   glgrib_window * gwindow2 = gwindow1->clone ();
@@ -131,15 +142,16 @@ void glgrib_window_diff_set::run (glgrib_shell * shell)
             {
               ext = e;
 
+              auto fopts1 = opts.field[0];
+              auto fopts2 = opts.field[0];
+
+              setDiffOptions (fopts1, fopts2, cont1->getFile () + "%" + ext, cont2->getFile () + "%" + ext);
+
               // First window
-              auto fopts1 = gwindow1->scene.getOptions ().field[0];
-              fopts1.path.clear (); fopts1.path.push_back (cont1->getFile () + "%" + ext);
               gwindow1->makeCurrent ();
               gwindow1->scene.setFieldOptions (0, fopts1);
 
               // Second window
-              auto fopts2 = gwindow1->scene.getOptions ().field[0];
-              fopts2.path.clear (); fopts2.path.push_back (cont2->getFile () + "%" + ext);
               gwindow2->makeCurrent ();
               gwindow2->scene.setFieldOptions (0, fopts2);
             }

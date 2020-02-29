@@ -94,6 +94,21 @@ const std::string glgrib_window_diff_set::getNextExt () const
   return e;
 }
 
+const std::string glgrib_window_diff_set::getPrevExt () const
+{
+  std::string e = ext;
+  while (1)
+    {
+      e = cont1->getPrevExt (e);
+      if (e == "") 
+        break;
+      if (cont2->hasExt (e))
+        break;
+      e = "";
+    }
+  return e;
+}
+
 void glgrib_window_diff_set::run (glgrib_shell * shell)
 {
   while (! empty ())
@@ -102,28 +117,34 @@ void glgrib_window_diff_set::run (glgrib_shell * shell)
       glgrib_window_diff * gwindow1 = dynamic_cast<glgrib_window_diff*>(getWindowById (0));
       glgrib_window * gwindow2 = getWindowById (1);
       if ((gwindow1 != nullptr) && (gwindow2 != nullptr))
-        if (gwindow1->getNext ())
-          {
-            ext = getNextExt ();
+        {
+          std::string e;
 
-            if (ext != "")
-              {
-                // First window
-                auto fopts1 = gwindow1->scene.getOptions ().field[0];
-                fopts1.path.clear (); fopts1.path.push_back (cont1->getFile () + "%" + ext);
-                gwindow1->makeCurrent ();
-                gwindow1->scene.setFieldOptions (0, fopts1);
+          if (gwindow1->getNext ())
+            e = getNextExt ();
+          
+          if (gwindow1->getPrev ())
+            e = getPrevExt ();
+          
 
-if(1){
-                // Second window
-                auto fopts2 = gwindow1->scene.getOptions ().field[0];
-                fopts2.path.clear (); fopts2.path.push_back (cont2->getFile () + "%" + ext);
-                gwindow2->makeCurrent ();
-                gwindow2->scene.setFieldOptions (0, fopts2);
-}
-              }
+          if (e != "")
+            {
+              ext = e;
 
-          }
+              // First window
+              auto fopts1 = gwindow1->scene.getOptions ().field[0];
+              fopts1.path.clear (); fopts1.path.push_back (cont1->getFile () + "%" + ext);
+              gwindow1->makeCurrent ();
+              gwindow1->scene.setFieldOptions (0, fopts1);
+
+              // Second window
+              auto fopts2 = gwindow1->scene.getOptions ().field[0];
+              fopts2.path.clear (); fopts2.path.push_back (cont2->getFile () + "%" + ext);
+              gwindow2->makeCurrent ();
+              gwindow2->scene.setFieldOptions (0, fopts2);
+            }
+
+        }
       runShell (&shell);
     }
 }

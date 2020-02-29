@@ -19,7 +19,7 @@ public:
   }
   bool getPrev ()
   {
-    bool _prev = next;
+    bool _prev = prev;
     prev = false;
     return _prev;
   }
@@ -35,6 +35,7 @@ public:
   void run (glgrib_shell *) override;
   glgrib_window_diff * create_diff (const glgrib_options &);
   const std::string getNextExt () const;
+  const std::string getPrevExt () const;
 private:
   glgrib_options opts;
   glgrib_container * cont1 = nullptr;

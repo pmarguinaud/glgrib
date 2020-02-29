@@ -180,8 +180,6 @@ public:
 
   const glgrib_options_window & getOptions () const { return opts; }
 
-  static void getScreenSize (int *, int *);
-
 protected:
   void showHelpItem (const char *, const char *, const char *, const char *);
   void createGFLWwindow (GLFWwindow * = nullptr);

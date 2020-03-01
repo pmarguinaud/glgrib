@@ -1,0 +1,67 @@
+#pragma once
+
+#include "glGribOpengl.h"
+#include "glGribProgram.h"
+#include "glGribOptions.h"
+#include "glGribProjection.h"
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <string>
+
+class glGribView
+{
+public:
+  enum transform_type
+  {
+    PERSPECTIVE=0,
+    ORTHOGRAPHIC=1,
+  };
+
+  static transform_type typeFromString (std::string);
+
+  void setMVP (glGribProgram *) const;
+  void delMVP (glGribProgram *) const;
+  void calcMVP ();
+  void setViewport (int, int);
+  glm::vec3 project (const glm::vec3 & xyz) const
+  {
+    return glm::project (xyz, View * Model, Projection, Viewport);
+  }
+  glm::vec3 unproject (const glm::vec3 & xyz) const
+  {
+    return glm::unProject (xyz, View * Model, Projection, Viewport);
+  }
+  glm::vec3 intersect_plane (const double &, const double &, const glm::vec3 &, const glm::vec3 &) const;
+  glm::vec3 intersect_sphere (const double &, const double &, const glm::vec3 &, const float &) const;
+
+  int get_latlon_from_screen_coords (float, float, float *, float *) const;
+  int get_screen_coords_from_latlon (float *, float *, float, float) const;
+  int get_screen_coords_from_xyz (float *, float *, const glm::vec3 &) const;
+  int get_xyz_from_screen_coords (float, float, glm::vec3 *) const;
+  float pixel_to_dist_at_nadir (float) const;
+  float frac_to_dist_at_nadir (float) const;
+
+  void nextProjection () { ps.next (); opts.projection = ps.currentName (); calcMVP (); }
+  glGribProjection * getProjection () const { return ps.current (); }
+
+  int getWidth () const { return width; }
+  int getHeight () const { return height; }
+
+  void toggleTransformType ();
+
+  void setup (const glgrib_options_view &);
+
+  const glm::mat4 & getMVP () const { return MVP; }
+
+  const glgrib_options_view & getOptions () const { return opts; }
+  void setOptions (const glgrib_options_view & o) { opts = o; calcMVP (); }
+  float getRatio () const { return (float)width/(float)height; }
+private:
+  glgrib_options_view opts;
+  int width, height;
+  glgrib_projection_set ps;
+  glm::mat4 Model, View, Projection, MVP;
+  glm::vec4 Viewport;
+};
+

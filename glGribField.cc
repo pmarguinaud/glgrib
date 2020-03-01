@@ -1,0 +1,447 @@
+#include "glGribField.h"
+#include "glGribTrigonometry.h"
+#include "glGribProgram.h"
+#include "glGribPalette.h"
+#include "glGribFieldScalar.h"
+#include "glGribFieldVector.h"
+#include "glGribFieldContour.h"
+#include "glGribFieldIsofill.h"
+#include "glGribFieldStream.h"
+#include "glGribResolve.h"
+#include "glGribSqlite.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+#define DEF(T) \
+template void glGribField::unpack<T>  \
+            (float *, const int, const float,   \
+             const float, const float, const T *);  \
+template void glGribField::pack<T>  \
+          (const float *, const int, const float,   \
+             const float, const float, T *);  \
+template void glGribField::packUnpack<T>   \
+          (const float *, float *, const int,   \
+           const float, const float, const float); \
+template void glGribField::loadHeight <T> (glgrib_opengl_buffer_ptr, glGribLoader *); \
+template void glGribField::bindHeight <T> (int);
+
+DEF (unsigned char)
+DEF (unsigned short)
+DEF (unsigned int)
+
+static
+int hilo_count (const_glgrib_geometry_ptr geometry, glgrib_field_float_buffer_ptr data,
+                int jglo0, int radius, bool lo)
+{
+  const float * val = data->data ();
+  std::vector<int> neigh;
+  std::set<int> seen;
+  
+  seen.insert (jglo0);
+
+  std::set<int> seen1, * s2 = &seen1, seen2, * s1 = &seen2;
+
+  // s1 : last inserted values
+  // s2 : values being inserted
+  s1->insert (jglo0);
+
+  for (int j = 1; j < radius; j++)
+    {
+
+      s2->clear ();
+
+      for (std::set<int>::iterator it = s1->begin (); it != s1->end (); it++)
+        {
+          int jglo1 = *it;
+          geometry->getPointNeighbours (jglo1, &neigh);
+          for (int i = 0; i < neigh.size (); i++)
+            {
+              int jglo2 = neigh[i];
+              if (seen.find (jglo2) != seen.end ())
+                continue;
+              if (lo)
+                {
+                  if (val[jglo2] < val[jglo0])
+                    return j-1;
+                }
+              else
+                {
+                  if (val[jglo2] > val[jglo0])
+                    return j-1;
+                }
+              s2->insert (jglo2);
+            }
+        }
+
+
+      for (std::set<int>::iterator it = s2->begin (); it != s2->end (); it++)
+        seen.insert (*it);
+
+      std::swap (s1, s2);
+    }
+
+  return radius;
+}
+
+void glGribField::setupHilo (glgrib_field_float_buffer_ptr data)
+{
+  class hilo_t
+  {
+  public:
+    std::vector<float> X, Y, Z, A;
+    std::vector<std::string> L;
+    void push (const std::string & l, float x, float y, float z, float a = 0.0f)
+    {
+      L.push_back (l);
+      X.push_back (x); Y.push_back (y);
+      Z.push_back (z); A.push_back (a);
+    }
+  };
+
+  hilo_t lhilo;
+
+  std::vector<int> neigh;
+  int np = geometry->getNumberOfPoints ();
+
+  const float radius = deg2rad * opts.hilo.radius;
+
+  const float * val = data->data ();
+
+#pragma omp parallel for
+  for (int jglo = 0; jglo < np; jglo++)
+    {
+      float x, y, z;
+      float mesh = geometry->getLocalMeshSize (jglo);
+
+      int r = (int)(radius / mesh);
+      int chi = hilo_count (geometry, data, jglo, r, false);
+      int clo = hilo_count (geometry, data, jglo, r, true);
+
+      bool lhi = chi >= r;
+      bool llo = clo >= r;
+
+      if (lhi || llo)
+        {
+          float lon, lat;
+          geometry->index2latlon (jglo, &lat, &lon);
+	  float x, y, z;
+          lonlat2xyz (lon, lat, &x, &y, &z);
+#pragma omp critical
+          {
+            lhilo.push (lhi ? "H" : "L", x, y, z);
+          }
+        }
+    }
+
+  glgrib_font_ptr font = new_glgrib_font_ptr (opts.hilo.font);
+
+  hilo.setShared (false);
+  hilo.setChange (true);
+  hilo.setup3D (font, lhilo.L, lhilo.X, lhilo.Y, lhilo.Z, lhilo.A, 
+                opts.hilo.font.scale, glGribString::C);
+  hilo.setForegroundColor (opts.hilo.font.color.foreground);
+  hilo.setScaleXYZ (opts.scale);
+
+}
+
+void glGribField::setPaletteOptions (const glgrib_options_palette & o) 
+{ 
+  palette = glGribPalette::create (o, getNormedMinValue (), getNormedMaxValue ());
+}
+
+void glGribField::setNextPalette ()
+{
+  palette = glGribPalette::next (palette, getNormedMinValue (), getNormedMaxValue ());
+}
+
+void glGribField::clear ()
+{
+  values.clear ();
+  meta.clear ();
+  hilo.clear ();
+  if (isReady ())
+    glDeleteVertexArrays (1, &VertexArrayID_frame);
+  glGribWorld::clear ();
+}
+
+void glGribField::scalePaletteUp (float x)
+{
+  if (! palette.hasMin ()) 
+    palette.setMin (getNormedMinValue ());
+  if (! palette.hasMax ()) 
+    palette.setMax (getNormedMaxValue ()); 
+  float d = palette.getMax () - palette.getMin ();
+  palette.setMin (palette.getMin () - d * x);
+  palette.setMax (palette.getMax () + d * x);
+}
+
+void glGribField::scalePaletteDown (float x)
+{
+  if (! palette.hasMin ()) 
+    palette.setMin (getNormedMinValue ()); 
+  if (! palette.hasMax ()) 
+    palette.setMax (getNormedMaxValue ()); 
+  float d = palette.getMax () - palette.getMin ();
+  palette.setMin (palette.getMin () + d * x);
+  palette.setMax (palette.getMax () - d * x);
+}
+
+const glGribPalette & glGribField::getPalette () const
+{
+  return palette;
+}
+
+const glgrib_options_field & glGribField::getOptions () const 
+{ 
+  opts.palette = palette.getOptions ();
+  return opts; 
+}
+
+
+void glGribField::getUserPref (glgrib_options_field * opts, glGribLoader * ld)
+{
+  glgrib_options_field opts_sql = *opts;
+  glgrib_options_field opts_ref;
+  
+  glGribFieldMetadata meta;
+  ld->load (nullptr, opts_sql.path, opts->geometry, 0, &meta);
+
+  glGribSqlite db (glGribResolve ("glGrib.db"));
+  
+  std::string options;
+
+  if (meta.CLNOMA != "")
+    {
+      glGribSqlite::stmt st = db.prepare ("SELECT options FROM CLNOMA2OPTIONS WHERE CLNOMA = ?;");
+      st.bindall (&meta.CLNOMA);
+      if (st.fetch_row (&options))
+        goto found;
+    }
+
+  if ((meta.discipline != 255) && (meta.parameterCategory != 255) && (meta.parameterNumber != 255))
+    {
+      glGribSqlite::stmt st = db.prepare ("SELECT options FROM GRIB2OPTIONS WHERE discipline = ? "
+		                           "AND parameterCategory = ? AND parameterNumber = ?;");
+      st.bindall (&meta.discipline, &meta.parameterCategory, &meta.parameterNumber);
+      if (st.fetch_row (&options))
+        goto found;
+    }
+  
+  return;
+
+found:
+  opts_sql.parse_unseen (options.c_str ());
+  opts_sql.path = opts->path;
+  *opts = opts_sql;
+}
+
+glGribField * glGribField::create (const glgrib_options_field & opts, float slot, glGribLoader * ld)
+{
+
+  if (opts.path.size () == 0)
+    return nullptr;
+
+  glgrib_options_field opts1 = opts;
+
+  if (opts.user_pref.on)
+    getUserPref (&opts1, ld);
+
+  glGribField * fld = nullptr;
+
+  std::string type = opts1.type;
+
+  std::transform (type.begin (), type.end (), type.begin (), ::toupper);
+
+  if (type == "VECTOR")
+    fld = new glGribFieldVector ();
+  else if (type == "STREAM")
+    fld = new glGribFieldStream ();
+  else if (type == "CONTOUR")
+    fld = new glGribFieldContour ();
+  else if (type == "SCALAR")
+    fld = new glGribFieldScalar ();
+  else if (type == "ISOFILL")
+    fld = new glGribFieldIsofill ();
+  else
+    throw std::runtime_error (std::string ("Unknown field type : ") + type);
+
+  fld->setup (ld, opts1, slot);
+
+
+  return fld;
+}
+
+void glGribField::saveOptions () const
+{
+  glgrib_options_field opts1, opts2;
+
+  opts1 = opts;
+  opts1.path.clear ();
+  std::string options = opts1.asOption (opts2);
+
+  glGribSqlite db (glGribResolve ("glGrib.db"));
+
+  if (meta[0].CLNOMA != "")
+    {
+      glGribSqlite::stmt st = db.prepare ("INSERT OR REPLACE INTO CLNOMA2OPTIONS (CLNOMA, options) VALUES (?, ?);");
+      st.bindall (&meta[0].CLNOMA, &options);
+      st.execute ();
+    }
+  if ((meta[0].discipline != 255) && (meta[0].parameterCategory != 255) && (meta[0].parameterNumber != 255))
+    {
+      glGribSqlite::stmt st = db.prepare ("INSERT OR REPLACE INTO GRIB2OPTIONS (discipline, "
+                                           "parameterCategory, parameterNumber, options) VALUES (?, ?, ?, ?);");
+      st.bindall (&meta[0].discipline, &meta[0].parameterCategory, &meta[0].parameterNumber, &options);
+      st.execute ();
+    }
+
+}
+
+template <typename T>
+void glGribField::loadHeight (glgrib_opengl_buffer_ptr buf, glGribLoader * ld)
+{
+  if (opts.geometry.height.on)
+    {
+      if (opts.geometry.height.path == "")
+        {
+          heightbuffer = buf;
+        }
+      else
+        {
+          glgrib_geometry_ptr geometry_height = glGribGeometry::load (ld, opts.geometry.height.path, opts.geometry);
+
+          if (! geometry_height->isEqual (*geometry))
+            throw std::runtime_error (std::string ("Field and height have different geometries"));
+
+          int size = geometry->getNumberOfPoints ();
+
+          glgrib_field_float_buffer_ptr data;
+          glGribFieldMetadata meta;
+
+          ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
+
+          heightbuffer = new_glgrib_opengl_buffer_ptr (size * sizeof (T));
+
+          T * height = (T *)heightbuffer->map (); 
+
+	  pack<T> (data->data (), size, meta.valmin, meta.valmax, meta.valmis, height);
+
+          heightbuffer->unmap (); 
+
+        }
+    }
+
+}
+
+template <typename T>
+void glGribField::bindHeight (int attr)
+{
+  if (heightbuffer)
+    {
+      heightbuffer->bind (GL_ARRAY_BUFFER);
+      glEnableVertexAttribArray (attr);
+      glVertexAttribPointer (attr, 1, getOpenglType<T> (), GL_TRUE, 0, nullptr);
+    }
+  else
+    {
+      glDisableVertexAttribArray (attr);
+      glVertexAttrib1f (attr, 0.0f);
+    }
+}
+
+void glGribField::renderHilo (const glGribView & view) const
+{
+  if (opts.hilo.on)
+    hilo.render (view);
+}
+
+template <typename T>
+void glGribField::pack (const float * f, const int n, const float valmin, 
+		         const float valmax, const float valmis, T * b)
+{
+  const T nmax = std::numeric_limits<T>::max () - 1;
+#pragma omp parallel for
+  for (int i = 0; i < n; i++)
+    if (f[i] == valmis)
+      b[i] = 0;
+    else
+      b[i] = 1 + (T)round (nmax * (f[i] - valmin)/(valmax - valmin));
+}
+
+template <typename T>
+void glGribField::unpack (float * f, const int n, const float valmin, 
+		           const float valmax, const float valmis, const T * b)
+{
+  const T nmax = std::numeric_limits<T>::max () - 1;
+#pragma omp parallel for
+  for (int i = 0; i < n; i++)
+    if (b[i] == 0)
+      f[i] = valmis;
+    else
+      f[i] = valmin + (valmax - valmin) * (b[i] - 1) / nmax;
+}
+
+template <typename T>
+void glGribField::packUnpack (const float * g, float * f, const int n, const float valmin, const float valmax, const float valmis)
+{
+  const T nmax = std::numeric_limits<T>::max () - 1;
+#pragma omp parallel for
+  for (int i = 0; i < n; i++)
+    {
+      if (g[i] != valmis)
+        {
+          T b = 1 + (T)round ((nmax - 1) * (g[i] - valmin)/(valmax - valmin));
+          f[i] = valmin + (valmax - valmin) * (b - 1) / nmax;
+        }
+    }
+
+}
+
+
+void glGribField::setupVertexAttributesFrame ()
+{
+  glGenVertexArrays (1, &VertexArrayID_frame);
+  glBindVertexArray (VertexArrayID_frame);
+
+  geometry->bindFrame (0);
+
+  glBindVertexArray (0); 
+}
+
+void glGribField::renderFrame (const glGribView & view) const
+{
+  glGribProgram * program = glGribProgram::load (glGribProgram::FRAME); 
+
+  program->use ();
+  view.setMVP (program);
+  
+  program->set ("scale0", opts.scale * 1.001f);
+  program->set ("colorb", opts.geometry.frame.color1);
+  program->set ("colorw", opts.geometry.frame.color2);
+  program->set ("dlon", opts.geometry.frame.dlon);
+  program->set ("dlat", opts.geometry.frame.dlat);
+
+  glBindVertexArray (VertexArrayID_frame);
+
+  if (opts.geometry.frame.width > 0.0f)
+    {
+      float width = view.pixel_to_dist_at_nadir (opts.geometry.frame.width);
+      program->set ("width", width);
+      unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
+      glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, 
+                               geometry->getFrameNumberOfPoints ());
+    }
+  else
+    {
+      glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, geometry->getFrameNumberOfPoints ());
+    }
+
+}
+
+
+
+

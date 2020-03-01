@@ -224,10 +224,11 @@ for my $name (@name)
     
     (my $test = $test{$name}) or die ("Unknown test `$name'\n");
     
-    system ('make', 'glgrib.x')
+    my $exec = "./glGrib.x";
+
+    system ('make', $exec)
       && die;
     
-    my $exec = "./glgrib.x";
     
     my @args = @{ $test->[1] };
     

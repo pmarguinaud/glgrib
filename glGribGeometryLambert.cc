@@ -192,7 +192,7 @@ void glGribGeometryLambert::setup (glgrib_handle_ptr ghp, const glGribOptionsGeo
 
 
   p_pj = proj_t (deg2rad * LoVInDegrees, deg2rad * LaDInDegrees, projectionCentreFlag == 128 ? -1.0 : +1.0);
-  center_xy = p_pj.latlon_to_xy (p_pj.ref_pt);
+  center_xy = p_pj.latlonToXy (p_pj.ref_pt);
 
   if (! opts.gencoords.on)
     setupCoordinates ();
@@ -208,7 +208,7 @@ glGribGeometryLambert::~glGribGeometryLambert ()
 
 int glGribGeometryLambert::latlon2index (float lat, float lon) const
 {
-  xy_t xy = p_pj.latlon_to_xy (latlon_t (lon * deg2rad, lat * deg2rad));
+  xy_t xy = p_pj.latlonToXy (latlon_t (lon * deg2rad, lat * deg2rad));
   xy = xy - center_xy;
 
   int i = (xy.x / DxInMetres + Nux / 2 + 0.5);
@@ -510,7 +510,7 @@ void glGribGeometryLambert::sampleTriangle (unsigned char * s, const unsigned ch
 
 int glGribGeometryLambert::getTriangle (float lon, float lat) const
 {
-  xy_t xy = p_pj.latlon_to_xy (latlon_t (lon * deg2rad, lat * deg2rad));
+  xy_t xy = p_pj.latlonToXy (latlon_t (lon * deg2rad, lat * deg2rad));
   xy = xy - center_xy;
 
   int i = xy.x / DxInMetres + Nux / 2;

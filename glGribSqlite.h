@@ -48,12 +48,12 @@ namespace glgrib_sqlite_detail
   void iset (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, const char * t);
   void iset (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, const std::string * t);
 
-  void iset_list (sqlite3_ptr, sqlite3_stmt_ptr, int);
+  void isetList (sqlite3_ptr, sqlite3_stmt_ptr, int);
   template <typename T, typename... Types>
-  void iset_list (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, const T & t, Types... args)
+  void isetList (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, const T & t, Types... args)
   {
     iset (db, req, rank, t);
-    iset_list (db, req, rank + 1, args...);
+    isetList (db, req, rank + 1, args...);
   }
 
   void oget (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, int * t);
@@ -105,7 +105,7 @@ public:
     template <typename... Types>
     void bindall (Types... args)
     {
-      glgrib_sqlite_detail::iset_list (db, req, 0, args...);
+      glgrib_sqlite_detail::isetList (db, req, 0, args...);
     }
     template <typename... Types>
     void execute (Types... args)

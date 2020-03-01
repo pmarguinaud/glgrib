@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-static glm::vec3 intersect_plane (const glm::vec3 & xa, const glm::vec3 & xb,
+static glm::vec3 intersectPlane (const glm::vec3 & xa, const glm::vec3 & xb,
                                   const glm::vec3 & p, const glm::vec3 & v) 
 {
 // The plane is defined by the normal v and p which belongs to the plane
@@ -14,7 +14,7 @@ static glm::vec3 intersect_plane (const glm::vec3 & xa, const glm::vec3 & xb,
   return xa + lambda * u;
 }
 
-static glm::vec3 intersect_sphere (const glm::vec3 & xa, const glm::vec3 & xb,
+static glm::vec3 intersectSphere (const glm::vec3 & xa, const glm::vec3 & xb,
                                    const glm::vec3 & c, const float & r) 
 {
 // The sphere is defined by the radius r and its centre c
@@ -52,7 +52,7 @@ glm::vec3 glGribProjectionXyz::project (const glm::vec3 & xyz) const
 int glGribProjectionXyz::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
 {
   glm::vec3 centre (0.0f, 0.0f, 0.0f);
-  *xyz = intersect_sphere (xa, xb, centre, 1.0f);
+  *xyz = intersectSphere (xa, xb, centre, 1.0f);
   if (centre == *xyz)
     return 0;
   return 1;
@@ -75,7 +75,7 @@ glm::vec3 glGribProjectionLatlon::project (const glm::vec3 & xyz) const
 
 int glGribProjectionLatlon::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
 {
-  glm::vec3 pos = intersect_plane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
+  glm::vec3 pos = intersectPlane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
   float lon = pos.y * pi + lon0 * pi / 180.0f + pi;
   float lat = pos.z * pi;
   *xyz = lonlat2xyz (glm::vec2 (lon, lat));
@@ -100,7 +100,7 @@ glm::vec3 glGribProjectionMercator::project (const glm::vec3 & xyz) const
 
 int glGribProjectionMercator::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
 {
-  glm::vec3 pos = intersect_plane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
+  glm::vec3 pos = intersectPlane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
   float lon = pos.y * pi + lon0 * pi / 180.0f + pi;
   float lat = 2.0f * glm::atan (glm::exp (pos.z * pi)) - pi / 2.0f;
   *xyz = lonlat2xyz (glm::vec2 (lon, lat));
@@ -122,7 +122,7 @@ glm::vec3 glGribProjectionPolarNorth::project (const glm::vec3 & xyz) const
 
 int glGribProjectionPolarNorth::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
 {
-  glm::vec3 pos = intersect_plane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
+  glm::vec3 pos = intersectPlane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
   float r2 = pos.y * pos.y + pos.z * pos.z;
   float z = (-r2 + 1.0f) / (+r2 + 1.0f);
   float x = (1.0f + z) * pos.y;
@@ -146,7 +146,7 @@ glm::vec3 glGribProjectionPolarSouth::project (const glm::vec3 & xyz) const
 
 int glGribProjectionPolarSouth::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
 {
-  glm::vec3 pos = intersect_plane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
+  glm::vec3 pos = intersectPlane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
   float r2 = pos.y * pos.y + pos.z * pos.z;
   float z = (+r2 - 1.0f) / (+r2 + 1.0f);
   float x = (1.0f - z) * pos.y;

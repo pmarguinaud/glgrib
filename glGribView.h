@@ -32,8 +32,8 @@ public:
   {
     return glm::unProject (xyz, View * Model, Projection, Viewport);
   }
-  glm::vec3 intersect_plane (const double &, const double &, const glm::vec3 &, const glm::vec3 &) const;
-  glm::vec3 intersect_sphere (const double &, const double &, const glm::vec3 &, const float &) const;
+  glm::vec3 intersectPlane (const double &, const double &, const glm::vec3 &, const glm::vec3 &) const;
+  glm::vec3 intersectSphere (const double &, const double &, const glm::vec3 &, const float &) const;
 
   int getLatlonFromScreenCoords (float, float, float *, float *) const;
   int getScreenCoordsFromLatlon (float *, float *, float, float) const;

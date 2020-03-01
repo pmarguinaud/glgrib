@@ -166,7 +166,7 @@ public:
     {
       return rtheta_to_latlon (xy_to_rtheta (pt_xy));
     }
-    rtheta_t latlon_to_rtheta (const latlon_t & pt_coord) const 
+    rtheta_t latlonToRtheta (const latlon_t & pt_coord) const 
     {
       return rtheta_t 
     	  (r_equateur * pow (tan ((pi / 4.0) - ((pole * pt_coord.lat) / 2.0)), kl),
@@ -176,9 +176,9 @@ public:
     {
       return xy_t (pt_rtheta.r * sin (pt_rtheta.theta), -pole * pt_rtheta.r * cos (pt_rtheta.theta));
     }
-    xy_t latlon_to_xy (const latlon_t & pt_coord) const 
+    xy_t latlonToXy (const latlon_t & pt_coord) const 
     {
-      return rtheta_to_xy (latlon_to_rtheta (pt_coord));
+      return rtheta_to_xy (latlonToRtheta (pt_coord));
     }
   
   };

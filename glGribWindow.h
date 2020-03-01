@@ -75,7 +75,7 @@ public:
     o.fov -= 1.; 
     scene.d.view.setOptions (o);
   }
-  void increase_radius     () 
+  void increaseRadius     () 
   { 
     glGribOptionsView o = scene.d.view.getOptions ();
     o.distance += 0.1; 
@@ -130,7 +130,7 @@ public:
   void scale_palette_up ();
   void scale_palette_down ();
   void next_palette ();
-  void hide_all_fields ();
+  void hideAllFields ();
   void show_all_fields ();
   void toggle_light ();
   void rotate_light_north ();
@@ -150,7 +150,7 @@ public:
 
   void next_projection ();
   void toggle_transform_type ();
-  void load_field (const glGribOptionsField &, int = 0);
+  void loadField (const glGribOptionsField &, int = 0);
   void remove_field (int);
   void save_current_palette ();
   void resample_current_field ();

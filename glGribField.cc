@@ -34,7 +34,7 @@ DEF (unsigned short)
 DEF (unsigned int)
 
 static
-int hilo_count (const_glgrib_geometry_ptr geometry, glgrib_field_float_buffer_ptr data,
+int hiloCount (const_glgrib_geometry_ptr geometry, glgrib_field_float_buffer_ptr data,
                 int jglo0, int radius, bool lo)
 {
   const float * val = data->data ();
@@ -118,8 +118,8 @@ void glGribField::setupHilo (glgrib_field_float_buffer_ptr data)
       float mesh = geometry->getLocalMeshSize (jglo);
 
       int r = (int)(radius / mesh);
-      int chi = hilo_count (geometry, data, jglo, r, false);
-      int clo = hilo_count (geometry, data, jglo, r, true);
+      int chi = hiloCount (geometry, data, jglo, r, false);
+      int clo = hiloCount (geometry, data, jglo, r, true);
 
       bool lhi = chi >= r;
       bool llo = clo >= r;

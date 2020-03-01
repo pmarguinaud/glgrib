@@ -18,16 +18,16 @@ namespace glgrib_options_util
   std::string escape (const std::string &);
 };
 
-class glgrib_option_color
+class glGribOptionColor
 {
 public:
-  static glgrib_option_color color_by_name (const std::string &);
-  static glgrib_option_color color_by_hexa (const std::string &);
-  static void parse (glgrib_option_color *, const std::string &);
+  static glGribOptionColor color_by_name (const std::string &);
+  static glGribOptionColor color_by_hexa (const std::string &);
+  static void parse (glGribOptionColor *, const std::string &);
 
-  glgrib_option_color () {}
-  glgrib_option_color (int _r, int _g, int _b, int _a = 255) : r (_r), g (_g), b (_b), a (_a) {}
-  glgrib_option_color (const std::string &);
+  glGribOptionColor () {}
+  glGribOptionColor (int _r, int _g, int _b, int _a = 255) : r (_r), g (_g), b (_b), a (_a) {}
+  glGribOptionColor (const std::string &);
 
   int r = 255, g = 255, b = 255, a = 255;
   std::string asString () const 
@@ -36,36 +36,36 @@ public:
     sprintf (str, "#%2.2x%2.2x%2.2x%2.2x", r, g, b, a); 
     return std::string (str); 
   }
-  friend std::ostream & operator << (std::ostream &, const glgrib_option_color &);
-  friend std::istream & operator >> (std::istream &, glgrib_option_color &);
-  friend bool operator== (glgrib_option_color const & col1, glgrib_option_color const & col2)
+  friend std::ostream & operator << (std::ostream &, const glGribOptionColor &);
+  friend std::istream & operator >> (std::istream &, glGribOptionColor &);
+  friend bool operator== (glGribOptionColor const & col1, glGribOptionColor const & col2)
   {
     return (col1.r == col2.r)
         && (col1.g == col2.g)
         && (col1.b == col2.b)
         && (col1.a == col2.a);
   }
-  friend bool operator!= (glgrib_option_color const & col1, glgrib_option_color const & col2)
+  friend bool operator!= (glGribOptionColor const & col1, glGribOptionColor const & col2)
   {
     return ! (col1 == col2);
   } 
 };
 
-class glgrib_option_date
+class glGribOptionDate
 {
 public:
-  static void parse (glgrib_option_date *, const std::string &);
-  glgrib_option_date () {}
-  glgrib_option_date (int _year, int _month, int _day, int _hour, int _minute, int _second) : 
+  static void parse (glGribOptionDate *, const std::string &);
+  glGribOptionDate () {}
+  glGribOptionDate (int _year, int _month, int _day, int _hour, int _minute, int _second) : 
     year (_year), month (_month), day (_day), hour (_hour), minute (_minute), second (_second) {}
   long int year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0;
-  static glgrib_option_date interpolate (const glgrib_option_date &, const glgrib_option_date &, const float);
-  static glgrib_option_date date_from_t (time_t);
-  static time_t t_from_date (const glgrib_option_date &);
+  static glGribOptionDate interpolate (const glGribOptionDate &, const glGribOptionDate &, const float);
+  static glGribOptionDate date_from_t (time_t);
+  static time_t t_from_date (const glGribOptionDate &);
   std::string asString () const;
-  friend std::ostream & operator << (std::ostream &, const glgrib_option_date &);
-  friend std::istream & operator >> (std::istream &, glgrib_option_date &);
-  friend bool operator== (glgrib_option_date const & d1, glgrib_option_date const & d2)
+  friend std::ostream & operator << (std::ostream &, const glGribOptionDate &);
+  friend std::istream & operator >> (std::istream &, glGribOptionDate &);
+  friend bool operator== (glGribOptionDate const & d1, glGribOptionDate const & d2)
   {
     return (d1.year   == d2.year  )
         && (d1.month  == d2.month )
@@ -201,12 +201,12 @@ namespace glgrib_options_parser_detail
   template <> std::string option_tmpl     <float>              ::type ();
   template <> std::string option_tmpl_list<int>                ::type ();
   template <> std::string option_tmpl_list<float>              ::type ();
-  template <> std::string option_tmpl     <glgrib_option_date> ::type ();
-  template <> std::string option_tmpl     <glgrib_option_color>::type ();
+  template <> std::string option_tmpl     <glGribOptionDate> ::type ();
+  template <> std::string option_tmpl     <glGribOptionColor>::type ();
   template <> std::string option_tmpl     <std::string>        ::type ();
   template <> std::string option_tmpl     <std::string>        ::asString () const;
   template <> std::string option_tmpl     <std::string>        ::asOption () const;
-  template <> std::string option_tmpl_list<glgrib_option_color>::type ();
+  template <> std::string option_tmpl_list<glGribOptionColor>::type ();
   template <> std::string option_tmpl_list<std::string>        ::type ();
   template <> std::string option_tmpl_list<std::string>        ::asString () const;
   template <> std::string option_tmpl_list<std::string>        ::asOption () const;
@@ -243,9 +243,9 @@ public:
   DEF_APPLY (std::string);
   DEF_APPLY (std::vector<float>);
   DEF_APPLY (std::vector<int>);
-  DEF_APPLY (glgrib_option_color);
-  DEF_APPLY (std::vector<glgrib_option_color>);
-  DEF_APPLY (glgrib_option_date);
+  DEF_APPLY (glGribOptionColor);
+  DEF_APPLY (std::vector<glGribOptionColor>);
+  DEF_APPLY (glGribOptionDate);
 #undef DEF_APPLY
 };
 
@@ -340,9 +340,9 @@ private:
   DEF_APPLY (std::string                       , glgrib_options_parser_detail::option_tmpl<std::string>);
   DEF_APPLY (std::vector<float>                , glgrib_options_parser_detail::option_tmpl_list<float>);
   DEF_APPLY (std::vector<int>                  , glgrib_options_parser_detail::option_tmpl_list<int>);
-  DEF_APPLY (glgrib_option_color               , glgrib_options_parser_detail::option_tmpl<glgrib_option_color>);
-  DEF_APPLY (std::vector<glgrib_option_color>  , glgrib_options_parser_detail::option_tmpl_list<glgrib_option_color>);
-  DEF_APPLY (glgrib_option_date                , glgrib_options_parser_detail::option_tmpl<glgrib_option_date>);
+  DEF_APPLY (glGribOptionColor               , glgrib_options_parser_detail::option_tmpl<glGribOptionColor>);
+  DEF_APPLY (std::vector<glGribOptionColor>  , glgrib_options_parser_detail::option_tmpl_list<glGribOptionColor>);
+  DEF_APPLY (glGribOptionDate                , glgrib_options_parser_detail::option_tmpl<glGribOptionDate>);
 
 #undef DEF_APPLY
 
@@ -416,8 +416,8 @@ public:
   struct 
   {
     bool on = false;
-    glgrib_option_color color1 = glgrib_option_color (255, 255, 255);
-    glgrib_option_color color2 = glgrib_option_color ( 80,  80,  80);
+    glGribOptionColor color1 = glGribOptionColor (255, 255, 255);
+    glGribOptionColor color2 = glGribOptionColor ( 80,  80,  80);
     float width = 0.0f;
     float dlon = 10.0f;
     float dlat = 10.0f;
@@ -448,8 +448,8 @@ public:
   float scale = 0.05f;
   struct
   {
-    glgrib_option_color foreground = glgrib_option_color (255, 255, 255, 255);
-    glgrib_option_color background = glgrib_option_color (  0,   0,   0,   0);
+    glGribOptionColor foreground = glGribOptionColor (255, 255, 255, 255);
+    glGribOptionColor background = glGribOptionColor (  0,   0,   0,   0);
   } color;
 };
 
@@ -560,7 +560,7 @@ public:
     {
       bool on = false;
     } fill;
-    glgrib_option_color color;
+    glGribOptionColor color;
     struct
     {
       bool on = false;
@@ -570,7 +570,7 @@ public:
   struct
   {
     bool on = false;
-    glgrib_option_color color;
+    glGribOptionColor color;
     float angle  = 60.0;
     float length = 0.25;
     float dleng  = 0.1;
@@ -618,7 +618,7 @@ public:
   float min = defaultMin;
   float max = defaultMax;
   std::vector<float> values;
-  std::vector<glgrib_option_color> colors;
+  std::vector<glGribOptionColor> colors;
   struct
   {
     bool on = false;
@@ -687,7 +687,7 @@ public:
   struct
   {
     bool on = false;
-    glgrib_option_color missing_color = glgrib_option_color (0, 0, 0, 0);
+    glGribOptionColor missing_color = glGribOptionColor (0, 0, 0, 0);
   } discrete;
 };
 
@@ -815,12 +815,12 @@ public:
   {
     bool on = false;
     float width = 0.01f;
-    glgrib_option_color color = glgrib_option_color (255,   0,   0);
+    glGribOptionColor color = glGribOptionColor (255,   0,   0);
   } frame;
   struct
   {
     bool on = false;
-    glgrib_option_color color = glgrib_option_color (255, 255, 255);
+    glGribOptionColor color = glGribOptionColor (255, 255, 255);
     float length = 0.025f;
     float width  = 0.010f;
     int kind     = 0;
@@ -850,7 +850,7 @@ public:
   int points = 200;
   int interval = 2;
   float dash_length = 4.0f;
-  glgrib_option_color color = glgrib_option_color (0, 255, 0);
+  glGribOptionColor color = glGribOptionColor (0, 255, 0);
   bool on = false;
   float scale = 1.005;
   struct 
@@ -865,7 +865,7 @@ public:
 class glGribOptionsLandLayer : public glGribOptionsBase
 {
 public:
-  glGribOptionsLandLayer (const std::string & _path, float _scale, const glgrib_option_color & _color)
+  glGribOptionsLandLayer (const std::string & _path, float _scale, const glGribOptionColor & _color)
                            :  path (_path), scale (_scale), color (_color) {}
   DEFINE
   {
@@ -886,7 +886,7 @@ public:
     float angle        = 1.0f;
     bool on            = true;
   } subdivision;
-  glgrib_option_color color = glgrib_option_color ("#ffe2ab");
+  glGribOptionColor color = glGribOptionColor ("#ffe2ab");
   struct
   {
     bool on            = false;
@@ -910,10 +910,10 @@ public:
 
   std::vector<glGribOptionsLandLayer> layers = 
   {
-    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L1.shp", 1.000f, glgrib_option_color ("#ffe2ab")),
-    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L2.shp", 1.001f, glgrib_option_color ("#0000ff")),
-    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L3.shp", 1.002f, glgrib_option_color ("#ffe2ab")),
-    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L5.shp", 1.000f, glgrib_option_color ("#ffe2ab")) 
+    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L1.shp", 1.000f, glGribOptionColor ("#ffe2ab")),
+    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L2.shp", 1.001f, glGribOptionColor ("#0000ff")),
+    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L3.shp", 1.002f, glGribOptionColor ("#ffe2ab")),
+    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L5.shp", 1.000f, glGribOptionColor ("#ffe2ab")) 
   };
 
 };
@@ -968,7 +968,7 @@ public:
   } lonlat;
   glGribOptionsGeometry geometry;
   float scale = 1.0f;
-  glgrib_option_color color = glgrib_option_color ("#00000000");
+  glGribOptionColor color = glGribOptionColor ("#00000000");
 };
 
 class glGribOptionsLines : public glGribOptionsBase
@@ -991,7 +991,7 @@ public:
   std::string selector;
   string path;
   string format = "gshhg";
-  glgrib_option_color color;
+  glGribOptionColor color;
   float scale = 1.005;
   float latmin = 0.0f, latmax = 0.0f, lonmin = 0.0f, lonmax = 0.0f;
 };
@@ -1077,7 +1077,7 @@ public:
     DESC (date,              Date for sunlight position);
     DESC (night,             Fraction of light during for night);
   }
-  glgrib_option_date date;
+  glGribOptionDate date;
   bool   on  = false;
   struct
   {
@@ -1356,8 +1356,8 @@ public:
   }
   bool on = false;
   glGribOptionsFont font = glGribOptionsFont ("fonts/16.bmp", 0.02f);
-  glgrib_option_color color1 = glgrib_option_color (255, 255, 255);
-  glgrib_option_color color2 = glgrib_option_color ( 80,  80,  80);
+  glGribOptionColor color1 = glGribOptionColor (255, 255, 255);
+  glGribOptionColor color2 = glGribOptionColor ( 80,  80,  80);
   struct position
   {
     float xmin = 0.05;
@@ -1418,7 +1418,7 @@ public:
     DESC (color, Point color);
   }
   glGribOptionsPalette palette = glGribOptionsPalette ("none");
-  glgrib_option_color color;
+  glGribOptionColor color;
   float scale = 1.0f;
   struct
   {

@@ -47,7 +47,7 @@ public:
 };
 
 static
-hsva_t rgba2hsva (const glgrib_option_color & rgba)
+hsva_t rgba2hsva (const glGribOptionColor & rgba)
 {
   float r = float (rgba.r) / 255.0f, g = float (rgba.g) / 255.0f;
   float b = float (rgba.b) / 255.0f, a = float (rgba.a) / 255.0f;
@@ -76,7 +76,7 @@ hsva_t rgba2hsva (const glgrib_option_color & rgba)
 }
 
 static
-glgrib_option_color hsva2rgba (const hsva_t & hsva)
+glGribOptionColor hsva2rgba (const hsva_t & hsva)
 {
   float h = hsva.h, s = hsva.s, v = hsva.v, a = hsva.a;
 
@@ -99,7 +99,7 @@ glgrib_option_color hsva2rgba (const hsva_t & hsva)
       case 5: r = v; g = l; b = m; break;
     }
 
-  return glgrib_option_color (int (255.0f * r), int (255.0f * g), 
+  return glGribOptionColor (int (255.0f * r), int (255.0f * g), 
 		              int (255.0f * b), int (255.0f * a));
 }
 
@@ -130,7 +130,7 @@ glGribPalette glGribPalette::create
       if (p.opts.max == defaultMax)
         p.opts.max = o.values.back ();
 
-      p.rgba_mis = glgrib_option_color (0, 0, 0, 0);
+      p.rgba_mis = glGribOptionColor (0, 0, 0, 0);
 
       // Generate values
       if (p.opts.generate.on)
@@ -154,7 +154,7 @@ glGribPalette glGribPalette::create
           hsva_t hsva1 = rgba2hsva (p.opts.colors.front ());
           hsva_t hsva2 = rgba2hsva (p.opts.colors.back  ());
 
-	  std::vector<glgrib_option_color> colors;
+	  std::vector<glGribOptionColor> colors;
 
 	  colors.push_back (p.opts.colors.front ());
 
@@ -177,7 +177,7 @@ glGribPalette glGribPalette::create
 	      float v = hsva1.v * (1.0f - c) + hsva2.v * c;
 	      float a = hsva1.a * (1.0f - c) + hsva2.a * c;
 	      hsva_t hsva (h, s, v, a);
-	      glgrib_option_color color = hsva2rgba (hsva);
+	      glGribOptionColor color = hsva2rgba (hsva);
 	      colors.push_back (color);
 	    }
 
@@ -204,7 +204,7 @@ glGribPalette glGribPalette::create
                 p.rgba.push_back (p.opts.colors.front ());
               else
                 {
-                  glgrib_option_color c;
+                  glGribOptionColor c;
                   int ia = j-1, ib = j+0;
                   float vala = p.opts.values[ia], valb = p.opts.values[ib];
                   float b = (val - vala) / (valb - vala), a = 1.0 - b;
@@ -275,9 +275,9 @@ glGribPalette & glGribPalette::create_by_name (const std::string & name)
           if (sscanf (&hexa[8*i], "%2x%2x%2x%2x", &r, &g, &b, &a) != 4)
             throw std::runtime_error ("Cannot parse hexa color");
           if (i == 0)
-            p.rgba_mis = glgrib_option_color (r, g, b, a);
+            p.rgba_mis = glGribOptionColor (r, g, b, a);
           else
-            p.rgba.push_back (glgrib_option_color (r, g, b, a));
+            p.rgba.push_back (glGribOptionColor (r, g, b, a));
         }
       p.opts.name = name;
     }
@@ -295,9 +295,9 @@ glGribPalette::glGribPalette (std::ifstream & fh)
     }
   int r, g, b, a;
   fh >> r >> g >> b >> a;
-  rgba_mis = glgrib_option_color (r, g, b, a);
+  rgba_mis = glGribOptionColor (r, g, b, a);
   while (fh >> r >> g >> b >> a)
-    rgba.push_back (glgrib_option_color (r, g, b, a));
+    rgba.push_back (glGribOptionColor (r, g, b, a));
 }
 
 glGribPalette glGribPalette::next (const glGribPalette & p, float min, float max)
@@ -369,7 +369,7 @@ std::ostream & operator << (std::ostream & out, const glGribPalette & p)
 {
   out << p.rgba_mis << std::endl;
   out << "[";
-  for (std::vector<glgrib_option_color>::const_iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
+  for (std::vector<glGribOptionColor>::const_iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
     out << *it << ",";
   out << "]" << std::endl;
   return out;
@@ -428,12 +428,12 @@ bool operator!= (const glGribPalette & p1, const glGribPalette & p2)
   return ! (p1 == p2);
 }
  
-glgrib_option_color glGribPalette::getColor (float val) const
+glGribOptionColor glGribPalette::getColor (float val) const
 {
   float RGBA0[256][4];
   getRGBA255 (RGBA0);
   int pal = std::max (1, std::min ((int)(1 + 254 * (val - opts.min) / (opts.max - opts.min)), 255));
-  return glgrib_option_color (255 * RGBA0[pal][0], 255 * RGBA0[pal][1], 255 * RGBA0[pal][2], 255 * RGBA0[pal][3]);
+  return glGribOptionColor (255 * RGBA0[pal][0], 255 * RGBA0[pal][1], 255 * RGBA0[pal][2], 255 * RGBA0[pal][3]);
 }
 
 int glGribPalette::getColorIndex (float val) const

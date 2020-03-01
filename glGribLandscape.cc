@@ -67,14 +67,14 @@ void glGribLandscape::setup (glGribLoader * ld, const glGribOptionsLandscape & o
 
   geometry = glGribGeometry::load (ld, opts.geometry_path, opts.geometry, opts.number_of_latitudes);
 
-  if (opts.color == glgrib_option_color ("#00000000"))
+  if (opts.color == glGribOptionColor ("#00000000"))
     {
       unsigned char * rgb;
       int w, h;
      
      
       if (endsWith (opts.path, ".png"))
-        glgrib_read_png (glGribResolve (opts.path), &w, &h, &rgb);
+        glGribReadPng (glGribResolve (opts.path), &w, &h, &rgb);
       else if (endsWith (opts.path, ".bmp"))
         glGribBitmap (glGribResolve (opts.path), &rgb, &w, &h);
       else
@@ -85,7 +85,7 @@ void glGribLandscape::setup (glGribLoader * ld, const glGribOptionsLandscape & o
       if ((sizemax < w) || (sizemax < h))
         throw std::runtime_error (std::string ("Image is too large to be used as a texture :") + opts.path);
      
-      texture = new_glgrib_opengl_texture_ptr (w, h, rgb);
+      texture = newGlgribOpenglTexturePtr (w, h, rgb);
       delete [] rgb;
     }
 
@@ -103,7 +103,7 @@ void glGribLandscape::setup (glGribLoader * ld, const glGribOptionsLandscape & o
 
       ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
 
-      heightbuffer = new_glgrib_opengl_buffer_ptr (size * sizeof (float));
+      heightbuffer = newGlgribOpenglBufferPtr (size * sizeof (float));
 
       float * height = (float *)heightbuffer->map (); 
 #pragma omp parallel for
@@ -128,7 +128,7 @@ void glGribLandscape::render (const glGribView & view, const glGribOptionsLight 
   program->set (light);
   program->set ("isflat", opts.flat.on);
 
-  if (opts.color == glgrib_option_color ("#00000000"))
+  if (opts.color == glGribOptionColor ("#00000000"))
     {
       // the texture selection process is a bit obscure
       glActiveTexture (GL_TEXTURE0); 

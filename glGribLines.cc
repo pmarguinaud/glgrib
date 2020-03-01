@@ -38,8 +38,8 @@ void glGribLines::setup (const glGribOptionsLines & o,
   else
      glGribShapelib::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &ind, opts.selector);
 
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (lonlat.size () * sizeof (float), lonlat.data ());
-  elementbuffer = new_glgrib_opengl_buffer_ptr (ind.size () * sizeof (unsigned int), ind.data ());
+  vertexbuffer = newGlgribOpenglBufferPtr (lonlat.size () * sizeof (float), lonlat.data ());
+  elementbuffer = newGlgribOpenglBufferPtr (ind.size () * sizeof (unsigned int), ind.data ());
 
   setupVertexAttributes ();
 

@@ -35,7 +35,7 @@ glGribFieldVector & glGribFieldVector::operator= (const glGribFieldVector & othe
         {
           glGribField::operator= (other);
 	  d = other.d;
-          d.buffer_d = new_glgrib_opengl_buffer_ptr (other.d.buffer_d);
+          d.buffer_d = newGlgribOpenglBufferPtr (other.d.buffer_d);
           setupVertexAttributes ();
           setReady ();
         }
@@ -114,7 +114,7 @@ void glGribFieldVector::setup (glGribLoader * ld, const glGribOptionsField & o, 
 
   glGribLoader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
-  d.buffer_n = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned char));
+  d.buffer_n = newGlgribOpenglBufferPtr (geometry->getNumberOfPoints () * sizeof (unsigned char));
   unsigned char * col_n = (unsigned char *)d.buffer_n->map ();
   pack<unsigned char> (data_n->data (), geometry->getNumberOfPoints (), meta_n.valmin, meta_n.valmax, meta_n.valmis, col_n);
   col_n = nullptr;
@@ -122,7 +122,7 @@ void glGribFieldVector::setup (glGribLoader * ld, const glGribOptionsField & o, 
 
   loadHeight <unsigned char> (d.buffer_n, ld);
 
-  d.buffer_d = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (unsigned char));
+  d.buffer_d = newGlgribOpenglBufferPtr (geometry->getNumberOfPoints () * sizeof (unsigned char));
   unsigned char * col_d = (unsigned char *)d.buffer_d->map ();
   pack<unsigned char> (data_d->data (), geometry->getNumberOfPoints (), meta_d.valmin, meta_d.valmax, meta_d.valmis, col_d);
 
@@ -143,8 +143,8 @@ void glGribFieldVector::setup (glGribLoader * ld, const glGribOptionsField & o, 
 
   if (opts.no_value_pointer.on)
     {
-      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)nullptr));
-      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)nullptr));
+      values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
+      values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
     }
   else
     {

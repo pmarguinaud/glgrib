@@ -24,8 +24,8 @@ public:
 
   const std::string & getName () { return opts.name; }
 
-  glgrib_option_color rgba_mis;
-  std::vector<glgrib_option_color> rgba;
+  glGribOptionColor rgba_mis;
+  std::vector<glGribOptionColor> rgba;
   float getMin () const { return opts.min; }
   float getMax () const { return opts.max; }
   bool hasMin () const { return opts.min != defaultMin; }
@@ -40,7 +40,7 @@ public:
   glGribPalette (const std::string & n, int r, int g, int b, int a,Types... vars)
   {
     glGribPalette p = glGribPalette (n, true, vars...);
-    p.rgba_mis = glgrib_option_color (r, g, b, a);
+    p.rgba_mis = glGribOptionColor (r, g, b, a);
     *this = p;
     register_ (p);
   }
@@ -49,7 +49,7 @@ public:
 		  int r, int g, int b, int a, Types... vars)
   {
     glGribPalette p = glGribPalette (n, true, vars...);
-    p.rgba_mis = glgrib_option_color (r, g, b, a);
+    p.rgba_mis = glGribOptionColor (r, g, b, a);
     p.opts.min = min_;
     p.opts.max = max_;
     *this = p;
@@ -70,7 +70,7 @@ public:
 
   const std::vector<float> & getValues () const { return opts.values; }
 
-  glgrib_option_color getColor (float) const;
+  glGribOptionColor getColor (float) const;
   int getColorIndex (float) const;
 
   bool isLinear () const
@@ -96,9 +96,9 @@ private:
   template <typename T, typename... Types> 
   glGribPalette (const std::string & n, bool record, T r, T g, T b, T a, Types... vars)
   {
-    rgba.push_back (glgrib_option_color (r, g, b, a));
+    rgba.push_back (glGribOptionColor (r, g, b, a));
     glGribPalette p = glGribPalette (n, false, vars...);
-    for (std::vector<glgrib_option_color>::iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
+    for (std::vector<glGribOptionColor>::iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
       rgba.push_back (*it);
     opts.name = n;
   }

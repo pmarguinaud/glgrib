@@ -2,6 +2,6 @@
 
 #include <string>
 
-void glgrib_write_png (const std::string &, int, int, unsigned char *);
-void glgrib_read_png (const std::string &, int *, int *, unsigned char **);
+void glGribWritePng (const std::string &, int, int, unsigned char *);
+void glGribReadPng (const std::string &, int *, int *, unsigned char **);
 

@@ -38,7 +38,7 @@ public:
     set (key, b ? 1 : 0);
   }
   
-  void set (const std::string & key, const glgrib_option_color & color)
+  void set (const std::string & key, const glGribOptionColor & color)
   {
     set (key, float (color.r) / 255.0f, float (color.g) / 255.0f,
               float (color.b) / 255.0f, float (color.a) / 255.0f);

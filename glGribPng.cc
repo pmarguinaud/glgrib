@@ -9,7 +9,7 @@
 
 #include "glGribPng.h"
 
-void glgrib_read_png (const std::string & filename, int * pwidth, int * pheight, unsigned char ** ppixels)
+void glGribReadPng (const std::string & filename, int * pwidth, int * pheight, unsigned char ** ppixels)
 {
   FILE *fp = fopen (filename.c_str (), "r");
   int width, height;
@@ -101,7 +101,7 @@ void glgrib_read_png (const std::string & filename, int * pwidth, int * pheight,
 
 }
 
-void glgrib_write_png (const std::string & filename, int width, int height, unsigned char * pixels) 
+void glGribWritePng (const std::string & filename, int width, int height, unsigned char * pixels) 
 {
   png_byte * png_bytes = nullptr;
   png_byte ** png_rows = nullptr;

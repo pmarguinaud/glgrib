@@ -23,7 +23,7 @@ float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2)
 
 // Symmetric 2x2 matrix diagonalization
 static
-void glgrib_diag (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
+void glGribDiag (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
 {
   double a = A[0][0], b = A[1][1], c = A[0][1];
   double D = sqrt ((a - b) * (a - b) + 4 * c * c);
@@ -948,7 +948,7 @@ void glGribEarcut::processRing (const std::vector<float> & lonlat1,
   // Change coordinate system : choose an XYZ where most
   // points are far enough from the poles
   glm::mat3 R;
-  R = getRotMat (glgrib_diag, xyz1, openmp);
+  R = getRotMat (glGribDiag, xyz1, openmp);
 
   std::vector<glm::vec3> xyz2;
   std::vector<float> lonlat2;

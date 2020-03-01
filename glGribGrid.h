@@ -12,7 +12,7 @@ public:
   void render (const glGribView &, const glGribOptionsLight &) const override;
   void resize (const glGribView &) override {}
   const glGribOptionsGrid & getOptions () const { return opts; }
-  void setColorOptions (const glgrib_option_color & o)
+  void setColorOptions (const glGribOptionColor & o)
   {
     opts.color = o;
   }

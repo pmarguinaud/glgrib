@@ -48,7 +48,7 @@ glGribGeometryLatlon::glGribGeometryLatlon (glgrib_handle_ptr ghp)
 
 void glGribGeometryLatlon::setupCoordinates ()
 {
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (float));
+  vertexbuffer = newGlgribOpenglBufferPtr (2 * numberOfPoints * sizeof (float));
 
   float * lonlat = (float *)vertexbuffer->map ();
 
@@ -102,7 +102,7 @@ void glGribGeometryLatlon::setup (glgrib_handle_ptr ghp, const glGribOptionsGeom
   // Generation of triangles
   if (! opts.triangle_strip.on)
     {
-      elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (unsigned int));
+      elementbuffer = newGlgribOpenglBufferPtr (3 * numberOfTriangles * sizeof (unsigned int));
       unsigned int * ind = (unsigned int *)elementbuffer->map ();
       for (int j = 0, t = 0; j < Nj-1; j++)
         {
@@ -129,7 +129,7 @@ void glGribGeometryLatlon::setup (glgrib_handle_ptr ghp, const glGribOptionsGeom
       else
         ind_strip_size = (2 * Ni + 1) * (Nj - 1);
 
-      elementbuffer = new_glgrib_opengl_buffer_ptr (3 * ind_strip_size * sizeof (unsigned int));
+      elementbuffer = newGlgribOpenglBufferPtr (3 * ind_strip_size * sizeof (unsigned int));
       unsigned int * ind_strip = (unsigned int *)elementbuffer->map ();
       for (int j = 0, t = 0; j < Nj-1; j++)
         {
@@ -164,7 +164,7 @@ void glGribGeometryLatlon::setup (glgrib_handle_ptr ghp, const glGribOptionsGeom
 void glGribGeometryLatlon::setupFrame ()
 {
   numberOfPoints_frame = 2 * (Ni + Nj - 2);
-  vertexbuffer_frame = new_glgrib_opengl_buffer_ptr (3 * (numberOfPoints_frame + 2) 
+  vertexbuffer_frame = newGlgribOpenglBufferPtr (3 * (numberOfPoints_frame + 2) 
                                                      * sizeof (float));
 
   float * lonlat = (float *)vertexbuffer_frame->map ();

@@ -106,7 +106,7 @@ void glGribScene::display () const
 
 }
 
-const glgrib_option_date * glGribScene::get_date ()
+const glGribOptionDate * glGribScene::get_date ()
 {
   for (auto fld : fieldlist)
     if (fld)
@@ -125,7 +125,7 @@ void glGribScene::update_light ()
   if (d.opts.scene.light.rotate.on)
     d.opts.scene.light.lon -= d.opts.scene.light.rotate.rate;
 
-  const glgrib_option_date * date = nullptr;
+  const glGribOptionDate * date = nullptr;
 
   if (d.opts.scene.light.date_from_grib.on)
     date = get_date ();
@@ -194,7 +194,7 @@ void glGribScene::update_view ()
   else if ((d.opts.scene.lon_at_hour >= 0.0f) && 
            (d.opts.scene.lon_at_hour <= 24.0f))
     {
-      const glgrib_option_date * date = get_date ();
+      const glGribOptionDate * date = get_date ();
       if (date != nullptr)
         {
           float hh = d.opts.scene.lon_at_hour - (date->hour + date->minute / 60.0f);
@@ -242,7 +242,7 @@ void glGribScene::update_date ()
 {
   if (d.opts.scene.date.on)
     {
-      const glgrib_option_date * date = nullptr;
+      const glGribOptionDate * date = nullptr;
 
       glGribField * fld = getCurrentField ();
       if (fld != nullptr)
@@ -280,7 +280,7 @@ void glGribScene::update_title ()
       if (strtitle != title)
         {
           d.strtitle.clear ();
-          glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.scene.title.font);
+          glgrib_font_ptr font = newGlgribFontPtr (d.opts.scene.title.font);
           d.strtitle.setup2D (font, title, d.opts.scene.title.x, 
                               d.opts.scene.title.y, d.opts.scene.title.font.scale, 
                               glGribString::str2align (d.opts.scene.title.a));
@@ -499,7 +499,7 @@ void glGribScene::setColorBarOptions (const glGribOptionsColorbar & o)
 
   if (d.opts.colorbar.on)
     {
-      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.colorbar.font);
+      glgrib_font_ptr font = newGlgribFontPtr (d.opts.colorbar.font);
       d.strmess.setup2D (font, std::string (30, ' '), 1.0f, 1.0f, 
                         d.opts.colorbar.font.scale, glGribString::NE);
       d.strmess.setForegroundColor (d.opts.colorbar.font.color.foreground);
@@ -532,7 +532,7 @@ void glGribScene::setTextOptions (const glGribOptionsText & o)
   d.str.clear ();
   if (d.opts.scene.text.on)
     {
-      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.scene.text.font);
+      glgrib_font_ptr font = newGlgribFontPtr (d.opts.scene.text.font);
       for (int i = 0; i < d.opts.scene.text.s.size (); i++)
         {
           glGribString str;
@@ -562,7 +562,7 @@ void glGribScene::setCitiesOptions (const glGribOptionsCities & o)
     d.cities.setup (o);
 }
 
-void glGribScene::setGridColorOptions (const glgrib_option_color & color)
+void glGribScene::setGridColorOptions (const glGribOptionColor & color)
 {
   d.grid.setColorOptions (color);
 }
@@ -587,7 +587,7 @@ void glGribScene::setDateOptions (const glGribOptionsDate & o)
   d.strdate.clear ();
   if (d.opts.scene.date.on)
     {
-      glgrib_font_ptr font = new_glgrib_font_ptr (d.opts.scene.date.font);
+      glgrib_font_ptr font = newGlgribFontPtr (d.opts.scene.date.font);
       d.strdate.setup2D (font, std::string (20, ' '), 1.0f, 0.0f, 
                         d.opts.scene.date.font.scale, glGribString::SE);
       d.strdate.setForegroundColor (d.opts.scene.date.font.color.foreground);

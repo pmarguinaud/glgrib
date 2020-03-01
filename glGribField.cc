@@ -137,7 +137,7 @@ void glGribField::setupHilo (glgrib_field_float_buffer_ptr data)
         }
     }
 
-  glgrib_font_ptr font = new_glgrib_font_ptr (opts.hilo.font);
+  glgrib_font_ptr font = newGlgribFontPtr (opts.hilo.font);
 
   hilo.setShared (false);
   hilo.setChange (true);
@@ -324,7 +324,7 @@ void glGribField::loadHeight (glgrib_opengl_buffer_ptr buf, glGribLoader * ld)
 
           ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
 
-          heightbuffer = new_glgrib_opengl_buffer_ptr (size * sizeof (T));
+          heightbuffer = newGlgribOpenglBufferPtr (size * sizeof (T));
 
           T * height = (T *)heightbuffer->map (); 
 

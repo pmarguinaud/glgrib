@@ -23,7 +23,7 @@ public:
   static type typeFromString (std::string str);
 };
 
-class glgrib_projection_xyz : public glGribProjection
+class glGribProjectionXyz : public glGribProjection
 {
 public:
   glm::vec3 project (const glm::vec3 &) const override;
@@ -33,7 +33,7 @@ public:
   bool setLon0 (const float &) const override { return false; }
 };
 
-class glgrib_projection_latlon : public glGribProjection
+class glGribProjectionLatlon : public glGribProjection
 {
 public:
   glm::vec3 project (const glm::vec3 &) const override;
@@ -45,7 +45,7 @@ private:
   mutable float lon0 = 180.0; // Latitude of right handside
 };
 
-class glgrib_projection_mercator : public glGribProjection
+class glGribProjectionMercator : public glGribProjection
 {
 public:
   glm::vec3 project (const glm::vec3 &) const override;
@@ -57,7 +57,7 @@ private:
   mutable float lon0 = 180.0; // Latitude of right handside
 };
 
-class glgrib_projection_polar_north : public glGribProjection
+class glGribProjectionPolarNorth : public glGribProjection
 {
 public:
   glm::vec3 project (const glm::vec3 &) const override;
@@ -67,7 +67,7 @@ public:
   bool setLon0 (const float &) const override { return false; }
 };
 
-class glgrib_projection_polar_south : public glGribProjection
+class glGribProjectionPolarSouth : public glGribProjection
 {
 public:
   glm::vec3 project (const glm::vec3 &) const override;
@@ -77,14 +77,14 @@ public:
   bool setLon0 (const float &) const override { return false; }
 };
 
-class glgrib_projection_set 
+class glGribProjectionSet 
 {
 public:
-  glgrib_projection_set () 
+  glGribProjectionSet () 
   {
     setup ();
   }
-  glgrib_projection_set & operator= (const glgrib_projection_set & ps)
+  glGribProjectionSet & operator= (const glGribProjectionSet & ps)
   {
     setup ();
     current_ = ps.current_;
@@ -127,11 +127,11 @@ private:
      proj[4] = &proj_latlon;
   }
   glGribProjection * proj[5];
-  glgrib_projection_xyz         proj_xyz;
-  glgrib_projection_polar_north proj_polar_north;
-  glgrib_projection_polar_south proj_polar_south;
-  glgrib_projection_mercator    proj_mercator;
-  glgrib_projection_latlon      proj_latlon;
+  glGribProjectionXyz         proj_xyz;
+  glGribProjectionPolarNorth proj_polar_north;
+  glGribProjectionPolarSouth proj_polar_south;
+  glGribProjectionMercator    proj_mercator;
+  glGribProjectionLatlon      proj_latlon;
 };
 
 

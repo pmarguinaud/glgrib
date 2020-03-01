@@ -75,7 +75,7 @@ void glGribProgram::compile ()
 {
   if (loaded) 
     return;
-  programID = glgrib_load_shader (FragmentShaderCode, VertexShaderCode, GeometryShaderCode);
+  programID = glGribLoadShader (FragmentShaderCode, VertexShaderCode, GeometryShaderCode);
   matrixID = glGetUniformLocation (programID, "MVP");
   loaded = true;
 }

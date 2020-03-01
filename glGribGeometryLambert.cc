@@ -13,7 +13,7 @@ const double glGribGeometryLambert::a = 6371229.0;
 
 void glGribGeometryLambert::setupCoordinates ()
 {
-  vertexbuffer = new_glgrib_opengl_buffer_ptr (2 * numberOfPoints * sizeof (float));
+  vertexbuffer = newGlgribOpenglBufferPtr (2 * numberOfPoints * sizeof (float));
 
   float * lonlat = (float *)vertexbuffer->map ();
 
@@ -86,7 +86,7 @@ glGribGeometryLambert::glGribGeometryLambert (glgrib_handle_ptr ghp)
 void glGribGeometryLambert::setupFrame ()
 {
   numberOfPoints_frame = 2 * (Nx + Ny - 2);
-  vertexbuffer_frame = new_glgrib_opengl_buffer_ptr (3 * (numberOfPoints_frame + 2) 
+  vertexbuffer_frame = newGlgribOpenglBufferPtr (3 * (numberOfPoints_frame + 2) 
                                                      * sizeof (float));
   
   float * lonlat = (float *)vertexbuffer_frame->map ();
@@ -140,7 +140,7 @@ void glGribGeometryLambert::setup (glgrib_handle_ptr ghp, const glGribOptionsGeo
   
   if (! opts.triangle_strip.on)
     {
-      elementbuffer = new_glgrib_opengl_buffer_ptr (3 * numberOfTriangles * sizeof (unsigned int));
+      elementbuffer = newGlgribOpenglBufferPtr (3 * numberOfTriangles * sizeof (unsigned int));
       unsigned int * ind = (unsigned int *)elementbuffer->map ();
       for (int j = 0, t = 0; j < Ny-1; j++)
         for (int i = 0; i < Nx-1; i++)
@@ -154,7 +154,7 @@ void glGribGeometryLambert::setup (glgrib_handle_ptr ghp, const glGribOptionsGeo
   else
     {
       ind_strip_size = (2 * Nx + 5) * (Ny - 1);
-      elementbuffer = new_glgrib_opengl_buffer_ptr (ind_strip_size * sizeof (unsigned int));
+      elementbuffer = newGlgribOpenglBufferPtr (ind_strip_size * sizeof (unsigned int));
       unsigned int * ind_strip = (unsigned int *)elementbuffer->map ();
 
       auto ind0 = [=] (int i, int j) { return (j + 0) * Nx + (i + 0); };

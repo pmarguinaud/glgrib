@@ -14,7 +14,7 @@ void gl_init ()
   glEnable (GL_MULTISAMPLE);
 }
   
-void glgrib_opengl_buffer::bind (GLenum target, GLuint index) const 
+void glGribOpenglBuffer::bind (GLenum target, GLuint index) const 
 {
   if (index == 0)
     glBindBuffer (target, id_);
@@ -22,7 +22,7 @@ void glgrib_opengl_buffer::bind (GLenum target, GLuint index) const
     glBindBufferBase (target, index, id_);
 }
 
-glgrib_opengl_buffer::glgrib_opengl_buffer (size_t size, const void * data)
+glGribOpenglBuffer::glGribOpenglBuffer (size_t size, const void * data)
 {
   glGenBuffers (1, &id_);
   glBindBuffer (GL_ARRAY_BUFFER, id_);
@@ -31,34 +31,34 @@ glgrib_opengl_buffer::glgrib_opengl_buffer (size_t size, const void * data)
   size_ = size;
 }
 
-void * glgrib_opengl_buffer::map ()
+void * glGribOpenglBuffer::map ()
 {
   bind (GL_ARRAY_BUFFER);
   return glMapBufferRange (GL_ARRAY_BUFFER, 0, size_, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
 }
 
-void glgrib_opengl_buffer::unmap ()
+void glGribOpenglBuffer::unmap ()
 {
   glFlushMappedBufferRange (GL_ARRAY_BUFFER, 0, size_);
   glUnmapBuffer (GL_ARRAY_BUFFER);
 }
 
-glgrib_opengl_buffer::~glgrib_opengl_buffer ()
+glGribOpenglBuffer::~glGribOpenglBuffer ()
 {
   if (allocated_)
     glDeleteBuffers (1, &id_);
   allocated_ = false;
 }
 
-glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (size_t size, const void * data)
+glgrib_opengl_buffer_ptr newGlgribOpenglBufferPtr (size_t size, const void * data)
 {
-  return std::make_shared<glgrib_opengl_buffer>(size, data);
+  return std::make_shared<glGribOpenglBuffer>(size, data);
 }
 
-glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (const glgrib_opengl_buffer_ptr & oldptr)
+glgrib_opengl_buffer_ptr newGlgribOpenglBufferPtr (const glgrib_opengl_buffer_ptr & oldptr)
 {
   size_t size = oldptr->buffersize ();
-  glgrib_opengl_buffer_ptr newptr = new_glgrib_opengl_buffer_ptr (size, nullptr);
+  glgrib_opengl_buffer_ptr newptr = newGlgribOpenglBufferPtr (size, nullptr);
   oldptr->bind (GL_COPY_READ_BUFFER);
   newptr->bind (GL_COPY_WRITE_BUFFER);
 
@@ -70,7 +70,7 @@ glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (const glgrib_opengl_buffe
   return newptr;
 }
 
-glgrib_opengl_texture::glgrib_opengl_texture (int width, int height, const void * data)
+glGribOpenglTexture::glGribOpenglTexture (int width, int height, const void * data)
 {
   glGenTextures (1, &id_);
   glBindTexture (GL_TEXTURE_2D, id_);
@@ -85,16 +85,16 @@ glgrib_opengl_texture::glgrib_opengl_texture (int width, int height, const void 
   allocated_ = true;
 }
 
-glgrib_opengl_texture::~glgrib_opengl_texture ()
+glGribOpenglTexture::~glGribOpenglTexture ()
 {
   if (allocated_)
     glDeleteTextures (1, &id_);
   allocated_ = false;
 }
 
-glgrib_opengl_texture_ptr new_glgrib_opengl_texture_ptr (int width, int height, const void * data)
+glgrib_opengl_texture_ptr newGlgribOpenglTexturePtr (int width, int height, const void * data)
 {
-  return std::make_shared<glgrib_opengl_texture>(width, height, data);
+  return std::make_shared<glGribOpenglTexture>(width, height, data);
 }
 
 template <> GLenum getOpenglType<unsigned char > () { return GL_UNSIGNED_BYTE ; }

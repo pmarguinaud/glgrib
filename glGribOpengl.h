@@ -5,11 +5,11 @@
 #include <memory>
 
 
-class glgrib_opengl_buffer
+class glGribOpenglBuffer
 {
 public:
-  glgrib_opengl_buffer (size_t, const void * = nullptr);
-  ~glgrib_opengl_buffer ();
+  glGribOpenglBuffer (size_t, const void * = nullptr);
+  ~glGribOpenglBuffer ();
   GLuint id () { return id_; }
   bool allocated () const { return allocated_; }
   void bind (GLenum, GLuint = 0) const;
@@ -22,15 +22,15 @@ private:
   size_t size_;
 };
 
-typedef std::shared_ptr<glgrib_opengl_buffer> glgrib_opengl_buffer_ptr;
-extern glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (size_t, const void * = nullptr);
-extern glgrib_opengl_buffer_ptr new_glgrib_opengl_buffer_ptr (const glgrib_opengl_buffer_ptr &);
+typedef std::shared_ptr<glGribOpenglBuffer> glgrib_opengl_buffer_ptr;
+extern glgrib_opengl_buffer_ptr newGlgribOpenglBufferPtr (size_t, const void * = nullptr);
+extern glgrib_opengl_buffer_ptr newGlgribOpenglBufferPtr (const glgrib_opengl_buffer_ptr &);
 
-class glgrib_opengl_texture
+class glGribOpenglTexture
 {
 public:
-  glgrib_opengl_texture (int, int, const void *);
-  ~glgrib_opengl_texture ();
+  glGribOpenglTexture (int, int, const void *);
+  ~glGribOpenglTexture ();
   GLuint id () { return id_; }
   bool allocated () { return allocated_; }
 private:
@@ -38,9 +38,9 @@ private:
   GLuint id_;
 };
 
-typedef std::shared_ptr<glgrib_opengl_texture> glgrib_opengl_texture_ptr;
-extern glgrib_opengl_texture_ptr new_glgrib_opengl_texture_ptr (const glgrib_opengl_texture_ptr &);
-extern glgrib_opengl_texture_ptr new_glgrib_opengl_texture_ptr (int, int, const void *);
+typedef std::shared_ptr<glGribOpenglTexture> glgrib_opengl_texture_ptr;
+extern glgrib_opengl_texture_ptr newGlgribOpenglTexturePtr (const glgrib_opengl_texture_ptr &);
+extern glgrib_opengl_texture_ptr newGlgribOpenglTexturePtr (int, int, const void *);
 
 void gl_init ();
 

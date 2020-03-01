@@ -60,7 +60,7 @@ public:
 private:
   glGribOptionsView opts;
   int width, height;
-  glgrib_projection_set ps;
+  glGribProjectionSet ps;
   glm::mat4 Model, View, Projection, MVP;
   glm::vec4 Viewport;
 };

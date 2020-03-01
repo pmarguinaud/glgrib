@@ -72,7 +72,7 @@ public:
 
   void setMessage (const std::string & mess) { if (d.strmess.isReady ()) d.strmess.update (mess); }
   void resize ();
-  const glgrib_option_date * get_date ();
+  const glGribOptionDate * get_date ();
 
   std::vector<glGribField*> fieldlist;
 
@@ -122,7 +122,7 @@ public:
   void setGridOptions (const glGribOptionsGrid &);
   void setTicksOptions (const glGribOptionsTicks &);
   void setLandOptions (const glGribOptionsLand &);
-  void setGridColorOptions (const glgrib_option_color &);
+  void setGridColorOptions (const glGribOptionColor &);
   void setGridScaleOptions (float);
   void setCoastOptions (const glGribOptionsCoast &);
   void setBorderOptions (const glGribOptionsBorder &);

@@ -416,7 +416,7 @@ void glGribFieldIsofill::setup (glGribLoader * ld, const glGribOptionsField & o,
               }
       }
 
-    d.colorbuffer  = new_glgrib_opengl_buffer_ptr (size * sizeof (unsigned char), color);
+    d.colorbuffer  = newGlgribOpenglBufferPtr (size * sizeof (unsigned char), color);
     
     delete [] color;
   }
@@ -445,7 +445,7 @@ void glGribFieldIsofill::setup (glGribLoader * ld, const glGribOptionsField & o,
 
 
       // Element buffer
-      d.isoband[i].elementbuffer = new_glgrib_opengl_buffer_ptr 
+      d.isoband[i].elementbuffer = newGlgribOpenglBufferPtr 
                                     (length_indice * sizeof (unsigned int));
 
       {
@@ -467,7 +467,7 @@ void glGribFieldIsofill::setup (glGribLoader * ld, const glGribOptionsField & o,
 
 
       // Coordinate buffer
-      d.isoband[i].vertexbuffer  = new_glgrib_opengl_buffer_ptr 
+      d.isoband[i].vertexbuffer  = newGlgribOpenglBufferPtr 
                                     (length_lonlat * sizeof (float));
 
       {
@@ -493,7 +493,7 @@ void glGribFieldIsofill::setup (glGribLoader * ld, const glGribOptionsField & o,
   setupVertexAttributes ();
 
   if (opts.no_value_pointer.on)
-    values.push_back (new_glgrib_field_float_buffer_ptr ((float*)nullptr));
+    values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
   else
     values.push_back (data);
 

@@ -302,12 +302,12 @@ void glGribLand::setup (const glGribOptionsLand & o)
      
       d[i].numberOfTriangles = ind.size () / 3;
      
-      d[i].vertexbuffer = new_glgrib_opengl_buffer_ptr 
+      d[i].vertexbuffer = newGlgribOpenglBufferPtr 
                           (
                             lonlat.size () * sizeof (lonlat[0]), 
                             lonlat.data ()
                           );
-      d[i].elementbuffer = new_glgrib_opengl_buffer_ptr 
+      d[i].elementbuffer = newGlgribOpenglBufferPtr 
                            (
                              ind.size () * sizeof (ind[0]), 
                              ind.data ()

@@ -111,7 +111,7 @@ void glGribFitpolynomial
 }
 
 template <typename TYPE>
-TYPE glgrib_evalpolynomial (const std::vector<TYPE> & coeff, TYPE x)
+TYPE glGribEvalpolynomial (const std::vector<TYPE> & coeff, TYPE x)
 {
   TYPE y = 0;
   for (int i = coeff.size () - 1; i >= 0; i--)
@@ -128,7 +128,7 @@ template void glGribFitpolynomial<double>
 );
 
 
-template double glgrib_evalpolynomial<double>
+template double glGribEvalpolynomial<double>
 (
   const std::vector<double> &, double
 );

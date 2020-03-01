@@ -60,11 +60,11 @@ public:
                float, float = 1.0f, align_t = SW);
   void render (const glm::mat4 &) const;
   void render (const glGribView &) const;
-  void setForegroundColor (const glgrib_option_color & color)
+  void setForegroundColor (const glGribOptionColor & color)
   {
     d.color0 = color;
   }
-  void setBackgroundColor (const glgrib_option_color & color)
+  void setBackgroundColor (const glGribOptionColor & color)
   {
     d.color1 = color;
   }
@@ -95,8 +95,8 @@ private:
     std::vector<float> x, y;       // Position of letters vertices
     std::vector<float> X, Y, Z, A; // Position & angle of each letter on the sphere
     std::vector<align_t> align;
-    glgrib_option_color color0 = glgrib_option_color (255, 255, 255, 255);
-    glgrib_option_color color1 = glgrib_option_color (  0,   0,   0,   0);
+    glGribOptionColor color0 = glGribOptionColor (255, 255, 255, 255);
+    glGribOptionColor color1 = glGribOptionColor (  0,   0,   0,   0);
     float scale;
     float scaleXYZ = 1.0f;
     int len;    // Total number of characters

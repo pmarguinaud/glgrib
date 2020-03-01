@@ -10,7 +10,7 @@ typedef std::map <std::string,glgrib_font_ptr> cache_t;
 static cache_t cache;
 
 
-glgrib_font_ptr new_glgrib_font_ptr (const glGribOptionsFont & opts)
+glgrib_font_ptr newGlgribFontPtr (const glGribOptionsFont & opts)
 {
   auto it = cache.find (opts.bitmap);
   glgrib_font_ptr font;

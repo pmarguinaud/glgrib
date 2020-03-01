@@ -331,7 +331,7 @@ void glGribTicks::resize (const glGribView & view)
       labels.setShared (false);
       labels.setChange (false);
 
-      glgrib_font_ptr font = new_glgrib_font_ptr (opts.labels.font); 
+      glgrib_font_ptr font = newGlgribFontPtr (opts.labels.font); 
 
       labels.setup2D (font, S, X, Y, opts.labels.font.scale, align, A);
       labels.setForegroundColor (opts.labels.font.color.foreground);
@@ -351,7 +351,7 @@ void glGribTicks::resize (const glGribView & view)
           XYa[i].z = align[i];
         }
 
-      vertexbuffer = new_glgrib_opengl_buffer_ptr (XYa.size () * sizeof (XYa[0]), XYa.data ());
+      vertexbuffer = newGlgribOpenglBufferPtr (XYa.size () * sizeof (XYa[0]), XYa.data ());
 
       glGenVertexArrays (1, &VertexArrayID);
       glBindVertexArray (VertexArrayID);

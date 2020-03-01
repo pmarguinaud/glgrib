@@ -141,7 +141,7 @@ float getLabelAngle (const std::vector<float> & lonlat, const std::vector<float>
 
 void glGribFieldContour::setupLabels (isoline_t * iso, const isoline_data_t & iso_data)
 {
-  glgrib_font_ptr font = new_glgrib_font_ptr (opts.contour.labels.font);
+  glgrib_font_ptr font = newGlgribFontPtr (opts.contour.labels.font);
   char tmp[256];
 
   sprintf (tmp, opts.contour.labels.format.c_str (), iso->level);
@@ -277,13 +277,13 @@ void glGribFieldContour::setup (glGribLoader * ld, const glGribOptionsField & o,
   for (int i = 0; i < levels.size (); i++)
     {
       iso[i].level = levels[i];
-      iso[i].vertexbuffer   = new_glgrib_opengl_buffer_ptr (iso_data[i].lonlat.size () * sizeof (float), 
+      iso[i].vertexbuffer   = newGlgribOpenglBufferPtr (iso_data[i].lonlat.size () * sizeof (float), 
                                                             iso_data[i].lonlat.data ());
       if (opts.geometry.height.on)
-        iso[i].heightbuffer   = new_glgrib_opengl_buffer_ptr (iso_data[i].height.size () * sizeof (float), 
+        iso[i].heightbuffer   = newGlgribOpenglBufferPtr (iso_data[i].height.size () * sizeof (float), 
                                                               iso_data[i].height.data ());
 
-      iso[i].distancebuffer = new_glgrib_opengl_buffer_ptr (iso_data[i].length.size () * sizeof (float), 
+      iso[i].distancebuffer = newGlgribOpenglBufferPtr (iso_data[i].length.size () * sizeof (float), 
                                                             iso_data[i].length.data ());
       iso[i].size = iso_data[i].size () - 1;
 
@@ -313,7 +313,7 @@ void glGribFieldContour::setup (glGribLoader * ld, const glGribOptionsField & o,
 
   if (opts.no_value_pointer.on)
     {
-      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)nullptr));
+      values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
     }
   else
     {

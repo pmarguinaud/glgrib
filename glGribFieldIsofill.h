@@ -29,7 +29,7 @@ private:
   class isoband_t
   {
   public:
-    glgrib_option_color color;
+    glGribOptionColor color;
     GLuint VertexArrayID = 0;
     glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
     int size;

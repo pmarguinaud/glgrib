@@ -168,9 +168,9 @@ void glGribFieldStream::setup (glGribLoader * ld, const glGribOptionsField & o, 
 
   for (int i = 0; i < N; i++)
     {
-      stream[i].vertexbuffer   = new_glgrib_opengl_buffer_ptr (stream_data[i].lonlat.size () * sizeof (float), stream_data[i].lonlat.data ());
-      stream[i].normalbuffer   = new_glgrib_opengl_buffer_ptr (stream_data[i].values.size () * sizeof (float), stream_data[i].values.data ());
-      stream[i].distancebuffer = new_glgrib_opengl_buffer_ptr (stream_data[i].length.size () * sizeof (float), stream_data[i].length.data ());
+      stream[i].vertexbuffer   = newGlgribOpenglBufferPtr (stream_data[i].lonlat.size () * sizeof (float), stream_data[i].lonlat.data ());
+      stream[i].normalbuffer   = newGlgribOpenglBufferPtr (stream_data[i].values.size () * sizeof (float), stream_data[i].values.data ());
+      stream[i].distancebuffer = newGlgribOpenglBufferPtr (stream_data[i].length.size () * sizeof (float), stream_data[i].length.data ());
       stream[i].size = stream_data[i].size () - 1;
     }
 
@@ -181,8 +181,8 @@ void glGribFieldStream::setup (glGribLoader * ld, const glGribOptionsField & o, 
 
   if (opts.no_value_pointer.on)
     {
-      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)nullptr));
-      values.push_back (new_glgrib_field_float_buffer_ptr ((float*)nullptr));
+      values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
+      values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
     }
   else
     {

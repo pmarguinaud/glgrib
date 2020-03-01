@@ -209,7 +209,7 @@ private:
   std::string title = "";
 };
 
-#define glgrib_window_if_key(mm, k, desc, action) \
+#define glGribWindowIfKey(mm, k, desc, action) \
 do { \
 if (help)                                       \
   {                                             \

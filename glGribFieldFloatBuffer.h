@@ -16,6 +16,6 @@ private:
 
 typedef std::shared_ptr<glGribFieldFloatBuffer> glgrib_field_float_buffer_ptr;
 
-extern glgrib_field_float_buffer_ptr new_glgrib_field_float_buffer_ptr (size_t);
-extern glgrib_field_float_buffer_ptr new_glgrib_field_float_buffer_ptr (float *);
+extern glgrib_field_float_buffer_ptr newGlgribFieldFloatBufferPtr (size_t);
+extern glgrib_field_float_buffer_ptr newGlgribFieldFloatBufferPtr (float *);
 

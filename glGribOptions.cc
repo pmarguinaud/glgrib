@@ -24,12 +24,12 @@ template <> std::string option_tmpl     <int>                ::type () { return 
 template <> std::string option_tmpl     <float>              ::type () { return std::string ("FLOAT"); }
 template <> std::string option_tmpl_list<int>                ::type () { return std::string ("LIST OF INTEGERS"); }
 template <> std::string option_tmpl_list<float>              ::type () { return std::string ("LIST OF FLOATS"); }
-template <> std::string option_tmpl     <glgrib_option_date> ::type () { return std::string ("YYYY/MM/DD_hh:mm:ss"); }
-template <> std::string option_tmpl     <glgrib_option_color>::type () { return std::string ("COLOR #rrggbb(aa)"); }
+template <> std::string option_tmpl     <glGribOptionDate> ::type () { return std::string ("YYYY/MM/DD_hh:mm:ss"); }
+template <> std::string option_tmpl     <glGribOptionColor>::type () { return std::string ("COLOR #rrggbb(aa)"); }
 template <> std::string option_tmpl     <std::string>        ::type () { return std::string ("STRING"); }
 template <> std::string option_tmpl     <std::string>        ::asString () const { return '"' + *value + '"'; }
 template <> std::string option_tmpl     <std::string>        ::asOption () const { return name + " " + glgrib_options_util::escape (*value); }
-template <> std::string option_tmpl_list<glgrib_option_color>::type () { return std::string ("LIST OF COLORS #rrggbb(aa)"); }
+template <> std::string option_tmpl_list<glGribOptionColor>::type () { return std::string ("LIST OF COLORS #rrggbb(aa)"); }
 template <> std::string option_tmpl_list<std::string>        ::type () { return std::string ("LIST OF STRINGS"); }
 template <> std::string option_tmpl_list<std::string>        ::asString () const 
 { 
@@ -87,36 +87,36 @@ template <> int option_tmpl<bool>::has_arg () const
 
 };
 
-std::ostream & operator << (std::ostream & out, const glgrib_option_date & date)
+std::ostream & operator << (std::ostream & out, const glGribOptionDate & date)
 {
   return out << date.asString ();
 }
 
-std::istream & operator >> (std::istream & in, glgrib_option_date & date)
+std::istream & operator >> (std::istream & in, glGribOptionDate & date)
 {
   std::string str;
   in >> str;
-  glgrib_option_date::parse (&date, str.c_str ());
+  glGribOptionDate::parse (&date, str.c_str ());
   return in;
 }
 
-void glgrib_option_date::parse (glgrib_option_date * date, const std::string & v)
+void glGribOptionDate::parse (glGribOptionDate * date, const std::string & v)
 {
   sscanf (v.c_str (), "%4ld/%2ld/%2ld_%2ld:%2ld:%2ld", &date->year, 
           &date->month, &date->day, &date->hour, &date->minute, &date->second);
 }
 
-std::string glgrib_option_date::asString () const 
+std::string glGribOptionDate::asString () const 
 {
   char tmp[128];
   sprintf (tmp, "%4.4ld/%2.2ld/%2.2ld_%2.2ld:%2.2ld:%2.2ld", year, month, day, hour, minute, second);
   return std::string (tmp);
 }
 
-glgrib_option_date glgrib_option_date::date_from_t (time_t time)
+glGribOptionDate glGribOptionDate::date_from_t (time_t time)
 {
   struct tm t;
-  glgrib_option_date d;
+  glGribOptionDate d;
   memset (&t, 0, sizeof (t));
   gmtime_r (&time, &t);
   d.second = t.tm_sec;
@@ -128,7 +128,7 @@ glgrib_option_date glgrib_option_date::date_from_t (time_t time)
   return d;
 }
 
-time_t glgrib_option_date::t_from_date (const glgrib_option_date & d)
+time_t glGribOptionDate::t_from_date (const glGribOptionDate & d)
 {
   time_t time;
   struct tm t;                  
@@ -142,28 +142,28 @@ time_t glgrib_option_date::t_from_date (const glgrib_option_date & d)
   return timegm (&t);             
 }
 
-glgrib_option_date glgrib_option_date::interpolate 
+glGribOptionDate glGribOptionDate::interpolate 
 (
-  const glgrib_option_date & d1, const glgrib_option_date & d2, const float alpha
+  const glGribOptionDate & d1, const glGribOptionDate & d2, const float alpha
 )
 {
   return date_from_t (round ((double)alpha * t_from_date (d1) + (1.0 - (double)alpha) * t_from_date (d2)));
 }
 
-std::ostream & operator << (std::ostream & out, const glgrib_option_color & color)
+std::ostream & operator << (std::ostream & out, const glGribOptionColor & color)
 {
   return out << color.asString ();
 }
 
-std::istream & operator >> (std::istream & in, glgrib_option_color & color)
+std::istream & operator >> (std::istream & in, glGribOptionColor & color)
 {
   std::string str;
   in >> str;
-  glgrib_option_color::parse (&color, str.c_str ());
+  glGribOptionColor::parse (&color, str.c_str ());
   return in;
 }
 
-void glgrib_option_color::parse (glgrib_option_color * value, const std::string & v)
+void glGribOptionColor::parse (glGribOptionColor * value, const std::string & v)
 {
   if ((v[0] == '#') && (v.length () == 7 || v.length () == 9))
     {
@@ -175,14 +175,14 @@ void glgrib_option_color::parse (glgrib_option_color * value, const std::string 
     }
 }
 
-glgrib_option_color::glgrib_option_color (const std::string & str)
+glGribOptionColor::glGribOptionColor (const std::string & str)
 {
   parse (this, str);
 }
 
-glgrib_option_color glgrib_option_color::color_by_hexa (const std::string & name)
+glGribOptionColor glGribOptionColor::color_by_hexa (const std::string & name)
 {
-  glgrib_option_color color;
+  glGribOptionColor color;
   if (name.length () == 7)
     {
       if (sscanf (name.c_str (), "#%2x%2x%2x", &color.r, &color.g, &color.b) != 3)
@@ -213,9 +213,9 @@ static name2hexa_t name2hexa =
    {"black", "#000000"}
 };
 
-glgrib_option_color glgrib_option_color::color_by_name (const std::string & n)
+glGribOptionColor glGribOptionColor::color_by_name (const std::string & n)
 {
-  glgrib_option_color color;
+  glGribOptionColor color;
 
   int len = n.length ();
   std::string name;

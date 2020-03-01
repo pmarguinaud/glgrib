@@ -39,7 +39,7 @@ void glGribMapscale::setup (const glGribOptionsMapscale & o)
 
   program.compile ();
 
-  glgrib_font_ptr font = new_glgrib_font_ptr (opts.font);
+  glgrib_font_ptr font = newGlgribFontPtr (opts.font);
 
   label.setup2D (font, std::string (15, ' '), opts.position.xmin, opts.position.ymax + 0.01, opts.font.scale, glGribString::SW);
   label.setForegroundColor (opts.font.color.foreground);

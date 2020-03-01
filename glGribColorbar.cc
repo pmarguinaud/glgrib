@@ -82,7 +82,7 @@ void glGribColorbar::render (const glm::mat4 & MVP, const glGribPalette & p,
 
       float min = pref.getMin (), max = pref.getMax ();
 
-      glgrib_font_ptr font = new_glgrib_font_ptr (opts.font);
+      glgrib_font_ptr font = newGlgribFontPtr (opts.font);
      
       std::vector<std::string> str;
       std::vector<float> x, y;

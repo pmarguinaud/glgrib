@@ -112,7 +112,7 @@ void glGribLoader::load (glgrib_field_float_buffer_ptr * ptr, const std::vector<
       load (&val2, file2, opts_geom, &meta2);
     
       int size = geom1->size ();
-      glgrib_field_float_buffer_ptr val = new_glgrib_field_float_buffer_ptr (size);
+      glgrib_field_float_buffer_ptr val = newGlgribFieldFloatBufferPtr (size);
     
       float valmin = std::numeric_limits<float>::max (), 
             valmax = std::numeric_limits<float>::min (), 
@@ -161,7 +161,7 @@ void glGribLoader::load (glgrib_field_float_buffer_ptr * ptr, const std::vector<
         }
       else
         {
-          meta->term = glgrib_option_date::interpolate (meta1.term, meta2.term, a);
+          meta->term = glGribOptionDate::interpolate (meta1.term, meta2.term, a);
           meta->valmin = valmin;
           meta->valmax = valmax;
           meta->valmis = valmis;
@@ -190,7 +190,7 @@ void glGribLoader::load (glgrib_field_float_buffer_ptr * ptr, const std::string 
       double * v = new double[v_len];
       codes_get_double_array (h, "values", v, &v_len);
 
-      glgrib_field_float_buffer_ptr val = new_glgrib_field_float_buffer_ptr (v_len);
+      glgrib_field_float_buffer_ptr val = newGlgribFieldFloatBufferPtr (v_len);
 
       for (int i = 0; i < v_len; i++)
         (*val)[i] = v[i];
@@ -273,7 +273,7 @@ void glGribLoader::load (glgrib_field_float_buffer_ptr * ptr, const std::string 
         throw std::runtime_error (std::string ("Unexpected indicatorOfUnitOfTimeRange found in `") + file + std::string ("'"));
     }
 
-  meta->term = glgrib_option_date::date_from_t (glgrib_option_date::t_from_date (meta->base) + meta->forecastTerm);
+  meta->term = glGribOptionDate::date_from_t (glGribOptionDate::t_from_date (meta->base) + meta->forecastTerm);
 
   if (false)
     {
@@ -293,7 +293,7 @@ void glGribLoader::load (glgrib_field_float_buffer_ptr * ptr, const std::string 
        << " " << meta->term.hour  
        << " " << meta->term.minute
        << " " << meta->term.second
-       << " " << glgrib_option_date::t_from_date (meta->term)
+       << " " << glGribOptionDate::t_from_date (meta->term)
        << " " << std::endl;
     }
 
@@ -310,8 +310,8 @@ void glGribLoader::uv2nd (const_glgrib_geometry_ptr geometry,
                            glGribFieldMetadata & meta_n, 
                            glGribFieldMetadata & meta_d)
 {
-  data_n = new_glgrib_field_float_buffer_ptr (geometry->getNumberOfPoints ());
-  data_d = new_glgrib_field_float_buffer_ptr (geometry->getNumberOfPoints ());
+  data_n = newGlgribFieldFloatBufferPtr (geometry->getNumberOfPoints ());
+  data_d = newGlgribFieldFloatBufferPtr (geometry->getNumberOfPoints ());
 
   meta_n = meta_u; // TODO : handle this differently
   meta_d = meta_u;

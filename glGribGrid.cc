@@ -32,7 +32,7 @@ void glGribGrid::setup (const glGribOptionsGrid & o)
   if (opts.labels.on)
     {
       
-      glgrib_font_ptr font = new_glgrib_font_ptr (opts.labels.font);
+      glgrib_font_ptr font = newGlgribFontPtr (opts.labels.font);
       labels.setShared (true);
       labels.setChange (false);
 

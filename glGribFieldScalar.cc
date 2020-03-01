@@ -176,7 +176,7 @@ void glGribFieldScalar::setup (glGribLoader * ld, const glGribOptionsField & o, 
   if (opts.hilo.on)
     setupHilo (data);
 
-  colorbuffer = new_glgrib_opengl_buffer_ptr (geometry->getNumberOfPoints () * sizeof (T));
+  colorbuffer = newGlgribOpenglBufferPtr (geometry->getNumberOfPoints () * sizeof (T));
   T * col = (T *)colorbuffer->map ();
   pack<T>  (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
             meta1.valmax, meta1.valmis, col);
@@ -191,7 +191,7 @@ void glGribFieldScalar::setup (glGribLoader * ld, const glGribOptionsField & o, 
   setupVertexAttributes<T> ();
 
   if (opts.no_value_pointer.on)
-    values.push_back (new_glgrib_field_float_buffer_ptr ((float*)nullptr));
+    values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
   else
     values.push_back (data);
 
@@ -243,7 +243,7 @@ void glGribFieldScalar::setupMpiView (glGribLoader * ld, const glGribOptionsFiel
   for (int i = 0; i < max; i++)
     printf (" %8d | %12.2f, %12.2f\n", i, rad2deg * Disl[i].x, rad2deg * Disl[i].y);
 
-  mpivbuffer = new_glgrib_opengl_buffer_ptr (3 * size * sizeof (float));
+  mpivbuffer = newGlgribOpenglBufferPtr (3 * size * sizeof (float));
   float * mpiv = (float *)mpivbuffer->map ();
   for (int i = 0; i < size; i++)
     {

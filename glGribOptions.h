@@ -14,7 +14,7 @@
 
 namespace glgrib_options_util
 {
-  std::string next_token (std::string *);
+  std::string nextToken (std::string *);
   std::string escape (const std::string &);
 };
 
@@ -80,10 +80,10 @@ public:
 namespace glgrib_options_parser_detail 
 {
 
-  class option_base
+  class optionBase
   {
   public:
-    option_base (const std::string & n, const std::string & d) : name (n), desc (d) {}
+    optionBase (const std::string & n, const std::string & d) : name (n), desc (d) {}
     virtual int hasArg () const { return 1; }
     virtual void set (const std::string &) 
     { throw std::runtime_error (std::string ("Set method is not defined")); }
@@ -95,15 +95,15 @@ namespace glgrib_options_parser_detail
     virtual std::string asString () const = 0;
     virtual std::string asOption () const = 0;
     virtual void clear () = 0;
-    virtual bool isEqual (const option_base *) const = 0;
+    virtual bool isEqual (const optionBase *) const = 0;
     bool hidden = false;
   };
 
   template <class T>
-  class option_tmpl : public option_base
+  class optionTmpl : public optionBase
   {
   public:
-    option_tmpl (const std::string & n, const std::string & d, T * v = nullptr) : option_base (n, d), value (v) {}
+    optionTmpl (const std::string & n, const std::string & d, T * v = nullptr) : optionBase (n, d), value (v) {}
     T * value = nullptr;
     std::string asString () const { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
     std::string asOption () const { return name + " " + glgrib_options_util::escape (asString ()); }
@@ -126,12 +126,12 @@ namespace glgrib_options_parser_detail
     std::string type () { return std::string ("UNKNOWN"); }
     void clear () {}
     int hasArg () const { return 1; }
-    bool isEqual (const option_base * _o) const
+    bool isEqual (const optionBase * _o) const
     {
-      const option_tmpl<T> * o = nullptr;
+      const optionTmpl<T> * o = nullptr;
       try
         {
-          o = dynamic_cast<const option_tmpl<T>*>(_o);
+          o = dynamic_cast<const optionTmpl<T>*>(_o);
 	}
       catch (...)
         {
@@ -142,10 +142,10 @@ namespace glgrib_options_parser_detail
   };
 
   template <class T>
-  class option_tmpl_list : public option_base
+  class optionTmplList : public optionBase
   {
   public:
-    option_tmpl_list (const std::string & n, const std::string & d, std::vector<T> * v = nullptr) : option_base (n, d), value (v) {}
+    optionTmplList (const std::string & n, const std::string & d, std::vector<T> * v = nullptr) : optionBase (n, d), value (v) {}
     std::vector<T> * value = nullptr;
     std::string asOption () const 
     { 
@@ -182,12 +182,12 @@ namespace glgrib_options_parser_detail
     }   
     void clear () { if (value) value->clear (); }
     std::string type () { return std::string ("UNKNOWN"); }
-    bool isEqual (const option_base * _o) const 
+    bool isEqual (const optionBase * _o) const 
     {
-      const option_tmpl_list<T> * o = nullptr;
+      const optionTmplList<T> * o = nullptr;
       try
         {
-          o = dynamic_cast<const option_tmpl_list<T>*>(_o);
+          o = dynamic_cast<const optionTmplList<T>*>(_o);
 	}
       catch (...)
         {
@@ -197,27 +197,27 @@ namespace glgrib_options_parser_detail
     }
   };
 
-  template <> std::string option_tmpl     <int>                ::type ();
-  template <> std::string option_tmpl     <float>              ::type ();
-  template <> std::string option_tmpl_list<int>                ::type ();
-  template <> std::string option_tmpl_list<float>              ::type ();
-  template <> std::string option_tmpl     <glGribOptionDate> ::type ();
-  template <> std::string option_tmpl     <glGribOptionColor>::type ();
-  template <> std::string option_tmpl     <std::string>        ::type ();
-  template <> std::string option_tmpl     <std::string>        ::asString () const;
-  template <> std::string option_tmpl     <std::string>        ::asOption () const;
-  template <> std::string option_tmpl_list<glGribOptionColor>::type ();
-  template <> std::string option_tmpl_list<std::string>        ::type ();
-  template <> std::string option_tmpl_list<std::string>        ::asString () const;
-  template <> std::string option_tmpl_list<std::string>        ::asOption () const;
-  template <> std::string option_tmpl     <bool>               ::type ();
-  template <> void option_tmpl     <bool>::set        ();
-  template <> void option_tmpl_list<std::string>::set (const std::string &);
-  template <> void option_tmpl     <std::string>::set (const std::string &);
-  template <> void option_tmpl<bool>::clear ();
-  template <> std::string option_tmpl<bool>::asString () const;
-  template <> std::string option_tmpl<bool>::asOption () const;
-  template <> int option_tmpl<bool>::hasArg () const;
+  template <> std::string optionTmpl     <int>                ::type ();
+  template <> std::string optionTmpl     <float>              ::type ();
+  template <> std::string optionTmplList<int>                ::type ();
+  template <> std::string optionTmplList<float>              ::type ();
+  template <> std::string optionTmpl     <glGribOptionDate> ::type ();
+  template <> std::string optionTmpl     <glGribOptionColor>::type ();
+  template <> std::string optionTmpl     <std::string>        ::type ();
+  template <> std::string optionTmpl     <std::string>        ::asString () const;
+  template <> std::string optionTmpl     <std::string>        ::asOption () const;
+  template <> std::string optionTmplList<glGribOptionColor>::type ();
+  template <> std::string optionTmplList<std::string>        ::type ();
+  template <> std::string optionTmplList<std::string>        ::asString () const;
+  template <> std::string optionTmplList<std::string>        ::asOption () const;
+  template <> std::string optionTmpl     <bool>               ::type ();
+  template <> void optionTmpl     <bool>::set        ();
+  template <> void optionTmplList<std::string>::set (const std::string &);
+  template <> void optionTmpl     <std::string>::set (const std::string &);
+  template <> void optionTmpl<bool>::clear ();
+  template <> std::string optionTmpl<bool>::asString () const;
+  template <> std::string optionTmpl<bool>::asOption () const;
+  template <> int optionTmpl<bool>::hasArg () const;
 
 };
 
@@ -278,7 +278,7 @@ public:
     return seen;
   }
 
-  const glgrib_options_parser_detail::option_base * getOption (const std::string & name)
+  const glgrib_options_parser_detail::optionBase * getOption (const std::string & name)
   {
     name2option_t::iterator it = name2option.find (name);
     if (it != name2option.end ())
@@ -297,13 +297,13 @@ private:
   std::vector<std::string> ctx;
   std::set<std::string> seen;
 
-  class name2option_t : public std::map<std::string,glgrib_options_parser_detail::option_base*> 
+  class name2option_t : public std::map<std::string,glgrib_options_parser_detail::optionBase*> 
   {
   public:
-    void insert (const std::string name, glgrib_options_parser_detail::option_base * opt)
+    void insert (const std::string name, glgrib_options_parser_detail::optionBase * opt)
     {
-      std::map<std::string,glgrib_options_parser_detail::option_base*>::insert 
-        (std::pair<std::string,glgrib_options_parser_detail::option_base *>(name, opt));
+      std::map<std::string,glgrib_options_parser_detail::optionBase*>::insert 
+        (std::pair<std::string,glgrib_options_parser_detail::optionBase *>(name, opt));
     }
   };
 
@@ -315,7 +315,7 @@ private:
   }
 
   void createOption (const std::string & opt_name, 
-                     glgrib_options_parser_detail::option_base * option, 
+                     glgrib_options_parser_detail::optionBase * option, 
                      const glGribOptionsCallback::opt * _o)
   {
     const opt * o = dynamic_cast<const opt*>(_o);
@@ -333,16 +333,16 @@ private:
     createOption (opt_name, new C (opt_name, desc, data), o);                          \
   }
 
-  DEF_APPLY (float                             , glgrib_options_parser_detail::option_tmpl<float> );
-  DEF_APPLY (bool                              , glgrib_options_parser_detail::option_tmpl<bool>);
-  DEF_APPLY (int                               , glgrib_options_parser_detail::option_tmpl<int>);
-  DEF_APPLY (std::vector<std::string>          , glgrib_options_parser_detail::option_tmpl_list<std::string>);
-  DEF_APPLY (std::string                       , glgrib_options_parser_detail::option_tmpl<std::string>);
-  DEF_APPLY (std::vector<float>                , glgrib_options_parser_detail::option_tmpl_list<float>);
-  DEF_APPLY (std::vector<int>                  , glgrib_options_parser_detail::option_tmpl_list<int>);
-  DEF_APPLY (glGribOptionColor               , glgrib_options_parser_detail::option_tmpl<glGribOptionColor>);
-  DEF_APPLY (std::vector<glGribOptionColor>  , glgrib_options_parser_detail::option_tmpl_list<glGribOptionColor>);
-  DEF_APPLY (glGribOptionDate                , glgrib_options_parser_detail::option_tmpl<glGribOptionDate>);
+  DEF_APPLY (float                             , glgrib_options_parser_detail::optionTmpl<float> );
+  DEF_APPLY (bool                              , glgrib_options_parser_detail::optionTmpl<bool>);
+  DEF_APPLY (int                               , glgrib_options_parser_detail::optionTmpl<int>);
+  DEF_APPLY (std::vector<std::string>          , glgrib_options_parser_detail::optionTmplList<std::string>);
+  DEF_APPLY (std::string                       , glgrib_options_parser_detail::optionTmpl<std::string>);
+  DEF_APPLY (std::vector<float>                , glgrib_options_parser_detail::optionTmplList<float>);
+  DEF_APPLY (std::vector<int>                  , glgrib_options_parser_detail::optionTmplList<int>);
+  DEF_APPLY (glGribOptionColor               , glgrib_options_parser_detail::optionTmpl<glGribOptionColor>);
+  DEF_APPLY (std::vector<glGribOptionColor>  , glgrib_options_parser_detail::optionTmplList<glGribOptionColor>);
+  DEF_APPLY (glGribOptionDate                , glgrib_options_parser_detail::optionTmpl<glGribOptionDate>);
 
 #undef DEF_APPLY
 

@@ -18,7 +18,7 @@
 
 glGribShell Shell;
 
-char * glGribShell::option_generator (const char * text, int state)
+char * glGribShell::optionGenerator (const char * text, int state)
 {
 
   if (! state) 
@@ -38,7 +38,7 @@ char * glGribShell::option_generator (const char * text, int state)
 
 char * shell_option_generator (const char * text, int state)
 {
-  return Shell.option_generator (text, state);
+  return Shell.optionGenerator (text, state);
 }
 
 char ** shell_completion (const char * text, int start, int end)
@@ -74,7 +74,7 @@ void glGribShell::execute (const std::string & _line, glGribWindow * gwindow)
 
   try 
     {
-      cmd = glgrib_options_util::next_token (&line);
+      cmd = glgrib_options_util::nextToken (&line);
 
       if (cmd == "")
         return;
@@ -83,7 +83,7 @@ void glGribShell::execute (const std::string & _line, glGribWindow * gwindow)
      
       while (1)
         {
-          std::string arg = glgrib_options_util::next_token (&line);
+          std::string arg = glgrib_options_util::nextToken (&line);
           if (arg == "") 
             break;
           if (arg[0] == '#')

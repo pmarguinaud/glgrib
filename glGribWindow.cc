@@ -40,7 +40,7 @@ void cursorPositionCallback (GLFWwindow * window, double xpos, double ypos)
 }
 
 static
-void mouse_button_callback (GLFWwindow * window, int button, int action, int mods)
+void mouseButtonCallback (GLFWwindow * window, int button, int action, int mods)
 {
   glGribWindow * gwindow = (glGribWindow *)glfwGetWindowUserPointer (window);
   gwindow->onclick (button, action, mods);
@@ -145,7 +145,7 @@ void glGribWindow::onkey (int key, int scancode, int action, int mods, bool help
       glGribWindowIfKey (CONTROL, G     ,  Decrease size of current field                       , scale_field_down         ());
       glGribWindowIfKey (NONE,    F     ,  Increase palette range                               , scale_palette_up         ());
       glGribWindowIfKey (CONTROL, F     ,  Decrease palette range                               , scale_palette_down       ());
-      glGribWindowIfKey (NONE,    J     ,  Try next palette                                     , next_palette             ());
+      glGribWindowIfKey (NONE,    J     ,  Try next palette                                     , nextPalette             ());
       glGribWindowIfKey (NONE,    L     ,  Turn on/off the light                                , toggle_light             ());
       glGribWindowIfKey (CONTROL, L     ,  Make current window master window                    , toggleMaster             ());
 
@@ -170,7 +170,7 @@ void glGribWindow::onkey (int key, int scancode, int action, int mods, bool help
 
       glGribWindowIfKey (CONTROL, C     ,  Clone current window                                 , duplicate                ());
       glGribWindowIfKey (ALT,     C     ,  Show/hide colorbar                                   , toggleColorBar           ());
-      glGribWindowIfKey (CONTROL, P     ,  Try next projection                                  , next_projection          ());
+      glGribWindowIfKey (CONTROL, P     ,  Try next projection                                  , nextProjection          ());
       glGribWindowIfKey (SHIFT,   P     ,  Try next transformation                              , toggle_transform_type    ());
       glGribWindowIfKey (CONTROL, S     ,  Save current palette                                 , save_current_palette     ());
       glGribWindowIfKey (ALT,     S     ,  Resample current field                               , resample_current_field   ());
@@ -334,7 +334,7 @@ void glGribWindow::toggle_transform_type ()
   scene.d.view.toggleTransformType ();
 }
 
-void glGribWindow::next_projection ()
+void glGribWindow::nextProjection ()
 {
   scene.d.view.nextProjection ();
 }
@@ -384,7 +384,7 @@ void glGribWindow::toggle_light ()
     scene.setLight ();
 }
 
-void glGribWindow::next_palette ()
+void glGribWindow::nextPalette ()
 {
   glGribField * f = scene.getCurrentField ();
   if (f != nullptr)
@@ -936,7 +936,7 @@ void glGribWindow::createGFLWwindow (GLFWwindow * context)
   glfwSetInputMode (window, GLFW_STICKY_KEYS, GL_TRUE);
   glfwSetKeyCallback (window, keyCallback);
   glfwSetScrollCallback (window, scroll_callback);
-  glfwSetMouseButtonCallback (window, mouse_button_callback);
+  glfwSetMouseButtonCallback (window, mouseButtonCallback);
   glfwSetFramebufferSizeCallback (window, resize_callback);  
 
 

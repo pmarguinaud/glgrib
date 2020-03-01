@@ -26,7 +26,7 @@ public:
   void unlock () { pthread_mutex_unlock (&mutex); }
   void wait () { if (wset) pthread_join (thread, nullptr); }
   bool started () { return wset != nullptr; }
-  char * option_generator (const char *, int);
+  char * optionGenerator (const char *, int);
   const glGribOptionsShell & getOptions () const { return opts; }
 private:
   glGribOptionsShell opts;

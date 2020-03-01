@@ -129,7 +129,7 @@ public:
   void toggle_hide_field ();
   void scale_palette_up ();
   void scale_palette_down ();
-  void next_palette ();
+  void nextPalette ();
   void hideAllFields ();
   void show_all_fields ();
   void toggle_light ();
@@ -148,7 +148,7 @@ public:
   
   int id () const { return id_; }
 
-  void next_projection ();
+  void nextProjection ();
   void toggle_transform_type ();
   void loadField (const glGribOptionsField &, int = 0);
   void remove_field (int);

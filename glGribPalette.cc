@@ -347,7 +347,7 @@ glGribPalette palette_cold_hot
      255,   0,   0, 255 
   );
 
-glGribPalette palette_cloud
+glGribPalette paletteCloud
   (
      0., 100.,
      "cloud",
@@ -356,7 +356,7 @@ glGribPalette palette_cloud
      255, 255, 255, 255
   );
 
-glGribPalette palette_cloud_auto
+glGribPalette paletteCloudAuto
   (
      "cloud_auto",
        0,   0,   0,   0,

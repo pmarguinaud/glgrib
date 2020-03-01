@@ -57,6 +57,6 @@ void glgrib_sqlite_detail::oget (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank,
   strcpy (&(*t)[0], str);
 }
 
-void glgrib_sqlite_detail::oget_list (sqlite3_ptr, sqlite3_stmt_ptr, int) {}
+void glgrib_sqlite_detail::ogetList (sqlite3_ptr, sqlite3_stmt_ptr, int) {}
 
 

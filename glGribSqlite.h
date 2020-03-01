@@ -61,14 +61,14 @@ namespace glgrib_sqlite_detail
   void oget (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, char * t);
   void oget (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, std::string * t);
 
-  void oget_list (sqlite3_ptr, sqlite3_stmt_ptr, int);
+  void ogetList (sqlite3_ptr, sqlite3_stmt_ptr, int);
   template <typename T, typename... Types>
-  void oget_list (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, T t, Types... args)
+  void ogetList (sqlite3_ptr db, sqlite3_stmt_ptr req, int rank, T t, Types... args)
   {
     if (rank >= sqlite3_column_count (req->data))
       throw std::runtime_error (std::string ("Column out of bounds"));
     oget (db, req, rank, t);
-    oget_list (db, req, rank + 1, args...);
+    ogetList (db, req, rank + 1, args...);
   }
 
 };
@@ -118,7 +118,7 @@ public:
     {
       if (sqlite3_step (req->data) == SQLITE_ROW)
         {
-          glgrib_sqlite_detail::oget_list (db, req, 0, args...);
+          glgrib_sqlite_detail::ogetList (db, req, 0, args...);
           return true;
 	}
       return false;

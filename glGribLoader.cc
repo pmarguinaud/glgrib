@@ -14,7 +14,7 @@
 #include <errno.h>
 #include <time.h>
 
-glgrib_handle_ptr glGribLoader::handle_from_file (const std::string & f)
+glgrib_handle_ptr glGribLoader::handleFromFile (const std::string & f)
 {
   // Search cache
   for (cache_t::iterator it = cache.begin (); it != cache.end (); it++)
@@ -174,7 +174,7 @@ void glGribLoader::load (glgrib_field_float_buffer_ptr * ptr, const std::vector<
 void glGribLoader::load (glgrib_field_float_buffer_ptr * ptr, const std::string & file, 
 		          const glGribOptionsGeometry & opts_geom, glGribFieldMetadata * meta)
 {
-  glgrib_handle_ptr ghp = handle_from_file (file);
+  glgrib_handle_ptr ghp = handleFromFile (file);
   codes_handle * h = ghp->getCodesHandle ();
 
   size_t v_len = 0;

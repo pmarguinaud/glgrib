@@ -42,7 +42,7 @@ typedef std::shared_ptr<glGribOpenglTexture> glgrib_opengl_texture_ptr;
 extern glgrib_opengl_texture_ptr newGlgribOpenglTexturePtr (const glgrib_opengl_texture_ptr &);
 extern glgrib_opengl_texture_ptr newGlgribOpenglTexturePtr (int, int, const void *);
 
-void gl_init ();
+void glInit ();
 
 template <typename T> GLenum getOpenglType ();
 template <> GLenum getOpenglType<unsigned char > ();

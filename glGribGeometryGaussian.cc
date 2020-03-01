@@ -1004,7 +1004,7 @@ using namespace std;
 
 static std::vector<int> jgloff_dum;
 
-class guess_jlat
+class guessJlat
 {
 public:
 #include "shaders/include/geometry/gaussian/guess_jlat.h"
@@ -1062,7 +1062,7 @@ void glGribGeometryGaussian::tryFitLatitudes (int _kind, latfit_t * latfit)
 
   latfit->kind  = _kind;
 
-  glgrib_geometry_gaussian_glsl::guess_jlat gj;
+  glgrib_geometry_gaussian_glsl::guessJlat gj;
   gj.geometry_gaussian_Nj                = Nj;
   gj.geometry_gaussian_numberOfPoints    = numberOfPoints;
   gj.geometry_gaussian_kind              = _kind;

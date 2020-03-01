@@ -80,7 +80,7 @@ template <> std::string option_tmpl<bool>::asOption () const
   return val;
 }
 
-template <> int option_tmpl<bool>::has_arg () const
+template <> int option_tmpl<bool>::hasArg () const
 {
   return 0;
 }
@@ -427,7 +427,7 @@ bool glGribOptionsParser::parse (int _argc, const char * _argv[],
 		      if (! do_skip)
 		        {
                           opt->clear (); // Clear option; this means that if options appears several times, then the last setting is taken into account
-                          if (! opt->has_arg ())
+                          if (! opt->hasArg ())
                             opt->set ();
 			}
                     }
@@ -617,7 +617,7 @@ void glGribOptionsParser::print (glGribOptions & opts1)
       if (o1->isEqual (o2))
         continue;
       std::cout << "  " << name;
-      if (o1->has_arg ())
+      if (o1->hasArg ())
         std::cout << " " << o1->asString ();
       std::cout << std::endl;
     }

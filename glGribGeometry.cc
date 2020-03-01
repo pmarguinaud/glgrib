@@ -22,7 +22,7 @@ glgrib_geometry_ptr glGribGeometry::load (glGribLoader * ld, const std::string &
  
   if (file != "")
     {
-      ghp = ld->handle_from_file (file);
+      ghp = ld->handleFromFile (file);
       h = ghp->getCodesHandle ();
     }
 

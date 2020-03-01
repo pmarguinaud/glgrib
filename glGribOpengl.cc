@@ -1,7 +1,7 @@
 #include "glGribOpengl.h"
 #include <iostream>
 
-void gl_init ()
+void glInit ()
 {
   glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
   glEnable (GL_DEPTH_TEST);

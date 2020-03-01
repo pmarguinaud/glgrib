@@ -40,8 +40,8 @@ void glGribView::setMVP (glGribProgram * program) const
           float lon1 = lon0 + opts.clip.dlon, lon2 = lon0 - opts.clip.dlon, 
                 lat1 = -90.0f + opts.clip.dlat, lat2 = +90.0f - opts.clip.dlat;
 
-          get_screen_coords_from_latlon (&xpos1, &ypos1, lat1, lon1);
-          get_screen_coords_from_latlon (&xpos2, &ypos2, lat2, lon2);
+          getScreenCoordsFromLatlon (&xpos1, &ypos1, lat1, lon1);
+          getScreenCoordsFromLatlon (&xpos2, &ypos2, lat2, lon2);
 
           xmin = std::max (xmin, xpos1); xmax = std::min (xmax, xpos2);
           ymin = std::max (ymin, ypos1); ymax = std::min (ymax, ypos2);
@@ -103,7 +103,7 @@ void glGribView::setViewport (int w, int h)
   calcMVP ();
 }
 
-int glGribView::get_screen_coords_from_latlon (float * xpos, float * ypos, float lat, float lon) const
+int glGribView::getScreenCoordsFromLatlon (float * xpos, float * ypos, float lat, float lon) const
 {
   lat = glm::radians (lat); 
   lon = glm::radians (lon);
@@ -113,14 +113,14 @@ int glGribView::get_screen_coords_from_latlon (float * xpos, float * ypos, float
 
   glm::vec3 pos = lonlat2xyz (lon, lat); 
 
-  return get_screen_coords_from_xyz (xpos, ypos, pos);
+  return getScreenCoordsFromXyz (xpos, ypos, pos);
 }
 
-int glGribView::get_latlon_from_screen_coords (float xpos, float ypos, float * lat, float * lon) const
+int glGribView::getLatlonFromScreenCoords (float xpos, float ypos, float * lat, float * lon) const
 {
   glm::vec3 pos;
 
-  if (! get_xyz_from_screen_coords (xpos, ypos, &pos))
+  if (! getXyzFromScreenCoords (xpos, ypos, &pos))
     return 0;
 
   *lat = glm::degrees (glm::asin (pos.z));
@@ -129,7 +129,7 @@ int glGribView::get_latlon_from_screen_coords (float xpos, float ypos, float * l
   return 1;
 }
 
-int glGribView::get_screen_coords_from_xyz (float * xpos, float * ypos, const glm::vec3 & xyz) const
+int glGribView::getScreenCoordsFromXyz (float * xpos, float * ypos, const glm::vec3 & xyz) const
 {
   glm::vec3 pos = ps.current ()->project (xyz);
   pos = project (pos);
@@ -140,7 +140,7 @@ int glGribView::get_screen_coords_from_xyz (float * xpos, float * ypos, const gl
   return 1;
 }
 
-int glGribView::get_xyz_from_screen_coords (float xpos, float ypos, glm::vec3 * xyz) const
+int glGribView::getXyzFromScreenCoords (float xpos, float ypos, glm::vec3 * xyz) const
 {
   glm::vec3 xa = unproject (glm::vec3 (xpos, ypos, +0.985601f));
   glm::vec3 xb = unproject (glm::vec3 (xpos, ypos, +0.900000f));
@@ -166,13 +166,13 @@ float glGribView::pixel_to_dist_at_nadir (float pixels) const
   glm::vec3 pos0 = glm::vec3 (coslon0 * coslat0, sinlon0 * coslat0, sinlat0);
 
   float xpos0, ypos0;
-  get_screen_coords_from_xyz (&xpos0, &ypos0, pos0);
+  getScreenCoordsFromXyz (&xpos0, &ypos0, pos0);
   
   float xpos1 = xpos0, ypos1 = ypos0 + pixels;
 
   glm::vec3 pos1;
 
-  if (get_xyz_from_screen_coords (xpos1, ypos1, &pos1))
+  if (getXyzFromScreenCoords (xpos1, ypos1, &pos1))
     {
       // Double precision required here
       glm::dvec3 dpos0 = pos0;

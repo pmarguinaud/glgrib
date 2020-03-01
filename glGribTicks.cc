@@ -190,7 +190,7 @@ void glGribTicks::createStr
 	    break;
         }
          
-      int c = view.get_latlon_from_screen_coords (x, y, &lat, &lon);
+      int c = view.getLatlonFromScreenCoords (x, y, &lat, &lon);
       xyllv.push_back (xyllv_t (x, y, lon, lat, c != 0));
 
     }

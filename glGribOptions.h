@@ -84,7 +84,7 @@ namespace glgrib_options_parser_detail
   {
   public:
     option_base (const std::string & n, const std::string & d) : name (n), desc (d) {}
-    virtual int has_arg () const { return 1; }
+    virtual int hasArg () const { return 1; }
     virtual void set (const std::string &) 
     { throw std::runtime_error (std::string ("Set method is not defined")); }
     virtual void set () 
@@ -125,7 +125,7 @@ namespace glgrib_options_parser_detail
     }   
     std::string type () { return std::string ("UNKNOWN"); }
     void clear () {}
-    int has_arg () const { return 1; }
+    int hasArg () const { return 1; }
     bool isEqual (const option_base * _o) const
     {
       const option_tmpl<T> * o = nullptr;
@@ -217,7 +217,7 @@ namespace glgrib_options_parser_detail
   template <> void option_tmpl<bool>::clear ();
   template <> std::string option_tmpl<bool>::asString () const;
   template <> std::string option_tmpl<bool>::asOption () const;
-  template <> int option_tmpl<bool>::has_arg () const;
+  template <> int option_tmpl<bool>::hasArg () const;
 
 };
 
@@ -309,7 +309,7 @@ private:
 
   name2option_t name2option;
 
-  std::string get_opt_name (const std::string & path, const std::string & name)
+  std::string getOptName (const std::string & path, const std::string & name)
   {
     return "--" + path + (path == "" ? "" : ".") + name;
   }
@@ -329,7 +329,7 @@ private:
               glGribOptionsBase *, const std::string & desc, T * data,               \
               const glGribOptionsCallback::opt * o = nullptr)                           \
   {                                                                                    \
-    std::string opt_name = get_opt_name (path, name);                                  \
+    std::string opt_name = getOptName (path, name);                                  \
     createOption (opt_name, new C (opt_name, desc, data), o);                          \
   }
 

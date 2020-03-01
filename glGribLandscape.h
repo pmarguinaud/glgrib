@@ -19,7 +19,7 @@ public:
   void toggleFlat () { opts.flat.on = ! opts.flat.on; }
   void setupVertexAttributes ();
   void resize (const glGribView &) override {}
-  void toggle_wireframe () { opts.wireframe.on = ! opts.wireframe.on; }
+  void toggleWireframe () { opts.wireframe.on = ! opts.wireframe.on; }
   const glGribOptionsLandscape & getOptions () const { return opts; }
   void setPositionOptions (const glGribOptionsLandscapePosition & o) { opts.lonlat.position = o; }
   float getScale () const override { return opts.scale; }

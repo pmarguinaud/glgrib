@@ -94,7 +94,7 @@ public:
   void setScale (float s) { opts.scale = s; hilo.setScaleXYZ (s); }
   float getScale () const override { return opts.scale; }
   const glGribPalette & getPalette () const;
-  void toggle_wireframe () 
+  void toggleWireframe () 
   {
     if (opts.scalar.wireframe.on)
       {

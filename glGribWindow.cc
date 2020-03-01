@@ -96,9 +96,9 @@ void glGribWindow::onkey (int key, int scancode, int action, int mods, bool help
       glGribWindowIfKey (NONE,    PAGE_UP     ,  One field forward,  next = true);
       glGribWindowIfKey (NONE,    PAGE_DOWN   ,  One field backward, prev = true);
       glGribWindowIfKey (NONE,    T     ,  Hide/show location & field value at cursor position  , toggleCursorposDisplay ());
-      glGribWindowIfKey (NONE,    TAB   ,  Enable/disable earth rotation                        , toggle_rotate            ());
-      glGribWindowIfKey (CONTROL, TAB   ,  Enable/disable light rotation                        , toggle_rotate_light      ());
-      glGribWindowIfKey (NONE,    Y     ,  Display landscape or current field as wireframe      , toggle_wireframe         ());
+      glGribWindowIfKey (NONE,    TAB   ,  Enable/disable earth rotation                        , toggleRotate            ());
+      glGribWindowIfKey (CONTROL, TAB   ,  Enable/disable light rotation                        , toggleRotateLight      ());
+      glGribWindowIfKey (NONE,    Y     ,  Display landscape or current field as wireframe      , toggleWireframe         ());
       glGribWindowIfKey (NONE,    D     ,  Use a framebuffer and generate a snapshot            , framebuffer              ());
       glGribWindowIfKey (NONE,    W     ,  Increase field of view                               , widen_fov                ());
       glGribWindowIfKey (NONE,    S     ,  Write a snapshot (PNG format)                        , snapshot                 ()); 
@@ -171,11 +171,11 @@ void glGribWindow::onkey (int key, int scancode, int action, int mods, bool help
       glGribWindowIfKey (CONTROL, C     ,  Clone current window                                 , duplicate                ());
       glGribWindowIfKey (ALT,     C     ,  Show/hide colorbar                                   , toggleColorBar           ());
       glGribWindowIfKey (CONTROL, P     ,  Try next projection                                  , nextProjection          ());
-      glGribWindowIfKey (SHIFT,   P     ,  Try next transformation                              , toggle_transform_type    ());
+      glGribWindowIfKey (SHIFT,   P     ,  Try next transformation                              , toggleTransformType    ());
       glGribWindowIfKey (CONTROL, S     ,  Save current palette                                 , saveCurrentPalette     ());
       glGribWindowIfKey (ALT,     S     ,  Resample current field                               , resampleCurrentField   ());
-      glGribWindowIfKey (NONE,    V     ,  Hide/show vector arrows                              , toggle_show_vector       ());
-      glGribWindowIfKey (CONTROL, V     ,  Hide/show vector norm                                , toggle_show_norm         ());
+      glGribWindowIfKey (NONE,    V     ,  Hide/show vector arrows                              , toggleShowVector       ());
+      glGribWindowIfKey (CONTROL, V     ,  Hide/show vector norm                                , toggleShowNorm         ());
       glGribWindowIfKey (NONE,    U     ,  Start shell                                          , startShell               ());
 
 
@@ -183,17 +183,17 @@ void glGribWindow::onkey (int key, int scancode, int action, int mods, bool help
 
 }
 
-void glGribWindow::toggle_wireframe () 
+void glGribWindow::toggleWireframe () 
 { 
   glGribField * f = scene.getCurrentField ();
 
   if (f == nullptr)
     {
-      scene.d.landscape.toggle_wireframe (); 
+      scene.d.landscape.toggleWireframe (); 
       return;
     }
 
-  f->toggle_wireframe ();
+  f->toggleWireframe ();
 
 }
 
@@ -253,7 +253,7 @@ static glGribFieldVector * getVector (glGribScene & scene)
   return v;
 }
 
-void glGribWindow::toggle_show_vector ()
+void glGribWindow::toggleShowVector ()
 {
   glGribFieldVector * v = getVector (scene);
   if (v)
@@ -261,7 +261,7 @@ void glGribWindow::toggle_show_vector ()
 }
 
 
-void glGribWindow::toggle_show_norm ()
+void glGribWindow::toggleShowNorm ()
 {
   glGribFieldVector * v = getVector (scene);
   if (v)
@@ -329,7 +329,7 @@ void glGribWindow::loadField (const glGribOptionsField & opts, int rank)
 
 }
 
-void glGribWindow::toggle_transform_type ()
+void glGribWindow::toggleTransformType ()
 {
   scene.d.view.toggleTransformType ();
 }

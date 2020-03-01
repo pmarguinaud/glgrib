@@ -120,7 +120,7 @@ const glGribOptionDate * glGribScene::getDate ()
 }
 
 
-void glGribScene::update_light ()
+void glGribScene::updateLight ()
 {
   if (d.opts.scene.light.rotate.on)
     d.opts.scene.light.lon -= d.opts.scene.light.rotate.rate;
@@ -156,7 +156,7 @@ static float ffmod (float x, float y)
   return x;
 }
 
-void glGribScene::update_view ()
+void glGribScene::updateView ()
 {
   glGribOptionsView o = d.view.getOptions ();
 
@@ -216,7 +216,7 @@ void glGribScene::update_view ()
   d.ticks.resize (d.view);
 }
 
-void glGribScene::update_interpolation ()
+void glGribScene::updateInterpolation ()
 {
   if (d.opts.scene.interpolation.on)
     {
@@ -238,7 +238,7 @@ void glGribScene::update_interpolation ()
 }
 
 
-void glGribScene::update_date ()
+void glGribScene::updateDate ()
 {
   if (d.opts.scene.date.on)
     {
@@ -266,7 +266,7 @@ void glGribScene::update_date ()
     }
 }
 
-void glGribScene::update_title ()
+void glGribScene::updateTitle ()
 {
   if (d.opts.scene.title.on)
     {
@@ -293,11 +293,11 @@ void glGribScene::update_title ()
 void glGribScene::update ()
 {
 
-  update_view ();
-  update_light ();
-  update_interpolation ();
-  update_date ();
-  update_title ();
+  updateView ();
+  updateLight ();
+  updateInterpolation ();
+  updateDate ();
+  updateTitle ();
 
   d.nupdate++;
 

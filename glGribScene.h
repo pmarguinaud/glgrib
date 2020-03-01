@@ -60,11 +60,11 @@ public:
   void unsetLight () { d.opts.scene.light.on = false; }
   bool hasLight () const { return d.opts.scene.light.on; }
   void update ();
-  void update_light ();
-  void update_interpolation ();
-  void update_view ();
-  void update_date ();
-  void update_title ();
+  void updateLight ();
+  void updateInterpolation ();
+  void updateView ();
+  void updateDate ();
+  void updateTitle ();
 
   void setCurrentFieldRank (int r) { d.currentFieldRank = r; }
 

@@ -51,13 +51,13 @@ public:
     scene.d.view.setOptions (o0);
     scene.resize ();
   }
-  void toggle_rotate       () 
+  void toggleRotate       () 
   { 
     glGribOptionsScene o = scene.getSceneOptions ();
     o.rotate_earth.on = ! o.rotate_earth.on; 
     scene.setSceneOptions (o);
   }
-  void toggle_rotate_light () 
+  void toggleRotateLight () 
   { 
     glGribOptionsScene o = scene.getSceneOptions ();
     o.light.rotate.on = ! o.light.rotate.on; 
@@ -111,7 +111,7 @@ public:
     o.lon = o.lon + 5.; 
     scene.d.view.setOptions (o);
   }
-  void toggle_wireframe ();
+  void toggleWireframe ();
 
   void resize (int, int);
   void scroll (double, double);
@@ -149,13 +149,13 @@ public:
   int id () const { return id_; }
 
   void nextProjection ();
-  void toggle_transform_type ();
+  void toggleTransformType ();
   void loadField (const glGribOptionsField &, int = 0);
   void removeField (int);
   void saveCurrentPalette ();
   void resampleCurrentField ();
-  void toggle_show_vector ();
-  void toggle_show_norm ();
+  void toggleShowVector ();
+  void toggleShowNorm ();
   void showHelp ();
 
   bool isMaster () const { return master; }

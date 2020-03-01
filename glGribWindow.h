@@ -44,8 +44,8 @@ public:
   }
   void reset_view ()
   {
-    glgrib_options_view o0;
-    const glgrib_options_view & o = scene.d.view.getOptions ();
+    glGribOptionsView o0;
+    const glGribOptionsView & o = scene.d.view.getOptions ();
     o0.projection     = o.projection;
     o0.transformation = o.transformation;
     scene.d.view.setOptions (o0);
@@ -53,61 +53,61 @@ public:
   }
   void toggle_rotate       () 
   { 
-    glgrib_options_scene o = scene.getSceneOptions ();
+    glGribOptionsScene o = scene.getSceneOptions ();
     o.rotate_earth.on = ! o.rotate_earth.on; 
     scene.setSceneOptions (o);
   }
   void toggle_rotate_light () 
   { 
-    glgrib_options_scene o = scene.getSceneOptions ();
+    glGribOptionsScene o = scene.getSceneOptions ();
     o.light.rotate.on = ! o.light.rotate.on; 
     scene.setSceneOptions (o);
   }
   void widen_fov           () 
   { 
-    glgrib_options_view o = scene.d.view.getOptions ();
+    glGribOptionsView o = scene.d.view.getOptions ();
     o.fov += 1.; 
     scene.d.view.setOptions (o);
   }
   void shrink_fov          () 
   { 
-    glgrib_options_view o = scene.d.view.getOptions ();
+    glGribOptionsView o = scene.d.view.getOptions ();
     o.fov -= 1.; 
     scene.d.view.setOptions (o);
   }
   void increase_radius     () 
   { 
-    glgrib_options_view o = scene.d.view.getOptions ();
+    glGribOptionsView o = scene.d.view.getOptions ();
     o.distance += 0.1; 
     scene.d.view.setOptions (o);
   }
   void decrease_radius     () 
   { 
-    glgrib_options_view o = scene.d.view.getOptions ();
+    glGribOptionsView o = scene.d.view.getOptions ();
     o.distance -= 0.1; 
     scene.d.view.setOptions (o);
   }
   void rotate_north        () 
   { 
-    glgrib_options_view o = scene.d.view.getOptions ();
+    glGribOptionsView o = scene.d.view.getOptions ();
     o.lat = o.lat + 5.; 
     scene.d.view.setOptions (o);
   }
   void rotate_south        () 
   { 
-    glgrib_options_view o = scene.d.view.getOptions ();
+    glGribOptionsView o = scene.d.view.getOptions ();
     o.lat = o.lat - 5.; 
     scene.d.view.setOptions (o);
   }
   void rotate_west         () 
   { 
-    glgrib_options_view o = scene.d.view.getOptions ();
+    glGribOptionsView o = scene.d.view.getOptions ();
     o.lon = o.lon - 5.; 
     scene.d.view.setOptions (o);
   }
   void rotate_east         () 
   { 
-    glgrib_options_view o = scene.d.view.getOptions ();
+    glGribOptionsView o = scene.d.view.getOptions ();
     o.lon = o.lon + 5.; 
     scene.d.view.setOptions (o);
   }
@@ -150,7 +150,7 @@ public:
 
   void next_projection ();
   void toggle_transform_type ();
-  void load_field (const glgrib_options_field &, int = 0);
+  void load_field (const glGribOptionsField &, int = 0);
   void remove_field (int);
   void save_current_palette ();
   void resample_current_field ();
@@ -163,8 +163,8 @@ public:
   void unsetMaster () { master = false; }
   void toggleMaster () { master = ! master; }
   void toggleColorBar ();
-  void setOptions (const glgrib_options_window &);
-  glgrib_options_window getOptions () { return opts; }
+  void setOptions (const glGribOptionsWindow &);
+  glGribOptionsWindow getOptions () { return opts; }
   void startShell ()
   {
     start_shell = true;
@@ -178,7 +178,7 @@ public:
 
   void fix_landscape (float, float, float, float);
 
-  const glgrib_options_window & getOptions () const { return opts; }
+  const glGribOptionsWindow & getOptions () const { return opts; }
 
   bool getNext ()
   {
@@ -198,7 +198,7 @@ protected:
   bool closed = false;
   bool cloned = false;
   bool master = false;
-  glgrib_options_window opts;
+  glGribOptionsWindow opts;
 private:
   bool next = false; // Next field
   bool prev = false; // Prev field

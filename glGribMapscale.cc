@@ -13,7 +13,7 @@ glGribMapscale & glGribMapscale::operator= (const glGribMapscale & mapscale)
   return *this;
 }
 
-void glGribMapscale::setup (const glgrib_options_mapscale & o)
+void glGribMapscale::setup (const glGribOptionsMapscale & o)
 {
   opts = o;
 

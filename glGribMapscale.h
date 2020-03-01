@@ -12,16 +12,16 @@
 class glGribMapscale
 {
 public:
-  void setup (const glgrib_options_mapscale &);
+  void setup (const glGribOptionsMapscale &);
   void clear ();
   ~glGribMapscale ();
   glGribMapscale & operator= (const glGribMapscale &);
   void render (const glm::mat4 &, const glGribView &) const;
   void toggleHidden () { hidden = ! hidden; }
   bool getHidden () const { return hidden; }
-  const glgrib_options_mapscale & getOptions () const { return opts; }
+  const glGribOptionsMapscale & getOptions () const { return opts; }
 private:
-  glgrib_options_mapscale opts;
+  glGribOptionsMapscale opts;
   static glGribProgram program;
   GLuint VertexArrayID;
   GLuint elementbuffer;

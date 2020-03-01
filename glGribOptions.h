@@ -221,9 +221,9 @@ namespace glgrib_options_parser_detail
 
 };
 
-class glgrib_options_base;
+class glGribOptionsBase;
 
-class glgrib_options_callback
+class glGribOptionsCallback
 {
 public:
 
@@ -234,7 +234,7 @@ public:
   };
 
 #define DEF_APPLY(T) \
-  virtual void apply (const std::string & path, const std::string & name, glgrib_options_base *, \
+  virtual void apply (const std::string & path, const std::string & name, glGribOptionsBase *, \
                       const std::string & desc, T * data, const opt * = nullptr) {}
   DEF_APPLY (float);
   DEF_APPLY (bool);
@@ -250,15 +250,15 @@ public:
 };
 
 
-class glgrib_options_parser : public glgrib_options_callback
+class glGribOptionsParser : public glGribOptionsCallback
 {
 public:
-  virtual std::string asOption (glgrib_options_parser &);
+  virtual std::string asOption (glGribOptionsParser &);
   static void print (class glGribOptions &);
   bool parse (int, const char * [], const std::set<std::string> * = nullptr);
   void show_help ();
   void display (const std::string &, bool = false);
-  ~glgrib_options_parser ()
+  ~glGribOptionsParser ()
   {
     for (name2option_t::iterator it = name2option.begin (); 
          it != name2option.end (); it++)
@@ -286,7 +286,7 @@ public:
     return nullptr;
   }
 
-  class opt : public glgrib_options_callback::opt
+  class opt : public glGribOptionsCallback::opt
   {
   public:
     bool hidden = false;
@@ -316,7 +316,7 @@ private:
 
   void createOption (const std::string & opt_name, 
                      glgrib_options_parser_detail::option_base * option, 
-                     const glgrib_options_callback::opt * _o)
+                     const glGribOptionsCallback::opt * _o)
   {
     const opt * o = dynamic_cast<const opt*>(_o);
     if (o != nullptr)
@@ -326,8 +326,8 @@ private:
 
 #define DEF_APPLY(T,C) \
   void apply (const std::string & path, const std::string & name,                      \
-              glgrib_options_base *, const std::string & desc, T * data,               \
-              const glgrib_options_callback::opt * o = nullptr)                           \
+              glGribOptionsBase *, const std::string & desc, T * data,               \
+              const glGribOptionsCallback::opt * o = nullptr)                           \
   {                                                                                    \
     std::string opt_name = get_opt_name (path, name);                                  \
     createOption (opt_name, new C (opt_name, desc, data), o);                          \
@@ -348,35 +348,35 @@ private:
 
 };
 
-class glgrib_options_base 
+class glGribOptionsBase 
 {
 public:
   typedef std::vector<std::string> string_list;
   typedef std::vector<float> float_list;
   typedef std::string string;
-  virtual void traverse (const std::string &, glgrib_options_callback *, 
-                         const glgrib_options_callback::opt * = nullptr) {}
+  virtual void traverse (const std::string &, glGribOptionsCallback *, 
+                         const glGribOptionsCallback::opt * = nullptr) {}
   virtual bool parse (int, const char * [], const std::set<std::string> * = nullptr);
   virtual bool parse (const char *, const std::set<std::string> * = nullptr);
-  virtual std::string asOption (glgrib_options_base &);
+  virtual std::string asOption (glGribOptionsBase &);
 };
 
 
 #define DESC(name, desc) do { cb->apply (p, #name, this, #desc, &name, o); } while (0)
 #define DESC_H(name, desc) \
-  do { glgrib_options_parser::opt o; o.hidden = true; \
+  do { glGribOptionsParser::opt o; o.hidden = true; \
        cb->apply (p, #name, this, #desc, &name, &o); } while (0)
 
 #define INCLUDE(name) do { name.traverse (p + ( p == "" ? "" : ".") + #name, cb, o); } while (0)
 
 #define INCLUDE_H(name) \
-  do { glgrib_options_parser::opt o; o.hidden = true; \
+  do { glGribOptionsParser::opt o; o.hidden = true; \
        name.traverse (p + ( p == "" ? "" : ".") + #name, cb, &o); } while (0)
 
-#define DEFINE virtual void traverse (const std::string & p, glgrib_options_callback * cb, \
-                                      const glgrib_options_callback::opt * o = nullptr)
+#define DEFINE virtual void traverse (const std::string & p, glGribOptionsCallback * cb, \
+                                      const glGribOptionsCallback::opt * o = nullptr)
 
-class glgrib_options_geometry : public glgrib_options_base
+class glGribOptionsGeometry : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -431,12 +431,12 @@ public:
   } gaussian;
 };
 
-class glgrib_options_font : public glgrib_options_base
+class glGribOptionsFont : public glGribOptionsBase
 {
 public:
-  glgrib_options_font (const std::string & b, float s) : bitmap (b), scale (s) {}
-  glgrib_options_font (float s) : scale (s) {}
-  glgrib_options_font () {}
+  glGribOptionsFont (const std::string & b, float s) : bitmap (b), scale (s) {}
+  glGribOptionsFont (float s) : scale (s) {}
+  glGribOptionsFont () {}
   DEFINE
   {
     DESC (bitmap,     Bitmap path);
@@ -453,7 +453,7 @@ public:
   } color;
 };
 
-class glgrib_options_contour : public glgrib_options_base
+class glGribOptionsContour : public glGribOptionsBase
 {
 public:
   static float defaultMin;
@@ -482,13 +482,13 @@ public:
   struct
   {
     bool on = false;
-    glgrib_options_font font;
+    glGribOptionsFont font;
     float distmin = 3.0f;
     std::string format = "%12.2f";
   } labels;
 };
 
-class glgrib_options_isofill : public glgrib_options_base
+class glGribOptionsIsofill : public glGribOptionsBase
 {
 public:
   static float defaultMin;
@@ -506,7 +506,7 @@ public:
   float max = defaultMax;
 };
 
-class glgrib_options_stream : public glgrib_options_base
+class glGribOptionsStream : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -527,7 +527,7 @@ public:
   } motion;
 };
 
-class glgrib_options_vector : public glgrib_options_base
+class glGribOptionsVector : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -592,13 +592,13 @@ public:
   float scale = 1.0f;
 };
 
-class glgrib_options_palette : public glgrib_options_base
+class glGribOptionsPalette : public glGribOptionsBase
 {
 public:
   static float defaultMin;
   static float defaultMax;
-  glgrib_options_palette () {}
-  glgrib_options_palette (const std::string & n) : name (n) {}
+  glGribOptionsPalette () {}
+  glGribOptionsPalette (const std::string & n) : name (n) {}
   DEFINE
   {
     DESC (name,        Palette name);                              
@@ -640,7 +640,7 @@ public:
   float offset = 0.0f;
 };
 
-class glgrib_options_scalar : public glgrib_options_base
+class glGribOptionsScalar : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -691,7 +691,7 @@ public:
   } discrete;
 };
 
-class glgrib_options_mpiview : public glgrib_options_base
+class glGribOptionsMpiview : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -706,7 +706,7 @@ public:
   float scale = 0.1f;
 };
 
-class glgrib_options_field : public glgrib_options_base
+class glGribOptionsField : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -734,7 +734,7 @@ public:
   struct 
   {
     bool on = false;
-    glgrib_options_font font;
+    glGribOptionsFont font;
     float radius = 10.0f;
   } hilo;
 
@@ -753,19 +753,19 @@ public:
   {
     bool on = false;
   } diff;
-  glgrib_options_palette palette;
-  glgrib_options_scalar scalar;
-  glgrib_options_vector vector;
-  glgrib_options_contour contour;
-  glgrib_options_isofill isofill;
-  glgrib_options_stream stream;
+  glGribOptionsPalette palette;
+  glGribOptionsScalar scalar;
+  glGribOptionsVector vector;
+  glGribOptionsContour contour;
+  glGribOptionsIsofill isofill;
+  glGribOptionsStream stream;
   bool parse_unseen (const char *);
-  glgrib_options_geometry geometry;
-  glgrib_options_mpiview mpiview;
+  glGribOptionsGeometry geometry;
+  glGribOptionsMpiview mpiview;
 };
 
 
-class glgrib_options_ticks_side : public glgrib_options_base
+class glGribOptionsTicksSide : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -784,7 +784,7 @@ public:
   } nswe;
 };
 
-class glgrib_options_ticks : public glgrib_options_base
+class glGribOptionsTicks : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -808,7 +808,7 @@ public:
   struct 
   {
     bool on = false;
-    glgrib_options_font font = glgrib_options_font (0.02f);
+    glGribOptionsFont font = glGribOptionsFont (0.02f);
     std::string format = "%+06.2f";
   } labels;
   struct
@@ -825,10 +825,10 @@ public:
     float width  = 0.010f;
     int kind     = 0;
   } lines;
-  glgrib_options_ticks_side N, S, W, E;
+  glGribOptionsTicksSide N, S, W, E;
 };
 
-class glgrib_options_grid : public glgrib_options_base
+class glGribOptionsGrid : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -858,14 +858,14 @@ public:
     bool on = false;
     float lon = 0.0f, lat = 0.0f;
     float angle = 0.0f;
-    glgrib_options_font font;
+    glGribOptionsFont font;
   } labels;
 };
 
-class glgrib_options_land_layer : public glgrib_options_base
+class glGribOptionsLandLayer : public glGribOptionsBase
 {
 public:
-  glgrib_options_land_layer (const std::string & _path, float _scale, const glgrib_option_color & _color)
+  glGribOptionsLandLayer (const std::string & _path, float _scale, const glgrib_option_color & _color)
                            :  path (_path), scale (_scale), color (_color) {}
   DEFINE
   {
@@ -894,7 +894,7 @@ public:
   bool on              = true;
 };
 
-class glgrib_options_land : public glgrib_options_base
+class glGribOptionsLand : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -908,17 +908,17 @@ public:
   
   bool on = false;
 
-  std::vector<glgrib_options_land_layer> layers = 
+  std::vector<glGribOptionsLandLayer> layers = 
   {
-    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L1.shp", 1.000f, glgrib_option_color ("#ffe2ab")),
-    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L2.shp", 1.001f, glgrib_option_color ("#0000ff")),
-    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L3.shp", 1.002f, glgrib_option_color ("#ffe2ab")),
-    glgrib_options_land_layer ("coastlines/shp/GSHHS_c_L5.shp", 1.000f, glgrib_option_color ("#ffe2ab")) 
+    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L1.shp", 1.000f, glgrib_option_color ("#ffe2ab")),
+    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L2.shp", 1.001f, glgrib_option_color ("#0000ff")),
+    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L3.shp", 1.002f, glgrib_option_color ("#ffe2ab")),
+    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L5.shp", 1.000f, glgrib_option_color ("#ffe2ab")) 
   };
 
 };
 
-class glgrib_options_landscape_position : public glgrib_options_base
+class glGribOptionsLandscapePosition : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -931,7 +931,7 @@ public:
   float lon1 = -180.0f, lon2 = +180.0f, lat1 = -90.0f, lat2 = +90.0f;
 };
 
-class glgrib_options_landscape : public glgrib_options_base
+class glGribOptionsLandscape : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -964,18 +964,18 @@ public:
   } flat;
   struct
   {
-    glgrib_options_landscape_position position;
+    glGribOptionsLandscapePosition position;
   } lonlat;
-  glgrib_options_geometry geometry;
+  glGribOptionsGeometry geometry;
   float scale = 1.0f;
   glgrib_option_color color = glgrib_option_color ("#00000000");
 };
 
-class glgrib_options_lines : public glgrib_options_base
+class glGribOptionsLines : public glGribOptionsBase
 {
 public:
-  glgrib_options_lines () {}
-  glgrib_options_lines (const std::string & p, const string & f) : path (p), format (f) {}
+  glGribOptionsLines () {}
+  glGribOptionsLines (const std::string & p, const string & f) : path (p), format (f) {}
   DEFINE
   {
     DESC (path,               Path to lines file);
@@ -996,7 +996,7 @@ public:
   float latmin = 0.0f, latmax = 0.0f, lonmin = 0.0f, lonmax = 0.0f;
 };
 
-class glgrib_options_offscreen : public glgrib_options_base
+class glGribOptionsOffscreen : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1010,7 +1010,7 @@ public:
   std::string format = "snapshot_%N.png";
 };
 
-class glgrib_options_window : public glgrib_options_base
+class glGribOptionsWindow : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1052,7 +1052,7 @@ public:
   } debug;
   int     version_major = 4;
   int     version_minor = 3;
-  glgrib_options_offscreen offscreen;
+  glGribOptionsOffscreen offscreen;
   struct
   {
     bool on = false;
@@ -1063,7 +1063,7 @@ public:
   } info;
 };
 
-class glgrib_options_light : public glgrib_options_base
+class glGribOptionsLight : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1093,7 +1093,7 @@ public:
   float  night = 0.1f;
 };
 
-class glgrib_options_position : public glgrib_options_base
+class glGribOptionsPosition : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1107,7 +1107,7 @@ public:
   float  fov  = 0.0f;
 };
 
-class glgrib_options_travelling : public glgrib_options_base
+class glGribOptionsTravelling : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1119,11 +1119,11 @@ public:
   }
   bool   on     = false;
   int    frames = 100;
-  glgrib_options_position pos1;
-  glgrib_options_position pos2;
+  glGribOptionsPosition pos1;
+  glGribOptionsPosition pos2;
 };
 
-class glgrib_options_interpolation : public glgrib_options_base
+class glGribOptionsInterpolation : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1135,7 +1135,7 @@ public:
   int frames = 10;
 };
 
-class glgrib_options_image : public glgrib_options_base
+class glGribOptionsImage : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1154,7 +1154,7 @@ public:
   std::string align;
 };
 
-class glgrib_options_text : public glgrib_options_base
+class glGribOptionsText : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1171,10 +1171,10 @@ public:
   std::vector<float> x;
   std::vector<float> y;
   std::vector<std::string> a;
-  glgrib_options_font font;
+  glGribOptionsFont font;
 };
 
-class glgrib_options_date : public glgrib_options_base
+class glGribOptionsDate : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1183,10 +1183,10 @@ public:
     INCLUDE (font);
   }
   bool on = false;
-  glgrib_options_font font;
+  glGribOptionsFont font;
 };
 
-class glgrib_options_title : public glgrib_options_base
+class glGribOptionsTitle : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1203,10 +1203,10 @@ public:
   float y = 1.;
   std::string a = "NW";
   std::string text = "";
-  glgrib_options_font font;
+  glGribOptionsFont font;
 };
 
-class glgrib_options_scene : public glgrib_options_base
+class glGribOptionsScene : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1230,13 +1230,13 @@ public:
     float rate = 1.0f;
   } rotate_earth;
   float   lon_at_hour = -1.0f;
-  glgrib_options_light light;  
-  glgrib_options_travelling travelling;
-  glgrib_options_interpolation interpolation;
-  glgrib_options_date date;
-  glgrib_options_text text;
-  glgrib_options_image image;
-  glgrib_options_title title;
+  glGribOptionsLight light;  
+  glGribOptionsTravelling travelling;
+  glGribOptionsInterpolation interpolation;
+  glGribOptionsDate date;
+  glGribOptionsText text;
+  glGribOptionsImage image;
+  glGribOptionsTitle title;
   struct
   {
     int field = 0;
@@ -1247,7 +1247,7 @@ public:
   } center;
 };
 
-class glgrib_options_view : public glgrib_options_base
+class glGribOptionsView : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1285,7 +1285,7 @@ public:
     bool on = true;
   } clip;
 
-  friend bool operator== (const glgrib_options_view & v1, const glgrib_options_view & v2)
+  friend bool operator== (const glGribOptionsView & v1, const glGribOptionsView & v2)
   {
 #define EQ(a) if (v1.a != v2.a) return false;
     EQ (projection);
@@ -1308,7 +1308,7 @@ public:
 };
 
 
-class glgrib_options_colorbar : public glgrib_options_base
+class glGribOptionsColorbar : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1324,7 +1324,7 @@ public:
     DESC (position.ymax, Colorbar position);
   }
   bool on = false;
-  glgrib_options_font font = glgrib_options_font ("fonts/16.bmp", 0.02f);
+  glGribOptionsFont font = glGribOptionsFont ("fonts/16.bmp", 0.02f);
   std::string format = "%6.4g";
   struct
   {
@@ -1340,7 +1340,7 @@ public:
   } position;
 };
 
-class glgrib_options_mapscale : public glgrib_options_base
+class glGribOptionsMapscale : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1355,7 +1355,7 @@ public:
     DESC (color2, Second color);
   }
   bool on = false;
-  glgrib_options_font font = glgrib_options_font ("fonts/16.bmp", 0.02f);
+  glGribOptionsFont font = glGribOptionsFont ("fonts/16.bmp", 0.02f);
   glgrib_option_color color1 = glgrib_option_color (255, 255, 255);
   glgrib_option_color color2 = glgrib_option_color ( 80,  80,  80);
   struct position
@@ -1367,7 +1367,7 @@ public:
   } position;
 };
 
-class glgrib_options_rivers : public glgrib_options_base
+class glGribOptionsRivers : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1376,10 +1376,10 @@ public:
     INCLUDE (lines);
   }
   bool on = false;
-  glgrib_options_lines lines = glgrib_options_lines ("coastlines/gshhg/WDBII_bin/wdb_rivers_f.b", "gshhg");
+  glGribOptionsLines lines = glGribOptionsLines ("coastlines/gshhg/WDBII_bin/wdb_rivers_f.b", "gshhg");
 };
 
-class glgrib_options_border : public glgrib_options_base
+class glGribOptionsBorder : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1403,10 +1403,10 @@ public:
   {
     bool on = false;
   } sea;
-  glgrib_options_lines lines = glgrib_options_lines ("coastlines/gshhg/WDBII_bin/wdb_borders_f.b", "gshhg");
+  glGribOptionsLines lines = glGribOptionsLines ("coastlines/gshhg/WDBII_bin/wdb_borders_f.b", "gshhg");
 };
 
-class glgrib_options_points : public glgrib_options_base
+class glGribOptionsPoints : public glGribOptionsBase
 {
 public:
   DEFINE 
@@ -1417,7 +1417,7 @@ public:
     INCLUDE (palette);
     DESC (color, Point color);
   }
-  glgrib_options_palette palette = glgrib_options_palette ("none");
+  glGribOptionsPalette palette = glGribOptionsPalette ("none");
   glgrib_option_color color;
   float scale = 1.0f;
   struct
@@ -1430,7 +1430,7 @@ public:
   } size;
 };
 
-class glgrib_options_cities : public glgrib_options_base
+class glGribOptionsCities : public glGribOptionsBase
 {
 public:
   DEFINE 
@@ -1441,15 +1441,15 @@ public:
     DESC (labels.on, Enable city names display);
   }
   bool on = false;
-  glgrib_options_points points;
+  glGribOptionsPoints points;
   struct
   {
-    glgrib_options_font font;
+    glGribOptionsFont font;
     bool on = false;
   } labels;
 };
 
-class glgrib_options_coast : public glgrib_options_base
+class glGribOptionsCoast : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1463,10 +1463,10 @@ public:
   {
     bool on = false;
   } lakes;
-  glgrib_options_lines lines = glgrib_options_lines ("coastlines/gshhg/GSHHS_bin/gshhs_h.b", "gshhg");
+  glGribOptionsLines lines = glGribOptionsLines ("coastlines/gshhg/GSHHS_bin/gshhs_h.b", "gshhg");
 };
 
-class glgrib_options_departements : public glgrib_options_base
+class glGribOptionsDepartements : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1475,10 +1475,10 @@ public:
     INCLUDE (lines);
   }
   bool on = false;
-  glgrib_options_lines lines = glgrib_options_lines ("coastlines/departements/departements-20180101.shp", "shapeline");
+  glGribOptionsLines lines = glGribOptionsLines ("coastlines/departements/departements-20180101.shp", "shapeline");
 };
 
-class glgrib_options_shell : public glgrib_options_base
+class glGribOptionsShell : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1495,7 +1495,7 @@ public:
   } prompt;
 };
 
-class glGribOptions : public glgrib_options_base
+class glGribOptions : public glGribOptionsBase
 {
 public:
   DEFINE
@@ -1528,28 +1528,28 @@ public:
     std::vector<std::string> path;
     bool on = false;
   } diff;
-  std::vector<glgrib_options_field> field =
-    {glgrib_options_field (), glgrib_options_field (), 
-     glgrib_options_field (), glgrib_options_field (), 
-     glgrib_options_field (), glgrib_options_field (), 
-     glgrib_options_field (), glgrib_options_field (), 
-     glgrib_options_field (), glgrib_options_field ()};
-  glgrib_options_coast coast;
-  glgrib_options_cities cities;
-  glgrib_options_border border;
-  glgrib_options_rivers rivers;
-  glgrib_options_colorbar colorbar;
-  glgrib_options_mapscale mapscale;
-  glgrib_options_departements departements;
-  glgrib_options_window window;
-  glgrib_options_landscape landscape;
-  glgrib_options_grid grid;
-  glgrib_options_ticks ticks;
-  glgrib_options_scene scene;
-  glgrib_options_view view;
-  glgrib_options_font font;
-  glgrib_options_shell shell;
-  glgrib_options_land land;
+  std::vector<glGribOptionsField> field =
+    {glGribOptionsField (), glGribOptionsField (), 
+     glGribOptionsField (), glGribOptionsField (), 
+     glGribOptionsField (), glGribOptionsField (), 
+     glGribOptionsField (), glGribOptionsField (), 
+     glGribOptionsField (), glGribOptionsField ()};
+  glGribOptionsCoast coast;
+  glGribOptionsCities cities;
+  glGribOptionsBorder border;
+  glGribOptionsRivers rivers;
+  glGribOptionsColorbar colorbar;
+  glGribOptionsMapscale mapscale;
+  glGribOptionsDepartements departements;
+  glGribOptionsWindow window;
+  glGribOptionsLandscape landscape;
+  glGribOptionsGrid grid;
+  glGribOptionsTicks ticks;
+  glGribOptionsScene scene;
+  glGribOptionsView view;
+  glGribOptionsFont font;
+  glGribOptionsShell shell;
+  glGribOptionsLand land;
   virtual bool parse (int, const char * [], const std::set<std::string> * = nullptr);
 };
 

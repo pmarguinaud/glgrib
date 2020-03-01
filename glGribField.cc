@@ -148,7 +148,7 @@ void glGribField::setupHilo (glgrib_field_float_buffer_ptr data)
 
 }
 
-void glGribField::setPaletteOptions (const glgrib_options_palette & o) 
+void glGribField::setPaletteOptions (const glGribOptionsPalette & o) 
 { 
   palette = glGribPalette::create (o, getNormedMinValue (), getNormedMaxValue ());
 }
@@ -195,17 +195,17 @@ const glGribPalette & glGribField::getPalette () const
   return palette;
 }
 
-const glgrib_options_field & glGribField::getOptions () const 
+const glGribOptionsField & glGribField::getOptions () const 
 { 
   opts.palette = palette.getOptions ();
   return opts; 
 }
 
 
-void glGribField::getUserPref (glgrib_options_field * opts, glGribLoader * ld)
+void glGribField::getUserPref (glGribOptionsField * opts, glGribLoader * ld)
 {
-  glgrib_options_field opts_sql = *opts;
-  glgrib_options_field opts_ref;
+  glGribOptionsField opts_sql = *opts;
+  glGribOptionsField opts_ref;
   
   glGribFieldMetadata meta;
   ld->load (nullptr, opts_sql.path, opts->geometry, 0, &meta);
@@ -239,13 +239,13 @@ found:
   *opts = opts_sql;
 }
 
-glGribField * glGribField::create (const glgrib_options_field & opts, float slot, glGribLoader * ld)
+glGribField * glGribField::create (const glGribOptionsField & opts, float slot, glGribLoader * ld)
 {
 
   if (opts.path.size () == 0)
     return nullptr;
 
-  glgrib_options_field opts1 = opts;
+  glGribOptionsField opts1 = opts;
 
   if (opts.user_pref.on)
     getUserPref (&opts1, ld);
@@ -277,7 +277,7 @@ glGribField * glGribField::create (const glgrib_options_field & opts, float slot
 
 void glGribField::saveOptions () const
 {
-  glgrib_options_field opts1, opts2;
+  glGribOptionsField opts1, opts2;
 
   opts1 = opts;
   opts1.path.clear ();

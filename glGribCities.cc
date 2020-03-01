@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 
-void glGribCities::setup (const glgrib_options_cities & o)
+void glGribCities::setup (const glGribOptionsCities & o)
 {
   opts = o;
 
@@ -86,7 +86,7 @@ void glGribCities::clear ()
   d.labels.clear ();
 }
 
-void glGribCities::render (const glGribView & view, const glgrib_options_light & light) const
+void glGribCities::render (const glGribView & view, const glGribOptionsLight & light) const
 {
   glGribPoints::render (view, light);
   d.labels.render (view);

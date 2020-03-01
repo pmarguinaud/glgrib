@@ -26,8 +26,8 @@ public:
                      glGribFieldMetadata &);
 
   glgrib_handle_ptr handle_from_file (const std::string &);
-  void load (glgrib_field_float_buffer_ptr *, const std::vector<std::string> &, const glgrib_options_geometry &, float, glGribFieldMetadata *, int = 1, int = 0, bool diff = false);
-  void load (glgrib_field_float_buffer_ptr *, const std::string &, const glgrib_options_geometry &, glGribFieldMetadata *);
+  void load (glgrib_field_float_buffer_ptr *, const std::vector<std::string> &, const glGribOptionsGeometry &, float, glGribFieldMetadata *, int = 1, int = 0, bool diff = false);
+  void load (glgrib_field_float_buffer_ptr *, const std::string &, const glGribOptionsGeometry &, glGribFieldMetadata *);
   void setSize (int _size) { size = _size; }
 private:
   int size = 0;

@@ -1112,7 +1112,7 @@ void glGribGeometryGaussian::tryFitLatitudes (int _kind, latfit_t * latfit)
 
 }
 
-void glGribGeometryGaussian::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & o)
+void glGribGeometryGaussian::setup (glgrib_handle_ptr ghp, const glGribOptionsGeometry & o)
 {
   opts = o;
 
@@ -1784,7 +1784,7 @@ void glGribGeometryGaussian::getView (glGribView * view) const
 {
   if (! rotated)
     return;
-  glgrib_options_view view_opts = view->getOptions (); 
+  glGribOptionsView view_opts = view->getOptions (); 
   view_opts.lon = longitudeOfStretchingPoleInDegrees;
   view_opts.lat = latitudeOfStretchingPoleInDegrees;
   view->setOptions (view_opts);

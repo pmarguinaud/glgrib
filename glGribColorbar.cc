@@ -13,7 +13,7 @@ glGribColorbar & glGribColorbar::operator= (const glGribColorbar & colorbar)
   return *this;
 }
 
-void glGribColorbar::setup (const glgrib_options_colorbar & o)
+void glGribColorbar::setup (const glGribOptionsColorbar & o)
 {
   opts = o;
 

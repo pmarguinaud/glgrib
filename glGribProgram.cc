@@ -113,7 +113,7 @@ void glGribProgram::use () const
     }
 }
 
-void glGribProgram::set (const glgrib_options_light & light)
+void glGribProgram::set (const glGribOptionsLight & light)
 {
   int lightid = glGetUniformLocation (programID, "light");
 

@@ -10,12 +10,12 @@
 #include <map>
 #include <list>
 
-float glgrib_options_palette::defaultMin = glGribPalette::defaultMin;
-float glgrib_options_palette::defaultMax = glGribPalette::defaultMax;
-float glgrib_options_contour::defaultMin = glGribPalette::defaultMin;
-float glgrib_options_contour::defaultMax = glGribPalette::defaultMax;
-float glgrib_options_isofill::defaultMin = glGribPalette::defaultMin;
-float glgrib_options_isofill::defaultMax = glGribPalette::defaultMax;
+float glGribOptionsPalette::defaultMin = glGribPalette::defaultMin;
+float glGribOptionsPalette::defaultMax = glGribPalette::defaultMax;
+float glGribOptionsContour::defaultMin = glGribPalette::defaultMin;
+float glGribOptionsContour::defaultMax = glGribPalette::defaultMax;
+float glGribOptionsIsofill::defaultMin = glGribPalette::defaultMin;
+float glGribOptionsIsofill::defaultMax = glGribPalette::defaultMax;
 
 namespace glgrib_options_parser_detail
 {
@@ -337,7 +337,7 @@ cont:
   return token;
 }
 
-bool glgrib_options_parser::parse (int _argc, const char * _argv[], 
+bool glGribOptionsParser::parse (int _argc, const char * _argv[], 
 		                   const std::set<std::string> * skip)
 {
   int argc = _argc;
@@ -472,15 +472,15 @@ bool glgrib_options_parser::parse (int _argc, const char * _argv[],
   return true;
 }
 
-bool glgrib_options_base::parse (int argc, const char * argv[], 
+bool glGribOptionsBase::parse (int argc, const char * argv[], 
 		                 const std::set<std::string> * skip)
 {
-  glgrib_options_parser p;
+  glGribOptionsParser p;
   traverse ("", &p);
   return p.parse (argc, argv, skip);
 }
 
-bool glgrib_options_base::parse (const char * args,
+bool glGribOptionsBase::parse (const char * args,
 		                 const std::set<std::string> * skip)
 {
   std::string line (args);
@@ -500,7 +500,7 @@ bool glgrib_options_base::parse (const char * args,
   for (int i = 0; i < list.size (); i++)
     argv[1+i] = list[i].c_str ();
 
-  glgrib_options_parser p;
+  glGribOptionsParser p;
   traverse ("", &p);
   return p.parse (argc, argv, skip);
 }
@@ -508,7 +508,7 @@ bool glgrib_options_base::parse (const char * args,
 bool glGribOptions::parse (int argc, const char * argv[], 
 		            const std::set<std::string> * skip)
 {
-  glgrib_options_parser p;
+  glGribOptionsParser p;
   traverse ("", &p);
   if (! p.parse (argc, argv, skip))
     return false;
@@ -532,7 +532,7 @@ bool glGribOptions::parse (int argc, const char * argv[],
   return true;
 }
 
-bool glgrib_options_parser::seenOption (const std::string & name) const
+bool glGribOptionsParser::seenOption (const std::string & name) const
 {
   for (std::set<std::string>::const_iterator it = seen.begin (); it != seen.end (); it++)
     {
@@ -543,13 +543,13 @@ bool glgrib_options_parser::seenOption (const std::string & name) const
   return false;
 }
 
-void glgrib_options_parser::show_help ()
+void glGribOptionsParser::show_help ()
 {
   printf ("Usage:\n");
   display (std::string ("--"));
 }
 
-std::string glgrib_options_parser::asOption (glgrib_options_parser & p2) 
+std::string glGribOptionsParser::asOption (glGribOptionsParser & p2) 
 {
   std::string str;
 
@@ -569,7 +569,7 @@ std::string glgrib_options_parser::asOption (glgrib_options_parser & p2)
   return str;
 }
 
-void glgrib_options_parser::display (const std::string & prefix, bool show_hidden)
+void glGribOptionsParser::display (const std::string & prefix, bool show_hidden)
 {
   size_t name_size = 0, type_size = 0;
   int len = prefix.size ();
@@ -597,9 +597,9 @@ void glgrib_options_parser::display (const std::string & prefix, bool show_hidde
       }   
 }
 
-void glgrib_options_parser::print (glGribOptions & opts1)
+void glGribOptionsParser::print (glGribOptions & opts1)
 {
-  glgrib_options_parser p1, p2;
+  glGribOptionsParser p1, p2;
   glGribOptions opts2;
 
   opts1.traverse ("", &p1);
@@ -625,16 +625,16 @@ void glgrib_options_parser::print (glGribOptions & opts1)
 
 }
 
-std::string glgrib_options_base::asOption (glgrib_options_base & ref) 
+std::string glGribOptionsBase::asOption (glGribOptionsBase & ref) 
 {
-  glgrib_options_parser p1, p2;
+  glGribOptionsParser p1, p2;
   traverse ("", &p1);
   ref.traverse ("", &p2);
   return p1.asOption (p2);
 }
 
 
-bool glgrib_options_field::parse_unseen (const char * args)
+bool glGribOptionsField::parse_unseen (const char * args)
 {
   parse (args, &seen);
   return true;

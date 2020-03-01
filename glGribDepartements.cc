@@ -1,6 +1,6 @@
 #include "glGribDepartements.h"
 
-void glGribDepartements::setup (const glgrib_options_departements & o)
+void glGribDepartements::setup (const glGribOptionsDepartements & o)
 {
   opts = o;
   glGribLines::setup (opts.lines);

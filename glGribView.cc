@@ -187,7 +187,7 @@ float glGribView::pixel_to_dist_at_nadir (float pixels) const
     }
 }
 
-void glGribView::setup (const glgrib_options_view & o)
+void glGribView::setup (const glGribOptionsView & o)
 {
   opts = o;
   calcMVP ();

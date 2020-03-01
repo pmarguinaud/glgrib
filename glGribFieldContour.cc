@@ -202,7 +202,7 @@ void glGribFieldContour::setupLabels (isoline_t * iso, const isoline_data_t & is
 
 }
 
-void glGribFieldContour::setup (glGribLoader * ld, const glgrib_options_field & o, float slot)
+void glGribFieldContour::setup (glGribLoader * ld, const glGribOptionsField & o, float slot)
 {
   opts = o;
 
@@ -237,8 +237,8 @@ void glGribFieldContour::setup (glGribLoader * ld, const glgrib_options_field & 
 
   if (levels.size () == 0)
     {
-      float min = opts.contour.min == glgrib_options_contour::defaultMin ? meta1.valmin : opts.contour.min;
-      float max = opts.contour.max == glgrib_options_contour::defaultMax ? meta1.valmax : opts.contour.max;
+      float min = opts.contour.min == glGribOptionsContour::defaultMin ? meta1.valmin : opts.contour.min;
+      float max = opts.contour.max == glGribOptionsContour::defaultMax ? meta1.valmax : opts.contour.max;
       for (int i = 0; i < opts.contour.number; i++)
         levels.push_back (min + (i + 1) * (max - min) / (opts.contour.number + 1));
     }
@@ -446,7 +446,7 @@ void glGribFieldContour::processTriangle (int it0, float * r, float r0, float * 
   return;
 }
 
-void glGribFieldContour::render (const glGribView & view, const glgrib_options_light & light) const
+void glGribFieldContour::render (const glGribView & view, const glGribOptionsLight & light) const
 {
   glGribProgram * program = glGribProgram::load (glGribProgram::CONTOUR);
   program->use ();

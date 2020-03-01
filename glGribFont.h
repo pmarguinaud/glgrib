@@ -10,7 +10,7 @@
 class glGribFont
 {
 public:
-  void setup (const glgrib_options_font &);
+  void setup (const glGribOptionsFont &);
   ~glGribFont ();
   int map (char c) const
   { 
@@ -25,9 +25,9 @@ public:
   float getAspect () const { return aspect; }
   float getPosBelow () const { return posb; }
   float getPosAbove () const { return posu; }
-  const glgrib_options_font & getOptions () const { return opts; }
+  const glGribOptionsFont & getOptions () const { return opts; }
 private:
-  glgrib_options_font opts;
+  glGribOptionsFont opts;
   std::vector<float> xoff, yoff;
   int nx, ny;  // Array of letters dimension
   bool ready = false;
@@ -40,5 +40,5 @@ private:
 typedef std::shared_ptr<glGribFont> glgrib_font_ptr;
 typedef std::shared_ptr<const glGribFont> const_glgrib_font_ptr;
 
-glgrib_font_ptr new_glgrib_font_ptr (const glgrib_options_font &);
+glgrib_font_ptr new_glgrib_font_ptr (const glGribOptionsFont &);
 

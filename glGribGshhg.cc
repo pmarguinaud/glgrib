@@ -81,7 +81,7 @@ static int read_GSHHG_POINT_list (std::vector<GSHHG_POINT_t> * gpl, int n, FILE 
 }
 
 
-void glGribGshhg::read (const glgrib_options_lines & opts, int * numberOfPoints, 
+void glGribGshhg::read (const glGribOptionsLines & opts, int * numberOfPoints, 
 		         unsigned int * numberOfLines, std::vector<float> * lonlat,
 			 std::vector<unsigned int> * ind, 
                          const std::vector<unsigned int> & mask, 

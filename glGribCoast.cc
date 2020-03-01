@@ -1,6 +1,6 @@
 #include "glGribCoast.h"
 
-void glGribCoast::setup (const glgrib_options_coast & o)
+void glGribCoast::setup (const glGribOptionsCoast & o)
 {
   opts = o;
   if (opts.lakes.on)

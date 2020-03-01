@@ -5,7 +5,7 @@
 
 
 static
-void setDiffOptions (glgrib_options_field & opts1, glgrib_options_field & opts2, 
+void setDiffOptions (glGribOptionsField & opts1, glGribOptionsField & opts2, 
                      const std::string & path1, const std::string & path2)
 {
   opts1.diff.on = true;

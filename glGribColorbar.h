@@ -12,16 +12,16 @@
 class glGribColorbar
 {
 public:
-  void setup (const glgrib_options_colorbar &);
+  void setup (const glGribOptionsColorbar &);
   void clear ();
   ~glGribColorbar ();
   glGribColorbar & operator= (const glGribColorbar &);
   void render (const glm::mat4 &, const glGribPalette &, float, float) const;
   void toggleHidden () { hidden = ! hidden; }
   bool getHidden () const { return hidden; }
-  const glgrib_options_colorbar & getOptions () const { return opts; }
+  const glGribOptionsColorbar & getOptions () const { return opts; }
 private:
-  glgrib_options_colorbar opts;
+  glGribOptionsColorbar opts;
   static glGribProgram program;
   GLuint VertexArrayID;
   GLuint elementbuffer;

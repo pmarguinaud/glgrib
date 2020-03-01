@@ -125,7 +125,7 @@ void glGribGeometryLambert::setupFrame ()
 }
 
 
-void glGribGeometryLambert::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & o)
+void glGribGeometryLambert::setup (glgrib_handle_ptr ghp, const glGribOptionsGeometry & o)
 {
   opts = o;
 
@@ -595,7 +595,7 @@ float glGribGeometryLambert::getLocalMeshSize (int jglo) const
 
 void glGribGeometryLambert::getView (glGribView * view) const
 {
-  glgrib_options_view view_opts = view->getOptions (); 
+  glGribOptionsView view_opts = view->getOptions (); 
   latlon_t latlon = p_pj.xy_to_latlon (center_xy);
   view_opts.lon = latlon.lon * rad2deg;
   view_opts.lat = latlon.lat * rad2deg;

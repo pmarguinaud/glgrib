@@ -96,7 +96,7 @@ void glGribFieldVector::setupVertexAttributes ()
 
 }
 
-void glGribFieldVector::setup (glGribLoader * ld, const glgrib_options_field & o, float slot)
+void glGribFieldVector::setup (glGribLoader * ld, const glGribOptionsField & o, float slot)
 {
   opts = o;
 
@@ -160,7 +160,7 @@ void glGribFieldVector::setup (glGribLoader * ld, const glgrib_options_field & o
 }
 
 void glGribFieldVector::renderNorms (const glGribView & view, 
-                                       const glgrib_options_light & light) 
+                                       const glGribOptionsLight & light) 
 const
 {
   float scale0 = opts.scale;
@@ -224,7 +224,7 @@ public:
 };
 
 void glGribFieldVector::renderArrow (const glGribView & view, 
-                                       const glgrib_options_light & light) 
+                                       const glGribOptionsLight & light) 
 const
 {
   std::vector<float> valmax = getMaxValue ();
@@ -318,7 +318,7 @@ const
   view.delMVP (program);
 }
 
-void glGribFieldVector::render (const glGribView & view, const glgrib_options_light & light) const
+void glGribFieldVector::render (const glGribView & view, const glGribOptionsLight & light) const
 {
   if (opts.vector.arrow.on || opts.vector.barb.on)
     renderArrow (view, light);
@@ -350,7 +350,7 @@ void glGribFieldVector::reSample (const glGribView & view)
   const glGribFieldMetadata & meta_n = meta[0];
   const glGribFieldMetadata & meta_d = meta[1];
 
-  const glgrib_options_view & view_opts = view.getOptions ();
+  const glGribOptionsView & view_opts = view.getOptions ();
   float w = view_opts.distance * deg2rad * view_opts.fov;
 
   const int npts = 2 * opts.vector.density / w;

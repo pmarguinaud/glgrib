@@ -21,7 +21,7 @@ glGribGrid & glGribGrid::operator= (const glGribGrid & other)
   return *this;
 }
 
-void glGribGrid::setup (const glgrib_options_grid & o)
+void glGribGrid::setup (const glGribOptionsGrid & o)
 {
   opts = o;
 
@@ -93,7 +93,7 @@ glGribGrid::~glGribGrid ()
   clear (); 
 }
 
-void glGribGrid::render (const glGribView & view, const glgrib_options_light & light) const
+void glGribGrid::render (const glGribView & view, const glGribOptionsLight & light) const
 {
   glGribProgram * program = glGribProgram::load (glGribProgram::GRID);
   program->use ();

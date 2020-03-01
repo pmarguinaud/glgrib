@@ -117,31 +117,31 @@ public:
 
   glGribLoader ld;
 
-  void setViewOptions (const glgrib_options_view &);
-  void setLandscapeOptions (const glgrib_options_landscape &);
-  void setGridOptions (const glgrib_options_grid &);
-  void setTicksOptions (const glgrib_options_ticks &);
-  void setLandOptions (const glgrib_options_land &);
+  void setViewOptions (const glGribOptionsView &);
+  void setLandscapeOptions (const glGribOptionsLandscape &);
+  void setGridOptions (const glGribOptionsGrid &);
+  void setTicksOptions (const glGribOptionsTicks &);
+  void setLandOptions (const glGribOptionsLand &);
   void setGridColorOptions (const glgrib_option_color &);
   void setGridScaleOptions (float);
-  void setCoastOptions (const glgrib_options_coast &);
-  void setBorderOptions (const glgrib_options_border &);
-  void setRiversOptions (const glgrib_options_rivers &);
-  void setDepartementsOptions (const glgrib_options_departements &);
-  void setFieldOptions (int, const glgrib_options_field &, float = 0);
-  void setFieldPaletteOptions (int, const glgrib_options_palette &);
-  void setColorBarOptions (const glgrib_options_colorbar &);
-  void setMapScaleOptions (const glgrib_options_mapscale &);
-  void setImageOptions (const glgrib_options_image &);
-  void setTextOptions (const glgrib_options_text &);
-  void setDateOptions (const glgrib_options_date &);
-  void setLightOptions (const glgrib_options_light &);
-  void setSceneOptions (const glgrib_options_scene &);
-  void setCitiesOptions (const glgrib_options_cities &);
-  void setTitleOptions (const glgrib_options_title &);
+  void setCoastOptions (const glGribOptionsCoast &);
+  void setBorderOptions (const glGribOptionsBorder &);
+  void setRiversOptions (const glGribOptionsRivers &);
+  void setDepartementsOptions (const glGribOptionsDepartements &);
+  void setFieldOptions (int, const glGribOptionsField &, float = 0);
+  void setFieldPaletteOptions (int, const glGribOptionsPalette &);
+  void setColorBarOptions (const glGribOptionsColorbar &);
+  void setMapScaleOptions (const glGribOptionsMapscale &);
+  void setImageOptions (const glGribOptionsImage &);
+  void setTextOptions (const glGribOptionsText &);
+  void setDateOptions (const glGribOptionsDate &);
+  void setLightOptions (const glGribOptionsLight &);
+  void setSceneOptions (const glGribOptionsScene &);
+  void setCitiesOptions (const glGribOptionsCities &);
+  void setTitleOptions (const glGribOptionsTitle &);
 
   glGribOptions getOptions () const;
-  const glgrib_options_scene & getSceneOptions () const { return d.opts.scene; }
+  const glGribOptionsScene & getSceneOptions () const { return d.opts.scene; }
 
 };
 

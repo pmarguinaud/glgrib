@@ -52,7 +52,7 @@ char ** shell_completion (const char * text, int start, int end)
 glGribShell::glGribShell ()
 {
   glGribOptions opts;
-  glgrib_options_parser p;
+  glGribOptionsParser p;
   opts.traverse ("", &p);
   p.getOptions (&getsetoptions);
   rl_attempted_completion_function = shell_completion;
@@ -120,12 +120,12 @@ void glGribShell::execute (const std::string & _line, glGribWindow * gwindow)
   else if (cmd == "show")
     {
       glGribOptions opts = gwindow->scene.getOptions ();
-      glgrib_options_parser::print (opts);
+      glGribOptionsParser::print (opts);
     }
   else if (cmd == "get")
     {
       glGribOptions opts = gwindow->scene.getOptions ();
-      glgrib_options_parser p;
+      glGribOptionsParser p;
       opts.traverse ("", &p);
  
       for (int i = 0; i < args.size (); i++)
@@ -146,7 +146,7 @@ void glGribShell::execute (const std::string & _line, glGribWindow * gwindow)
       opts.window = gwindow->getOptions ();
       opts.shell = this->opts;
 
-      glgrib_options_parser p;
+      glGribOptionsParser p;
       opts.traverse ("", &p);
       
       if (p.parse (argc, argv))
@@ -414,7 +414,7 @@ void glGribShell::run ()
     run_int ();
 }
 
-void glGribShell::setup (const glgrib_options_shell & o)
+void glGribShell::setup (const glGribOptionsShell & o)
 { 
   opts = o;
 }

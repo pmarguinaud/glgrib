@@ -1,6 +1,6 @@
 #include "glGribBorder.h"
 
-void glGribBorder::setup (const glgrib_options_border & o)
+void glGribBorder::setup (const glGribOptionsBorder & o)
 {
   opts = o;
   std::vector<unsigned int> mask, code;

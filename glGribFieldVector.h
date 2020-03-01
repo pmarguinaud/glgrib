@@ -14,10 +14,10 @@ public:
   glGribFieldVector & operator= (const glGribFieldVector &);
   glGribFieldVector () { }
   glGribFieldVector (const glGribFieldVector &);
-  void setup (glGribLoader *, const glgrib_options_field &, float = 0) override;
-  void renderArrow (const glGribView &, const glgrib_options_light &) const;
-  void renderNorms (const glGribView &, const glgrib_options_light &) const;
-  void render (const glGribView &, const glgrib_options_light &) const override;
+  void setup (glGribLoader *, const glGribOptionsField &, float = 0) override;
+  void renderArrow (const glGribView &, const glGribOptionsLight &) const;
+  void renderNorms (const glGribView &, const glGribOptionsLight &) const;
+  void render (const glGribView &, const glGribOptionsLight &) const override;
   virtual ~glGribFieldVector ();
   void setupVertexAttributes ();
   void reSample (const glGribView &);

@@ -7,7 +7,7 @@
 
 
 
-void glGribTest::render (const glGribView & view, const glgrib_options_light & light) const
+void glGribTest::render (const glGribView & view, const glGribOptionsLight & light) const
 {
   return;
   glGribProgram * program = glGribProgram::load (glGribProgram::TEST);

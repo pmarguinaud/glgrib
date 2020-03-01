@@ -8,7 +8,7 @@
 class glGribObject
 {
 public:
-  virtual void render (const glGribView &, const glgrib_options_light &) const = 0;
+  virtual void render (const glGribView &, const glGribOptionsLight &) const = 0;
   bool isReady () const { return ready_; }
   void setReady () { ready_ = true; }
   void hide () { hidden = true; }

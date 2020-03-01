@@ -19,7 +19,7 @@ public:
   void index2latlon (int, float *, float *) const override;
   glGribGeometryGaussian (glgrib_handle_ptr);
   glGribGeometryGaussian (int);
-  void setup (glgrib_handle_ptr, const glgrib_options_geometry &) override;
+  void setup (glgrib_handle_ptr, const glGribOptionsGeometry &) override;
   int size () const override;
   virtual ~glGribGeometryGaussian ();
   void applyNormScale (float *) const override;

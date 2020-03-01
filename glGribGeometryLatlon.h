@@ -14,7 +14,7 @@ public:
   int latlon2index (float, float) const override;
   void index2latlon (int, float *, float *) const override;
   glGribGeometryLatlon (glgrib_handle_ptr);
-  void setup (glgrib_handle_ptr, const glgrib_options_geometry &) override;
+  void setup (glgrib_handle_ptr, const glGribOptionsGeometry &) override;
   int size () const override;
   virtual ~glGribGeometryLatlon ();
   void applyNormScale (float *) const override {}

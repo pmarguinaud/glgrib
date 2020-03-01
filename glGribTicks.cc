@@ -19,7 +19,7 @@ glGribTicks & glGribTicks::operator= (const glGribTicks & other)
   return *this;
 }
 
-void glGribTicks::setup (const glgrib_options_ticks & o)
+void glGribTicks::setup (const glGribOptionsTicks & o)
 {
   opts = o;
   setReady ();
@@ -121,7 +121,7 @@ void glGribTicks::render (const glm::mat4 & MVP) const
 
 
 void glGribTicks::createStr 
-(const glgrib_options_ticks_side & sopts,
+(const glGribOptionsTicksSide & sopts,
  glGribString::align_t _align, const glGribView & view, 
  std::vector<std::string> & S, std::vector<float> & X, 
  std::vector<float> & Y, std::vector<float> & A,

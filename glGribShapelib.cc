@@ -15,7 +15,7 @@
 #include <iostream>
 
 
-void glGribShapelib::read (const glgrib_options_lines & opts, int * numberOfPoints, 
+void glGribShapelib::read (const glGribOptionsLines & opts, int * numberOfPoints, 
                             unsigned int * numberOfLines, std::vector<float> * lonlat,
                             std::vector<unsigned int> * ind, 
                             const std::string & selector)

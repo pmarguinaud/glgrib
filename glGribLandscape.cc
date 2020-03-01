@@ -61,7 +61,7 @@ static bool endsWith (const std::string & str, const std::string & end)
   return end == str.substr (i0, i1);
 }
 
-void glGribLandscape::setup (glGribLoader * ld, const glgrib_options_landscape & o)
+void glGribLandscape::setup (glGribLoader * ld, const glGribOptionsLandscape & o)
 {
   opts = o;
 
@@ -119,7 +119,7 @@ void glGribLandscape::setup (glGribLoader * ld, const glgrib_options_landscape &
   setReady ();
 }
 
-void glGribLandscape::render (const glGribView & view, const glgrib_options_light & light) const
+void glGribLandscape::render (const glGribView & view, const glGribOptionsLight & light) const
 {
   glGribProgram * program = glGribProgram::load (glGribProgram::FLAT_TEX);
   program->use ();

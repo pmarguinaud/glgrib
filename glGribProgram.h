@@ -122,7 +122,7 @@ public:
       glUniformMatrix4fv (id, 1, GL_FALSE, &mat[0][0]);
   }
 
-  void set (const glgrib_options_light &);
+  void set (const glGribOptionsLight &);
 
   void compile ();
 

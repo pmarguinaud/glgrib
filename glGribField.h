@@ -18,7 +18,7 @@ class glGribField : public glGribWorld
 {
 public:
 
-  static glGribField * create (const glgrib_options_field &, float, glGribLoader *);
+  static glGribField * create (const glGribOptionsField &, float, glGribLoader *);
 
   typedef enum
   {
@@ -33,8 +33,8 @@ public:
   virtual bool useColorBar () const  = 0;
 
   virtual glGribField * clone () const  = 0;
-  virtual void setup (glGribLoader *, const glgrib_options_field &, float = 0) = 0;
-  void setPaletteOptions (const glgrib_options_palette &);
+  virtual void setup (glGribLoader *, const glGribOptionsField &, float = 0) = 0;
+  void setPaletteOptions (const glGribOptionsPalette &);
   void setNextPalette ();
   void scalePaletteUp (float = 0.025);
   void scalePaletteDown (float = 0.025);
@@ -90,7 +90,7 @@ public:
   {
     return meta;
   }
-  const glgrib_options_field & getOptions () const;
+  const glGribOptionsField & getOptions () const;
   void setScale (float s) { opts.scale = s; hilo.setScaleXYZ (s); }
   float getScale () const override { return opts.scale; }
   const glGribPalette & getPalette () const;
@@ -133,9 +133,9 @@ protected:
   void loadHeight (glgrib_opengl_buffer_ptr, glGribLoader *);
   template <typename T>
   void bindHeight (int);
-  static void getUserPref (glgrib_options_field *, glGribLoader *);
+  static void getUserPref (glGribOptionsField *, glGribLoader *);
   glGribPalette palette = palette_cold_hot;
-  mutable glgrib_options_field opts;
+  mutable glGribOptionsField opts;
   std::vector<glGribFieldMetadata> meta;
   std::vector<glgrib_field_float_buffer_ptr> values;
   glGribString hilo;

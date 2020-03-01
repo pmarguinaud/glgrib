@@ -65,7 +65,7 @@ glgrib_handle_ptr glGribLoader::handle_from_file (const std::string & f)
   return ghp;
 }
 
-void glGribLoader::load (glgrib_field_float_buffer_ptr * ptr, const std::vector<std::string> & file, const glgrib_options_geometry & opts_geom, 
+void glGribLoader::load (glgrib_field_float_buffer_ptr * ptr, const std::vector<std::string> & file, const glGribOptionsGeometry & opts_geom, 
 		          float fslot, glGribFieldMetadata * meta, int mult, int base, bool diff)
 {
   int islot = (int)fslot;
@@ -172,7 +172,7 @@ void glGribLoader::load (glgrib_field_float_buffer_ptr * ptr, const std::vector<
 }
 
 void glGribLoader::load (glgrib_field_float_buffer_ptr * ptr, const std::string & file, 
-		          const glgrib_options_geometry & opts_geom, glGribFieldMetadata * meta)
+		          const glGribOptionsGeometry & opts_geom, glGribFieldMetadata * meta)
 {
   glgrib_handle_ptr ghp = handle_from_file (file);
   codes_handle * h = ghp->getCodesHandle ();

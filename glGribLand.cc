@@ -24,7 +24,7 @@ glGribLand & glGribLand::operator=(const glGribLand & other)
   return *this;
 }
 
-void glGribLand::render (const glGribView & view, const glgrib_options_light & light) const
+void glGribLand::render (const glGribView & view, const glGribOptionsLight & light) const
 {
   glGribProgram * program = glGribProgram::load (glGribProgram::LAND);
   program->use (); 
@@ -261,7 +261,7 @@ void glGribLand::subdivide (const std::vector<int> & ind_offset,
 }
 
 
-void glGribLand::setup (const glgrib_options_land & o)
+void glGribLand::setup (const glGribOptionsLand & o)
 {
   opts = o;
 
@@ -270,7 +270,7 @@ void glGribLand::setup (const glgrib_options_land & o)
   if (opts.layers[i].on)
     {
       int numberOfPoints;
-      glgrib_options_lines lopts;
+      glGribOptionsLines lopts;
       unsigned int numberOfLines; 
       std::vector<float> lonlat;
       std::vector<unsigned int> indl;

@@ -11,10 +11,10 @@ class glGribLand : public glGribObject
 {
 public:
   glGribLand & operator=(const glGribLand &);
-  void render (const glGribView &, const glgrib_options_light &) const override;
+  void render (const glGribView &, const glGribOptionsLight &) const override;
   virtual ~glGribLand () { clear (); }
   virtual void clear ();
-  virtual void setup (const glgrib_options_land &);
+  virtual void setup (const glGribOptionsLand &);
   void resize (const glGribView &) override {}
   void setupVertexAttributes ();
   float getScale () const override { return opts.layers[0].scale; }
@@ -29,7 +29,7 @@ private:
                   std::vector<unsigned int> *, std::vector<float> *,
                   const float);
 private:
-  glgrib_options_land opts;
+  glGribOptionsLand opts;
   typedef struct
   {
     glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;

@@ -19,15 +19,15 @@ public:
   void setupVertexAttributes ();
   virtual void clear ();
 
-  void setup (const glgrib_options_points &, const std::vector<float> &, const std::vector<float> &, const std::vector<float> &);
-  void render (const glGribView &, const glgrib_options_light &) const override;
-  const glgrib_options_points & getOptions () const { return d.opts; }
+  void setup (const glGribOptionsPoints &, const std::vector<float> &, const std::vector<float> &, const std::vector<float> &);
+  void render (const glGribView &, const glGribOptionsLight &) const override;
+  const glGribOptionsPoints & getOptions () const { return d.opts; }
   void resize (const glGribView &) override {}
 private:
   struct
   {
     float min, max;
-    glgrib_options_points opts;
+    glGribOptionsPoints opts;
     int len;
     glgrib_opengl_buffer_ptr llsbuffer;
   } d;

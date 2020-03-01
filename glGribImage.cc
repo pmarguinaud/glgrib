@@ -43,7 +43,7 @@ void glGribImage::setupVertexAttributes ()
 
 }
 
-void glGribImage::setup (const glgrib_options_image & o)
+void glGribImage::setup (const glGribOptionsImage & o)
 {
   unsigned char * rgb;
   int w, h;

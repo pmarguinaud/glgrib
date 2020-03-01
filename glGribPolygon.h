@@ -8,7 +8,7 @@ class glGribPolygon : public glGribObject
 {
 public:
   void setupVertexAttributes ();
-  void render (const glGribView &, const glgrib_options_light &) const override;
+  void render (const glGribView &, const glGribOptionsLight &) const override;
   virtual ~glGribPolygon ();
   virtual void clear ();
 protected:

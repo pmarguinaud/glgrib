@@ -8,7 +8,7 @@
 
 namespace glGribShapelib
 {
-extern void read (const glgrib_options_lines &, int *, unsigned int *, 
+extern void read (const glGribOptionsLines &, int *, unsigned int *, 
                   std::vector<float> *, std::vector<unsigned int> *,
                   const std::string &);
 };

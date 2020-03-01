@@ -11,14 +11,14 @@
 class glGribCities : public glGribPoints
 {
 public:
-  void render (const glGribView &, const glgrib_options_light &) const;
+  void render (const glGribView &, const glGribOptionsLight &) const;
   glGribCities & operator= (const glGribCities &);
   void clear ();
-  void setup (const glgrib_options_cities &);
-  const glgrib_options_cities & getOptions () const { return opts; }
+  void setup (const glGribOptionsCities &);
+  const glGribOptionsCities & getOptions () const { return opts; }
   float getScale () const override { return opts.points.scale; }
 private:
-  glgrib_options_cities opts;
+  glGribOptionsCities opts;
   struct
   {
     glGribString labels;

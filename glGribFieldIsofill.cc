@@ -332,7 +332,7 @@ void processTriangle1 (std::vector<isoband_maker_t> * isomake,
   processTriangle2 (isomake, v, xyz, levels);
 }
 
-void glGribFieldIsofill::setup (glGribLoader * ld, const glgrib_options_field & o, float slot)
+void glGribFieldIsofill::setup (glGribLoader * ld, const glGribOptionsField & o, float slot)
 {
   opts = o;
 
@@ -351,9 +351,9 @@ void glGribFieldIsofill::setup (glGribLoader * ld, const glgrib_options_field & 
 
   if (levels.size () == 0)
     {
-      float min = opts.isofill.min == glgrib_options_isofill::defaultMin 
+      float min = opts.isofill.min == glGribOptionsIsofill::defaultMin 
                 ? meta1.valmin : opts.isofill.min;
-      float max = opts.isofill.max == glgrib_options_isofill::defaultMax 
+      float max = opts.isofill.max == glGribOptionsIsofill::defaultMax 
                 ? meta1.valmax : opts.isofill.max;
       for (int i = 0; i < opts.isofill.number; i++)
         levels.push_back (min + (i + 1) * (max - min) / (opts.isofill.number + 1));
@@ -501,7 +501,7 @@ void glGribFieldIsofill::setup (glGribLoader * ld, const glgrib_options_field & 
 
 }
 
-void glGribFieldIsofill::render (const glGribView & view, const glgrib_options_light & light) const
+void glGribFieldIsofill::render (const glGribView & view, const glGribOptionsLight & light) const
 {
   const glGribPalette & p = palette;
 

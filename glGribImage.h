@@ -42,11 +42,11 @@ public:
   void setupVertexAttributes ();
   void clear ();
 
-  void setup (const glgrib_options_image &);
+  void setup (const glGribOptionsImage &);
   void render (const glm::mat4 &) const;
-  const glgrib_options_image & getOptions () const { return opts; }
+  const glGribOptionsImage & getOptions () const { return opts; }
 private:
-  glgrib_options_image opts;
+  glGribOptionsImage opts;
   bool ready = false;
   glgrib_opengl_texture_ptr texture;
   GLuint VertexArrayID = 0;

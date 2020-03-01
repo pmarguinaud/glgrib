@@ -14,8 +14,8 @@ public:
   glGribFieldStream & operator= (const glGribFieldStream &);
   glGribFieldStream () { }
   glGribFieldStream (const glGribFieldStream &);
-  void setup (glGribLoader *, const glgrib_options_field &, float = 0) override;
-  void render (const glGribView &, const glgrib_options_light &) const override;
+  void setup (glGribLoader *, const glGribOptionsField &, float = 0) override;
+  void render (const glGribView &, const glGribOptionsLight &) const override;
   virtual ~glGribFieldStream ();
   void setupVertexAttributes ();
   void clear () override;

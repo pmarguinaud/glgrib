@@ -50,15 +50,15 @@ public:
 
   void toggleTransformType ();
 
-  void setup (const glgrib_options_view &);
+  void setup (const glGribOptionsView &);
 
   const glm::mat4 & getMVP () const { return MVP; }
 
-  const glgrib_options_view & getOptions () const { return opts; }
-  void setOptions (const glgrib_options_view & o) { opts = o; calcMVP (); }
+  const glGribOptionsView & getOptions () const { return opts; }
+  void setOptions (const glGribOptionsView & o) { opts = o; calcMVP (); }
   float getRatio () const { return (float)width/(float)height; }
 private:
-  glgrib_options_view opts;
+  glGribOptionsView opts;
   int width, height;
   glgrib_projection_set ps;
   glm::mat4 Model, View, Projection, MVP;

@@ -138,7 +138,7 @@ void glGribFieldScalar::setupVertexAttributes ()
 
 }
 
-void glGribFieldScalar::setup (glGribLoader * ld, const glgrib_options_field & o, float slot)
+void glGribFieldScalar::setup (glGribLoader * ld, const glGribOptionsField & o, float slot)
 {
   opts = o;
   switch (opts.scalar.pack.bits)
@@ -159,7 +159,7 @@ void glGribFieldScalar::setup (glGribLoader * ld, const glgrib_options_field & o
 }
 
 template <typename T>
-void glGribFieldScalar::setup (glGribLoader * ld, const glgrib_options_field & o, float slot)
+void glGribFieldScalar::setup (glGribLoader * ld, const glGribOptionsField & o, float slot)
 {
   opts = o;
 
@@ -198,7 +198,7 @@ void glGribFieldScalar::setup (glGribLoader * ld, const glgrib_options_field & o
   setReady ();
 }
 
-void glGribFieldScalar::setupMpiView (glGribLoader * ld, const glgrib_options_field & o, float slot)
+void glGribFieldScalar::setupMpiView (glGribLoader * ld, const glGribOptionsField & o, float slot)
 {
   int size = geometry->getNumberOfPoints ();
 
@@ -257,7 +257,7 @@ void glGribFieldScalar::setupMpiView (glGribLoader * ld, const glgrib_options_fi
 
 }
 
-void glGribFieldScalar::render (const glGribView & view, const glgrib_options_light & light) const
+void glGribFieldScalar::render (const glGribView & view, const glGribOptionsLight & light) const
 {
   float scale0 = opts.scale;
 

@@ -199,7 +199,7 @@ void glGribWindow::toggle_wireframe ()
 
 void glGribWindow::fix_landscape (float dy, float dx, float sy, float sx)
 {
-  glgrib_options_landscape_position o = scene.d.landscape.getOptions ().lonlat.position;
+  glGribOptionsLandscapePosition o = scene.d.landscape.getOptions ().lonlat.position;
 
   float dlat = o.lat2 - o.lat1;
   float dlon = o.lon2 - o.lon1;
@@ -311,7 +311,7 @@ void glGribWindow::remove_field (int rank)
   scene.fieldlist[rank] = f;
 }
 
-void glGribWindow::load_field (const glgrib_options_field & opts, int rank)
+void glGribWindow::load_field (const glGribOptionsField & opts, int rank)
 {
 
   if ((rank < 0) || (rank > 11))
@@ -417,7 +417,7 @@ void glGribWindow::scale_field_down ()
   glGribField * f = scene.getCurrentField ();
   if (f != nullptr)
     {
-      const glgrib_options_field & o = f->getOptions ();
+      const glGribOptionsField & o = f->getOptions ();
       f->setScale (o.scale - 0.01);
     }
 }
@@ -427,7 +427,7 @@ void glGribWindow::scale_field_up ()
   glGribField * f = scene.getCurrentField ();
   if (f != nullptr)
     {
-      const glgrib_options_field & o = f->getOptions ();
+      const glGribOptionsField & o = f->getOptions ();
       f->setScale (o.scale + 0.01);
     }
 }
@@ -742,7 +742,7 @@ void glGribWindow::centerLightAtCursorPos ()
 
 void glGribWindow::centerViewAtCursorPos ()
 {
-  glgrib_options_view o = scene.d.view.getOptions ();
+  glGribOptionsView o = scene.d.view.getOptions ();
   if (get_latlon_from_cursor (&o.lat, &o.lon))
     {
       scene.d.view.setOptions (o);
@@ -768,7 +768,7 @@ void glGribWindow::scroll (double xoffset, double yoffset)
 
   makeCurrent ();
 
-  glgrib_options_view o = scene.d.view.getOptions ();
+  glGribOptionsView o = scene.d.view.getOptions ();
 
   if (yoffset > 0)
     {
@@ -1026,7 +1026,7 @@ void glGribWindow::debug (unsigned int source, unsigned int type, GLuint id,
           debug_severity (severity), debug_type (type), id, message);
 }
 
-void glGribWindow::setOptions (const glgrib_options_window & o)
+void glGribWindow::setOptions (const glGribOptionsWindow & o)
 {
   if ((o.width != opts.width) || (o.height != opts.height))
     {

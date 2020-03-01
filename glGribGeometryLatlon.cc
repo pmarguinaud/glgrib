@@ -70,7 +70,7 @@ void glGribGeometryLatlon::setupCoordinates ()
   vertexbuffer->unmap ();
 }
 
-void glGribGeometryLatlon::setup (glgrib_handle_ptr ghp, const glgrib_options_geometry & o)
+void glGribGeometryLatlon::setup (glgrib_handle_ptr ghp, const glGribOptionsGeometry & o)
 {
   opts = o;
 
@@ -595,7 +595,7 @@ void glGribGeometryLatlon::getView (glGribView * view) const
   if (periodic)
     return;
 
-  glgrib_options_view view_opts = view->getOptions (); 
+  glGribOptionsView view_opts = view->getOptions (); 
 
   glm::vec3 xyz[2][2];
 

@@ -20,7 +20,7 @@ typedef std::shared_ptr<const glGribGeometry> const_glgrib_geometry_ptr;
 class glGribGeometry
 {
 public:
-  static glgrib_geometry_ptr load (class glGribLoader *, const std::string &, const glgrib_options_geometry & opts, const int  = 0);
+  static glgrib_geometry_ptr load (class glGribLoader *, const std::string &, const glGribOptionsGeometry & opts, const int  = 0);
   virtual void getPointNeighbours (int, std::vector<int> *) const = 0;
   virtual float getLocalMeshSize (int) const = 0;
   virtual bool isEqual (const glGribGeometry &) const = 0;
@@ -28,7 +28,7 @@ public:
   {
     return isEqual (geom);
   }
-  virtual void setup (glgrib_handle_ptr, const glgrib_options_geometry &) = 0;
+  virtual void setup (glgrib_handle_ptr, const glGribOptionsGeometry &) = 0;
   virtual int size () const = 0;
   virtual int latlon2index (float, float) const = 0;
   virtual void index2latlon (int, float *, float *) const = 0;
@@ -89,7 +89,7 @@ public:
   virtual void setProgramParameters (glGribProgram * program) const;
 
 protected:
-  glgrib_options_geometry opts;
+  glGribOptionsGeometry opts;
   unsigned int ind_strip_size = 0;
   int numberOfPoints = 0;
   unsigned int numberOfTriangles = 0;

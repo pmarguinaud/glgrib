@@ -106,7 +106,7 @@ void glGribFieldStream::setupVertexAttributes ()
     }
 }
 
-void glGribFieldStream::setup (glGribLoader * ld, const glgrib_options_field & o, float slot)
+void glGribFieldStream::setup (glGribLoader * ld, const glGribOptionsField & o, float slot)
 {
   opts = o;
 
@@ -438,7 +438,7 @@ void glGribFieldStream::computeStreamLine (int it0, const float * ru, const floa
   return;
 }
 
-void glGribFieldStream::render (const glGribView & view, const glgrib_options_light & light) const
+void glGribFieldStream::render (const glGribView & view, const glGribOptionsLight & light) const
 {
   glGribProgram * program = glGribProgram::load (glGribProgram::STREAM);
   program->use ();

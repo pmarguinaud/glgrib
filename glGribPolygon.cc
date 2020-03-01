@@ -18,7 +18,7 @@ void glGribPolygon::setupVertexAttributes ()
   glBindVertexArray (0);
 }
 
-void glGribPolygon::render (const glGribView & view, const glgrib_options_light & light) const
+void glGribPolygon::render (const glGribView & view, const glGribOptionsLight & light) const
 {
   glBindVertexArray (VertexArrayID);
   glEnable (GL_PRIMITIVE_RESTART);

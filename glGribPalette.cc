@@ -105,7 +105,7 @@ glgrib_option_color hsva2rgba (const hsva_t & hsva)
 
 
 glGribPalette glGribPalette::create 
-        (const glgrib_options_palette & o,  
+        (const glGribOptionsPalette & o,  
          float min, float max)
 {
   glGribPalette p;

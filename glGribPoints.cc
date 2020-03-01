@@ -49,7 +49,7 @@ void glGribPoints::setupVertexAttributes ()
   glBindVertexArray (0);
 }
 
-void glGribPoints::setup (const glgrib_options_points & o, 
+void glGribPoints::setup (const glGribOptionsPoints & o, 
 		          const std::vector<float> & lon, 
                           const std::vector<float> & lat, 
                           const std::vector<float> & val)
@@ -81,7 +81,7 @@ void glGribPoints::setup (const glgrib_options_points & o,
   setReady ();
 }
 
-void glGribPoints::render (const glGribView & view, const glgrib_options_light &) const
+void glGribPoints::render (const glGribView & view, const glGribOptionsLight &) const
 {
   if (! isReady ())
     return;

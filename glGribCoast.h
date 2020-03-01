@@ -6,11 +6,11 @@
 class glGribCoast : public glGribLines
 {
 public:
-  void setup (const glgrib_options_coast &);
-  const glgrib_options_coast & getOptions () const { return opts; }
+  void setup (const glGribOptionsCoast &);
+  const glGribOptionsCoast & getOptions () const { return opts; }
   float getScale () const override { return opts.lines.scale; }
 private:
-  glgrib_options_coast opts;
+  glGribOptionsCoast opts;
 };
 
 

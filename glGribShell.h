@@ -13,7 +13,7 @@ class glGribShell
 {
 public:
   glGribShell ();
-  void setup (const glgrib_options_shell &);
+  void setup (const glGribOptionsShell &);
   void execute (const std::string &, class glGribWindow *);
   int close = 0;
   bool closed () { return close; }
@@ -27,9 +27,9 @@ public:
   void wait () { if (wset) pthread_join (thread, nullptr); }
   bool started () { return wset != nullptr; }
   char * option_generator (const char *, int);
-  const glgrib_options_shell & getOptions () const { return opts; }
+  const glGribOptionsShell & getOptions () const { return opts; }
 private:
-  glgrib_options_shell opts;
+  glGribOptionsShell opts;
   glGribWindowSet * wset = nullptr;
   pthread_t thread;
   pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;

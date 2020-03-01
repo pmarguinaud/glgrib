@@ -23,7 +23,7 @@ glGribLines & glGribLines::operator= (const glGribLines & other)
   return *this;
 }
 
-void glGribLines::setup (const glgrib_options_lines & o, 
+void glGribLines::setup (const glGribOptionsLines & o, 
                           const std::vector<unsigned int> & mask, 
                           const std::vector<unsigned int> & code)
 {
@@ -46,7 +46,7 @@ void glGribLines::setup (const glgrib_options_lines & o,
   setReady ();
 }
 
-void glGribLines::render (const glGribView & view, const glgrib_options_light & light) const
+void glGribLines::render (const glGribView & view, const glGribOptionsLight & light) const
 {
   glGribProgram * program = glGribProgram::load (glGribProgram::MONO);
   program->use ();

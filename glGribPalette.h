@@ -19,7 +19,7 @@ public:
 
   static glGribPalette next (const glGribPalette &, float = defaultMin, float = defaultMax);
 
-  static glGribPalette create (const glgrib_options_palette &,  
+  static glGribPalette create (const glGribOptionsPalette &,  
                                 float = defaultMin, float = defaultMax);
 
   const std::string & getName () { return opts.name; }
@@ -61,7 +61,7 @@ public:
   friend bool operator== (const glGribPalette &, const glGribPalette &);
   friend bool operator!= (const glGribPalette &, const glGribPalette &);
 
-  const glgrib_options_palette & getOptions () const
+  const glGribOptionsPalette & getOptions () const
   {
     return opts;
   }
@@ -92,7 +92,7 @@ public:
 private:
   void getRGBA255 (float RGBA0[256][4]) const;
   static glGribPalette & create_by_name (const std::string &);
-  glgrib_options_palette opts;
+  glGribOptionsPalette opts;
   template <typename T, typename... Types> 
   glGribPalette (const std::string & n, bool record, T r, T g, T b, T a, Types... vars)
   {

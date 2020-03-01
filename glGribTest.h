@@ -7,7 +7,7 @@
 class glGribTest : public glGribObject
 {
 public:
-  void render (const glGribView &, const glgrib_options_light &) const override;
+  void render (const glGribView &, const glGribOptionsLight &) const override;
   virtual ~glGribTest () { clear (); }
   virtual void clear ();
   virtual void setup ();

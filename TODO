@@ -1,5 +1,4 @@
 Try intel gpu tools
-Change names like toggle_transform_type into toggleTransformType
 Make a view below field and above ground, with XYZ movement
 Accessors for scene
 Better container than fieldlist
@@ -33,7 +32,10 @@ in VS_OUT
 
 Make VAOs object with automatic destruction.
 
-Start with multiple windows. 
+Use namespaces
+
+
+
 
 
 

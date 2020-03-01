@@ -240,7 +240,7 @@ glGribOptionColor glGribOptionColor::colorByName (const std::string & n)
   st.bindall (&name);
 
   std::string hexa;
-  if (st.fetch_row (&hexa))
+  if (st.fetchRow (&hexa))
     {
       if (sscanf (&hexa[0], "#%2x%2x%2x", &color.r, &color.g, &color.b) != 3)
         throw std::runtime_error ("Cannot parse hexa color");

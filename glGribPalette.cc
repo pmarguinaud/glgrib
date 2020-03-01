@@ -267,7 +267,7 @@ glGribPalette & glGribPalette::createByName (const std::string & name)
   bool found;
   std::string hexa;
 
-  if ((found = st.fetch_row (&hexa)))
+  if ((found = st.fetchRow (&hexa)))
     {
       for (int i = 0; 8 * i + 7 < hexa.length (); i++)
         {

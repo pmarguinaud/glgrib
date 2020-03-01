@@ -81,7 +81,7 @@ public:
     o.distance += 0.1; 
     scene.d.view.setOptions (o);
   }
-  void decrease_radius     () 
+  void decreaseRadius     () 
   { 
     glGribOptionsView o = scene.d.view.getOptions ();
     o.distance -= 0.1; 
@@ -117,7 +117,7 @@ public:
   void scroll (double, double);
   void onclick (int, int, int);
   virtual void onkey (int, int, int, int, bool = false);
-  void display_cursor_position (double, double);
+  void displayCursorPosition (double, double);
   int get_latlon_from_cursor (float *, float *);
   void centerViewAtCursorPos ();
   void centerLightAtCursorPos ();
@@ -176,7 +176,7 @@ public:
     return _start_shell;
   }
 
-  void fix_landscape (float, float, float, float);
+  void fixLandscape (float, float, float, float);
 
   const glGribOptionsWindow & getOptions () const { return opts; }
 

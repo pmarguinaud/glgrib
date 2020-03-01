@@ -114,7 +114,7 @@ public:
       sqlite3_step (req->data);
     }
     template <typename... Types>
-    bool fetch_row (Types... args)
+    bool fetchRow (Types... args)
     {
       if (sqlite3_step (req->data) == SQLITE_ROW)
         {

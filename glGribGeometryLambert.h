@@ -65,7 +65,7 @@ public:
     return b > 0 ? +fabs (a) : -fabs (a);
   }
   
-  static inline double dist_2ref (const latlon_t & pt_coord, const latlon_t & ref_coord)
+  static inline double dist2ref (const latlon_t & pt_coord, const latlon_t & ref_coord)
   {
     double z = pt_coord.lon - ref_coord.lon;
     z = z - sign (pi, z) * (1.0 + sign (1.0, fabs (z) - pi));
@@ -170,7 +170,7 @@ public:
     {
       return rtheta_t 
     	  (r_equateur * pow (tan ((pi / 4.0) - ((pole * pt_coord.lat) / 2.0)), kl),
-               kl * dist_2ref (pt_coord, ref_pt));
+               kl * dist2ref (pt_coord, ref_pt));
     }
     xy_t rtheta_to_xy (const rtheta_t & pt_rtheta) const 
     {

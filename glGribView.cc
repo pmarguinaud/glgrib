@@ -151,7 +151,7 @@ int glGribView::get_xyz_from_screen_coords (float xpos, float ypos, glm::vec3 * 
   return 1;
 }
 
-float glGribView::frac_to_dist_at_nadir (float frac) const
+float glGribView::fracToDistAtNadir (float frac) const
 {
   return pixel_to_dist_at_nadir (height * frac);
 }

@@ -24,7 +24,7 @@ void glGribCities::setup (const glGribOptionsCities & o)
   st = db.prepare ("SELECT max (size) FROM CITIES;");
 
   float maxsize;
-  if (! st.fetch_row (&maxsize))
+  if (! st.fetchRow (&maxsize))
     return;
 
   st = db.prepare ("SELECT name, lon, lat, size FROM CITIES;");
@@ -32,7 +32,7 @@ void glGribCities::setup (const glGribOptionsCities & o)
   float lon_, lat_;
   int siz_;
   std::string name;
-  while (st.fetch_row (&name, &lon_, &lat_, &siz_))
+  while (st.fetchRow (&name, &lon_, &lat_, &siz_))
     {
       lon.push_back (lon_);
       lat.push_back (lat_);

@@ -15,7 +15,7 @@
 #include <iostream>
 
 
-static void error_callback (int c, const char * desc)
+static void errorCallback (int c, const char * desc)
 {
   fprintf (stderr, "Error: %4d | %s\n", c, desc);
   abort ();
@@ -48,7 +48,7 @@ int main (int argc, const char * argv[])
   else if (! opts.parse (argc, argv))
     return 1;
 
-  glfwSetErrorCallback (error_callback);
+  glfwSetErrorCallback (errorCallback);
 
   if (! glfwInit ())
     {

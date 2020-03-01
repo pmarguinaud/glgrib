@@ -71,7 +71,7 @@ void glGribMapscale::render (const glm::mat4 & MVP, const glGribView & view) con
   const double a = 6371229.0;
 
   const double frac0 = 0.25;
-  float dist0 = a * view.frac_to_dist_at_nadir (frac0);
+  float dist0 = a * view.fracToDistAtNadir (frac0);
 
   double frac1 = opts.position.xmax - opts.position.xmin;
   float dist1 = dist0 * frac1 / frac0;

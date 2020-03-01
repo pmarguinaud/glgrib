@@ -51,7 +51,7 @@ void glGribShapelib::read (const glGribOptionsLines & opts, int * numberOfPoints
       glGribSqlite::stmt st = db.prepare (sql);
 
       int k;
-      while (st.fetch_row (&k))
+      while (st.fetchRow (&k))
         list.push_back (k-1);
 
     }

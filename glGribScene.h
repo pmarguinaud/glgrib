@@ -36,7 +36,7 @@ public:
   virtual ~glGribScene ();
   void setup (const glGribOptions &);
   void display () const;
-  void display_obj (const glGribObject *) const;
+  void displayObj (const glGribObject *) const;
 
   glGribField * getCurrentField () 
     { 
@@ -72,7 +72,7 @@ public:
 
   void setMessage (const std::string & mess) { if (d.strmess.isReady ()) d.strmess.update (mess); }
   void resize ();
-  const glGribOptionDate * get_date ();
+  const glGribOptionDate * getDate ();
 
   std::vector<glGribField*> fieldlist;
 

@@ -1026,7 +1026,7 @@ public:
     DESC (version_minor,         GLFW_CONTEXT_VERSION_MINOR);
     INCLUDE (offscreen);
     DESC (info.on,               Show hardware info);
-    DESC_H (fix_landscape.on,    Fix landscape position);
+    DESC_H (fixLandscape.on,    Fix landscape position);
     DESC (position.x,            Window x position);
     DESC (position.y,            Window y position);
   }
@@ -1056,7 +1056,7 @@ public:
   struct
   {
     bool on = false;
-  } fix_landscape;
+  } fixLandscape;
   struct
   {
     bool on = false;

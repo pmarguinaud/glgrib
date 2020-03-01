@@ -35,7 +35,7 @@ glGribScene::~glGribScene ()
       delete f;
 }
 
-void glGribScene::display_obj (const glGribObject * obj) const
+void glGribScene::displayObj (const glGribObject * obj) const
 {
   if (obj == nullptr)
     return;
@@ -76,7 +76,7 @@ void glGribScene::display () const
 
 
   for (auto obj : obj_list)
-    display_obj (obj);
+    displayObj (obj);
 
   const glGribField * fld = d.currentFieldRank < fieldlist.size () 
                            ? fieldlist[d.currentFieldRank] : nullptr;
@@ -106,7 +106,7 @@ void glGribScene::display () const
 
 }
 
-const glGribOptionDate * glGribScene::get_date ()
+const glGribOptionDate * glGribScene::getDate ()
 {
   for (auto fld : fieldlist)
     if (fld)
@@ -128,7 +128,7 @@ void glGribScene::update_light ()
   const glGribOptionDate * date = nullptr;
 
   if (d.opts.scene.light.date_from_grib.on)
-    date = get_date ();
+    date = getDate ();
   else if (d.opts.scene.light.date.year != 0)
     date = &d.opts.scene.light.date;
 
@@ -194,7 +194,7 @@ void glGribScene::update_view ()
   else if ((d.opts.scene.lon_at_hour >= 0.0f) && 
            (d.opts.scene.lon_at_hour <= 24.0f))
     {
-      const glGribOptionDate * date = get_date ();
+      const glGribOptionDate * date = getDate ();
       if (date != nullptr)
         {
           float hh = d.opts.scene.lon_at_hour - (date->hour + date->minute / 60.0f);
@@ -252,7 +252,7 @@ void glGribScene::update_date ()
 	}
       else
         {
-          date = get_date ();
+          date = getDate ();
 	}
 
       if (date != nullptr)

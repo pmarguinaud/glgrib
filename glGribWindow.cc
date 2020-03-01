@@ -36,7 +36,7 @@ static
 void cursorPositionCallback (GLFWwindow * window, double xpos, double ypos)
 {
   glGribWindow * gwindow = (glGribWindow *)glfwGetWindowUserPointer (window);
-  gwindow->display_cursor_position (xpos, ypos);
+  gwindow->displayCursorPosition (xpos, ypos);
 }
 
 static
@@ -105,7 +105,7 @@ void glGribWindow::onkey (int key, int scancode, int action, int mods, bool help
       glGribWindowIfKey (NONE,    Q     ,  Decrease field of view                               , shrink_fov               ());
       glGribWindowIfKey (NONE,    P     ,  Make earth flat/show orography                       , toggle_flat              ());
       glGribWindowIfKey (NONE,    6     ,  Increase size of current field                       , increase_radius          ());
-      glGribWindowIfKey (NONE,    EQUAL ,  Decrease size of current field                       , decrease_radius          ());
+      glGribWindowIfKey (NONE,    EQUAL ,  Decrease size of current field                       , decreaseRadius          ());
       glGribWindowIfKey (NONE,    SPACE ,  Reset view                                           , reset_view               ());
       glGribWindowIfKey (NONE,    UP    ,  Move northwards                                      , rotate_north             ());
       glGribWindowIfKey (NONE,    DOWN  ,  Move southwards                                      , rotate_south             ());
@@ -149,16 +149,16 @@ void glGribWindow::onkey (int key, int scancode, int action, int mods, bool help
       glGribWindowIfKey (NONE,    L     ,  Turn on/off the light                                , toggle_light             ());
       glGribWindowIfKey (CONTROL, L     ,  Make current window master window                    , toggleMaster             ());
 
-      if (opts.fix_landscape.on)
+      if (opts.fixLandscape.on)
       {
-      glGribWindowIfKey (CONTROL, UP    ,                                                       , fix_landscape (+1,  0,  0,  0));
-      glGribWindowIfKey (CONTROL, DOWN  ,                                                       , fix_landscape (-1,  0,  0,  0));
-      glGribWindowIfKey (CONTROL, LEFT  ,                                                       , fix_landscape ( 0, -1,  0,  0));
-      glGribWindowIfKey (CONTROL, RIGHT ,                                                       , fix_landscape ( 0, +1,  0,  0));
-      glGribWindowIfKey (ALT,     UP    ,                                                       , fix_landscape ( 0,  0, +1,  0));
-      glGribWindowIfKey (ALT,     DOWN  ,                                                       , fix_landscape ( 0,  0, -1,  0));
-      glGribWindowIfKey (ALT,     LEFT  ,                                                       , fix_landscape ( 0,  0,  0, -1));
-      glGribWindowIfKey (ALT,     RIGHT ,                                                       , fix_landscape ( 0,  0,  0, +1));
+      glGribWindowIfKey (CONTROL, UP    ,                                                       , fixLandscape (+1,  0,  0,  0));
+      glGribWindowIfKey (CONTROL, DOWN  ,                                                       , fixLandscape (-1,  0,  0,  0));
+      glGribWindowIfKey (CONTROL, LEFT  ,                                                       , fixLandscape ( 0, -1,  0,  0));
+      glGribWindowIfKey (CONTROL, RIGHT ,                                                       , fixLandscape ( 0, +1,  0,  0));
+      glGribWindowIfKey (ALT,     UP    ,                                                       , fixLandscape ( 0,  0, +1,  0));
+      glGribWindowIfKey (ALT,     DOWN  ,                                                       , fixLandscape ( 0,  0, -1,  0));
+      glGribWindowIfKey (ALT,     LEFT  ,                                                       , fixLandscape ( 0,  0,  0, -1));
+      glGribWindowIfKey (ALT,     RIGHT ,                                                       , fixLandscape ( 0,  0,  0, +1));
       }
       else
       {
@@ -197,7 +197,7 @@ void glGribWindow::toggle_wireframe ()
 
 }
 
-void glGribWindow::fix_landscape (float dy, float dx, float sy, float sx)
+void glGribWindow::fixLandscape (float dy, float dx, float sy, float sx)
 {
   glGribOptionsLandscapePosition o = scene.d.landscape.getOptions ().lonlat.position;
 
@@ -484,7 +484,7 @@ void glGribWindow::snapshot (const std::string & format)
   // %N  -> snapshot_cnt
   // %D  -> date
 
-  const glGribOptionDate * date = scene.get_date ();
+  const glGribOptionDate * date = scene.getDate ();
   std::string dstr = date ? date->asString () : "";
   for (int i = 0; i < dstr.size (); i++)
     if ((dstr[i] == ' ') || (dstr[i] == '/'))
@@ -659,7 +659,7 @@ void glGribWindow::framebuffer (const std::string & format)
 
 }
 
-void glGribWindow::display_cursor_position (double xpos, double ypos)
+void glGribWindow::displayCursorPosition (double xpos, double ypos)
 {
   float lat, lon;
   if (get_latlon_from_cursor (&lat, &lon))
@@ -980,7 +980,7 @@ glGribWindow * glGribWindow::clone ()
 }
 
 #define GLMESS(x) case GL_DEBUG_SOURCE_##x: return #x
-static const char * debug_source (unsigned int source)
+static const char * debugSource (unsigned int source)
 {
   switch (source)
     {
@@ -992,7 +992,7 @@ static const char * debug_source (unsigned int source)
 #undef GLMESS
 
 #define GLMESS(x) case GL_DEBUG_TYPE_##x: return #x
-static const char * debug_type (unsigned int type)
+static const char * debugType (unsigned int type)
 {
   switch (type)
     {
@@ -1022,8 +1022,8 @@ void glGribWindow::debug (unsigned int source, unsigned int type, GLuint id,
   // ignore non-significant error/warning codes
   if (id == 131169 || id == 131185 || id == 131218 || id == 131204) 
     return; 
-  printf ("%-20s | %-20s | %-30s | %10d | %s\n", debug_source (source), 
-          debugSeverity (severity), debug_type (type), id, message);
+  printf ("%-20s | %-20s | %-30s | %10d | %s\n", debugSource (source), 
+          debugSeverity (severity), debugType (type), id, message);
 }
 
 void glGribWindow::setOptions (const glGribOptionsWindow & o)

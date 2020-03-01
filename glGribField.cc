@@ -218,7 +218,7 @@ void glGribField::getUserPref (glGribOptionsField * opts, glGribLoader * ld)
     {
       glGribSqlite::stmt st = db.prepare ("SELECT options FROM CLNOMA2OPTIONS WHERE CLNOMA = ?;");
       st.bindall (&meta.CLNOMA);
-      if (st.fetch_row (&options))
+      if (st.fetchRow (&options))
         goto found;
     }
 
@@ -227,7 +227,7 @@ void glGribField::getUserPref (glGribOptionsField * opts, glGribLoader * ld)
       glGribSqlite::stmt st = db.prepare ("SELECT options FROM GRIB2OPTIONS WHERE discipline = ? "
 		                           "AND parameterCategory = ? AND parameterNumber = ?;");
       st.bindall (&meta.discipline, &meta.parameterCategory, &meta.parameterNumber);
-      if (st.fetch_row (&options))
+      if (st.fetchRow (&options))
         goto found;
     }
   

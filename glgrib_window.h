@@ -180,6 +180,18 @@ public:
 
   const glgrib_options_window & getOptions () const { return opts; }
 
+  bool getNext ()
+  {
+    bool _next = next;
+    next = false;
+    return _next;
+  }
+  bool getPrev ()
+  {
+    bool _prev = prev;
+    prev = false;
+    return _prev;
+  }
 protected:
   void showHelpItem (const char *, const char *, const char *, const char *);
   void createGFLWwindow (GLFWwindow * = nullptr);
@@ -188,7 +200,9 @@ protected:
   bool master = false;
   glgrib_options_window opts;
 private:
-  bool start_shell = false;
+  bool next = false; // Next field
+  bool prev = false; // Prev field
+  bool start_shell = false; // Start shell
   int id_;
   double t0;
   int nframes = 0;

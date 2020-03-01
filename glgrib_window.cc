@@ -93,6 +93,8 @@ void glgrib_window::onkey (int key, int scancode, int action, int mods, bool hel
 
   if ((action == GLFW_PRESS || action == GLFW_REPEAT) || help)
     {
+      glgrib_window_if_key (NONE,    PAGE_UP     ,  One field forward,  next = true);
+      glgrib_window_if_key (NONE,    PAGE_DOWN   ,  One field backward, prev = true);
       glgrib_window_if_key (NONE,    T     ,  Hide/show location & field value at cursor position  , toggle_cursorpos_display ());
       glgrib_window_if_key (NONE,    TAB   ,  Enable/disable earth rotation                        , toggle_rotate            ());
       glgrib_window_if_key (CONTROL, TAB   ,  Enable/disable light rotation                        , toggle_rotate_light      ());

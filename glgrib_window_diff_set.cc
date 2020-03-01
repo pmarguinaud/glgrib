@@ -1,26 +1,8 @@
-#include "glgrib_window_diff.h"
+#include "glgrib_window_diff_set.h"
 
 #include <iostream>
 
 
-
-void glgrib_window_diff::onkey (int key, int scancode, int action, int mods, bool help)
-{
-  if ((action == GLFW_PRESS || action == GLFW_REPEAT) || help)
-    {
-      glgrib_window_if_key (NONE,    PAGE_UP     ,  One field forward,  next = true);
-      glgrib_window_if_key (NONE,    PAGE_DOWN   ,  One field backward, prev = true);
-    }
-  glgrib_window::onkey (key, scancode, action, mods, help);
-}
-
-glgrib_window_diff * glgrib_window_diff_set::create_diff (const glgrib_options & opts)
-{
-  glgrib_window_diff * gwindow = new glgrib_window_diff (opts);
-  gwindow->scene.setup (opts);
-  insert (gwindow);
-  return gwindow;
-}
 
 static
 void setDiffOptions (glgrib_options_field & opts1, glgrib_options_field & opts2, 
@@ -77,7 +59,7 @@ glgrib_window_diff_set::glgrib_window_diff_set (const glgrib_options & o)
                   opts.diff.path[0] + "%" + ext, 
                   opts.diff.path[1] + "%" + ext);
 
-  glgrib_window * gwindow1 = create_diff (opts1);
+  glgrib_window * gwindow1 = create (opts1);
   glgrib_window * gwindow2 = gwindow1->clone ();
 
   gwindow2->setOptions (opts2.window);
@@ -125,7 +107,7 @@ void glgrib_window_diff_set::run (glgrib_shell * shell)
   while (! empty ())
     {
       handleMasterWindow ();
-      glgrib_window_diff * gwindow1 = dynamic_cast<glgrib_window_diff*>(getWindowById (0));
+      glgrib_window * gwindow1 = getWindowById (0);
       glgrib_window * gwindow2 = getWindowById (1);
       if ((gwindow1 != nullptr) && (gwindow2 != nullptr))
         {

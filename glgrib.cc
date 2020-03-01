@@ -7,7 +7,7 @@
 #include "glgrib_shell.h"
 #include "glgrib_window.h"
 #include "glgrib_window_set.h"
-#include "glgrib_window_diff.h"
+#include "glgrib_window_diff_set.h"
 #include "glgrib_options.h"
 #include "glgrib_geometry.h"
 #include "glgrib_loader.h"

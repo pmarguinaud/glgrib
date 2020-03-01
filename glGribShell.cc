@@ -328,7 +328,7 @@ void glGribShell::start (glGribWindowSet * ws)
 }
 
 
-void glGribShell::run_int ()
+void glGribShell::runInt ()
 {
   if (read_history (".glgrib_history") != 0)
     write_history (".glgrib_history");
@@ -370,7 +370,7 @@ void glGribShell::run_int ()
     }
 }
 
-void glGribShell::run_off ()
+void glGribShell::runOff ()
 {
   std::ifstream fp (opts.script);
 
@@ -391,7 +391,7 @@ void glGribShell::run_off ()
         }
       if (opts.prompt.on)
         {
-         run_int ();
+         runInt ();
         }
       else
         {
@@ -409,9 +409,9 @@ void glGribShell::run_off ()
 void glGribShell::run ()
 {
   if (opts.script != "")
-    run_off ();
+    runOff ();
   else
-    run_int ();
+    runInt ();
 }
 
 void glGribShell::setup (const glGribOptionsShell & o)

@@ -47,14 +47,14 @@ void mouseButtonCallback (GLFWwindow * window, int button, int action, int mods)
 }
 
 static
-void scroll_callback (GLFWwindow * window, double xoffset, double yoffset)
+void scrollCallback (GLFWwindow * window, double xoffset, double yoffset)
 {
   glGribWindow * gwindow = (glGribWindow *)glfwGetWindowUserPointer (window);
   gwindow->scroll (xoffset, yoffset);
 }
 
 static 
-void resize_callback (GLFWwindow * window, int width, int height)
+void resizeCallback (GLFWwindow * window, int width, int height)
 {
   glGribWindow * gwindow = (glGribWindow *)glfwGetWindowUserPointer (window);
   gwindow->resize (width, height);
@@ -106,45 +106,45 @@ void glGribWindow::onkey (int key, int scancode, int action, int mods, bool help
       glGribWindowIfKey (NONE,    P     ,  Make earth flat/show orography                       , toggle_flat              ());
       glGribWindowIfKey (NONE,    6     ,  Increase size of current field                       , increaseRadius          ());
       glGribWindowIfKey (NONE,    EQUAL ,  Decrease size of current field                       , decreaseRadius          ());
-      glGribWindowIfKey (NONE,    SPACE ,  Reset view                                           , reset_view               ());
-      glGribWindowIfKey (NONE,    UP    ,  Move northwards                                      , rotate_north             ());
-      glGribWindowIfKey (NONE,    DOWN  ,  Move southwards                                      , rotate_south             ());
-      glGribWindowIfKey (NONE,    LEFT  ,  Move westwards                                       , rotate_west              ());
-      glGribWindowIfKey (NONE,    RIGHT ,  Move eastwards                                       , rotate_east              ());
+      glGribWindowIfKey (NONE,    SPACE ,  Reset view                                           , resetView               ());
+      glGribWindowIfKey (NONE,    UP    ,  Move northwards                                      , rotateNorth             ());
+      glGribWindowIfKey (NONE,    DOWN  ,  Move southwards                                      , rotateSouth             ());
+      glGribWindowIfKey (NONE,    LEFT  ,  Move westwards                                       , rotateWest              ());
+      glGribWindowIfKey (NONE,    RIGHT ,  Move eastwards                                       , rotateEast              ());
 
-      glGribWindowIfKey (NONE,    F1    ,  Select field #1                                      , select_field           ( 0));
-      glGribWindowIfKey (NONE,    F2    ,  Select field #2                                      , select_field           ( 1));
-      glGribWindowIfKey (NONE,    F3    ,  Select field #3                                      , select_field           ( 2));
-      glGribWindowIfKey (NONE,    F4    ,  Select field #4                                      , select_field           ( 3));
-      glGribWindowIfKey (NONE,    F5    ,  Select field #5                                      , select_field           ( 4));
-      glGribWindowIfKey (NONE,    F6    ,  Select field #6                                      , select_field           ( 5));
-      glGribWindowIfKey (NONE,    F7    ,  Select field #7                                      , select_field           ( 6));
-      glGribWindowIfKey (NONE,    F8    ,  Select field #8                                      , select_field           ( 7));
-      glGribWindowIfKey (NONE,    F9    ,  Select field #9                                      , select_field           ( 8));
-      glGribWindowIfKey (NONE,    F10   ,  Select field #10                                     , select_field           ( 9));
-      glGribWindowIfKey (NONE,    F11   ,  Select field #11                                     , select_field           (10));
-      glGribWindowIfKey (NONE,    F12   ,  Select field #12                                     , select_field           (11));
+      glGribWindowIfKey (NONE,    F1    ,  Select field #1                                      , selectField           ( 0));
+      glGribWindowIfKey (NONE,    F2    ,  Select field #2                                      , selectField           ( 1));
+      glGribWindowIfKey (NONE,    F3    ,  Select field #3                                      , selectField           ( 2));
+      glGribWindowIfKey (NONE,    F4    ,  Select field #4                                      , selectField           ( 3));
+      glGribWindowIfKey (NONE,    F5    ,  Select field #5                                      , selectField           ( 4));
+      glGribWindowIfKey (NONE,    F6    ,  Select field #6                                      , selectField           ( 5));
+      glGribWindowIfKey (NONE,    F7    ,  Select field #7                                      , selectField           ( 6));
+      glGribWindowIfKey (NONE,    F8    ,  Select field #8                                      , selectField           ( 7));
+      glGribWindowIfKey (NONE,    F9    ,  Select field #9                                      , selectField           ( 8));
+      glGribWindowIfKey (NONE,    F10   ,  Select field #10                                     , selectField           ( 9));
+      glGribWindowIfKey (NONE,    F11   ,  Select field #11                                     , selectField           (10));
+      glGribWindowIfKey (NONE,    F12   ,  Select field #12                                     , selectField           (11));
 
-      glGribWindowIfKey (CONTROL, F1    ,  Show only field #1                                   , { hideAllFields (); select_field ( 0); toggle_hide_field (); });
-      glGribWindowIfKey (CONTROL, F2    ,  Show only field #2                                   , { hideAllFields (); select_field ( 1); toggle_hide_field (); });
-      glGribWindowIfKey (CONTROL, F3    ,  Show only field #3                                   , { hideAllFields (); select_field ( 2); toggle_hide_field (); });
-      glGribWindowIfKey (CONTROL, F4    ,  Show only field #4                                   , { hideAllFields (); select_field ( 3); toggle_hide_field (); });
-      glGribWindowIfKey (CONTROL, F5    ,  Show only field #5                                   , { hideAllFields (); select_field ( 4); toggle_hide_field (); });
-      glGribWindowIfKey (CONTROL, F6    ,  Show only field #6                                   , { hideAllFields (); select_field ( 5); toggle_hide_field (); });
-      glGribWindowIfKey (CONTROL, F7    ,  Show only field #7                                   , { hideAllFields (); select_field ( 6); toggle_hide_field (); });
-      glGribWindowIfKey (CONTROL, F8    ,  Show only field #8                                   , { hideAllFields (); select_field ( 7); toggle_hide_field (); });
-      glGribWindowIfKey (CONTROL, F9    ,  Show only field #9                                   , { hideAllFields (); select_field ( 8); toggle_hide_field (); });
-      glGribWindowIfKey (CONTROL, F10   ,  Show only field #10                                  , { hideAllFields (); select_field ( 9); toggle_hide_field (); });
-      glGribWindowIfKey (CONTROL, F11   ,  Show only field #11                                  , { hideAllFields (); select_field (10); toggle_hide_field (); });
-      glGribWindowIfKey (CONTROL, F12   ,  Show only field #12                                  , { hideAllFields (); select_field (11); toggle_hide_field (); });
+      glGribWindowIfKey (CONTROL, F1    ,  Show only field #1                                   , { hideAllFields (); selectField ( 0); toggle_hide_field (); });
+      glGribWindowIfKey (CONTROL, F2    ,  Show only field #2                                   , { hideAllFields (); selectField ( 1); toggle_hide_field (); });
+      glGribWindowIfKey (CONTROL, F3    ,  Show only field #3                                   , { hideAllFields (); selectField ( 2); toggle_hide_field (); });
+      glGribWindowIfKey (CONTROL, F4    ,  Show only field #4                                   , { hideAllFields (); selectField ( 3); toggle_hide_field (); });
+      glGribWindowIfKey (CONTROL, F5    ,  Show only field #5                                   , { hideAllFields (); selectField ( 4); toggle_hide_field (); });
+      glGribWindowIfKey (CONTROL, F6    ,  Show only field #6                                   , { hideAllFields (); selectField ( 5); toggle_hide_field (); });
+      glGribWindowIfKey (CONTROL, F7    ,  Show only field #7                                   , { hideAllFields (); selectField ( 6); toggle_hide_field (); });
+      glGribWindowIfKey (CONTROL, F8    ,  Show only field #8                                   , { hideAllFields (); selectField ( 7); toggle_hide_field (); });
+      glGribWindowIfKey (CONTROL, F9    ,  Show only field #9                                   , { hideAllFields (); selectField ( 8); toggle_hide_field (); });
+      glGribWindowIfKey (CONTROL, F10   ,  Show only field #10                                  , { hideAllFields (); selectField ( 9); toggle_hide_field (); });
+      glGribWindowIfKey (CONTROL, F11   ,  Show only field #11                                  , { hideAllFields (); selectField (10); toggle_hide_field (); });
+      glGribWindowIfKey (CONTROL, F12   ,  Show only field #12                                  , { hideAllFields (); selectField (11); toggle_hide_field (); });
       glGribWindowIfKey (CONTROL, H     ,  Show all fields                                      , show_all_fields          ());
       glGribWindowIfKey (ALT,     H     ,  Show help                                            , showHelp                 ());
 
       glGribWindowIfKey (NONE,    H     ,  Show/hide selected field                             , toggle_hide_field        ());
-      glGribWindowIfKey (NONE,    G     ,  Increase size of current field                       , scale_field_up           ());
-      glGribWindowIfKey (CONTROL, G     ,  Decrease size of current field                       , scale_field_down         ());
-      glGribWindowIfKey (NONE,    F     ,  Increase palette range                               , scale_palette_up         ());
-      glGribWindowIfKey (CONTROL, F     ,  Decrease palette range                               , scale_palette_down       ());
+      glGribWindowIfKey (NONE,    G     ,  Increase size of current field                       , scaleFieldUp           ());
+      glGribWindowIfKey (CONTROL, G     ,  Decrease size of current field                       , scaleFieldDown         ());
+      glGribWindowIfKey (NONE,    F     ,  Increase palette range                               , scalePaletteUp         ());
+      glGribWindowIfKey (CONTROL, F     ,  Decrease palette range                               , scalePaletteDown       ());
       glGribWindowIfKey (NONE,    J     ,  Try next palette                                     , nextPalette             ());
       glGribWindowIfKey (NONE,    L     ,  Turn on/off the light                                , toggle_light             ());
       glGribWindowIfKey (CONTROL, L     ,  Make current window master window                    , toggleMaster             ());
@@ -162,18 +162,18 @@ void glGribWindow::onkey (int key, int scancode, int action, int mods, bool help
       }
       else
       {
-      glGribWindowIfKey (CONTROL, UP    ,  Move light northwards                                , rotate_light_north       ());
-      glGribWindowIfKey (CONTROL, DOWN  ,  Move light southwards                                , rotate_light_south       ());
-      glGribWindowIfKey (CONTROL, LEFT  ,  Move light westwards                                 , rotate_light_west        ());
-      glGribWindowIfKey (CONTROL, RIGHT ,  Move light eastwards                                 , rotate_light_east        ());
+      glGribWindowIfKey (CONTROL, UP    ,  Move light northwards                                , rotateLightNorth       ());
+      glGribWindowIfKey (CONTROL, DOWN  ,  Move light southwards                                , rotateLightSouth       ());
+      glGribWindowIfKey (CONTROL, LEFT  ,  Move light westwards                                 , rotateLightWest        ());
+      glGribWindowIfKey (CONTROL, RIGHT ,  Move light eastwards                                 , rotateLightEast        ());
       }
 
       glGribWindowIfKey (CONTROL, C     ,  Clone current window                                 , duplicate                ());
       glGribWindowIfKey (ALT,     C     ,  Show/hide colorbar                                   , toggleColorBar           ());
       glGribWindowIfKey (CONTROL, P     ,  Try next projection                                  , nextProjection          ());
       glGribWindowIfKey (SHIFT,   P     ,  Try next transformation                              , toggle_transform_type    ());
-      glGribWindowIfKey (CONTROL, S     ,  Save current palette                                 , save_current_palette     ());
-      glGribWindowIfKey (ALT,     S     ,  Resample current field                               , resample_current_field   ());
+      glGribWindowIfKey (CONTROL, S     ,  Save current palette                                 , saveCurrentPalette     ());
+      glGribWindowIfKey (ALT,     S     ,  Resample current field                               , resampleCurrentField   ());
       glGribWindowIfKey (NONE,    V     ,  Hide/show vector arrows                              , toggle_show_vector       ());
       glGribWindowIfKey (CONTROL, V     ,  Hide/show vector norm                                , toggle_show_norm         ());
       glGribWindowIfKey (NONE,    U     ,  Start shell                                          , startShell               ());
@@ -268,7 +268,7 @@ void glGribWindow::toggle_show_norm ()
     v->toggleShowNorm ();
 }
 
-void glGribWindow::resample_current_field ()
+void glGribWindow::resampleCurrentField ()
 {
   glGribField * f = scene.getCurrentField ();
 
@@ -293,7 +293,7 @@ void glGribWindow::resample_current_field ()
 
 }
 
-void glGribWindow::save_current_palette ()
+void glGribWindow::saveCurrentPalette ()
 {
   glGribField * f = scene.getCurrentField ();
   if (f == nullptr)
@@ -301,7 +301,7 @@ void glGribWindow::save_current_palette ()
   f->saveOptions ();
 }
 
-void glGribWindow::remove_field (int rank)
+void glGribWindow::removeField (int rank)
 {
   glGribField * f = nullptr;
   if ((rank < 0) || (rank > scene.fieldlist.size ()-1))
@@ -344,7 +344,7 @@ void glGribWindow::duplicate ()
   cloned = true;
 }
 
-void glGribWindow::rotate_light_north ()
+void glGribWindow::rotateLightNorth ()
 {
   float x, y;
   scene.getLightPos (&x, &y);
@@ -352,7 +352,7 @@ void glGribWindow::rotate_light_north ()
   scene.setLightPos (x, y);
 }
 
-void glGribWindow::rotate_light_south ()
+void glGribWindow::rotateLightSouth ()
 {
   float x, y;
   scene.getLightPos (&x, &y);
@@ -360,7 +360,7 @@ void glGribWindow::rotate_light_south ()
   scene.setLightPos (x, y);
 }
 
-void glGribWindow::rotate_light_west  ()
+void glGribWindow::rotateLightWest  ()
 {
   float x, y;
   scene.getLightPos (&x, &y);
@@ -368,7 +368,7 @@ void glGribWindow::rotate_light_west  ()
   scene.setLightPos (x, y);
 }
 
-void glGribWindow::rotate_light_east  ()
+void glGribWindow::rotateLightEast  ()
 {
   float x, y;
   scene.getLightPos (&x, &y);
@@ -391,7 +391,7 @@ void glGribWindow::nextPalette ()
     f->setNextPalette ();
 }
 
-void glGribWindow::scale_palette_up ()
+void glGribWindow::scalePaletteUp ()
 {
   glGribField * fld  = scene.getCurrentField ();
   if (fld == nullptr)
@@ -399,7 +399,7 @@ void glGribWindow::scale_palette_up ()
   fld->scalePaletteUp ();
 }
 
-void glGribWindow::scale_palette_down ()
+void glGribWindow::scalePaletteDown ()
 {
   glGribField * fld  = scene.getCurrentField ();
   if (fld == nullptr)
@@ -407,12 +407,12 @@ void glGribWindow::scale_palette_down ()
   fld->scalePaletteDown ();
 }
 
-void glGribWindow::select_field (int ifield)
+void glGribWindow::selectField (int ifield)
 {
   scene.setCurrentFieldRank (ifield);
 }
 
-void glGribWindow::scale_field_down ()
+void glGribWindow::scaleFieldDown ()
 {
   glGribField * f = scene.getCurrentField ();
   if (f != nullptr)
@@ -422,7 +422,7 @@ void glGribWindow::scale_field_down ()
     }
 }
 
-void glGribWindow::scale_field_up ()
+void glGribWindow::scaleFieldUp ()
 {
   glGribField * f = scene.getCurrentField ();
   if (f != nullptr)
@@ -935,9 +935,9 @@ void glGribWindow::createGFLWwindow (GLFWwindow * context)
 
   glfwSetInputMode (window, GLFW_STICKY_KEYS, GL_TRUE);
   glfwSetKeyCallback (window, keyCallback);
-  glfwSetScrollCallback (window, scroll_callback);
+  glfwSetScrollCallback (window, scrollCallback);
   glfwSetMouseButtonCallback (window, mouseButtonCallback);
-  glfwSetFramebufferSizeCallback (window, resize_callback);  
+  glfwSetFramebufferSizeCallback (window, resizeCallback);  
 
 
 }

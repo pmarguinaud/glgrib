@@ -42,7 +42,7 @@ public:
   {
     scene.d.landscape.toggle_flat ();
   }
-  void reset_view ()
+  void resetView ()
   {
     glGribOptionsView o0;
     const glGribOptionsView & o = scene.d.view.getOptions ();
@@ -87,25 +87,25 @@ public:
     o.distance -= 0.1; 
     scene.d.view.setOptions (o);
   }
-  void rotate_north        () 
+  void rotateNorth        () 
   { 
     glGribOptionsView o = scene.d.view.getOptions ();
     o.lat = o.lat + 5.; 
     scene.d.view.setOptions (o);
   }
-  void rotate_south        () 
+  void rotateSouth        () 
   { 
     glGribOptionsView o = scene.d.view.getOptions ();
     o.lat = o.lat - 5.; 
     scene.d.view.setOptions (o);
   }
-  void rotate_west         () 
+  void rotateWest         () 
   { 
     glGribOptionsView o = scene.d.view.getOptions ();
     o.lon = o.lon - 5.; 
     scene.d.view.setOptions (o);
   }
-  void rotate_east         () 
+  void rotateEast         () 
   { 
     glGribOptionsView o = scene.d.view.getOptions ();
     o.lon = o.lon + 5.; 
@@ -123,20 +123,20 @@ public:
   void centerLightAtCursorPos ();
   void debugTriangleNumber ();
 
-  void select_field (int);
-  void scale_field_up ();
-  void scale_field_down ();
+  void selectField (int);
+  void scaleFieldUp ();
+  void scaleFieldDown ();
   void toggle_hide_field ();
-  void scale_palette_up ();
-  void scale_palette_down ();
+  void scalePaletteUp ();
+  void scalePaletteDown ();
   void nextPalette ();
   void hideAllFields ();
   void show_all_fields ();
   void toggle_light ();
-  void rotate_light_north ();
-  void rotate_light_south ();
-  void rotate_light_west  ();
-  void rotate_light_east  ();
+  void rotateLightNorth ();
+  void rotateLightSouth ();
+  void rotateLightWest  ();
+  void rotateLightEast  ();
   void duplicate          ();
   void create (const glGribOptions &);
 
@@ -151,9 +151,9 @@ public:
   void nextProjection ();
   void toggle_transform_type ();
   void loadField (const glGribOptionsField &, int = 0);
-  void remove_field (int);
-  void save_current_palette ();
-  void resample_current_field ();
+  void removeField (int);
+  void saveCurrentPalette ();
+  void resampleCurrentField ();
   void toggle_show_vector ();
   void toggle_show_norm ();
   void showHelp ();

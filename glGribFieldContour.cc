@@ -466,14 +466,14 @@ void glGribFieldContour::render (const glGribView & view, const glGribOptionsLig
 
       if (is.dash)
         {
-          float length = view.pixel_to_dist_at_nadir (is.length);
+          float length = view.pixelToDistAtNadir (is.length);
           program->set ("length", length);
           program->set ("N", (int)is.pattern.size ());
           program->set ("pattern", is.pattern);
         }
       if (is.wide)
         {
-          float width = view.pixel_to_dist_at_nadir (is.width);
+          float width = view.pixelToDistAtNadir (is.width);
           program->set ("width", width);
           unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
           glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, is.size);

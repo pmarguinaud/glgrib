@@ -104,7 +104,7 @@ private:
   }
 };
 
-extern glGribPalette palette_cold_hot;
+extern glGribPalette paletteColdHot;
 extern glGribPalette paletteCloud;
 extern glGribPalette paletteCloudAuto;
 

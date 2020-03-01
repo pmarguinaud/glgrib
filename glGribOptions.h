@@ -759,7 +759,7 @@ public:
   glGribOptionsContour contour;
   glGribOptionsIsofill isofill;
   glGribOptionsStream stream;
-  bool parse_unseen (const char *);
+  bool parseUnseen (const char *);
   glGribOptionsGeometry geometry;
   glGribOptionsMpiview mpiview;
 };

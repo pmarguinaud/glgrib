@@ -109,29 +109,29 @@ public:
   std::vector<unsigned int> indice;
   std::vector<float> lonlat;
 
-  void push_lonlat (const glm::vec2 & lonlat_)
+  void pushLonlat (const glm::vec2 & lonlat_)
   {
     lonlat.push_back (lonlat_.x);
     lonlat.push_back (lonlat_.y);
   }
 
   template <typename T, typename... Args>
-  void push_lonlat (const T & lonlat, Args... args)
+  void pushLonlat (const T & lonlat, Args... args)
   {
-    push_lonlat (lonlat);
-    push_lonlat (args...);
+    pushLonlat (lonlat);
+    pushLonlat (args...);
   }
 
-  void push_indice (int ind)
+  void pushIndice (int ind)
   {
     indice.push_back (ind);
   }
 
   template <typename T, typename... Args>
-  void push_indice (T ind, Args... args)
+  void pushIndice (T ind, Args... args)
   {
-    push_indice (ind);
-    push_indice (args...);
+    pushIndice (ind);
+    pushIndice (args...);
   }
 
   void quad (const glm::vec2 & lonlata, const glm::vec2 & lonlatb, 
@@ -140,7 +140,7 @@ public:
   {
     int ind0 = lonlat.size () / 2;
 
-    push_lonlat (lonlata, lonlatb, 
+    pushLonlat (lonlata, lonlatb, 
                  lonlatc, lonlatd);
     
     int ord[6] = {0, 1, 2, 0, 2, 3};
@@ -151,7 +151,7 @@ public:
         std::swap (ord[3], ord[4]);
       }
 
-    push_indice (ind0+ord[0], ind0+ord[1], 
+    pushIndice (ind0+ord[0], ind0+ord[1], 
                  ind0+ord[2], ind0+ord[3], 
                  ind0+ord[4], ind0+ord[5]);
 
@@ -163,8 +163,8 @@ public:
   {
     int ind0 = lonlat.size () / 2;
 
-    push_lonlat (lonlata, lonlatb, lonlatc);
-    push_indice (ind0+0, ind0+1, ind0+2);
+    pushLonlat (lonlata, lonlatb, lonlatc);
+    pushIndice (ind0+0, ind0+1, ind0+2);
   }
 
   void penta (const glm::vec2 & lonlata, const glm::vec2 & lonlatb, 
@@ -173,10 +173,10 @@ public:
   {
     int ind0 = lonlat.size () / 2;
 
-    push_lonlat (lonlata, lonlatb, lonlatc,
+    pushLonlat (lonlata, lonlatb, lonlatc,
                  lonlatd, lonlate);
 
-    push_indice (ind0+0, ind0+1, ind0+2,
+    pushIndice (ind0+0, ind0+1, ind0+2,
                  ind0+0, ind0+2, ind0+3,
                  ind0+0, ind0+3, ind0+4);
   }

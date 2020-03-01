@@ -39,7 +39,7 @@ public:
   int getScreenCoordsFromLatlon (float *, float *, float, float) const;
   int getScreenCoordsFromXyz (float *, float *, const glm::vec3 &) const;
   int getXyzFromScreenCoords (float, float, glm::vec3 *) const;
-  float pixel_to_dist_at_nadir (float) const;
+  float pixelToDistAtNadir (float) const;
   float fracToDistAtNadir (float) const;
 
   void nextProjection () { ps.next (); opts.projection = ps.currentName (); calcMVP (); }

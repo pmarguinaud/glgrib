@@ -153,10 +153,10 @@ int glGribView::getXyzFromScreenCoords (float xpos, float ypos, glm::vec3 * xyz)
 
 float glGribView::fracToDistAtNadir (float frac) const
 {
-  return pixel_to_dist_at_nadir (height * frac);
+  return pixelToDistAtNadir (height * frac);
 }
 
-float glGribView::pixel_to_dist_at_nadir (float pixels) const
+float glGribView::pixelToDistAtNadir (float pixels) const
 {
   float lon = deg2rad * opts.lon, lat = deg2rad * opts.lat;
 

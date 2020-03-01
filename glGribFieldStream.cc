@@ -472,7 +472,7 @@ void glGribFieldStream::render (const glGribView & view, const glGribOptionsLigh
       glBindVertexArray (stream[i].VertexArrayID);
       if (wide)
         {
-          float width = view.pixel_to_dist_at_nadir (Width);
+          float width = view.pixelToDistAtNadir (Width);
           program->set ("width", width);
           unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
           glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, stream[i].size);

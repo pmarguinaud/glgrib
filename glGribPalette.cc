@@ -23,7 +23,7 @@ glGribPalette & glGribPalette::register_ (const glGribPalette & p)
 }
 
 static
-glGribPalette palette_white_black
+glGribPalette paletteWhiteBlack
   (
     "white_black",
       0,   0,   0,   0,
@@ -283,7 +283,7 @@ glGribPalette & glGribPalette::createByName (const std::string & name)
     }
 
     
-  return found ? p.register_ (p) : palette_white_black;
+  return found ? p.register_ (p) : paletteWhiteBlack;
 }
 
 glGribPalette::glGribPalette (std::ifstream & fh)
@@ -317,7 +317,7 @@ glGribPalette glGribPalette::next (const glGribPalette & p, float min, float max
   return p1;
 }
 
-glGribPalette palette_zsdiff_big
+glGribPalette paletteZsdiffBig
   (
      -350.0f, +350.0f,
      "zsdiff_big",
@@ -327,7 +327,7 @@ glGribPalette palette_zsdiff_big
      255,   0,   0, 255 
   );
 
-glGribPalette palette_cold_hot_temp
+glGribPalette paletteColdHotTemp
   (
      253.15, 313.15,
      "cold_hot_temp",
@@ -337,7 +337,7 @@ glGribPalette palette_cold_hot_temp
      255,   0,   0, 255 
   );
 
-glGribPalette palette_cold_hot
+glGribPalette paletteColdHot
   (
 //   253.15, 293.15,
      "cold_hot",

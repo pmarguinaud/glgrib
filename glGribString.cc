@@ -264,7 +264,7 @@ void glGribString::render (const glGribView & view) const
 
   view.setMVP (program);
 
-  float length = view.pixel_to_dist_at_nadir (10);
+  float length = view.pixelToDistAtNadir (10);
 
   program->set ("scale", d.scale);
   program->set ("texture", 0);

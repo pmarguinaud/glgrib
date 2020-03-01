@@ -634,7 +634,7 @@ std::string glGribOptionsBase::asOption (glGribOptionsBase & ref)
 }
 
 
-bool glGribOptionsField::parse_unseen (const char * args)
+bool glGribOptionsField::parseUnseen (const char * args)
 {
   parse (args, &seen);
   return true;

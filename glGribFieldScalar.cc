@@ -298,7 +298,7 @@ void glGribFieldScalar::render (const glGribView & view, const glGribOptionsLigh
     
   if (opts.scalar.points.on)
     {
-      float length = view.pixel_to_dist_at_nadir (10);
+      float length = view.pixelToDistAtNadir (10);
     
       program->set ("length10", length);
       program->set ("pointSiz", opts.scalar.points.size.value);

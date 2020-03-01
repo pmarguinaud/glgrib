@@ -19,8 +19,8 @@ public:
   bool closed () { return close; }
   void start (class glGribWindowSet *);
   void run ();
-  void run_int ();
-  void run_off ();
+  void runInt ();
+  void runOff ();
   int windowid = 0;
   void lock () { pthread_mutex_lock (&mutex); }
   void unlock () { pthread_mutex_unlock (&mutex); }

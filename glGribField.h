@@ -134,7 +134,7 @@ protected:
   template <typename T>
   void bindHeight (int);
   static void getUserPref (glGribOptionsField *, glGribLoader *);
-  glGribPalette palette = palette_cold_hot;
+  glGribPalette palette = paletteColdHot;
   mutable glGribOptionsField opts;
   std::vector<glGribFieldMetadata> meta;
   std::vector<glgrib_field_float_buffer_ptr> values;

@@ -234,7 +234,7 @@ void glGribField::getUserPref (glGribOptionsField * opts, glGribLoader * ld)
   return;
 
 found:
-  opts_sql.parse_unseen (options.c_str ());
+  opts_sql.parseUnseen (options.c_str ());
   opts_sql.path = opts->path;
   *opts = opts_sql;
 }
@@ -429,7 +429,7 @@ void glGribField::renderFrame (const glGribView & view) const
 
   if (opts.geometry.frame.width > 0.0f)
     {
-      float width = view.pixel_to_dist_at_nadir (opts.geometry.frame.width);
+      float width = view.pixelToDistAtNadir (opts.geometry.frame.width);
       program->set ("width", width);
       unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
       glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, 

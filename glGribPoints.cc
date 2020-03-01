@@ -86,7 +86,7 @@ void glGribPoints::render (const glGribView & view, const glGribOptionsLight &) 
   if (! isReady ())
     return;
 
-  float length = view.pixel_to_dist_at_nadir (10);
+  float length = view.pixelToDistAtNadir (10);
 
   glGribProgram * program = glGribProgram::load (glGribProgram::POINTS);
   program->use ();

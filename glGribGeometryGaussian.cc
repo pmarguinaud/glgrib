@@ -140,7 +140,7 @@ static int JPREV (int JLON, int ILOEN)
 }
 
 static 
-void process_lat (int jlat, int iloen1, int iloen2, 
+void processLat (int jlat, int iloen1, int iloen2, 
                   int jglooff1, int jglooff2,
 	          unsigned int ** p_inds_strip, int dir)  
 {
@@ -336,11 +336,11 @@ void computeTrigaussStrip (const long int Nj, const std::vector<long int> & pl,
         }
       else if (iloen1 > iloen2)
         {
-          process_lat (jlat, iloen1, iloen2, jglooff1, jglooff2, &inds_strip, +1);
+          processLat (jlat, iloen1, iloen2, jglooff1, jglooff2, &inds_strip, +1);
         }
       else if (iloen1 < iloen2)
         {
-          process_lat (jlat, iloen2, iloen1, jglooff2, jglooff1, &inds_strip, -1);
+          processLat (jlat, iloen2, iloen1, jglooff2, jglooff1, &inds_strip, -1);
         }
   
       unsigned int * inds_strip_last = ind_strip 

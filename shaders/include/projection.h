@@ -10,6 +10,8 @@ vec3 posFromLonLat (vec2 vertexLonLat)
   float lon = vertexLonLat.x, lat = vertexLonLat.y;
   if (abs (lat) > pi)
     return vec3 (0.0f, 0.0f, 0.0f);
+  lon = lon + pi;
+  lat = lat / 2;
   float coslon = cos (lon), sinlon = sin (lon);
   float coslat = cos (lat), sinlat = sin (lat);
   return vec3 (coslon * coslat, sinlon * coslat, sinlat);

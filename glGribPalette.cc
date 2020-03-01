@@ -237,7 +237,7 @@ glGribPalette glGribPalette::create
     }
   else
     {
-      p = create_by_name (o.name);
+      p = createByName (o.name);
       p.opts = o;
     }
 
@@ -249,7 +249,7 @@ glGribPalette glGribPalette::create
   return p;
 }
 
-glGribPalette & glGribPalette::create_by_name (const std::string & name)
+glGribPalette & glGribPalette::createByName (const std::string & name)
 {
   name2palette_t::iterator it = name2palette.find (name);
 

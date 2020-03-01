@@ -15,7 +15,7 @@
 #include <exception>
 
 static
-void compute_latgauss (int kn, double * latgauss)
+void computeLatgauss (int kn, double * latgauss)
 {
   const double pi = M_PI;
   const int itemax = 20;
@@ -299,7 +299,7 @@ void process_lat (int jlat, int iloen1, int iloen2,
   
 
 static 
-void compute_trigauss_strip (const long int Nj, const std::vector<long int> & pl, 
+void computeTrigaussStrip (const long int Nj, const std::vector<long int> & pl, 
                              unsigned int * ind_strip,
 	                     int ind_stripcnt_per_lat[], 
 	                     int ind_stripoff_per_lat[])
@@ -360,7 +360,7 @@ void compute_trigauss_strip (const long int Nj, const std::vector<long int> & pl
 
 
 static 
-void compute_trigauss (const long int Nj, const std::vector<long int> & pl, unsigned int * ind, 
+void computeTrigauss (const long int Nj, const std::vector<long int> & pl, unsigned int * ind, 
                        const int indoff[], const int indcnt[], int triu[], int trid[])
 {
   int iglooff[Nj];
@@ -1142,7 +1142,7 @@ void glGribGeometryGaussian::setup (glgrib_handle_ptr ghp, const glGribOptionsGe
       triu = new int[numberOfPoints]; 
       trid = new int[numberOfPoints]; 
       // Generation of triangles
-      compute_trigauss (Nj, pl, ind, indoff_per_lat, indcnt_per_lat, triu, trid);
+      computeTrigauss (Nj, pl, ind, indoff_per_lat, indcnt_per_lat, triu, trid);
       elementbuffer = newGlgribOpenglBufferPtr (3 * numberOfTriangles * sizeof (ind[0]), ind);
     }
   else
@@ -1169,7 +1169,7 @@ void glGribGeometryGaussian::setup (glgrib_handle_ptr ghp, const glGribOptionsGe
       elementbuffer = newGlgribOpenglBufferPtr (ind_strip_size * sizeof (unsigned int));
       unsigned int * ind_strip = (unsigned int*)elementbuffer->map ();
 
-      compute_trigauss_strip (Nj, pl, ind_strip, ind_stripcnt_per_lat, ind_stripoff_per_lat); 
+      computeTrigaussStrip (Nj, pl, ind_strip, ind_stripcnt_per_lat, ind_stripoff_per_lat); 
 
       delete [] ind_stripcnt_per_lat;
       delete [] ind_stripoff_per_lat;
@@ -1181,7 +1181,7 @@ void glGribGeometryGaussian::setup (glgrib_handle_ptr ghp, const glGribOptionsGe
 
   latgauss = new double[Nj]; 
   // Compute Gaussian latitudes
-  compute_latgauss (Nj, latgauss);
+  computeLatgauss (Nj, latgauss);
       
 
   if (! opts.gencoords.on)

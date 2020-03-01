@@ -21,8 +21,8 @@ namespace glgrib_options_util
 class glGribOptionColor
 {
 public:
-  static glGribOptionColor color_by_name (const std::string &);
-  static glGribOptionColor color_by_hexa (const std::string &);
+  static glGribOptionColor colorByName (const std::string &);
+  static glGribOptionColor colorByHexa (const std::string &);
   static void parse (glGribOptionColor *, const std::string &);
 
   glGribOptionColor () {}

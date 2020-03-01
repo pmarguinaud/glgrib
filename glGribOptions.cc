@@ -167,11 +167,11 @@ void glGribOptionColor::parse (glGribOptionColor * value, const std::string & v)
 {
   if ((v[0] == '#') && (v.length () == 7 || v.length () == 9))
     {
-      *value = color_by_hexa (v);
+      *value = colorByHexa (v);
     }
   else 
     {
-      *value = color_by_name (v);
+      *value = colorByName (v);
     }
 }
 
@@ -180,7 +180,7 @@ glGribOptionColor::glGribOptionColor (const std::string & str)
   parse (this, str);
 }
 
-glGribOptionColor glGribOptionColor::color_by_hexa (const std::string & name)
+glGribOptionColor glGribOptionColor::colorByHexa (const std::string & name)
 {
   glGribOptionColor color;
   if (name.length () == 7)
@@ -213,7 +213,7 @@ static name2hexa_t name2hexa =
    {"black", "#000000"}
 };
 
-glGribOptionColor glGribOptionColor::color_by_name (const std::string & n)
+glGribOptionColor glGribOptionColor::colorByName (const std::string & n)
 {
   glGribOptionColor color;
 
@@ -232,7 +232,7 @@ glGribOptionColor glGribOptionColor::color_by_name (const std::string & n)
 
   name2hexa_t::const_iterator it = name2hexa.find (std::string (name));
   if (it != name2hexa.end ())
-    return color_by_hexa (it->second.c_str ());
+    return colorByHexa (it->second.c_str ());
 
   glGribSqlite db (glGribResolve ("glGrib.db"));
 

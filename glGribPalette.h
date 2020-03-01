@@ -91,7 +91,7 @@ public:
 
 private:
   void getRGBA255 (float RGBA0[256][4]) const;
-  static glGribPalette & create_by_name (const std::string &);
+  static glGribPalette & createByName (const std::string &);
   glGribOptionsPalette opts;
   template <typename T, typename... Types> 
   glGribPalette (const std::string & n, bool record, T r, T g, T b, T a, Types... vars)

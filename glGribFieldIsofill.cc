@@ -369,7 +369,7 @@ void glGribFieldIsofill::setup (glGribLoader * ld, const glGribOptionsField & o,
     isomake[ith].resize (d.isoband.size ());
 
 
-  std::vector<int> color_index (d.isoband.size ());
+  std::vector<int> colorIndex (d.isoband.size ());
 
   for (int i = 0; i < d.isoband.size (); i++)
     {
@@ -382,7 +382,7 @@ void glGribFieldIsofill::setup (glGribLoader * ld, const glGribOptionsField & o,
         v = (levels[i-1] + levels[i+0]) / 2.0f;
 
       d.isoband[i].color = palette.getColor      (v);
-      color_index[i]     = palette.getColorIndex (v);
+      colorIndex[i]     = palette.getColorIndex (v);
     }
 
 
@@ -404,14 +404,14 @@ void glGribFieldIsofill::setup (glGribLoader * ld, const glGribOptionsField & o,
       {
         float v = val[i];
         if (v < levels.front ())
-          color[i] = color_index.front ();
+          color[i] = colorIndex.front ();
         else if (v > levels.back ())
-          color[i] = color_index.back  ();
+          color[i] = colorIndex.back  ();
         else
           for (int j = 0; j < levels.size ()-1; j++)
             if ((levels[j] < v) && (v < levels[j+1]))
               {
-                color[i] = color_index[j+1];
+                color[i] = colorIndex[j+1];
                 break;
               }
       }

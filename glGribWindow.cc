@@ -16,7 +16,7 @@
 #include <iostream>
 #include <stdexcept>
 
-static double current_time ()
+static double currentTime ()
 {
   struct timeval tv;
   struct timezone tz;
@@ -25,7 +25,7 @@ static double current_time ()
 }
 
 static
-void APIENTRY debug_callback (unsigned int source, unsigned int type, GLuint id, unsigned int severity, 
+void APIENTRY debugCallback (unsigned int source, unsigned int type, GLuint id, unsigned int severity, 
                               int length, const char * message, const void * data)
 {
   glGribWindow * gwindow = (glGribWindow *)data;
@@ -33,7 +33,7 @@ void APIENTRY debug_callback (unsigned int source, unsigned int type, GLuint id,
 }
 
 static 
-void cursor_position_callback (GLFWwindow * window, double xpos, double ypos)
+void cursorPositionCallback (GLFWwindow * window, double xpos, double ypos)
 {
   glGribWindow * gwindow = (glGribWindow *)glfwGetWindowUserPointer (window);
   gwindow->display_cursor_position (xpos, ypos);
@@ -700,7 +700,7 @@ void glGribWindow::toggle_cursorpos_display ()
   if (cursorpos)
     glfwSetCursorPosCallback (window, nullptr);
   else
-    glfwSetCursorPosCallback (window, cursor_position_callback);
+    glfwSetCursorPosCallback (window, cursorPositionCallback);
   cursorpos = ! cursorpos;
   scene.setMessage (std::string (""));
   glfwSetWindowTitle (window, title.c_str ());
@@ -877,7 +877,7 @@ void glGribWindow::create (const glGribOptions & o)
 
   createGFLWwindow (nullptr);
 
-  t0 = current_time ();
+  t0 = currentTime ();
 
   if (opts.info.on)
     {
@@ -928,7 +928,7 @@ void glGribWindow::createGFLWwindow (GLFWwindow * context)
        {
          glEnable (GL_DEBUG_OUTPUT);
          glEnable (GL_DEBUG_OUTPUT_SYNCHRONOUS); 
-         glDebugMessageCallback (debug_callback, this);
+         glDebugMessageCallback (debugCallback, this);
          glDebugMessageControl (GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
        }
    }
@@ -949,7 +949,7 @@ glGribWindow::~glGribWindow ()
     glfwDestroyWindow (window);
   if (opts.statistics.on)
     {
-      double t1 = current_time ();
+      double t1 = currentTime ();
       printf ("Window #%d rendered %f frames/sec\n", id_, nframes/(t1 - t0));
     }
 }
@@ -1005,7 +1005,7 @@ static const char * debug_type (unsigned int type)
 #undef GLMESS
 
 #define GLMESS(x) case GL_DEBUG_SEVERITY_##x: return #x
-static const char * debug_severity (unsigned int severity)
+static const char * debugSeverity (unsigned int severity)
 {
   switch (severity)
     {
@@ -1023,7 +1023,7 @@ void glGribWindow::debug (unsigned int source, unsigned int type, GLuint id,
   if (id == 131169 || id == 131185 || id == 131218 || id == 131204) 
     return; 
   printf ("%-20s | %-20s | %-30s | %10d | %s\n", debug_source (source), 
-          debug_severity (severity), debug_type (type), id, message);
+          debugSeverity (severity), debug_type (type), id, message);
 }
 
 void glGribWindow::setOptions (const glGribOptionsWindow & o)

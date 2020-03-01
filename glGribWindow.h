@@ -35,12 +35,12 @@ public:
   bool cursorpos = false;
   GLFWwindow * window = nullptr;
 
-  void toggle_cursorpos_display ();
+  void toggleCursorposDisplay ();
   void framebuffer              (const std::string & = "snapshot_%N.png");
   void snapshot                 (const std::string & = "snapshot_%N.png");
-  void toggle_flat ()
+  void toggleFlat ()
   {
-    scene.d.landscape.toggle_flat ();
+    scene.d.landscape.toggleFlat ();
   }
   void resetView ()
   {
@@ -69,7 +69,7 @@ public:
     o.fov += 1.; 
     scene.d.view.setOptions (o);
   }
-  void shrink_fov          () 
+  void shrinkFov          () 
   { 
     glGribOptionsView o = scene.d.view.getOptions ();
     o.fov -= 1.; 
@@ -126,13 +126,13 @@ public:
   void selectField (int);
   void scaleFieldUp ();
   void scaleFieldDown ();
-  void toggle_hide_field ();
+  void toggleHideField ();
   void scalePaletteUp ();
   void scalePaletteDown ();
   void nextPalette ();
   void hideAllFields ();
-  void show_all_fields ();
-  void toggle_light ();
+  void showAllFields ();
+  void toggleLight ();
   void rotateLightNorth ();
   void rotateLightSouth ();
   void rotateLightWest  ();

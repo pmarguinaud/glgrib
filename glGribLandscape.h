@@ -15,8 +15,8 @@ public:
   virtual void setup (glGribLoader *, const glGribOptionsLandscape &);
   void render (const glGribView &, const glGribOptionsLight &) const override;
   virtual ~glGribLandscape ();
-  void set_flat (bool f) { opts.flat.on = f; }
-  void toggle_flat () { opts.flat.on = ! opts.flat.on; }
+  void setFlat (bool f) { opts.flat.on = f; }
+  void toggleFlat () { opts.flat.on = ! opts.flat.on; }
   void setupVertexAttributes ();
   void resize (const glGribView &) override {}
   void toggle_wireframe () { opts.wireframe.on = ! opts.wireframe.on; }

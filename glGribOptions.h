@@ -61,7 +61,7 @@ public:
   long int year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0;
   static glGribOptionDate interpolate (const glGribOptionDate &, const glGribOptionDate &, const float);
   static glGribOptionDate date_from_t (time_t);
-  static time_t t_from_date (const glGribOptionDate &);
+  static time_t tFromDate (const glGribOptionDate &);
   std::string asString () const;
   friend std::ostream & operator << (std::ostream &, const glGribOptionDate &);
   friend std::istream & operator >> (std::istream &, glGribOptionDate &);
@@ -256,7 +256,7 @@ public:
   virtual std::string asOption (glGribOptionsParser &);
   static void print (class glGribOptions &);
   bool parse (int, const char * [], const std::set<std::string> * = nullptr);
-  void show_help ();
+  void showHelp ();
   void display (const std::string &, bool = false);
   ~glGribOptionsParser ()
   {

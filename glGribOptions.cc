@@ -128,7 +128,7 @@ glGribOptionDate glGribOptionDate::date_from_t (time_t time)
   return d;
 }
 
-time_t glGribOptionDate::t_from_date (const glGribOptionDate & d)
+time_t glGribOptionDate::tFromDate (const glGribOptionDate & d)
 {
   time_t time;
   struct tm t;                  
@@ -147,7 +147,7 @@ glGribOptionDate glGribOptionDate::interpolate
   const glGribOptionDate & d1, const glGribOptionDate & d2, const float alpha
 )
 {
-  return date_from_t (round ((double)alpha * t_from_date (d1) + (1.0 - (double)alpha) * t_from_date (d2)));
+  return date_from_t (round ((double)alpha * tFromDate (d1) + (1.0 - (double)alpha) * tFromDate (d2)));
 }
 
 std::ostream & operator << (std::ostream & out, const glGribOptionColor & color)
@@ -412,7 +412,7 @@ bool glGribOptionsParser::parse (int _argc, const char * _argv[],
                     }
                   if (arg == "--help")
                     {
-                      show_help ();
+                      showHelp ();
                       return false;
                     }
 
@@ -543,7 +543,7 @@ bool glGribOptionsParser::seenOption (const std::string & name) const
   return false;
 }
 
-void glGribOptionsParser::show_help ()
+void glGribOptionsParser::showHelp ()
 {
   printf ("Usage:\n");
   display (std::string ("--"));

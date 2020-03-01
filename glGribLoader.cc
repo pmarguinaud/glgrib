@@ -273,7 +273,7 @@ void glGribLoader::load (glgrib_field_float_buffer_ptr * ptr, const std::string 
         throw std::runtime_error (std::string ("Unexpected indicatorOfUnitOfTimeRange found in `") + file + std::string ("'"));
     }
 
-  meta->term = glGribOptionDate::date_from_t (glGribOptionDate::t_from_date (meta->base) + meta->forecastTerm);
+  meta->term = glGribOptionDate::date_from_t (glGribOptionDate::tFromDate (meta->base) + meta->forecastTerm);
 
   if (false)
     {
@@ -293,7 +293,7 @@ void glGribLoader::load (glgrib_field_float_buffer_ptr * ptr, const std::string 
        << " " << meta->term.hour  
        << " " << meta->term.minute
        << " " << meta->term.second
-       << " " << glGribOptionDate::t_from_date (meta->term)
+       << " " << glGribOptionDate::tFromDate (meta->term)
        << " " << std::endl;
     }
 

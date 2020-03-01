@@ -36,16 +36,16 @@ char * glGribShell::optionGenerator (const char * text, int state)
   return nullptr;
 }
 
-char * shell_option_generator (const char * text, int state)
+char * shellOptionGenerator (const char * text, int state)
 {
   return Shell.optionGenerator (text, state);
 }
 
-char ** shell_completion (const char * text, int start, int end)
+char ** shellCompletion (const char * text, int start, int end)
 {
   char * line = rl_line_buffer;
   if ((strncmp (line, "set ", 4) == 0) || (strncmp (line, "get ", 4) == 0))
-    return rl_completion_matches (text, shell_option_generator);
+    return rl_completion_matches (text, shellOptionGenerator);
   return nullptr;
 }
 
@@ -55,7 +55,7 @@ glGribShell::glGribShell ()
   glGribOptionsParser p;
   opts.traverse ("", &p);
   p.getOptions (&getsetoptions);
-  rl_attempted_completion_function = shell_completion;
+  rl_attempted_completion_function = shellCompletion;
 }
 
 static void help ()

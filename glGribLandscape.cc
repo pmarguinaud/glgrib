@@ -125,27 +125,6 @@ void glGribLandscape::render (const glGribView & view, const glGribOptionsLight 
   program->use ();
 
 
-{
-  float lonP = 2.0f, latP = 46.7f;
-  float stretch = 2.0f;
-  glm::mat4 rot;
-  rot = glm::rotate (glm::mat4 (1.0f),
-                     glm::radians (90.0f-(float)latP), 
-                     glm::vec3 (-sinf (glm::radians (lonP)),
-                                +cosf (glm::radians (lonP)),
-                                0.0f));
-  rot = rot *
-        glm::rotate (glm::mat4 (1.0f),
-                     glm::radians (180.0f+(float)lonP),
-                     glm::vec3 (0.0f, 0.0f, 1.0f));
-
-  float omc2 = 1.0f - 1.0f / (stretch * stretch);
-  float opc2 = 1.0f + 1.0f / (stretch * stretch);
-  program->set ("schmidt_rot", rot);
-  program->set ("schmidt_omc2", omc2);
-  program->set ("schmidt_opc2", opc2);
-}
-
   view.setMVP (program);
   program->set (light);
   program->set ("isflat", opts.flat.on);

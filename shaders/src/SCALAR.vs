@@ -25,11 +25,54 @@ const float deg2rad = pi / 180.0;
 
 #include "geometry.h"
 
+uniform mat4 schmidt_rotd;
+uniform mat4 schmidt_roti;
+uniform float schmidt_opc2 = 1.25;
+uniform float schmidt_omc2 = 0.75;
+
+vec2 doSchmidt (vec2 lonlat)
+{
+  vec4 XYZ;
+  float coslat, sinlat, coslon, sinlon;
+
+  float lon = lonlat.x, lat = lonlat.y;
+
+  coslat = cos (lat), sinlat = sin (lat);
+  coslon = cos (lon), sinlon = sin (lon);
+  
+  XYZ = vec4 (coslon * coslat, sinlon * coslat, sinlat, 0.0f);
+  XYZ = schmidt_roti * XYZ;
+  
+  lon = atan (XYZ.y, XYZ.x);
+  lat = asin (max (-1.0, min (1.0, XYZ.z)));
+  
+  float coordx = lon;
+  float coordy = lat;
+
+  float sincoordy = sin (coordy);
+  lat = asin ((schmidt_omc2 + sincoordy * schmidt_opc2) 
+            / (schmidt_opc2 + sincoordy * schmidt_omc2));
+  lon = coordx;
+
+  coslat = cos (lat), sinlat = sin (lat);
+  coslon = cos (lon), sinlon = sin (lon);
+  
+  XYZ = vec4 (coslon * coslat, sinlon * coslat, sinlat, 0.0f);
+  XYZ = schmidt_rotd * XYZ;
+  
+  lon = atan (XYZ.y, XYZ.x);
+  lat = asin (max (-1.0, min (1.0, XYZ.z)));
+  
+  return vec2 (lon, lat);
+}
+
+
 void main ()
 {
   vec3 vertexDisp = vec3 (0.0f, 0.0f, 0.0f);
 
   vec2 vertexLonLat_ = getVertexLonLat (gl_VertexID);
+  vertexLonLat_ = doSchmidt (vertexLonLat_);
 
   if (mpiview_scale > 0.0f)
     {

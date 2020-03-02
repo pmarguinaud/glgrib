@@ -1,9 +1,10 @@
 
 #include "version.h"
 
-in float alpha;
-in float islatcst;
-in vec3 fragmentPos;
+in
+#include "FRAME_VS.h"
+
+
 out vec4 color;
 
 
@@ -17,13 +18,13 @@ void main ()
   const float pi = 3.1415926;
   const float rad2deg = 180.0 / pi;
 
-  float lon = 360.0 + rad2deg * atan (fragmentPos.y, fragmentPos.x);
-  float lat =  90.0 + rad2deg * asin (fragmentPos.z);
+  float lon = 360.0 + rad2deg * atan (frame_vs.fragmentPos.y, frame_vs.fragmentPos.x);
+  float lat =  90.0 + rad2deg * asin (frame_vs.fragmentPos.z);
 
-  if (alpha < 1.)
+  if (frame_vs.alpha < 1.)
     discard;
 
-  if (islatcst > 0.0f)
+  if (frame_vs.islatcst > 0.0f)
     {
       int lonm = int (mod (int (lon / dlon), 2));
       color = lonm == 0 ? colorb : colorw;

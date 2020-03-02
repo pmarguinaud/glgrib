@@ -6,11 +6,8 @@ layout(location = 1) in vec3 vertexLonLatCst1;
 layout(location = 2) in vec3 vertexLonLatCst2;
 
 
-out float alpha;
-out vec3 fragmentPos;
-out float islatcst;
-out vec3 posA;
-out vec3 posB;
+out
+#include "FRAME_VS.h"
 
 
 uniform mat4 MVP;
@@ -29,7 +26,7 @@ void main ()
   vec3 vertexPos1 = posFromLonLat (vertexLonLatCst1.xy);
   vec3 vertexPos2 = posFromLonLat (vertexLonLatCst2.xy);
 
-  islatcst = vertexLonLatCst0.z;
+  frame_vs.islatcst = vertexLonLatCst0.z;
 
   vec3 vertexPos;
 
@@ -45,7 +42,7 @@ void main ()
       vertexPos = vertexPos1;  
     }
 
-  fragmentPos = vertexPos;
+  frame_vs.fragmentPos = vertexPos;
 
   vec3 vertexPosA = vertexPos;
   vec3 vertexPosB = vertexPos;
@@ -70,10 +67,10 @@ void main ()
 
   vec3 normedPosA = compNormedPos (vertexPosA);
   vec3 normedPosB = compNormedPos (vertexPosB);
-  posA = compProjedPos (vertexPosA, normedPosA);
-  posB = compProjedPos (vertexPosB, normedPosB);
+  vec3 posA = compProjedPos (vertexPosA, normedPosA);
+  vec3 posB = compProjedPos (vertexPosB, normedPosB);
 
-  alpha = min (min (1.0f, length (vertexPos0)), min (1.0f, length (vertexPos1)));
+  frame_vs.alpha = min (min (1.0f, length (vertexPos0)), min (1.0f, length (vertexPos1)));
 
   if (proj == XYZ)
     {
@@ -89,11 +86,11 @@ void main ()
         {
           posB.x = -0.1;
           if (do_alpha)
-            alpha = 0.0;
+            frame_vs.alpha = 0.0;
 	}
       if (proj == LATLON)
       if ((posB.z > +0.49) || (posB.z < -0.49))
-        alpha = 0.0;
+        frame_vs.alpha = 0.0;
 
       if (proj == POLAR_SOUTH)
         posB.x = posB.x - 0.005;

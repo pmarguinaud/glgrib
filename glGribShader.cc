@@ -8,7 +8,7 @@
 #include <stdexcept>
 
 
-static GLuint compileShader (const std::string & code, GLuint type)
+static GLuint compileShader (const std::string & name, const std::string & code, GLuint type)
 {
   int len;
   GLint res = GL_FALSE;
@@ -24,23 +24,24 @@ static GLuint compileShader (const std::string & code, GLuint type)
     {
       char mess[len+1];
       glGetShaderInfoLog (id, len, nullptr, &mess[0]);
-      throw std::runtime_error (std::string ("Error compiling shader : ") + std::string (mess));
+      throw std::runtime_error (std::string ("Error compiling shader : ") + name + ", " + std::string (mess));
     }
 
   return id;
 }
 
-GLuint glGribLoadShader (const std::string & FragmentShaderCode, 
-		           const std::string & VertexShaderCode,
-			   const std::string & GeometryShaderCode)
+GLuint glGribLoadShader (const std::string & name,
+		         const std::string & FragmentShaderCode,
+		         const std::string & VertexShaderCode,
+			 const std::string & GeometryShaderCode)
 {
-  GLuint VertexShaderID = compileShader (VertexShaderCode, GL_VERTEX_SHADER);
-  GLuint FragmentShaderID = compileShader (FragmentShaderCode, GL_FRAGMENT_SHADER);
+  GLuint VertexShaderID = compileShader (name, VertexShaderCode, GL_VERTEX_SHADER);
+  GLuint FragmentShaderID = compileShader (name, FragmentShaderCode, GL_FRAGMENT_SHADER);
 
   bool geom = GeometryShaderCode != "";
   GLuint GeometryShaderID = 0;
   if (geom)
-    GeometryShaderID = compileShader (GeometryShaderCode, GL_GEOMETRY_SHADER);
+    GeometryShaderID = compileShader (name, GeometryShaderCode, GL_GEOMETRY_SHADER);
 
   // Link the program
   GLuint ProgramID = glCreateProgram ();
@@ -62,7 +63,7 @@ GLuint glGribLoadShader (const std::string & FragmentShaderCode,
     {
       char mess[len+1];
       glGetProgramInfoLog (ProgramID, len, nullptr, &mess[0]);
-      throw std::runtime_error (std::string ("Error linking program : ") + std::string (mess));
+      throw std::runtime_error (std::string ("Error linking program : ") + name + ", " + std::string (mess));
     }
   
   glDetachShader (ProgramID, VertexShaderID);

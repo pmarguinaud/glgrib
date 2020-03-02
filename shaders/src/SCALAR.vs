@@ -17,6 +17,7 @@ uniform mat4 MVP;
 uniform float height_scale = 0.05;
 uniform float mpiview_scale = 0.0f;
 
+#include "schmidt.h"
 #include "projection.h"
 #include "scale.h"
 
@@ -24,11 +25,6 @@ const float rad2deg = 180.0 / pi;
 const float deg2rad = pi / 180.0;
 
 #include "geometry.h"
-
-uniform mat4 schmidt_rotd;
-uniform mat4 schmidt_roti;
-uniform float schmidt_opc2 = 1.25;
-uniform float schmidt_omc2 = 0.75;
 
 vec2 doSchmidt (vec2 lonlat)
 {

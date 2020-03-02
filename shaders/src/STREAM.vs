@@ -19,6 +19,7 @@ uniform mat4 MVP;
 uniform float normmax;
 uniform bool scalenorm = false;
 
+#include "schmidt.h"
 #include "projection.h"
 #include "scale.h"
 #include "linevertex.h"

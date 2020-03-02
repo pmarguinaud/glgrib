@@ -5,6 +5,7 @@ layout (location = 0) in vec3 aPos;
 
 uniform mat4 MVP;
 
+#include "schmidt.h"
 #include "projection.h"
 #include "scale.h"
 

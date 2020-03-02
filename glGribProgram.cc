@@ -19,12 +19,12 @@ static name2prog_t name2prog;
 
 
 static
-std::string kind2name (glGribProgram::kind kind)
+std::string kind2name (glGribProgram::kind_t kind)
 {
 #define KIND(k) do { if (kind == glGribProgram::k) return #k; } while (0)
   KIND (MONO);
   KIND (SCALAR);
-  KIND (FLAT_TEX);
+  KIND (LANDSCAPE);
   KIND (VECTOR);
   KIND (CONTOUR);
   KIND (FONT);
@@ -69,18 +69,19 @@ void glGribProgram::read (const std::string & file)
   VertexShaderCode   = slurp (glGribResolve (".shaders/" + file + ".vs"));
   FragmentShaderCode = slurp (glGribResolve (".shaders/" + file + ".fs"));
   GeometryShaderCode = slurp (glGribResolve (".shaders/" + file + ".gs"), false);
+  name = file;
 }
 
 void glGribProgram::compile ()
 {
   if (loaded) 
     return;
-  programID = glGribLoadShader (FragmentShaderCode, VertexShaderCode, GeometryShaderCode);
+  programID = glGribLoadShader (name, FragmentShaderCode, VertexShaderCode, GeometryShaderCode);
   matrixID = glGetUniformLocation (programID, "MVP");
   loaded = true;
 }
 
-glGribProgram * glGribProgram::load (glGribProgram::kind kind)
+glGribProgram * glGribProgram::load (glGribProgram::kind_t kind)
 {
   std::string name = kind2name (kind);
   if (name2prog.find (name) == name2prog.end ())

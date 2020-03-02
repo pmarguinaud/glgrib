@@ -16,6 +16,7 @@ out float dist;
 
 uniform mat4 MVP;
 
+#include "schmidt.h"
 #include "projection.h"
 #include "scale.h"
 #include "linevertex.h"

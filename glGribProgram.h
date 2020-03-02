@@ -13,7 +13,7 @@ public:
   {
     MONO,
     SCALAR,
-    FLAT_TEX,
+    LANDSCAPE,
     VECTOR,
     CONTOUR,
     FONT,
@@ -29,9 +29,9 @@ public:
     TICKS,
     FTICKS,
     TEST,
-  } kind;
+  } kind_t;
 
-  static glGribProgram * load (glGribProgram::kind);
+  static glGribProgram * load (glGribProgram::kind_t);
 
   void set (const std::string & key, bool b)
   {
@@ -142,6 +142,8 @@ public:
   GLuint matrixID;
   bool loaded = false;
   mutable bool active = false;
+
+  std::string name;
 };
 
 

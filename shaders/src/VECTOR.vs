@@ -15,6 +15,7 @@ uniform float valmin_d, valmax_d;
 
 uniform mat4 MVP;
 
+#include "schmidt.h"
 #include "projection.h"
 #include "scale.h"
 #include "unpack.h"

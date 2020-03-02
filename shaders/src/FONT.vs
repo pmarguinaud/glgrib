@@ -16,6 +16,7 @@ uniform float length10;
 uniform float scaleXYZ = 1.0f;
 uniform float ratio = 1.0f;
 
+#include "schmidt.h"
 #include "projection.h"
 #include "scale.h"
 

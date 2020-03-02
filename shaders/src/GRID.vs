@@ -13,6 +13,7 @@ uniform int nn = 100;
 uniform int do_lat = 0;
 uniform int interval = 4;
 
+#include "schmidt.h"
 #include "projection.h"
 
 void main()

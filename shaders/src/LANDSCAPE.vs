@@ -7,6 +7,7 @@ layout (location = 1) in float vertexHeight;
 out vec3 fragmentPos;
 uniform mat4 MVP;
 
+#include "schmidt.h"
 #include "projection.h"
 #include "scale.h"
 

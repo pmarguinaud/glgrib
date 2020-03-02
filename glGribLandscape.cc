@@ -121,7 +121,7 @@ void glGribLandscape::setup (glGribLoader * ld, const glGribOptionsLandscape & o
 
 void glGribLandscape::render (const glGribView & view, const glGribOptionsLight & light) const
 {
-  glGribProgram * program = glGribProgram::load (glGribProgram::FLAT_TEX);
+  glGribProgram * program = glGribProgram::load (glGribProgram::LANDSCAPE);
   program->use ();
 
 

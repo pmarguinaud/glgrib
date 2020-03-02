@@ -311,29 +311,6 @@ void glGribFieldScalar::render (const glGribView & view, const glGribOptionsLigh
     }
   else
     {
-{
-  float lonP = 2.0f, latP = 46.7f;
-  float stretch = 0.2f;
-  glm::mat4 rotd;
-  rotd = glm::rotate (glm::mat4 (1.0f),
-                      glm::radians (90.0f-(float)latP), 
-                      glm::vec3 (-sinf (glm::radians (lonP)),
-                                 +cosf (glm::radians (lonP)),
-                                 0.0f));
-  rotd = rotd *
-         glm::rotate (glm::mat4 (1.0f),
-                      glm::radians (180.0f+(float)lonP),
-                      glm::vec3 (0.0f, 0.0f, 1.0f));
-  glm::mat4 roti = glm::inverse (rotd);
-
-  float omc2 = 1.0f - 1.0f / (stretch * stretch);
-  float opc2 = 1.0f + 1.0f / (stretch * stretch);
-  program->set ("schmidt_rotd", rotd);
-  program->set ("schmidt_roti", roti);
-  program->set ("schmidt_omc2", omc2);
-  program->set ("schmidt_opc2", opc2);
-}
-
       program->set ("smoothed", opts.scalar.smooth.on);
     
       if (opts.scalar.wireframe.on)

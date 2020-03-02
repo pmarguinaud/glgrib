@@ -11,6 +11,7 @@ out float missingFlag;
 
 uniform mat4 MVP;
 
+#include "schmidt.h"
 #include "projection.h"
 #include "scale.h"
 #include "geometry.h"

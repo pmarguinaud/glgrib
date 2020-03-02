@@ -10,6 +10,7 @@ uniform bool do_alpha = false;
 uniform float posmax = 0.97;
 uniform float scale = 1.005;
 
+#include "schmidt.h"
 #include "projection.h"
 
 void main()

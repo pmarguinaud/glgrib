@@ -5,6 +5,7 @@ layout(location = 0) in vec2 vertexLonLat;
 
 uniform mat4 MVP;
 
+#include "schmidt.h"
 #include "projection.h"
 #include "scale.h"
 

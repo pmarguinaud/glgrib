@@ -16,14 +16,16 @@ vec3 applySchmidt (vec3 pos)
   XYZ.xyz = XYZ.xyz / length (XYZ.xyz);
   
   float lon = atan (XYZ.y, XYZ.x);
-  float lat = asin (max (-1.0, min (1.0, XYZ.z)));
+  float lat = asin (XYZ.z);
   
   float coordx = lon;
   float coordy = lat;
 
   float sincoordy = sin (coordy);
-  lat = asin ((schmidt_omc2 + sincoordy * schmidt_opc2) 
-            / (schmidt_opc2 + sincoordy * schmidt_omc2));
+
+  float w = (schmidt_omc2 + sincoordy * schmidt_opc2) 
+          / (schmidt_opc2 + sincoordy * schmidt_omc2);
+  lat = asin (min (+1.0, max (-1.0, w)));
   lon = coordx;
 
   float coslat = cos (lat), sinlat = sin (lat);

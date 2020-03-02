@@ -46,10 +46,12 @@ void main()
   float coslat = cos (lat), sinlat = sin (lat);
   
   vec3 pos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
-  pos = pos * scale0;
 
   if (proj == XYZ)
     {
+      pos = applySchmidt (pos);
+      pos = pos * scale0;
+
       vec3 northPos  = vec3 (0., 0., 1.);
       vec3 vx = normalize (cross (northPos, pos));
       vec3 vy = normalize (cross (pos, vx));

@@ -22,7 +22,7 @@ void main()
 
   if (proj == XYZ)
     {
-      pos = scale * vertexPos;
+      pos = scale * applySchmidt (vertexPos);
     }
   else
     {

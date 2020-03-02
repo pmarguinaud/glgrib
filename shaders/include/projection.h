@@ -27,13 +27,14 @@ vec3 compNormedPos (vec3 vertexPos)
 vec3 compProjedPos (vec3 vertexPos, vec3 normedPos)
 {
   vec3 pos;
+  normedPos = applySchmidt (normedPos);
   switch (proj)
     {
       case XYZ:
         if (isflat)
-          pos = normedPos;
+          pos = applySchmidt (normedPos);
         else
-          pos = vertexPos;
+          pos = applySchmidt (vertexPos);
         break;
       case POLAR_NORTH:
         pos =  vec3 (0., normedPos.x / (+normedPos.z + 1.0),

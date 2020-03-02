@@ -2,6 +2,7 @@ uniform float scale0 = 1.0f;
 
 vec3 scalePosition (vec3 pos, vec3 normedPos, float scale0)
 {
+  normedPos = applySchmidt (normedPos);
   if (proj == XYZ)
     {
       pos.x = scale0 * normedPos.x;

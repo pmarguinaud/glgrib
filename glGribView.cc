@@ -21,6 +21,7 @@ void glGribView::setMVP (glGribProgram * program) const
   program->set ("MVP", MVP);
   program->set ("proj", ps.current ()->getType ());
 
+  if (false)
 {
   float lonP = 2.0f, latP = 46.7f;
   float stretch = 0.2f;

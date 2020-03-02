@@ -1,12 +1,8 @@
 
 #include "version.h"
 
-in float fragmentVal;
-in float fragmentMPI;
-in vec3 fragmentPos;
-in float missingFlag;
-flat in float fragmentValFlat;
-flat in float fragmentMPIFlat;
+in
+#include "SCALAR_VS.h"
 
 out vec4 color;
 
@@ -15,7 +11,8 @@ out vec4 color;
 
 void main ()
 {
-  if (fragmentMPI != fragmentMPIFlat)
+  if (scalar_vs.fragmentMPI != scalar_vs.fragmentMPIFlat)
     discard;
-  color = enlightFragment (fragmentPos, fragmentVal, missingFlag);
+  color = enlightFragment (scalar_vs.fragmentPos, scalar_vs.fragmentVal, 
+                           scalar_vs.missingFlag, scalar_vs.fragmentValFlat);
 }

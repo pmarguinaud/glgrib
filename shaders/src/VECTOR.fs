@@ -25,7 +25,7 @@ void main ()
     }
   else
     {
-      color = enlightFragment (fragmentPos, fragmentVal, 0.0f);
+      color = enlightFragment (fragmentPos, fragmentVal, 0.0f, fragmentValFlat);
     }
 
 }

@@ -10,6 +10,15 @@ use Data::Dumper;
 sub load
 {
   my $f = shift;
+  for my $dir (qw (include src))
+    {
+      my $g = "shaders/$dir/$f";
+      if (-f $g)
+        {
+          $f = $g; 
+          last;
+        }
+    }
   my @text = do { my $fh = 'FileHandle'->new ("<$f"); $fh or die ("Cannot find $f\n"); <$fh> };
   return @text;
 }
@@ -23,7 +32,7 @@ sub expand
       if ($text =~ m/^#include\s+"([^"]+)"\s*$/o)
         {
           my $h = $1;
-          push @code, "// start include $h\n", &load ("shaders/include/$h"), "// end include $h\n";
+          push @code, "// start include $h\n", &load ("$h"), "// end include $h\n";
         }
       else
         {

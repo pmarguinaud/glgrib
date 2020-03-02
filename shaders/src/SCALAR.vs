@@ -6,12 +6,9 @@ layout(location = 1) in float vertexVal;
 layout(location = 2) in float vertexHeight;
 layout(location = 3) in vec3  vertexMPIView;
 
-out float fragmentVal;
-out float fragmentMPI;
-out vec3 fragmentPos;
-out float missingFlag;
-flat out float fragmentValFlat;
-flat out float fragmentMPIFlat;
+
+out 
+#include "SCALAR_VS.h"
 
 uniform mat4 MVP;
 uniform float height_scale = 0.05;
@@ -40,8 +37,8 @@ void main ()
       vertexDisp = vec3 (coslon * coslat, sinlon * coslat, sinlat);
     }
 
-  fragmentValFlat = vertexVal;
-  fragmentMPIFlat = vertexMPIView.x;
+  scalar_vs.fragmentValFlat = vertexVal;
+  scalar_vs.fragmentMPIFlat = vertexMPIView.x;
 
   vec3 vertexPos = posFromLonLat (vertexLonLat_);
   vec3 normedPos = compNormedPos (vertexPos);
@@ -57,9 +54,9 @@ void main ()
     
   gl_Position =  MVP * vec4 (pos, 1.);
 
-  fragmentVal = vertexVal;
-  fragmentMPI = vertexMPIView.x;
-  fragmentPos = normedPos;
-  missingFlag = vertexVal == 0 ? 1. : 0.;
+  scalar_vs.fragmentVal = vertexVal;
+  scalar_vs.fragmentMPI = vertexMPIView.x;
+  scalar_vs.fragmentPos = normedPos;
+  scalar_vs.missingFlag = vertexVal == 0 ? 1. : 0.;
 
 }

@@ -19,5 +19,5 @@ void main ()
 //  discard;
 //if (abs (centerVec.x) + abs (centerVec.y) + abs (centerVec.z) > pointRad)
 //  discard;
-  color = enlightFragment (fragmentPos, fragmentVal, missingFlag);
+  color = enlightFragment (fragmentPos, fragmentVal, missingFlag, fragmentValFlat);
 }

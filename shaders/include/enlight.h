@@ -13,7 +13,8 @@ uniform bool smoothed = false;
 uniform bool discrete = false;
 
 
-vec4 enlightFragment (vec3 fragmentPos, float fragmentVal, float missingFlag)
+vec4 enlightFragment (vec3 fragmentPos, float fragmentVal, 
+                      float missingFlag, float fragmentValFlat)
 {
   if (missingFlag > 0.)
     discard;

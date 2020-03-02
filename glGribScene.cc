@@ -1,6 +1,6 @@
 #include "glGribScene.h"
 #include "glGribTrigonometry.h"
-#include "glGribOpengl.h"
+#include "glGribOpenGL.h"
 
 #include <stdio.h>
 #include <sys/time.h>

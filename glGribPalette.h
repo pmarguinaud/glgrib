@@ -1,6 +1,6 @@
 #pragma once
 
-#include "glGribOpengl.h"
+#include "glGribOpenGL.h"
 #include "glGribOptions.h"
 #include "glGribFieldMetadata.h"
 

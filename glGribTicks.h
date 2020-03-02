@@ -3,7 +3,7 @@
 #include "glGribObject.h"
 #include "glGribOptions.h"
 #include "glGribString.h"
-#include "glGribOpengl.h"
+#include "glGribOpenGL.h"
 
 class glGribTicks 
 {

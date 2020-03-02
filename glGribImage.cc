@@ -52,7 +52,7 @@ void glGribImage::setup (const glGribOptionsImage & o)
 
   glGribBitmap (opts.path, &rgb, &w, &h);
 
-  texture = newGlgribOpenglTexturePtr (w, h, rgb);
+  texture = newGlgribOpenGLTexturePtr (w, h, rgb);
   delete [] rgb;
 
   setupVertexAttributes ();

@@ -44,12 +44,12 @@ static glm::vec3 compNormedPos (const glm::vec3 & xyz)
   return glm::vec3 (x * r, y * r, z * r);
 }
 
-glm::vec3 glGribProjectionXyz::project (const glm::vec3 & xyz) const
+glm::vec3 glGribProjectionXYZ::project (const glm::vec3 & xyz) const
 {
   return xyz;
 }
 
-int glGribProjectionXyz::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
+int glGribProjectionXYZ::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
 {
   glm::vec3 centre (0.0f, 0.0f, 0.0f);
   *xyz = intersectSphere (xa, xb, centre, 1.0f);
@@ -58,12 +58,12 @@ int glGribProjectionXyz::unproject (const glm::vec3 & xa, const glm::vec3 & xb, 
   return 1;
 }
 
-glm::mat4 glGribProjectionXyz::getView (const glm::vec3 & p, const float dist) const
+glm::mat4 glGribProjectionXYZ::getView (const glm::vec3 & p, const float dist) const
 {
   return glm::lookAt (p, glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 0.0f, 1.0f));
 }
 
-glm::vec3 glGribProjectionLatlon::project (const glm::vec3 & xyz) const
+glm::vec3 glGribProjectionLatLon::project (const glm::vec3 & xyz) const
 {
   float lat, lon;
   xyz2lonlat (compNormedPos (xyz), &lon, &lat);
@@ -73,7 +73,7 @@ glm::vec3 glGribProjectionLatlon::project (const glm::vec3 & xyz) const
   return glm::vec3 (0.0f, X, Y);
 }
 
-int glGribProjectionLatlon::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
+int glGribProjectionLatLon::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
 {
   glm::vec3 pos = intersectPlane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
   float lon = pos.y * pi + lon0 * pi / 180.0f + pi;
@@ -82,7 +82,7 @@ int glGribProjectionLatlon::unproject (const glm::vec3 & xa, const glm::vec3 & x
   return 1;
 }
 
-glm::mat4 glGribProjectionLatlon::getView (const glm::vec3 & p, const float dist) const
+glm::mat4 glGribProjectionLatLon::getView (const glm::vec3 & p, const float dist) const
 {
   glm::vec3 co = project (p);
   return glm::lookAt (glm::vec3 (+dist, co.y, co.z), glm::vec3 (0.0f, +co.y, +co.z), glm::vec3 (0.0f, 0.0f, +1.0f));

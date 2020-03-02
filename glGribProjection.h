@@ -23,7 +23,7 @@ public:
   static type typeFromString (std::string str);
 };
 
-class glGribProjectionXyz : public glGribProjection
+class glGribProjectionXYZ : public glGribProjection
 {
 public:
   glm::vec3 project (const glm::vec3 &) const override;
@@ -33,7 +33,7 @@ public:
   bool setLon0 (const float &) const override { return false; }
 };
 
-class glGribProjectionLatlon : public glGribProjection
+class glGribProjectionLatLon : public glGribProjection
 {
 public:
   glm::vec3 project (const glm::vec3 &) const override;
@@ -127,11 +127,11 @@ private:
      proj[4] = &proj_latlon;
   }
   glGribProjection * proj[5];
-  glGribProjectionXyz         proj_xyz;
+  glGribProjectionXYZ         proj_xyz;
   glGribProjectionPolarNorth proj_polar_north;
   glGribProjectionPolarSouth proj_polar_south;
   glGribProjectionMercator    proj_mercator;
-  glGribProjectionLatlon      proj_latlon;
+  glGribProjectionLatLon      proj_latlon;
 };
 
 

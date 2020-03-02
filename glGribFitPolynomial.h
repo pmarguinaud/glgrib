@@ -3,7 +3,7 @@
 #include <vector>
 
 template <typename TYPE>
-void glGribFitpolynomial
+void glGribFitPolynomial
 ( 
   const std::vector<TYPE> &,
   const std::vector<TYPE> &,

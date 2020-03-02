@@ -1,7 +1,7 @@
 #include "glGribCities.h"
 #include "glGribTrigonometry.h"
 #include "glGribResolve.h"
-#include "glGribSqlite.h"
+#include "glGribSQLite.h"
 
 #include <iostream>
 #include <vector>
@@ -18,8 +18,8 @@ void glGribCities::setup (const glGribOptionsCities & o)
   std::vector<std::string> Str;
 
 
-  glGribSqlite db (glGribResolve ("glGrib.db"));
-  glGribSqlite::stmt st;
+  glGribSQLite db (glGribResolve ("glGrib.db"));
+  glGribSQLite::stmt st;
  
   st = db.prepare ("SELECT max (size) FROM CITIES;");
 

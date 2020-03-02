@@ -118,7 +118,7 @@ public:
   void onclick (int, int, int);
   virtual void onkey (int, int, int, int, bool = false);
   void displayCursorPosition (double, double);
-  int getLatlonFromCursor (float *, float *);
+  int getLatLonFromCursor (float *, float *);
   void centerViewAtCursorPos ();
   void centerLightAtCursorPos ();
   void debugTriangleNumber ();

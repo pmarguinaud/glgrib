@@ -85,7 +85,7 @@ void glGribLandscape::setup (glGribLoader * ld, const glGribOptionsLandscape & o
       if ((sizemax < w) || (sizemax < h))
         throw std::runtime_error (std::string ("Image is too large to be used as a texture :") + opts.path);
      
-      texture = newGlgribOpenglTexturePtr (w, h, rgb);
+      texture = newGlgribOpenGLTexturePtr (w, h, rgb);
       delete [] rgb;
     }
 
@@ -103,7 +103,7 @@ void glGribLandscape::setup (glGribLoader * ld, const glGribOptionsLandscape & o
 
       ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
 
-      heightbuffer = newGlgribOpenglBufferPtr (size * sizeof (float));
+      heightbuffer = newGlgribOpenGLBufferPtr (size * sizeof (float));
 
       float * height = (float *)heightbuffer->map (); 
 #pragma omp parallel for

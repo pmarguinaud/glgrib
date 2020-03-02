@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "glGribOpengl.h"
+#include "glGribOpenGL.h"
 
 #include <stdexcept>
 

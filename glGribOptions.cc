@@ -1,7 +1,7 @@
 #include "glGribOptions.h"
 #include "glGribResolve.h"
 #include "glGribPalette.h"
-#include "glGribSqlite.h"
+#include "glGribSQLite.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -234,9 +234,9 @@ glGribOptionColor glGribOptionColor::colorByName (const std::string & n)
   if (it != name2hexa.end ())
     return colorByHexa (it->second.c_str ());
 
-  glGribSqlite db (glGribResolve ("glGrib.db"));
+  glGribSQLite db (glGribResolve ("glGrib.db"));
 
-  glGribSqlite::stmt st = db.prepare ("SELECT hexa FROM COLORS WHERE name = ?;");
+  glGribSQLite::stmt st = db.prepare ("SELECT hexa FROM COLORS WHERE name = ?;");
   st.bindall (&name);
 
   std::string hexa;

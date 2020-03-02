@@ -190,7 +190,7 @@ void glGribTicks::createStr
 	    break;
         }
          
-      int c = view.getLatlonFromScreenCoords (x, y, &lat, &lon);
+      int c = view.getLatLonFromScreenCoords (x, y, &lat, &lon);
       xyllv.push_back (xyllv_t (x, y, lon, lat, c != 0));
 
     }
@@ -351,7 +351,7 @@ void glGribTicks::resize (const glGribView & view)
           XYa[i].z = align[i];
         }
 
-      vertexbuffer = newGlgribOpenglBufferPtr (XYa.size () * sizeof (XYa[0]), XYa.data ());
+      vertexbuffer = newGlgribOpenGLBufferPtr (XYa.size () * sizeof (XYa[0]), XYa.data ());
 
       glGenVertexArrays (1, &VertexArrayID);
       glBindVertexArray (VertexArrayID);

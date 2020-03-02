@@ -1,8 +1,8 @@
 #include "glGribLines.h"
 #include "glGribProgram.h"
 #include "glGribResolve.h"
-#include "glGribGshhg.h"
-#include "glGribShapelib.h"
+#include "glGribGSHHG.h"
+#include "glGribShapeLib.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -34,12 +34,12 @@ void glGribLines::setup (const glGribOptionsLines & o,
   std::vector <unsigned int> ind;
 
   if (opts.format == "gshhg")
-     glGribGshhg::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &ind, mask, code);
+     glGribGSHHG::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &ind, mask, code);
   else
-     glGribShapelib::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &ind, opts.selector);
+     glGribShapeLib::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &ind, opts.selector);
 
-  vertexbuffer = newGlgribOpenglBufferPtr (lonlat.size () * sizeof (float), lonlat.data ());
-  elementbuffer = newGlgribOpenglBufferPtr (ind.size () * sizeof (unsigned int), ind.data ());
+  vertexbuffer = newGlgribOpenGLBufferPtr (lonlat.size () * sizeof (float), lonlat.data ());
+  elementbuffer = newGlgribOpenGLBufferPtr (ind.size () * sizeof (unsigned int), ind.data ());
 
   setupVertexAttributes ();
 

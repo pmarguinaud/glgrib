@@ -457,14 +457,14 @@ void glGribWindow::showAllFields ()
       f->show ();
 }
 
-int glGribWindow::getLatlonFromCursor (float * lat, float * lon)
+int glGribWindow::getLatLonFromCursor (float * lat, float * lon)
 {
   double xpos, ypos;
 
   glfwGetCursorPos (window, &xpos, &ypos);
   ypos = opts.height - ypos;
   
-  return scene.d.view.getLatlonFromScreenCoords (xpos, ypos, lat, lon);
+  return scene.d.view.getLatLonFromScreenCoords (xpos, ypos, lat, lon);
 }
 
 void glGribWindow::snapshot (const std::string & format)
@@ -662,7 +662,7 @@ void glGribWindow::framebuffer (const std::string & format)
 void glGribWindow::displayCursorPosition (double xpos, double ypos)
 {
   float lat, lon;
-  if (getLatlonFromCursor (&lat, &lon))
+  if (getLatLonFromCursor (&lat, &lon))
     {
       std::string title_;
       const glGribField * field = scene.getCurrentField ();
@@ -736,18 +736,18 @@ if ((button == GLFW_MOUSE_BUTTON_##k) && (mm == mods)) \
 void glGribWindow::centerLightAtCursorPos ()
 {
   float lat, lon;
-  if (getLatlonFromCursor (&lat, &lon))
+  if (getLatLonFromCursor (&lat, &lon))
     scene.setLightPos (lon, lat);
 }
 
 void glGribWindow::centerViewAtCursorPos ()
 {
   glGribOptionsView o = scene.d.view.getOptions ();
-  if (getLatlonFromCursor (&o.lat, &o.lon))
+  if (getLatLonFromCursor (&o.lat, &o.lon))
     {
       scene.d.view.setOptions (o);
       float xpos, ypos;
-      scene.d.view.getScreenCoordsFromLatlon (&xpos, &ypos, o.lat, o.lon);
+      scene.d.view.getScreenCoordsFromLatLon (&xpos, &ypos, o.lat, o.lon);
       glfwSetCursorPos (window, xpos, ypos);
     }
 }
@@ -756,7 +756,7 @@ void glGribWindow::debugTriangleNumber ()
 {
   glGribField * f = scene.getCurrentField ();
   float lon, lat;
-  if (getLatlonFromCursor (&lat, &lon) && (f != nullptr))
+  if (getLatLonFromCursor (&lat, &lon) && (f != nullptr))
     {
       const_glgrib_geometry_ptr geometry = f->getGeometry ();
       std::cout << " getTriangle = " << geometry->getTriangle (lon, lat) << std::endl;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "glGribOpengl.h"
+#include "glGribOpenGL.h"
 #include "glGribProgram.h"
 #include "glGribOptions.h"
 #include "glGribProjection.h"
@@ -35,10 +35,10 @@ public:
   glm::vec3 intersectPlane (const double &, const double &, const glm::vec3 &, const glm::vec3 &) const;
   glm::vec3 intersectSphere (const double &, const double &, const glm::vec3 &, const float &) const;
 
-  int getLatlonFromScreenCoords (float, float, float *, float *) const;
-  int getScreenCoordsFromLatlon (float *, float *, float, float) const;
-  int getScreenCoordsFromXyz (float *, float *, const glm::vec3 &) const;
-  int getXyzFromScreenCoords (float, float, glm::vec3 *) const;
+  int getLatLonFromScreenCoords (float, float, float *, float *) const;
+  int getScreenCoordsFromLatLon (float *, float *, float, float) const;
+  int getScreenCoordsFromXYZ (float *, float *, const glm::vec3 &) const;
+  int getXYZFromScreenCoords (float, float, glm::vec3 *) const;
   float pixelToDistAtNadir (float) const;
   float fracToDistAtNadir (float) const;
 

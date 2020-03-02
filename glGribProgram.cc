@@ -1,6 +1,6 @@
 #include "glGribProgram.h"
 #include "glGribTrigonometry.h"
-#include "glGribOpengl.h"
+#include "glGribOpenGL.h"
 #include "glGribShader.h"
 #include "glGribResolve.h"
 

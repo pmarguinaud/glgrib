@@ -1,5 +1,5 @@
 #include "glGribWorld.h"
-#include "glGribOpengl.h"
+#include "glGribOpenGL.h"
 
 #include <stdlib.h>
 #include <stdio.h>

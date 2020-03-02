@@ -83,7 +83,7 @@ void glGribFieldScalar::setupVertexAttributes ()
   colorbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
 
-  glVertexAttribPointer (1, 1, getOpenglType<T> (), GL_TRUE, 0,  nullptr); 
+  glVertexAttribPointer (1, 1, getOpenGLType<T> (), GL_TRUE, 0,  nullptr); 
 
   geometry->bindTriangles ();
 
@@ -114,14 +114,14 @@ void glGribFieldScalar::setupVertexAttributes ()
   
   colorbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, 1, getOpenglType<T> (), GL_TRUE, 0, nullptr); 
+  glVertexAttribPointer (1, 1, getOpenGLType<T> (), GL_TRUE, 0, nullptr); 
   glVertexAttribDivisor (1, 1);
 
   if (heightbuffer)
     {
       heightbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (2);
-      glVertexAttribPointer (2, 1, getOpenglType<T> (), GL_TRUE, 0, nullptr);
+      glVertexAttribPointer (2, 1, getOpenGLType<T> (), GL_TRUE, 0, nullptr);
       glVertexAttribDivisor (2, 1);
     }
   else
@@ -176,7 +176,7 @@ void glGribFieldScalar::setup (glGribLoader * ld, const glGribOptionsField & o, 
   if (opts.hilo.on)
     setupHilo (data);
 
-  colorbuffer = newGlgribOpenglBufferPtr (geometry->getNumberOfPoints () * sizeof (T));
+  colorbuffer = newGlgribOpenGLBufferPtr (geometry->getNumberOfPoints () * sizeof (T));
   T * col = (T *)colorbuffer->map ();
   pack<T>  (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
             meta1.valmax, meta1.valmis, col);
@@ -243,7 +243,7 @@ void glGribFieldScalar::setupMpiView (glGribLoader * ld, const glGribOptionsFiel
   for (int i = 0; i < max; i++)
     printf (" %8d | %12.2f, %12.2f\n", i, rad2deg * Disl[i].x, rad2deg * Disl[i].y);
 
-  mpivbuffer = newGlgribOpenglBufferPtr (3 * size * sizeof (float));
+  mpivbuffer = newGlgribOpenGLBufferPtr (3 * size * sizeof (float));
   float * mpiv = (float *)mpivbuffer->map ();
   for (int i = 0; i < size; i++)
     {

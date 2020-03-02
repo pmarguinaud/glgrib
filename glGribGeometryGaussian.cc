@@ -1,6 +1,6 @@
 #include "glGribGeometryGaussian.h"
 #include "glGribTrigonometry.h"
-#include "glGribFitpolynomial.h"
+#include "glGribFitPolynomial.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -894,7 +894,7 @@ void glGribGeometryGaussian::setupSSBO ()
 
   if (! opts.gaussian.fit.on)
     {
-      ssbo_jlat = newGlgribOpenglBufferPtr (numberOfPoints * sizeof (int));
+      ssbo_jlat = newGlgribOpenGLBufferPtr (numberOfPoints * sizeof (int));
       int * jlat = (int *)ssbo_jlat->map ();
 
 #pragma omp parallel for
@@ -908,12 +908,12 @@ void glGribGeometryGaussian::setupSSBO ()
 
   // jglooff
 
-  ssbo_jglo = newGlgribOpenglBufferPtr (jglooff.size () * sizeof (jglooff[0]),
+  ssbo_jglo = newGlgribOpenGLBufferPtr (jglooff.size () * sizeof (jglooff[0]),
                                             jglooff.data ());
 
   // Gaussian latitudes
  
-  ssbo_glat = newGlgribOpenglBufferPtr (Nj * sizeof (float));
+  ssbo_glat = newGlgribOpenGLBufferPtr (Nj * sizeof (float));
   float * glat = (float *)ssbo_glat->map ();
 
   for (int i = 0; i < Nj; i++)
@@ -926,7 +926,7 @@ void glGribGeometryGaussian::setupSSBO ()
 
 void glGribGeometryGaussian::setupCoordinates ()
 {
-  vertexbuffer = newGlgribOpenglBufferPtr (2 * numberOfPoints * sizeof (float));
+  vertexbuffer = newGlgribOpenGLBufferPtr (2 * numberOfPoints * sizeof (float));
   float * lonlat = (float *)vertexbuffer->map ();
   
   int iglooff[Nj];
@@ -1080,7 +1080,7 @@ void glGribGeometryGaussian::tryFitLatitudes (int _kind, latfit_t * latfit)
   std::vector<double> coeff;
 
   const int degree = 3;
-  glGribFitpolynomial (x, y, degree, coeff);
+  glGribFitPolynomial (x, y, degree, coeff);
 
   gj.geometry_gaussian_latfit_degre      = coeff.size () - 1;
   for (auto c : coeff)
@@ -1143,7 +1143,7 @@ void glGribGeometryGaussian::setup (glgrib_handle_ptr ghp, const glGribOptionsGe
       trid = new int[numberOfPoints]; 
       // Generation of triangles
       computeTrigauss (Nj, pl, ind, indoff_per_lat, indcnt_per_lat, triu, trid);
-      elementbuffer = newGlgribOpenglBufferPtr (3 * numberOfTriangles * sizeof (ind[0]), ind);
+      elementbuffer = newGlgribOpenGLBufferPtr (3 * numberOfTriangles * sizeof (ind[0]), ind);
     }
   else
     {
@@ -1166,7 +1166,7 @@ void glGribGeometryGaussian::setup (glgrib_handle_ptr ghp, const glGribOptionsGe
       for (int jlat = 1; jlat < Nj; jlat++)
         ind_strip_size += ind_stripcnt_per_lat[jlat-1];
 
-      elementbuffer = newGlgribOpenglBufferPtr (ind_strip_size * sizeof (unsigned int));
+      elementbuffer = newGlgribOpenGLBufferPtr (ind_strip_size * sizeof (unsigned int));
       unsigned int * ind_strip = (unsigned int*)elementbuffer->map ();
 
       computeTrigaussStrip (Nj, pl, ind_strip, ind_stripcnt_per_lat, ind_stripoff_per_lat); 

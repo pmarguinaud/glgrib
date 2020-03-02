@@ -1,5 +1,5 @@
 #include "glGribPolygon.h"
-#include "glGribOpengl.h"
+#include "glGribOpenGL.h"
 
 #include <stdio.h>
 

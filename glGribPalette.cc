@@ -1,7 +1,7 @@
 #include "glGribPalette.h"
-#include "glGribOpengl.h"
+#include "glGribOpenGL.h"
 #include "glGribResolve.h"
-#include "glGribSqlite.h"
+#include "glGribSQLite.h"
 
 #include <iostream>
 #include <fstream>
@@ -259,8 +259,8 @@ glGribPalette & glGribPalette::createByName (const std::string & name)
   glGribPalette p;
 
 
-  glGribSqlite db (glGribResolve ("glGrib.db"));
-  glGribSqlite::stmt st = db.prepare ("SELECT hexa FROM PALETTES WHERE name = ?;");
+  glGribSQLite db (glGribResolve ("glGrib.db"));
+  glGribSQLite::stmt st = db.prepare ("SELECT hexa FROM PALETTES WHERE name = ?;");
   st.bindall (&name);
 
 

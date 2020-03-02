@@ -1,8 +1,8 @@
-#include "glGribDbase.h"
+#include "glGribDBase.h"
 
 int main (int argc, char * argv[])
 {
-  glGribDbase d;
+  glGribDBase d;
 
   d.convert2sqlite (argv[1]);
 

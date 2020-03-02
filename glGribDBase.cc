@@ -1,5 +1,5 @@
-#include "glGribDbase.h"
-#include "glGribSqlite.h"
+#include "glGribDBase.h"
+#include "glGribSQLite.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -22,7 +22,7 @@ static std::string trim (const std::string & str)
   return str.substr (i, j-i+1);
 }
 
-bool glGribDbase::open (const std::string & path)
+bool glGribDBase::open (const std::string & path)
 {
   fp = fopen ((path + ".dbf").c_str (), "r");
   if (fp == nullptr)
@@ -44,7 +44,7 @@ bool glGribDbase::open (const std::string & path)
   return true;
 }
 
-bool glGribDbase::read (record_t * record)
+bool glGribDBase::read (record_t * record)
 {
   record->clear ();
 
@@ -73,7 +73,7 @@ bool glGribDbase::read (record_t * record)
   return true;
 }
 
-void glGribDbase::convert2sqlite (const std::string & path)
+void glGribDBase::convert2sqlite (const std::string & path)
 {
   struct stat sta;
   if (stat ((path + ".db").c_str (), &sta) == 0)
@@ -81,7 +81,7 @@ void glGribDbase::convert2sqlite (const std::string & path)
 
   open (path);
 
-  glGribSqlite db (path + ".db");
+  glGribSQLite db (path + ".db");
   std::string sql;
   record_t record;
 
@@ -109,7 +109,7 @@ void glGribDbase::convert2sqlite (const std::string & path)
     }
   sql += ")";
 
-  glGribSqlite::stmt st = db.prepare (sql);
+  glGribSQLite::stmt st = db.prepare (sql);
 
   while (read (&record))
     {

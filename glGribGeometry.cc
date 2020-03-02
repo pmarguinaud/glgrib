@@ -1,7 +1,7 @@
 #include "glGribGeometry.h"
 #include "glGribLoader.h"
 #include "glGribGeometryGaussian.h"
-#include "glGribGeometryLatlon.h"
+#include "glGribGeometryLatLon.h"
 #include "glGribGeometryLambert.h"
 #include "glGribLoader.h"
 
@@ -43,7 +43,7 @@ glgrib_geometry_ptr glGribGeometry::load (glGribLoader * ld, const std::string &
         geom = std::make_shared<glGribGeometryGaussian> (ghp);
 	break;
       case 0:
-        geom = std::make_shared<glGribGeometryLatlon> (ghp);
+        geom = std::make_shared<glGribGeometryLatLon> (ghp);
 	break;
       case -1:
         geom = std::make_shared<glGribGeometryGaussian> (Nj);

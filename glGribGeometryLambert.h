@@ -86,7 +86,7 @@ public:
     double r_equateur;
     double kl;
 
-    latlon_j_t rthetaToLatlon (const rtheta_j_t & pt_rtheta) const
+    latlon_j_t rthetaToLatLon (const rtheta_j_t & pt_rtheta) const
     {
       return latlon_j_t 
                (
@@ -109,7 +109,7 @@ public:
                    )
                );
     }
-    latlon_t rthetaToLatlon (const rtheta_t & pt_rtheta) const 
+    latlon_t rthetaToLatLon (const rtheta_t & pt_rtheta) const 
     {
       return latlon_t (ref_pt.lon + pt_rtheta.theta / kl,
                        pole * ((pi / 2.0) - 2.0 * atan(pow (pt_rtheta.r / r_equateur, 1.0 / kl))));
@@ -160,11 +160,11 @@ public:
     }
     latlon_j_t xy_to_latlon (const xy_j_t & pt_xy) const
     {
-      return rthetaToLatlon (xy_to_rtheta (pt_xy));
+      return rthetaToLatLon (xy_to_rtheta (pt_xy));
     }
     latlon_t xy_to_latlon (const xy_t & pt_xy) const 
     {
-      return rthetaToLatlon (xy_to_rtheta (pt_xy));
+      return rthetaToLatLon (xy_to_rtheta (pt_xy));
     }
     rtheta_t latlonToRtheta (const latlon_t & pt_coord) const 
     {

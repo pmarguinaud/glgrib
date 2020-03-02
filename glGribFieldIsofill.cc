@@ -109,17 +109,17 @@ public:
   std::vector<unsigned int> indice;
   std::vector<float> lonlat;
 
-  void pushLonlat (const glm::vec2 & lonlat_)
+  void pushLonLat (const glm::vec2 & lonlat_)
   {
     lonlat.push_back (lonlat_.x);
     lonlat.push_back (lonlat_.y);
   }
 
   template <typename T, typename... Args>
-  void pushLonlat (const T & lonlat, Args... args)
+  void pushLonLat (const T & lonlat, Args... args)
   {
-    pushLonlat (lonlat);
-    pushLonlat (args...);
+    pushLonLat (lonlat);
+    pushLonLat (args...);
   }
 
   void pushIndice (int ind)
@@ -140,7 +140,7 @@ public:
   {
     int ind0 = lonlat.size () / 2;
 
-    pushLonlat (lonlata, lonlatb, 
+    pushLonLat (lonlata, lonlatb, 
                  lonlatc, lonlatd);
     
     int ord[6] = {0, 1, 2, 0, 2, 3};
@@ -163,7 +163,7 @@ public:
   {
     int ind0 = lonlat.size () / 2;
 
-    pushLonlat (lonlata, lonlatb, lonlatc);
+    pushLonLat (lonlata, lonlatb, lonlatc);
     pushIndice (ind0+0, ind0+1, ind0+2);
   }
 
@@ -173,7 +173,7 @@ public:
   {
     int ind0 = lonlat.size () / 2;
 
-    pushLonlat (lonlata, lonlatb, lonlatc,
+    pushLonLat (lonlata, lonlatb, lonlatc,
                  lonlatd, lonlate);
 
     pushIndice (ind0+0, ind0+1, ind0+2,
@@ -416,7 +416,7 @@ void glGribFieldIsofill::setup (glGribLoader * ld, const glGribOptionsField & o,
               }
       }
 
-    d.colorbuffer  = newGlgribOpenglBufferPtr (size * sizeof (unsigned char), color);
+    d.colorbuffer  = newGlgribOpenGLBufferPtr (size * sizeof (unsigned char), color);
     
     delete [] color;
   }
@@ -445,7 +445,7 @@ void glGribFieldIsofill::setup (glGribLoader * ld, const glGribOptionsField & o,
 
 
       // Element buffer
-      d.isoband[i].elementbuffer = newGlgribOpenglBufferPtr 
+      d.isoband[i].elementbuffer = newGlgribOpenGLBufferPtr 
                                     (length_indice * sizeof (unsigned int));
 
       {
@@ -467,7 +467,7 @@ void glGribFieldIsofill::setup (glGribLoader * ld, const glGribOptionsField & o,
 
 
       // Coordinate buffer
-      d.isoband[i].vertexbuffer  = newGlgribOpenglBufferPtr 
+      d.isoband[i].vertexbuffer  = newGlgribOpenGLBufferPtr 
                                     (length_lonlat * sizeof (float));
 
       {

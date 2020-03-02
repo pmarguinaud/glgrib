@@ -1,7 +1,7 @@
 #pragma once
 
 #include "glGribView.h"
-#include "glGribOpengl.h"
+#include "glGribOpenGL.h"
 #include "glGribOptions.h"
 #include "glGribPalette.h"
 #include "glGribView.h"

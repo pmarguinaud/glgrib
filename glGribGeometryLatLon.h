@@ -5,7 +5,7 @@
 #include "glGribOptions.h"
 #include "glGribHandle.h"
 
-class glGribGeometryLatlon : public glGribGeometry
+class glGribGeometryLatLon : public glGribGeometry
 {
 public:
   bool isEqual (const glGribGeometry &) const override;
@@ -13,10 +13,10 @@ public:
   std::string md5 () const override;
   int latlon2index (float, float) const override;
   void index2latlon (int, float *, float *) const override;
-  glGribGeometryLatlon (glgrib_handle_ptr);
+  glGribGeometryLatLon (glgrib_handle_ptr);
   void setup (glgrib_handle_ptr, const glGribOptionsGeometry &) override;
   int size () const override;
-  virtual ~glGribGeometryLatlon ();
+  virtual ~glGribGeometryLatLon ();
   void applyNormScale (float *) const override {}
   void applyUVangle (float *) const override {}
   void sample (unsigned char *, const unsigned char, const int) const override;

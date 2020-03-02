@@ -73,14 +73,14 @@ namespace glgrib_sqlite_detail
 
 };
 
-class glGribSqlite
+class glGribSQLite
 {
 public:
 
   typedef glgrib_sqlite_detail::sqlite3_ptr sqlite3_ptr;
   typedef glgrib_sqlite_detail::sqlite3_stmt_ptr sqlite3_stmt_ptr;
 
-  glGribSqlite (const std::string & file)
+  glGribSQLite (const std::string & file)
   {
     db = std::make_shared<glgrib_sqlite_detail::_sqlite3>();
     if (sqlite3_open (file.c_str (), &db->data) != SQLITE_OK)
@@ -133,7 +133,7 @@ public:
 protected:
     sqlite3_stmt_ptr req;
     sqlite3_ptr db;
-    friend class glGribSqlite;
+    friend class glGribSQLite;
   };
 
   stmt prepare (const std::string & sql)
@@ -149,7 +149,7 @@ protected:
     glgrib_sqlite_detail::ok (db, sqlite3_exec (db->data, sql.c_str (), 0, 0, 0));
   }
 
-  ~glGribSqlite ()
+  ~glGribSQLite ()
   {
     close ();
   }

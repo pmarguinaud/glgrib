@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <memory>
-#include "glGribOpengl.h"
+#include "glGribOpenGL.h"
 #include "glGribOptions.h"
 #include "glGribProgram.h"
 

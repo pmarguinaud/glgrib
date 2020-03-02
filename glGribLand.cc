@@ -1,7 +1,7 @@
 #include "glGribLand.h"
 #include "glGribTrigonometry.h"
-#include "glGribOpengl.h"
-#include "glGribShapelib.h"
+#include "glGribOpenGL.h"
+#include "glGribShapeLib.h"
 #include "glGribOptions.h"
 #include "glGribEarcut.h"
 #include "glGribSubdivide.h"
@@ -276,7 +276,7 @@ void glGribLand::setup (const glGribOptionsLand & o)
       std::vector<unsigned int> indl;
       
       lopts.path = opts.layers[i].path; lopts.selector = opts.layers[i].selector;
-      glGribShapelib::read (lopts, &numberOfPoints, &numberOfLines, &lonlat, 
+      glGribShapeLib::read (lopts, &numberOfPoints, &numberOfLines, &lonlat, 
                              &indl, lopts.selector);
      
      
@@ -302,12 +302,12 @@ void glGribLand::setup (const glGribOptionsLand & o)
      
       d[i].numberOfTriangles = ind.size () / 3;
      
-      d[i].vertexbuffer = newGlgribOpenglBufferPtr 
+      d[i].vertexbuffer = newGlgribOpenGLBufferPtr 
                           (
                             lonlat.size () * sizeof (lonlat[0]), 
                             lonlat.data ()
                           );
-      d[i].elementbuffer = newGlgribOpenglBufferPtr 
+      d[i].elementbuffer = newGlgribOpenGLBufferPtr 
                            (
                              ind.size () * sizeof (ind[0]), 
                              ind.data ()

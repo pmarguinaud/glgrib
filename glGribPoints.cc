@@ -70,7 +70,7 @@ void glGribPoints::setup (const glGribOptionsPoints & o,
       lls.push_back (val[i]);
     }
 
-  d.llsbuffer = newGlgribOpenglBufferPtr (lls.size () * sizeof (float), lls.data ());
+  d.llsbuffer = newGlgribOpenGLBufferPtr (lls.size () * sizeof (float), lls.data ());
 
   if (d.opts.palette.min == glGribPalette::defaultMin)
     d.opts.palette.min = d.min;

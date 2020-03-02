@@ -4,7 +4,7 @@
 #include "glGribTrigonometry.h"
 #include "glGribOptions.h"
 #include "glGribHandle.h"
-#include "glGribOpengl.h"
+#include "glGribOpenGL.h"
 
 #include <glm/glm.hpp>
 #include <vector>

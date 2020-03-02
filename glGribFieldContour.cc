@@ -277,13 +277,13 @@ void glGribFieldContour::setup (glGribLoader * ld, const glGribOptionsField & o,
   for (int i = 0; i < levels.size (); i++)
     {
       iso[i].level = levels[i];
-      iso[i].vertexbuffer   = newGlgribOpenglBufferPtr (iso_data[i].lonlat.size () * sizeof (float), 
+      iso[i].vertexbuffer   = newGlgribOpenGLBufferPtr (iso_data[i].lonlat.size () * sizeof (float), 
                                                             iso_data[i].lonlat.data ());
       if (opts.geometry.height.on)
-        iso[i].heightbuffer   = newGlgribOpenglBufferPtr (iso_data[i].height.size () * sizeof (float), 
+        iso[i].heightbuffer   = newGlgribOpenGLBufferPtr (iso_data[i].height.size () * sizeof (float), 
                                                               iso_data[i].height.data ());
 
-      iso[i].distancebuffer = newGlgribOpenglBufferPtr (iso_data[i].length.size () * sizeof (float), 
+      iso[i].distancebuffer = newGlgribOpenGLBufferPtr (iso_data[i].length.size () * sizeof (float), 
                                                             iso_data[i].length.data ());
       iso[i].size = iso_data[i].size () - 1;
 

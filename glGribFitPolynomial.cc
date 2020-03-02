@@ -1,4 +1,4 @@
-#include "glGribFitpolynomial.h"
+#include "glGribFitPolynomial.h"
 
 #include <vector>
 #include <stdexcept>
@@ -14,7 +14,7 @@ TYPE ipow (TYPE x, int n)
 }
 
 template <typename TYPE>
-void glGribFitpolynomial
+void glGribFitPolynomial
 ( 
   const std::vector<TYPE> & x,
   const std::vector<TYPE> & y,
@@ -119,7 +119,7 @@ TYPE glGribEvalpolynomial (const std::vector<TYPE> & coeff, TYPE x)
   return y;
 }
 
-template void glGribFitpolynomial<double>
+template void glGribFitPolynomial<double>
 (
   const std::vector<double> &,
   const std::vector<double> &,

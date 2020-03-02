@@ -1,8 +1,8 @@
-#include "glGribShapelib.h"
+#include "glGribShapeLib.h"
 #include "glGribTrigonometry.h"
-#include "glGribDbase.h"
+#include "glGribDBase.h"
 #include "glGribResolve.h"
-#include "glGribSqlite.h"
+#include "glGribSQLite.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -15,7 +15,7 @@
 #include <iostream>
 
 
-void glGribShapelib::read (const glGribOptionsLines & opts, int * numberOfPoints, 
+void glGribShapeLib::read (const glGribOptionsLines & opts, int * numberOfPoints, 
                             unsigned int * numberOfLines, std::vector<float> * lonlat,
                             std::vector<unsigned int> * ind, 
                             const std::string & selector)
@@ -31,7 +31,7 @@ void glGribShapelib::read (const glGribOptionsLines & opts, int * numberOfPoints
 
   SHPHandle fp = SHPOpen (path.c_str (), "r");
 
-  glGribDbase d;
+  glGribDBase d;
   d.convert2sqlite (path);
 
   if (fp == nullptr)
@@ -47,8 +47,8 @@ void glGribShapelib::read (const glGribOptionsLines & opts, int * numberOfPoints
     {
       std::string sql = "SELECT rowid FROM dbase WHERE " + selector + ";";
 
-      glGribSqlite db (path + ".db");
-      glGribSqlite::stmt st = db.prepare (sql);
+      glGribSQLite db (path + ".db");
+      glGribSQLite::stmt st = db.prepare (sql);
 
       int k;
       while (st.fetchRow (&k))

@@ -201,9 +201,9 @@ void glGribString::setup (const_glgrib_font_ptr ff, const std::vector<std::strin
     }
      
 
-  d.vertexbuffer = newGlgribOpenglBufferPtr (xy.size () * sizeof (float), xy.data ());
-  d.letterbuffer = newGlgribOpenglBufferPtr (let.size () * sizeof (float), let.data ());
-  d.xyzbuffer = newGlgribOpenglBufferPtr (xyz.size () * sizeof (float), xyz.data ());
+  d.vertexbuffer = newGlgribOpenGLBufferPtr (xy.size () * sizeof (float), xy.data ());
+  d.letterbuffer = newGlgribOpenGLBufferPtr (let.size () * sizeof (float), let.data ());
+  d.xyzbuffer = newGlgribOpenGLBufferPtr (xyz.size () * sizeof (float), xyz.data ());
 
   setupVertexAttributes ();
   

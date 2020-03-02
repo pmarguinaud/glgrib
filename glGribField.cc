@@ -8,7 +8,7 @@
 #include "glGribFieldIsofill.h"
 #include "glGribFieldStream.h"
 #include "glGribResolve.h"
-#include "glGribSqlite.h"
+#include "glGribSQLite.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -210,13 +210,13 @@ void glGribField::getUserPref (glGribOptionsField * opts, glGribLoader * ld)
   glGribFieldMetadata meta;
   ld->load (nullptr, opts_sql.path, opts->geometry, 0, &meta);
 
-  glGribSqlite db (glGribResolve ("glGrib.db"));
+  glGribSQLite db (glGribResolve ("glGrib.db"));
   
   std::string options;
 
   if (meta.CLNOMA != "")
     {
-      glGribSqlite::stmt st = db.prepare ("SELECT options FROM CLNOMA2OPTIONS WHERE CLNOMA = ?;");
+      glGribSQLite::stmt st = db.prepare ("SELECT options FROM CLNOMA2OPTIONS WHERE CLNOMA = ?;");
       st.bindall (&meta.CLNOMA);
       if (st.fetchRow (&options))
         goto found;
@@ -224,7 +224,7 @@ void glGribField::getUserPref (glGribOptionsField * opts, glGribLoader * ld)
 
   if ((meta.discipline != 255) && (meta.parameterCategory != 255) && (meta.parameterNumber != 255))
     {
-      glGribSqlite::stmt st = db.prepare ("SELECT options FROM GRIB2OPTIONS WHERE discipline = ? "
+      glGribSQLite::stmt st = db.prepare ("SELECT options FROM GRIB2OPTIONS WHERE discipline = ? "
 		                           "AND parameterCategory = ? AND parameterNumber = ?;");
       st.bindall (&meta.discipline, &meta.parameterCategory, &meta.parameterNumber);
       if (st.fetchRow (&options))
@@ -283,17 +283,17 @@ void glGribField::saveOptions () const
   opts1.path.clear ();
   std::string options = opts1.asOption (opts2);
 
-  glGribSqlite db (glGribResolve ("glGrib.db"));
+  glGribSQLite db (glGribResolve ("glGrib.db"));
 
   if (meta[0].CLNOMA != "")
     {
-      glGribSqlite::stmt st = db.prepare ("INSERT OR REPLACE INTO CLNOMA2OPTIONS (CLNOMA, options) VALUES (?, ?);");
+      glGribSQLite::stmt st = db.prepare ("INSERT OR REPLACE INTO CLNOMA2OPTIONS (CLNOMA, options) VALUES (?, ?);");
       st.bindall (&meta[0].CLNOMA, &options);
       st.execute ();
     }
   if ((meta[0].discipline != 255) && (meta[0].parameterCategory != 255) && (meta[0].parameterNumber != 255))
     {
-      glGribSqlite::stmt st = db.prepare ("INSERT OR REPLACE INTO GRIB2OPTIONS (discipline, "
+      glGribSQLite::stmt st = db.prepare ("INSERT OR REPLACE INTO GRIB2OPTIONS (discipline, "
                                            "parameterCategory, parameterNumber, options) VALUES (?, ?, ?, ?);");
       st.bindall (&meta[0].discipline, &meta[0].parameterCategory, &meta[0].parameterNumber, &options);
       st.execute ();
@@ -324,7 +324,7 @@ void glGribField::loadHeight (glgrib_opengl_buffer_ptr buf, glGribLoader * ld)
 
           ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
 
-          heightbuffer = newGlgribOpenglBufferPtr (size * sizeof (T));
+          heightbuffer = newGlgribOpenGLBufferPtr (size * sizeof (T));
 
           T * height = (T *)heightbuffer->map (); 
 
@@ -344,7 +344,7 @@ void glGribField::bindHeight (int attr)
     {
       heightbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (attr);
-      glVertexAttribPointer (attr, 1, getOpenglType<T> (), GL_TRUE, 0, nullptr);
+      glVertexAttribPointer (attr, 1, getOpenGLType<T> (), GL_TRUE, 0, nullptr);
     }
   else
     {

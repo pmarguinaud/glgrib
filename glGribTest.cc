@@ -1,6 +1,6 @@
 #include "glGribTest.h"
 #include "glGribTrigonometry.h"
-#include "glGribOpengl.h"
+#include "glGribOpenGL.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -45,8 +45,8 @@ void glGribTest::setup ()
 
   numberOfTriangles = ind.size () / 3;
 
-  vertexbuffer = newGlgribOpenglBufferPtr (lonlat.size () * sizeof (lonlat[0]), lonlat.data ());
-  elementbuffer = newGlgribOpenglBufferPtr (ind.size () * sizeof (ind[0]), ind.data ());
+  vertexbuffer = newGlgribOpenGLBufferPtr (lonlat.size () * sizeof (lonlat[0]), lonlat.data ());
+  elementbuffer = newGlgribOpenGLBufferPtr (ind.size () * sizeof (ind[0]), ind.data ());
 
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);

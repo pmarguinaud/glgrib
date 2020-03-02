@@ -168,9 +168,9 @@ void glGribFieldStream::setup (glGribLoader * ld, const glGribOptionsField & o, 
 
   for (int i = 0; i < N; i++)
     {
-      stream[i].vertexbuffer   = newGlgribOpenglBufferPtr (stream_data[i].lonlat.size () * sizeof (float), stream_data[i].lonlat.data ());
-      stream[i].normalbuffer   = newGlgribOpenglBufferPtr (stream_data[i].values.size () * sizeof (float), stream_data[i].values.data ());
-      stream[i].distancebuffer = newGlgribOpenglBufferPtr (stream_data[i].length.size () * sizeof (float), stream_data[i].length.data ());
+      stream[i].vertexbuffer   = newGlgribOpenGLBufferPtr (stream_data[i].lonlat.size () * sizeof (float), stream_data[i].lonlat.data ());
+      stream[i].normalbuffer   = newGlgribOpenGLBufferPtr (stream_data[i].values.size () * sizeof (float), stream_data[i].values.data ());
+      stream[i].distancebuffer = newGlgribOpenGLBufferPtr (stream_data[i].length.size () * sizeof (float), stream_data[i].length.data ());
       stream[i].size = stream_data[i].size () - 1;
     }
 

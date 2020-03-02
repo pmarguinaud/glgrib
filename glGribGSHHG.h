@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 
-namespace glGribGshhg
+namespace glGribGSHHG
 {
 extern void read (const glGribOptionsLines &, int *, unsigned int *, 
 		  std::vector<float> *, std::vector<unsigned int> *, 

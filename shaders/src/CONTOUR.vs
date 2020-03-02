@@ -9,9 +9,8 @@ layout(location = 4) in float vertexHeight1;
 layout(location = 5) in float dist0;
 layout(location = 6) in float dist1;
 
-
-out float alpha;
-out float dist;
+out
+#include "CONTOUR_VS.h"
 
 
 uniform mat4 MVP;
@@ -27,11 +26,11 @@ void main ()
 
   vec3 pos;
 
-  alpha = 1.0f;
+  contour_vs.alpha = 1.0f;
 
   getLineVertex (vertexLonLat0, vertexLonLat1, vertexLonLat2,
                  vertexHeight0, vertexHeight1, c0,
-                 true, dist0, dist1, pos, dist, alpha);
+                 true, dist0, dist1, pos, contour_vs.dist, contour_vs.alpha);
 
   gl_Position =  MVP * vec4 (pos, 1);
 }

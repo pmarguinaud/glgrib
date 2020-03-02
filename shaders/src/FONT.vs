@@ -6,9 +6,8 @@ layout (location = 0) in vec4  letterPos;
 layout (location = 1) in float letterVal;
 layout (location = 2) in vec4  letterXYZA;
 
-out vec2 fragmentPos;
-out vec2 fletterPos;
-out float fletterVal;
+out
+#include "FONT_VS.h"
 
 uniform mat4 MVP;
 uniform bool l3d = false;
@@ -98,9 +97,9 @@ void main ()
       );
       gl_Position =  MVP * vec4 (0., rpos2.x, rpos2.y, 1.);
     }
-  fragmentPos = pos2;
-  fletterVal  = letterVal;
-  fletterPos  = vec2 (xx, yy);
+  font_vs.fragmentPos = pos2;
+  font_vs.fletterVal  = letterVal;
+  font_vs.fletterPos  = vec2 (xx, yy);
 }
 
 

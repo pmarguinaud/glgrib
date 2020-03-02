@@ -1,6 +1,8 @@
 
 #include "version.h"
 
+in
+#include "CONTOUR_VS.h"
 in float alpha;
 in float dist;
 out vec4 color;
@@ -13,7 +15,7 @@ uniform bool dash;
 
 void main ()
 {
-  if (alpha < 1.)
+  if (contour_vs.alpha < 1.)
     discard;
   if(! dash)
     {
@@ -21,7 +23,7 @@ void main ()
     }
   else
     {
-      float r = mod (dist / length, 1.0f);
+      float r = mod (contour_vs.dist / length, 1.0f);
       int k = int (N * r);
 
       color.r = color0.r;

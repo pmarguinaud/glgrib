@@ -1,8 +1,7 @@
 #include "version.h"
 
-in vec2 fragmentPos;
-in vec2 fletterPos;
-in float fletterVal;
+in
+#include "FONT_VS.h"
 
 out vec4 color;
 
@@ -22,11 +21,11 @@ void main ()
   float dx = scale * aspect;
   float dy = scale;
 
-  int ix = int (mod (fletterVal, nx));
-  int iy = int (fletterVal / nx);
+  int ix = int (mod (font_vs.fletterVal, nx));
+  int iy = int (font_vs.fletterVal / nx);
 
-  float tx = (fragmentPos.x - fletterPos.x) / dx;
-  float ty = (fragmentPos.y - fletterPos.y) / dy;
+  float tx = (font_vs.fragmentPos.x - font_vs.fletterPos.x) / dx;
+  float ty = (font_vs.fragmentPos.y - font_vs.fletterPos.y) / dy;
 
   tx = xoff[ix] + tx * (xoff[ix+1] - xoff[ix]);
   ty = yoff[iy] + ty * (yoff[iy+1] - yoff[iy]);

@@ -3,7 +3,9 @@
 
 #include "projection/kind.h"
 
-in vec3 fragmentPos;
+in 
+#include "LAND_VS.h"
+
 out vec4 color;
 
 uniform vec4 color0 = vec4 (0.0f, 1.0f, 0.0f, 1.0f);
@@ -21,7 +23,7 @@ void main()
 {
   if ((proj == LATLON) || (proj == MERCATOR))
     {
-      float lon = rad2deg * atan (fragmentPos.y, fragmentPos.x);  
+      float lon = rad2deg * atan (land_vs.fragmentPos.y, land_vs.fragmentPos.x);  
       float dlon = 10.0f;
      
       while (lon > lon0)

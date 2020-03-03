@@ -1,12 +1,14 @@
 
 #include "version.h"
 
-in vec2 fragmentTex;
+in 
+#include "IMAGE_VS.h"
+
 out vec4 color;
 
 uniform sampler2D texture;
 
 void main ()
 {
-  color = texture2D (texture, fragmentTex);
+  color = texture2D (texture, image_vs.fragmentTex);
 }

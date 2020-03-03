@@ -2,7 +2,8 @@
 
 #include "version.h"
 
-out vec2 fragmentTex;
+out
+#include "IMAGE_VS.h"
 
 uniform mat4 MVP;
 uniform float x0;
@@ -23,7 +24,7 @@ void main ()
   else if (gl_VertexID == 3)
     pos2 = vec2 (0.0f, 1.0f);
 
-  fragmentTex = pos2;
+  image_vs.fragmentTex = pos2;
 
   pos2 = vec2 (x0, y0) + vec2 (x1 - x0, y1 - y0) * pos2;
 

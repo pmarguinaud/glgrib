@@ -4,7 +4,9 @@
 layout (location = 0) in vec2 vertexLonLat;
 layout (location = 1) in float vertexHeight;
 
-out vec3 fragmentPos;
+out 
+#include "LANDSCAPE_VS.h"
+
 uniform mat4 MVP;
 
 #include "schmidt.h"
@@ -19,5 +21,5 @@ void main()
   pos = scalePosition (pos, normedPos, scale0);
   pos = pos * (1.0f + vertexHeight);
   gl_Position =  MVP * vec4 (pos, 1.);
-  fragmentPos = normedPos;
+  landscape_vs.fragmentPos = normedPos;
 }

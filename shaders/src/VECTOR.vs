@@ -5,10 +5,8 @@ layout(location = 1) in float vertexVal_n;
 layout(location = 2) in float vertexVal_d;
 layout(location = 3) in float vertexHeight;
 
-out float alpha;
-out float fragmentVal;
-out vec3 fragmentPos;
-
+out 
+#include "VECTOR_VS.h"
 
 uniform float valmin_n, valmax_n;
 uniform float valmin_d, valmax_d;
@@ -184,8 +182,8 @@ void main ()
   vec3 u = normalize (vec3 (-vertexPos.y, +vertexPos.x, 0.));
   vec3 v = cross (vertexPos, u);
 
-  fragmentVal = vertexVal_n;
-  fragmentPos = vertexPos;
+  vector_vs.fragmentVal = vertexVal_n;
+  vector_vs.fragmentPos = vertexPos;
 
   float N = unpack (vertexVal_n, valmin_n, valmax_n);
   float D = unpack (vertexVal_d, valmin_d, valmax_d);
@@ -208,7 +206,7 @@ void main ()
     pos = getPos0 ();
     
 
-  alpha = 1.;
+  vector_vs.alpha = 1.;
   if (defined)
     {
       D = D * deg2rad;
@@ -241,7 +239,7 @@ void main ()
       if ((pos.y < -posmax) || (+posmax < pos.y))
         {
           pos.x = -0.1;
-          alpha = 0.0;
+          vector_vs.alpha = 0.0;
 	}
     }
 

@@ -10,10 +10,8 @@ layout(location = 5) in float dist0;
 layout(location = 6) in float dist1;
 
 
-out float alpha;
-out float dist;
-out float norm;
-
+out
+#include "STREAM_VS.h"
 
 uniform mat4 MVP;
 uniform float normmax;
@@ -30,11 +28,11 @@ void main ()
 
   vec3 pos;
 
-  norm = alpha = min (norm0, norm1);
+  stream_vs.norm = stream_vs.alpha = min (norm0, norm1);
 
   getLineVertex (vertexLonLat0, vertexLonLat1, vertexLonLat2,
                  0.0f, 0.0f, c0,
-                 false, dist0, dist1, pos, dist, alpha);
+                 false, dist0, dist1, pos, stream_vs.dist, stream_vs.alpha);
 
   gl_Position =  MVP * vec4 (pos, 1);
 }

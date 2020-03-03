@@ -11,7 +11,8 @@ uniform mat4 MVP;
 
 uniform float posmax = 0.97;
 
-out vec3 fragmentPos;
+out 
+#include "LAND_VS.h"
 
 void main()
 {
@@ -26,7 +27,7 @@ void main()
       pos.x = -0.1;
     }
 
-  fragmentPos = normedPos;
+  land_vs.fragmentPos = normedPos;
 
   gl_Position =  MVP * vec4 (pos, 1.);
 }

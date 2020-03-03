@@ -3,7 +3,8 @@
 
 layout(location = 0) in vec2  vertexLonLat;
 
-out vec3 fragmentPos;
+out 
+#include "ISOFILL2_VS.h"
 
 uniform mat4 MVP;
 
@@ -20,6 +21,6 @@ void main ()
 
   gl_Position =  MVP * vec4 (pos, 1.);
 
-  fragmentPos = normedPos;
+  isofill2_vs.fragmentPos = normedPos;
 
 }

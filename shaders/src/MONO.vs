@@ -2,7 +2,8 @@
 #include "version.h"
 
 layout(location = 0) in vec2 vertexLonLat;
-out float alpha;
+out 
+#include "MONO_VS.h"
 
 
 uniform mat4 MVP;
@@ -18,7 +19,7 @@ void main()
   vec3 vertexPos = posFromLonLat (vertexLonLat);
   vec3 pos;
 
-  alpha = 1.0;
+  mono_vs.alpha = 1.0;
 
   if (proj == XYZ)
     {
@@ -34,11 +35,11 @@ void main()
         {
           pos.x = -0.1;
           if (do_alpha)
-            alpha = 0.0;
+            mono_vs.alpha = 0.0;
 	}
       if (proj == LATLON)
       if ((pos.z > +0.49) || (pos.z < -0.49))
-        alpha = 0.0;
+        mono_vs.alpha = 0.0;
 
       if (proj == POLAR_SOUTH)
         pos.x = pos.x - 0.005;

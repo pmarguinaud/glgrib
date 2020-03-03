@@ -1,8 +1,8 @@
 
 #include "version.h"
 
-in float dashed;
-in vec3 vertexPos;
+in
+#include "GRID_VS.h"
 
 out vec4 color;
 
@@ -19,14 +19,14 @@ void main()
 {
   int k = gl_PrimitiveID;
 
-  float lat = asin (vertexPos.z);
-  float lon = mod (atan (vertexPos.y, vertexPos.x), 2 * pi);
+  float lat = asin (grid_vs.vertexPos.z);
+  float lon = mod (atan (grid_vs.vertexPos.y, grid_vs.vertexPos.x), 2 * pi);
 
   if (frag_do_lat == 0)
     {
       if ((k + 1) % (frag_nn + 1) == 0)
         discard;
-      if (dashed > 0.0f)
+      if (grid_vs.dashed > 0.0f)
         {
           if (mod (cos (lat) * lon * rad2deg, dash_length) < dash_length / 2.0)
             discard;
@@ -36,7 +36,7 @@ void main()
     {
       if ((k + 1) % (frag_nn / 2 + 1) == 0)
         discard;
-      if (dashed > 0.0f)
+      if (grid_vs.dashed > 0.0f)
         {
           if (mod (lat * rad2deg, dash_length) < dash_length / 2.0)
             discard;

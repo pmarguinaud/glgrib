@@ -1,9 +1,9 @@
 
 #include "version.h"
 
-in float alpha;
-in float dist;
-in float norm;
+in 
+#include "STREAM_VS.h"
+
 out vec4 color;
 
 uniform vec4 RGBA0[256];
@@ -19,7 +19,7 @@ uniform float nwaves = 10.0f;       // 10 waves over 1000km
 
 void main ()
 {
-  if (alpha == 0.0f)
+  if (stream_vs.alpha == 0.0f)
     discard;
 
   int k;
@@ -30,12 +30,12 @@ void main ()
       const float distref = 1000000.0f; // = 1000 km
       float distrefovervalmax = distref / valmax;
       float tscale = distrefovervalmax / nwaves;
-      float y = (1 + sin ((ra * dist - timea * accelt) / tscale)) / 2;
+      float y = (1 + sin ((ra * stream_vs.dist - timea * accelt) / tscale)) / 2;
       k = 1 + int (254 * min (1, max (0, y)));
     }
   else
     {
-      float n = norm / valmax;
+      float n = stream_vs.norm / valmax;
       k = min (255, 1 + int (n * 254.0));
     }
   

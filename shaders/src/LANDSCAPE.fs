@@ -1,7 +1,9 @@
 
 #include "version.h"
 
-in vec3 fragmentPos;
+in 
+#include "LANDSCAPE_VS.h"
+
 out vec4 color;
 
 const int LONLAT = 0;
@@ -119,11 +121,11 @@ void main ()
     {
       if (texproj == LONLAT)
         {
-          col = getColorLATLON (fragmentPos);
+          col = getColorLATLON (landscape_vs.fragmentPos);
         }
       else if (texproj == WEBMERCATOR)
         {
-          col = getColorMERCATOR (fragmentPos);
+          col = getColorMERCATOR (landscape_vs.fragmentPos);
         }
     }
 
@@ -131,7 +133,7 @@ void main ()
 
   if (light)
     {
-      total = frac + (1.0 - frac) * max (dot (fragmentPos, lightDir), 0.0);
+      total = frac + (1.0 - frac) * max (dot (landscape_vs.fragmentPos, lightDir), 0.0);
     }
 
   color.r = total * col.r;

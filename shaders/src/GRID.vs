@@ -1,8 +1,8 @@
 
 #include "version.h"
 
-out float dashed;
-out vec3 vertexPos;
+out
+#include "GRID_VS.h"
 
 uniform mat4 MVP;
 uniform bool do_alpha = false;
@@ -32,7 +32,7 @@ void main()
       if ((2 * (nlat / 2) != nlat) && (ilat > nlat / 2))
         jlat = jlat + 1;
 
-      dashed = (abs (ilat - jlat) % interval) != 0 ? 1.0f : 0.0f;
+      grid_vs.dashed = (abs (ilat - jlat) % interval) != 0 ? 1.0f : 0.0f;
     }
   else
     {
@@ -40,7 +40,7 @@ void main()
       nlat = nn / 2;
       ilon = gl_VertexID / (nn / 2 + 1);
       ilat = gl_VertexID % (nn / 2 + 1);
-      dashed = (ilon % interval) != 0 ? 1.0f : 0.0f;
+      grid_vs.dashed = (ilon % interval) != 0 ? 1.0f : 0.0f;
     }
 
 
@@ -49,16 +49,16 @@ void main()
   float coslon = cos (lon), sinlon = sin (lon);
   float coslat = cos (lat), sinlat = sin (lat);
 
-  vertexPos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
+  grid_vs.vertexPos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
 
   if (proj == XYZ)
     {
-      pos = scale * applySchmidt (vertexPos);
+      pos = scale * applySchmidt (grid_vs.vertexPos);
     }
   else
     {
-      vec3 normedPos = compNormedPos (vertexPos);
-      pos = compProjedPos (vertexPos, normedPos);
+      vec3 normedPos = compNormedPos (grid_vs.vertexPos);
+      pos = compProjedPos (grid_vs.vertexPos, normedPos);
 
       if ((proj == LATLON) || (proj == MERCATOR))
       if ((pos.y < -posmax) || (+posmax < pos.y))

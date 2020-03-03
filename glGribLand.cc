@@ -3,7 +3,7 @@
 #include "glGribOpenGL.h"
 #include "glGribShapeLib.h"
 #include "glGribOptions.h"
-#include "glGribEarcut.h"
+#include "glGribEarCut.h"
 #include "glGribSubdivide.h"
 
 #include <stdlib.h>
@@ -135,7 +135,7 @@ void glGribLand::triangulate (std::vector<int> * _pos_offset,
       if (pos_length[j] < 300)
         break;
       if (pos_length[j] > 2)
-        glGribEarcut::processRing (lonlat, pos_offset[j], pos_length[j], 
+        glGribEarCut::processRing (lonlat, pos_offset[j], pos_length[j], 
                                     ind_offset[j], &ind_length[j],
                                     &ind, true);
     }
@@ -147,7 +147,7 @@ void glGribLand::triangulate (std::vector<int> * _pos_offset,
     {
       int j = ord[l];
       if (pos_length[j] > 2)
-        glGribEarcut::processRing (lonlat, pos_offset[j], pos_length[j], 
+        glGribEarCut::processRing (lonlat, pos_offset[j], pos_length[j], 
                                     ind_offset[j], &ind_length[j],
                                     &ind, false);
     }

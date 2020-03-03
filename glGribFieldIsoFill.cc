@@ -1,4 +1,4 @@
-#include "glGribFieldIsofill.h"
+#include "glGribFieldIsoFill.h"
 #include "glGribTrigonometry.h"
 #include "glGribProgram.h"
 #include "glGribPalette.h"
@@ -12,7 +12,7 @@
 #include <omp.h>
 
 
-glGribFieldIsofill::glGribFieldIsofill (const glGribFieldIsofill & field)
+glGribFieldIsoFill::glGribFieldIsoFill (const glGribFieldIsoFill & field)
 {
   if (field.isReady ())
     {
@@ -22,16 +22,16 @@ glGribFieldIsofill::glGribFieldIsofill (const glGribFieldIsofill & field)
     }
 }
 
-glGribFieldIsofill * glGribFieldIsofill::clone () const
+glGribFieldIsoFill * glGribFieldIsoFill::clone () const
 {
   if (this == nullptr)
     return nullptr;
-  glGribFieldIsofill * fld = new glGribFieldIsofill ();
+  glGribFieldIsoFill * fld = new glGribFieldIsoFill ();
   *fld = *this;
   return fld;
 }
 
-glGribFieldIsofill & glGribFieldIsofill::operator= (const glGribFieldIsofill & field)
+glGribFieldIsoFill & glGribFieldIsoFill::operator= (const glGribFieldIsoFill & field)
 {
   if (this != &field)
     {
@@ -47,7 +47,7 @@ glGribFieldIsofill & glGribFieldIsofill::operator= (const glGribFieldIsofill & f
   return *this;
 }
 
-void glGribFieldIsofill::clear ()
+void glGribFieldIsoFill::clear ()
 {
   if (isReady ()) 
     {
@@ -58,7 +58,7 @@ void glGribFieldIsofill::clear ()
   glGribField::clear ();
 }
 
-void glGribFieldIsofill::setupVertexAttributes ()
+void glGribFieldIsoFill::setupVertexAttributes ()
 {
   numberOfPoints = geometry->getNumberOfPoints ();
   numberOfTriangles = geometry->getNumberOfTriangles ();
@@ -332,7 +332,7 @@ void processTriangle1 (std::vector<isoband_maker_t> * isomake,
   processTriangle2 (isomake, v, xyz, levels);
 }
 
-void glGribFieldIsofill::setup (glGribLoader * ld, const glGribOptionsField & o, float slot)
+void glGribFieldIsoFill::setup (glGribLoader * ld, const glGribOptionsField & o, float slot)
 {
   opts = o;
 
@@ -501,7 +501,7 @@ void glGribFieldIsofill::setup (glGribLoader * ld, const glGribOptionsField & o,
 
 }
 
-void glGribFieldIsofill::render (const glGribView & view, const glGribOptionsLight & light) const
+void glGribFieldIsoFill::render (const glGribView & view, const glGribOptionsLight & light) const
 {
   const glGribPalette & p = palette;
 
@@ -543,7 +543,7 @@ void glGribFieldIsofill::render (const glGribView & view, const glGribOptionsLig
 
 }
 
-glGribFieldIsofill::~glGribFieldIsofill ()
+glGribFieldIsoFill::~glGribFieldIsoFill ()
 {
 }
 

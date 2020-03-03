@@ -1,4 +1,4 @@
-#include "glGribEarcut.h"
+#include "glGribEarCut.h"
 #include "glGribTrigonometry.h"
 
 #include <stdlib.h>
@@ -922,7 +922,7 @@ glm::mat3 getRotMat (glgrib_diag_t diag, const std::vector<glm::vec3> & xyz, boo
 
 
 // Process a single ring
-void glGribEarcut::processRing (const std::vector<float> & lonlat1, 
+void glGribEarCut::processRing (const std::vector<float> & lonlat1, 
                                  int rankb, int rankl, 
 		                 int indrb, int * indrl,
                                  std::vector<unsigned int> * ind,

@@ -2,20 +2,20 @@
 
 #include "glGribField.h"
 
-class glGribFieldIsofill : public glGribField
+class glGribFieldIsoFill : public glGribField
 {
 public:
   glGribField::kind getKind () const 
   {
     return glGribField::ISOFILL;
   }
-  glGribFieldIsofill * clone () const;
-  glGribFieldIsofill & operator= (const glGribFieldIsofill &);
-  glGribFieldIsofill () { }
-  glGribFieldIsofill (const glGribFieldIsofill &);
+  glGribFieldIsoFill * clone () const;
+  glGribFieldIsoFill & operator= (const glGribFieldIsoFill &);
+  glGribFieldIsoFill () { }
+  glGribFieldIsoFill (const glGribFieldIsoFill &);
   void setup (glGribLoader *, const glGribOptionsField &, float = 0) override;
   void render (const glGribView &, const glGribOptionsLight &) const override;
-  virtual ~glGribFieldIsofill ();
+  virtual ~glGribFieldIsoFill ();
   void setupVertexAttributes ();
   void clear () override; 
   bool useColorBar () const override { return true; }

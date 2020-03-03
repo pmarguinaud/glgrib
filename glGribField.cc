@@ -5,7 +5,7 @@
 #include "glGribFieldScalar.h"
 #include "glGribFieldVector.h"
 #include "glGribFieldContour.h"
-#include "glGribFieldIsofill.h"
+#include "glGribFieldIsoFill.h"
 #include "glGribFieldStream.h"
 #include "glGribResolve.h"
 #include "glGribSQLite.h"
@@ -265,7 +265,7 @@ glGribField * glGribField::create (const glGribOptionsField & opts, float slot, 
   else if (type == "SCALAR")
     fld = new glGribFieldScalar ();
   else if (type == "ISOFILL")
-    fld = new glGribFieldIsofill ();
+    fld = new glGribFieldIsoFill ();
   else
     throw std::runtime_error (std::string ("Unknown field type : ") + type);
 

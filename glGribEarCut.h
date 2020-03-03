@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace glGribEarcut
+namespace glGribEarCut
 {
 void processRing (const std::vector<float> &, 
                   int, int, int, int *,

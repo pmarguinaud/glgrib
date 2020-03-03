@@ -26,7 +26,7 @@ template void glGribField::pack<T>  \
 template void glGribField::packUnpack<T>   \
           (const float *, float *, const int,   \
            const float, const float, const float); \
-template void glGribField::loadHeight <T> (glgrib_opengl_buffer_ptr, glGribLoader *); \
+template void glGribField::loadHeight <T> (glGribOpenGLBufferPtr, glGribLoader *); \
 template void glGribField::bindHeight <T> (int);
 
 DEF (unsigned char)
@@ -34,7 +34,7 @@ DEF (unsigned short)
 DEF (unsigned int)
 
 static
-int hiloCount (const_glgrib_geometry_ptr geometry, glgrib_field_float_buffer_ptr data,
+int hiloCount (const_glGribGeometryPtr geometry, glGribFieldFloatBufferPtr data,
                 int jglo0, int radius, bool lo)
 {
   const float * val = data->data ();
@@ -87,7 +87,7 @@ int hiloCount (const_glgrib_geometry_ptr geometry, glgrib_field_float_buffer_ptr
   return radius;
 }
 
-void glGribField::setupHilo (glgrib_field_float_buffer_ptr data)
+void glGribField::setupHilo (glGribFieldFloatBufferPtr data)
 {
   class hilo_t
   {
@@ -302,7 +302,7 @@ void glGribField::saveOptions () const
 }
 
 template <typename T>
-void glGribField::loadHeight (glgrib_opengl_buffer_ptr buf, glGribLoader * ld)
+void glGribField::loadHeight (glGribOpenGLBufferPtr buf, glGribLoader * ld)
 {
   if (opts.geometry.height.on)
     {
@@ -319,7 +319,7 @@ void glGribField::loadHeight (glgrib_opengl_buffer_ptr buf, glGribLoader * ld)
 
           int size = geometry->getNumberOfPoints ();
 
-          glgrib_field_float_buffer_ptr data;
+          glGribFieldFloatBufferPtr data;
           glGribFieldMetadata meta;
 
           ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);

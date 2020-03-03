@@ -22,9 +22,9 @@ private:
   size_t size_;
 };
 
-typedef std::shared_ptr<glGribOpenGLBuffer> glgrib_opengl_buffer_ptr;
-extern glgrib_opengl_buffer_ptr newGlgribOpenGLBufferPtr (size_t, const void * = nullptr);
-extern glgrib_opengl_buffer_ptr newGlgribOpenGLBufferPtr (const glgrib_opengl_buffer_ptr &);
+typedef std::shared_ptr<glGribOpenGLBuffer> glGribOpenGLBufferPtr;
+extern glGribOpenGLBufferPtr newGlgribOpenGLBufferPtr (size_t, const void * = nullptr);
+extern glGribOpenGLBufferPtr newGlgribOpenGLBufferPtr (const glGribOpenGLBufferPtr &);
 
 class glGribOpenGLTexture
 {

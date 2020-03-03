@@ -14,8 +14,8 @@ private:
   float * data_ = nullptr;
 };
 
-typedef std::shared_ptr<glGribFieldFloatBuffer> glgrib_field_float_buffer_ptr;
+typedef std::shared_ptr<glGribFieldFloatBuffer> glGribFieldFloatBufferPtr;
 
-extern glgrib_field_float_buffer_ptr newGlgribFieldFloatBufferPtr (size_t);
-extern glgrib_field_float_buffer_ptr newGlgribFieldFloatBufferPtr (float *);
+extern glGribFieldFloatBufferPtr newGlgribFieldFloatBufferPtr (size_t);
+extern glGribFieldFloatBufferPtr newGlgribFieldFloatBufferPtr (float *);
 

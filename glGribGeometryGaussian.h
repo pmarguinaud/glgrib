@@ -149,6 +149,6 @@ private:
   int * triu = nullptr;          // Rank of triangle above
   int * trid = nullptr;          // Rank of triangle below
   double * latgauss = nullptr;
-  glgrib_opengl_buffer_ptr ssbo_jglo, ssbo_jlat, ssbo_glat;
+  glGribOpenGLBufferPtr ssbo_jglo, ssbo_jlat, ssbo_glat;
 };
 

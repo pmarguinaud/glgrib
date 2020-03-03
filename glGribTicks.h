@@ -38,7 +38,7 @@ private:
   bool ready = false;
   GLuint VertexArrayID = 0;
   GLuint VertexArrayID_frame = 0;
-  glgrib_opengl_buffer_ptr vertexbuffer;
+  glGribOpenGLBufferPtr vertexbuffer;
   unsigned int numberOfTicks;
 };
 

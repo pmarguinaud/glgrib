@@ -50,15 +50,15 @@ glGribOpenGLBuffer::~glGribOpenGLBuffer ()
   allocated_ = false;
 }
 
-glgrib_opengl_buffer_ptr newGlgribOpenGLBufferPtr (size_t size, const void * data)
+glGribOpenGLBufferPtr newGlgribOpenGLBufferPtr (size_t size, const void * data)
 {
   return std::make_shared<glGribOpenGLBuffer>(size, data);
 }
 
-glgrib_opengl_buffer_ptr newGlgribOpenGLBufferPtr (const glgrib_opengl_buffer_ptr & oldptr)
+glGribOpenGLBufferPtr newGlgribOpenGLBufferPtr (const glGribOpenGLBufferPtr & oldptr)
 {
   size_t size = oldptr->buffersize ();
-  glgrib_opengl_buffer_ptr newptr = newGlgribOpenGLBufferPtr (size, nullptr);
+  glGribOpenGLBufferPtr newptr = newGlgribOpenGLBufferPtr (size, nullptr);
   oldptr->bind (GL_COPY_READ_BUFFER);
   newptr->bind (GL_COPY_WRITE_BUFFER);
 

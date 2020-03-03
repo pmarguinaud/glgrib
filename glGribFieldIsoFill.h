@@ -31,7 +31,7 @@ private:
   public:
     glGribOptionColor color;
     GLuint VertexArrayID = 0;
-    glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
+    glGribOpenGLBufferPtr vertexbuffer, elementbuffer;
     int size;
   };
 
@@ -39,7 +39,7 @@ private:
   {
     // Triangles with a single color
     GLuint VertexArrayID = 0;
-    glgrib_opengl_buffer_ptr colorbuffer;
+    glGribOpenGLBufferPtr colorbuffer;
 
     // Isoband
     std::vector<isoband_t> isoband;

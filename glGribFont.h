@@ -38,7 +38,7 @@ private:
 };
 
 typedef std::shared_ptr<glGribFont> glgrib_font_ptr;
-typedef std::shared_ptr<const glGribFont> const_glgrib_font_ptr;
+typedef std::shared_ptr<const glGribFont> const_glGribFontPtr;
 
 glgrib_font_ptr newGlgribFontPtr (const glGribOptionsFont &);
 

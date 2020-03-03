@@ -758,7 +758,7 @@ void glGribWindow::debugTriangleNumber ()
   float lon, lat;
   if (getLatLonFromCursor (&lat, &lon) && (f != nullptr))
     {
-      const_glgrib_geometry_ptr geometry = f->getGeometry ();
+      const_glGribGeometryPtr geometry = f->getGeometry ();
       std::cout << " getTriangle = " << geometry->getTriangle (lon, lat) << std::endl;
     }
 }

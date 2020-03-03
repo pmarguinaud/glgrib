@@ -15,19 +15,19 @@ class glGribLoader
 {
 public:
 
-  static void uv2nd (const_glgrib_geometry_ptr,
-                     const glgrib_field_float_buffer_ptr, 
-                     const glgrib_field_float_buffer_ptr,
-                     glgrib_field_float_buffer_ptr &, 
-                     glgrib_field_float_buffer_ptr &,
+  static void uv2nd (const_glGribGeometryPtr,
+                     const glGribFieldFloatBufferPtr, 
+                     const glGribFieldFloatBufferPtr,
+                     glGribFieldFloatBufferPtr &, 
+                     glGribFieldFloatBufferPtr &,
                      const glGribFieldMetadata &, 
                      const glGribFieldMetadata &,
                      glGribFieldMetadata &, 
                      glGribFieldMetadata &);
 
   glgrib_handle_ptr handleFromFile (const std::string &);
-  void load (glgrib_field_float_buffer_ptr *, const std::vector<std::string> &, const glGribOptionsGeometry &, float, glGribFieldMetadata *, int = 1, int = 0, bool diff = false);
-  void load (glgrib_field_float_buffer_ptr *, const std::string &, const glGribOptionsGeometry &, glGribFieldMetadata *);
+  void load (glGribFieldFloatBufferPtr *, const std::vector<std::string> &, const glGribOptionsGeometry &, float, glGribFieldMetadata *, int = 1, int = 0, bool diff = false);
+  void load (glGribFieldFloatBufferPtr *, const std::string &, const glGribOptionsGeometry &, glGribFieldMetadata *);
   void setSize (int _size) { size = _size; }
 private:
   int size = 0;

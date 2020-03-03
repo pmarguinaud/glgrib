@@ -32,7 +32,7 @@ private:
   glGribOptionsLand opts;
   typedef struct
   {
-    glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
+    glGribOpenGLBufferPtr vertexbuffer, elementbuffer;
     unsigned int numberOfTriangles;
   } layer_t;
   std::vector<layer_t> d;

@@ -98,7 +98,7 @@ void glGribLandscape::setup (glGribLoader * ld, const glGribOptionsLandscape & o
 
       int size = geometry->getNumberOfPoints ();
 
-      glgrib_field_float_buffer_ptr data;
+      glGribFieldFloatBufferPtr data;
       glGribFieldMetadata meta;
 
       ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);

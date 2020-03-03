@@ -103,14 +103,14 @@ void glGribFieldVector::setup (glGribLoader * ld, const glGribOptionsField & o, 
   glGribFieldMetadata meta_u, meta_v;
   glGribFieldMetadata meta_n, meta_d;
 
-  glgrib_field_float_buffer_ptr data_u, data_v;
+  glGribFieldFloatBufferPtr data_u, data_v;
   ld->load (&data_u, opts.path, opts.geometry, slot, &meta_u, 2, 0);
   ld->load (&data_v, opts.path, opts.geometry, slot, &meta_v, 2, 1);
 
   geometry = glGribGeometry::load (ld, opts.path[int (2 * slot)], opts.geometry);
 
 
-  glgrib_field_float_buffer_ptr data_n, data_d;
+  glGribFieldFloatBufferPtr data_n, data_d;
 
   glGribLoader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 

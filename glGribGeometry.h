@@ -15,7 +15,7 @@
 class glGribGeometry;
 
 typedef std::shared_ptr<glGribGeometry> glgrib_geometry_ptr;
-typedef std::shared_ptr<const glGribGeometry> const_glgrib_geometry_ptr;
+typedef std::shared_ptr<const glGribGeometry> const_glGribGeometryPtr;
 
 class glGribGeometry
 {
@@ -93,9 +93,9 @@ protected:
   unsigned int ind_strip_size = 0;
   int numberOfPoints = 0;
   unsigned int numberOfTriangles = 0;
-  glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
+  glGribOpenGLBufferPtr vertexbuffer, elementbuffer;
   int numberOfPoints_frame = 0;
-  glgrib_opengl_buffer_ptr vertexbuffer_frame;
+  glGribOpenGLBufferPtr vertexbuffer_frame;
   std::string md5string (const unsigned char []) const;
 };
 

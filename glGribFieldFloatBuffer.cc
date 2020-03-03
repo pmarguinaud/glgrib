@@ -18,12 +18,12 @@ glGribFieldFloatBuffer::~glGribFieldFloatBuffer ()
   data_ = nullptr;
 }
 
-glgrib_field_float_buffer_ptr newGlgribFieldFloatBufferPtr (size_t size)
+glGribFieldFloatBufferPtr newGlgribFieldFloatBufferPtr (size_t size)
 {
   return std::make_shared<glGribFieldFloatBuffer>(size);
 }
 
-glgrib_field_float_buffer_ptr newGlgribFieldFloatBufferPtr (float * data)
+glGribFieldFloatBufferPtr newGlgribFieldFloatBufferPtr (float * data)
 {
   return std::make_shared<glGribFieldFloatBuffer>(data);
 }

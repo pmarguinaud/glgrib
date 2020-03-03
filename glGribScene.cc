@@ -365,7 +365,7 @@ void glGribScene::setup (const glGribOptions & o)
       glGribField * field = getCurrentField ();
       if (field != nullptr)
         {
-          const_glgrib_geometry_ptr geometry = field->getGeometry ();
+          const_glGribGeometryPtr geometry = field->getGeometry ();
           geometry->getView (&d.view);
         }
     }

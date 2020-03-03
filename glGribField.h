@@ -38,7 +38,7 @@ public:
   void setNextPalette ();
   void scalePaletteUp (float = 0.025);
   void scalePaletteDown (float = 0.025);
-  void setupHilo (glgrib_field_float_buffer_ptr);
+  void setupHilo (glGribFieldFloatBufferPtr);
   void renderHilo (const glGribView &) const;
   void setupVertexAttributesFrame ();
   void renderFrame (const glGribView &) const;
@@ -135,14 +135,14 @@ protected:
   void packUnpack (const float *, float *, const int, 
 		   const float, const float, const float);
   template <typename T>
-  void loadHeight (glgrib_opengl_buffer_ptr, glGribLoader *);
+  void loadHeight (glGribOpenGLBufferPtr, glGribLoader *);
   template <typename T>
   void bindHeight (int);
   static void getUserPref (glGribOptionsField *, glGribLoader *, int);
   glGribPalette palette = paletteColdHot;
   mutable glGribOptionsField opts;
   std::vector<glGribFieldMetadata> meta;
-  std::vector<glgrib_field_float_buffer_ptr> values;
+  std::vector<glGribFieldFloatBufferPtr> values;
   glGribString hilo;
 };
 

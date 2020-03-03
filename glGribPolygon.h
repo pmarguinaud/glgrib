@@ -13,7 +13,7 @@ public:
   virtual void clear ();
 protected:
   GLuint VertexArrayID;
-  glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
+  glGribOpenGLBufferPtr vertexbuffer, elementbuffer;
   unsigned int numberOfLines;
   int numberOfPoints;
 };

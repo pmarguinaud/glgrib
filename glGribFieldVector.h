@@ -43,7 +43,7 @@ private:
   GLuint VertexArrayIDvector = 0;
   struct
     {
-      glgrib_opengl_buffer_ptr buffer_n, buffer_d;
+      glGribOpenGLBufferPtr buffer_n, buffer_d;
       float vscale;
     } d;
 protected:

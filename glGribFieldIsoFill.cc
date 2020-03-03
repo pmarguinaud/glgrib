@@ -296,7 +296,7 @@ void processTriangle2 (std::vector<isoband_maker_t> * isomake,
 
 static
 void processTriangle1 (std::vector<isoband_maker_t> * isomake, 
-                       const_glgrib_geometry_ptr geometry,
+                       const_glGribGeometryPtr geometry,
                        const float * val, int it, 
                        const std::vector<float> & levels)
 {
@@ -337,7 +337,7 @@ void glGribFieldIsoFill::setup (glGribLoader * ld, const glGribOptionsField & o,
   opts = o;
 
   glGribFieldMetadata meta1;
-  glgrib_field_float_buffer_ptr data;
+  glGribFieldFloatBufferPtr data;
   ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
 

@@ -91,7 +91,7 @@ private:
   {
   public:
     GLuint VertexArrayID;
-    glgrib_opengl_buffer_ptr vertexbuffer, normalbuffer, distancebuffer;
+    glGribOpenGLBufferPtr vertexbuffer, normalbuffer, distancebuffer;
     GLuint size;
   };
 

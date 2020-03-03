@@ -29,7 +29,7 @@ private:
     float min, max;
     glGribOptionsPoints opts;
     int len;
-    glgrib_opengl_buffer_ptr llsbuffer;
+    glGribOpenGLBufferPtr llsbuffer;
   } d;
   GLuint VertexArrayID = 0;
 };

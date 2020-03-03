@@ -26,6 +26,6 @@ public:
 private:
   glGribOptionsLandscape opts;
   glgrib_opengl_texture_ptr texture;
-  glgrib_opengl_buffer_ptr heightbuffer;
+  glGribOpenGLBufferPtr heightbuffer;
 };
 

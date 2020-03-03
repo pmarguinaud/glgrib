@@ -14,7 +14,7 @@ public:
   void resize (const glGribView &) override {}
   float getScale () const override { return 1; }
 protected:
-  glgrib_opengl_buffer_ptr vertexbuffer, elementbuffer;
+  glGribOpenGLBufferPtr vertexbuffer, elementbuffer;
   int numberOfPoints;
   unsigned int numberOfTriangles;
   GLuint VertexArrayID = 0;

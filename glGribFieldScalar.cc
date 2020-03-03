@@ -165,7 +165,7 @@ void glGribFieldScalar::setup (glGribLoader * ld, const glGribOptionsField & o, 
 
   glGribFieldMetadata meta1;
 
-  glgrib_field_float_buffer_ptr data;
+  glGribFieldFloatBufferPtr data;
   ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
 
@@ -203,7 +203,7 @@ void glGribFieldScalar::setupMpiView (glGribLoader * ld, const glGribOptionsFiel
   int size = geometry->getNumberOfPoints ();
 
   glGribFieldMetadata mpiview_meta;
-  glgrib_field_float_buffer_ptr mpiview;
+  glGribFieldFloatBufferPtr mpiview;
 
   ld->load (&mpiview, opts.mpiview.path, opts.geometry, slot, &mpiview_meta, 1, 0);
 

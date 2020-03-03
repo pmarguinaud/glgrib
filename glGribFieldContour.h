@@ -93,7 +93,7 @@ private:
     glGribOptionColor color;
     std::vector<int> pattern;
     GLuint VertexArrayID;
-    glgrib_opengl_buffer_ptr vertexbuffer, heightbuffer, distancebuffer;
+    glGribOpenGLBufferPtr vertexbuffer, heightbuffer, distancebuffer;
     GLuint size;
   };
 

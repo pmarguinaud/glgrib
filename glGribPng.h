@@ -2,6 +2,11 @@
 
 #include <string>
 
-void glGribWritePng (const std::string &, int, int, unsigned char *);
-void glGribReadPng (const std::string &, int *, int *, unsigned char **);
+namespace glGrib
+{
 
+void WritePng (const std::string &, int, int, unsigned char *);
+void ReadPng (const std::string &, int *, int *, unsigned char **);
+
+
+}

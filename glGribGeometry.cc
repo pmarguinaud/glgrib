@@ -12,12 +12,12 @@
 #include <map>
 #include <stdexcept>
 
-typedef std::map <std::string,glGribGeometryPtr> cache_t;
+typedef std::map <std::string,glGrib::GeometryPtr> cache_t;
 static cache_t cache;
 
-glGribGeometryPtr glGribGeometry::load (glGribLoader * ld, const std::string & file, const glGribOptionsGeometry & opts, const int Nj)
+glGrib::GeometryPtr glGrib::Geometry::load (glGrib::Loader * ld, const std::string & file, const glGrib::OptionsGeometry & opts, const int Nj)
 {
-  glGribHandlePtr ghp;
+  glGrib::HandlePtr ghp;
   codes_handle * h = nullptr;
  
   if (file != "")
@@ -31,22 +31,22 @@ glGribGeometryPtr glGribGeometry::load (glGribLoader * ld, const std::string & f
   if (h != nullptr)
     codes_get_long (h, "gridDefinitionTemplateNumber", &gridDefinitionTemplateNumber);
 
-  glGribGeometryPtr geom;
+  glGrib::GeometryPtr geom;
  
   // Read geometry metadata
   switch (gridDefinitionTemplateNumber)
     {
       case 30: case 33:
-        geom = std::make_shared<glGribGeometryLambert> (ghp);
+        geom = std::make_shared<glGrib::GeometryLambert> (ghp);
         break;
       case 40: case 41: case 42: case 43:
-        geom = std::make_shared<glGribGeometryGaussian> (ghp);
+        geom = std::make_shared<glGrib::GeometryGaussian> (ghp);
 	break;
       case 0:
-        geom = std::make_shared<glGribGeometryLatLon> (ghp);
+        geom = std::make_shared<glGrib::GeometryLatLon> (ghp);
 	break;
       case -1:
-        geom = std::make_shared<glGribGeometryGaussian> (Nj);
+        geom = std::make_shared<glGrib::GeometryGaussian> (Nj);
 	break;
       default:
         throw std::runtime_error (std::string ("Unexpected gridDefinitionTemplateNumber ") 
@@ -57,7 +57,7 @@ glGribGeometryPtr glGribGeometry::load (glGribLoader * ld, const std::string & f
   auto it = cache.find (geom->md5 ());
   if (it != cache.end ())
     {
-      glGribGeometryPtr g = it->second;
+      glGrib::GeometryPtr g = it->second;
       if (*g == *geom)  // Same geometry
         {
           geom = g;
@@ -70,7 +70,7 @@ glGribGeometryPtr glGribGeometry::load (glGribLoader * ld, const std::string & f
   if (opts.check.on)
     geom->checkTriangles ();
 
-  cache.insert (std::pair<std::string,glGribGeometryPtr> (geom->md5 (), geom));
+  cache.insert (std::pair<std::string,glGrib::GeometryPtr> (geom->md5 (), geom));
 
 found:
 
@@ -87,11 +87,11 @@ again:
   return geom;
 }
 
-glGribGeometry::~glGribGeometry ()
+glGrib::Geometry::~Geometry ()
 {
 }
 
-std::string glGribGeometry::md5string (const unsigned char md5[]) const
+std::string glGrib::Geometry::md5string (const unsigned char md5[]) const
 {
   const char * const lut = "0123456789ABCDEF";
 
@@ -108,7 +108,7 @@ std::string glGribGeometry::md5string (const unsigned char md5[]) const
   return str;
 }
 
-void glGribGeometry::checkTriangles () const
+void glGrib::Geometry::checkTriangles () const
 {
   int nt = numberOfTriangles;
 #pragma omp parallel for
@@ -148,7 +148,7 @@ void glGribGeometry::checkTriangles () const
   printf ("checkTriangles OK\n");
 }
 
-void glGribGeometry::renderTriangles () const
+void glGrib::Geometry::renderTriangles () const
 {
   if (ind_strip_size)
     {
@@ -163,13 +163,13 @@ void glGribGeometry::renderTriangles () const
     }
 }
 
-void glGribGeometry::setProgramParameters (glGribProgram * program) const 
+void glGrib::Geometry::setProgramParameters (glGrib::Program * program) const 
 {
 #include "shaders/include/geometry/types.h"
   program->set ("geometry_type", geometry_none);
 }
 
-void glGribGeometry::bindCoordinates (int attr) const
+void glGrib::Geometry::bindCoordinates (int attr) const
 {
   if (vertexbuffer != nullptr)
     {

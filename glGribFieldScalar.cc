@@ -8,7 +8,7 @@
 #include <iostream>
 #include <algorithm>
 
-glGribFieldScalar::glGribFieldScalar (const glGribFieldScalar & field)
+glGrib::FieldScalar::FieldScalar (const glGrib::FieldScalar & field)
 {
   if (field.isReady ())
     {
@@ -18,31 +18,31 @@ glGribFieldScalar::glGribFieldScalar (const glGribFieldScalar & field)
     }
 }
 
-void glGribFieldScalar::clear ()
+void glGrib::FieldScalar::clear ()
 {
   if (isReady ())
     glDeleteVertexArrays (1, &VertexArrayIDpoints);
-  glGribField::clear ();
+  glGrib::Field::clear ();
 }
 
 
-glGribFieldScalar * glGribFieldScalar::clone () const
+glGrib::FieldScalar * glGrib::FieldScalar::clone () const
 {
   if (this == nullptr)
     return nullptr;
-  glGribFieldScalar * fld = new glGribFieldScalar ();
+  glGrib::FieldScalar * fld = new glGrib::FieldScalar ();
   *fld = *this;
   return fld;
 }
 
-glGribFieldScalar & glGribFieldScalar::operator= (const glGribFieldScalar & field)
+glGrib::FieldScalar & glGrib::FieldScalar::operator= (const glGrib::FieldScalar & field)
 {
   if (this != &field)
     {
       clear ();
       if (field.isReady ())
         {
-          glGribField::operator= (field);
+          glGrib::Field::operator= (field);
           setupVertexAttributes ();
           setReady ();
         }
@@ -50,7 +50,7 @@ glGribFieldScalar & glGribFieldScalar::operator= (const glGribFieldScalar & fiel
   return *this;
 }
 
-void glGribFieldScalar::setupVertexAttributes ()
+void glGrib::FieldScalar::setupVertexAttributes ()
 {
   switch (opts.scalar.pack.bits)
     {
@@ -70,7 +70,7 @@ void glGribFieldScalar::setupVertexAttributes ()
 }
 
 template <typename T>
-void glGribFieldScalar::setupVertexAttributes ()
+void glGrib::FieldScalar::setupVertexAttributes ()
 {
   numberOfPoints = geometry->getNumberOfPoints ();
   numberOfTriangles = geometry->getNumberOfTriangles ();
@@ -138,7 +138,7 @@ void glGribFieldScalar::setupVertexAttributes ()
 
 }
 
-void glGribFieldScalar::setup (glGribLoader * ld, const glGribOptionsField & o, float slot)
+void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
   opts = o;
   switch (opts.scalar.pack.bits)
@@ -159,19 +159,19 @@ void glGribFieldScalar::setup (glGribLoader * ld, const glGribOptionsField & o, 
 }
 
 template <typename T>
-void glGribFieldScalar::setup (glGribLoader * ld, const glGribOptionsField & o, float slot)
+void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
   opts = o;
 
-  glGribFieldMetadata meta1;
+  glGrib::FieldMetadata meta1;
 
-  glGribFieldFloatBufferPtr data;
+  glGrib::FieldFloatBufferPtr data;
   ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
 
-  palette = glGribPalette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
+  palette = glGrib::Palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
 
-  geometry = glGribGeometry::load (ld, opts.path[int (slot)], opts.geometry);
+  geometry = glGrib::Geometry::load (ld, opts.path[int (slot)], opts.geometry);
 
   if (opts.hilo.on)
     setupHilo (data);
@@ -198,12 +198,12 @@ void glGribFieldScalar::setup (glGribLoader * ld, const glGribOptionsField & o, 
   setReady ();
 }
 
-void glGribFieldScalar::setupMpiView (glGribLoader * ld, const glGribOptionsField & o, float slot)
+void glGrib::FieldScalar::setupMpiView (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
   int size = geometry->getNumberOfPoints ();
 
-  glGribFieldMetadata mpiview_meta;
-  glGribFieldFloatBufferPtr mpiview;
+  glGrib::FieldMetadata mpiview_meta;
+  glGrib::FieldFloatBufferPtr mpiview;
 
   ld->load (&mpiview, opts.mpiview.path, opts.geometry, slot, &mpiview_meta, 1, 0);
 
@@ -257,16 +257,16 @@ void glGribFieldScalar::setupMpiView (glGribLoader * ld, const glGribOptionsFiel
 
 }
 
-void glGribFieldScalar::render (const glGribView & view, const glGribOptionsLight & light) const
+void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
   float scale0 = opts.scale;
 
   if (opts.mpiview.on)
     scale0 = scale0 / (1.0f + opts.mpiview.scale);
 
-  glGribProgram * program = glGribProgram::load (opts.scalar.points.on 
-                                                 ? glGribProgram::SCALAR_POINTS 
-                                                 : glGribProgram::SCALAR);
+  glGrib::Program * program = glGrib::Program::load (opts.scalar.points.on 
+                                                 ? glGrib::Program::SCALAR_POINTS 
+                                                 : glGrib::Program::SCALAR);
 
   program->use ();
 
@@ -335,7 +335,7 @@ void glGribFieldScalar::render (const glGribView & view, const glGribOptionsLigh
 
 }
 
-glGribFieldScalar::~glGribFieldScalar ()
+glGrib::FieldScalar::~FieldScalar ()
 {
 }
 

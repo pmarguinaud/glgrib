@@ -3,20 +3,23 @@
 #include "glGribField.h"
 #include "glGribString.h"
 
-class glGribFieldContour : public glGribField
+namespace glGrib
+{
+
+class FieldContour : public Field
 {
 public:
-  glGribField::kind getKind () const 
+  Field::kind getKind () const 
   {
-    return glGribField::CONTOUR;
+    return Field::CONTOUR;
   }
-  glGribFieldContour * clone () const;
-  glGribFieldContour & operator= (const glGribFieldContour &);
-  glGribFieldContour () { }
-  glGribFieldContour (const glGribFieldContour &);
-  void setup (glGribLoader *, const glGribOptionsField &, float = 0) override;
-  void render (const glGribView &, const glGribOptionsLight &) const override;
-  virtual ~glGribFieldContour ();
+  FieldContour * clone () const;
+  FieldContour & operator= (const FieldContour &);
+  FieldContour () { }
+  FieldContour (const FieldContour &);
+  void setup (Loader *, const OptionsField &, float = 0) override;
+  void render (const View &, const OptionsLight &) const override;
+  virtual ~FieldContour ();
   void setupVertexAttributes ();
   void clear () override; 
   bool useColorBar () const override { return true; }
@@ -84,16 +87,16 @@ private:
   class isoline_t
   {
   public:
-    glGribString labels;
+    String labels;
     float level;
     bool wide = false;
     float width = 0.0f;
     bool dash = false;
     float length = 0.0f;
-    glGribOptionColor color;
+    OptionColor color;
     std::vector<int> pattern;
     GLuint VertexArrayID;
-    glGribOpenGLBufferPtr vertexbuffer, heightbuffer, distancebuffer;
+    OpenGLBufferPtr vertexbuffer, heightbuffer, distancebuffer;
     GLuint size;
   };
 
@@ -103,3 +106,5 @@ private:
   void setupLabels (isoline_t *, const isoline_data_t &);
 };
 
+
+}

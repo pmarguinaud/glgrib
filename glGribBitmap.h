@@ -2,5 +2,10 @@
 
 #include <string>
 
-void glGribBitmap (const std::string &, unsigned char **, int *, int *);
+namespace glGrib
+{
 
+void Bitmap (const std::string &, unsigned char **, int *, int *);
+
+
+}

@@ -3,20 +3,23 @@
 #include "glGribField.h"
 #include <bits/stdc++.h> 
 
-class glGribFieldStream : public glGribField
+namespace glGrib
+{
+
+class FieldStream : public Field
 {
 public:
-  glGribField::kind getKind () const 
+  Field::kind getKind () const 
   {
-    return glGribField::STREAM;
+    return Field::STREAM;
   }
-  glGribFieldStream * clone () const;
-  glGribFieldStream & operator= (const glGribFieldStream &);
-  glGribFieldStream () { }
-  glGribFieldStream (const glGribFieldStream &);
-  void setup (glGribLoader *, const glGribOptionsField &, float = 0) override;
-  void render (const glGribView &, const glGribOptionsLight &) const override;
-  virtual ~glGribFieldStream ();
+  FieldStream * clone () const;
+  FieldStream & operator= (const FieldStream &);
+  FieldStream () { }
+  FieldStream (const FieldStream &);
+  void setup (Loader *, const OptionsField &, float = 0) override;
+  void render (const View &, const OptionsLight &) const override;
+  virtual ~FieldStream ();
   void setupVertexAttributes ();
   void clear () override;
   bool useColorBar () const override { return true; }
@@ -91,7 +94,7 @@ private:
   {
   public:
     GLuint VertexArrayID;
-    glGribOpenGLBufferPtr vertexbuffer, normalbuffer, distancebuffer;
+    OpenGLBufferPtr vertexbuffer, normalbuffer, distancebuffer;
     GLuint size;
   };
 
@@ -131,3 +134,5 @@ private:
                              std::vector<glm::vec3> &);
 };
 
+
+}

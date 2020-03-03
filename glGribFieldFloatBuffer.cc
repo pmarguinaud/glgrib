@@ -1,29 +1,29 @@
 #include "glGribFieldFloatBuffer.h"
 
 
-glGribFieldFloatBuffer::glGribFieldFloatBuffer (size_t size)
+glGrib::FieldFloatBuffer::FieldFloatBuffer (size_t size)
 {
   data_ = new float[size];
 }
 
-glGribFieldFloatBuffer::glGribFieldFloatBuffer (float * data)
+glGrib::FieldFloatBuffer::FieldFloatBuffer (float * data)
 {
   data_ = data;
 }
 
-glGribFieldFloatBuffer::~glGribFieldFloatBuffer ()
+glGrib::FieldFloatBuffer::~FieldFloatBuffer ()
 {
   if (data_)
     delete [] data_;
   data_ = nullptr;
 }
 
-glGribFieldFloatBufferPtr newGlgribFieldFloatBufferPtr (size_t size)
+glGrib::FieldFloatBufferPtr glGrib::newGlgribFieldFloatBufferPtr (size_t size)
 {
-  return std::make_shared<glGribFieldFloatBuffer>(size);
+  return std::make_shared<glGrib::FieldFloatBuffer>(size);
 }
 
-glGribFieldFloatBufferPtr newGlgribFieldFloatBufferPtr (float * data)
+glGrib::FieldFloatBufferPtr glGrib::newGlgribFieldFloatBufferPtr (float * data)
 {
-  return std::make_shared<glGribFieldFloatBuffer>(data);
+  return std::make_shared<glGrib::FieldFloatBuffer>(data);
 }

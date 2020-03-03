@@ -9,9 +9,9 @@
 #include <iostream>
 #include <stdexcept>
 
-const double glGribGeometryLambert::a = 6371229.0;
+const double glGrib::GeometryLambert::a = 6371229.0;
 
-void glGribGeometryLambert::setupCoordinates ()
+void glGrib::GeometryLambert::setupCoordinates ()
 {
   vertexbuffer = newGlgribOpenGLBufferPtr (2 * numberOfPoints * sizeof (float));
 
@@ -37,7 +37,7 @@ void glGribGeometryLambert::setupCoordinates ()
   vertexbuffer->unmap ();
 }
 
-void glGribGeometryLambert::setProgramParameters (glGribProgram * program) const 
+void glGrib::GeometryLambert::setProgramParameters (glGrib::Program * program) const 
 {
 #include "shaders/include/geometry/types.h"
   if (vertexbuffer != nullptr)
@@ -63,12 +63,12 @@ void glGribGeometryLambert::setProgramParameters (glGribProgram * program) const
     }
 }
 
-int glGribGeometryLambert::size () const
+int glGrib::GeometryLambert::size () const
 {
   return Nx * Ny;
 }
 
-glGribGeometryLambert::glGribGeometryLambert (glGribHandlePtr ghp)
+glGrib::GeometryLambert::GeometryLambert (glGrib::HandlePtr ghp)
 {
   codes_handle * h = ghp->getCodesHandle ();
   codes_get_long (h, "Nx", &Nx);
@@ -83,7 +83,7 @@ glGribGeometryLambert::glGribGeometryLambert (glGribHandlePtr ghp)
   
 }
 
-void glGribGeometryLambert::setupFrame ()
+void glGrib::GeometryLambert::setupFrame ()
 {
   numberOfPoints_frame = 2 * (Nx + Ny - 2);
   vertexbuffer_frame = newGlgribOpenGLBufferPtr (3 * (numberOfPoints_frame + 2) 
@@ -125,7 +125,7 @@ void glGribGeometryLambert::setupFrame ()
 }
 
 
-void glGribGeometryLambert::setup (glGribHandlePtr ghp, const glGribOptionsGeometry & o)
+void glGrib::GeometryLambert::setup (glGrib::HandlePtr ghp, const glGrib::OptionsGeometry & o)
 {
   opts = o;
 
@@ -202,11 +202,11 @@ void glGribGeometryLambert::setup (glGribHandlePtr ghp, const glGribOptionsGeome
 
 }
 
-glGribGeometryLambert::~glGribGeometryLambert ()
+glGrib::GeometryLambert::~GeometryLambert ()
 {
 }
 
-int glGribGeometryLambert::latlon2index (float lat, float lon) const
+int glGrib::GeometryLambert::latlon2index (float lat, float lon) const
 {
   xy_t xy = p_pj.latlonToXy (latlon_t (lon * deg2rad, lat * deg2rad));
   xy = xy - center_xy;
@@ -222,7 +222,7 @@ int glGribGeometryLambert::latlon2index (float lat, float lon) const
   return j * Nx + i;
 }
 
-void glGribGeometryLambert::index2latlon (int jglo, float * lat, float * lon) const
+void glGrib::GeometryLambert::index2latlon (int jglo, float * lat, float * lon) const
 {
   int i = jglo % Nx;
   int j = jglo / Nx;
@@ -236,7 +236,7 @@ void glGribGeometryLambert::index2latlon (int jglo, float * lat, float * lon) co
   *lat = latlon.lat;
 }
 
-std::string glGribGeometryLambert::md5 () const
+std::string glGrib::GeometryLambert::md5 () const
 {
   unsigned char out[MD5_DIGEST_LENGTH];
   MD5_CTX c;
@@ -256,11 +256,11 @@ std::string glGribGeometryLambert::md5 () const
   return md5string (out);
 }
 
-bool glGribGeometryLambert::isEqual (const glGribGeometry & geom) const
+bool glGrib::GeometryLambert::isEqual (const glGrib::Geometry & geom) const
 {
   try
     {
-      const glGribGeometryLambert & g = dynamic_cast<const glGribGeometryLambert &>(geom);
+      const glGrib::GeometryLambert & g = dynamic_cast<const glGrib::GeometryLambert &>(geom);
       return (Nx                    == g.Nx)
           && (Ny                    == g.Ny)
           && (Nux                   == g.Nux)
@@ -277,7 +277,7 @@ bool glGribGeometryLambert::isEqual (const glGribGeometry & geom) const
     }
 }
 
-void glGribGeometryLambert::sample (unsigned char * p, const unsigned char p0, const int level) const
+void glGrib::GeometryLambert::sample (unsigned char * p, const unsigned char p0, const int level) const
 {
   xy_t pt_sw ((-Nux / 2) * DxInMetres, (-Nuy / 2) * DyInMetres);
   xy_t pt_ne ((+Nux / 2) * DxInMetres, (+Nuy / 2) * DyInMetres);
@@ -305,7 +305,7 @@ void glGribGeometryLambert::sample (unsigned char * p, const unsigned char p0, c
     }
 }
 
-float glGribGeometryLambert::resolution (int level) const 
+float glGrib::GeometryLambert::resolution (int level) const 
 {
   if (level == 0)
     level == Ny;
@@ -319,7 +319,7 @@ float glGribGeometryLambert::resolution (int level) const
   return Dlat / level;
 }
 
-void glGribGeometryLambert::applyUVangle (float * angle) const 
+void glGrib::GeometryLambert::applyUVangle (float * angle) const 
 {
 
   // Generation of coordinates
@@ -345,7 +345,7 @@ void glGribGeometryLambert::applyUVangle (float * angle) const
       }
 }
 
-void glGribGeometryLambert::getTriangleVertices (int it, int jglo[3]) const
+void glGrib::GeometryLambert::getTriangleVertices (int it, int jglo[3]) const
 { 
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;
@@ -365,7 +365,7 @@ void glGribGeometryLambert::getTriangleVertices (int it, int jglo[3]) const
     }
 }
 
-void glGribGeometryLambert::getTriangleNeighboursXY (int it, int jglo[3], int itri[3], xy_t xy[4]) const
+void glGrib::GeometryLambert::getTriangleNeighboursXY (int it, int jglo[3], int itri[3], xy_t xy[4]) const
 { 
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;                // it is now the rank of the triangle 012
@@ -400,7 +400,7 @@ void glGribGeometryLambert::getTriangleNeighboursXY (int it, int jglo[3], int it
     }
 }
 
-void glGribGeometryLambert::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
+void glGrib::GeometryLambert::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
 { 
   bool t021 = (it % 2) == 0;
 
@@ -431,7 +431,7 @@ void glGribGeometryLambert::getTriangleNeighbours (int it, int jglo[3], int itri
     }
 }
 
-void glGribGeometryLambert::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec2 xy[3]) const
+void glGrib::GeometryLambert::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec2 xy[3]) const
 {
   bool t021 = (it % 2) == 0;
 
@@ -457,7 +457,7 @@ void glGribGeometryLambert::getTriangleNeighbours (int it, int jglo[3], int itri
 
 }
 
-bool glGribGeometryLambert::triangleIsEdge (int it) const
+bool glGrib::GeometryLambert::triangleIsEdge (int it) const
 { 
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;
@@ -479,7 +479,7 @@ bool glGribGeometryLambert::triangleIsEdge (int it) const
   return false;
 }
 
-void glGribGeometryLambert::sampleTriangle (unsigned char * s, const unsigned char s0, const int level) const
+void glGrib::GeometryLambert::sampleTriangle (unsigned char * s, const unsigned char s0, const int level) const
 {
   xy_t pt_sw ((-Nux / 2) * DxInMetres, (-Nuy / 2) * DyInMetres);
   xy_t pt_ne ((+Nux / 2) * DxInMetres, (+Nuy / 2) * DyInMetres);
@@ -508,7 +508,7 @@ void glGribGeometryLambert::sampleTriangle (unsigned char * s, const unsigned ch
 
 }
 
-int glGribGeometryLambert::getTriangle (float lon, float lat) const
+int glGrib::GeometryLambert::getTriangle (float lon, float lat) const
 {
   xy_t xy = p_pj.latlonToXy (latlon_t (lon * deg2rad, lat * deg2rad));
   xy = xy - center_xy;
@@ -536,12 +536,12 @@ int glGribGeometryLambert::getTriangle (float lon, float lat) const
   return it;
 }
 
-glm::vec2 glGribGeometryLambert::xyz2conformal (const glm::vec3 &) const
+glm::vec2 glGrib::GeometryLambert::xyz2conformal (const glm::vec3 &) const
 {
-  throw std::runtime_error (std::string ("glGribGeometryLambert::xyz2conformal not implemented"));
+  throw std::runtime_error (std::string ("glGrib::GeometryLambert::xyz2conformal not implemented"));
 }
 
-glm::vec3 glGribGeometryLambert::conformal2xyz (const glm::vec2 & xy) const
+glm::vec3 glGrib::GeometryLambert::conformal2xyz (const glm::vec2 & xy) const
 {
   xy_t pt_xy (xy.x, xy.y);
   pt_xy = pt_xy + center_xy;
@@ -552,7 +552,7 @@ glm::vec3 glGribGeometryLambert::conformal2xyz (const glm::vec2 & xy) const
 }
 
 
-glm::vec2 glGribGeometryLambert::conformal2latlon (const glm::vec2 & xy) const
+glm::vec2 glGrib::GeometryLambert::conformal2latlon (const glm::vec2 & xy) const
 {
   xy_t pt_xy (xy.x, xy.y);
   pt_xy = pt_xy + center_xy;
@@ -562,7 +562,7 @@ glm::vec2 glGribGeometryLambert::conformal2latlon (const glm::vec2 & xy) const
   return glm::vec2 (rad2deg * latlon.lon, rad2deg * latlon.lat);
 }
 
-void glGribGeometryLambert::getPointNeighbours (int jglo, std::vector<int> * neigh) const
+void glGrib::GeometryLambert::getPointNeighbours (int jglo, std::vector<int> * neigh) const
 {
   neigh->resize (0);
 
@@ -588,14 +588,14 @@ void glGribGeometryLambert::getPointNeighbours (int jglo, std::vector<int> * nei
 }
 
 
-float glGribGeometryLambert::getLocalMeshSize (int jglo) const
+float glGrib::GeometryLambert::getLocalMeshSize (int jglo) const
 {
   return DxInMetres / a;
 }
 
-void glGribGeometryLambert::getView (glGribView * view) const
+void glGrib::GeometryLambert::getView (glGrib::View * view) const
 {
-  glGribOptionsView view_opts = view->getOptions (); 
+  glGrib::OptionsView view_opts = view->getOptions (); 
   latlon_t latlon = p_pj.xy_to_latlon (center_xy);
   view_opts.lon = latlon.lon * rad2deg;
   view_opts.lat = latlon.lat * rad2deg;

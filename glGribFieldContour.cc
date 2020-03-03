@@ -11,7 +11,7 @@
 #include <numeric>
 
 
-glGribFieldContour::glGribFieldContour (const glGribFieldContour & field)
+glGrib::FieldContour::FieldContour (const glGrib::FieldContour & field)
 {
   if (field.isReady ())
     {
@@ -21,23 +21,23 @@ glGribFieldContour::glGribFieldContour (const glGribFieldContour & field)
     }
 }
 
-glGribFieldContour * glGribFieldContour::clone () const
+glGrib::FieldContour * glGrib::FieldContour::clone () const
 {
   if (this == nullptr)
     return nullptr;
-  glGribFieldContour * fld = new glGribFieldContour ();
+  glGrib::FieldContour * fld = new glGrib::FieldContour ();
   *fld = *this;
   return fld;
 }
 
-glGribFieldContour & glGribFieldContour::operator= (const glGribFieldContour & field)
+glGrib::FieldContour & glGrib::FieldContour::operator= (const glGrib::FieldContour & field)
 {
   if (this != &field)
     {
       clear ();
       if (field.isReady ())
         {
-          glGribField::operator= (field);
+          glGrib::Field::operator= (field);
           iso = field.iso;
           setupVertexAttributes ();
           setReady ();
@@ -46,15 +46,15 @@ glGribFieldContour & glGribFieldContour::operator= (const glGribFieldContour & f
   return *this;
 }
 
-void glGribFieldContour::clear ()
+void glGrib::FieldContour::clear ()
 {
   if (isReady ()) 
     for (auto & is : iso)
       glDeleteVertexArrays (1, &is.VertexArrayID);
-  glGribField::clear ();
+  glGrib::Field::clear ();
 }
 
-void glGribFieldContour::setupVertexAttributes ()
+void glGrib::FieldContour::setupVertexAttributes ()
 {
   numberOfPoints = geometry->getNumberOfPoints ();
   numberOfTriangles = geometry->getNumberOfTriangles ();
@@ -113,14 +113,14 @@ float getLabelAngle (const std::vector<float> & lonlat, const std::vector<float>
 
   float lon = lonlat[2*j+0], lat = lonlat[2*j+1];
 
-  glm::vec3 P = lonlat2xyz (glm::vec2 (lonlat[2*j+0], lonlat[2*j+1]));
+  glm::vec3 P = glGrib::lonlat2xyz (glm::vec2 (lonlat[2*j+0], lonlat[2*j+1]));
   std::vector<glm::vec3> V (2 * width);
 
   for (int i = -width; i < 0; i++)
-    V[width+i+0] = glm::normalize (P - lonlat2xyz (glm::vec2 (lonlat[2*(j+i)+0], lonlat[2*(j+i)+1])));
+    V[width+i+0] = glm::normalize (P - glGrib::lonlat2xyz (glm::vec2 (lonlat[2*(j+i)+0], lonlat[2*(j+i)+1])));
 
   for (int i = 1; i <= width; i++)
-    V[width+i-1] = glm::normalize (lonlat2xyz (glm::vec2 (lonlat[2*(j+i)+0], lonlat[2*(j+i)+1])) - P);
+    V[width+i-1] = glm::normalize (glGrib::lonlat2xyz (glm::vec2 (lonlat[2*(j+i)+0], lonlat[2*(j+i)+1])) - P);
 
   auto A = glm::normalize (std::accumulate (V.begin (), V.end (), glm::vec3 (0.0f, 0.0f, 0.0f)));
 
@@ -130,7 +130,7 @@ float getLabelAngle (const std::vector<float> & lonlat, const std::vector<float>
   float x = glm::dot (u, A);
   float y = glm::dot (v, A);
 
-  float angle = rad2deg * atan2 (y, x);
+  float angle = glGrib::rad2deg * atan2 (y, x);
 
   if (fabs (angle - 180.0f) < fabs (angle))
     angle = angle - 180.0f;
@@ -139,9 +139,9 @@ float getLabelAngle (const std::vector<float> & lonlat, const std::vector<float>
 }
 
 
-void glGribFieldContour::setupLabels (isoline_t * iso, const isoline_data_t & iso_data)
+void glGrib::FieldContour::setupLabels (isoline_t * iso, const isoline_data_t & iso_data)
 {
-  glGribFontPtr font = newGlgribFontPtr (opts.contour.labels.font);
+  glGrib::FontPtr font = newGlgribFontPtr (opts.contour.labels.font);
   char tmp[256];
 
   sprintf (tmp, opts.contour.labels.format.c_str (), iso->level);
@@ -194,7 +194,7 @@ void glGribFieldContour::setupLabels (isoline_t * iso, const isoline_data_t & is
     }
 
   iso->labels.setup3D (font, L, X, Y, Z, A, opts.contour.labels.font.scale, 
-                       glGribString::C);
+                       glGrib::String::C);
   iso->labels.setForegroundColor (opts.contour.labels.font.color.foreground);
   iso->labels.setBackgroundColor (opts.contour.labels.font.color.background);
 
@@ -202,27 +202,27 @@ void glGribFieldContour::setupLabels (isoline_t * iso, const isoline_data_t & is
 
 }
 
-void glGribFieldContour::setup (glGribLoader * ld, const glGribOptionsField & o, float slot)
+void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
   opts = o;
 
-  glGribFieldMetadata meta1;
-  glGribFieldFloatBufferPtr data;
+  glGrib::FieldMetadata meta1;
+  glGrib::FieldFloatBufferPtr data;
   ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
 
-  palette = glGribPalette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
+  palette = glGrib::Palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
 
-  geometry = glGribGeometry::load (ld, opts.path[0], opts.geometry);
+  geometry = glGrib::Geometry::load (ld, opts.path[0], opts.geometry);
 
   if (opts.hilo.on)
     setupHilo (data);
 
-  glGribFieldFloatBufferPtr height = data;
-  glGribFieldMetadata meta_height = meta1;
+  glGrib::FieldFloatBufferPtr height = data;
+  glGrib::FieldMetadata meta_height = meta1;
   if ((opts.geometry.height.on) && (opts.geometry.height.path != ""))
     {
-      glGribGeometryPtr geometry_height = glGribGeometry::load (ld, opts.geometry.height.path, opts.geometry);
+      glGrib::GeometryPtr geometry_height = glGrib::Geometry::load (ld, opts.geometry.height.path, opts.geometry);
 
       if (! geometry_height->isEqual (*geometry))
         throw std::runtime_error (std::string ("Field and height have different geometries"));
@@ -237,8 +237,8 @@ void glGribFieldContour::setup (glGribLoader * ld, const glGribOptionsField & o,
 
   if (levels.size () == 0)
     {
-      float min = opts.contour.min == glGribOptionsContour::defaultMin ? meta1.valmin : opts.contour.min;
-      float max = opts.contour.max == glGribOptionsContour::defaultMax ? meta1.valmax : opts.contour.max;
+      float min = opts.contour.min == glGrib::OptionsContour::defaultMin ? meta1.valmin : opts.contour.min;
+      float max = opts.contour.max == glGrib::OptionsContour::defaultMax ? meta1.valmax : opts.contour.max;
       for (int i = 0; i < opts.contour.number; i++)
         levels.push_back (min + (i + 1) * (max - min) / (opts.contour.number + 1));
     }
@@ -324,7 +324,7 @@ void glGribFieldContour::setup (glGribLoader * ld, const glGribOptionsField & o,
   setReady ();
 }
 
-void glGribFieldContour::processTriangle (int it0, float * r, float r0, float * h, float hmin, float hmax, 
+void glGrib::FieldContour::processTriangle (int it0, float * r, float r0, float * h, float hmin, float hmax, 
                                             float hmis, bool * seen, isoline_data_t * iso)
 {
   int count = 0;
@@ -446,11 +446,11 @@ void glGribFieldContour::processTriangle (int it0, float * r, float r0, float * 
   return;
 }
 
-void glGribFieldContour::render (const glGribView & view, const glGribOptionsLight & light) const
+void glGrib::FieldContour::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  glGribProgram * program = glGribProgram::load (glGribProgram::CONTOUR);
+  glGrib::Program * program = glGrib::Program::load (glGrib::Program::CONTOUR);
   program->use ();
-  const glGribPalette & p = palette;
+  const glGrib::Palette & p = palette;
 
   view.setMVP (program);
   program->set ("scale0", opts.scale);
@@ -496,7 +496,7 @@ void glGribFieldContour::render (const glGribView & view, const glGribOptionsLig
 
 }
 
-glGribFieldContour::~glGribFieldContour ()
+glGrib::FieldContour::~FieldContour ()
 {
 }
 

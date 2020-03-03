@@ -16,9 +16,12 @@
 #include <readline/history.h>
 
 
-glGribShell Shell;
+namespace glGrib
+{
+glGrib::Shell Shell0;
+}
 
-char * glGribShell::optionGenerator (const char * text, int state)
+char * glGrib::Shell::optionGenerator (const char * text, int state)
 {
 
   if (! state) 
@@ -38,7 +41,7 @@ char * glGribShell::optionGenerator (const char * text, int state)
 
 char * shellOptionGenerator (const char * text, int state)
 {
-  return Shell.optionGenerator (text, state);
+  return glGrib::Shell0.optionGenerator (text, state);
 }
 
 char ** shellCompletion (const char * text, int start, int end)
@@ -49,10 +52,10 @@ char ** shellCompletion (const char * text, int start, int end)
   return nullptr;
 }
 
-glGribShell::glGribShell ()
+glGrib::Shell::Shell ()
 {
-  glGribOptions opts;
-  glGribOptionsParser p;
+  glGrib::Options opts;
+  glGrib::OptionsParser p;
   opts.traverse ("", &p);
   p.getOptions (&getsetoptions);
   rl_attempted_completion_function = shellCompletion;
@@ -63,7 +66,7 @@ static void help ()
   std::cout << "Unknown command" << std::endl;
 }
 
-void glGribShell::execute (const std::string & _line, glGribWindow * gwindow)
+void glGrib::Shell::execute (const std::string & _line, glGrib::Window * gwindow)
 {
   std::string cmd;
   std::vector<std::string> args;
@@ -74,7 +77,7 @@ void glGribShell::execute (const std::string & _line, glGribWindow * gwindow)
 
   try 
     {
-      cmd = glGribOptionsUtil::nextToken (&line);
+      cmd = glGrib::OptionsUtil::nextToken (&line);
 
       if (cmd == "")
         return;
@@ -83,7 +86,7 @@ void glGribShell::execute (const std::string & _line, glGribWindow * gwindow)
      
       while (1)
         {
-          std::string arg = glGribOptionsUtil::nextToken (&line);
+          std::string arg = glGrib::OptionsUtil::nextToken (&line);
           if (arg == "") 
             break;
           if (arg[0] == '#')
@@ -119,13 +122,13 @@ void glGribShell::execute (const std::string & _line, glGribWindow * gwindow)
     }
   else if (cmd == "show")
     {
-      glGribOptions opts = gwindow->scene.getOptions ();
-      glGribOptionsParser::print (opts);
+      glGrib::Options opts = gwindow->scene.getOptions ();
+      glGrib::OptionsParser::print (opts);
     }
   else if (cmd == "get")
     {
-      glGribOptions opts = gwindow->scene.getOptions ();
-      glGribOptionsParser p;
+      glGrib::Options opts = gwindow->scene.getOptions ();
+      glGrib::OptionsParser p;
       opts.traverse ("", &p);
  
       for (int i = 0; i < args.size (); i++)
@@ -137,16 +140,16 @@ void glGribShell::execute (const std::string & _line, glGribWindow * gwindow)
 
       int argc = 1 + args.size ();
       const char * argv[argc];
-      argv[0] = "glGrib";
+      argv[0] = "glGrib::";
       
       for (int i = 0; i < args.size (); i++)
         argv[1+i] = args[i].c_str ();
       
-      glGribOptions opts = gwindow->scene.getOptions ();
+      glGrib::Options opts = gwindow->scene.getOptions ();
       opts.window = gwindow->getOptions ();
       opts.shell = this->opts;
 
-      glGribOptionsParser p;
+      glGrib::OptionsParser p;
       opts.traverse ("", &p);
       
       if (p.parse (argc, argv))
@@ -292,7 +295,7 @@ do { \
   else if ((cmd == "window") && (args.size () == 0))
     {
       std::cout << "Window list:" << std::endl;
-      for (glGribWindowSet::const_iterator it = wset->begin (); it != wset->end (); it++)
+      for (glGrib::WindowSet::const_iterator it = wset->begin (); it != wset->end (); it++)
         {
           int id = (*it)->id ();
           std::cout << (windowid == id ? " > " : "   ") << id << std::endl;
@@ -315,26 +318,26 @@ do { \
 static 
 void * _run (void * data)
 {
-  glGribShell * shell = (glGribShell *)data;
+  glGrib::Shell * shell = (glGrib::Shell *)data;
   shell->run ();
   return nullptr;
 }
 
 
-void glGribShell::start (glGribWindowSet * ws)
+void glGrib::Shell::start (glGrib::WindowSet * ws)
 {
   wset = ws;
   pthread_create(&thread, nullptr, _run, this);
 }
 
 
-void glGribShell::runInt ()
+void glGrib::Shell::runInt ()
 {
-  if (read_history (".glGribHistory") != 0)
-    write_history (".glGribHistory");
+  if (read_history (".glGrib::History") != 0)
+    write_history (".glGrib::History");
   while (wset->size () > 0)
     {
-      char * line = readline ("glGrib> ");
+      char * line = readline ("glGrib::> ");
 
       if (line == nullptr)
         {
@@ -351,7 +354,7 @@ void glGribShell::runInt ()
       {
         if (wset->size ())
           {
-            glGribWindow * gwindow = wset->getWindowById (windowid);
+            glGrib::Window * gwindow = wset->getWindowById (windowid);
 	    if (gwindow == nullptr)
               gwindow = wset->getFirstWindow ();
             if (gwindow != nullptr)
@@ -360,7 +363,7 @@ void glGribShell::runInt ()
       }
       unlock ();
       
-      append_history (1, ".glGribHistory");
+      append_history (1, ".glGrib::History");
 
       free (line);
       
@@ -370,7 +373,7 @@ void glGribShell::runInt ()
     }
 }
 
-void glGribShell::runOff ()
+void glGrib::Shell::runOff ()
 {
   std::ifstream fp (opts.script);
 
@@ -382,7 +385,7 @@ void glGribShell::runOff ()
           if (wset->size () == 0)
             break;
           lock ();
-          glGribWindow * gwindow = wset->getWindowById (windowid);
+          glGrib::Window * gwindow = wset->getWindowById (windowid);
           if (gwindow == nullptr)
             gwindow = wset->getFirstWindow ();
           if (gwindow != nullptr)
@@ -406,7 +409,7 @@ void glGribShell::runOff ()
     }
 }
 
-void glGribShell::run ()
+void glGrib::Shell::run ()
 {
   if (opts.script != "")
     runOff ();
@@ -414,7 +417,7 @@ void glGribShell::run ()
     runInt ();
 }
 
-void glGribShell::setup (const glGribOptionsShell & o)
+void glGrib::Shell::setup (const glGrib::OptionsShell & o)
 { 
   opts = o;
 }

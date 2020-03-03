@@ -9,26 +9,31 @@
 #include "glGribProgram.h"
 #include "glGribView.h"
 
-class glGribMapscale
+namespace glGrib
+{
+
+class Mapscale
 {
 public:
-  void setup (const glGribOptionsMapscale &);
+  void setup (const OptionsMapscale &);
   void clear ();
-  ~glGribMapscale ();
-  glGribMapscale & operator= (const glGribMapscale &);
-  void render (const glm::mat4 &, const glGribView &) const;
+  ~Mapscale ();
+  Mapscale & operator= (const Mapscale &);
+  void render (const glm::mat4 &, const View &) const;
   void toggleHidden () { hidden = ! hidden; }
   bool getHidden () const { return hidden; }
-  const glGribOptionsMapscale & getOptions () const { return opts; }
+  const OptionsMapscale & getOptions () const { return opts; }
 private:
-  glGribOptionsMapscale opts;
-  static glGribProgram program;
+  OptionsMapscale opts;
+  static Program program;
   GLuint VertexArrayID;
   GLuint elementbuffer;
   bool ready = false;
   bool hidden = false;
   int nt;
-  mutable glGribString label;
+  mutable String label;
   mutable std::string label_str;
 };
 
+
+}

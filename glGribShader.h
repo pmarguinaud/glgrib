@@ -3,5 +3,10 @@
 #include "glGribOpenGL.h"
 #include <string>
 
-GLuint glGribLoadShader (const std::string &, const std::string &, const std::string &, const std::string &);
+namespace glGrib
+{
 
+GLuint LoadShader (const std::string &, const std::string &, const std::string &, const std::string &);
+
+
+}

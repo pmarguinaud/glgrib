@@ -2,5 +2,10 @@
 
 #include <string>
 
-extern std::string glGribResolve (const std::string &);
+namespace glGrib
+{
 
+extern std::string Resolve (const std::string &);
+
+
+}

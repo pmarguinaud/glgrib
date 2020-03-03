@@ -8,7 +8,7 @@
 #include <iostream>
 #include <vector>
 
-glGribTicks & glGribTicks::operator= (const glGribTicks & other)
+glGrib::Ticks & glGrib::Ticks::operator= (const glGrib::Ticks & other)
 {
   if ((this != &other) && other.isReady ())
     {
@@ -19,13 +19,13 @@ glGribTicks & glGribTicks::operator= (const glGribTicks & other)
   return *this;
 }
 
-void glGribTicks::setup (const glGribOptionsTicks & o)
+void glGrib::Ticks::setup (const glGrib::OptionsTicks & o)
 {
   opts = o;
   setReady ();
 }
 
-void glGribTicks::clear ()
+void glGrib::Ticks::clear ()
 {
   labels.clear ();
   if (isReady ())
@@ -38,28 +38,28 @@ void glGribTicks::clear ()
   ready = false;
 }
 
-glGribTicks::~glGribTicks ()
+glGrib::Ticks::~Ticks ()
 {
   clear (); 
 }
 
-void glGribTicks::render (const glm::mat4 & MVP) const
+void glGrib::Ticks::render (const glm::mat4 & MVP) const
 {
   if (! ready)
     return;
 
   if (opts.lines.on)
     {
-      glGribProgram * program = glGribProgram::load (glGribProgram::TICKS);
+      glGrib::Program * program = glGrib::Program::load (glGrib::Program::TICKS);
       program->use ();
 
       int kind = std::min (1, std::max (0, opts.lines.kind));
 
       program->set ("MVP", MVP);
-      program->set ("N", float (glGribString::N));
-      program->set ("S", float (glGribString::S));
-      program->set ("W", float (glGribString::W));
-      program->set ("E", float (glGribString::E));
+      program->set ("N", float (glGrib::String::N));
+      program->set ("S", float (glGrib::String::S));
+      program->set ("W", float (glGrib::String::W));
+      program->set ("E", float (glGrib::String::E));
       program->set ("color0", opts.lines.color);
       program->set ("length", opts.lines.length);
       program->set ("width", opts.lines.width);
@@ -91,7 +91,7 @@ void glGribTicks::render (const glm::mat4 & MVP) const
 
   if (opts.frame.on)
     {
-      glGribProgram * program = glGribProgram::load (glGribProgram::FTICKS);
+      glGrib::Program * program = glGrib::Program::load (glGrib::Program::FTICKS);
       program->use ();
 
 
@@ -120,12 +120,12 @@ void glGribTicks::render (const glm::mat4 & MVP) const
 }
 
 
-void glGribTicks::createStr 
-(const glGribOptionsTicksSide & sopts,
- glGribString::align_t _align, const glGribView & view, 
+void glGrib::Ticks::createStr 
+(const glGrib::OptionsTicksSide & sopts,
+ glGrib::String::align_t _align, const glGrib::View & view, 
  std::vector<std::string> & S, std::vector<float> & X, 
  std::vector<float> & Y, std::vector<float> & A,
- std::vector<glGribString::align_t> & align)
+ std::vector<glGrib::String::align_t> & align)
 {
   float ratio = float (width) / float (height);
 
@@ -151,10 +151,10 @@ void glGribTicks::createStr
 
   switch (_align)
     {
-      case glGribString::E: nxy = ny; break;
-      case glGribString::W: nxy = ny; break;
-      case glGribString::N: nxy = nx; break;
-      case glGribString::S: nxy = nx; break;
+      case glGrib::String::E: nxy = ny; break;
+      case glGrib::String::W: nxy = ny; break;
+      case glGrib::String::N: nxy = nx; break;
+      case glGrib::String::S: nxy = nx; break;
     }
          
   // Start at 1, finish at nxy-1 : avoid corners
@@ -176,16 +176,16 @@ void glGribTicks::createStr
 
       switch (_align)
         {
-          case glGribString::E: 
+          case glGrib::String::E: 
             x = width * vopts.clip.xmax; y = cy ();                               
 	    break;
-          case glGribString::W: 
+          case glGrib::String::W: 
 	    x = width * vopts.clip.xmin; y = cy ();                               
 	    break;
-          case glGribString::N: 
+          case glGrib::String::N: 
 	    x = cx ();                   y = height * (vopts.clip.ymax - dymaxf); 
 	    break;
-          case glGribString::S: 
+          case glGrib::String::S: 
 	    x = cx ();                   y = height * (vopts.clip.ymin + dyminf); 
 	    break;
         }
@@ -203,8 +203,8 @@ void glGribTicks::createStr
       {
         switch (_align)
           {
-            case glGribString::E:
-            case glGribString::W:
+            case glGrib::String::E:
+            case glGrib::String::W:
               {
                 float y0 = xyllv[i+0].y, y1 = xyllv[i+1].y, x = xyllv[i].x;
                 float lat0 = xyllv[i+0].lat, lat1 = xyllv[i+1].lat;
@@ -240,8 +240,8 @@ void glGribTicks::createStr
                   }
 	      }
 	    break;
-            case glGribString::N:
-            case glGribString::S:
+            case glGrib::String::N:
+            case glGrib::String::S:
               {
                 float x0 = xyllv[i+0].x, x1 = xyllv[i+1].x, y = xyllv[i+0].y;
                 float lon0 = xyllv[i+0].lon, lon1 = xyllv[i+1].lon;
@@ -298,7 +298,7 @@ void glGribTicks::createStr
 }
 
 
-void glGribTicks::resize (const glGribView & view)
+void glGrib::Ticks::resize (const glGrib::View & view)
 {
   if ((! opts.labels.on) && (! opts.lines.on) && (! opts.frame.on))
     return;
@@ -318,12 +318,12 @@ void glGribTicks::resize (const glGribView & view)
   // Create ticks labels
   std::vector<std::string> S; 
   std::vector<float> X, Y, A;
-  std::vector<glGribString::align_t> align;
+  std::vector<glGrib::String::align_t> align;
 
-  createStr (opts.E, glGribString::E, view, S, X, Y, A, align);
-  createStr (opts.W, glGribString::W, view, S, X, Y, A, align);
-  createStr (opts.N, glGribString::N, view, S, X, Y, A, align);
-  createStr (opts.S, glGribString::S, view, S, X, Y, A, align);
+  createStr (opts.E, glGrib::String::E, view, S, X, Y, A, align);
+  createStr (opts.W, glGrib::String::W, view, S, X, Y, A, align);
+  createStr (opts.N, glGrib::String::N, view, S, X, Y, A, align);
+  createStr (opts.S, glGrib::String::S, view, S, X, Y, A, align);
 
   if (opts.labels.on)
     {
@@ -331,7 +331,7 @@ void glGribTicks::resize (const glGribView & view)
       labels.setShared (false);
       labels.setChange (false);
 
-      glGribFontPtr font = newGlgribFontPtr (opts.labels.font); 
+      glGrib::FontPtr font = newGlgribFontPtr (opts.labels.font); 
 
       labels.setup2D (font, S, X, Y, opts.labels.font.scale, align, A);
       labels.setForegroundColor (opts.labels.font.color.foreground);

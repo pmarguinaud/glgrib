@@ -5,17 +5,20 @@
 #include "glGribString.h"
 #include "glGribOpenGL.h"
 
-class glGribTicks 
+namespace glGrib
+{
+
+class Ticks 
 {
 public:
-  glGribTicks & operator=(const glGribTicks &);
-  void setup (const glGribOptionsTicks &);
+  Ticks & operator=(const Ticks &);
+  void setup (const OptionsTicks &);
   void render (const glm::mat4 &) const;
-  void resize (const glGribView &);
-  const glGribOptionsTicks & getOptions () const { return opts; }
+  void resize (const View &);
+  const OptionsTicks & getOptions () const { return opts; }
   void setupVertexAttributes ();
   void clear ();
-  ~glGribTicks ();
+  ~Ticks ();
   void setReady ()
   {
     ready = true;
@@ -26,19 +29,21 @@ public:
   }
 private:
   void createStr 
-    (const glGribOptionsTicksSide &,
-     glGribString::align_t, const glGribView &, 
+    (const OptionsTicksSide &,
+     String::align_t, const View &, 
      std::vector<std::string> &, std::vector<float> &, 
      std::vector<float> &, std::vector<float> &,
-     std::vector<glGribString::align_t> &);
-  glGribString labels;
-  glGribOptionsTicks opts;
+     std::vector<String::align_t> &);
+  String labels;
+  OptionsTicks opts;
   int width = 0, height = 0;
-  glGribOptionsView vopts;
+  OptionsView vopts;
   bool ready = false;
   GLuint VertexArrayID = 0;
   GLuint VertexArrayID_frame = 0;
-  glGribOpenGLBufferPtr vertexbuffer;
+  OpenGLBufferPtr vertexbuffer;
   unsigned int numberOfTicks;
 };
 
+
+}

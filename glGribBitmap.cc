@@ -10,7 +10,7 @@ static int S4 (unsigned char * h)
 }
   
   
-void glGribBitmap (const std::string & file, unsigned char ** rgb, int * width, int * height)
+void glGrib::Bitmap (const std::string & file, unsigned char ** rgb, int * width, int * height)
 {
   unsigned char h[54];
   FILE * fp = fopen (file.c_str (), "r");

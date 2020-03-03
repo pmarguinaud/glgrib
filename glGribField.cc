@@ -17,24 +17,24 @@
 #include <algorithm>
 
 #define DEF(T) \
-template void glGribField::unpack<T>  \
+template void glGrib::Field::unpack<T>  \
             (float *, const int, const float,   \
              const float, const float, const T *);  \
-template void glGribField::pack<T>  \
+template void glGrib::Field::pack<T>  \
           (const float *, const int, const float,   \
              const float, const float, T *);  \
-template void glGribField::packUnpack<T>   \
+template void glGrib::Field::packUnpack<T>   \
           (const float *, float *, const int,   \
            const float, const float, const float); \
-template void glGribField::loadHeight <T> (glGribOpenGLBufferPtr, glGribLoader *); \
-template void glGribField::bindHeight <T> (int);
+template void glGrib::Field::loadHeight <T> (glGrib::OpenGLBufferPtr, glGrib::Loader *); \
+template void glGrib::Field::bindHeight <T> (int);
 
 DEF (unsigned char)
 DEF (unsigned short)
 DEF (unsigned int)
 
 static
-int hiloCount (const_glGribGeometryPtr geometry, glGribFieldFloatBufferPtr data,
+int hiloCount (glGrib::const_glGribGeometryPtr geometry, glGrib::FieldFloatBufferPtr data,
                 int jglo0, int radius, bool lo)
 {
   const float * val = data->data ();
@@ -87,7 +87,7 @@ int hiloCount (const_glGribGeometryPtr geometry, glGribFieldFloatBufferPtr data,
   return radius;
 }
 
-void glGribField::setupHilo (glGribFieldFloatBufferPtr data)
+void glGrib::Field::setupHilo (glGrib::FieldFloatBufferPtr data)
 {
   class hilo_t
   {
@@ -137,38 +137,38 @@ void glGribField::setupHilo (glGribFieldFloatBufferPtr data)
         }
     }
 
-  glGribFontPtr font = newGlgribFontPtr (opts.hilo.font);
+  glGrib::FontPtr font = newGlgribFontPtr (opts.hilo.font);
 
   hilo.setShared (false);
   hilo.setChange (true);
   hilo.setup3D (font, lhilo.L, lhilo.X, lhilo.Y, lhilo.Z, lhilo.A, 
-                opts.hilo.font.scale, glGribString::C);
+                opts.hilo.font.scale, glGrib::String::C);
   hilo.setForegroundColor (opts.hilo.font.color.foreground);
   hilo.setScaleXYZ (opts.scale);
 
 }
 
-void glGribField::setPaletteOptions (const glGribOptionsPalette & o) 
+void glGrib::Field::setPaletteOptions (const glGrib::OptionsPalette & o) 
 { 
-  palette = glGribPalette::create (o, getNormedMinValue (), getNormedMaxValue ());
+  palette = glGrib::Palette::create (o, getNormedMinValue (), getNormedMaxValue ());
 }
 
-void glGribField::setNextPalette ()
+void glGrib::Field::setNextPalette ()
 {
-  palette = glGribPalette::next (palette, getNormedMinValue (), getNormedMaxValue ());
+  palette = glGrib::Palette::next (palette, getNormedMinValue (), getNormedMaxValue ());
 }
 
-void glGribField::clear ()
+void glGrib::Field::clear ()
 {
   values.clear ();
   meta.clear ();
   hilo.clear ();
   if (isReady ())
     glDeleteVertexArrays (1, &VertexArrayID_frame);
-  glGribWorld::clear ();
+  glGrib::World::clear ();
 }
 
-void glGribField::scalePaletteUp (float x)
+void glGrib::Field::scalePaletteUp (float x)
 {
   if (! palette.hasMin ()) 
     palette.setMin (getNormedMinValue ());
@@ -179,7 +179,7 @@ void glGribField::scalePaletteUp (float x)
   palette.setMax (palette.getMax () + d * x);
 }
 
-void glGribField::scalePaletteDown (float x)
+void glGrib::Field::scalePaletteDown (float x)
 {
   if (! palette.hasMin ()) 
     palette.setMin (getNormedMinValue ()); 
@@ -190,33 +190,33 @@ void glGribField::scalePaletteDown (float x)
   palette.setMax (palette.getMax () - d * x);
 }
 
-const glGribPalette & glGribField::getPalette () const
+const glGrib::Palette & glGrib::Field::getPalette () const
 {
   return palette;
 }
 
-const glGribOptionsField & glGribField::getOptions () const 
+const glGrib::OptionsField & glGrib::Field::getOptions () const 
 { 
   opts.palette = palette.getOptions ();
   return opts; 
 }
 
 
-void glGribField::getUserPref (glGribOptionsField * opts, glGribLoader * ld, int slot)
+void glGrib::Field::getUserPref (glGrib::OptionsField * opts, glGrib::Loader * ld, int slot)
 {
-  glGribOptionsField opts_sql = *opts;
-  glGribOptionsField opts_ref;
+  glGrib::OptionsField opts_sql = *opts;
+  glGrib::OptionsField opts_ref;
   
-  glGribFieldMetadata meta;
+  glGrib::FieldMetadata meta;
   ld->load (nullptr, opts_sql.path, opts->geometry, slot, &meta);
 
-  glGribSQLite db (glGribResolve ("glGrib.db"));
+  glGrib::SQLite db (glGrib::Resolve ("glGrib.db"));
   
   std::string options;
 
   if (meta.CLNOMA != "")
     {
-      glGribSQLite::stmt st = db.prepare ("SELECT options FROM CLNOMA2OPTIONS WHERE CLNOMA = ?;");
+      glGrib::SQLite::stmt st = db.prepare ("SELECT options FROM CLNOMA2OPTIONS WHERE CLNOMA = ?;");
       st.bindall (&meta.CLNOMA);
       if (st.fetchRow (&options))
         goto found;
@@ -224,7 +224,7 @@ void glGribField::getUserPref (glGribOptionsField * opts, glGribLoader * ld, int
 
   if ((meta.discipline != 255) && (meta.parameterCategory != 255) && (meta.parameterNumber != 255))
     {
-      glGribSQLite::stmt st = db.prepare ("SELECT options FROM GRIB2OPTIONS WHERE discipline = ? "
+      glGrib::SQLite::stmt st = db.prepare ("SELECT options FROM GRIB2OPTIONS WHERE discipline = ? "
 		                           "AND parameterCategory = ? AND parameterNumber = ?;");
       st.bindall (&meta.discipline, &meta.parameterCategory, &meta.parameterNumber);
       if (st.fetchRow (&options))
@@ -239,33 +239,33 @@ found:
   *opts = opts_sql;
 }
 
-glGribField * glGribField::create (const glGribOptionsField & opts, float slot, glGribLoader * ld)
+glGrib::Field * glGrib::Field::create (const glGrib::OptionsField & opts, float slot, glGrib::Loader * ld)
 {
 
   if (opts.path.size () == 0)
     return nullptr;
 
-  glGribOptionsField opts1 = opts;
+  glGrib::OptionsField opts1 = opts;
 
   if (opts.user_pref.on)
     getUserPref (&opts1, ld, slot);
 
-  glGribField * fld = nullptr;
+  glGrib::Field * fld = nullptr;
 
   std::string type = opts1.type;
 
   std::transform (type.begin (), type.end (), type.begin (), ::toupper);
 
   if (type == "VECTOR")
-    fld = new glGribFieldVector ();
+    fld = new glGrib::FieldVector ();
   else if (type == "STREAM")
-    fld = new glGribFieldStream ();
+    fld = new glGrib::FieldStream ();
   else if (type == "CONTOUR")
-    fld = new glGribFieldContour ();
+    fld = new glGrib::FieldContour ();
   else if (type == "SCALAR")
-    fld = new glGribFieldScalar ();
+    fld = new glGrib::FieldScalar ();
   else if (type == "ISOFILL")
-    fld = new glGribFieldIsoFill ();
+    fld = new glGrib::FieldIsoFill ();
   else
     throw std::runtime_error (std::string ("Unknown field type : ") + type);
 
@@ -275,25 +275,25 @@ glGribField * glGribField::create (const glGribOptionsField & opts, float slot, 
   return fld;
 }
 
-void glGribField::saveOptions () const
+void glGrib::Field::saveOptions () const
 {
-  glGribOptionsField opts1, opts2;
+  glGrib::OptionsField opts1, opts2;
 
   opts1 = opts;
   opts1.path.clear ();
   std::string options = opts1.asOption (opts2);
 
-  glGribSQLite db (glGribResolve ("glGrib.db"));
+  glGrib::SQLite db (glGrib::Resolve ("glGrib.db"));
 
   if (meta[0].CLNOMA != "")
     {
-      glGribSQLite::stmt st = db.prepare ("INSERT OR REPLACE INTO CLNOMA2OPTIONS (CLNOMA, options) VALUES (?, ?);");
+      glGrib::SQLite::stmt st = db.prepare ("INSERT OR REPLACE INTO CLNOMA2OPTIONS (CLNOMA, options) VALUES (?, ?);");
       st.bindall (&meta[0].CLNOMA, &options);
       st.execute ();
     }
   if ((meta[0].discipline != 255) && (meta[0].parameterCategory != 255) && (meta[0].parameterNumber != 255))
     {
-      glGribSQLite::stmt st = db.prepare ("INSERT OR REPLACE INTO GRIB2OPTIONS (discipline, "
+      glGrib::SQLite::stmt st = db.prepare ("INSERT OR REPLACE INTO GRIB2OPTIONS (discipline, "
                                            "parameterCategory, parameterNumber, options) VALUES (?, ?, ?, ?);");
       st.bindall (&meta[0].discipline, &meta[0].parameterCategory, &meta[0].parameterNumber, &options);
       st.execute ();
@@ -302,7 +302,7 @@ void glGribField::saveOptions () const
 }
 
 template <typename T>
-void glGribField::loadHeight (glGribOpenGLBufferPtr buf, glGribLoader * ld)
+void glGrib::Field::loadHeight (glGrib::OpenGLBufferPtr buf, glGrib::Loader * ld)
 {
   if (opts.geometry.height.on)
     {
@@ -312,15 +312,15 @@ void glGribField::loadHeight (glGribOpenGLBufferPtr buf, glGribLoader * ld)
         }
       else
         {
-          glGribGeometryPtr geometry_height = glGribGeometry::load (ld, opts.geometry.height.path, opts.geometry);
+          glGrib::GeometryPtr geometry_height = glGrib::Geometry::load (ld, opts.geometry.height.path, opts.geometry);
 
           if (! geometry_height->isEqual (*geometry))
             throw std::runtime_error (std::string ("Field and height have different geometries"));
 
           int size = geometry->getNumberOfPoints ();
 
-          glGribFieldFloatBufferPtr data;
-          glGribFieldMetadata meta;
+          glGrib::FieldFloatBufferPtr data;
+          glGrib::FieldMetadata meta;
 
           ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
 
@@ -338,7 +338,7 @@ void glGribField::loadHeight (glGribOpenGLBufferPtr buf, glGribLoader * ld)
 }
 
 template <typename T>
-void glGribField::bindHeight (int attr)
+void glGrib::Field::bindHeight (int attr)
 {
   if (heightbuffer)
     {
@@ -353,14 +353,14 @@ void glGribField::bindHeight (int attr)
     }
 }
 
-void glGribField::renderHilo (const glGribView & view) const
+void glGrib::Field::renderHilo (const glGrib::View & view) const
 {
   if (opts.hilo.on)
     hilo.render (view);
 }
 
 template <typename T>
-void glGribField::pack (const float * f, const int n, const float valmin, 
+void glGrib::Field::pack (const float * f, const int n, const float valmin, 
 		         const float valmax, const float valmis, T * b)
 {
   const T nmax = std::numeric_limits<T>::max () - 1;
@@ -373,7 +373,7 @@ void glGribField::pack (const float * f, const int n, const float valmin,
 }
 
 template <typename T>
-void glGribField::unpack (float * f, const int n, const float valmin, 
+void glGrib::Field::unpack (float * f, const int n, const float valmin, 
 		           const float valmax, const float valmis, const T * b)
 {
   const T nmax = std::numeric_limits<T>::max () - 1;
@@ -386,7 +386,7 @@ void glGribField::unpack (float * f, const int n, const float valmin,
 }
 
 template <typename T>
-void glGribField::packUnpack (const float * g, float * f, const int n, const float valmin, const float valmax, const float valmis)
+void glGrib::Field::packUnpack (const float * g, float * f, const int n, const float valmin, const float valmax, const float valmis)
 {
   const T nmax = std::numeric_limits<T>::max () - 1;
 #pragma omp parallel for
@@ -402,7 +402,7 @@ void glGribField::packUnpack (const float * g, float * f, const int n, const flo
 }
 
 
-void glGribField::setupVertexAttributesFrame ()
+void glGrib::Field::setupVertexAttributesFrame ()
 {
   glGenVertexArrays (1, &VertexArrayID_frame);
   glBindVertexArray (VertexArrayID_frame);
@@ -412,9 +412,9 @@ void glGribField::setupVertexAttributesFrame ()
   glBindVertexArray (0); 
 }
 
-void glGribField::renderFrame (const glGribView & view) const
+void glGrib::Field::renderFrame (const glGrib::View & view) const
 {
-  glGribProgram * program = glGribProgram::load (glGribProgram::FRAME); 
+  glGrib::Program * program = glGrib::Program::load (glGrib::Program::FRAME); 
 
   program->use ();
   view.setMVP (program);

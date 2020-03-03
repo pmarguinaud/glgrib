@@ -2,7 +2,7 @@
 #include "glGribShader.h"
 
 
-glGribColorbar & glGribColorbar::operator= (const glGribColorbar & colorbar)
+glGrib::Colorbar & glGrib::Colorbar::operator= (const glGrib::Colorbar & colorbar)
 {
   if (this != &colorbar)
     {
@@ -13,7 +13,7 @@ glGribColorbar & glGribColorbar::operator= (const glGribColorbar & colorbar)
   return *this;
 }
 
-void glGribColorbar::setup (const glGribOptionsColorbar & o)
+void glGrib::Colorbar::setup (const glGrib::OptionsColorbar & o)
 {
   opts = o;
 
@@ -42,7 +42,7 @@ void glGribColorbar::setup (const glGribOptionsColorbar & o)
   ready = true;
 }
 
-void glGribColorbar::clear ()
+void glGrib::Colorbar::clear ()
 {
   if (ready)
     {
@@ -50,16 +50,16 @@ void glGribColorbar::clear ()
       glDeleteVertexArrays (1, &VertexArrayID);
       label.clear ();
     }
-  pref = glGribPalette ();
+  pref = glGrib::Palette ();
   ready = false;
 }
 
-glGribColorbar::~glGribColorbar ()
+glGrib::Colorbar::~Colorbar ()
 {
   clear ();
 }
 
-void glGribColorbar::render (const glm::mat4 & MVP, const glGribPalette & p,
+void glGrib::Colorbar::render (const glm::mat4 & MVP, const glGrib::Palette & p,
                               float valmin, float valmax) const
 {
   if (! ready)
@@ -67,7 +67,7 @@ void glGribColorbar::render (const glm::mat4 & MVP, const glGribPalette & p,
 
   rank2rgba.resize (256);
 
-  glGribPalette p1 = p;
+  glGrib::Palette p1 = p;
   if (! p1.hasMin ())
     p1.setMin (valmin);
   if (! p1.hasMax ())
@@ -82,7 +82,7 @@ void glGribColorbar::render (const glm::mat4 & MVP, const glGribPalette & p,
 
       float min = pref.getMin (), max = pref.getMax ();
 
-      glGribFontPtr font = newGlgribFontPtr (opts.font);
+      glGrib::FontPtr font = newGlgribFontPtr (opts.font);
      
       std::vector<std::string> str;
       std::vector<float> x, y;
@@ -156,7 +156,7 @@ void glGribColorbar::render (const glm::mat4 & MVP, const glGribPalette & p,
 	    }
         }
 
-      label.setup2D (font, str, x, y, opts.font.scale, glGribString::SE);
+      label.setup2D (font, str, x, y, opts.font.scale, glGrib::String::SE);
       label.setForegroundColor (opts.font.color.foreground);
       label.setBackgroundColor (opts.font.color.background);
 
@@ -183,7 +183,7 @@ void glGribColorbar::render (const glm::mat4 & MVP, const glGribPalette & p,
 
 }
 
-glGribProgram glGribColorbar::program = glGribProgram
+glGrib::Program glGrib::Colorbar::program = glGrib::Program
 (
 R"CODE(
 #version 330 core

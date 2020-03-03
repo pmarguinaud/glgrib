@@ -7,10 +7,10 @@
 
 
 
-void glGribTest::render (const glGribView & view, const glGribOptionsLight & light) const
+void glGrib::Test::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
   return;
-  glGribProgram * program = glGribProgram::load (glGribProgram::TEST);
+  glGrib::Program * program = glGrib::Program::load (glGrib::Program::TEST);
   program->use (); 
 
   view.setMVP (program);
@@ -27,14 +27,14 @@ void glGribTest::render (const glGribView & view, const glGribOptionsLight & lig
 
 }
 
-void glGribTest::clear ()
+void glGrib::Test::clear ()
 {
   if (isReady ())
     glDeleteVertexArrays (1, &VertexArrayID);
-  glGribObject::clear ();
+  glGrib::Object::clear ();
 }
 
-void glGribTest::setup ()
+void glGrib::Test::setup ()
 {
   return;
   int numberOfPoints = 3;

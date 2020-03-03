@@ -4,15 +4,18 @@
 #include "glGribOptions.h"
 #include "glGribString.h"
 
-class glGribGrid : public glGribObject
+namespace glGrib
+{
+
+class Grid : public Object
 {
 public:
-  glGribGrid & operator=(const glGribGrid &);
-  void setup (const glGribOptionsGrid &);
-  void render (const glGribView &, const glGribOptionsLight &) const override;
-  void resize (const glGribView &) override {}
-  const glGribOptionsGrid & getOptions () const { return opts; }
-  void setColorOptions (const glGribOptionColor & o)
+  Grid & operator=(const Grid &);
+  void setup (const OptionsGrid &);
+  void render (const View &, const OptionsLight &) const override;
+  void resize (const View &) override {}
+  const OptionsGrid & getOptions () const { return opts; }
+  void setColorOptions (const OptionColor & o)
   {
     opts.color = o;
   }
@@ -21,12 +24,14 @@ public:
     opts.scale = s;
   }
   void clear ();
-  ~glGribGrid ();
+  ~Grid ();
   float getScale () const override { return opts.scale; }
 private:
-  glGribString labels;
-  glGribOptionsGrid opts;
+  String labels;
+  OptionsGrid opts;
   GLuint VertexArrayID;
   int numberOfPoints;
 };
 
+
+}

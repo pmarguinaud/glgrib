@@ -2,7 +2,7 @@
 
 int main (int argc, char * argv[])
 {
-  glGribDBase d;
+  glGrib::DBase d;
 
   d.convert2sqlite (argv[1]);
 

@@ -2,10 +2,14 @@
 
 #include <vector>
 
-namespace glGribEarCut
+namespace glGrib
+{
+
+namespace EarCut
 {
 void processRing (const std::vector<float> &, 
                   int, int, int, int *,
                   std::vector<unsigned int> *, bool);
 }
 
+}

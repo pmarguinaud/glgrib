@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <iostream>
 
-glGribFieldVector::glGribFieldVector (const glGribFieldVector & field)
+glGrib::FieldVector::FieldVector (const glGrib::FieldVector & field)
 {
   if (field.isReady ())
     {
@@ -17,23 +17,23 @@ glGribFieldVector::glGribFieldVector (const glGribFieldVector & field)
     }
 }
 
-glGribFieldVector * glGribFieldVector::clone () const
+glGrib::FieldVector * glGrib::FieldVector::clone () const
 {
   if (this == nullptr)
     return nullptr;
-  glGribFieldVector * fld = new glGribFieldVector ();
+  glGrib::FieldVector * fld = new glGrib::FieldVector ();
   *fld = *this;
   return fld;
 }
 
-glGribFieldVector & glGribFieldVector::operator= (const glGribFieldVector & other)
+glGrib::FieldVector & glGrib::FieldVector::operator= (const glGrib::FieldVector & other)
 {
   if (this != &other)
     {
       clear ();
       if (other.isReady ())
         {
-          glGribField::operator= (other);
+          glGrib::Field::operator= (other);
 	  d = other.d;
           d.buffer_d = newGlgribOpenGLBufferPtr (other.d.buffer_d);
           setupVertexAttributes ();
@@ -44,7 +44,7 @@ glGribFieldVector & glGribFieldVector::operator= (const glGribFieldVector & othe
 }
 
 
-void glGribFieldVector::setupVertexAttributes ()
+void glGrib::FieldVector::setupVertexAttributes ()
 {
   // Norm/direction
 
@@ -96,23 +96,23 @@ void glGribFieldVector::setupVertexAttributes ()
 
 }
 
-void glGribFieldVector::setup (glGribLoader * ld, const glGribOptionsField & o, float slot)
+void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
   opts = o;
 
-  glGribFieldMetadata meta_u, meta_v;
-  glGribFieldMetadata meta_n, meta_d;
+  glGrib::FieldMetadata meta_u, meta_v;
+  glGrib::FieldMetadata meta_n, meta_d;
 
-  glGribFieldFloatBufferPtr data_u, data_v;
+  glGrib::FieldFloatBufferPtr data_u, data_v;
   ld->load (&data_u, opts.path, opts.geometry, slot, &meta_u, 2, 0);
   ld->load (&data_v, opts.path, opts.geometry, slot, &meta_v, 2, 1);
 
-  geometry = glGribGeometry::load (ld, opts.path[int (2 * slot)], opts.geometry);
+  geometry = glGrib::Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry);
 
 
-  glGribFieldFloatBufferPtr data_n, data_d;
+  glGrib::FieldFloatBufferPtr data_n, data_d;
 
-  glGribLoader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
+  glGrib::Loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
   d.buffer_n = newGlgribOpenGLBufferPtr (geometry->getNumberOfPoints () * sizeof (unsigned char));
   unsigned char * col_n = (unsigned char *)d.buffer_n->map ();
@@ -154,13 +154,13 @@ void glGribFieldVector::setup (glGribLoader * ld, const glGribOptionsField & o, 
 
   d.vscale = opts.vector.scale * (pi / npts) / (meta_n.valmax || 1.0f);
 
-  palette = glGribPalette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
+  palette = glGrib::Palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
   
   setReady ();
 }
 
-void glGribFieldVector::renderNorms (const glGribView & view, 
-                                       const glGribOptionsLight & light) 
+void glGrib::FieldVector::renderNorms (const glGrib::View & view, 
+                                       const glGrib::OptionsLight & light) 
 const
 {
   float scale0 = opts.scale;
@@ -168,7 +168,7 @@ const
   std::vector<float> valmax = getMaxValue ();
   std::vector<float> valmin = getMinValue ();
 
-  glGribProgram * program = glGribProgram::load (glGribProgram::SCALAR);
+  glGrib::Program * program = glGrib::Program::load (glGrib::Program::SCALAR);
   program->use ();
 
   geometry->setProgramParameters (program);
@@ -223,8 +223,8 @@ public:
   }
 };
 
-void glGribFieldVector::renderArrow (const glGribView & view, 
-                                       const glGribOptionsLight & light) 
+void glGrib::FieldVector::renderArrow (const glGrib::View & view, 
+                                       const glGrib::OptionsLight & light) 
 const
 {
   std::vector<float> valmax = getMaxValue ();
@@ -232,7 +232,7 @@ const
 
 // Display vectors
 
-  glGribProgram * program = glGribProgram::load (glGribProgram::VECTOR);
+  glGrib::Program * program = glGrib::Program::load (glGrib::Program::VECTOR);
   program->use ();
 
   geometry->setProgramParameters (program);
@@ -318,7 +318,7 @@ const
   view.delMVP (program);
 }
 
-void glGribFieldVector::render (const glGribView & view, const glGribOptionsLight & light) const
+void glGrib::FieldVector::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
   if (opts.vector.arrow.on || opts.vector.barb.on)
     renderArrow (view, light);
@@ -326,19 +326,19 @@ void glGribFieldVector::render (const glGribView & view, const glGribOptionsLigh
     renderNorms (view, light);
 }
 
-glGribFieldVector::~glGribFieldVector ()
+glGrib::FieldVector::~FieldVector ()
 {
 }
 
 
-void glGribFieldVector::clear ()
+void glGrib::FieldVector::clear ()
 {
   if (isReady ())
     glDeleteVertexArrays (1, &VertexArrayIDvector);
-  glGribField::clear ();
+  glGrib::Field::clear ();
 }
 
-void glGribFieldVector::reSample (const glGribView & view)
+void glGrib::FieldVector::reSample (const glGrib::View & view)
 {
   unsigned char * col_d = (unsigned char *)d.buffer_d->map ();
 
@@ -347,10 +347,10 @@ void glGribFieldVector::reSample (const glGribView & view)
   if (data_d == nullptr)
     return; 
 
-  const glGribFieldMetadata & meta_n = meta[0];
-  const glGribFieldMetadata & meta_d = meta[1];
+  const glGrib::FieldMetadata & meta_n = meta[0];
+  const glGrib::FieldMetadata & meta_d = meta[1];
 
-  const glGribOptionsView & view_opts = view.getOptions ();
+  const glGrib::OptionsView & view_opts = view.getOptions ();
   float w = view_opts.distance * deg2rad * view_opts.fov;
 
   const int npts = 2 * opts.vector.density / w;
@@ -365,7 +365,7 @@ void glGribFieldVector::reSample (const glGribView & view)
 
 }
 
-void glGribFieldVector::resize (const glGribView & view)
+void glGrib::FieldVector::resize (const glGrib::View & view)
 {
   reSample (view);
 }

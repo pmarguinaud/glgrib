@@ -5,17 +5,20 @@
 #include "glGribOptions.h"
 #include "glGribProgram.h"
 
-class glGribObject
+namespace glGrib
+{
+
+class Object
 {
 public:
-  virtual void render (const glGribView &, const glGribOptionsLight &) const = 0;
+  virtual void render (const View &, const OptionsLight &) const = 0;
   bool isReady () const { return ready_; }
   void setReady () { ready_ = true; }
   void hide () { hidden = true; }
   void show () { hidden = false; }
   bool visible () const { return ! hidden; }
   void clear () { ready_ = false; }
-  virtual void resize (const glGribView &) = 0;
+  virtual void resize (const View &) = 0;
   virtual float getScale () const  = 0;
 private:
   bool ready_ = false;
@@ -23,3 +26,5 @@ private:
 };
 
 
+
+}

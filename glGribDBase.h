@@ -8,7 +8,10 @@
 #include <string>
 #include <stdexcept>
 
-class glGribDBase
+namespace glGrib
+{
+
+class DBase
 {
 public:
 
@@ -79,7 +82,7 @@ public:
     }
   private:
     map_t * map = nullptr;
-    friend class glGribDBase;
+    friend class DBase;
   };
 
   void convert2sqlite (const std::string &);
@@ -88,7 +91,7 @@ public:
 
   bool read (record_t *);
 
-  ~glGribDBase ()
+  ~DBase ()
   {
     close ();
   }
@@ -115,3 +118,5 @@ private:
   int count = 0;
 };
  
+
+}

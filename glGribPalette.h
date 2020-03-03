@@ -11,57 +11,60 @@
 #include <map>
 #include <limits>
 
-class glGribPalette
+namespace glGrib
+{
+
+class Palette
 {
 public:
   static const float defaultMin;
   static const float defaultMax;
 
-  static glGribPalette next (const glGribPalette &, float = defaultMin, float = defaultMax);
+  static Palette next (const Palette &, float = defaultMin, float = defaultMax);
 
-  static glGribPalette create (const glGribOptionsPalette &,  
+  static Palette create (const OptionsPalette &,  
                                 float = defaultMin, float = defaultMax);
 
   const std::string & getName () { return opts.name; }
 
-  glGribOptionColor rgba_mis;
-  std::vector<glGribOptionColor> rgba;
+  OptionColor rgba_mis;
+  std::vector<OptionColor> rgba;
   float getMin () const { return opts.min; }
   float getMax () const { return opts.max; }
   bool hasMin () const { return opts.min != defaultMin; }
   bool hasMax () const { return opts.max != defaultMax; }
-  glGribPalette (std::ifstream &);
-  glGribPalette () {}
-  glGribPalette (const std::string & n, bool) 
+  Palette (std::ifstream &);
+  Palette () {}
+  Palette (const std::string & n, bool) 
   {
     opts.name = n;
   }
   template <typename... Types> 
-  glGribPalette (const std::string & n, int r, int g, int b, int a,Types... vars)
+  Palette (const std::string & n, int r, int g, int b, int a,Types... vars)
   {
-    glGribPalette p = glGribPalette (n, true, vars...);
-    p.rgba_mis = glGribOptionColor (r, g, b, a);
+    Palette p = Palette (n, true, vars...);
+    p.rgba_mis = OptionColor (r, g, b, a);
     *this = p;
     register_ (p);
   }
   template <typename... Types> 
-  glGribPalette (float min_, float max_, const std::string & n, 
+  Palette (float min_, float max_, const std::string & n, 
 		  int r, int g, int b, int a, Types... vars)
   {
-    glGribPalette p = glGribPalette (n, true, vars...);
-    p.rgba_mis = glGribOptionColor (r, g, b, a);
+    Palette p = Palette (n, true, vars...);
+    p.rgba_mis = OptionColor (r, g, b, a);
     p.opts.min = min_;
     p.opts.max = max_;
     *this = p;
     register_ (p);
   }
-  friend std::ostream & operator << (std::ostream &, const glGribPalette &);
+  friend std::ostream & operator << (std::ostream &, const Palette &);
   void setRGBA255 (GLuint) const;
-  glGribPalette & register_ (const glGribPalette &);
-  friend bool operator== (const glGribPalette &, const glGribPalette &);
-  friend bool operator!= (const glGribPalette &, const glGribPalette &);
+  Palette & register_ (const Palette &);
+  friend bool operator== (const Palette &, const Palette &);
+  friend bool operator!= (const Palette &, const Palette &);
 
-  const glGribOptionsPalette & getOptions () const
+  const OptionsPalette & getOptions () const
   {
     return opts;
   }
@@ -70,7 +73,7 @@ public:
 
   const std::vector<float> & getValues () const { return opts.values; }
 
-  glGribOptionColor getColor (float) const;
+  OptionColor getColor (float) const;
   int getColorIndex (float) const;
 
   bool isLinear () const
@@ -91,23 +94,25 @@ public:
 
 private:
   void getRGBA255 (float RGBA0[256][4]) const;
-  static glGribPalette & createByName (const std::string &);
-  glGribOptionsPalette opts;
+  static Palette & createByName (const std::string &);
+  OptionsPalette opts;
   template <typename T, typename... Types> 
-  glGribPalette (const std::string & n, bool record, T r, T g, T b, T a, Types... vars)
+  Palette (const std::string & n, bool record, T r, T g, T b, T a, Types... vars)
   {
-    rgba.push_back (glGribOptionColor (r, g, b, a));
-    glGribPalette p = glGribPalette (n, false, vars...);
-    for (std::vector<glGribOptionColor>::iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
+    rgba.push_back (OptionColor (r, g, b, a));
+    Palette p = Palette (n, false, vars...);
+    for (std::vector<OptionColor>::iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
       rgba.push_back (*it);
     opts.name = n;
   }
 };
 
-extern glGribPalette paletteColdHot;
-extern glGribPalette paletteCloud;
-extern glGribPalette paletteCloudAuto;
+extern Palette paletteColdHot;
+extern Palette paletteCloud;
+extern Palette paletteCloudAuto;
 
 
 
 
+
+}

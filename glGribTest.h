@@ -4,19 +4,24 @@
 #include "glGribOpenGL.h"
 #include "glGribView.h"
 
-class glGribTest : public glGribObject
+namespace glGrib
+{
+
+class Test : public Object
 {
 public:
-  void render (const glGribView &, const glGribOptionsLight &) const override;
-  virtual ~glGribTest () { clear (); }
+  void render (const View &, const OptionsLight &) const override;
+  virtual ~Test () { clear (); }
   virtual void clear ();
   virtual void setup ();
-  void resize (const glGribView &) override {}
+  void resize (const View &) override {}
   float getScale () const override { return 1; }
 protected:
-  glGribOpenGLBufferPtr vertexbuffer, elementbuffer;
+  OpenGLBufferPtr vertexbuffer, elementbuffer;
   int numberOfPoints;
   unsigned int numberOfTriangles;
   GLuint VertexArrayID = 0;
 };
 
+
+}

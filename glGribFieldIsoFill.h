@@ -2,20 +2,23 @@
 
 #include "glGribField.h"
 
-class glGribFieldIsoFill : public glGribField
+namespace glGrib
+{
+
+class FieldIsoFill : public Field
 {
 public:
-  glGribField::kind getKind () const 
+  Field::kind getKind () const 
   {
-    return glGribField::ISOFILL;
+    return Field::ISOFILL;
   }
-  glGribFieldIsoFill * clone () const;
-  glGribFieldIsoFill & operator= (const glGribFieldIsoFill &);
-  glGribFieldIsoFill () { }
-  glGribFieldIsoFill (const glGribFieldIsoFill &);
-  void setup (glGribLoader *, const glGribOptionsField &, float = 0) override;
-  void render (const glGribView &, const glGribOptionsLight &) const override;
-  virtual ~glGribFieldIsoFill ();
+  FieldIsoFill * clone () const;
+  FieldIsoFill & operator= (const FieldIsoFill &);
+  FieldIsoFill () { }
+  FieldIsoFill (const FieldIsoFill &);
+  void setup (Loader *, const OptionsField &, float = 0) override;
+  void render (const View &, const OptionsLight &) const override;
+  virtual ~FieldIsoFill ();
   void setupVertexAttributes ();
   void clear () override; 
   bool useColorBar () const override { return true; }
@@ -29,9 +32,9 @@ private:
   class isoband_t
   {
   public:
-    glGribOptionColor color;
+    OptionColor color;
     GLuint VertexArrayID = 0;
-    glGribOpenGLBufferPtr vertexbuffer, elementbuffer;
+    OpenGLBufferPtr vertexbuffer, elementbuffer;
     int size;
   };
 
@@ -39,7 +42,7 @@ private:
   {
     // Triangles with a single color
     GLuint VertexArrayID = 0;
-    glGribOpenGLBufferPtr colorbuffer;
+    OpenGLBufferPtr colorbuffer;
 
     // Isoband
     std::vector<isoband_t> isoband;
@@ -48,3 +51,5 @@ private:
 
 };
 
+
+}

@@ -2,7 +2,7 @@
 #include "glGribShader.h"
 
 
-glGribMapscale & glGribMapscale::operator= (const glGribMapscale & mapscale)
+glGrib::Mapscale & glGrib::Mapscale::operator= (const glGrib::Mapscale & mapscale)
 {
   if (this != &mapscale)
     {
@@ -13,7 +13,7 @@ glGribMapscale & glGribMapscale::operator= (const glGribMapscale & mapscale)
   return *this;
 }
 
-void glGribMapscale::setup (const glGribOptionsMapscale & o)
+void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
 {
   opts = o;
 
@@ -39,16 +39,16 @@ void glGribMapscale::setup (const glGribOptionsMapscale & o)
 
   program.compile ();
 
-  glGribFontPtr font = newGlgribFontPtr (opts.font);
+  glGrib::FontPtr font = newGlgribFontPtr (opts.font);
 
-  label.setup2D (font, std::string (15, ' '), opts.position.xmin, opts.position.ymax + 0.01, opts.font.scale, glGribString::SW);
+  label.setup2D (font, std::string (15, ' '), opts.position.xmin, opts.position.ymax + 0.01, opts.font.scale, glGrib::String::SW);
   label.setForegroundColor (opts.font.color.foreground);
   label.setBackgroundColor (opts.font.color.background);
 
   ready = true;
 }
 
-void glGribMapscale::clear ()
+void glGrib::Mapscale::clear ()
 {
   if (ready)
     {
@@ -58,12 +58,12 @@ void glGribMapscale::clear ()
   ready = false;
 }
 
-glGribMapscale::~glGribMapscale ()
+glGrib::Mapscale::~Mapscale ()
 {
   clear ();
 }
 
-void glGribMapscale::render (const glm::mat4 & MVP, const glGribView & view) const
+void glGrib::Mapscale::render (const glm::mat4 & MVP, const glGrib::View & view) const
 {
   if (! ready)
     return;
@@ -118,7 +118,7 @@ void glGribMapscale::render (const glm::mat4 & MVP, const glGribView & view) con
 
 }
 
-glGribProgram glGribMapscale::program = glGribProgram
+glGrib::Program glGrib::Mapscale::program = glGrib::Program
 (
 R"CODE(
 #version 330 core

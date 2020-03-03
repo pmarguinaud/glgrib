@@ -14,7 +14,7 @@ TYPE ipow (TYPE x, int n)
 }
 
 template <typename TYPE>
-void glGribFitPolynomial
+void glGrib::FitPolynomial
 ( 
   const std::vector<TYPE> & x,
   const std::vector<TYPE> & y,
@@ -111,7 +111,7 @@ void glGribFitPolynomial
 }
 
 template <typename TYPE>
-TYPE glGribEvalpolynomial (const std::vector<TYPE> & coeff, TYPE x)
+TYPE glGrib::Evalpolynomial (const std::vector<TYPE> & coeff, TYPE x)
 {
   TYPE y = 0;
   for (int i = coeff.size () - 1; i >= 0; i--)
@@ -119,7 +119,7 @@ TYPE glGribEvalpolynomial (const std::vector<TYPE> & coeff, TYPE x)
   return y;
 }
 
-template void glGribFitPolynomial<double>
+template void glGrib::FitPolynomial<double>
 (
   const std::vector<double> &,
   const std::vector<double> &,
@@ -128,7 +128,7 @@ template void glGribFitPolynomial<double>
 );
 
 
-template double glGribEvalpolynomial<double>
+template double glGrib::Evalpolynomial<double>
 (
   const std::vector<double> &, double
 );

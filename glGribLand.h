@@ -7,15 +7,18 @@
 
 #include <vector>
 
-class glGribLand : public glGribObject
+namespace glGrib
+{
+
+class Land : public Object
 {
 public:
-  glGribLand & operator=(const glGribLand &);
-  void render (const glGribView &, const glGribOptionsLight &) const override;
-  virtual ~glGribLand () { clear (); }
+  Land & operator=(const Land &);
+  void render (const View &, const OptionsLight &) const override;
+  virtual ~Land () { clear (); }
   virtual void clear ();
-  virtual void setup (const glGribOptionsLand &);
-  void resize (const glGribView &) override {}
+  virtual void setup (const OptionsLand &);
+  void resize (const View &) override {}
   void setupVertexAttributes ();
   float getScale () const override { return opts.layers[0].scale; }
 private:
@@ -29,13 +32,15 @@ private:
                   std::vector<unsigned int> *, std::vector<float> *,
                   const float);
 private:
-  glGribOptionsLand opts;
+  OptionsLand opts;
   typedef struct
   {
-    glGribOpenGLBufferPtr vertexbuffer, elementbuffer;
+    OpenGLBufferPtr vertexbuffer, elementbuffer;
     unsigned int numberOfTriangles;
   } layer_t;
   std::vector<layer_t> d;
   std::vector<GLuint> VertexArrayID;
 };
 
+
+}

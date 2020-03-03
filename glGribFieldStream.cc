@@ -19,7 +19,7 @@ double getTime ()
   return double (tv.tv_sec) + 0.000001 * double (tv.tv_usec);
 }
 
-glGribFieldStream::glGribFieldStream (const glGribFieldStream & field)
+glGrib::FieldStream::FieldStream (const glGrib::FieldStream & field)
 {
   if (field.isReady ())
     {
@@ -29,23 +29,23 @@ glGribFieldStream::glGribFieldStream (const glGribFieldStream & field)
     }
 }
 
-glGribFieldStream * glGribFieldStream::clone () const
+glGrib::FieldStream * glGrib::FieldStream::clone () const
 {
   if (this == nullptr)
     return nullptr;
-  glGribFieldStream * fld = new glGribFieldStream ();
+  glGrib::FieldStream * fld = new glGrib::FieldStream ();
   *fld = *this;
   return fld;
 }
 
-glGribFieldStream & glGribFieldStream::operator= (const glGribFieldStream & field)
+glGrib::FieldStream & glGrib::FieldStream::operator= (const glGrib::FieldStream & field)
 {
   if (this != &field)
     {
       clear ();
       if (field.isReady ())
         {
-          glGribField::operator= (field);
+          glGrib::Field::operator= (field);
           stream = field.stream;
 	  time0  = field.time0;
           setupVertexAttributes ();
@@ -55,17 +55,17 @@ glGribFieldStream & glGribFieldStream::operator= (const glGribFieldStream & fiel
   return *this;
 }
 
-void glGribFieldStream::clear ()
+void glGrib::FieldStream::clear ()
 {
   if (isReady ()) 
     {
       for (int i = 0; i < stream.size (); i++)
         glDeleteVertexArrays (1, &stream[i].VertexArrayID);
     }
-  glGribField::clear ();
+  glGrib::Field::clear ();
 }
 
-void glGribFieldStream::setupVertexAttributes ()
+void glGrib::FieldStream::setupVertexAttributes ()
 {
   numberOfPoints = geometry->getNumberOfPoints ();
   numberOfTriangles = geometry->getNumberOfTriangles ();
@@ -106,30 +106,30 @@ void glGribFieldStream::setupVertexAttributes ()
     }
 }
 
-void glGribFieldStream::setup (glGribLoader * ld, const glGribOptionsField & o, float slot)
+void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
   opts = o;
 
   time0 = getTime ();
 
-  glGribFieldMetadata meta_u, meta_v;
-  glGribFieldMetadata meta_n, meta_d;
+  glGrib::FieldMetadata meta_u, meta_v;
+  glGrib::FieldMetadata meta_n, meta_d;
 
-  glGribFieldFloatBufferPtr data_u, data_v;
+  glGrib::FieldFloatBufferPtr data_u, data_v;
   ld->load (&data_u, opts.path, opts.geometry, slot, &meta_u, 2, 0);
   ld->load (&data_v, opts.path, opts.geometry, slot, &meta_v, 2, 1);
 
-  geometry = glGribGeometry::load (ld, opts.path[int (2 * slot)], opts.geometry);
+  geometry = glGrib::Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry);
 
 //geometry->checkTriangles ();
 
   int size = geometry->size ();
 
-  glGribFieldFloatBufferPtr data_n, data_d;
+  glGrib::FieldFloatBufferPtr data_n, data_d;
 
-  glGribLoader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
+  glGrib::Loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
-  palette = glGribPalette::create (opts.palette, 0.0f, meta_n.valmax);
+  palette = glGrib::Palette::create (opts.palette, 0.0f, meta_n.valmax);
 
   std::vector<streamline_data_t> stream_data;
 
@@ -215,7 +215,7 @@ float lineLineIntersect (const glm::vec2 & P1, const glm::vec2 & V1,
 }
 
 
-void glGribFieldStream::getFirstPoint (int it, const float * ru, const float * rv, 
+void glGrib::FieldStream::getFirstPoint (int it, const float * ru, const float * rv, 
 					 glm::vec2 & M, glm::vec2 & Vp, glm::vec2 & Vm,
 		                         std::valarray<float> & wp, std::valarray<float> & wm, 
 					 int & itp, int & itm)
@@ -294,7 +294,7 @@ void glGribFieldStream::getFirstPoint (int it, const float * ru, const float * r
 
 }
 
-void glGribFieldStream::computeStreamLineDir (int it, const float * ru, const float * rv, 
+void glGrib::FieldStream::computeStreamLineDir (int it, const float * ru, const float * rv, 
 		                                const glm::vec2 & M0, const glm::vec2 & V0,
                                                 stream_seen_t & seen, float sign, std::valarray<float> w,
 					        std::vector<glm::vec3> & list)
@@ -403,7 +403,7 @@ last:
 }
 
 
-void glGribFieldStream::computeStreamLine (int it0, const float * ru, const float * rv, 
+void glGrib::FieldStream::computeStreamLine (int it0, const float * ru, const float * rv, 
                                              streamline_data_t * stream)
 {
   std::vector<glm::vec3> listf, listb;
@@ -438,11 +438,11 @@ void glGribFieldStream::computeStreamLine (int it0, const float * ru, const floa
   return;
 }
 
-void glGribFieldStream::render (const glGribView & view, const glGribOptionsLight & light) const
+void glGrib::FieldStream::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  glGribProgram * program = glGribProgram::load (glGribProgram::STREAM);
+  glGrib::Program * program = glGrib::Program::load (glGrib::Program::STREAM);
   program->use ();
-  const glGribPalette & p = palette;
+  const glGrib::Palette & p = palette;
 
   view.setMVP (program);
   program->set ("scale0", opts.scale);
@@ -489,7 +489,7 @@ void glGribFieldStream::render (const glGribView & view, const glGribOptionsLigh
 
 }
 
-glGribFieldStream::~glGribFieldStream ()
+glGrib::FieldStream::~FieldStream ()
 {
 }
 

@@ -8,12 +8,12 @@
 #include <iostream>
 #include <vector>
 
-glGribGrid & glGribGrid::operator= (const glGribGrid & other)
+glGrib::Grid & glGrib::Grid::operator= (const glGrib::Grid & other)
 {
   clear ();
   if ((this != &other) && other.isReady ())
     {
-      glGribObject::operator= (other);
+      glGrib::Object::operator= (other);
       opts = other.opts;
       setup (opts);
       setReady ();
@@ -21,7 +21,7 @@ glGribGrid & glGribGrid::operator= (const glGribGrid & other)
   return *this;
 }
 
-void glGribGrid::setup (const glGribOptionsGrid & o)
+void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
 {
   opts = o;
 
@@ -32,7 +32,7 @@ void glGribGrid::setup (const glGribOptionsGrid & o)
   if (opts.labels.on)
     {
       
-      glGribFontPtr font = newGlgribFontPtr (opts.labels.font);
+      glGrib::FontPtr font = newGlgribFontPtr (opts.labels.font);
       labels.setShared (true);
       labels.setChange (false);
 
@@ -71,7 +71,7 @@ void glGribGrid::setup (const glGribOptionsGrid & o)
 	  push (lon, lat, str);
 	}
 
-      labels.setup3D (font, L, X, Y, Z, A, opts.labels.font.scale, glGribString::C);
+      labels.setup3D (font, L, X, Y, Z, A, opts.labels.font.scale, glGrib::String::C);
       labels.setForegroundColor (opts.labels.font.color.foreground);
       labels.setBackgroundColor (opts.labels.font.color.background);
     }
@@ -80,22 +80,22 @@ void glGribGrid::setup (const glGribOptionsGrid & o)
   setReady ();
 }
 
-void glGribGrid::clear ()
+void glGrib::Grid::clear ()
 {
   if (isReady ()) 
     glDeleteVertexArrays (1, &VertexArrayID);
-  glGribObject::clear (); 
+  glGrib::Object::clear (); 
   labels.clear ();
 }
 
-glGribGrid::~glGribGrid ()
+glGrib::Grid::~Grid ()
 {
   clear (); 
 }
 
-void glGribGrid::render (const glGribView & view, const glGribOptionsLight & light) const
+void glGrib::Grid::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  glGribProgram * program = glGribProgram::load (glGribProgram::GRID);
+  glGrib::Program * program = glGrib::Program::load (glGrib::Program::GRID);
   program->use ();
 
   view.setMVP (program);

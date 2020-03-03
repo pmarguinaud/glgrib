@@ -10,7 +10,10 @@
 
 #include <string>
 
-class glGribWindow
+namespace glGrib
+{
+
+class Window
 {
 public:
 
@@ -22,16 +25,16 @@ public:
     ALT     = GLFW_MOD_ALT
   };
 
-  glGribWindow ();
-  glGribWindow (const glGribOptions &);
+  Window ();
+  Window (const Options &);
   virtual void setHints ();
-  virtual ~glGribWindow ();
+  virtual ~Window ();
   virtual void renderFrame ();
-  virtual void run (class glGribShell * = nullptr);
+  virtual void run (class Shell * = nullptr);
   void makeCurrent () { glfwMakeContextCurrent (window); }
   void debug (unsigned int, unsigned int, GLuint, unsigned int, int, const char *);
   int snapshot_cnt = 0;
-  glGribScene scene;
+  Scene scene;
   bool cursorpos = false;
   GLFWwindow * window = nullptr;
 
@@ -44,8 +47,8 @@ public:
   }
   void resetView ()
   {
-    glGribOptionsView o0;
-    const glGribOptionsView & o = scene.d.view.getOptions ();
+    OptionsView o0;
+    const OptionsView & o = scene.d.view.getOptions ();
     o0.projection     = o.projection;
     o0.transformation = o.transformation;
     scene.d.view.setOptions (o0);
@@ -53,61 +56,61 @@ public:
   }
   void toggleRotate       () 
   { 
-    glGribOptionsScene o = scene.getSceneOptions ();
+    OptionsScene o = scene.getSceneOptions ();
     o.rotate_earth.on = ! o.rotate_earth.on; 
     scene.setSceneOptions (o);
   }
   void toggleRotateLight () 
   { 
-    glGribOptionsScene o = scene.getSceneOptions ();
+    OptionsScene o = scene.getSceneOptions ();
     o.light.rotate.on = ! o.light.rotate.on; 
     scene.setSceneOptions (o);
   }
   void widen_fov           () 
   { 
-    glGribOptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.d.view.getOptions ();
     o.fov += 1.; 
     scene.d.view.setOptions (o);
   }
   void shrinkFov          () 
   { 
-    glGribOptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.d.view.getOptions ();
     o.fov -= 1.; 
     scene.d.view.setOptions (o);
   }
   void increaseRadius     () 
   { 
-    glGribOptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.d.view.getOptions ();
     o.distance += 0.1; 
     scene.d.view.setOptions (o);
   }
   void decreaseRadius     () 
   { 
-    glGribOptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.d.view.getOptions ();
     o.distance -= 0.1; 
     scene.d.view.setOptions (o);
   }
   void rotateNorth        () 
   { 
-    glGribOptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.d.view.getOptions ();
     o.lat = o.lat + 5.; 
     scene.d.view.setOptions (o);
   }
   void rotateSouth        () 
   { 
-    glGribOptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.d.view.getOptions ();
     o.lat = o.lat - 5.; 
     scene.d.view.setOptions (o);
   }
   void rotateWest         () 
   { 
-    glGribOptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.d.view.getOptions ();
     o.lon = o.lon - 5.; 
     scene.d.view.setOptions (o);
   }
   void rotateEast         () 
   { 
-    glGribOptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.d.view.getOptions ();
     o.lon = o.lon + 5.; 
     scene.d.view.setOptions (o);
   }
@@ -138,9 +141,9 @@ public:
   void rotateLightWest  ();
   void rotateLightEast  ();
   void duplicate          ();
-  void create (const glGribOptions &);
+  void create (const Options &);
 
-  class glGribWindow * clone ();
+  class Window * clone ();
   bool isClosed () { return closed; }
   bool isCloned () { return cloned; }
   void setCloned () { cloned = true; }
@@ -150,7 +153,7 @@ public:
 
   void nextProjection ();
   void toggleTransformType ();
-  void loadField (const glGribOptionsField &, int = 0);
+  void loadField (const OptionsField &, int = 0);
   void removeField (int);
   void saveCurrentPalette ();
   void resampleCurrentField ();
@@ -163,8 +166,8 @@ public:
   void unsetMaster () { master = false; }
   void toggleMaster () { master = ! master; }
   void toggleColorBar ();
-  void setOptions (const glGribOptionsWindow &);
-  glGribOptionsWindow getOptions () { return opts; }
+  void setOptions (const OptionsWindow &);
+  OptionsWindow getOptions () { return opts; }
   void startShell ()
   {
     start_shell = true;
@@ -178,7 +181,7 @@ public:
 
   void fixLandscape (float, float, float, float);
 
-  const glGribOptionsWindow & getOptions () const { return opts; }
+  const OptionsWindow & getOptions () const { return opts; }
 
   bool getNext ()
   {
@@ -198,7 +201,7 @@ protected:
   bool closed = false;
   bool cloned = false;
   bool master = false;
-  glGribOptionsWindow opts;
+  OptionsWindow opts;
 private:
   bool next = false; // Next field
   bool prev = false; // Prev field
@@ -215,10 +218,12 @@ if (help)                                       \
   {                                             \
     showHelpItem (#mm, #k, #desc, #action);     \
   }                                             \
-else if ((key == GLFW_KEY_##k) && (glGribWindow::mm == mods)) \
+else if ((key == GLFW_KEY_##k) && (Window::mm == mods)) \
   {                                             \
     action;                                     \
     return;                                     \
   }                                             \
 } while (0)
 
+
+}

@@ -1,7 +1,7 @@
 #include "glGribRivers.h"
 
-void glGribRivers::setup (const glGribOptionsRivers & o)
+void glGrib::Rivers::setup (const glGrib::OptionsRivers & o)
 {
   opts = o;
-  glGribLines::setup (opts.lines);
+  glGrib::Lines::setup (opts.lines);
 }

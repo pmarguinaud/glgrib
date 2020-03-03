@@ -2,20 +2,25 @@
 
 #include <memory>
 
-class glGribFieldFloatBuffer
+namespace glGrib
+{
+
+class FieldFloatBuffer
 {
 public:
-  glGribFieldFloatBuffer (size_t);
-  glGribFieldFloatBuffer (float *);
-  ~glGribFieldFloatBuffer ();
+  FieldFloatBuffer (size_t);
+  FieldFloatBuffer (float *);
+  ~FieldFloatBuffer ();
   float * data () { return data_; }
   float & operator[] (int i) { return data_[i]; }
 private:
   float * data_ = nullptr;
 };
 
-typedef std::shared_ptr<glGribFieldFloatBuffer> glGribFieldFloatBufferPtr;
+typedef std::shared_ptr<FieldFloatBuffer> FieldFloatBufferPtr;
 
-extern glGribFieldFloatBufferPtr newGlgribFieldFloatBufferPtr (size_t);
-extern glGribFieldFloatBufferPtr newGlgribFieldFloatBufferPtr (float *);
+extern FieldFloatBufferPtr newGlgribFieldFloatBufferPtr (size_t);
+extern FieldFloatBufferPtr newGlgribFieldFloatBufferPtr (float *);
 
+
+}

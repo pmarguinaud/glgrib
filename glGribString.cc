@@ -4,7 +4,7 @@
 #include <iostream>
 #include <stdexcept>
 
-glGribString & glGribString::operator= (const glGribString & str)
+glGrib::String & glGrib::String::operator= (const glGrib::String & str)
 {
 
   if (this != &str)
@@ -37,19 +37,19 @@ glGribString & glGribString::operator= (const glGribString & str)
 
 
 
-void glGribString::clear ()
+void glGrib::String::clear ()
 {
   if (ready)
     glDeleteVertexArrays (1, &VertexArrayID);
   ready = false;
 }
 
-glGribString::~glGribString ()
+glGrib::String::~String ()
 {
   clear ();
 }
 
-void glGribString::setup3D (const_glGribFontPtr ff, const std::vector<std::string> & str, 
+void glGrib::String::setup3D (const_glGribFontPtr ff, const std::vector<std::string> & str, 
 	                    const std::vector<float> & _X, const std::vector<float> & _Y,
 	                    const std::vector<float> & _Z, const std::vector<float> & _A,
 	                    float s, align_t _align)
@@ -63,13 +63,13 @@ void glGribString::setup3D (const_glGribFontPtr ff, const std::vector<std::strin
   setup (ff, str, _x, _y, s, std::vector<align_t>{_align}, _X, _Y, _Z, _A);
 }
 
-void glGribString::setup2D (const_glGribFontPtr ff, const std::vector<std::string> & str, 
+void glGrib::String::setup2D (const_glGribFontPtr ff, const std::vector<std::string> & str, 
                             float x, float y, float s, align_t align)
 {
   setup (ff, str, std::vector<float>{x}, std::vector<float>{y}, s, std::vector<align_t>{align});
 }
 
-void glGribString::setup2D (const_glGribFontPtr ff, const std::vector<std::string> & str, 
+void glGrib::String::setup2D (const_glGribFontPtr ff, const std::vector<std::string> & str, 
                             const std::vector<float> & x, const std::vector<float> & y, 
 			    float s, align_t align,
                             const std::vector<float> & a)
@@ -78,7 +78,7 @@ void glGribString::setup2D (const_glGribFontPtr ff, const std::vector<std::strin
          std::vector<float>{}, std::vector<float>{}, std::vector<float>{}, a);
 }
 
-void glGribString::setup2D (const_glGribFontPtr ff, const std::vector<std::string> & str, 
+void glGrib::String::setup2D (const_glGribFontPtr ff, const std::vector<std::string> & str, 
                             const std::vector<float> & x, const std::vector<float> & y, 
 			    float s, const std::vector<align_t> & align,
                             const std::vector<float> & a)
@@ -87,7 +87,7 @@ void glGribString::setup2D (const_glGribFontPtr ff, const std::vector<std::strin
          std::vector<float>{}, std::vector<float>{}, std::vector<float>{}, a);
 }
 
-void glGribString::setup (const_glGribFontPtr ff, const std::vector<std::string> & str, 
+void glGrib::String::setup (const_glGribFontPtr ff, const std::vector<std::string> & str, 
                           const std::vector<float> & _x, const std::vector<float> & _y, 
                           float s, const std::vector<align_t> & _align,
 			  const std::vector<float> & _X, const std::vector<float> & _Y,
@@ -218,7 +218,7 @@ void glGribString::setup (const_glGribFontPtr ff, const std::vector<std::string>
     }
 }
 
-void glGribString::setupVertexAttributes ()
+void glGrib::String::setupVertexAttributes ()
 {
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
@@ -244,7 +244,7 @@ void glGribString::setupVertexAttributes ()
 }
 
 
-void glGribString::setup2D (const_glGribFontPtr ff, const std::string & str, 
+void glGrib::String::setup2D (const_glGribFontPtr ff, const std::string & str, 
                             float x, float y, float s, align_t align)
 {
   std::vector<std::string> _str = {str};
@@ -253,14 +253,14 @@ void glGribString::setup2D (const_glGribFontPtr ff, const std::string & str,
   setup (ff, _str, _x, _y, s, std::vector<align_t>{align});
 }
 
-void glGribString::render (const glGribView & view) const
+void glGrib::String::render (const glGrib::View & view) const
 {
   if (! ready)
     return;
 
   d.font->select ();
 
-  glGribProgram * program = d.font->getProgram ();
+  glGrib::Program * program = d.font->getProgram ();
 
   view.setMVP (program);
 
@@ -282,14 +282,14 @@ void glGribString::render (const glGribView & view) const
   view.delMVP (program);
 }
 
-void glGribString::render (const glm::mat4 & MVP) const
+void glGrib::String::render (const glm::mat4 & MVP) const
 {
   if (! ready)
     return;
 
   d.font->select ();
 
-  glGribProgram * program = d.font->getProgram ();
+  glGrib::Program * program = d.font->getProgram ();
   program->set ("MVP", MVP);
   program->set ("scale", d.scale);
   program->set ("scaleXYZ", 1.0f);
@@ -303,12 +303,12 @@ void glGribString::render (const glm::mat4 & MVP) const
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, d.len);
 }
 
-void glGribString::update (const std::string & str)
+void glGrib::String::update (const std::string & str)
 {
   update (std::vector<std::string>{str});
 }
 
-void glGribString::update (const std::vector<std::string> & str)
+void glGrib::String::update (const std::vector<std::string> & str)
 {
   if (! ready)
     throw std::runtime_error (std::string ("Cannot set update string"));
@@ -344,12 +344,12 @@ void glGribString::update (const std::vector<std::string> & str)
   d.letterbuffer->unmap ();
 }
 
-void glGribString::setShared (bool p)
+void glGrib::String::setShared (bool p)
 {
   d.shared = p;
 }
 
-void glGribString::setChange (bool u)
+void glGrib::String::setChange (bool u)
 {
   if (ready && u)
     throw std::runtime_error (std::string ("Cannot set attribute change"));

@@ -1,6 +1,10 @@
 #pragma once
 
 #include <math.h>
+#include <glm/glm.hpp>
+
+namespace glGrib
+{
 
 static const float rad2deg = 180.0f / M_PI;
 static const float deg2rad = M_PI / 180.0f;
@@ -8,7 +12,6 @@ static const float twopi = 2.0f * M_PI;
 static const float pi = M_PI;
 static const float halfpi = M_PI / 2.0f;
 
-#include <glm/glm.hpp>
 
 static inline
 void lonlat2xyz (float lon, float lat, float * x, float * y, float * z)
@@ -67,3 +70,5 @@ void lonlat2xyz (const glm::vec2 & lonlat, float * x, float * y, float * z)
   lonlat2xyz (lonlat.x, lonlat.y, x, y, z);
 }
 
+
+}

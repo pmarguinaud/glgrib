@@ -4,26 +4,31 @@
 #include "glGribShell.h"
 #include "glGribOptions.h"
 
-class glGribWindowSet : public std::set<glGribWindow*> 
+namespace glGrib
+{
+
+class WindowSet : public std::set<Window*> 
 {
 public:
-  glGribWindowSet (const glGribOptions &);
-  virtual void run (glGribShell * = nullptr);
+  WindowSet (const Options &);
+  virtual void run (Shell * = nullptr);
   virtual void updateWindows ();
-  glGribWindow * getWindowById (int);
-  glGribWindow * getFirstWindow () 
+  Window * getWindowById (int);
+  Window * getFirstWindow () 
     { 
-      glGribWindowSet::iterator it = begin ();
+      WindowSet::iterator it = begin ();
       if (it != end ())
         return *it;
       else
         return nullptr;
     }
   void close ();
-  virtual glGribWindow * create (const glGribOptions &);
-  void runShell (glGribShell **);
+  virtual Window * create (const Options &);
+  void runShell (Shell **);
   void handleMasterWindow ();
 protected:
-  glGribOptions opts;
+  Options opts;
 };
 
+
+}

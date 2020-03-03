@@ -4,11 +4,14 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-class glGribSubdivide
+namespace glGrib
+{
+
+class Subdivide
 {
 public:
 
-  glGribSubdivide () {}
+  Subdivide () {}
 
   void init (const std::vector<float> &, 
              const std::vector<unsigned int> &,
@@ -40,3 +43,5 @@ private:
   
 };
 
+
+}

@@ -5,16 +5,21 @@
 #include <string>
 #include <vector>
 
-class glGribLines : public glGribPolygon
+namespace glGrib
+{
+
+class Lines : public Polygon
 {
 public:
-  glGribLines & operator=(const glGribLines &);
-  void setup (const glGribOptionsLines &, const std::vector<unsigned int> & = {0x00000000}, 
+  Lines & operator=(const Lines &);
+  void setup (const OptionsLines &, const std::vector<unsigned int> & = {0x00000000}, 
              const std::vector<unsigned int> & = {0x00000000});
-  void render (const glGribView &, const glGribOptionsLight &) const override;
-  void resize (const glGribView &) override {}
-  const glGribOptionsLines & getOptions () const { return opts; }
+  void render (const View &, const OptionsLight &) const override;
+  void resize (const View &) override {}
+  const OptionsLines & getOptions () const { return opts; }
 private:
-  glGribOptionsLines opts;
+  OptionsLines opts;
 };
 
+
+}

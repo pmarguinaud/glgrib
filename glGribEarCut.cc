@@ -9,7 +9,10 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-typedef void glGribDiag_t (const glm::dmat2 &, glm::dmat2 *, glm::dvec2 *);
+namespace glGrib
+{
+typedef void Diag_t (const glm::dmat2 &, glm::dmat2 *, glm::dvec2 *);
+}
 
 static
 float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2) 
@@ -21,9 +24,12 @@ float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2)
   return ang;
 }
 
+
+namespace glGrib
+{
 // Symmetric 2x2 matrix diagonalization
-static
-void glGribDiag (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
+
+void Diag (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
 {
   double a = A[0][0], b = A[1][1], c = A[0][1];
   double D = sqrt ((a - b) * (a - b) + 4 * c * c);
@@ -33,6 +39,8 @@ void glGribDiag (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
 
   (*Q)[0] = -glm::normalize (glm::dvec2 (2.0 * c, b - a - D));
   (*Q)[1] = -glm::normalize (glm::dvec2 (2.0 * c, b - a + D));
+}
+
 }
 
 class node_t
@@ -195,8 +203,8 @@ private:
 
 static float in02pi (float x)
 {
-  while (x < 0.0f ) x += twopi;
-  while (x > twopi) x -= twopi;
+  while (x <         0.0f ) x += glGrib::twopi;
+  while (x > glGrib::twopi) x -= glGrib::twopi;
   return x;
 }
 
@@ -205,7 +213,7 @@ static void xint (float & x1, float & x2)
   x1 = in02pi (x1);
   x2 = in02pi (x2);
 
-  if (fabs (x1 - x2) > pi)
+  if (fabs (x1 - x2) > glGrib::pi)
     {
       if (x1 < x2)
         std::swap (x1, x2);
@@ -336,8 +344,8 @@ static
 void getLatRange (const glm::vec2 & lonlat1, const glm::vec2 & lonlat2, 
                   float * latmin, float * latmax)
 {
-  const glm::vec3 p1 = lonlat2xyz (lonlat1);
-  const glm::vec3 p2 = lonlat2xyz (lonlat2);
+  const glm::vec3 p1 = glGrib::lonlat2xyz (lonlat1);
+  const glm::vec3 p2 = glGrib::lonlat2xyz (lonlat2);
  
   float zmin, zmax;
 
@@ -359,7 +367,7 @@ void getLatRange (const glm::vec2 & lonlat1, const glm::vec2 & lonlat2,
   glm::vec3 q1 = glm::cross (p, p1);
 
   float theta_op1 = atan2 (q1.z, p1.z), 
-        theta_op2 = theta_op1 + pi,
+        theta_op2 = theta_op1 + glGrib::pi,
         theta_max = atan2 (glm::dot (p2, q1), glm::dot (p2, p1));
 
   if ((0 <= theta_op1) && (theta_op1 <= theta_max))
@@ -432,13 +440,13 @@ public:
     getLonRange (nodevec, xy, &lonmin, &lonmax);
     getLatRange (nodevec, xy, &latmin, &latmax);
 
-    nx = std::max (2, (int)(rad2deg * (lonmax - lonmin)));
-    ny = std::max (2, (int)(rad2deg * (latmax - latmin)));
+    nx = std::max (2, (int)(glGrib::rad2deg * (lonmax - lonmin)));
+    ny = std::max (2, (int)(glGrib::rad2deg * (latmax - latmin)));
 
-    float ddy = std::max ((latmax - latmin) / ny, 0.1f * deg2rad);
+    float ddy = std::max ((latmax - latmin) / ny, 0.1f * glGrib::deg2rad);
 
-    ymin = std::max (-pi, latmin - ddy);
-    ymax = std::min (+pi, latmax + ddy);
+    ymin = std::max (-glGrib::pi, latmin - ddy);
+    ymax = std::min (+glGrib::pi, latmax + ddy);
     dy = (ymax - ymin) / ny;
 
 
@@ -446,9 +454,9 @@ public:
     xmax = lonmax;
 
     while (xmin > xmax)
-      xmin -= twopi;
+      xmin -= glGrib::twopi;
 
-    float ddx = std::max ((xmax - xmin) / nx, 0.1f * deg2rad);
+    float ddx = std::max ((xmax - xmin) / nx, 0.1f * glGrib::deg2rad);
 
     xmin = xmin - ddx;
     xmax = xmax + ddx;
@@ -504,8 +512,8 @@ public:
 // Convert coordinates to index pointer
   int xy2ind (float x, float y) const
   {
-    while (x < xmin) x += twopi;
-    while (x > xmax) x -= twopi;
+    while (x < xmin) x += glGrib::twopi;
+    while (x > xmax) x -= glGrib::twopi;
     int ix = nx * (x - xmin) / (xmax - xmin);
     int iy = ny * (y - ymin) / (ymax - ymin);
 
@@ -540,14 +548,14 @@ public:
     : ymin (_ymin), ymax (_ymax), xmin (_xmin), xmax (_xmax), ll2n (_ll2n)
     {
 
-      while (xmin < ll2n->xmin) xmin += twopi;
-      while (xmin > ll2n->xmax) xmin -= twopi;
+      while (xmin < ll2n->xmin) xmin += glGrib::twopi;
+      while (xmin > ll2n->xmax) xmin -= glGrib::twopi;
 
       if ((xmin < ll2n->xmin) || (ll2n->xmax < xmin))
         abort ();
 
-      while (xmax < ll2n->xmin) xmax += twopi;
-      while (xmax > ll2n->xmax) xmax -= twopi;
+      while (xmax < ll2n->xmin) xmax += glGrib::twopi;
+      while (xmax > ll2n->xmax) xmax -= glGrib::twopi;
 
       if ((xmax < ll2n->xmin) || (ll2n->xmax < xmax))
         abort ();
@@ -637,7 +645,7 @@ public:
   {
     const node_t * nn[3] = {n.getPrev (), &n, n.getNext ()};
 
-    float ymin = +pi, ymax = -pi;
+    float ymin = +glGrib::pi, ymax = -glGrib::pi;
 
     for (int i = 0; i < 3; i++)
       {
@@ -679,8 +687,8 @@ public:
     float xmin = int01.xmin;
     float xmax = int01.xmax;
 
-    while (xmax - xmin > twopi) xmax -= twopi;
-    while (xmin - xmax > twopi) xmin -= twopi;
+    while (xmax - xmin > glGrib::twopi) xmax -= glGrib::twopi;
+    while (xmin - xmax > glGrib::twopi) xmin -= glGrib::twopi;
 
     return iterator (ymin, ymax, xmin, xmax, this);
   }
@@ -707,8 +715,8 @@ private:
   std::vector<int> off, len;
   std::vector<const node_t*> nodes;
   float dx, dy;
-  float ymin = -halfpi, ymax = +halfpi;
-  float xmin = 0.0f,    xmax = twopi;
+  float ymin = -glGrib::halfpi, ymax = +glGrib::halfpi;
+  float xmin = 0.0f,    xmax = glGrib::twopi;
   bool openmp = true;
 };
 
@@ -771,7 +779,7 @@ void earCut (node_t ** nodelist,
   
           // Node OK for removal
 
-          if ((0.0f < ang) && (ang < pi))
+          if ((0.0f < ang) && (ang < glGrib::pi))
             {
       
               bool intri = false;
@@ -836,7 +844,7 @@ void earCut (node_t ** nodelist,
 // X axis is chosen using average point
 // Y axis is chosen so that it matches maximum extent
 static 
-glm::mat3 getRotMat (glGribDiag_t diag, const std::vector<glm::vec3> & xyz, bool openmp)
+glm::mat3 getRotMat (glGrib::Diag_t diag, const std::vector<glm::vec3> & xyz, bool openmp)
 {
 
   // Average point
@@ -922,7 +930,7 @@ glm::mat3 getRotMat (glGribDiag_t diag, const std::vector<glm::vec3> & xyz, bool
 
 
 // Process a single ring
-void glGribEarCut::processRing (const std::vector<float> & lonlat1, 
+void glGrib::EarCut::processRing (const std::vector<float> & lonlat1, 
                                  int rankb, int rankl, 
 		                 int indrb, int * indrl,
                                  std::vector<unsigned int> * ind,
@@ -948,7 +956,7 @@ void glGribEarCut::processRing (const std::vector<float> & lonlat1,
   // Change coordinate system : choose an XYZ where most
   // points are far enough from the poles
   glm::mat3 R;
-  R = getRotMat (glGribDiag, xyz1, openmp);
+  R = getRotMat (glGrib::Diag, xyz1, openmp);
 
   std::vector<glm::vec3> xyz2;
   std::vector<float> lonlat2;

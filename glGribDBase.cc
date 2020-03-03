@@ -22,7 +22,7 @@ static std::string trim (const std::string & str)
   return str.substr (i, j-i+1);
 }
 
-bool glGribDBase::open (const std::string & path)
+bool glGrib::DBase::open (const std::string & path)
 {
   fp = fopen ((path + ".dbf").c_str (), "r");
   if (fp == nullptr)
@@ -44,7 +44,7 @@ bool glGribDBase::open (const std::string & path)
   return true;
 }
 
-bool glGribDBase::read (record_t * record)
+bool glGrib::DBase::read (record_t * record)
 {
   record->clear ();
 
@@ -73,7 +73,7 @@ bool glGribDBase::read (record_t * record)
   return true;
 }
 
-void glGribDBase::convert2sqlite (const std::string & path)
+void glGrib::DBase::convert2sqlite (const std::string & path)
 {
   struct stat sta;
   if (stat ((path + ".db").c_str (), &sta) == 0)
@@ -81,7 +81,7 @@ void glGribDBase::convert2sqlite (const std::string & path)
 
   open (path);
 
-  glGribSQLite db (path + ".db");
+  glGrib::SQLite db (path + ".db");
   std::string sql;
   record_t record;
 
@@ -109,7 +109,7 @@ void glGribDBase::convert2sqlite (const std::string & path)
     }
   sql += ")";
 
-  glGribSQLite::stmt st = db.prepare (sql);
+  glGrib::SQLite::stmt st = db.prepare (sql);
 
   while (read (&record))
     {

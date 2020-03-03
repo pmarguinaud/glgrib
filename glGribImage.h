@@ -9,7 +9,10 @@
 #include <vector>
 
 
-class glGribImage 
+namespace glGrib
+{
+
+class Image 
 {
 public:
   static const int CX = 0x01;
@@ -36,19 +39,21 @@ public:
     return C;
   }
 
-  ~glGribImage ();
+  ~Image ();
   
-  glGribImage & operator= (const glGribImage &);
+  Image & operator= (const Image &);
   void setupVertexAttributes ();
   void clear ();
 
-  void setup (const glGribOptionsImage &);
+  void setup (const OptionsImage &);
   void render (const glm::mat4 &) const;
-  const glGribOptionsImage & getOptions () const { return opts; }
+  const OptionsImage & getOptions () const { return opts; }
 private:
-  glGribOptionsImage opts;
+  OptionsImage opts;
   bool ready = false;
-  glGribOpenGLTexturePtr texture;
+  OpenGLTexturePtr texture;
   GLuint VertexArrayID = 0;
 };
 
+
+}

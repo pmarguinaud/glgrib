@@ -4,17 +4,22 @@
 #include "glGribOpenGL.h"
 #include "glGribView.h"
 
-class glGribPolygon : public glGribObject
+namespace glGrib
+{
+
+class Polygon : public Object
 {
 public:
   void setupVertexAttributes ();
-  void render (const glGribView &, const glGribOptionsLight &) const override;
-  virtual ~glGribPolygon ();
+  void render (const View &, const OptionsLight &) const override;
+  virtual ~Polygon ();
   virtual void clear ();
 protected:
   GLuint VertexArrayID;
-  glGribOpenGLBufferPtr vertexbuffer, elementbuffer;
+  OpenGLBufferPtr vertexbuffer, elementbuffer;
   unsigned int numberOfLines;
   int numberOfPoints;
 };
 
+
+}

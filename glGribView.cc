@@ -10,13 +10,13 @@
 #include <cctype>
 
 
-void glGribView::delMVP (glGribProgram * program) const
+void glGrib::View::delMVP (glGrib::Program * program) const
 {
   glDisable (GL_SCISSOR_TEST);
 }
 
 
-void glGribView::setMVP (glGribProgram * program) const
+void glGrib::View::setMVP (glGrib::Program * program) const
 {
   program->set ("MVP", MVP);
   program->set ("proj", ps.current ()->getType ());
@@ -69,8 +69,8 @@ void glGribView::setMVP (glGribProgram * program) const
       float xmin = width  * opts.clip.xmin, xmax = width  * opts.clip.xmax, 
 	    ymin = height * opts.clip.ymin, ymax = height * opts.clip.ymax;
       int type = ps.current ()->getType ();
-      if ((type == glGribProjection::LATLON)
-       || (type == glGribProjection::MERCATOR))
+      if ((type == glGrib::Projection::LATLON)
+       || (type == glGrib::Projection::MERCATOR))
         {
           float xpos1, xpos2, ypos1, ypos2;
           float dlon = 10.0f, dlat = 5.0f;
@@ -88,9 +88,9 @@ void glGribView::setMVP (glGribProgram * program) const
     }
 }
 
-void glGribView::calcMVP () 
+void glGrib::View::calcMVP () 
 {
-  glGribProjection::type pt = glGribProjection::typeFromString (opts.projection);
+  glGrib::Projection::type pt = glGrib::Projection::typeFromString (opts.projection);
   ps.setType (pt);
 
   glm::vec3 pos
@@ -98,14 +98,14 @@ void glGribView::calcMVP ()
      opts.distance * glm::sin (glm::radians (opts.lon)) * glm::cos (glm::radians (opts.lat)),
      opts.distance *                                      glm::sin (glm::radians (opts.lat)));
 
-  Viewport   = glm::vec4 (0.0f, 0.0f, (float)width, (float)height);
+  viewport   = glm::vec4 (0.0f, 0.0f, (float)width, (float)height);
 
   float ratio = (float)width/(float)height;
 
-  glm::mat4 Trans = glm::mat4 (1.0f);
+  glm::mat4 trans = glm::mat4 (1.0f);
 
   if ((! opts.center.on) && (ratio > 1.0f))
-    Trans = glm::translate (Trans, glm::vec3 ((ratio - 1.0f) / 2.0f, 0.0f, 0.0f));
+    trans = glm::translate (trans, glm::vec3 ((ratio - 1.0f) / 2.0f, 0.0f, 0.0f));
        
   glm::mat4 p;
 
@@ -123,24 +123,24 @@ void glGribView::calcMVP ()
 	break;
     }
 
-  Projection = Trans * p;
+  projection = trans * p;
 
-  View       = ps.current ()->getView (pos, opts.distance);
-  Model      = glm::mat4 (1.0f);
-  MVP = Projection * View * Model; 
+  view       = ps.current ()->getView (pos, opts.distance);
+  model      = glm::mat4 (1.0f);
+  MVP = projection * view * model; 
 
   float lon0 = opts.lon + 180.0f;
   ps.current ()->setLon0 (lon0);
 }
 
-void glGribView::setViewport (int w, int h)
+void glGrib::View::setViewport (int w, int h)
 {
   width = w;
   height = h;
   calcMVP ();
 }
 
-int glGribView::getScreenCoordsFromLatLon (float * xpos, float * ypos, float lat, float lon) const
+int glGrib::View::getScreenCoordsFromLatLon (float * xpos, float * ypos, float lat, float lon) const
 {
   lat = glm::radians (lat); 
   lon = glm::radians (lon);
@@ -153,7 +153,7 @@ int glGribView::getScreenCoordsFromLatLon (float * xpos, float * ypos, float lat
   return getScreenCoordsFromXYZ (xpos, ypos, pos);
 }
 
-int glGribView::getLatLonFromScreenCoords (float xpos, float ypos, float * lat, float * lon) const
+int glGrib::View::getLatLonFromScreenCoords (float xpos, float ypos, float * lat, float * lon) const
 {
   glm::vec3 pos;
 
@@ -166,7 +166,7 @@ int glGribView::getLatLonFromScreenCoords (float xpos, float ypos, float * lat, 
   return 1;
 }
 
-int glGribView::getScreenCoordsFromXYZ (float * xpos, float * ypos, const glm::vec3 & xyz) const
+int glGrib::View::getScreenCoordsFromXYZ (float * xpos, float * ypos, const glm::vec3 & xyz) const
 {
   glm::vec3 pos = ps.current ()->project (xyz);
   pos = project (pos);
@@ -177,7 +177,7 @@ int glGribView::getScreenCoordsFromXYZ (float * xpos, float * ypos, const glm::v
   return 1;
 }
 
-int glGribView::getXYZFromScreenCoords (float xpos, float ypos, glm::vec3 * xyz) const
+int glGrib::View::getXYZFromScreenCoords (float xpos, float ypos, glm::vec3 * xyz) const
 {
   glm::vec3 xa = unproject (glm::vec3 (xpos, ypos, +0.985601f));
   glm::vec3 xb = unproject (glm::vec3 (xpos, ypos, +0.900000f));
@@ -188,12 +188,12 @@ int glGribView::getXYZFromScreenCoords (float xpos, float ypos, glm::vec3 * xyz)
   return 1;
 }
 
-float glGribView::fracToDistAtNadir (float frac) const
+float glGrib::View::fracToDistAtNadir (float frac) const
 {
   return pixelToDistAtNadir (height * frac);
 }
 
-float glGribView::pixelToDistAtNadir (float pixels) const
+float glGrib::View::pixelToDistAtNadir (float pixels) const
 {
   float lon = deg2rad * opts.lon, lat = deg2rad * opts.lat;
 
@@ -224,13 +224,13 @@ float glGribView::pixelToDistAtNadir (float pixels) const
     }
 }
 
-void glGribView::setup (const glGribOptionsView & o)
+void glGrib::View::setup (const glGrib::OptionsView & o)
 {
   opts = o;
   calcMVP ();
 }
 
-glGribView::transform_type glGribView::typeFromString (std::string str)
+glGrib::View::transform_type glGrib::View::typeFromString (std::string str)
 {
   for (int i = 0; i < str.length (); i++)
     str[i] = std::toupper (str[i]);
@@ -241,7 +241,7 @@ glGribView::transform_type glGribView::typeFromString (std::string str)
   return PERSPECTIVE;
 }
 
-void glGribView::toggleTransformType () 
+void glGrib::View::toggleTransformType () 
 { 
   if (opts.transformation == "PERSPECTIVE")
     opts.transformation = "ORTHOGRAPHIC";

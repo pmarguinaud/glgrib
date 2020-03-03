@@ -10,7 +10,10 @@
 #include <vector>
 
 
-class glGribString 
+namespace glGrib
+{
+
+class String 
 {
 public:
   static const int CX = 0x01;
@@ -37,7 +40,7 @@ public:
     return C;
   }
 
-  glGribString & operator= (const glGribString &);
+  String & operator= (const String &);
   void setup2D (const_glGribFontPtr, const std::string &, float, 
                float, float = 1.0f, align_t = SW);
   void setup2D (const_glGribFontPtr, const std::vector<std::string> &, 
@@ -59,16 +62,16 @@ public:
   void setup2D (const_glGribFontPtr, const std::vector<std::string> &, float, 
                float, float = 1.0f, align_t = SW);
   void render (const glm::mat4 &) const;
-  void render (const glGribView &) const;
-  void setForegroundColor (const glGribOptionColor & color)
+  void render (const View &) const;
+  void setForegroundColor (const OptionColor & color)
   {
     d.color0 = color;
   }
-  void setBackgroundColor (const glGribOptionColor & color)
+  void setBackgroundColor (const OptionColor & color)
   {
     d.color1 = color;
   }
-  ~glGribString ();
+  ~String ();
   void update (const std::vector<std::string> &);
   void update (const std::string &);
   void clear ();
@@ -95,12 +98,14 @@ private:
     std::vector<float> x, y;       // Position of letters vertices
     std::vector<float> X, Y, Z, A; // Position & angle of each letter on the sphere
     std::vector<align_t> align;
-    glGribOptionColor color0 = glGribOptionColor (255, 255, 255, 255);
-    glGribOptionColor color1 = glGribOptionColor (  0,   0,   0,   0);
+    OptionColor color0 = OptionColor (255, 255, 255, 255);
+    OptionColor color1 = OptionColor (  0,   0,   0,   0);
     float scale;
     float scaleXYZ = 1.0f;
     int len;    // Total number of characters
-    glGribOpenGLBufferPtr xyzbuffer, vertexbuffer, letterbuffer;
+    OpenGLBufferPtr xyzbuffer, vertexbuffer, letterbuffer;
     const_glGribFontPtr font = nullptr; 
   } d;
 };
+
+}

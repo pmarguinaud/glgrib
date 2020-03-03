@@ -4,15 +4,20 @@
 #include "glGribContainer.h"
 #include "glGribWindowSet.h"
 
-class glGribWindowDiffSet : public glGribWindowSet
+namespace glGrib
+{
+
+class WindowDiffSet : public WindowSet
 {
 public:
-  glGribWindowDiffSet (const glGribOptions &);
+  WindowDiffSet (const Options &);
   const std::string getNextExt () const;
   const std::string getPrevExt () const;
   void updateWindows () override;
 private:
-  glGribContainer * cont1 = nullptr;
-  glGribContainer * cont2 = nullptr;
+  Container * cont1 = nullptr;
+  Container * cont2 = nullptr;
   std::string ext = "";
 };
+
+}

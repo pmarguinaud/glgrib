@@ -2,17 +2,22 @@
 
 #include "glGribWindow.h"
 
-class glGribWindowOffscreen : public glGribWindow
+namespace glGrib
+{
+
+class WindowOffscreen : public Window
 {
 public:
-  glGribWindowOffscreen (const glGribOptions & opts)
+  WindowOffscreen (const Options & opts)
   {
     frames = opts.window.offscreen.frames;
-    glGribWindow::create (opts);
+    Window::create (opts);
   }
-  void run (class glGribShell * shell = nullptr) override;
+  void run (class Shell * shell = nullptr) override;
   void setHints () override;
 private:
   int frames;
 };
 
+
+}

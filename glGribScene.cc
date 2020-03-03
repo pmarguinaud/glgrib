@@ -6,7 +6,7 @@
 #include <sys/time.h>
 
 
-glGribScene & glGribScene::operator= (const glGribScene & other)
+glGrib::Scene & glGrib::Scene::operator= (const glGrib::Scene & other)
 {
 
   if (this != &other)
@@ -28,14 +28,14 @@ glGribScene & glGribScene::operator= (const glGribScene & other)
   return *this;
 }
 
-glGribScene::~glGribScene () 
+glGrib::Scene::~Scene () 
 {
   for (auto f : fieldlist)
     if (f != nullptr)
       delete f;
 }
 
-void glGribScene::displayObj (const glGribObject * obj) const
+void glGrib::Scene::displayObj (const glGrib::Object * obj) const
 {
   if (obj == nullptr)
     return;
@@ -46,14 +46,14 @@ void glGribScene::displayObj (const glGribObject * obj) const
   obj->render (d.view, d.opts.scene.light);
 }
 
-void glGribScene::display () const
+void glGrib::Scene::display () const
 {
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   d.test.render (d.view, d.opts.scene.light);
   
 
-  std::vector<const glGribObject*> obj_list;
+  std::vector<const glGrib::Object*> obj_list;
 
   obj_list.push_back (&d.landscape);
 
@@ -71,14 +71,14 @@ void glGribScene::display () const
 
 
   std::sort (obj_list.begin (), obj_list.end (), 
-             [] (const glGribObject * a, const glGribObject * b) 
+             [] (const glGrib::Object * a, const glGrib::Object * b) 
              { return a->getScale () < b->getScale (); });
 
 
   for (auto obj : obj_list)
     displayObj (obj);
 
-  const glGribField * fld = d.currentFieldRank < fieldlist.size () 
+  const glGrib::Field * fld = d.currentFieldRank < fieldlist.size () 
                            ? fieldlist[d.currentFieldRank] : nullptr;
   d.image.render (d.MVP_L);
 
@@ -106,13 +106,13 @@ void glGribScene::display () const
 
 }
 
-const glGribOptionDate * glGribScene::getDate ()
+const glGrib::OptionDate * glGrib::Scene::getDate ()
 {
   for (auto fld : fieldlist)
     if (fld)
       if (fld->isReady ())
         {
-          const std::vector<glGribFieldMetadata> & meta = fld->getMeta ();
+          const std::vector<glGrib::FieldMetadata> & meta = fld->getMeta ();
 	  if (meta.size () >= 1)
             return &meta[0].term;
         }
@@ -120,12 +120,12 @@ const glGribOptionDate * glGribScene::getDate ()
 }
 
 
-void glGribScene::updateLight ()
+void glGrib::Scene::updateLight ()
 {
   if (d.opts.scene.light.rotate.on)
     d.opts.scene.light.lon -= d.opts.scene.light.rotate.rate;
 
-  const glGribOptionDate * date = nullptr;
+  const glGrib::OptionDate * date = nullptr;
 
   if (d.opts.scene.light.date_from_grib.on)
     date = getDate ();
@@ -156,9 +156,9 @@ static float ffmod (float x, float y)
   return x;
 }
 
-void glGribScene::updateView ()
+void glGrib::Scene::updateView ()
 {
-  glGribOptionsView o = d.view.getOptions ();
+  glGrib::OptionsView o = d.view.getOptions ();
 
   if (d.opts.scene.rotate_earth.on)
     o.lon += d.opts.scene.rotate_earth.rate;
@@ -194,7 +194,7 @@ void glGribScene::updateView ()
   else if ((d.opts.scene.lon_at_hour >= 0.0f) && 
            (d.opts.scene.lon_at_hour <= 24.0f))
     {
-      const glGribOptionDate * date = getDate ();
+      const glGrib::OptionDate * date = getDate ();
       if (date != nullptr)
         {
           float hh = d.opts.scene.lon_at_hour - (date->hour + date->minute / 60.0f);
@@ -216,7 +216,7 @@ void glGribScene::updateView ()
   d.ticks.resize (d.view);
 }
 
-void glGribScene::updateInterpolation ()
+void glGrib::Scene::updateInterpolation ()
 {
   if (d.opts.scene.interpolation.on)
     {
@@ -238,16 +238,16 @@ void glGribScene::updateInterpolation ()
 }
 
 
-void glGribScene::updateDate ()
+void glGrib::Scene::updateDate ()
 {
   if (d.opts.scene.date.on)
     {
-      const glGribOptionDate * date = nullptr;
+      const glGrib::OptionDate * date = nullptr;
 
-      glGribField * fld = getCurrentField ();
+      glGrib::Field * fld = getCurrentField ();
       if (fld != nullptr)
         {
-          const std::vector<glGribFieldMetadata> & meta = fld->getMeta ();
+          const std::vector<glGrib::FieldMetadata> & meta = fld->getMeta ();
           date = &meta[0].term;
 	}
       else
@@ -266,31 +266,31 @@ void glGribScene::updateDate ()
     }
 }
 
-void glGribScene::updateTitle ()
+void glGrib::Scene::updateTitle ()
 {
   if (d.opts.scene.title.on)
     {
       std::string title = d.opts.scene.title.text;
-      glGribField * fld = getCurrentField ();
+      glGrib::Field * fld = getCurrentField ();
       if ((fld != nullptr) && (title == ""))
         {
-          const std::vector<glGribFieldMetadata> & meta = fld->getMeta ();
+          const std::vector<glGrib::FieldMetadata> & meta = fld->getMeta ();
           title = meta[0].getName ();
 	}
       if (strtitle != title)
         {
           d.strtitle.clear ();
-          glGribFontPtr font = newGlgribFontPtr (d.opts.scene.title.font);
+          glGrib::FontPtr font = newGlgribFontPtr (d.opts.scene.title.font);
           d.strtitle.setup2D (font, title, d.opts.scene.title.x, 
                               d.opts.scene.title.y, d.opts.scene.title.font.scale, 
-                              glGribString::str2align (d.opts.scene.title.a));
+                              glGrib::String::str2align (d.opts.scene.title.a));
           d.strtitle.setForegroundColor (d.opts.scene.title.font.color.foreground);
           d.strtitle.setBackgroundColor (d.opts.scene.title.font.color.background);
         }
     }
 }
 
-void glGribScene::update ()
+void glGrib::Scene::update ()
 {
 
   updateView ();
@@ -303,7 +303,7 @@ void glGribScene::update ()
 
 }
 
-void glGribScene::setup (const glGribOptions & o)
+void glGrib::Scene::setup (const glGrib::Options & o)
 {
   d.opts = o;
 
@@ -345,7 +345,7 @@ void glGribScene::setup (const glGribOptions & o)
   setDepartementsOptions (d.opts.departements);
 
   for (auto f : d.opts.field)
-    fieldlist.push_back ((glGribField *)nullptr);
+    fieldlist.push_back ((glGrib::Field *)nullptr);
 
   for (int i = 0; i < d.opts.field.size (); i++)
     setFieldOptions (i, d.opts.field[i]);
@@ -362,7 +362,7 @@ void glGribScene::setup (const glGribOptions & o)
 
   if (d.opts.scene.center.on)
     {
-      glGribField * field = getCurrentField ();
+      glGrib::Field * field = getCurrentField ();
       if (field != nullptr)
         {
           const_glGribGeometryPtr geometry = field->getGeometry ();
@@ -373,7 +373,7 @@ void glGribScene::setup (const glGribOptions & o)
   resize ();
 }
 
-void glGribScene::setViewport (int _width, int _height)
+void glGrib::Scene::setViewport (int _width, int _height)
 {
   d.view.setViewport (_width, _height);
   float width = d.view.getWidth (), height = d.view.getHeight ();
@@ -386,7 +386,7 @@ void glGribScene::setViewport (int _width, int _height)
           * glm::lookAt (glm::vec3 (+1.0f,0.0f,0.0f), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
 }
 
-void glGribScene::resize ()
+void glGrib::Scene::resize ()
 {
   d.landscape.resize (d.view);
   d.coast.resize (d.view);
@@ -400,9 +400,9 @@ void glGribScene::resize ()
       f->resize (d.view);
 }
 
-glGribOptions glGribScene::getOptions () const
+glGrib::Options glGrib::Scene::getOptions () const
 {
-  glGribOptions o = d.opts;
+  glGrib::Options o = d.opts;
 
   o.view           = d.view.getOptions ();
   o.landscape      = d.landscape.getOptions ();
@@ -422,76 +422,76 @@ glGribOptions glGribScene::getOptions () const
   return o;
 }
 
-void glGribScene::setViewOptions (const glGribOptionsView & o)
+void glGrib::Scene::setViewOptions (const glGrib::OptionsView & o)
 {
   d.view.setup (o);
 }
 
-void glGribScene::setLandscapeOptions (const glGribOptionsLandscape & o)
+void glGrib::Scene::setLandscapeOptions (const glGrib::OptionsLandscape & o)
 {
   d.landscape.clear ();
   if (o.on)
     d.landscape.setup (&ld, o);
 }
 
-void glGribScene::setLandOptions (const glGribOptionsLand & o)
+void glGrib::Scene::setLandOptions (const glGrib::OptionsLand & o)
 {
   d.land.clear ();
   if (o.on)
     d.land.setup (o);
 }
 
-void glGribScene::setGridOptions (const glGribOptionsGrid & o)
+void glGrib::Scene::setGridOptions (const glGrib::OptionsGrid & o)
 {
   d.grid.clear ();
   if (o.on)
     d.grid.setup (o);
 }
 
-void glGribScene::setTicksOptions (const glGribOptionsTicks & o)
+void glGrib::Scene::setTicksOptions (const glGrib::OptionsTicks & o)
 {
   d.ticks.clear ();
   d.ticks.setup (o);
   d.ticks.resize (d.view);
 }
 
-void glGribScene::setCoastOptions (const glGribOptionsCoast & o)
+void glGrib::Scene::setCoastOptions (const glGrib::OptionsCoast & o)
 {
   d.coast.clear ();
   if (o.on)
     d.coast.setup (o);
 }
 
-void glGribScene::setBorderOptions (const glGribOptionsBorder & o)
+void glGrib::Scene::setBorderOptions (const glGrib::OptionsBorder & o)
 {
   d.border.clear ();
   if (o.on)
     d.border.setup (o);
 }
 
-void glGribScene::setRiversOptions (const glGribOptionsRivers & o)
+void glGrib::Scene::setRiversOptions (const glGrib::OptionsRivers & o)
 {
   d.rivers.clear ();
   if (o.on)
     d.rivers.setup (o);
 }
 
-void glGribScene::setDepartementsOptions (const glGribOptionsDepartements & o)
+void glGrib::Scene::setDepartementsOptions (const glGrib::OptionsDepartements & o)
 {
   d.departements.clear ();
   if (o.on)
     d.departements.setup (o);
 }
 
-void glGribScene::setFieldOptions (int j, const glGribOptionsField & o, float slot)
+void glGrib::Scene::setFieldOptions (int j, const glGrib::OptionsField & o, float slot)
 {
   if (fieldlist[j] != nullptr)
     delete fieldlist[j];
 
-  fieldlist[j] = glGribField::create (o, slot, &ld);
+  fieldlist[j] = glGrib::Field::create (o, slot, &ld);
 }
 
-void glGribScene::setColorBarOptions (const glGribOptionsColorbar & o)
+void glGrib::Scene::setColorBarOptions (const glGrib::OptionsColorbar & o)
 {
   d.opts.colorbar = o;
   d.strmess.clear ();
@@ -499,16 +499,16 @@ void glGribScene::setColorBarOptions (const glGribOptionsColorbar & o)
 
   if (d.opts.colorbar.on)
     {
-      glGribFontPtr font = newGlgribFontPtr (d.opts.colorbar.font);
+      glGrib::FontPtr font = newGlgribFontPtr (d.opts.colorbar.font);
       d.strmess.setup2D (font, std::string (30, ' '), 1.0f, 1.0f, 
-                        d.opts.colorbar.font.scale, glGribString::NE);
+                        d.opts.colorbar.font.scale, glGrib::String::NE);
       d.strmess.setForegroundColor (d.opts.colorbar.font.color.foreground);
       d.colorbar.setup (d.opts.colorbar);
     }
 
 }
 
-void glGribScene::setMapScaleOptions (const glGribOptionsMapscale & o)
+void glGrib::Scene::setMapScaleOptions (const glGrib::OptionsMapscale & o)
 {
   d.opts.mapscale = o;
   d.mapscale.clear ();
@@ -518,7 +518,7 @@ void glGribScene::setMapScaleOptions (const glGribOptionsMapscale & o)
 
 }
 
-void glGribScene::setImageOptions (const glGribOptionsImage & o)
+void glGrib::Scene::setImageOptions (const glGrib::OptionsImage & o)
 {
   d.opts.scene.image = o;
   d.image.clear ();
@@ -526,16 +526,16 @@ void glGribScene::setImageOptions (const glGribOptionsImage & o)
     d.image.setup (d.opts.scene.image);
 }
 
-void glGribScene::setTextOptions (const glGribOptionsText & o)
+void glGrib::Scene::setTextOptions (const glGrib::OptionsText & o)
 {
   d.opts.scene.text = o;
   d.str.clear ();
   if (d.opts.scene.text.on)
     {
-      glGribFontPtr font = newGlgribFontPtr (d.opts.scene.text.font);
+      glGrib::FontPtr font = newGlgribFontPtr (d.opts.scene.text.font);
       for (int i = 0; i < d.opts.scene.text.s.size (); i++)
         {
-          glGribString str;
+          glGrib::String str;
           d.str.push_back (str);
 
           if (i >= d.opts.scene.text.x.size ())
@@ -543,8 +543,8 @@ void glGribScene::setTextOptions (const glGribOptionsText & o)
           if (i >= d.opts.scene.text.y.size ())
             break;
 
-          glGribString::align_t a = i < d.opts.scene.text.a.size () ? 
-            glGribString::str2align (d.opts.scene.text.a[i]) : glGribString::C;
+          glGrib::String::align_t a = i < d.opts.scene.text.a.size () ? 
+            glGrib::String::str2align (d.opts.scene.text.a[i]) : glGrib::String::C;
 
           d.str[i].setup2D (font, d.opts.scene.text.s[i], d.opts.scene.text.x[i], 
                            d.opts.scene.text.y[i], d.opts.scene.text.font.scale, a);
@@ -554,7 +554,7 @@ void glGribScene::setTextOptions (const glGribOptionsText & o)
     }
 }
 
-void glGribScene::setCitiesOptions (const glGribOptionsCities & o)
+void glGrib::Scene::setCitiesOptions (const glGrib::OptionsCities & o)
 {
   d.opts.cities = o;
   d.cities.clear ();
@@ -562,40 +562,40 @@ void glGribScene::setCitiesOptions (const glGribOptionsCities & o)
     d.cities.setup (o);
 }
 
-void glGribScene::setGridColorOptions (const glGribOptionColor & color)
+void glGrib::Scene::setGridColorOptions (const glGrib::OptionColor & color)
 {
   d.grid.setColorOptions (color);
 }
 
-void glGribScene::setGridScaleOptions (float scale)
+void glGrib::Scene::setGridScaleOptions (float scale)
 {
   d.grid.setScaleOptions (scale);
 }
 
-void glGribScene::setFieldPaletteOptions (int j, const glGribOptionsPalette & opts)
+void glGrib::Scene::setFieldPaletteOptions (int j, const glGrib::OptionsPalette & opts)
 {
-  glGribField * fld = fieldlist[j];
+  glGrib::Field * fld = fieldlist[j];
   if (fld == nullptr)
     return;
   fld->setPaletteOptions (opts);
 }
 
-void glGribScene::setDateOptions (const glGribOptionsDate & o)
+void glGrib::Scene::setDateOptions (const glGrib::OptionsDate & o)
 {
   strdate = "";
   d.opts.scene.date = o;
   d.strdate.clear ();
   if (d.opts.scene.date.on)
     {
-      glGribFontPtr font = newGlgribFontPtr (d.opts.scene.date.font);
+      glGrib::FontPtr font = newGlgribFontPtr (d.opts.scene.date.font);
       d.strdate.setup2D (font, std::string (20, ' '), 1.0f, 0.0f, 
-                        d.opts.scene.date.font.scale, glGribString::SE);
+                        d.opts.scene.date.font.scale, glGrib::String::SE);
       d.strdate.setForegroundColor (d.opts.scene.date.font.color.foreground);
       d.strdate.setBackgroundColor (d.opts.scene.date.font.color.background);
     }
 }
 
-void glGribScene::setTitleOptions (const glGribOptionsTitle & o)
+void glGrib::Scene::setTitleOptions (const glGrib::OptionsTitle & o)
 {
   strtitle = "";
   d.opts.scene.title = o;
@@ -605,12 +605,12 @@ void glGribScene::setTitleOptions (const glGribOptionsTitle & o)
     }
 }
 
-void glGribScene::setLightOptions (const glGribOptionsLight & o)
+void glGrib::Scene::setLightOptions (const glGrib::OptionsLight & o)
 {
   d.opts.scene.light = o;
 }
 
-void glGribScene::setSceneOptions (const glGribOptionsScene & o)
+void glGrib::Scene::setSceneOptions (const glGrib::OptionsScene & o)
 {
   d.opts.scene.rotate_earth = o.rotate_earth;
   d.opts.scene.lon_at_hour  = o.lon_at_hour;

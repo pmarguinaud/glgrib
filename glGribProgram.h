@@ -5,7 +5,10 @@
 #include <string>
 #include <glm/glm.hpp>
 
-class glGribProgram
+namespace glGrib
+{
+
+class Program
 {
 public:
 
@@ -31,14 +34,14 @@ public:
     TEST,
   } kind_t;
 
-  static glGribProgram * load (glGribProgram::kind_t);
+  static Program * load (Program::kind_t);
 
   void set (const std::string & key, bool b)
   {
     set (key, b ? 1 : 0);
   }
   
-  void set (const std::string & key, const glGribOptionColor & color)
+  void set (const std::string & key, const OptionColor & color)
   {
     set (key, float (color.r) / 255.0f, float (color.g) / 255.0f,
               float (color.b) / 255.0f, float (color.a) / 255.0f);
@@ -122,16 +125,16 @@ public:
       glUniformMatrix4fv (id, 1, GL_FALSE, &mat[0][0]);
   }
 
-  void set (const glGribOptionsLight &);
+  void set (const OptionsLight &);
 
   void compile ();
 
-  glGribProgram () {}
-  glGribProgram (const std::string & fsc, const std::string & vsc, const std::string & gsc)
+  Program () {}
+  Program (const std::string & fsc, const std::string & vsc, const std::string & gsc)
      : FragmentShaderCode (fsc), VertexShaderCode (vsc), GeometryShaderCode (gsc) { }
-  glGribProgram (const std::string & fsc, const std::string & vsc)
+  Program (const std::string & fsc, const std::string & vsc)
      : FragmentShaderCode (fsc), VertexShaderCode (vsc), GeometryShaderCode ("") { }
-  virtual ~glGribProgram ();
+  virtual ~Program ();
   void use () const;
   void read (const std::string &);
 
@@ -147,3 +150,5 @@ public:
 };
 
 
+
+}

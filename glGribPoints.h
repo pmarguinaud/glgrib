@@ -10,27 +10,32 @@
 #include <vector>
 
 
-class glGribPoints : public glGribObject
+namespace glGrib
+{
+
+class Points : public Object
 {
 public:
-  ~glGribPoints ();
+  ~Points ();
   
-  glGribPoints & operator= (const glGribPoints &);
+  Points & operator= (const Points &);
   void setupVertexAttributes ();
   virtual void clear ();
 
-  void setup (const glGribOptionsPoints &, const std::vector<float> &, const std::vector<float> &, const std::vector<float> &);
-  void render (const glGribView &, const glGribOptionsLight &) const override;
-  const glGribOptionsPoints & getOptions () const { return d.opts; }
-  void resize (const glGribView &) override {}
+  void setup (const OptionsPoints &, const std::vector<float> &, const std::vector<float> &, const std::vector<float> &);
+  void render (const View &, const OptionsLight &) const override;
+  const OptionsPoints & getOptions () const { return d.opts; }
+  void resize (const View &) override {}
 private:
   struct
   {
     float min, max;
-    glGribOptionsPoints opts;
+    OptionsPoints opts;
     int len;
-    glGribOpenGLBufferPtr llsbuffer;
+    OpenGLBufferPtr llsbuffer;
   } d;
   GLuint VertexArrayID = 0;
 };
 
+
+}

@@ -81,13 +81,13 @@ static int read_GSHHG_POINT_list (std::vector<GSHHG_POINT_t> * gpl, int n, FILE 
 }
 
 
-void glGribGSHHG::read (const glGribOptionsLines & opts, int * numberOfPoints, 
+void glGrib::GSHHG::read (const glGrib::OptionsLines & opts, int * numberOfPoints, 
 		         unsigned int * numberOfLines, std::vector<float> * lonlat,
 			 std::vector<unsigned int> * ind, 
                          const std::vector<unsigned int> & mask, 
                          const std::vector<unsigned int> & code)
 {
-  std::string path = glGribResolve (opts.path);
+  std::string path = glGrib::Resolve (opts.path);
 
   GSHHG_t h;
   std::vector<GSHHG_POINT_t> gpl;

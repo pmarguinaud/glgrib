@@ -10,12 +10,12 @@
 #include <iostream>
 #include <stdexcept>
 
-glGribLines & glGribLines::operator= (const glGribLines & other)
+glGrib::Lines & glGrib::Lines::operator= (const glGrib::Lines & other)
 {
   clear ();
   if ((this != &other) && other.isReady ())
     {
-      glGribPolygon::operator= (other);
+      glGrib::Polygon::operator= (other);
       opts = other.opts;
       setupVertexAttributes ();
       setReady ();
@@ -23,7 +23,7 @@ glGribLines & glGribLines::operator= (const glGribLines & other)
   return *this;
 }
 
-void glGribLines::setup (const glGribOptionsLines & o, 
+void glGrib::Lines::setup (const glGrib::OptionsLines & o, 
                           const std::vector<unsigned int> & mask, 
                           const std::vector<unsigned int> & code)
 {
@@ -34,9 +34,9 @@ void glGribLines::setup (const glGribOptionsLines & o,
   std::vector <unsigned int> ind;
 
   if (opts.format == "gshhg")
-     glGribGSHHG::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &ind, mask, code);
+     glGrib::GSHHG::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &ind, mask, code);
   else
-     glGribShapeLib::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &ind, opts.selector);
+     glGrib::ShapeLib::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &ind, opts.selector);
 
   vertexbuffer = newGlgribOpenGLBufferPtr (lonlat.size () * sizeof (float), lonlat.data ());
   elementbuffer = newGlgribOpenGLBufferPtr (ind.size () * sizeof (unsigned int), ind.data ());
@@ -46,9 +46,9 @@ void glGribLines::setup (const glGribOptionsLines & o,
   setReady ();
 }
 
-void glGribLines::render (const glGribView & view, const glGribOptionsLight & light) const
+void glGrib::Lines::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  glGribProgram * program = glGribProgram::load (glGribProgram::MONO);
+  glGrib::Program * program = glGrib::Program::load (glGrib::Program::MONO);
   program->use ();
   view.setMVP (program);
   program->set (light);
@@ -56,7 +56,7 @@ void glGribLines::render (const glGribView & view, const glGribOptionsLight & li
   program->set ("do_alpha", 1);
   program->set ("scale", opts.scale);
 
-  glGribPolygon::render (view, light);
+  glGrib::Polygon::render (view, light);
 
   view.delMVP (program);
 

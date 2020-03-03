@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-void glGribPolygon::setupVertexAttributes ()
+void glGrib::Polygon::setupVertexAttributes ()
 {
 
   glGenVertexArrays (1, &VertexArrayID);
@@ -18,7 +18,7 @@ void glGribPolygon::setupVertexAttributes ()
   glBindVertexArray (0);
 }
 
-void glGribPolygon::render (const glGribView & view, const glGribOptionsLight & light) const
+void glGrib::Polygon::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
   glBindVertexArray (VertexArrayID);
   glEnable (GL_PRIMITIVE_RESTART);
@@ -29,14 +29,14 @@ void glGribPolygon::render (const glGribView & view, const glGribOptionsLight & 
 
 }
 
-glGribPolygon::~glGribPolygon ()
+glGrib::Polygon::~Polygon ()
 {
   clear ();
 }
 
-void glGribPolygon::clear ()
+void glGrib::Polygon::clear ()
 {
   if (isReady ())
     glDeleteVertexArrays (1, &VertexArrayID);
-  glGribObject::clear ();
+  glGrib::Object::clear ();
 }

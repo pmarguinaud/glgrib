@@ -5,11 +5,14 @@
 #include <memory>
 
 
-class glGribOpenGLBuffer
+namespace glGrib
+{
+
+class OpenGLBuffer
 {
 public:
-  glGribOpenGLBuffer (size_t, const void * = nullptr);
-  ~glGribOpenGLBuffer ();
+  OpenGLBuffer (size_t, const void * = nullptr);
+  ~OpenGLBuffer ();
   GLuint id () { return id_; }
   bool allocated () const { return allocated_; }
   void bind (GLenum, GLuint = 0) const;
@@ -22,15 +25,15 @@ private:
   size_t size_;
 };
 
-typedef std::shared_ptr<glGribOpenGLBuffer> glGribOpenGLBufferPtr;
-extern glGribOpenGLBufferPtr newGlgribOpenGLBufferPtr (size_t, const void * = nullptr);
-extern glGribOpenGLBufferPtr newGlgribOpenGLBufferPtr (const glGribOpenGLBufferPtr &);
+typedef std::shared_ptr<OpenGLBuffer> OpenGLBufferPtr;
+OpenGLBufferPtr newGlgribOpenGLBufferPtr (size_t, const void * = nullptr);
+OpenGLBufferPtr newGlgribOpenGLBufferPtr (const OpenGLBufferPtr &);
 
-class glGribOpenGLTexture
+class OpenGLTexture
 {
 public:
-  glGribOpenGLTexture (int, int, const void *);
-  ~glGribOpenGLTexture ();
+  OpenGLTexture (int, int, const void *);
+  ~OpenGLTexture ();
   GLuint id () { return id_; }
   bool allocated () { return allocated_; }
 private:
@@ -38,9 +41,9 @@ private:
   GLuint id_;
 };
 
-typedef std::shared_ptr<glGribOpenGLTexture> glGribOpenGLTexturePtr;
-extern glGribOpenGLTexturePtr newGlgribOpenGLTexturePtr (const glGribOpenGLTexturePtr &);
-extern glGribOpenGLTexturePtr newGlgribOpenGLTexturePtr (int, int, const void *);
+typedef std::shared_ptr<OpenGLTexture> OpenGLTexturePtr;
+OpenGLTexturePtr newGlgribOpenGLTexturePtr (const OpenGLTexturePtr &);
+OpenGLTexturePtr newGlgribOpenGLTexturePtr (int, int, const void *);
 
 void glInit ();
 
@@ -50,3 +53,5 @@ template <> GLenum getOpenGLType<unsigned short> ();
 template <> GLenum getOpenGLType<unsigned int  > ();
 template <> GLenum getOpenGLType<float         > ();
 
+
+}

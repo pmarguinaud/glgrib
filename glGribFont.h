@@ -7,11 +7,14 @@
 #include "glGribProgram.h"
 
 
-class glGribFont
+namespace glGrib
+{
+
+class Font
 {
 public:
-  void setup (const glGribOptionsFont &);
-  ~glGribFont ();
+  void setup (const OptionsFont &);
+  ~Font ();
   int map (char c) const
   { 
     if (c <= 32) 
@@ -20,14 +23,14 @@ public:
     int iy = 5 - (c - 32) / 16;
     return iy * nx + ix;
   }
-  glGribProgram * getProgram () const { return glGribProgram::load (glGribProgram::FONT); }
+  Program * getProgram () const { return Program::load (Program::FONT); }
   void select () const;
   float getAspect () const { return aspect; }
   float getPosBelow () const { return posb; }
   float getPosAbove () const { return posu; }
-  const glGribOptionsFont & getOptions () const { return opts; }
+  const OptionsFont & getOptions () const { return opts; }
 private:
-  glGribOptionsFont opts;
+  OptionsFont opts;
   std::vector<float> xoff, yoff;
   int nx, ny;  // Array of letters dimension
   bool ready = false;
@@ -37,8 +40,10 @@ private:
   float posb;  // Size below line
 };
 
-typedef std::shared_ptr<glGribFont> glGribFontPtr;
-typedef std::shared_ptr<const glGribFont> const_glGribFontPtr;
+typedef std::shared_ptr<Font> FontPtr;
+typedef std::shared_ptr<const Font> const_glGribFontPtr;
 
-glGribFontPtr newGlgribFontPtr (const glGribOptionsFont &);
+FontPtr newGlgribFontPtr (const OptionsFont &);
 
+
+}

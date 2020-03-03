@@ -4,7 +4,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <string>
 
-class glGribProjection
+namespace glGrib
+{
+
+class Projection
 {
 public:
   enum type
@@ -23,88 +26,88 @@ public:
   static type typeFromString (std::string str);
 };
 
-class glGribProjectionXYZ : public glGribProjection
+class ProjectionXYZ : public Projection
 {
 public:
   glm::vec3 project (const glm::vec3 &) const override;
   int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const override;
   glm::mat4 getView (const glm::vec3 &, const float) const override;
-  int getType () const override { return glGribProjection::XYZ; }
+  int getType () const override { return Projection::XYZ; }
   bool setLon0 (const float &) const override { return false; }
 };
 
-class glGribProjectionLatLon : public glGribProjection
+class ProjectionLatLon : public Projection
 {
 public:
   glm::vec3 project (const glm::vec3 &) const override;
   int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const override;
   glm::mat4 getView (const glm::vec3 &, const float) const override;
-  int getType () const override { return glGribProjection::LATLON; }
+  int getType () const override { return Projection::LATLON; }
   bool setLon0 (const float & lon) const override { lon0 = lon; return true; }
 private:
   mutable float lon0 = 180.0; // Latitude of right handside
 };
 
-class glGribProjectionMercator : public glGribProjection
+class ProjectionMercator : public Projection
 {
 public:
   glm::vec3 project (const glm::vec3 &) const override;
   int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const override;
   glm::mat4 getView (const glm::vec3 &, const float) const override;
-  int getType () const override { return glGribProjection::MERCATOR; }
+  int getType () const override { return Projection::MERCATOR; }
   bool setLon0 (const float & lon) const override { lon0 = lon; return true; }
 private:
   mutable float lon0 = 180.0; // Latitude of right handside
 };
 
-class glGribProjectionPolarNorth : public glGribProjection
+class ProjectionPolarNorth : public Projection
 {
 public:
   glm::vec3 project (const glm::vec3 &) const override;
   int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const override;
   glm::mat4 getView (const glm::vec3 &, const float) const override;
-  int getType () const override { return glGribProjection::POLAR_NORTH; }
+  int getType () const override { return Projection::POLAR_NORTH; }
   bool setLon0 (const float &) const override { return false; }
 };
 
-class glGribProjectionPolarSouth : public glGribProjection
+class ProjectionPolarSouth : public Projection
 {
 public:
   glm::vec3 project (const glm::vec3 &) const override;
   int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *) const override;
   glm::mat4 getView (const glm::vec3 &, const float) const override;
-  int getType () const override { return glGribProjection::POLAR_SOUTH; }
+  int getType () const override { return Projection::POLAR_SOUTH; }
   bool setLon0 (const float &) const override { return false; }
 };
 
-class glGribProjectionSet 
+class ProjectionSet 
 {
 public:
-  glGribProjectionSet () 
+  ProjectionSet () 
   {
     setup ();
   }
-  glGribProjectionSet & operator= (const glGribProjectionSet & ps)
+  ProjectionSet & operator= (const ProjectionSet & ps)
   {
     setup ();
     current_ = ps.current_;
     return *this;
   }
-  glGribProjection * current () const
+  Projection * current () const
   {
     return proj[current_];
   }
-  glGribProjection * next ()
+  Projection * next ()
   {
     current_++; current_ %= 5; return current ();
   }
-  void setType (const glGribProjection::type & type)
+  void setType (const Projection::type & type)
   {
     current_ = type;
   }
   virtual std::string currentName () const
   {
- #define if_type(x) case glGribProjection::x: return #x
+ #define if_type(x) case Projection::x: return #x
      switch (current_)
        {
          if_type (XYZ);
@@ -117,7 +120,7 @@ public:
      return "";
   }
 private:
-  int current_ = glGribProjection::XYZ;
+  int current_ = Projection::XYZ;
   void setup ()
   { 
      proj[0] = &proj_xyz;
@@ -126,12 +129,14 @@ private:
      proj[3] = &proj_mercator;
      proj[4] = &proj_latlon;
   }
-  glGribProjection * proj[5];
-  glGribProjectionXYZ         proj_xyz;
-  glGribProjectionPolarNorth proj_polar_north;
-  glGribProjectionPolarSouth proj_polar_south;
-  glGribProjectionMercator    proj_mercator;
-  glGribProjectionLatLon      proj_latlon;
+  Projection * proj[5];
+  ProjectionXYZ         proj_xyz;
+  ProjectionPolarNorth proj_polar_north;
+  ProjectionPolarSouth proj_polar_south;
+  ProjectionMercator    proj_mercator;
+  ProjectionLatLon      proj_latlon;
 };
 
 
+
+}

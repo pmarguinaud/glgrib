@@ -6,30 +6,30 @@
 #include <map>
 
 
-typedef std::map <std::string,glGribFontPtr> cache_t;
+typedef std::map <std::string,glGrib::FontPtr> cache_t;
 static cache_t cache;
 
 
-glGribFontPtr newGlgribFontPtr (const glGribOptionsFont & opts)
+glGrib::FontPtr glGrib::newGlgribFontPtr (const glGrib::OptionsFont & opts)
 {
   auto it = cache.find (opts.bitmap);
-  glGribFontPtr font;
+  glGrib::FontPtr font;
   if (it != cache.end ())
     { 
       font = it->second;
     }
   else
     {
-      font = std::make_shared<glGribFont> ();
+      font = std::make_shared<glGrib::Font> ();
       font->setup (opts);
-      cache.insert (std::pair<std::string,glGribFontPtr> (opts.bitmap, font));
+      cache.insert (std::pair<std::string,glGrib::FontPtr> (opts.bitmap, font));
     }
   return font;
 }
 
-void glGribFont::select () const
+void glGrib::Font::select () const
 {
-  glGribProgram * program = glGribProgram::load (glGribProgram::FONT);
+  glGrib::Program * program = glGrib::Program::load (glGrib::Program::FONT);
   program->use ();
   program->set ("xoff", xoff);
   program->set ("yoff", yoff);
@@ -42,20 +42,20 @@ void glGribFont::select () const
 
 }
 
-glGribFont::~glGribFont ()
+glGrib::Font::~Font ()
 {
   if (ready)
     glDeleteTextures (1, &texture);
 }
 
-void glGribFont::setup (const glGribOptionsFont & o)
+void glGrib::Font::setup (const glGrib::OptionsFont & o)
 {
   opts = o;
   unsigned char * rgb = nullptr;
   int w, h;
   std::vector<int> ioff, joff;
 
-  glGribBitmap (glGribResolve (opts.bitmap), &rgb, &w, &h);
+  glGrib::Bitmap (glGrib::Resolve (opts.bitmap), &rgb, &w, &h);
 
   for (int i = 0, p = w * (h - 2); i < w; i++, p += 1)
     if ((rgb[3*p+0] == 255) && (rgb[3*p+1] == 0) && (rgb[3*p+2] == 0))

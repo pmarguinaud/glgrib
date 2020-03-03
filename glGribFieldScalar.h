@@ -2,20 +2,23 @@
 
 #include "glGribField.h"
 
-class glGribFieldScalar : public glGribField
+namespace glGrib
+{
+
+class FieldScalar : public Field
 {
 public:
-  glGribField::kind getKind () const 
+  Field::kind getKind () const 
   {
-    return glGribField::SCALAR;
+    return Field::SCALAR;
   }
-  glGribFieldScalar * clone () const;
-  glGribFieldScalar & operator= (const glGribFieldScalar &);
-  glGribFieldScalar () { }
-  glGribFieldScalar (const glGribFieldScalar &);
-  void setup (glGribLoader *, const glGribOptionsField &, float = 0) override;
-  void render (const glGribView &, const glGribOptionsLight &) const override;
-  virtual ~glGribFieldScalar ();
+  FieldScalar * clone () const;
+  FieldScalar & operator= (const FieldScalar &);
+  FieldScalar () { }
+  FieldScalar (const FieldScalar &);
+  void setup (Loader *, const OptionsField &, float = 0) override;
+  void render (const View &, const OptionsLight &) const override;
+  virtual ~FieldScalar ();
   void setupVertexAttributes ();
   bool useColorBar () const override { return true; }
   int getSlotMax () const override
@@ -23,12 +26,14 @@ public:
     return (int)opts.path.size ();
   }
 private:
-  void setupMpiView (glGribLoader *, const glGribOptionsField &, float = 0);
+  void setupMpiView (Loader *, const OptionsField &, float = 0);
   template <typename T>
   void setupVertexAttributes ();
   template <typename T>
-  void setup (glGribLoader *, const glGribOptionsField &, float = 0);
+  void setup (Loader *, const OptionsField &, float = 0);
   GLuint VertexArrayIDpoints = 0;
   void clear () override;
 };
 
+
+}

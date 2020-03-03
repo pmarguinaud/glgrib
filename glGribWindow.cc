@@ -28,46 +28,46 @@ static
 void APIENTRY debugCallback (unsigned int source, unsigned int type, GLuint id, unsigned int severity, 
                              int length, const char * message, const void * data)
 {
-  glGribWindow * gwindow = (glGribWindow *)data;
+  glGrib::Window * gwindow = (glGrib::Window *)data;
   gwindow->debug (source, type, id, severity, length, message);
 }
 
 static 
 void cursorPositionCallback (GLFWwindow * window, double xpos, double ypos)
 {
-  glGribWindow * gwindow = (glGribWindow *)glfwGetWindowUserPointer (window);
+  glGrib::Window * gwindow = (glGrib::Window *)glfwGetWindowUserPointer (window);
   gwindow->displayCursorPosition (xpos, ypos);
 }
 
 static
 void mouseButtonCallback (GLFWwindow * window, int button, int action, int mods)
 {
-  glGribWindow * gwindow = (glGribWindow *)glfwGetWindowUserPointer (window);
+  glGrib::Window * gwindow = (glGrib::Window *)glfwGetWindowUserPointer (window);
   gwindow->onclick (button, action, mods);
 }
 
 static
 void scrollCallback (GLFWwindow * window, double xoffset, double yoffset)
 {
-  glGribWindow * gwindow = (glGribWindow *)glfwGetWindowUserPointer (window);
+  glGrib::Window * gwindow = (glGrib::Window *)glfwGetWindowUserPointer (window);
   gwindow->scroll (xoffset, yoffset);
 }
 
 static 
 void resizeCallback (GLFWwindow * window, int width, int height)
 {
-  glGribWindow * gwindow = (glGribWindow *)glfwGetWindowUserPointer (window);
+  glGrib::Window * gwindow = (glGrib::Window *)glfwGetWindowUserPointer (window);
   gwindow->resize (width, height);
 }
 
 static 
 void keyCallback (GLFWwindow * window, int key, int scancode, int action, int mods)
 {
-  glGribWindow * gwindow = (glGribWindow *)glfwGetWindowUserPointer (window);
+  glGrib::Window * gwindow = (glGrib::Window *)glfwGetWindowUserPointer (window);
   gwindow->onkey (key, scancode, action, mods);
 }
 
-void glGribWindow::showHelpItem (const char * mm, const char * k, const char * desc, const char * action)
+void glGrib::Window::showHelpItem (const char * mm, const char * k, const char * desc, const char * action)
 {
   char line[strlen (desc) + strlen (action) + 64];
   char key[32];
@@ -88,7 +88,7 @@ void glGribWindow::showHelpItem (const char * mm, const char * k, const char * d
   printf ("%s", line);
 }
 
-void glGribWindow::onkey (int key, int scancode, int action, int mods, bool help)
+void glGrib::Window::onkey (int key, int scancode, int action, int mods, bool help)
 {
 
   if ((action == GLFW_PRESS || action == GLFW_REPEAT) || help)
@@ -183,9 +183,9 @@ void glGribWindow::onkey (int key, int scancode, int action, int mods, bool help
 
 }
 
-void glGribWindow::toggleWireframe () 
+void glGrib::Window::toggleWireframe () 
 { 
-  glGribField * f = scene.getCurrentField ();
+  glGrib::Field * f = scene.getCurrentField ();
 
   if (f == nullptr)
     {
@@ -197,9 +197,9 @@ void glGribWindow::toggleWireframe ()
 
 }
 
-void glGribWindow::fixLandscape (float dy, float dx, float sy, float sx)
+void glGrib::Window::fixLandscape (float dy, float dx, float sy, float sx)
 {
-  glGribOptionsLandscapePosition o = scene.d.landscape.getOptions ().lonlat.position;
+  glGrib::OptionsLandscapePosition o = scene.d.landscape.getOptions ().lonlat.position;
 
   float dlat = o.lat2 - o.lat1;
   float dlon = o.lon2 - o.lon1;
@@ -222,28 +222,28 @@ void glGribWindow::fixLandscape (float dy, float dx, float sy, float sx)
   scene.d.landscape.setPositionOptions (o);
 }
 
-void glGribWindow::toggleColorBar ()
+void glGrib::Window::toggleColorBar ()
 {
   scene.toggleColorBar ();
 }
 
-void glGribWindow::showHelp () 
+void glGrib::Window::showHelp () 
 {
   onkey (0, 0, 0, 0, true);
 }
 
-static glGribFieldVector * getVector (glGribScene & scene)
+static glGrib::FieldVector * getVector (glGrib::Scene & scene)
 {
-  glGribField * f = scene.getCurrentField ();
+  glGrib::Field * f = scene.getCurrentField ();
 
   if (f == nullptr) 
     return nullptr;
 
-  glGribFieldVector * v = nullptr;
+  glGrib::FieldVector * v = nullptr;
 
   try
     {
-      v = dynamic_cast<glGribFieldVector*>(f);
+      v = dynamic_cast<glGrib::FieldVector*>(f);
     }
   catch (const std::bad_cast & e)
     {
@@ -253,33 +253,33 @@ static glGribFieldVector * getVector (glGribScene & scene)
   return v;
 }
 
-void glGribWindow::toggleShowVector ()
+void glGrib::Window::toggleShowVector ()
 {
-  glGribFieldVector * v = getVector (scene);
+  glGrib::FieldVector * v = getVector (scene);
   if (v)
     v->toggleShowVector ();
 }
 
 
-void glGribWindow::toggleShowNorm ()
+void glGrib::Window::toggleShowNorm ()
 {
-  glGribFieldVector * v = getVector (scene);
+  glGrib::FieldVector * v = getVector (scene);
   if (v)
     v->toggleShowNorm ();
 }
 
-void glGribWindow::resampleCurrentField ()
+void glGrib::Window::resampleCurrentField ()
 {
-  glGribField * f = scene.getCurrentField ();
+  glGrib::Field * f = scene.getCurrentField ();
 
   if (f == nullptr) 
     return;
 
-  glGribFieldVector * v = nullptr;
+  glGrib::FieldVector * v = nullptr;
 
   try
     {
-      v = dynamic_cast<glGribFieldVector*>(f);
+      v = dynamic_cast<glGrib::FieldVector*>(f);
     }
   catch (const std::bad_cast & e)
     {
@@ -293,17 +293,17 @@ void glGribWindow::resampleCurrentField ()
 
 }
 
-void glGribWindow::saveCurrentPalette ()
+void glGrib::Window::saveCurrentPalette ()
 {
-  glGribField * f = scene.getCurrentField ();
+  glGrib::Field * f = scene.getCurrentField ();
   if (f == nullptr)
     return;
   f->saveOptions ();
 }
 
-void glGribWindow::removeField (int rank)
+void glGrib::Window::removeField (int rank)
 {
-  glGribField * f = nullptr;
+  glGrib::Field * f = nullptr;
   if ((rank < 0) || (rank > scene.fieldlist.size ()-1))
     return;
   if (scene.fieldlist[rank] != nullptr)
@@ -311,7 +311,7 @@ void glGribWindow::removeField (int rank)
   scene.fieldlist[rank] = f;
 }
 
-void glGribWindow::loadField (const glGribOptionsField & opts, int rank)
+void glGrib::Window::loadField (const glGrib::OptionsField & opts, int rank)
 {
 
   if ((rank < 0) || (rank > 11))
@@ -319,7 +319,7 @@ void glGribWindow::loadField (const glGribOptionsField & opts, int rank)
 
   makeCurrent ();
 
-  glGribField * f = new glGribFieldScalar ();
+  glGrib::Field * f = new glGrib::FieldScalar ();
   f->setup (&scene.ld, opts);
 
   if (rank > scene.fieldlist.size () - 1)
@@ -329,22 +329,22 @@ void glGribWindow::loadField (const glGribOptionsField & opts, int rank)
 
 }
 
-void glGribWindow::toggleTransformType ()
+void glGrib::Window::toggleTransformType ()
 {
   scene.d.view.toggleTransformType ();
 }
 
-void glGribWindow::nextProjection ()
+void glGrib::Window::nextProjection ()
 {
   scene.d.view.nextProjection ();
 }
 
-void glGribWindow::duplicate ()
+void glGrib::Window::duplicate ()
 {
   cloned = true;
 }
 
-void glGribWindow::rotateLightNorth ()
+void glGrib::Window::rotateLightNorth ()
 {
   float x, y;
   scene.getLightPos (&x, &y);
@@ -352,7 +352,7 @@ void glGribWindow::rotateLightNorth ()
   scene.setLightPos (x, y);
 }
 
-void glGribWindow::rotateLightSouth ()
+void glGrib::Window::rotateLightSouth ()
 {
   float x, y;
   scene.getLightPos (&x, &y);
@@ -360,7 +360,7 @@ void glGribWindow::rotateLightSouth ()
   scene.setLightPos (x, y);
 }
 
-void glGribWindow::rotateLightWest  ()
+void glGrib::Window::rotateLightWest  ()
 {
   float x, y;
   scene.getLightPos (&x, &y);
@@ -368,7 +368,7 @@ void glGribWindow::rotateLightWest  ()
   scene.setLightPos (x, y);
 }
 
-void glGribWindow::rotateLightEast  ()
+void glGrib::Window::rotateLightEast  ()
 {
   float x, y;
   scene.getLightPos (&x, &y);
@@ -376,7 +376,7 @@ void glGribWindow::rotateLightEast  ()
   scene.setLightPos (x, y);
 }
 
-void glGribWindow::toggleLight ()
+void glGrib::Window::toggleLight ()
 {
   if (scene.hasLight ())
     scene.unsetLight ();
@@ -384,57 +384,57 @@ void glGribWindow::toggleLight ()
     scene.setLight ();
 }
 
-void glGribWindow::nextPalette ()
+void glGrib::Window::nextPalette ()
 {
-  glGribField * f = scene.getCurrentField ();
+  glGrib::Field * f = scene.getCurrentField ();
   if (f != nullptr)
     f->setNextPalette ();
 }
 
-void glGribWindow::scalePaletteUp ()
+void glGrib::Window::scalePaletteUp ()
 {
-  glGribField * fld  = scene.getCurrentField ();
+  glGrib::Field * fld  = scene.getCurrentField ();
   if (fld == nullptr)
     return;
   fld->scalePaletteUp ();
 }
 
-void glGribWindow::scalePaletteDown ()
+void glGrib::Window::scalePaletteDown ()
 {
-  glGribField * fld  = scene.getCurrentField ();
+  glGrib::Field * fld  = scene.getCurrentField ();
   if (fld == nullptr)
     return;
   fld->scalePaletteDown ();
 }
 
-void glGribWindow::selectField (int ifield)
+void glGrib::Window::selectField (int ifield)
 {
   scene.setCurrentFieldRank (ifield);
 }
 
-void glGribWindow::scaleFieldDown ()
+void glGrib::Window::scaleFieldDown ()
 {
-  glGribField * f = scene.getCurrentField ();
+  glGrib::Field * f = scene.getCurrentField ();
   if (f != nullptr)
     {
-      const glGribOptionsField & o = f->getOptions ();
+      const glGrib::OptionsField & o = f->getOptions ();
       f->setScale (o.scale - 0.01);
     }
 }
 
-void glGribWindow::scaleFieldUp ()
+void glGrib::Window::scaleFieldUp ()
 {
-  glGribField * f = scene.getCurrentField ();
+  glGrib::Field * f = scene.getCurrentField ();
   if (f != nullptr)
     {
-      const glGribOptionsField & o = f->getOptions ();
+      const glGrib::OptionsField & o = f->getOptions ();
       f->setScale (o.scale + 0.01);
     }
 }
 
-void glGribWindow::toggleHideField ()
+void glGrib::Window::toggleHideField ()
 {
-  glGribField * fld = scene.getCurrentField ();
+  glGrib::Field * fld = scene.getCurrentField ();
   if (fld == nullptr)
     return;
   if (fld->visible ())
@@ -443,21 +443,21 @@ void glGribWindow::toggleHideField ()
     fld->show ();
 }
 
-void glGribWindow::hideAllFields ()
+void glGrib::Window::hideAllFields ()
 {
   for (auto f : scene.fieldlist)
     if (f != nullptr)
       f->hide ();
 }
 
-void glGribWindow::showAllFields ()
+void glGrib::Window::showAllFields ()
 {
   for (auto f : scene.fieldlist)
     if (f != nullptr)
       f->show ();
 }
 
-int glGribWindow::getLatLonFromCursor (float * lat, float * lon)
+int glGrib::Window::getLatLonFromCursor (float * lat, float * lon)
 {
   double xpos, ypos;
 
@@ -467,7 +467,7 @@ int glGribWindow::getLatLonFromCursor (float * lat, float * lon)
   return scene.d.view.getLatLonFromScreenCoords (xpos, ypos, lat, lon);
 }
 
-void glGribWindow::snapshot (const std::string & format)
+void glGrib::Window::snapshot (const std::string & format)
 {
   unsigned char * rgb = new unsigned char[opts.width * opts.height * 4];
 
@@ -484,7 +484,7 @@ void glGribWindow::snapshot (const std::string & format)
   // %N  -> snapshot_cnt
   // %D  -> date
 
-  const glGribOptionDate * date = scene.getDate ();
+  const glGrib::OptionDate * date = scene.getDate ();
   std::string dstr = date ? date->asString () : "";
   for (int i = 0; i < dstr.size (); i++)
     if ((dstr[i] == ' ') || (dstr[i] == '/'))
@@ -541,12 +541,12 @@ void glGribWindow::snapshot (const std::string & format)
       filename = fmt;
     }
 
-  glGribWritePng (filename, opts.width, opts.height, rgb);
+  glGrib::WritePng (filename, opts.width, opts.height, rgb);
 
   delete [] rgb;
 }
 
-void glGribWindow::framebuffer (const std::string & format)
+void glGrib::Window::framebuffer (const std::string & format)
 {
   if (opts.antialiasing.on)
     {
@@ -659,13 +659,13 @@ void glGribWindow::framebuffer (const std::string & format)
 
 }
 
-void glGribWindow::displayCursorPosition (double xpos, double ypos)
+void glGrib::Window::displayCursorPosition (double xpos, double ypos)
 {
   float lat, lon;
   if (getLatLonFromCursor (&lat, &lon))
     {
       std::string title_;
-      const glGribField * field = scene.getCurrentField ();
+      const glGrib::Field * field = scene.getCurrentField ();
       if (field)
         {
           int jglo = field->getGeometry ()->latlon2index (lat, lon);
@@ -695,7 +695,7 @@ void glGribWindow::displayCursorPosition (double xpos, double ypos)
   glfwSetWindowTitle (window, title.c_str ());
 }
 
-void glGribWindow::toggleCursorposDisplay ()
+void glGrib::Window::toggleCursorposDisplay ()
 {
   if (cursorpos)
     glfwSetCursorPosCallback (window, nullptr);
@@ -706,7 +706,7 @@ void glGribWindow::toggleCursorposDisplay ()
   glfwSetWindowTitle (window, title.c_str ());
 }
 
-void glGribWindow::onclick (int button, int action, int mods)
+void glGrib::Window::onclick (int button, int action, int mods)
 {
   enum
   {
@@ -733,16 +733,16 @@ if ((button == GLFW_MOUSE_BUTTON_##k) && (mm == mods)) \
     }
 }
 
-void glGribWindow::centerLightAtCursorPos ()
+void glGrib::Window::centerLightAtCursorPos ()
 {
   float lat, lon;
   if (getLatLonFromCursor (&lat, &lon))
     scene.setLightPos (lon, lat);
 }
 
-void glGribWindow::centerViewAtCursorPos ()
+void glGrib::Window::centerViewAtCursorPos ()
 {
-  glGribOptionsView o = scene.d.view.getOptions ();
+  glGrib::OptionsView o = scene.d.view.getOptions ();
   if (getLatLonFromCursor (&o.lat, &o.lon))
     {
       scene.d.view.setOptions (o);
@@ -752,9 +752,9 @@ void glGribWindow::centerViewAtCursorPos ()
     }
 }
 
-void glGribWindow::debugTriangleNumber ()
+void glGrib::Window::debugTriangleNumber ()
 {
-  glGribField * f = scene.getCurrentField ();
+  glGrib::Field * f = scene.getCurrentField ();
   float lon, lat;
   if (getLatLonFromCursor (&lat, &lon) && (f != nullptr))
     {
@@ -763,12 +763,12 @@ void glGribWindow::debugTriangleNumber ()
     }
 }
 
-void glGribWindow::scroll (double xoffset, double yoffset)
+void glGrib::Window::scroll (double xoffset, double yoffset)
 {
 
   makeCurrent ();
 
-  glGribOptionsView o = scene.d.view.getOptions ();
+  glGrib::OptionsView o = scene.d.view.getOptions ();
 
   if (yoffset > 0)
     {
@@ -791,7 +791,7 @@ void glGribWindow::scroll (double xoffset, double yoffset)
 
 }
 
-void glGribWindow::renderFrame ()
+void glGrib::Window::renderFrame ()
 {
 
   nframes++;
@@ -800,19 +800,19 @@ void glGribWindow::renderFrame ()
 
   scene.update ();
 
-  if (Shell.started ())
-    Shell.lock ();
+  if (Shell0.started ())
+    Shell0.lock ();
 
   scene.display (); 
 
   glfwSwapBuffers (window);
 
-  if (Shell.started ())
-    Shell.unlock ();
+  if (Shell0.started ())
+    Shell0.unlock ();
 
 }
 
-void glGribWindow::run (glGribShell * shell)
+void glGrib::Window::run (glGrib::Shell * shell)
 {
   renderFrame ();
   glfwPollEvents ();
@@ -824,7 +824,7 @@ void glGribWindow::run (glGribShell * shell)
 }
 
 
-void glGribWindow::resize (int w, int h)
+void glGrib::Window::resize (int w, int h)
 {
 
   opts.width = w;
@@ -837,7 +837,7 @@ void glGribWindow::resize (int w, int h)
 
 }
 
-void glGribWindow::setHints ()
+void glGrib::Window::setHints ()
 {
   if (opts.antialiasing.on)
     glfwWindowHint (GLFW_SAMPLES, opts.antialiasing.samples);
@@ -853,18 +853,18 @@ void glGribWindow::setHints ()
 
 static int idcount = 0;
 
-glGribWindow::glGribWindow ()
+glGrib::Window::Window ()
 {
   id_ = idcount++;
 }
 
 
-glGribWindow::glGribWindow (const glGribOptions & opts)
+glGrib::Window::Window (const glGrib::Options & opts)
 {
   create (opts);
 }
 
-void glGribWindow::create (const glGribOptions & o)
+void glGrib::Window::create (const glGrib::Options & o)
 {
   id_ = idcount++;
   opts = o.window;
@@ -893,7 +893,7 @@ void glGribWindow::create (const glGribOptions & o)
     glfwSetWindowPos (window, opts.position.x, opts.position.y);
 }
 
-void glGribWindow::createGFLWwindow (GLFWwindow * context)
+void glGrib::Window::createGFLWwindow (GLFWwindow * context)
 {
   setHints ();
   
@@ -943,7 +943,7 @@ void glGribWindow::createGFLWwindow (GLFWwindow * context)
 }
 
   
-glGribWindow::~glGribWindow ()
+glGrib::Window::~Window ()
 {
   if (window)
     glfwDestroyWindow (window);
@@ -954,9 +954,9 @@ glGribWindow::~glGribWindow ()
     }
 }
 
-glGribWindow * glGribWindow::clone ()
+glGrib::Window * glGrib::Window::clone ()
 {
-  glGribWindow * w = new glGribWindow ();
+  glGrib::Window * w = new glGrib::Window ();
 
 #define COPY(x) do { w->x = x; } while (0)
   COPY (opts);
@@ -1016,7 +1016,7 @@ static const char * debugSeverity (unsigned int severity)
 }
 #undef GLMESS
 
-void glGribWindow::debug (unsigned int source, unsigned int type, GLuint id, 
+void glGrib::Window::debug (unsigned int source, unsigned int type, GLuint id, 
 		           unsigned int severity, int length, const char * message)
 {
   // ignore non-significant error/warning codes
@@ -1026,7 +1026,7 @@ void glGribWindow::debug (unsigned int source, unsigned int type, GLuint id,
           debugSeverity (severity), debugType (type), id, message);
 }
 
-void glGribWindow::setOptions (const glGribOptionsWindow & o)
+void glGrib::Window::setOptions (const glGrib::OptionsWindow & o)
 {
   if ((o.width != opts.width) || (o.height != opts.height))
     {

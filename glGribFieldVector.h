@@ -3,27 +3,30 @@
 #include "glGribField.h"
 #include "glGribView.h"
 
-class glGribFieldVector : public glGribField
+namespace glGrib
+{
+
+class FieldVector : public Field
 {
 public:
-  glGribField::kind getKind () const 
+  Field::kind getKind () const 
   {
-    return glGribField::VECTOR;
+    return Field::VECTOR;
   }
-  glGribFieldVector * clone () const;
-  glGribFieldVector & operator= (const glGribFieldVector &);
-  glGribFieldVector () { }
-  glGribFieldVector (const glGribFieldVector &);
-  void setup (glGribLoader *, const glGribOptionsField &, float = 0) override;
-  void renderArrow (const glGribView &, const glGribOptionsLight &) const;
-  void renderNorms (const glGribView &, const glGribOptionsLight &) const;
-  void render (const glGribView &, const glGribOptionsLight &) const override;
-  virtual ~glGribFieldVector ();
+  FieldVector * clone () const;
+  FieldVector & operator= (const FieldVector &);
+  FieldVector () { }
+  FieldVector (const FieldVector &);
+  void setup (Loader *, const OptionsField &, float = 0) override;
+  void renderArrow (const View &, const OptionsLight &) const;
+  void renderNorms (const View &, const OptionsLight &) const;
+  void render (const View &, const OptionsLight &) const override;
+  virtual ~FieldVector ();
   void setupVertexAttributes ();
-  void reSample (const glGribView &);
+  void reSample (const View &);
   void toggleShowVector () { opts.vector.arrow.on = ! opts.vector.arrow.on; }
   void toggleShowNorm () { opts.vector.norm.on = ! opts.vector.norm.on; }
-  void resize (const glGribView &) override;
+  void resize (const View &) override;
   float getNormedMinValue () const override
   {
     std::vector<float> val = getMinValue ();
@@ -43,10 +46,12 @@ private:
   GLuint VertexArrayIDvector = 0;
   struct
     {
-      glGribOpenGLBufferPtr buffer_n, buffer_d;
+      OpenGLBufferPtr buffer_n, buffer_d;
       float vscale;
     } d;
 protected:
   void clear () override;
 };
 
+
+}

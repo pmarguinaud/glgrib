@@ -9,15 +9,18 @@
 #include <map>
 #include <list>
 
-class glGribShell
+namespace glGrib
+{
+
+class Shell
 {
 public:
-  glGribShell ();
-  void setup (const glGribOptionsShell &);
-  void execute (const std::string &, class glGribWindow *);
+  Shell ();
+  void setup (const OptionsShell &);
+  void execute (const std::string &, class Window *);
   int close = 0;
   bool closed () { return close; }
-  void start (class glGribWindowSet *);
+  void start (class WindowSet *);
   void run ();
   void runInt ();
   void runOff ();
@@ -27,10 +30,10 @@ public:
   void wait () { if (wset) pthread_join (thread, nullptr); }
   bool started () { return wset != nullptr; }
   char * optionGenerator (const char *, int);
-  const glGribOptionsShell & getOptions () const { return opts; }
+  const OptionsShell & getOptions () const { return opts; }
 private:
-  glGribOptionsShell opts;
-  glGribWindowSet * wset = nullptr;
+  OptionsShell opts;
+  WindowSet * wset = nullptr;
   pthread_t thread;
   pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
   std::vector<std::string> getsetoptions;
@@ -40,5 +43,7 @@ private:
   } og;
 };
 
-extern glGribShell Shell;
+extern Shell Shell0;
 
+
+}

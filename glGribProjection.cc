@@ -44,12 +44,12 @@ static glm::vec3 compNormedPos (const glm::vec3 & xyz)
   return glm::vec3 (x * r, y * r, z * r);
 }
 
-glm::vec3 glGribProjectionXYZ::project (const glm::vec3 & xyz) const
+glm::vec3 glGrib::ProjectionXYZ::project (const glm::vec3 & xyz) const
 {
   return xyz;
 }
 
-int glGribProjectionXYZ::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
+int glGrib::ProjectionXYZ::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
 {
   glm::vec3 centre (0.0f, 0.0f, 0.0f);
   *xyz = intersectSphere (xa, xb, centre, 1.0f);
@@ -58,12 +58,12 @@ int glGribProjectionXYZ::unproject (const glm::vec3 & xa, const glm::vec3 & xb, 
   return 1;
 }
 
-glm::mat4 glGribProjectionXYZ::getView (const glm::vec3 & p, const float dist) const
+glm::mat4 glGrib::ProjectionXYZ::getView (const glm::vec3 & p, const float dist) const
 {
   return glm::lookAt (p, glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 0.0f, 1.0f));
 }
 
-glm::vec3 glGribProjectionLatLon::project (const glm::vec3 & xyz) const
+glm::vec3 glGrib::ProjectionLatLon::project (const glm::vec3 & xyz) const
 {
   float lat, lon;
   xyz2lonlat (compNormedPos (xyz), &lon, &lat);
@@ -73,7 +73,7 @@ glm::vec3 glGribProjectionLatLon::project (const glm::vec3 & xyz) const
   return glm::vec3 (0.0f, X, Y);
 }
 
-int glGribProjectionLatLon::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
+int glGrib::ProjectionLatLon::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
 {
   glm::vec3 pos = intersectPlane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
   float lon = pos.y * pi + lon0 * pi / 180.0f + pi;
@@ -82,13 +82,13 @@ int glGribProjectionLatLon::unproject (const glm::vec3 & xa, const glm::vec3 & x
   return 1;
 }
 
-glm::mat4 glGribProjectionLatLon::getView (const glm::vec3 & p, const float dist) const
+glm::mat4 glGrib::ProjectionLatLon::getView (const glm::vec3 & p, const float dist) const
 {
   glm::vec3 co = project (p);
   return glm::lookAt (glm::vec3 (+dist, co.y, co.z), glm::vec3 (0.0f, +co.y, +co.z), glm::vec3 (0.0f, 0.0f, +1.0f));
 }
 
-glm::vec3 glGribProjectionMercator::project (const glm::vec3 & xyz) const
+glm::vec3 glGrib::ProjectionMercator::project (const glm::vec3 & xyz) const
 {
   float lon, lat;
   xyz2lonlat (compNormedPos (xyz), &lon, &lat);
@@ -98,7 +98,7 @@ glm::vec3 glGribProjectionMercator::project (const glm::vec3 & xyz) const
   return glm::vec3 (0.0f, X, Y);
 }
 
-int glGribProjectionMercator::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
+int glGrib::ProjectionMercator::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
 {
   glm::vec3 pos = intersectPlane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
   float lon = pos.y * pi + lon0 * pi / 180.0f + pi;
@@ -107,20 +107,20 @@ int glGribProjectionMercator::unproject (const glm::vec3 & xa, const glm::vec3 &
   return 1;
 }
 
-glm::mat4 glGribProjectionMercator::getView (const glm::vec3 & p, const float dist) const
+glm::mat4 glGrib::ProjectionMercator::getView (const glm::vec3 & p, const float dist) const
 {
   glm::vec3 co = project (p);
   return glm::lookAt (glm::vec3 (+dist, co.y, co.z), glm::vec3 (0.0f, +co.y, +co.z), glm::vec3 (0.0f, 0.0f, +1.0f));
 }
 
-glm::vec3 glGribProjectionPolarNorth::project (const glm::vec3 & xyz) const
+glm::vec3 glGrib::ProjectionPolarNorth::project (const glm::vec3 & xyz) const
 {
   glm::vec3 normedPos = compNormedPos (xyz);
   return glm::vec3 (0.0f, normedPos.x / (+normedPos.z + 1.0f), 
                     normedPos.y / (+normedPos.z + 1.0f));
 }
 
-int glGribProjectionPolarNorth::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
+int glGrib::ProjectionPolarNorth::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
 {
   glm::vec3 pos = intersectPlane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
   float r2 = pos.y * pos.y + pos.z * pos.z;
@@ -131,20 +131,20 @@ int glGribProjectionPolarNorth::unproject (const glm::vec3 & xa, const glm::vec3
   return 1;
 }
 
-glm::mat4 glGribProjectionPolarNorth::getView (const glm::vec3 & p, const float dist) const
+glm::mat4 glGrib::ProjectionPolarNorth::getView (const glm::vec3 & p, const float dist) const
 {
   glm::vec3 co = project (p);
   return glm::lookAt (glm::vec3 (+dist, co.y, co.z), glm::vec3 (0.0f, +co.y, +co.z), glm::vec3 (0.0f, -co.y, -co.z));
 }
 
-glm::vec3 glGribProjectionPolarSouth::project (const glm::vec3 & xyz) const
+glm::vec3 glGrib::ProjectionPolarSouth::project (const glm::vec3 & xyz) const
 {
   glm::vec3 normedPos = compNormedPos (xyz);
   return glm::vec3 (0.0f, normedPos.x / (-normedPos.z + 1.0f), 
                     normedPos.y / (-normedPos.z + 1.0f));
 }
 
-int glGribProjectionPolarSouth::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
+int glGrib::ProjectionPolarSouth::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz) const
 {
   glm::vec3 pos = intersectPlane (xa, xb,  glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (1.0f, 0.0f, 0.0f));
   float r2 = pos.y * pos.y + pos.z * pos.z;
@@ -155,14 +155,14 @@ int glGribProjectionPolarSouth::unproject (const glm::vec3 & xa, const glm::vec3
   return 1;
 }
 
-glm::mat4 glGribProjectionPolarSouth::getView (const glm::vec3 & p, const float dist) const
+glm::mat4 glGrib::ProjectionPolarSouth::getView (const glm::vec3 & p, const float dist) const
 {
   glm::vec3 co = project (p);
   return glm::lookAt (glm::vec3 (-dist, co.y, co.z), glm::vec3 (0.0f, +co.y, +co.z), glm::vec3 (0.0f, +co.y, +co.z));
 }
 
 
-glGribProjection::type glGribProjection::typeFromString (std::string str)
+glGrib::Projection::type glGrib::Projection::typeFromString (std::string str)
 {
   for (int i = 0; i < str.length (); i++)
     str[i] = std::toupper (str[i]);

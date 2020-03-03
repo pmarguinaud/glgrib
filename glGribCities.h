@@ -8,20 +8,25 @@
 #include <vector>
 
 
-class glGribCities : public glGribPoints
+namespace glGrib
+{
+
+class Cities : public Points
 {
 public:
-  void render (const glGribView &, const glGribOptionsLight &) const;
-  glGribCities & operator= (const glGribCities &);
+  void render (const View &, const OptionsLight &) const;
+  Cities & operator= (const Cities &);
   void clear ();
-  void setup (const glGribOptionsCities &);
-  const glGribOptionsCities & getOptions () const { return opts; }
+  void setup (const OptionsCities &);
+  const OptionsCities & getOptions () const { return opts; }
   float getScale () const override { return opts.points.scale; }
 private:
-  glGribOptionsCities opts;
+  OptionsCities opts;
   struct
   {
-    glGribString labels;
+    String labels;
   } d;
 };
 
+
+}

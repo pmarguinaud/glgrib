@@ -1,4 +1,4 @@
-#include "glGribLandscape.h"
+#include "glGribLandScape.h"
 #include "glGribTrigonometry.h"
 #include "glGribProgram.h"
 #include "glGribBitmap.h"
@@ -13,12 +13,12 @@
 
 #include <math.h>
 
-glGribLandscape & glGribLandscape::operator= (const glGribLandscape & landscape)
+glGrib::Landscape & glGrib::Landscape::operator= (const glGrib::Landscape & landscape)
 {
   clear ();
   if ((this != &landscape) && landscape.isReady ())
     {
-      glGribWorld::operator= (landscape);
+      glGrib::World::operator= (landscape);
       texture = landscape.texture;
       opts    = landscape.opts;
       setupVertexAttributes ();
@@ -27,7 +27,7 @@ glGribLandscape & glGribLandscape::operator= (const glGribLandscape & landscape)
   return *this;
 }
 
-void glGribLandscape::setupVertexAttributes ()
+void glGrib::Landscape::setupVertexAttributes ()
 {
   numberOfPoints = geometry->getNumberOfPoints ();
   numberOfTriangles = geometry->getNumberOfTriangles ();
@@ -61,22 +61,22 @@ static bool endsWith (const std::string & str, const std::string & end)
   return end == str.substr (i0, i1);
 }
 
-void glGribLandscape::setup (glGribLoader * ld, const glGribOptionsLandscape & o)
+void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandscape & o)
 {
   opts = o;
 
-  geometry = glGribGeometry::load (ld, opts.geometry_path, opts.geometry, opts.number_of_latitudes);
+  geometry = glGrib::Geometry::load (ld, opts.geometry_path, opts.geometry, opts.number_of_latitudes);
 
-  if (opts.color == glGribOptionColor ("#00000000"))
+  if (opts.color == glGrib::OptionColor ("#00000000"))
     {
       unsigned char * rgb;
       int w, h;
      
      
       if (endsWith (opts.path, ".png"))
-        glGribReadPng (glGribResolve (opts.path), &w, &h, &rgb);
+        glGrib::ReadPng (glGrib::Resolve (opts.path), &w, &h, &rgb);
       else if (endsWith (opts.path, ".bmp"))
-        glGribBitmap (glGribResolve (opts.path), &rgb, &w, &h);
+        glGrib::Bitmap (glGrib::Resolve (opts.path), &rgb, &w, &h);
       else
         throw std::runtime_error (std::string ("Unknown image format :") + opts.path);
      
@@ -91,15 +91,15 @@ void glGribLandscape::setup (glGribLoader * ld, const glGribOptionsLandscape & o
 
   if (opts.geometry.height.on)
     {
-      glGribGeometryPtr geometry_height = glGribGeometry::load (ld, opts.geometry.height.path, opts.geometry);
+      glGrib::GeometryPtr geometry_height = glGrib::Geometry::load (ld, opts.geometry.height.path, opts.geometry);
 
       if (! geometry_height->isEqual (*geometry))
         throw std::runtime_error (std::string ("Landscape and height have different geometries"));
 
       int size = geometry->getNumberOfPoints ();
 
-      glGribFieldFloatBufferPtr data;
-      glGribFieldMetadata meta;
+      glGrib::FieldFloatBufferPtr data;
+      glGrib::FieldMetadata meta;
 
       ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
 
@@ -119,9 +119,9 @@ void glGribLandscape::setup (glGribLoader * ld, const glGribOptionsLandscape & o
   setReady ();
 }
 
-void glGribLandscape::render (const glGribView & view, const glGribOptionsLight & light) const
+void glGrib::Landscape::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  glGribProgram * program = glGribProgram::load (glGribProgram::LANDSCAPE);
+  glGrib::Program * program = glGrib::Program::load (glGrib::Program::LANDSCAPE);
   program->use ();
 
 
@@ -129,7 +129,7 @@ void glGribLandscape::render (const glGribView & view, const glGribOptionsLight 
   program->set (light);
   program->set ("isflat", opts.flat.on);
 
-  if (opts.color == glGribOptionColor ("#00000000"))
+  if (opts.color == glGrib::OptionColor ("#00000000"))
     {
       // the texture selection process is a bit obscure
       glActiveTexture (GL_TEXTURE0); 
@@ -194,7 +194,7 @@ void glGribLandscape::render (const glGribView & view, const glGribOptionsLight 
   view.delMVP (program);
 }
 
-glGribLandscape::~glGribLandscape ()
+glGrib::Landscape::~Landscape ()
 {
 }
 

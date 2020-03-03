@@ -30,7 +30,7 @@ static GLuint compileShader (const std::string & name, const std::string & code,
   return id;
 }
 
-GLuint glGribLoadShader (const std::string & name,
+GLuint glGrib::LoadShader (const std::string & name,
 		         const std::string & FragmentShaderCode,
 		         const std::string & VertexShaderCode,
 			 const std::string & GeometryShaderCode)

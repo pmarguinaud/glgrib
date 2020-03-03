@@ -5,7 +5,10 @@
 #include "glGribOptions.h"
 #include "glGribHandle.h"
 
-class glGribGeometryLambert : public glGribGeometry
+namespace glGrib
+{
+
+class GeometryLambert : public Geometry
 {
 public:
   static const double a;
@@ -183,15 +186,15 @@ public:
   
   };
 
-  bool isEqual (const glGribGeometry &) const override;
+  bool isEqual (const Geometry &) const override;
   void getPointNeighbours (int, std::vector<int> *) const override;
   std::string md5 () const override;
   int latlon2index (float, float) const override;
   void index2latlon (int, float *, float *) const override;
-  glGribGeometryLambert (glGribHandlePtr);
-  void setup (glGribHandlePtr, const glGribOptionsGeometry &) override;
+  GeometryLambert (HandlePtr);
+  void setup (HandlePtr, const OptionsGeometry &) override;
   int size () const override;
-  virtual ~glGribGeometryLambert ();
+  virtual ~GeometryLambert ();
   void applyNormScale (float *) const override {}
   void applyUVangle (float *) const override;
   void sample (unsigned char *, const unsigned char, const int) const override;
@@ -207,8 +210,8 @@ public:
   glm::vec2 conformal2latlon (const glm::vec2 &) const override;
   void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const override {}
   float getLocalMeshSize (int) const override;
-  void getView (glGribView *) const override;
-  void setProgramParameters (glGribProgram *) const override;
+  void getView (View *) const override;
+  void setProgramParameters (Program *) const override;
   void setupFrame ();
 private:
   void getTriangleNeighboursXY (int, int [3], int [3], xy_t [4]) const;
@@ -219,3 +222,5 @@ private:
   xy_t center_xy;
 };
 
+
+}

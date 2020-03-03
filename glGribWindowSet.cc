@@ -3,9 +3,9 @@
 #include "glGribWindowOffscreen.h"
 
 
-void glGribWindowSet::handleMasterWindow ()
+void glGrib::WindowSet::handleMasterWindow ()
 {
-  const glGribWindow * wl = nullptr;
+  const glGrib::Window * wl = nullptr;
   
   for (auto w : *this)
     if (w->isMaster ())
@@ -20,16 +20,16 @@ void glGribWindowSet::handleMasterWindow ()
       w->scene.d.view.setOptions (wl->scene.d.view.getOptions ());
 }
 
-void glGribWindowSet::runShell (glGribShell ** _shell)
+void glGrib::WindowSet::runShell (glGrib::Shell ** _shell)
 {
-  glGribShell * shell = *_shell;
+  glGrib::Shell * shell = *_shell;
   for (auto w : *this)
     {
       if ((! shell) && (w->getStartShell ()))
         {
-          Shell.setup (w->scene.getOptions ().shell);
-          Shell.start (this);
-          shell = &Shell;
+          Shell0.setup (w->scene.getOptions ().shell);
+          Shell0.start (this);
+          shell = &Shell0;
         }
   
       w->run (shell);
@@ -43,7 +43,7 @@ void glGribWindowSet::runShell (glGribShell ** _shell)
   
       if (w->isCloned ())
         {
-          glGribWindow * w1 = w->clone ();
+          glGrib::Window * w1 = w->clone ();
           insert (w1);
           break;
 	}
@@ -52,11 +52,11 @@ void glGribWindowSet::runShell (glGribShell ** _shell)
   *_shell = shell;
 }
 
-void glGribWindowSet::updateWindows ()
+void glGrib::WindowSet::updateWindows ()
 {
   for (auto w : *this)
     {
-      glGribField * f = w->scene.getCurrentField ();
+      glGrib::Field * f = w->scene.getCurrentField ();
 
       if (f == nullptr)
         continue;
@@ -83,7 +83,7 @@ void glGribWindowSet::updateWindows ()
     }
 }
 
-void glGribWindowSet::run (glGribShell * shell)
+void glGrib::WindowSet::run (glGrib::Shell * shell)
 {
   while (! empty ())
     {
@@ -93,7 +93,7 @@ void glGribWindowSet::run (glGribShell * shell)
     }
 }
 
-glGribWindow * glGribWindowSet::getWindowById (int id)
+glGrib::Window * glGrib::WindowSet::getWindowById (int id)
 {
   for (auto w : *this)
     if (w->id () == id)
@@ -101,21 +101,21 @@ glGribWindow * glGribWindowSet::getWindowById (int id)
   return nullptr;
 }
 
-void glGribWindowSet::close ()
+void glGrib::WindowSet::close ()
 {
   for (auto win : *this)
     win->shouldClose ();
 }
 
 
-glGribWindow * glGribWindowSet::create (const glGribOptions & opts)
+glGrib::Window * glGrib::WindowSet::create (const glGrib::Options & opts)
 {
-  glGribWindow * gwindow = nullptr;
+  glGrib::Window * gwindow = nullptr;
 
   if (opts.window.offscreen.on)
-    gwindow = new glGribWindowOffscreen (opts);
+    gwindow = new glGrib::WindowOffscreen (opts);
   else
-    gwindow = new glGribWindow (opts);
+    gwindow = new glGrib::Window (opts);
 
   gwindow->scene.setup (opts);
 
@@ -124,7 +124,7 @@ glGribWindow * glGribWindowSet::create (const glGribOptions & opts)
   return gwindow;
 }
 
-glGribWindowSet::glGribWindowSet (const glGribOptions & o)
+glGrib::WindowSet::WindowSet (const glGrib::Options & o)
 {
   opts = o;
 }

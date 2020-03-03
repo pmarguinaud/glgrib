@@ -5,15 +5,16 @@
 
 #include "glGribOptions.h"
 #include "glGribLoader.h"
+#include "glGribContainer.h"
 
 #include <iostream>
 
 
 int main (int argc, const char * argv[])
 {
-  glGribOptions opts;
+  glGrib::Options opts;
 
-  glGribContainer * cont = glGribContainer::create (argv[1]);
+  glGrib::Container * cont = glGrib::Container::create (argv[1]);
 
   cont->buildIndex ();
   for (auto it = cont->begin (); it != cont->end (); ++it)

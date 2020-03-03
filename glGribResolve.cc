@@ -8,7 +8,7 @@
 #include <iostream>
 
 
-std::string glGribResolve (const std::string & file)
+std::string glGrib::Resolve (const std::string & file)
 {
   // Try user directory
 

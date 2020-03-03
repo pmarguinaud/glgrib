@@ -3,14 +3,19 @@
 #include "glGribOptions.h"
 #include "glGribLines.h"
 
-class glGribBorder : public glGribLines
+namespace glGrib
+{
+
+class Border : public Lines
 {
 public:
-  void setup (const glGribOptionsBorder &);
-  const glGribOptionsBorder & getOptions () const { return opts; }
+  void setup (const OptionsBorder &);
+  const OptionsBorder & getOptions () const { return opts; }
   float getScale () const override { return opts.lines.scale; }
 private:
-  glGribOptionsBorder opts;
+  OptionsBorder opts;
 };
 
 
+
+}

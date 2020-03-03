@@ -9,7 +9,10 @@
 #include <memory>
 
 
-namespace glGribSQLiteDetail
+namespace glGrib
+{
+
+namespace SQLiteDetail
 {
 
   class _sqlite3
@@ -73,16 +76,16 @@ namespace glGribSQLiteDetail
 
 };
 
-class glGribSQLite
+class SQLite
 {
 public:
 
-  typedef glGribSQLiteDetail::sqlite3_ptr sqlite3_ptr;
-  typedef glGribSQLiteDetail::sqlite3_stmt_ptr sqlite3_stmt_ptr;
+  typedef SQLiteDetail::sqlite3_ptr sqlite3_ptr;
+  typedef SQLiteDetail::sqlite3_stmt_ptr sqlite3_stmt_ptr;
 
-  glGribSQLite (const std::string & file)
+  SQLite (const std::string & file)
   {
-    db = std::make_shared<glGribSQLiteDetail::_sqlite3>();
+    db = std::make_shared<SQLiteDetail::_sqlite3>();
     if (sqlite3_open (file.c_str (), &db->data) != SQLITE_OK)
       throw std::runtime_error (std::string ("Cannot open database ") + file);
   }
@@ -93,19 +96,19 @@ public:
     
     stmt ()
     {
-      req = std::make_shared<glGribSQLiteDetail::_sqlite3_stmt>();
+      req = std::make_shared<SQLiteDetail::_sqlite3_stmt>();
     }
     ~stmt ()
     {
     }
     void reset ()
     {
-      glGribSQLiteDetail::ok (db, sqlite3_reset (req->data));
+      SQLiteDetail::ok (db, sqlite3_reset (req->data));
     }
     template <typename... Types>
     void bindall (Types... args)
     {
-      glGribSQLiteDetail::isetList (db, req, 0, args...);
+      SQLiteDetail::isetList (db, req, 0, args...);
     }
     template <typename... Types>
     void execute (Types... args)
@@ -118,7 +121,7 @@ public:
     {
       if (sqlite3_step (req->data) == SQLITE_ROW)
         {
-          glGribSQLiteDetail::ogetList (db, req, 0, args...);
+          SQLiteDetail::ogetList (db, req, 0, args...);
           return true;
 	}
       return false;
@@ -128,28 +131,28 @@ public:
     {
       if (rank >= sqlite3_bind_parameter_count (req->data))
         throw std::runtime_error (std::string ("Column out of bounds"));
-      glGribSQLiteDetail::iset (db, req, rank, t);
+      SQLiteDetail::iset (db, req, rank, t);
     }
 protected:
     sqlite3_stmt_ptr req;
     sqlite3_ptr db;
-    friend class glGribSQLite;
+    friend class SQLite;
   };
 
   stmt prepare (const std::string & sql)
   {
     stmt st;
     st.db = db;
-    glGribSQLiteDetail::ok (db, sqlite3_prepare_v2 (db->data, sql.c_str (), -1, &st.req->data, 0));
+    SQLiteDetail::ok (db, sqlite3_prepare_v2 (db->data, sql.c_str (), -1, &st.req->data, 0));
     return st;
   }
 
   void execute (const std::string & sql)
   {
-    glGribSQLiteDetail::ok (db, sqlite3_exec (db->data, sql.c_str (), 0, 0, 0));
+    SQLiteDetail::ok (db, sqlite3_exec (db->data, sql.c_str (), 0, 0, 0));
   }
 
-  ~glGribSQLite ()
+  ~SQLite ()
   {
     close ();
   }
@@ -163,3 +166,5 @@ private:
 };
 
 
+
+}

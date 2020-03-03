@@ -5,18 +5,18 @@
 #include <stdlib.h>
 
 
-glGribImage::~glGribImage ()
+glGrib::Image::~Image ()
 {
   clear ();
 }
 
-void glGribImage::clear ()
+void glGrib::Image::clear ()
 {
   if (ready)
     glDeleteVertexArrays (1, &VertexArrayID);
 }
 
-glGribImage & glGribImage::operator= (const glGribImage & img)
+glGrib::Image & glGrib::Image::operator= (const glGrib::Image & img)
 {
   if (this != &img)
     {   
@@ -32,7 +32,7 @@ glGribImage & glGribImage::operator= (const glGribImage & img)
   return *this;
 }
 
-void glGribImage::setupVertexAttributes ()
+void glGrib::Image::setupVertexAttributes ()
 {
 
   // We have no buffer at all, but for some reason, we have to define a vertex array
@@ -43,14 +43,14 @@ void glGribImage::setupVertexAttributes ()
 
 }
 
-void glGribImage::setup (const glGribOptionsImage & o)
+void glGrib::Image::setup (const glGrib::OptionsImage & o)
 {
   unsigned char * rgb;
   int w, h;
 
   opts = o;
 
-  glGribBitmap (opts.path, &rgb, &w, &h);
+  glGrib::Bitmap (opts.path, &rgb, &w, &h);
 
   texture = newGlgribOpenGLTexturePtr (w, h, rgb);
   delete [] rgb;
@@ -60,12 +60,12 @@ void glGribImage::setup (const glGribOptionsImage & o)
   ready = true;
 }
 
-void glGribImage::render (const glm::mat4 & MVP) const
+void glGrib::Image::render (const glm::mat4 & MVP) const
 {
   if (! ready)
     return;
 
-  glGribProgram * program = glGribProgram::load (glGribProgram::IMAGE);
+  glGrib::Program * program = glGrib::Program::load (glGrib::Program::IMAGE);
   program->use ();
 
   program->set ("MVP", MVP);

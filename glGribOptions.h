@@ -12,22 +12,25 @@
 #include <time.h>
 #include <string.h>
 
-namespace glGribOptionsUtil
+namespace glGrib
+{
+
+namespace OptionsUtil
 {
   std::string nextToken (std::string *);
   std::string escape (const std::string &);
 };
 
-class glGribOptionColor
+class OptionColor
 {
 public:
-  static glGribOptionColor colorByName (const std::string &);
-  static glGribOptionColor colorByHexa (const std::string &);
-  static void parse (glGribOptionColor *, const std::string &);
+  static OptionColor colorByName (const std::string &);
+  static OptionColor colorByHexa (const std::string &);
+  static void parse (OptionColor *, const std::string &);
 
-  glGribOptionColor () {}
-  glGribOptionColor (int _r, int _g, int _b, int _a = 255) : r (_r), g (_g), b (_b), a (_a) {}
-  glGribOptionColor (const std::string &);
+  OptionColor () {}
+  OptionColor (int _r, int _g, int _b, int _a = 255) : r (_r), g (_g), b (_b), a (_a) {}
+  OptionColor (const std::string &);
 
   int r = 255, g = 255, b = 255, a = 255;
   std::string asString () const 
@@ -36,36 +39,36 @@ public:
     sprintf (str, "#%2.2x%2.2x%2.2x%2.2x", r, g, b, a); 
     return std::string (str); 
   }
-  friend std::ostream & operator << (std::ostream &, const glGribOptionColor &);
-  friend std::istream & operator >> (std::istream &, glGribOptionColor &);
-  friend bool operator== (glGribOptionColor const & col1, glGribOptionColor const & col2)
+  friend std::ostream & operator << (std::ostream &, const OptionColor &);
+  friend std::istream & operator >> (std::istream &, OptionColor &);
+  friend bool operator== (OptionColor const & col1, OptionColor const & col2)
   {
     return (col1.r == col2.r)
         && (col1.g == col2.g)
         && (col1.b == col2.b)
         && (col1.a == col2.a);
   }
-  friend bool operator!= (glGribOptionColor const & col1, glGribOptionColor const & col2)
+  friend bool operator!= (OptionColor const & col1, OptionColor const & col2)
   {
     return ! (col1 == col2);
   } 
 };
 
-class glGribOptionDate
+class OptionDate
 {
 public:
-  static void parse (glGribOptionDate *, const std::string &);
-  glGribOptionDate () {}
-  glGribOptionDate (int _year, int _month, int _day, int _hour, int _minute, int _second) : 
+  static void parse (OptionDate *, const std::string &);
+  OptionDate () {}
+  OptionDate (int _year, int _month, int _day, int _hour, int _minute, int _second) : 
     year (_year), month (_month), day (_day), hour (_hour), minute (_minute), second (_second) {}
   long int year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0;
-  static glGribOptionDate interpolate (const glGribOptionDate &, const glGribOptionDate &, const float);
-  static glGribOptionDate date_from_t (time_t);
-  static time_t tFromDate (const glGribOptionDate &);
+  static OptionDate interpolate (const OptionDate &, const OptionDate &, const float);
+  static OptionDate date_from_t (time_t);
+  static time_t tFromDate (const OptionDate &);
   std::string asString () const;
-  friend std::ostream & operator << (std::ostream &, const glGribOptionDate &);
-  friend std::istream & operator >> (std::istream &, glGribOptionDate &);
-  friend bool operator== (glGribOptionDate const & d1, glGribOptionDate const & d2)
+  friend std::ostream & operator << (std::ostream &, const OptionDate &);
+  friend std::istream & operator >> (std::istream &, OptionDate &);
+  friend bool operator== (OptionDate const & d1, OptionDate const & d2)
   {
     return (d1.year   == d2.year  )
         && (d1.month  == d2.month )
@@ -77,7 +80,7 @@ public:
 };
 
 
-namespace glGribOptionsParserDetail 
+namespace OptionsParserDetail 
 {
 
   class optionBase
@@ -106,7 +109,7 @@ namespace glGribOptionsParserDetail
     optionTmpl (const std::string & n, const std::string & d, T * v = nullptr) : optionBase (n, d), value (v) {}
     T * value = nullptr;
     std::string asString () const { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
-    std::string asOption () const { return name + " " + glGribOptionsUtil::escape (asString ()); }
+    std::string asOption () const { return name + " " + OptionsUtil::escape (asString ()); }
     void set ()
     {
     }
@@ -154,7 +157,7 @@ namespace glGribOptionsParserDetail
         {
           std::ostringstream ss;
           ss << (*it) << " ";
-	  str = str + " " + glGribOptionsUtil::escape (std::string (ss.str ()));
+	  str = str + " " + OptionsUtil::escape (std::string (ss.str ()));
 	}
       return str;
     }
@@ -201,12 +204,12 @@ namespace glGribOptionsParserDetail
   template <> std::string optionTmpl     <float>              ::type ();
   template <> std::string optionTmplList<int>                ::type ();
   template <> std::string optionTmplList<float>              ::type ();
-  template <> std::string optionTmpl     <glGribOptionDate> ::type ();
-  template <> std::string optionTmpl     <glGribOptionColor>::type ();
+  template <> std::string optionTmpl     <OptionDate> ::type ();
+  template <> std::string optionTmpl     <OptionColor>::type ();
   template <> std::string optionTmpl     <std::string>        ::type ();
   template <> std::string optionTmpl     <std::string>        ::asString () const;
   template <> std::string optionTmpl     <std::string>        ::asOption () const;
-  template <> std::string optionTmplList<glGribOptionColor>::type ();
+  template <> std::string optionTmplList<OptionColor>::type ();
   template <> std::string optionTmplList<std::string>        ::type ();
   template <> std::string optionTmplList<std::string>        ::asString () const;
   template <> std::string optionTmplList<std::string>        ::asOption () const;
@@ -221,9 +224,9 @@ namespace glGribOptionsParserDetail
 
 };
 
-class glGribOptionsBase;
+class OptionsBase;
 
-class glGribOptionsCallback
+class OptionsCallback
 {
 public:
 
@@ -234,7 +237,7 @@ public:
   };
 
 #define DEF_APPLY(T) \
-  virtual void apply (const std::string & path, const std::string & name, glGribOptionsBase *, \
+  virtual void apply (const std::string & path, const std::string & name, OptionsBase *, \
                       const std::string & desc, T * data, const opt * = nullptr) {}
   DEF_APPLY (float);
   DEF_APPLY (bool);
@@ -243,22 +246,22 @@ public:
   DEF_APPLY (std::string);
   DEF_APPLY (std::vector<float>);
   DEF_APPLY (std::vector<int>);
-  DEF_APPLY (glGribOptionColor);
-  DEF_APPLY (std::vector<glGribOptionColor>);
-  DEF_APPLY (glGribOptionDate);
+  DEF_APPLY (OptionColor);
+  DEF_APPLY (std::vector<OptionColor>);
+  DEF_APPLY (OptionDate);
 #undef DEF_APPLY
 };
 
 
-class glGribOptionsParser : public glGribOptionsCallback
+class OptionsParser : public OptionsCallback
 {
 public:
-  virtual std::string asOption (glGribOptionsParser &);
-  static void print (class glGribOptions &);
+  virtual std::string asOption (OptionsParser &);
+  static void print (class Options &);
   bool parse (int, const char * [], const std::set<std::string> * = nullptr);
   void showHelp ();
   void display (const std::string &, bool = false);
-  ~glGribOptionsParser ()
+  ~OptionsParser ()
   {
     for (name2option_t::iterator it = name2option.begin (); 
          it != name2option.end (); it++)
@@ -278,7 +281,7 @@ public:
     return seen;
   }
 
-  const glGribOptionsParserDetail::optionBase * getOption (const std::string & name)
+  const OptionsParserDetail::optionBase * getOption (const std::string & name)
   {
     name2option_t::iterator it = name2option.find (name);
     if (it != name2option.end ())
@@ -286,7 +289,7 @@ public:
     return nullptr;
   }
 
-  class opt : public glGribOptionsCallback::opt
+  class opt : public OptionsCallback::opt
   {
   public:
     bool hidden = false;
@@ -297,13 +300,13 @@ private:
   std::vector<std::string> ctx;
   std::set<std::string> seen;
 
-  class name2option_t : public std::map<std::string,glGribOptionsParserDetail::optionBase*> 
+  class name2option_t : public std::map<std::string,OptionsParserDetail::optionBase*> 
   {
   public:
-    void insert (const std::string name, glGribOptionsParserDetail::optionBase * opt)
+    void insert (const std::string name, OptionsParserDetail::optionBase * opt)
     {
-      std::map<std::string,glGribOptionsParserDetail::optionBase*>::insert 
-        (std::pair<std::string,glGribOptionsParserDetail::optionBase *>(name, opt));
+      std::map<std::string,OptionsParserDetail::optionBase*>::insert 
+        (std::pair<std::string,OptionsParserDetail::optionBase *>(name, opt));
     }
   };
 
@@ -315,8 +318,8 @@ private:
   }
 
   void createOption (const std::string & opt_name, 
-                     glGribOptionsParserDetail::optionBase * option, 
-                     const glGribOptionsCallback::opt * _o)
+                     OptionsParserDetail::optionBase * option, 
+                     const OptionsCallback::opt * _o)
   {
     const opt * o = dynamic_cast<const opt*>(_o);
     if (o != nullptr)
@@ -326,57 +329,57 @@ private:
 
 #define DEF_APPLY(T,C) \
   void apply (const std::string & path, const std::string & name,                      \
-              glGribOptionsBase *, const std::string & desc, T * data,               \
-              const glGribOptionsCallback::opt * o = nullptr)                           \
+              OptionsBase *, const std::string & desc, T * data,               \
+              const OptionsCallback::opt * o = nullptr)                           \
   {                                                                                    \
     std::string opt_name = getOptName (path, name);                                  \
     createOption (opt_name, new C (opt_name, desc, data), o);                          \
   }
 
-  DEF_APPLY (float                             , glGribOptionsParserDetail::optionTmpl<float> );
-  DEF_APPLY (bool                              , glGribOptionsParserDetail::optionTmpl<bool>);
-  DEF_APPLY (int                               , glGribOptionsParserDetail::optionTmpl<int>);
-  DEF_APPLY (std::vector<std::string>          , glGribOptionsParserDetail::optionTmplList<std::string>);
-  DEF_APPLY (std::string                       , glGribOptionsParserDetail::optionTmpl<std::string>);
-  DEF_APPLY (std::vector<float>                , glGribOptionsParserDetail::optionTmplList<float>);
-  DEF_APPLY (std::vector<int>                  , glGribOptionsParserDetail::optionTmplList<int>);
-  DEF_APPLY (glGribOptionColor               , glGribOptionsParserDetail::optionTmpl<glGribOptionColor>);
-  DEF_APPLY (std::vector<glGribOptionColor>  , glGribOptionsParserDetail::optionTmplList<glGribOptionColor>);
-  DEF_APPLY (glGribOptionDate                , glGribOptionsParserDetail::optionTmpl<glGribOptionDate>);
+  DEF_APPLY (float                             , OptionsParserDetail::optionTmpl<float> );
+  DEF_APPLY (bool                              , OptionsParserDetail::optionTmpl<bool>);
+  DEF_APPLY (int                               , OptionsParserDetail::optionTmpl<int>);
+  DEF_APPLY (std::vector<std::string>          , OptionsParserDetail::optionTmplList<std::string>);
+  DEF_APPLY (std::string                       , OptionsParserDetail::optionTmpl<std::string>);
+  DEF_APPLY (std::vector<float>                , OptionsParserDetail::optionTmplList<float>);
+  DEF_APPLY (std::vector<int>                  , OptionsParserDetail::optionTmplList<int>);
+  DEF_APPLY (OptionColor               , OptionsParserDetail::optionTmpl<OptionColor>);
+  DEF_APPLY (std::vector<OptionColor>  , OptionsParserDetail::optionTmplList<OptionColor>);
+  DEF_APPLY (OptionDate                , OptionsParserDetail::optionTmpl<OptionDate>);
 
 #undef DEF_APPLY
 
 };
 
-class glGribOptionsBase 
+class OptionsBase 
 {
 public:
   typedef std::vector<std::string> string_list;
   typedef std::vector<float> float_list;
   typedef std::string string;
-  virtual void traverse (const std::string &, glGribOptionsCallback *, 
-                         const glGribOptionsCallback::opt * = nullptr) {}
+  virtual void traverse (const std::string &, OptionsCallback *, 
+                         const OptionsCallback::opt * = nullptr) {}
   virtual bool parse (int, const char * [], const std::set<std::string> * = nullptr);
   virtual bool parse (const char *, const std::set<std::string> * = nullptr);
-  virtual std::string asOption (glGribOptionsBase &);
+  virtual std::string asOption (OptionsBase &);
 };
 
 
 #define DESC(name, desc) do { cb->apply (p, #name, this, #desc, &name, o); } while (0)
 #define DESC_H(name, desc) \
-  do { glGribOptionsParser::opt o; o.hidden = true; \
+  do { OptionsParser::opt o; o.hidden = true; \
        cb->apply (p, #name, this, #desc, &name, &o); } while (0)
 
 #define INCLUDE(name) do { name.traverse (p + ( p == "" ? "" : ".") + #name, cb, o); } while (0)
 
 #define INCLUDE_H(name) \
-  do { glGribOptionsParser::opt o; o.hidden = true; \
+  do { OptionsParser::opt o; o.hidden = true; \
        name.traverse (p + ( p == "" ? "" : ".") + #name, cb, &o); } while (0)
 
-#define DEFINE virtual void traverse (const std::string & p, glGribOptionsCallback * cb, \
-                                      const glGribOptionsCallback::opt * o = nullptr)
+#define DEFINE virtual void traverse (const std::string & p, OptionsCallback * cb, \
+                                      const OptionsCallback::opt * o = nullptr)
 
-class glGribOptionsGeometry : public glGribOptionsBase
+class OptionsGeometry : public OptionsBase
 {
 public:
   DEFINE
@@ -416,8 +419,8 @@ public:
   struct 
   {
     bool on = false;
-    glGribOptionColor color1 = glGribOptionColor (255, 255, 255);
-    glGribOptionColor color2 = glGribOptionColor ( 80,  80,  80);
+    OptionColor color1 = OptionColor (255, 255, 255);
+    OptionColor color2 = OptionColor ( 80,  80,  80);
     float width = 0.0f;
     float dlon = 10.0f;
     float dlat = 10.0f;
@@ -431,12 +434,12 @@ public:
   } gaussian;
 };
 
-class glGribOptionsFont : public glGribOptionsBase
+class OptionsFont : public OptionsBase
 {
 public:
-  glGribOptionsFont (const std::string & b, float s) : bitmap (b), scale (s) {}
-  glGribOptionsFont (float s) : scale (s) {}
-  glGribOptionsFont () {}
+  OptionsFont (const std::string & b, float s) : bitmap (b), scale (s) {}
+  OptionsFont (float s) : scale (s) {}
+  OptionsFont () {}
   DEFINE
   {
     DESC (bitmap,     Bitmap path);
@@ -448,12 +451,12 @@ public:
   float scale = 0.05f;
   struct
   {
-    glGribOptionColor foreground = glGribOptionColor (255, 255, 255, 255);
-    glGribOptionColor background = glGribOptionColor (  0,   0,   0,   0);
+    OptionColor foreground = OptionColor (255, 255, 255, 255);
+    OptionColor background = OptionColor (  0,   0,   0,   0);
   } color;
 };
 
-class glGribOptionsContour : public glGribOptionsBase
+class OptionsContour : public OptionsBase
 {
 public:
   static float defaultMin;
@@ -482,13 +485,13 @@ public:
   struct
   {
     bool on = false;
-    glGribOptionsFont font;
+    OptionsFont font;
     float distmin = 3.0f;
     std::string format = "%12.2f";
   } labels;
 };
 
-class glGribOptionsIsofill : public glGribOptionsBase
+class OptionsIsofill : public OptionsBase
 {
 public:
   static float defaultMin;
@@ -506,7 +509,7 @@ public:
   float max = defaultMax;
 };
 
-class glGribOptionsStream : public glGribOptionsBase
+class OptionsStream : public OptionsBase
 {
 public:
   DEFINE
@@ -527,7 +530,7 @@ public:
   } motion;
 };
 
-class glGribOptionsVector : public glGribOptionsBase
+class OptionsVector : public OptionsBase
 {
 public:
   DEFINE
@@ -560,7 +563,7 @@ public:
     {
       bool on = false;
     } fill;
-    glGribOptionColor color;
+    OptionColor color;
     struct
     {
       bool on = false;
@@ -570,7 +573,7 @@ public:
   struct
   {
     bool on = false;
-    glGribOptionColor color;
+    OptionColor color;
     float angle  = 60.0;
     float length = 0.25;
     float dleng  = 0.1;
@@ -592,13 +595,13 @@ public:
   float scale = 1.0f;
 };
 
-class glGribOptionsPalette : public glGribOptionsBase
+class OptionsPalette : public OptionsBase
 {
 public:
   static float defaultMin;
   static float defaultMax;
-  glGribOptionsPalette () {}
-  glGribOptionsPalette (const std::string & n) : name (n) {}
+  OptionsPalette () {}
+  OptionsPalette (const std::string & n) : name (n) {}
   DEFINE
   {
     DESC (name,        Palette name);                              
@@ -618,7 +621,7 @@ public:
   float min = defaultMin;
   float max = defaultMax;
   std::vector<float> values;
-  std::vector<glGribOptionColor> colors;
+  std::vector<OptionColor> colors;
   struct
   {
     bool on = false;
@@ -640,7 +643,7 @@ public:
   float offset = 0.0f;
 };
 
-class glGribOptionsScalar : public glGribOptionsBase
+class OptionsScalar : public OptionsBase
 {
 public:
   DEFINE
@@ -687,11 +690,11 @@ public:
   struct
   {
     bool on = false;
-    glGribOptionColor missing_color = glGribOptionColor (0, 0, 0, 0);
+    OptionColor missing_color = OptionColor (0, 0, 0, 0);
   } discrete;
 };
 
-class glGribOptionsMpiview : public glGribOptionsBase
+class OptionsMpiview : public OptionsBase
 {
 public:
   DEFINE
@@ -706,7 +709,7 @@ public:
   float scale = 0.1f;
 };
 
-class glGribOptionsField : public glGribOptionsBase
+class OptionsField : public OptionsBase
 {
 public:
   DEFINE
@@ -734,7 +737,7 @@ public:
   struct 
   {
     bool on = false;
-    glGribOptionsFont font;
+    OptionsFont font;
     float radius = 10.0f;
   } hilo;
 
@@ -753,19 +756,19 @@ public:
   {
     bool on = false;
   } diff;
-  glGribOptionsPalette palette;
-  glGribOptionsScalar scalar;
-  glGribOptionsVector vector;
-  glGribOptionsContour contour;
-  glGribOptionsIsofill isofill;
-  glGribOptionsStream stream;
+  OptionsPalette palette;
+  OptionsScalar scalar;
+  OptionsVector vector;
+  OptionsContour contour;
+  OptionsIsofill isofill;
+  OptionsStream stream;
   bool parseUnseen (const char *);
-  glGribOptionsGeometry geometry;
-  glGribOptionsMpiview mpiview;
+  OptionsGeometry geometry;
+  OptionsMpiview mpiview;
 };
 
 
-class glGribOptionsTicksSide : public glGribOptionsBase
+class OptionsTicksSide : public OptionsBase
 {
 public:
   DEFINE
@@ -784,7 +787,7 @@ public:
   } nswe;
 };
 
-class glGribOptionsTicks : public glGribOptionsBase
+class OptionsTicks : public OptionsBase
 {
 public:
   DEFINE
@@ -808,27 +811,27 @@ public:
   struct 
   {
     bool on = false;
-    glGribOptionsFont font = glGribOptionsFont (0.02f);
+    OptionsFont font = OptionsFont (0.02f);
     std::string format = "%+06.2f";
   } labels;
   struct
   {
     bool on = false;
     float width = 0.01f;
-    glGribOptionColor color = glGribOptionColor (255,   0,   0);
+    OptionColor color = OptionColor (255,   0,   0);
   } frame;
   struct
   {
     bool on = false;
-    glGribOptionColor color = glGribOptionColor (255, 255, 255);
+    OptionColor color = OptionColor (255, 255, 255);
     float length = 0.025f;
     float width  = 0.010f;
     int kind     = 0;
   } lines;
-  glGribOptionsTicksSide N, S, W, E;
+  OptionsTicksSide N, S, W, E;
 };
 
-class glGribOptionsGrid : public glGribOptionsBase
+class OptionsGrid : public OptionsBase
 {
 public:
   DEFINE
@@ -850,7 +853,7 @@ public:
   int points = 200;
   int interval = 2;
   float dash_length = 4.0f;
-  glGribOptionColor color = glGribOptionColor (0, 255, 0);
+  OptionColor color = OptionColor (0, 255, 0);
   bool on = false;
   float scale = 1.005;
   struct 
@@ -858,14 +861,14 @@ public:
     bool on = false;
     float lon = 0.0f, lat = 0.0f;
     float angle = 0.0f;
-    glGribOptionsFont font;
+    OptionsFont font;
   } labels;
 };
 
-class glGribOptionsLandLayer : public glGribOptionsBase
+class OptionsLandLayer : public OptionsBase
 {
 public:
-  glGribOptionsLandLayer (const std::string & _path, float _scale, const glGribOptionColor & _color)
+  OptionsLandLayer (const std::string & _path, float _scale, const OptionColor & _color)
                            :  path (_path), scale (_scale), color (_color) {}
   DEFINE
   {
@@ -886,7 +889,7 @@ public:
     float angle        = 1.0f;
     bool on            = true;
   } subdivision;
-  glGribOptionColor color = glGribOptionColor ("#ffe2ab");
+  OptionColor color = OptionColor ("#ffe2ab");
   struct
   {
     bool on            = false;
@@ -894,7 +897,7 @@ public:
   bool on              = true;
 };
 
-class glGribOptionsLand : public glGribOptionsBase
+class OptionsLand : public OptionsBase
 {
 public:
   DEFINE
@@ -908,17 +911,17 @@ public:
   
   bool on = false;
 
-  std::vector<glGribOptionsLandLayer> layers = 
+  std::vector<OptionsLandLayer> layers = 
   {
-    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L1.shp", 1.000f, glGribOptionColor ("#ffe2ab")),
-    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L2.shp", 1.001f, glGribOptionColor ("#0000ff")),
-    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L3.shp", 1.002f, glGribOptionColor ("#ffe2ab")),
-    glGribOptionsLandLayer ("coastlines/shp/GSHHS_c_L5.shp", 1.000f, glGribOptionColor ("#ffe2ab")) 
+    OptionsLandLayer ("coastlines/shp/GSHHS_c_L1.shp", 1.000f, OptionColor ("#ffe2ab")),
+    OptionsLandLayer ("coastlines/shp/GSHHS_c_L2.shp", 1.001f, OptionColor ("#0000ff")),
+    OptionsLandLayer ("coastlines/shp/GSHHS_c_L3.shp", 1.002f, OptionColor ("#ffe2ab")),
+    OptionsLandLayer ("coastlines/shp/GSHHS_c_L5.shp", 1.000f, OptionColor ("#ffe2ab")) 
   };
 
 };
 
-class glGribOptionsLandscapePosition : public glGribOptionsBase
+class OptionsLandscapePosition : public OptionsBase
 {
 public:
   DEFINE
@@ -931,7 +934,7 @@ public:
   float lon1 = -180.0f, lon2 = +180.0f, lat1 = -90.0f, lat2 = +90.0f;
 };
 
-class glGribOptionsLandscape : public glGribOptionsBase
+class OptionsLandscape : public OptionsBase
 {
 public:
   DEFINE
@@ -964,18 +967,18 @@ public:
   } flat;
   struct
   {
-    glGribOptionsLandscapePosition position;
+    OptionsLandscapePosition position;
   } lonlat;
-  glGribOptionsGeometry geometry;
+  OptionsGeometry geometry;
   float scale = 1.0f;
-  glGribOptionColor color = glGribOptionColor ("#00000000");
+  OptionColor color = OptionColor ("#00000000");
 };
 
-class glGribOptionsLines : public glGribOptionsBase
+class OptionsLines : public OptionsBase
 {
 public:
-  glGribOptionsLines () {}
-  glGribOptionsLines (const std::string & p, const string & f) : path (p), format (f) {}
+  OptionsLines () {}
+  OptionsLines (const std::string & p, const string & f) : path (p), format (f) {}
   DEFINE
   {
     DESC (path,               Path to lines file);
@@ -991,12 +994,12 @@ public:
   std::string selector;
   string path;
   string format = "gshhg";
-  glGribOptionColor color;
+  OptionColor color;
   float scale = 1.005;
   float latmin = 0.0f, latmax = 0.0f, lonmin = 0.0f, lonmax = 0.0f;
 };
 
-class glGribOptionsOffscreen : public glGribOptionsBase
+class OptionsOffscreen : public OptionsBase
 {
 public:
   DEFINE
@@ -1010,7 +1013,7 @@ public:
   std::string format = "snapshot_%N.png";
 };
 
-class glGribOptionsWindow : public glGribOptionsBase
+class OptionsWindow : public OptionsBase
 {
 public:
   DEFINE
@@ -1052,7 +1055,7 @@ public:
   } debug;
   int     version_major = 4;
   int     version_minor = 3;
-  glGribOptionsOffscreen offscreen;
+  OptionsOffscreen offscreen;
   struct
   {
     bool on = false;
@@ -1063,7 +1066,7 @@ public:
   } info;
 };
 
-class glGribOptionsLight : public glGribOptionsBase
+class OptionsLight : public OptionsBase
 {
 public:
   DEFINE
@@ -1077,7 +1080,7 @@ public:
     DESC (date,              Date for sunlight position);
     DESC (night,             Fraction of light during for night);
   }
-  glGribOptionDate date;
+  OptionDate date;
   bool   on  = false;
   struct
   {
@@ -1093,7 +1096,7 @@ public:
   float  night = 0.1f;
 };
 
-class glGribOptionsPosition : public glGribOptionsBase
+class OptionsPosition : public OptionsBase
 {
 public:
   DEFINE
@@ -1107,7 +1110,7 @@ public:
   float  fov  = 0.0f;
 };
 
-class glGribOptionsTravelling : public glGribOptionsBase
+class OptionsTravelling : public OptionsBase
 {
 public:
   DEFINE
@@ -1119,11 +1122,11 @@ public:
   }
   bool   on     = false;
   int    frames = 100;
-  glGribOptionsPosition pos1;
-  glGribOptionsPosition pos2;
+  OptionsPosition pos1;
+  OptionsPosition pos2;
 };
 
-class glGribOptionsInterpolation : public glGribOptionsBase
+class OptionsInterpolation : public OptionsBase
 {
 public:
   DEFINE
@@ -1135,7 +1138,7 @@ public:
   int frames = 10;
 };
 
-class glGribOptionsImage : public glGribOptionsBase
+class OptionsImage : public OptionsBase
 {
 public:
   DEFINE
@@ -1154,7 +1157,7 @@ public:
   std::string align;
 };
 
-class glGribOptionsText : public glGribOptionsBase
+class OptionsText : public OptionsBase
 {
 public:
   DEFINE
@@ -1171,10 +1174,10 @@ public:
   std::vector<float> x;
   std::vector<float> y;
   std::vector<std::string> a;
-  glGribOptionsFont font;
+  OptionsFont font;
 };
 
-class glGribOptionsDate : public glGribOptionsBase
+class OptionsDate : public OptionsBase
 {
 public:
   DEFINE
@@ -1183,10 +1186,10 @@ public:
     INCLUDE (font);
   }
   bool on = false;
-  glGribOptionsFont font;
+  OptionsFont font;
 };
 
-class glGribOptionsTitle : public glGribOptionsBase
+class OptionsTitle : public OptionsBase
 {
 public:
   DEFINE
@@ -1203,10 +1206,10 @@ public:
   float y = 1.;
   std::string a = "NW";
   std::string text = "";
-  glGribOptionsFont font;
+  OptionsFont font;
 };
 
-class glGribOptionsScene : public glGribOptionsBase
+class OptionsScene : public OptionsBase
 {
 public:
   DEFINE
@@ -1230,13 +1233,13 @@ public:
     float rate = 1.0f;
   } rotate_earth;
   float   lon_at_hour = -1.0f;
-  glGribOptionsLight light;  
-  glGribOptionsTravelling travelling;
-  glGribOptionsInterpolation interpolation;
-  glGribOptionsDate date;
-  glGribOptionsText text;
-  glGribOptionsImage image;
-  glGribOptionsTitle title;
+  OptionsLight light;  
+  OptionsTravelling travelling;
+  OptionsInterpolation interpolation;
+  OptionsDate date;
+  OptionsText text;
+  OptionsImage image;
+  OptionsTitle title;
   struct
   {
     int field = 0;
@@ -1247,7 +1250,7 @@ public:
   } center;
 };
 
-class glGribOptionsView : public glGribOptionsBase
+class OptionsView : public OptionsBase
 {
 public:
   DEFINE
@@ -1285,7 +1288,7 @@ public:
     bool on = true;
   } clip;
 
-  friend bool operator== (const glGribOptionsView & v1, const glGribOptionsView & v2)
+  friend bool operator== (const OptionsView & v1, const OptionsView & v2)
   {
 #define EQ(a) if (v1.a != v2.a) return false;
     EQ (projection);
@@ -1308,7 +1311,7 @@ public:
 };
 
 
-class glGribOptionsColorbar : public glGribOptionsBase
+class OptionsColorbar : public OptionsBase
 {
 public:
   DEFINE
@@ -1324,7 +1327,7 @@ public:
     DESC (position.ymax, Colorbar position);
   }
   bool on = false;
-  glGribOptionsFont font = glGribOptionsFont ("fonts/16.bmp", 0.02f);
+  OptionsFont font = OptionsFont ("fonts/16.bmp", 0.02f);
   std::string format = "%6.4g";
   struct
   {
@@ -1340,7 +1343,7 @@ public:
   } position;
 };
 
-class glGribOptionsMapscale : public glGribOptionsBase
+class OptionsMapscale : public OptionsBase
 {
 public:
   DEFINE
@@ -1355,9 +1358,9 @@ public:
     DESC (color2, Second color);
   }
   bool on = false;
-  glGribOptionsFont font = glGribOptionsFont ("fonts/16.bmp", 0.02f);
-  glGribOptionColor color1 = glGribOptionColor (255, 255, 255);
-  glGribOptionColor color2 = glGribOptionColor ( 80,  80,  80);
+  OptionsFont font = OptionsFont ("fonts/16.bmp", 0.02f);
+  OptionColor color1 = OptionColor (255, 255, 255);
+  OptionColor color2 = OptionColor ( 80,  80,  80);
   struct position
   {
     float xmin = 0.05;
@@ -1367,7 +1370,7 @@ public:
   } position;
 };
 
-class glGribOptionsRivers : public glGribOptionsBase
+class OptionsRivers : public OptionsBase
 {
 public:
   DEFINE
@@ -1376,10 +1379,10 @@ public:
     INCLUDE (lines);
   }
   bool on = false;
-  glGribOptionsLines lines = glGribOptionsLines ("coastlines/gshhg/WDBII_bin/wdb_rivers_f.b", "gshhg");
+  OptionsLines lines = OptionsLines ("coastlines/gshhg/WDBII_bin/wdb_rivers_f.b", "gshhg");
 };
 
-class glGribOptionsBorder : public glGribOptionsBase
+class OptionsBorder : public OptionsBase
 {
 public:
   DEFINE
@@ -1403,10 +1406,10 @@ public:
   {
     bool on = false;
   } sea;
-  glGribOptionsLines lines = glGribOptionsLines ("coastlines/gshhg/WDBII_bin/wdb_borders_f.b", "gshhg");
+  OptionsLines lines = OptionsLines ("coastlines/gshhg/WDBII_bin/wdb_borders_f.b", "gshhg");
 };
 
-class glGribOptionsPoints : public glGribOptionsBase
+class OptionsPoints : public OptionsBase
 {
 public:
   DEFINE 
@@ -1417,8 +1420,8 @@ public:
     INCLUDE (palette);
     DESC (color, Point color);
   }
-  glGribOptionsPalette palette = glGribOptionsPalette ("none");
-  glGribOptionColor color;
+  OptionsPalette palette = OptionsPalette ("none");
+  OptionColor color;
   float scale = 1.0f;
   struct
   {
@@ -1430,7 +1433,7 @@ public:
   } size;
 };
 
-class glGribOptionsCities : public glGribOptionsBase
+class OptionsCities : public OptionsBase
 {
 public:
   DEFINE 
@@ -1441,15 +1444,15 @@ public:
     DESC (labels.on, Enable city names display);
   }
   bool on = false;
-  glGribOptionsPoints points;
+  OptionsPoints points;
   struct
   {
-    glGribOptionsFont font;
+    OptionsFont font;
     bool on = false;
   } labels;
 };
 
-class glGribOptionsCoast : public glGribOptionsBase
+class OptionsCoast : public OptionsBase
 {
 public:
   DEFINE
@@ -1463,10 +1466,10 @@ public:
   {
     bool on = false;
   } lakes;
-  glGribOptionsLines lines = glGribOptionsLines ("coastlines/gshhg/GSHHS_bin/gshhs_h.b", "gshhg");
+  OptionsLines lines = OptionsLines ("coastlines/gshhg/GSHHS_bin/gshhs_h.b", "gshhg");
 };
 
-class glGribOptionsDepartements : public glGribOptionsBase
+class OptionsDepartements : public OptionsBase
 {
 public:
   DEFINE
@@ -1475,10 +1478,10 @@ public:
     INCLUDE (lines);
   }
   bool on = false;
-  glGribOptionsLines lines = glGribOptionsLines ("coastlines/departements/departements-20180101.shp", "shapeline");
+  OptionsLines lines = OptionsLines ("coastlines/departements/departements-20180101.shp", "shapeline");
 };
 
-class glGribOptionsShell : public glGribOptionsBase
+class OptionsShell : public OptionsBase
 {
 public:
   DEFINE
@@ -1495,7 +1498,7 @@ public:
   } prompt;
 };
 
-class glGribOptions : public glGribOptionsBase
+class Options : public OptionsBase
 {
 public:
   DEFINE
@@ -1528,28 +1531,28 @@ public:
     std::vector<std::string> path;
     bool on = false;
   } diff;
-  std::vector<glGribOptionsField> field =
-    {glGribOptionsField (), glGribOptionsField (), 
-     glGribOptionsField (), glGribOptionsField (), 
-     glGribOptionsField (), glGribOptionsField (), 
-     glGribOptionsField (), glGribOptionsField (), 
-     glGribOptionsField (), glGribOptionsField ()};
-  glGribOptionsCoast coast;
-  glGribOptionsCities cities;
-  glGribOptionsBorder border;
-  glGribOptionsRivers rivers;
-  glGribOptionsColorbar colorbar;
-  glGribOptionsMapscale mapscale;
-  glGribOptionsDepartements departements;
-  glGribOptionsWindow window;
-  glGribOptionsLandscape landscape;
-  glGribOptionsGrid grid;
-  glGribOptionsTicks ticks;
-  glGribOptionsScene scene;
-  glGribOptionsView view;
-  glGribOptionsFont font;
-  glGribOptionsShell shell;
-  glGribOptionsLand land;
+  std::vector<OptionsField> field =
+    {OptionsField (), OptionsField (), 
+     OptionsField (), OptionsField (), 
+     OptionsField (), OptionsField (), 
+     OptionsField (), OptionsField (), 
+     OptionsField (), OptionsField ()};
+  OptionsCoast coast;
+  OptionsCities cities;
+  OptionsBorder border;
+  OptionsRivers rivers;
+  OptionsColorbar colorbar;
+  OptionsMapscale mapscale;
+  OptionsDepartements departements;
+  OptionsWindow window;
+  OptionsLandscape landscape;
+  OptionsGrid grid;
+  OptionsTicks ticks;
+  OptionsScene scene;
+  OptionsView view;
+  OptionsFont font;
+  OptionsShell shell;
+  OptionsLand land;
   virtual bool parse (int, const char * [], const std::set<std::string> * = nullptr);
 };
 
@@ -1557,3 +1560,5 @@ public:
 #undef DESC
 #undef INCLUDE
 #undef INCLUDE_H
+
+}

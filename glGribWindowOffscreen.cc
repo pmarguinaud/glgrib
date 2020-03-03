@@ -2,13 +2,13 @@
 
 #include <iostream>
 
-void glGribWindowOffscreen::setHints ()
+void glGrib::WindowOffscreen::setHints ()
 {
-  glGribWindow::setHints ();
+  glGrib::Window::setHints ();
   glfwWindowHint (GLFW_VISIBLE, GLFW_FALSE);
 }
 
-void glGribWindowOffscreen::run (class glGribShell * shell)
+void glGrib::WindowOffscreen::run (class glGrib::Shell * shell)
 {
   for (int i = 0; i < frames; i++)
     {

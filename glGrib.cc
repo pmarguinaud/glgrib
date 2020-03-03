@@ -22,23 +22,23 @@ static void errorCallback (int c, const char * desc)
 }
 
 static
-glGribWindowSet * startRegularMode (const glGribOptions & opts)
+glGrib::WindowSet * startRegularMode (const glGrib::Options & opts)
 {
-  glGribWindowSet * wset = new glGribWindowSet (opts);
+  glGrib::WindowSet * wset = new glGrib::WindowSet (opts);
   wset->create (opts);
   return wset;
 }
 
 static
-glGribWindowSet * startDiffMode (const glGribOptions & opts)
+glGrib::WindowSet * startDiffMode (const glGrib::Options & opts)
 {
-  glGribWindowDiffSet * wset = new glGribWindowDiffSet (opts);
+  glGrib::WindowDiffSet * wset = new glGrib::WindowDiffSet (opts);
   return wset;
 }
 
 int main (int argc, const char * argv[])
 {
-  glGribOptions opts;
+  glGrib::Options opts;
 
   if ((argc == 2) && strncmp (argv[1], "--", 2))
     {
@@ -56,7 +56,7 @@ int main (int argc, const char * argv[])
       exit (EXIT_FAILURE);
     }
 
-  glGribWindowSet * wset;
+  glGrib::WindowSet * wset;
   
   if (opts.diff.on)
     wset = startDiffMode (opts);
@@ -65,16 +65,16 @@ int main (int argc, const char * argv[])
 
   if (opts.shell.on)
     {
-      Shell.setup (opts.shell);
-      Shell.start (wset);
-      wset->run (&Shell);
+      glGrib::Shell0.setup (opts.shell);
+      glGrib::Shell0.start (wset);
+      wset->run (&glGrib::Shell0);
     }
   else
     {
       wset->run ();
     }
 
-  Shell.wait ();
+  glGrib::Shell0.wait ();
 
   delete wset;
 

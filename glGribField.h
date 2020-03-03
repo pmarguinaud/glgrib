@@ -14,11 +14,14 @@
 #include <vector>
 
 
-class glGribField : public glGribWorld
+namespace glGrib
+{
+
+class Field : public World
 {
 public:
 
-  static glGribField * create (const glGribOptionsField &, float, glGribLoader *);
+  static Field * create (const OptionsField &, float, Loader *);
 
   typedef enum
   {
@@ -32,18 +35,18 @@ public:
   virtual kind getKind () const = 0;
   virtual bool useColorBar () const  = 0;
 
-  virtual glGribField * clone () const  = 0;
-  virtual void setup (glGribLoader *, const glGribOptionsField &, float = 0) = 0;
-  void setPaletteOptions (const glGribOptionsPalette &);
+  virtual Field * clone () const  = 0;
+  virtual void setup (Loader *, const OptionsField &, float = 0) = 0;
+  void setPaletteOptions (const OptionsPalette &);
   void setNextPalette ();
   void scalePaletteUp (float = 0.025);
   void scalePaletteDown (float = 0.025);
-  void setupHilo (glGribFieldFloatBufferPtr);
-  void renderHilo (const glGribView &) const;
+  void setupHilo (FieldFloatBufferPtr);
+  void renderHilo (const View &) const;
   void setupVertexAttributesFrame ();
-  void renderFrame (const glGribView &) const;
+  void renderFrame (const View &) const;
 
-  virtual ~glGribField () {}
+  virtual ~Field () {}
   virtual std::vector<float> getValue (int index) const 
   { 
     std::vector<float> val;
@@ -85,15 +88,15 @@ public:
     return sqrt (n);
   }
   void clear () override;
-  void resize (const glGribView &) override {}
-  const std::vector<glGribFieldMetadata> & getMeta () const
+  void resize (const View &) override {}
+  const std::vector<FieldMetadata> & getMeta () const
   {
     return meta;
   }
-  const glGribOptionsField & getOptions () const;
+  const OptionsField & getOptions () const;
   void setScale (float s) { opts.scale = s; hilo.setScaleXYZ (s); }
   float getScale () const override { return opts.scale; }
-  const glGribPalette & getPalette () const;
+  const Palette & getPalette () const;
   void toggleWireframe () 
   {
     if (opts.scalar.wireframe.on)
@@ -135,14 +138,16 @@ protected:
   void packUnpack (const float *, float *, const int, 
 		   const float, const float, const float);
   template <typename T>
-  void loadHeight (glGribOpenGLBufferPtr, glGribLoader *);
+  void loadHeight (OpenGLBufferPtr, Loader *);
   template <typename T>
   void bindHeight (int);
-  static void getUserPref (glGribOptionsField *, glGribLoader *, int);
-  glGribPalette palette = paletteColdHot;
-  mutable glGribOptionsField opts;
-  std::vector<glGribFieldMetadata> meta;
-  std::vector<glGribFieldFloatBufferPtr> values;
-  glGribString hilo;
+  static void getUserPref (OptionsField *, Loader *, int);
+  Palette palette = paletteColdHot;
+  mutable OptionsField opts;
+  std::vector<FieldMetadata> meta;
+  std::vector<FieldFloatBufferPtr> values;
+  String hilo;
 };
 
+
+}

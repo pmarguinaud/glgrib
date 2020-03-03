@@ -8,7 +8,7 @@
 #include <stdlib.h>
 
 
-void glGribCities::setup (const glGribOptionsCities & o)
+void glGrib::Cities::setup (const glGrib::OptionsCities & o)
 {
   opts = o;
 
@@ -18,8 +18,8 @@ void glGribCities::setup (const glGribOptionsCities & o)
   std::vector<std::string> Str;
 
 
-  glGribSQLite db (glGribResolve ("glGrib.db"));
-  glGribSQLite::stmt st;
+  glGrib::SQLite db (glGrib::Resolve ("glGrib.db"));
+  glGrib::SQLite::stmt st;
  
   st = db.prepare ("SELECT max (size) FROM CITIES;");
 
@@ -50,27 +50,27 @@ void glGribCities::setup (const glGribOptionsCities & o)
     }
 
 
-  glGribPoints::setup (opts.points, lon, lat, siz);
+  glGrib::Points::setup (opts.points, lon, lat, siz);
 
   d.labels.setShared (true);
   d.labels.setChange (false);
 
-  glGribFontPtr font = newGlgribFontPtr (opts.labels.font);
+  glGrib::FontPtr font = newGlgribFontPtr (opts.labels.font);
 
   d.labels.setup3D (font, Str, X, Y, Z, A,
-                   opts.labels.font.scale, glGribString::C);
+                   opts.labels.font.scale, glGrib::String::C);
   d.labels.setForegroundColor (opts.labels.font.color.foreground);
   d.labels.setBackgroundColor (opts.labels.font.color.background);
 
 
 }
 
-glGribCities & glGribCities::operator= (const glGribCities & cities)
+glGrib::Cities & glGrib::Cities::operator= (const glGrib::Cities & cities)
 {
   if (this != &cities)
     {
       clear ();
-      glGribPoints::operator= (cities);
+      glGrib::Points::operator= (cities);
       if (cities.isReady ())
         {
           opts = cities.opts;
@@ -80,14 +80,14 @@ glGribCities & glGribCities::operator= (const glGribCities & cities)
   return *this;
 }
 
-void glGribCities::clear ()
+void glGrib::Cities::clear ()
 {
-  glGribPoints::clear ();
+  glGrib::Points::clear ();
   d.labels.clear ();
 }
 
-void glGribCities::render (const glGribView & view, const glGribOptionsLight & light) const
+void glGrib::Cities::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  glGribPoints::render (view, light);
+  glGrib::Points::render (view, light);
   d.labels.render (view);
 }

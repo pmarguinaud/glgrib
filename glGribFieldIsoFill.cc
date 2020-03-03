@@ -12,7 +12,7 @@
 #include <omp.h>
 
 
-glGribFieldIsoFill::glGribFieldIsoFill (const glGribFieldIsoFill & field)
+glGrib::FieldIsoFill::FieldIsoFill (const glGrib::FieldIsoFill & field)
 {
   if (field.isReady ())
     {
@@ -22,23 +22,23 @@ glGribFieldIsoFill::glGribFieldIsoFill (const glGribFieldIsoFill & field)
     }
 }
 
-glGribFieldIsoFill * glGribFieldIsoFill::clone () const
+glGrib::FieldIsoFill * glGrib::FieldIsoFill::clone () const
 {
   if (this == nullptr)
     return nullptr;
-  glGribFieldIsoFill * fld = new glGribFieldIsoFill ();
+  glGrib::FieldIsoFill * fld = new glGrib::FieldIsoFill ();
   *fld = *this;
   return fld;
 }
 
-glGribFieldIsoFill & glGribFieldIsoFill::operator= (const glGribFieldIsoFill & field)
+glGrib::FieldIsoFill & glGrib::FieldIsoFill::operator= (const glGrib::FieldIsoFill & field)
 {
   if (this != &field)
     {
       clear ();
       if (field.isReady ())
         {
-          glGribField::operator= (field);
+          glGrib::Field::operator= (field);
           d = field.d;
           setupVertexAttributes ();
           setReady ();
@@ -47,7 +47,7 @@ glGribFieldIsoFill & glGribFieldIsoFill::operator= (const glGribFieldIsoFill & f
   return *this;
 }
 
-void glGribFieldIsoFill::clear ()
+void glGrib::FieldIsoFill::clear ()
 {
   if (isReady ()) 
     {
@@ -55,10 +55,10 @@ void glGribFieldIsoFill::clear ()
       for (auto & ib : d.isoband)
         glDeleteVertexArrays (1, &ib.VertexArrayID);
     }
-  glGribField::clear ();
+  glGrib::Field::clear ();
 }
 
-void glGribFieldIsoFill::setupVertexAttributes ()
+void glGrib::FieldIsoFill::setupVertexAttributes ()
 {
   numberOfPoints = geometry->getNumberOfPoints ();
   numberOfTriangles = geometry->getNumberOfTriangles ();
@@ -202,7 +202,7 @@ void processTriangle2 (std::vector<isoband_maker_t> * isomake,
   processTriangle2_ctx_t ctx;
 
   for (int i = 0; i < 3; i++)
-    ctx.lonlat[i] = xyz2lonlat (xyz[i]);
+    ctx.lonlat[i] = glGrib::xyz2lonlat (xyz[i]);
   ctx.v = v;
 
 
@@ -255,8 +255,8 @@ void processTriangle2 (std::vector<isoband_maker_t> * isomake,
               float a_k = (lev - v[i]) / (v[k] - v[i]);
 	      glm::vec3 xyz_j = glm::normalize (xyz[j] * a_j + xyz[i] * (1.0f - a_j)),
 	                xyz_k = glm::normalize (xyz[k] * a_k + xyz[i] * (1.0f - a_k));
-	      glm::vec2 lonlat_j = xyz2lonlat (xyz_j),
-	                lonlat_k = xyz2lonlat (xyz_k);
+	      glm::vec2 lonlat_j = glGrib::xyz2lonlat (xyz_j),
+	                lonlat_k = glGrib::xyz2lonlat (xyz_k);
               
 	      int ind0 = ib.lonlat.size () / 2;
 
@@ -296,7 +296,7 @@ void processTriangle2 (std::vector<isoband_maker_t> * isomake,
 
 static
 void processTriangle1 (std::vector<isoband_maker_t> * isomake, 
-                       const_glGribGeometryPtr geometry,
+                       glGrib::const_glGribGeometryPtr geometry,
                        const float * val, int it, 
                        const std::vector<float> & levels)
 {
@@ -326,24 +326,24 @@ void processTriangle1 (std::vector<isoband_maker_t> * isomake,
     {
       float lon, lat;
       geometry->index2latlon (jglo[i], &lat, &lon);
-      xyz[i] = lonlat2xyz (glm::vec2 (lon, lat));
+      xyz[i] = glGrib::lonlat2xyz (glm::vec2 (lon, lat));
     }
 
   processTriangle2 (isomake, v, xyz, levels);
 }
 
-void glGribFieldIsoFill::setup (glGribLoader * ld, const glGribOptionsField & o, float slot)
+void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
   opts = o;
 
-  glGribFieldMetadata meta1;
-  glGribFieldFloatBufferPtr data;
+  glGrib::FieldMetadata meta1;
+  glGrib::FieldFloatBufferPtr data;
   ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
 
-  palette = glGribPalette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
+  palette = glGrib::Palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
 
-  geometry = glGribGeometry::load (ld, opts.path[int (slot)], opts.geometry);
+  geometry = glGrib::Geometry::load (ld, opts.path[int (slot)], opts.geometry);
 
   int size = geometry->size ();
 
@@ -351,9 +351,9 @@ void glGribFieldIsoFill::setup (glGribLoader * ld, const glGribOptionsField & o,
 
   if (levels.size () == 0)
     {
-      float min = opts.isofill.min == glGribOptionsIsofill::defaultMin 
+      float min = opts.isofill.min == glGrib::OptionsIsofill::defaultMin 
                 ? meta1.valmin : opts.isofill.min;
-      float max = opts.isofill.max == glGribOptionsIsofill::defaultMax 
+      float max = opts.isofill.max == glGrib::OptionsIsofill::defaultMax 
                 ? meta1.valmax : opts.isofill.max;
       for (int i = 0; i < opts.isofill.number; i++)
         levels.push_back (min + (i + 1) * (max - min) / (opts.isofill.number + 1));
@@ -501,15 +501,15 @@ void glGribFieldIsoFill::setup (glGribLoader * ld, const glGribOptionsField & o,
 
 }
 
-void glGribFieldIsoFill::render (const glGribView & view, const glGribOptionsLight & light) const
+void glGrib::FieldIsoFill::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  const glGribPalette & p = palette;
+  const glGrib::Palette & p = palette;
 
   if (opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
   
 
-  glGribProgram * program1 = glGribProgram::load (glGribProgram::ISOFILL1);
+  glGrib::Program * program1 = glGrib::Program::load (glGrib::Program::ISOFILL1);
   program1->use ();
 
   view.setMVP (program1);
@@ -522,7 +522,7 @@ void glGribFieldIsoFill::render (const glGribView & view, const glGribOptionsLig
   glBindVertexArray (0);
   view.delMVP (program1);
 
-  glGribProgram * program2 = glGribProgram::load (glGribProgram::ISOFILL2);
+  glGrib::Program * program2 = glGrib::Program::load (glGrib::Program::ISOFILL2);
   program2->use ();
 
   view.setMVP (program2);
@@ -543,7 +543,7 @@ void glGribFieldIsoFill::render (const glGribView & view, const glGribOptionsLig
 
 }
 
-glGribFieldIsoFill::~glGribFieldIsoFill ()
+glGrib::FieldIsoFill::~FieldIsoFill ()
 {
 }
 

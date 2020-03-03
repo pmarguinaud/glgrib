@@ -6,10 +6,10 @@
 #include <iostream>
 
 
-void glGribWorld::clear ()
+void glGrib::World::clear ()
 {
   if (isReady ())
     glDeleteVertexArrays (1, &VertexArrayID);
-  glGribObject::clear ();
+  glGrib::Object::clear ();
 }
 

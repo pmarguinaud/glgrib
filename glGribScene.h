@@ -9,7 +9,7 @@
 #include "glGribView.h"
 #include "glGribObject.h"
 #include "glGribProgram.h"
-#include "glGribLandscape.h"
+#include "glGribLandScape.h"
 #include "glGribGrid.h"
 #include "glGribTicks.h"
 #include "glGribField.h"
@@ -26,24 +26,27 @@
 
 #include <set>
 
-class glGribScene
+namespace glGrib
+{
+
+class Scene
 {
 public:
 
 
-  glGribScene () {}
-  glGribScene & operator= (const glGribScene & other);
-  virtual ~glGribScene ();
-  void setup (const glGribOptions &);
+  Scene () {}
+  Scene & operator= (const Scene & other);
+  virtual ~Scene ();
+  void setup (const Options &);
   void display () const;
-  void displayObj (const glGribObject *) const;
+  void displayObj (const Object *) const;
 
   int getCurrentFieldRank () const
   {
     return d.currentFieldRank;
   }
 
-  glGribField * getCurrentField () 
+  Field * getCurrentField () 
   { 
     return d.currentFieldRank < fieldlist.size () ? fieldlist[d.currentFieldRank] : nullptr; 
   }
@@ -80,38 +83,38 @@ public:
 
   void setMessage (const std::string & mess) { if (d.strmess.isReady ()) d.strmess.update (mess); }
   void resize ();
-  const glGribOptionDate * getDate ();
+  const OptionDate * getDate ();
 
-  std::vector<glGribField*> fieldlist;
+  std::vector<Field*> fieldlist;
 
 
   class _data
   {
     public:
-      glGribOptions opts;
-      glGribView view;
-      glGribLandscape landscape;
-      glGribCoast coast;
-      glGribBorder border;
-      glGribRivers rivers;
-      glGribGrid grid;
-      glGribTicks ticks;
-      glGribDepartements departements;
-      glGribCities cities;
-      glGribTest test;
-      glGribLand land;
+      Options opts;
+      View view;
+      Landscape landscape;
+      Coast coast;
+      Border border;
+      Rivers rivers;
+      Grid grid;
+      Ticks ticks;
+      Departements departements;
+      Cities cities;
+      Test test;
+      Land land;
     private:
-      glGribImage image;
-      glGribColorbar colorbar;
-      glGribMapscale mapscale;
-      glGribString strmess;
-      glGribString strdate;
-      glGribString strtitle;
-      std::vector<glGribString> str;
+      Image image;
+      Colorbar colorbar;
+      Mapscale mapscale;
+      String strmess;
+      String strdate;
+      String strtitle;
+      std::vector<String> str;
       int nupdate = 0;
       int currentFieldRank = 0;
       glm::mat4 MVP_R, MVP_L;
-      friend class glGribScene;
+      friend class Scene;
   };
   std::string strdate = "";
   std::string strtitle = "";
@@ -123,33 +126,35 @@ public:
 
   _data d;
 
-  glGribLoader ld;
+  Loader ld;
 
-  void setViewOptions (const glGribOptionsView &);
-  void setLandscapeOptions (const glGribOptionsLandscape &);
-  void setGridOptions (const glGribOptionsGrid &);
-  void setTicksOptions (const glGribOptionsTicks &);
-  void setLandOptions (const glGribOptionsLand &);
-  void setGridColorOptions (const glGribOptionColor &);
+  void setViewOptions (const OptionsView &);
+  void setLandscapeOptions (const OptionsLandscape &);
+  void setGridOptions (const OptionsGrid &);
+  void setTicksOptions (const OptionsTicks &);
+  void setLandOptions (const OptionsLand &);
+  void setGridColorOptions (const OptionColor &);
   void setGridScaleOptions (float);
-  void setCoastOptions (const glGribOptionsCoast &);
-  void setBorderOptions (const glGribOptionsBorder &);
-  void setRiversOptions (const glGribOptionsRivers &);
-  void setDepartementsOptions (const glGribOptionsDepartements &);
-  void setFieldOptions (int, const glGribOptionsField &, float = 0);
-  void setFieldPaletteOptions (int, const glGribOptionsPalette &);
-  void setColorBarOptions (const glGribOptionsColorbar &);
-  void setMapScaleOptions (const glGribOptionsMapscale &);
-  void setImageOptions (const glGribOptionsImage &);
-  void setTextOptions (const glGribOptionsText &);
-  void setDateOptions (const glGribOptionsDate &);
-  void setLightOptions (const glGribOptionsLight &);
-  void setSceneOptions (const glGribOptionsScene &);
-  void setCitiesOptions (const glGribOptionsCities &);
-  void setTitleOptions (const glGribOptionsTitle &);
+  void setCoastOptions (const OptionsCoast &);
+  void setBorderOptions (const OptionsBorder &);
+  void setRiversOptions (const OptionsRivers &);
+  void setDepartementsOptions (const OptionsDepartements &);
+  void setFieldOptions (int, const OptionsField &, float = 0);
+  void setFieldPaletteOptions (int, const OptionsPalette &);
+  void setColorBarOptions (const OptionsColorbar &);
+  void setMapScaleOptions (const OptionsMapscale &);
+  void setImageOptions (const OptionsImage &);
+  void setTextOptions (const OptionsText &);
+  void setDateOptions (const OptionsDate &);
+  void setLightOptions (const OptionsLight &);
+  void setSceneOptions (const OptionsScene &);
+  void setCitiesOptions (const OptionsCities &);
+  void setTitleOptions (const OptionsTitle &);
 
-  glGribOptions getOptions () const;
-  const glGribOptionsScene & getSceneOptions () const { return d.opts.scene; }
+  Options getOptions () const;
+  const OptionsScene & getSceneOptions () const { return d.opts.scene; }
 
 };
 
+
+}

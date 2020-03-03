@@ -11,7 +11,7 @@
 #include <iostream>
 #include <omp.h>
 
-glGribLand & glGribLand::operator=(const glGribLand & other)
+glGrib::Land & glGrib::Land::operator=(const glGrib::Land & other)
 {
   clear (); 
   if ((this != &other) && other.isReady ()) 
@@ -24,9 +24,9 @@ glGribLand & glGribLand::operator=(const glGribLand & other)
   return *this;
 }
 
-void glGribLand::render (const glGribView & view, const glGribOptionsLight & light) const
+void glGrib::Land::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  glGribProgram * program = glGribProgram::load (glGribProgram::LAND);
+  glGrib::Program * program = glGrib::Program::load (glGrib::Program::LAND);
   program->use (); 
 
   view.setMVP (program);
@@ -49,7 +49,7 @@ void glGribLand::render (const glGribView & view, const glGribOptionsLight & lig
 
 }
 
-void glGribLand::clear ()
+void glGrib::Land::clear ()
 {
   if (isReady ())
     for (int i = 0; i < VertexArrayID.size (); i++)
@@ -57,10 +57,10 @@ void glGribLand::clear ()
       glDeleteVertexArrays (1, &VertexArrayID[i]);
   VertexArrayID.clear ();
   d.clear ();
-  glGribObject::clear ();
+  glGrib::Object::clear ();
 }
 
-void glGribLand::triangulate (std::vector<int> * _pos_offset, 
+void glGrib::Land::triangulate (std::vector<int> * _pos_offset, 
                                std::vector<int> * _pos_length,
                                std::vector<int> * _ind_offset,
                                std::vector<int> * _ind_length,
@@ -135,7 +135,7 @@ void glGribLand::triangulate (std::vector<int> * _pos_offset,
       if (pos_length[j] < 300)
         break;
       if (pos_length[j] > 2)
-        glGribEarCut::processRing (lonlat, pos_offset[j], pos_length[j], 
+        glGrib::EarCut::processRing (lonlat, pos_offset[j], pos_length[j], 
                                     ind_offset[j], &ind_length[j],
                                     &ind, true);
     }
@@ -147,13 +147,13 @@ void glGribLand::triangulate (std::vector<int> * _pos_offset,
     {
       int j = ord[l];
       if (pos_length[j] > 2)
-        glGribEarCut::processRing (lonlat, pos_offset[j], pos_length[j], 
+        glGrib::EarCut::processRing (lonlat, pos_offset[j], pos_length[j], 
                                     ind_offset[j], &ind_length[j],
                                     &ind, false);
     }
 }
 
-void glGribLand::subdivide (const std::vector<int> & ind_offset,
+void glGrib::Land::subdivide (const std::vector<int> & ind_offset,
                              const std::vector<int> & ind_length,
                              const std::vector<int> & pos_offset,
                              const std::vector<int> & pos_length,
@@ -225,7 +225,7 @@ void glGribLand::subdivide (const std::vector<int> & ind_offset,
     }
 
   const int n = pos_offset_sub.size ();
-  std::vector<glGribSubdivide> sr (n);
+  std::vector<glGrib::Subdivide> sr (n);
 
   // Subdivide information kept in subdivide objects
 #pragma omp parallel for
@@ -261,7 +261,7 @@ void glGribLand::subdivide (const std::vector<int> & ind_offset,
 }
 
 
-void glGribLand::setup (const glGribOptionsLand & o)
+void glGrib::Land::setup (const glGrib::OptionsLand & o)
 {
   opts = o;
 
@@ -270,13 +270,13 @@ void glGribLand::setup (const glGribOptionsLand & o)
   if (opts.layers[i].on)
     {
       int numberOfPoints;
-      glGribOptionsLines lopts;
+      glGrib::OptionsLines lopts;
       unsigned int numberOfLines; 
       std::vector<float> lonlat;
       std::vector<unsigned int> indl;
       
       lopts.path = opts.layers[i].path; lopts.selector = opts.layers[i].selector;
-      glGribShapeLib::read (lopts, &numberOfPoints, &numberOfLines, &lonlat, 
+      glGrib::ShapeLib::read (lopts, &numberOfPoints, &numberOfLines, &lonlat, 
                              &indl, lopts.selector);
      
      
@@ -294,7 +294,7 @@ void glGribLand::setup (const glGribOptionsLand & o)
       if (opts.layers[i].subdivision.on)
         {
           const float angmax = deg2rad * opts.layers[i].subdivision.angle;
-          glGribLand::subdivide (ind_offset, ind_length, pos_offset, pos_length,
+          glGrib::Land::subdivide (ind_offset, ind_length, pos_offset, pos_length,
                                   &ind, &lonlat, angmax);
         }
      
@@ -320,7 +320,7 @@ void glGribLand::setup (const glGribOptionsLand & o)
   setReady ();
 }
 
-void glGribLand::setupVertexAttributes ()
+void glGrib::Land::setupVertexAttributes ()
 {
   VertexArrayID.resize (d.size ());
 

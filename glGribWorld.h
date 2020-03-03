@@ -5,14 +5,17 @@
 #include "glGribView.h"
 #include "glGribGeometry.h"
 
-class glGribWorld : public glGribObject
+namespace glGrib
+{
+
+class World : public Object
 {
 public:
-  virtual ~glGribWorld () { clear (); }
+  virtual ~World () { clear (); }
   const_glGribGeometryPtr getGeometry () const { return geometry; }
   virtual void clear ();
 protected:
-  glGribOpenGLBufferPtr vertexbuffer, colorbuffer, elementbuffer, heightbuffer, mpivbuffer;
+  OpenGLBufferPtr vertexbuffer, colorbuffer, elementbuffer, heightbuffer, mpivbuffer;
   const_glGribGeometryPtr geometry;
   int numberOfPoints;
   unsigned int numberOfTriangles;
@@ -20,3 +23,5 @@ protected:
   GLuint VertexArrayID_frame = 0;
 };
 
+
+}

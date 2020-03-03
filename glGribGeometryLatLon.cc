@@ -10,7 +10,7 @@
 #include <iostream>
 #include <stdexcept>
 
-void glGribGeometryLatLon::setProgramParameters (glGribProgram * program) const 
+void glGrib::GeometryLatLon::setProgramParameters (glGrib::Program * program) const 
 {
 #include "shaders/include/geometry/types.h"
   if (vertexbuffer != nullptr)
@@ -29,12 +29,12 @@ void glGribGeometryLatLon::setProgramParameters (glGribProgram * program) const
     }
 }
 
-int glGribGeometryLatLon::size () const
+int glGrib::GeometryLatLon::size () const
 {
   return Ni * Nj;
 }
 
-glGribGeometryLatLon::glGribGeometryLatLon (glGribHandlePtr ghp)
+glGrib::GeometryLatLon::GeometryLatLon (glGrib::HandlePtr ghp)
 {
   codes_handle * h = ghp->getCodesHandle ();
   codes_get_long (h, "Ni", &Ni);
@@ -46,7 +46,7 @@ glGribGeometryLatLon::glGribGeometryLatLon (glGribHandlePtr ghp)
   
 }
 
-void glGribGeometryLatLon::setupCoordinates ()
+void glGrib::GeometryLatLon::setupCoordinates ()
 {
   vertexbuffer = newGlgribOpenGLBufferPtr (2 * numberOfPoints * sizeof (float));
 
@@ -70,7 +70,7 @@ void glGribGeometryLatLon::setupCoordinates ()
   vertexbuffer->unmap ();
 }
 
-void glGribGeometryLatLon::setup (glGribHandlePtr ghp, const glGribOptionsGeometry & o)
+void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::OptionsGeometry & o)
 {
   opts = o;
 
@@ -161,7 +161,7 @@ void glGribGeometryLatLon::setup (glGribHandlePtr ghp, const glGribOptionsGeomet
     setupFrame ();
 }
 
-void glGribGeometryLatLon::setupFrame ()
+void glGrib::GeometryLatLon::setupFrame ()
 {
   numberOfPoints_frame = 2 * (Ni + Nj - 2);
   vertexbuffer_frame = newGlgribOpenGLBufferPtr (3 * (numberOfPoints_frame + 2) 
@@ -199,11 +199,11 @@ void glGribGeometryLatLon::setupFrame ()
   vertexbuffer_frame->unmap ();
 }
 
-glGribGeometryLatLon::~glGribGeometryLatLon ()
+glGrib::GeometryLatLon::~GeometryLatLon ()
 {
 }
 
-int glGribGeometryLatLon::latlon2index (float lat, float lon) const
+int glGrib::GeometryLatLon::latlon2index (float lat, float lon) const
 {
   lat = lat * deg2rad;
   lon = lon * deg2rad;
@@ -228,7 +228,7 @@ int glGribGeometryLatLon::latlon2index (float lat, float lon) const
   return j * Ni + i;
 }
 
-void glGribGeometryLatLon::index2latlon (int jglo, float * lat, float * lon) const
+void glGrib::GeometryLatLon::index2latlon (int jglo, float * lat, float * lon) const
 {
   int i = jglo % Ni;
   int j = jglo / Ni;
@@ -237,7 +237,7 @@ void glGribGeometryLatLon::index2latlon (int jglo, float * lat, float * lon) con
   *lon = lon0 + dlon * (float)i;
 }
 
-std::string glGribGeometryLatLon::md5 () const
+std::string glGrib::GeometryLatLon::md5 () const
 {
   unsigned char out[MD5_DIGEST_LENGTH];
   MD5_CTX c;
@@ -255,11 +255,11 @@ std::string glGribGeometryLatLon::md5 () const
   return md5string (out);
 }
 
-bool glGribGeometryLatLon::isEqual (const glGribGeometry & geom) const
+bool glGrib::GeometryLatLon::isEqual (const glGrib::Geometry & geom) const
 {
   try
     {
-      const glGribGeometryLatLon & g = dynamic_cast<const glGribGeometryLatLon &>(geom);
+      const glGrib::GeometryLatLon & g = dynamic_cast<const glGrib::GeometryLatLon &>(geom);
       return (Ni                                 == g.Ni)
           && (Nj                                 == g.Nj)
           && (latitudeOfFirstGridPointInDegrees  == g.latitudeOfFirstGridPointInDegrees)
@@ -273,7 +273,7 @@ bool glGribGeometryLatLon::isEqual (const glGribGeometry & geom) const
     }
 }
 
-void glGribGeometryLatLon::sample (unsigned char * p, const unsigned char p0, const int level) const
+void glGrib::GeometryLatLon::sample (unsigned char * p, const unsigned char p0, const int level) const
 {
   float Dlat = deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees);
   float Dlon = deg2rad * (longitudeOfLastGridPointInDegrees - longitudeOfFirstGridPointInDegrees);
@@ -295,7 +295,7 @@ void glGribGeometryLatLon::sample (unsigned char * p, const unsigned char p0, co
     }
 }
 
-void glGribGeometryLatLon::getTriangleVertices (int it, int jglo[3]) const
+void glGrib::GeometryLatLon::getTriangleVertices (int it, int jglo[3]) const
 { 
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;
@@ -316,7 +316,7 @@ void glGribGeometryLatLon::getTriangleVertices (int it, int jglo[3]) const
 }
 
 
-void glGribGeometryLatLon::getTriangleNeighboursLatLon (int it, int jglo[3], int itri[3], 
+void glGrib::GeometryLatLon::getTriangleNeighboursLatLon (int it, int jglo[3], int itri[3], 
 		                                          float & xlon0, float & xlat0, 
 		                                          float & xlon1, float & xlat1)
 const
@@ -354,7 +354,7 @@ const
 
 }
 
-void glGribGeometryLatLon::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
+void glGrib::GeometryLatLon::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
 { 
   bool t021 = (it % 2) == 0;
   float xlon0, xlat0, xlat1, xlon1;
@@ -375,7 +375,7 @@ void glGribGeometryLatLon::getTriangleNeighbours (int it, int jglo[3], int itri[
     }
 }
 
-void glGribGeometryLatLon::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec2 merc[3]) const
+void glGrib::GeometryLatLon::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec2 merc[3]) const
 {
   bool t021 = (it % 2) == 0;
   float xlon0, xlat0, xlat1, xlon1;
@@ -411,7 +411,7 @@ void glGribGeometryLatLon::getTriangleNeighbours (int it, int jglo[3], int itri[
     }
 }
 
-bool glGribGeometryLatLon::triangleIsEdge (int it) const
+bool glGrib::GeometryLatLon::triangleIsEdge (int it) const
 { 
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;
@@ -436,7 +436,7 @@ bool glGribGeometryLatLon::triangleIsEdge (int it) const
   return false;
 }
 
-void glGribGeometryLatLon::sampleTriangle (unsigned char * s, const unsigned char s0, const int level) const
+void glGrib::GeometryLatLon::sampleTriangle (unsigned char * s, const unsigned char s0, const int level) const
 {
   float Dlat = deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees);
   float Dlon = deg2rad * (longitudeOfLastGridPointInDegrees - longitudeOfFirstGridPointInDegrees);
@@ -467,7 +467,7 @@ void glGribGeometryLatLon::sampleTriangle (unsigned char * s, const unsigned cha
     }
 }
 
-int glGribGeometryLatLon::getTriangle (float lon, float lat) const
+int glGrib::GeometryLatLon::getTriangle (float lon, float lat) const
 {
   lat = lat * deg2rad;
   lon = lon * deg2rad;
@@ -523,14 +523,14 @@ int glGribGeometryLatLon::getTriangle (float lon, float lat) const
   return it;
 }
 
-glm::vec2 glGribGeometryLatLon::xyz2conformal (const glm::vec3 & xyz) const
+glm::vec2 glGrib::GeometryLatLon::xyz2conformal (const glm::vec3 & xyz) const
 {
   float lon = atan2 (xyz.y, xyz.x);
   float lat = asin (xyz.z);
   return glm::vec2 (lon, log (tan (pi / 4.0f + lat / 2.0f)));
 }
 
-glm::vec3 glGribGeometryLatLon::conformal2xyz (const glm::vec2 & merc) const
+glm::vec3 glGrib::GeometryLatLon::conformal2xyz (const glm::vec2 & merc) const
 {
   float lon = merc.x;
   float lat = 2.0f * atan (exp (merc.y)) - pi / 2.0f;
@@ -538,14 +538,14 @@ glm::vec3 glGribGeometryLatLon::conformal2xyz (const glm::vec2 & merc) const
   return lonlat2xyz (lon, lat);
 }
 
-glm::vec2 glGribGeometryLatLon::conformal2latlon (const glm::vec2 & merc) const
+glm::vec2 glGrib::GeometryLatLon::conformal2latlon (const glm::vec2 & merc) const
 {
   float lon = merc.x;
   float lat = 2.0f * atan (exp (merc.y)) - pi / 2.0f;
   return glm::vec2 (glm::degrees (lon), glm::degrees (lat));
 }
 
-void glGribGeometryLatLon::fixPeriodicity (const glm::vec2 & M, glm::vec2 * P, int n) const
+void glGrib::GeometryLatLon::fixPeriodicity (const glm::vec2 & M, glm::vec2 * P, int n) const
 {
   // Fix periodicity issue
   for (int i = 0; i < n; i++)
@@ -557,7 +557,7 @@ void glGribGeometryLatLon::fixPeriodicity (const glm::vec2 & M, glm::vec2 * P, i
     }
 }
 
-void glGribGeometryLatLon::getPointNeighbours (int jglo, std::vector<int> * neigh) const
+void glGrib::GeometryLatLon::getPointNeighbours (int jglo, std::vector<int> * neigh) const
 {
   neigh->resize (0);
 
@@ -584,18 +584,18 @@ void glGribGeometryLatLon::getPointNeighbours (int jglo, std::vector<int> * neig
 }
 
 
-float glGribGeometryLatLon::getLocalMeshSize (int) const
+float glGrib::GeometryLatLon::getLocalMeshSize (int) const
 {
   return dlat;
 }
 
 
-void glGribGeometryLatLon::getView (glGribView * view) const
+void glGrib::GeometryLatLon::getView (glGrib::View * view) const
 {
   if (periodic)
     return;
 
-  glGribOptionsView view_opts = view->getOptions (); 
+  glGrib::OptionsView view_opts = view->getOptions (); 
 
   glm::vec3 xyz[2][2];
 

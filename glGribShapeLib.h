@@ -6,10 +6,15 @@
 #include <vector>
 #include <string>
 
-namespace glGribShapeLib
+namespace glGrib
 {
-extern void read (const glGribOptionsLines &, int *, unsigned int *, 
+
+namespace ShapeLib
+{
+extern void read (const OptionsLines &, int *, unsigned int *, 
                   std::vector<float> *, std::vector<unsigned int> *,
                   const std::string &);
 };
 
+
+}

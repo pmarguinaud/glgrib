@@ -312,7 +312,7 @@ void subdivideRing1 (std::vector<glm::vec3> & xyz,
 
 }
 
-void glGribSubdivide::init (const std::vector<float> & lonlat, 
+void glGrib::Subdivide::init (const std::vector<float> & lonlat, 
                              const std::vector<unsigned int> & ind,
                              int indpb, int indpl,
                              int indrb, int indrl)
@@ -371,7 +371,7 @@ void glGribSubdivide::init (const std::vector<float> & lonlat,
 
 }
 
-void glGribSubdivide::subdivide (float angmax)
+void glGrib::Subdivide::subdivide (float angmax)
 {
   // Two steps
 
@@ -381,7 +381,7 @@ void glGribSubdivide::subdivide (float angmax)
   subdivideRing1 (xyz1, ind1, ind1_size, ind1.size (), angmax);
 }
 
-void glGribSubdivide::append (std::vector<float> & lonlat, std::vector<unsigned int> & ind,
+void glGrib::Subdivide::append (std::vector<float> & lonlat, std::vector<unsigned int> & ind,
                                int points_offset, int triangles_offset)
 {
   // Append new points

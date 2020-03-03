@@ -3,17 +3,20 @@
 #include <memory>
 #include <eccodes.h>
 
-class glGribHandle
+namespace glGrib
+{
+
+class Handle
 {
 public:
-  glGribHandle () 
+  Handle () 
   {
   }
-  glGribHandle (codes_handle * _h)
+  Handle (codes_handle * _h)
   {
     h = _h;
   }
-  ~glGribHandle () 
+  ~Handle () 
   {
     if (h != nullptr)
       codes_handle_delete (h);
@@ -26,6 +29,8 @@ private:
   codes_handle * h = nullptr;
 };
 
-typedef std::shared_ptr<glGribHandle> glGribHandlePtr;
+typedef std::shared_ptr<Handle> HandlePtr;
 
 
+
+}

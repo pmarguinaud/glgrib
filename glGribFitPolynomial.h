@@ -2,8 +2,11 @@
 
 #include <vector>
 
+namespace glGrib
+{
+
 template <typename TYPE>
-void glGribFitPolynomial
+void FitPolynomial
 ( 
   const std::vector<TYPE> &,
   const std::vector<TYPE> &,
@@ -12,6 +15,8 @@ void glGribFitPolynomial
 );
 
 template <typename TYPE>
-TYPE glGribEvalpolynomial (const std::vector<TYPE> &, TYPE);
+TYPE Evalpolynomial (const std::vector<TYPE> &, TYPE);
 
 
+
+}

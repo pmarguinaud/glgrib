@@ -5,7 +5,7 @@
 
 
 static
-void setDiffOptions (glGribOptionsField & opts1, glGribOptionsField & opts2, 
+void setDiffOptions (glGrib::OptionsField & opts1, glGrib::OptionsField & opts2, 
                      const std::string & path1, const std::string & path2)
 {
   opts1.diff.on = true;
@@ -18,16 +18,16 @@ void setDiffOptions (glGribOptionsField & opts1, glGribOptionsField & opts2,
   opts2.path.push_back (path2);
 }
 
-glGribWindowDiffSet::glGribWindowDiffSet (const glGribOptions & o)
-  : glGribWindowSet (o)
+glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
+  : glGrib::WindowSet (o)
 {
-  glGribOptions opts1 = opts, opts2 = opts;
+  glGrib::Options opts1 = opts, opts2 = opts;
 
   if (opts.diff.path.size () != 2)
     throw std::runtime_error (std::string ("Option --diff.path requires two arguments"));
 
 
-  auto fixOpts = [] (glGribOptions * opts)
+  auto fixOpts = [] (glGrib::Options * opts)
   {
     opts->diff.on = false;
     opts->diff.path.clear ();
@@ -45,8 +45,8 @@ glGribWindowDiffSet::glGribWindowDiffSet (const glGribOptions & o)
   opts2.window.position.x = opts1.window.position.x + opts1.window.width;
   opts2.window.position.y = 0;
 
-  cont1 = glGribContainer::create (opts.diff.path[0], true);
-  cont2 = glGribContainer::create (opts.diff.path[1], true);
+  cont1 = glGrib::Container::create (opts.diff.path[0], true);
+  cont2 = glGrib::Container::create (opts.diff.path[1], true);
 
 
   cont1->buildIndex ();
@@ -58,8 +58,8 @@ glGribWindowDiffSet::glGribWindowDiffSet (const glGribOptions & o)
                   opts.diff.path[0] + "%" + ext, 
                   opts.diff.path[1] + "%" + ext);
 
-  glGribWindow * gwindow1 = create (opts1);
-  glGribWindow * gwindow2 = gwindow1->clone ();
+  glGrib::Window * gwindow1 = create (opts1);
+  glGrib::Window * gwindow2 = gwindow1->clone ();
 
   gwindow2->setOptions (opts2.window);
 
@@ -71,7 +71,7 @@ glGribWindowDiffSet::glGribWindowDiffSet (const glGribOptions & o)
   
 }
 
-const std::string glGribWindowDiffSet::getNextExt () const
+const std::string glGrib::WindowDiffSet::getNextExt () const
 {
   std::string e = ext;
   while (1)
@@ -86,7 +86,7 @@ const std::string glGribWindowDiffSet::getNextExt () const
   return e;
 }
 
-const std::string glGribWindowDiffSet::getPrevExt () const
+const std::string glGrib::WindowDiffSet::getPrevExt () const
 {
   std::string e = ext;
   while (1)
@@ -101,10 +101,10 @@ const std::string glGribWindowDiffSet::getPrevExt () const
   return e;
 }
 
-void glGribWindowDiffSet::updateWindows ()
+void glGrib::WindowDiffSet::updateWindows ()
 {
-  glGribWindow * gwindow1 = getWindowById (0);
-  glGribWindow * gwindow2 = getWindowById (1);
+  glGrib::Window * gwindow1 = getWindowById (0);
+  glGrib::Window * gwindow2 = getWindowById (1);
   if ((gwindow1 == nullptr) || (gwindow2 == nullptr))
     return;
 

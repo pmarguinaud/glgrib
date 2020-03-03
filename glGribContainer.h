@@ -4,13 +4,16 @@
 #include <vector>
 #include <eccodes.h>
 
-class glGribContainer
+namespace glGrib
+{
+
+class Container
 {
 public:
-  static glGribContainer * create (const std::string &, bool = false);
-  static void remove (glGribContainer *);
+  static Container * create (const std::string &, bool = false);
+  static void remove (Container *);
   static void clear ();
-  glGribContainer (const std::string & _file) : file (_file) {}
+  Container (const std::string & _file) : file (_file) {}
   virtual codes_handle * getHandleByExt (const std::string &) = 0;
   virtual bool hasExt (const std::string &) const = 0;
   const std::string & getFile () const { return file; }
@@ -61,3 +64,5 @@ private:
   std::string file;
 };
 
+
+}

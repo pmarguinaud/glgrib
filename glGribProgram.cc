@@ -14,14 +14,14 @@
 #include <map>
 #include <stdexcept>
 
-typedef std::map<std::string,glGribProgram> name2prog_t;
+typedef std::map<std::string,glGrib::Program> name2prog_t;
 static name2prog_t name2prog;
 
 
 static
-std::string kind2name (glGribProgram::kind_t kind)
+std::string kind2name (glGrib::Program::kind_t kind)
 {
-#define KIND(k) do { if (kind == glGribProgram::k) return #k; } while (0)
+#define KIND(k) do { if (kind == glGrib::Program::k) return #k; } while (0)
   KIND (MONO);
   KIND (SCALAR);
   KIND (LANDSCAPE);
@@ -64,44 +64,44 @@ std::string slurp (const std::string & file, bool fatal = true)
   return "";
 }
 
-void glGribProgram::read (const std::string & file)
+void glGrib::Program::read (const std::string & file)
 {
-  VertexShaderCode   = slurp (glGribResolve (".shaders/" + file + ".vs"));
-  FragmentShaderCode = slurp (glGribResolve (".shaders/" + file + ".fs"));
-  GeometryShaderCode = slurp (glGribResolve (".shaders/" + file + ".gs"), false);
+  VertexShaderCode   = slurp (glGrib::Resolve (".shaders/" + file + ".vs"));
+  FragmentShaderCode = slurp (glGrib::Resolve (".shaders/" + file + ".fs"));
+  GeometryShaderCode = slurp (glGrib::Resolve (".shaders/" + file + ".gs"), false);
   name = file;
 }
 
-void glGribProgram::compile ()
+void glGrib::Program::compile ()
 {
   if (loaded) 
     return;
-  programID = glGribLoadShader (name, FragmentShaderCode, VertexShaderCode, GeometryShaderCode);
+  programID = glGrib::LoadShader (name, FragmentShaderCode, VertexShaderCode, GeometryShaderCode);
   matrixID = glGetUniformLocation (programID, "MVP");
   loaded = true;
 }
 
-glGribProgram * glGribProgram::load (glGribProgram::kind_t kind)
+glGrib::Program * glGrib::Program::load (glGrib::Program::kind_t kind)
 {
   std::string name = kind2name (kind);
   if (name2prog.find (name) == name2prog.end ())
     {
-      glGribProgram prog;
-      name2prog.insert (std::pair<std::string,glGribProgram> (name, prog));
+      glGrib::Program prog;
+      name2prog.insert (std::pair<std::string,glGrib::Program> (name, prog));
       name2prog[name].read (name);
       name2prog[name].compile ();
     }
   return &name2prog[kind2name (kind)];
 }
 
-glGribProgram::~glGribProgram ()
+glGrib::Program::~Program ()
 {
   if (loaded)
     glDeleteProgram (programID);
 }
 
 
-void glGribProgram::use () const
+void glGrib::Program::use () const
 {
   glUseProgram (programID);
   if (! active)
@@ -114,7 +114,7 @@ void glGribProgram::use () const
     }
 }
 
-void glGribProgram::set (const glGribOptionsLight & light)
+void glGrib::Program::set (const glGrib::OptionsLight & light)
 {
   int lightid = glGetUniformLocation (programID, "light");
 

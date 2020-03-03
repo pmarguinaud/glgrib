@@ -7,21 +7,21 @@
 #include <stdlib.h>
 
 
-glGribPoints::~glGribPoints ()
+glGrib::Points::~Points ()
 {
   clear ();
 }
 
-void glGribPoints::clear ()
+void glGrib::Points::clear ()
 {
   if (isReady ())
     {
       glDeleteVertexArrays (1, &VertexArrayID);
-      glGribObject::clear ();
+      glGrib::Object::clear ();
     }
 }
 
-glGribPoints & glGribPoints::operator= (const glGribPoints & points)
+glGrib::Points & glGrib::Points::operator= (const glGrib::Points & points)
 {
   if (this != &points)
     {   
@@ -36,7 +36,7 @@ glGribPoints & glGribPoints::operator= (const glGribPoints & points)
   return *this;
 }
 
-void glGribPoints::setupVertexAttributes ()
+void glGrib::Points::setupVertexAttributes ()
 {
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
@@ -49,7 +49,7 @@ void glGribPoints::setupVertexAttributes ()
   glBindVertexArray (0);
 }
 
-void glGribPoints::setup (const glGribOptionsPoints & o, 
+void glGrib::Points::setup (const glGrib::OptionsPoints & o, 
 		          const std::vector<float> & lon, 
                           const std::vector<float> & lat, 
                           const std::vector<float> & val)
@@ -72,23 +72,23 @@ void glGribPoints::setup (const glGribOptionsPoints & o,
 
   d.llsbuffer = newGlgribOpenGLBufferPtr (lls.size () * sizeof (float), lls.data ());
 
-  if (d.opts.palette.min == glGribPalette::defaultMin)
+  if (d.opts.palette.min == glGrib::Palette::defaultMin)
     d.opts.palette.min = d.min;
-  if (d.opts.palette.max == glGribPalette::defaultMax)
+  if (d.opts.palette.max == glGrib::Palette::defaultMax)
     d.opts.palette.max = d.max;
 
   setupVertexAttributes ();
   setReady ();
 }
 
-void glGribPoints::render (const glGribView & view, const glGribOptionsLight &) const
+void glGrib::Points::render (const glGrib::View & view, const glGrib::OptionsLight &) const
 {
   if (! isReady ())
     return;
 
   float length = view.pixelToDistAtNadir (10);
 
-  glGribProgram * program = glGribProgram::load (glGribProgram::POINTS);
+  glGrib::Program * program = glGrib::Program::load (glGrib::Program::POINTS);
   program->use ();
 
   program->set ("scale0", d.opts.scale);
@@ -105,7 +105,7 @@ void glGribPoints::render (const glGribView & view, const glGribOptionsLight &) 
 
   if (d.opts.palette.name != "none")
     {
-      glGribPalette palette = glGribPalette::create (d.opts.palette);
+      glGrib::Palette palette = glGrib::Palette::create (d.opts.palette);
       palette.setRGBA255 (program->programID);
       program->set ("lcolor0", false);
     }

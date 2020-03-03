@@ -330,8 +330,8 @@ void glGribShell::start (glGribWindowSet * ws)
 
 void glGribShell::runInt ()
 {
-  if (read_history (".glgrib_history") != 0)
-    write_history (".glgrib_history");
+  if (read_history (".glGribHistory") != 0)
+    write_history (".glGribHistory");
   while (wset->size () > 0)
     {
       char * line = readline ("glGrib> ");
@@ -360,7 +360,7 @@ void glGribShell::runInt ()
       }
       unlock ();
       
-      append_history (1, ".glgrib_history");
+      append_history (1, ".glGribHistory");
 
       free (line);
       

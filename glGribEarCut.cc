@@ -9,7 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-typedef void glgrib_diag_t (const glm::dmat2 &, glm::dmat2 *, glm::dvec2 *);
+typedef void glGribDiag_t (const glm::dmat2 &, glm::dmat2 *, glm::dvec2 *);
 
 static
 float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2) 
@@ -836,7 +836,7 @@ void earCut (node_t ** nodelist,
 // X axis is chosen using average point
 // Y axis is chosen so that it matches maximum extent
 static 
-glm::mat3 getRotMat (glgrib_diag_t diag, const std::vector<glm::vec3> & xyz, bool openmp)
+glm::mat3 getRotMat (glGribDiag_t diag, const std::vector<glm::vec3> & xyz, bool openmp)
 {
 
   // Average point

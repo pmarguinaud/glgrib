@@ -48,7 +48,7 @@ public:
 private:
   glGribOptionsImage opts;
   bool ready = false;
-  glgrib_opengl_texture_ptr texture;
+  glGribOpenGLTexturePtr texture;
   GLuint VertexArrayID = 0;
 };
 

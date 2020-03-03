@@ -38,9 +38,9 @@ private:
   GLuint id_;
 };
 
-typedef std::shared_ptr<glGribOpenGLTexture> glgrib_opengl_texture_ptr;
-extern glgrib_opengl_texture_ptr newGlgribOpenGLTexturePtr (const glgrib_opengl_texture_ptr &);
-extern glgrib_opengl_texture_ptr newGlgribOpenGLTexturePtr (int, int, const void *);
+typedef std::shared_ptr<glGribOpenGLTexture> glGribOpenGLTexturePtr;
+extern glGribOpenGLTexturePtr newGlgribOpenGLTexturePtr (const glGribOpenGLTexturePtr &);
+extern glGribOpenGLTexturePtr newGlgribOpenGLTexturePtr (int, int, const void *);
 
 void glInit ();
 

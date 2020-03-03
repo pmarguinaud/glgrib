@@ -12,10 +12,10 @@
 #include <map>
 #include <stdexcept>
 
-typedef std::map <std::string,glgrib_geometry_ptr> cache_t;
+typedef std::map <std::string,glGribGeometryPtr> cache_t;
 static cache_t cache;
 
-glgrib_geometry_ptr glGribGeometry::load (glGribLoader * ld, const std::string & file, const glGribOptionsGeometry & opts, const int Nj)
+glGribGeometryPtr glGribGeometry::load (glGribLoader * ld, const std::string & file, const glGribOptionsGeometry & opts, const int Nj)
 {
   glGribHandlePtr ghp;
   codes_handle * h = nullptr;
@@ -31,7 +31,7 @@ glgrib_geometry_ptr glGribGeometry::load (glGribLoader * ld, const std::string &
   if (h != nullptr)
     codes_get_long (h, "gridDefinitionTemplateNumber", &gridDefinitionTemplateNumber);
 
-  glgrib_geometry_ptr geom;
+  glGribGeometryPtr geom;
  
   // Read geometry metadata
   switch (gridDefinitionTemplateNumber)
@@ -57,7 +57,7 @@ glgrib_geometry_ptr glGribGeometry::load (glGribLoader * ld, const std::string &
   auto it = cache.find (geom->md5 ());
   if (it != cache.end ())
     {
-      glgrib_geometry_ptr g = it->second;
+      glGribGeometryPtr g = it->second;
       if (*g == *geom)  // Same geometry
         {
           geom = g;
@@ -70,7 +70,7 @@ glgrib_geometry_ptr glGribGeometry::load (glGribLoader * ld, const std::string &
   if (opts.check.on)
     geom->checkTriangles ();
 
-  cache.insert (std::pair<std::string,glgrib_geometry_ptr> (geom->md5 (), geom));
+  cache.insert (std::pair<std::string,glGribGeometryPtr> (geom->md5 (), geom));
 
 found:
 

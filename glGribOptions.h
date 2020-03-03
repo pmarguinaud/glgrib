@@ -12,7 +12,7 @@
 #include <time.h>
 #include <string.h>
 
-namespace glgrib_options_util
+namespace glGribOptionsUtil
 {
   std::string nextToken (std::string *);
   std::string escape (const std::string &);
@@ -77,7 +77,7 @@ public:
 };
 
 
-namespace glgrib_options_parser_detail 
+namespace glGribOptionsParserDetail 
 {
 
   class optionBase
@@ -106,7 +106,7 @@ namespace glgrib_options_parser_detail
     optionTmpl (const std::string & n, const std::string & d, T * v = nullptr) : optionBase (n, d), value (v) {}
     T * value = nullptr;
     std::string asString () const { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
-    std::string asOption () const { return name + " " + glgrib_options_util::escape (asString ()); }
+    std::string asOption () const { return name + " " + glGribOptionsUtil::escape (asString ()); }
     void set ()
     {
     }
@@ -154,7 +154,7 @@ namespace glgrib_options_parser_detail
         {
           std::ostringstream ss;
           ss << (*it) << " ";
-	  str = str + " " + glgrib_options_util::escape (std::string (ss.str ()));
+	  str = str + " " + glGribOptionsUtil::escape (std::string (ss.str ()));
 	}
       return str;
     }
@@ -278,7 +278,7 @@ public:
     return seen;
   }
 
-  const glgrib_options_parser_detail::optionBase * getOption (const std::string & name)
+  const glGribOptionsParserDetail::optionBase * getOption (const std::string & name)
   {
     name2option_t::iterator it = name2option.find (name);
     if (it != name2option.end ())
@@ -297,13 +297,13 @@ private:
   std::vector<std::string> ctx;
   std::set<std::string> seen;
 
-  class name2option_t : public std::map<std::string,glgrib_options_parser_detail::optionBase*> 
+  class name2option_t : public std::map<std::string,glGribOptionsParserDetail::optionBase*> 
   {
   public:
-    void insert (const std::string name, glgrib_options_parser_detail::optionBase * opt)
+    void insert (const std::string name, glGribOptionsParserDetail::optionBase * opt)
     {
-      std::map<std::string,glgrib_options_parser_detail::optionBase*>::insert 
-        (std::pair<std::string,glgrib_options_parser_detail::optionBase *>(name, opt));
+      std::map<std::string,glGribOptionsParserDetail::optionBase*>::insert 
+        (std::pair<std::string,glGribOptionsParserDetail::optionBase *>(name, opt));
     }
   };
 
@@ -315,7 +315,7 @@ private:
   }
 
   void createOption (const std::string & opt_name, 
-                     glgrib_options_parser_detail::optionBase * option, 
+                     glGribOptionsParserDetail::optionBase * option, 
                      const glGribOptionsCallback::opt * _o)
   {
     const opt * o = dynamic_cast<const opt*>(_o);
@@ -333,16 +333,16 @@ private:
     createOption (opt_name, new C (opt_name, desc, data), o);                          \
   }
 
-  DEF_APPLY (float                             , glgrib_options_parser_detail::optionTmpl<float> );
-  DEF_APPLY (bool                              , glgrib_options_parser_detail::optionTmpl<bool>);
-  DEF_APPLY (int                               , glgrib_options_parser_detail::optionTmpl<int>);
-  DEF_APPLY (std::vector<std::string>          , glgrib_options_parser_detail::optionTmplList<std::string>);
-  DEF_APPLY (std::string                       , glgrib_options_parser_detail::optionTmpl<std::string>);
-  DEF_APPLY (std::vector<float>                , glgrib_options_parser_detail::optionTmplList<float>);
-  DEF_APPLY (std::vector<int>                  , glgrib_options_parser_detail::optionTmplList<int>);
-  DEF_APPLY (glGribOptionColor               , glgrib_options_parser_detail::optionTmpl<glGribOptionColor>);
-  DEF_APPLY (std::vector<glGribOptionColor>  , glgrib_options_parser_detail::optionTmplList<glGribOptionColor>);
-  DEF_APPLY (glGribOptionDate                , glgrib_options_parser_detail::optionTmpl<glGribOptionDate>);
+  DEF_APPLY (float                             , glGribOptionsParserDetail::optionTmpl<float> );
+  DEF_APPLY (bool                              , glGribOptionsParserDetail::optionTmpl<bool>);
+  DEF_APPLY (int                               , glGribOptionsParserDetail::optionTmpl<int>);
+  DEF_APPLY (std::vector<std::string>          , glGribOptionsParserDetail::optionTmplList<std::string>);
+  DEF_APPLY (std::string                       , glGribOptionsParserDetail::optionTmpl<std::string>);
+  DEF_APPLY (std::vector<float>                , glGribOptionsParserDetail::optionTmplList<float>);
+  DEF_APPLY (std::vector<int>                  , glGribOptionsParserDetail::optionTmplList<int>);
+  DEF_APPLY (glGribOptionColor               , glGribOptionsParserDetail::optionTmpl<glGribOptionColor>);
+  DEF_APPLY (std::vector<glGribOptionColor>  , glGribOptionsParserDetail::optionTmplList<glGribOptionColor>);
+  DEF_APPLY (glGribOptionDate                , glGribOptionsParserDetail::optionTmpl<glGribOptionDate>);
 
 #undef DEF_APPLY
 

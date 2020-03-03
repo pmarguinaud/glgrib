@@ -25,7 +25,7 @@ public:
   float getScale () const override { return opts.scale; }
 private:
   glGribOptionsLandscape opts;
-  glgrib_opengl_texture_ptr texture;
+  glGribOpenGLTexturePtr texture;
   glGribOpenGLBufferPtr heightbuffer;
 };
 

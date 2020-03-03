@@ -91,7 +91,7 @@ void glGribLandscape::setup (glGribLoader * ld, const glGribOptionsLandscape & o
 
   if (opts.geometry.height.on)
     {
-      glgrib_geometry_ptr geometry_height = glGribGeometry::load (ld, opts.geometry.height.path, opts.geometry);
+      glGribGeometryPtr geometry_height = glGribGeometry::load (ld, opts.geometry.height.path, opts.geometry);
 
       if (! geometry_height->isEqual (*geometry))
         throw std::runtime_error (std::string ("Landscape and height have different geometries"));

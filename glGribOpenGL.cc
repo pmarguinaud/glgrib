@@ -92,7 +92,7 @@ glGribOpenGLTexture::~glGribOpenGLTexture ()
   allocated_ = false;
 }
 
-glgrib_opengl_texture_ptr newGlgribOpenGLTexturePtr (int width, int height, const void * data)
+glGribOpenGLTexturePtr newGlgribOpenGLTexturePtr (int width, int height, const void * data)
 {
   return std::make_shared<glGribOpenGLTexture>(width, height, data);
 }

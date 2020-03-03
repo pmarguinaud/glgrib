@@ -17,7 +17,7 @@ float glGribOptionsContour::defaultMax = glGribPalette::defaultMax;
 float glGribOptionsIsofill::defaultMin = glGribPalette::defaultMin;
 float glGribOptionsIsofill::defaultMax = glGribPalette::defaultMax;
 
-namespace glgrib_options_parser_detail
+namespace glGribOptionsParserDetail
 {
 
 template <> std::string optionTmpl     <int>                ::type () { return std::string ("INTEGER"); }
@@ -28,7 +28,7 @@ template <> std::string optionTmpl     <glGribOptionDate> ::type () { return std
 template <> std::string optionTmpl     <glGribOptionColor>::type () { return std::string ("COLOR #rrggbb(aa)"); }
 template <> std::string optionTmpl     <std::string>        ::type () { return std::string ("STRING"); }
 template <> std::string optionTmpl     <std::string>        ::asString () const { return '"' + *value + '"'; }
-template <> std::string optionTmpl     <std::string>        ::asOption () const { return name + " " + glgrib_options_util::escape (*value); }
+template <> std::string optionTmpl     <std::string>        ::asOption () const { return name + " " + glGribOptionsUtil::escape (*value); }
 template <> std::string optionTmplList<glGribOptionColor>::type () { return std::string ("LIST OF COLORS #rrggbb(aa)"); }
 template <> std::string optionTmplList<std::string>        ::type () { return std::string ("LIST OF STRINGS"); }
 template <> std::string optionTmplList<std::string>        ::asString () const 
@@ -42,7 +42,7 @@ template <> std::string optionTmplList<std::string>        ::asOption () const
 { 
   std::string str = name + " ";
   for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); it++)
-    str = str + " " + glgrib_options_util::escape (*it);
+    str = str + " " + glGribOptionsUtil::escape (*it);
   return str;
 }
 template <> std::string optionTmpl     <bool>               ::type () { return std::string ("BOOLEAN"); }
@@ -254,7 +254,7 @@ glGribOptionColor glGribOptionColor::colorByName (const std::string & n)
   return color;
 }
 
-std::string glgrib_options_util::escape (const std::string & token)
+std::string glGribOptionsUtil::escape (const std::string & token)
 { 
   std::string tok;
 
@@ -271,7 +271,7 @@ std::string glgrib_options_util::escape (const std::string & token)
 }
 
 
-std::string glgrib_options_util::nextToken (std::string * line)
+std::string glGribOptionsUtil::nextToken (std::string * line)
 {
   while (line->length () && (*line)[0] == ' ')
     *line = line->substr (1);
@@ -348,7 +348,7 @@ bool glGribOptionsParser::parse (int _argc, const char * _argv[],
     argv.push_back (_argv[i]);
   try
     {
-      glgrib_options_parser_detail::optionBase * opt = nullptr;
+      glGribOptionsParserDetail::optionBase * opt = nullptr;
 
       while (argv.size () > 0)
         {
@@ -371,7 +371,7 @@ bool glGribOptionsParser::parse (int _argc, const char * _argv[],
                 {
                   while (1)
                     {
-                      std::string token = glgrib_options_util::nextToken (&line);
+                      std::string token = glGribOptionsUtil::nextToken (&line);
                       if (token == "")
                         break;
                       ll.push_back (token);
@@ -488,7 +488,7 @@ bool glGribOptionsBase::parse (const char * args,
  
   while (1)
     {
-      std::string token = glgrib_options_util::nextToken (&line);
+      std::string token = glGribOptionsUtil::nextToken (&line);
       if (token == "")
         break;
       list.push_back (token);
@@ -556,8 +556,8 @@ std::string glGribOptionsParser::asOption (glGribOptionsParser & p2)
   for (name2option_t::const_iterator it = name2option.begin (); 
        it != name2option.end (); it++)
     {
-	glgrib_options_parser_detail::optionBase * opt1 = it->second;
-	glgrib_options_parser_detail::optionBase * opt2 = p2.name2option[it->first];
+	glGribOptionsParserDetail::optionBase * opt1 = it->second;
+	glGribOptionsParserDetail::optionBase * opt2 = p2.name2option[it->first];
 
 	std::string str1 = opt1->asOption ();
 	std::string str2 = opt2->asOption ();
@@ -587,7 +587,7 @@ void glGribOptionsParser::display (const std::string & prefix, bool show_hidden)
        it != name2option.end (); it++)
     if (it->first.substr (0, len) == prefix)
       {   
-	glgrib_options_parser_detail::optionBase * opt = it->second;
+	glGribOptionsParserDetail::optionBase * opt = it->second;
         if ((! show_hidden) && (opt->hidden))
           continue;
         printf (format, it->first.c_str (), opt->type ().c_str ());
@@ -612,8 +612,8 @@ void glGribOptionsParser::print (glGribOptions & opts1)
   for (int i = 0; i < options_list.size (); i++)
     {
       const std::string & name = options_list[i];
-      const glgrib_options_parser_detail::optionBase * o1 = p1.getOption (name);
-      const glgrib_options_parser_detail::optionBase * o2 = p2.getOption (name);
+      const glGribOptionsParserDetail::optionBase * o1 = p1.getOption (name);
+      const glGribOptionsParserDetail::optionBase * o2 = p2.getOption (name);
       if (o1->isEqual (o2))
         continue;
       std::cout << "  " << name;

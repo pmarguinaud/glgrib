@@ -14,13 +14,13 @@
 
 class glGribGeometry;
 
-typedef std::shared_ptr<glGribGeometry> glgrib_geometry_ptr;
+typedef std::shared_ptr<glGribGeometry> glGribGeometryPtr;
 typedef std::shared_ptr<const glGribGeometry> const_glGribGeometryPtr;
 
 class glGribGeometry
 {
 public:
-  static glgrib_geometry_ptr load (class glGribLoader *, const std::string &, const glGribOptionsGeometry & opts, const int  = 0);
+  static glGribGeometryPtr load (class glGribLoader *, const std::string &, const glGribOptionsGeometry & opts, const int  = 0);
   virtual void getPointNeighbours (int, std::vector<int> *) const = 0;
   virtual float getLocalMeshSize (int) const = 0;
   virtual bool isEqual (const glGribGeometry &) const = 0;

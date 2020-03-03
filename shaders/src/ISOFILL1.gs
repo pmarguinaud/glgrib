@@ -2,16 +2,21 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
-in float geometryColInd[3];
-out float fragmentColInd;
+in 
+#include "ISOFILL1_VS.h"
+[3];
+
+out 
+#include "ISOFILL1_GS.h"
 
 void main () 
 {    
-  if ((geometryColInd[0] == geometryColInd[1]) && (geometryColInd[1] == geometryColInd[2]))
+  if ((isofill1_vs[0].geometryColInd == isofill1_vs[1].geometryColInd) 
+   && (isofill1_vs[1].geometryColInd == isofill1_vs[2].geometryColInd))
     {
-      fragmentColInd = geometryColInd[0]; gl_Position = gl_in[0].gl_Position; EmitVertex ();
-      fragmentColInd = geometryColInd[1]; gl_Position = gl_in[1].gl_Position; EmitVertex ();
-      fragmentColInd = geometryColInd[2]; gl_Position = gl_in[2].gl_Position; EmitVertex ();
+      isofill1_gs.fragmentColInd = isofill1_vs[0].geometryColInd; gl_Position = gl_in[0].gl_Position; EmitVertex ();
+      isofill1_gs.fragmentColInd = isofill1_vs[1].geometryColInd; gl_Position = gl_in[1].gl_Position; EmitVertex ();
+      isofill1_gs.fragmentColInd = isofill1_vs[2].geometryColInd; gl_Position = gl_in[2].gl_Position; EmitVertex ();
       EndPrimitive ();
     }
 }  

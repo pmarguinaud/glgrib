@@ -21,10 +21,10 @@ extern void lficas_mt64_ (LFICAS_ARGS_DECL);
 extern void lfierf_mt64_ (LFIERF_ARGS_DECL);
 }
 
-class glgrib_containerPlain : public glGribContainer
+class glGribcontainerPlain : public glGribContainer
 {
 public:
-  glgrib_containerPlain (const std::string & file) : glGribContainer (file) {}
+  glGribcontainerPlain (const std::string & file) : glGribContainer (file) {}
   codes_handle * getHandleByExt (const std::string &) override;
   const std::string & getNextExt (const std::string &) override;
   const std::string & getPrevExt (const std::string &) override;
@@ -114,7 +114,7 @@ private:
 
       return rank == other->rank;
     }
-    glgrib_containerPlain * cont = nullptr;
+    glGribcontainerPlain * cont = nullptr;
     int rank = 0;
   };
 
@@ -129,7 +129,7 @@ private:
 
 static std::string empty  = "";
 
-const std::string & glgrib_containerPlain::getNextExt (const std::string & ext) 
+const std::string & glGribcontainerPlain::getNextExt (const std::string & ext) 
 {
   if ((ext == empty) && (index.size () > 0))
     return index.front ().ext;
@@ -139,7 +139,7 @@ const std::string & glgrib_containerPlain::getNextExt (const std::string & ext)
   return empty;
 }
 
-const std::string & glgrib_containerPlain::getPrevExt (const std::string & ext) 
+const std::string & glGribcontainerPlain::getPrevExt (const std::string & ext) 
 {
   if ((ext == empty) && (index.size () > 0))
     return index.back ().ext;
@@ -149,10 +149,10 @@ const std::string & glgrib_containerPlain::getPrevExt (const std::string & ext)
   return empty;
 }
 
-class glgrib_containerFA : public glGribContainer
+class glGribcontainerFA : public glGribContainer
 {
 public:
-  glgrib_containerFA (const std::string & file) : glGribContainer (file) {}
+  glGribcontainerFA (const std::string & file) : glGribContainer (file) {}
   codes_handle * getHandleByExt (const std::string &) override;
   const std::string & getNextExt (const std::string &) override;
   const std::string & getPrevExt (const std::string &) override;
@@ -207,7 +207,7 @@ private:
 
       return rank == other->rank;
     }
-    glgrib_containerFA * cont = nullptr;
+    glGribcontainerFA * cont = nullptr;
     int rank = 0;
   };
   friend class _iteratorFA;
@@ -219,7 +219,7 @@ private:
   void close ();
 };
 
-const std::string & glgrib_containerFA::getNextExt (const std::string & ext) 
+const std::string & glGribcontainerFA::getNextExt (const std::string & ext) 
 {
   if ((ext == empty) && (names.size () > 0))
     return names.front ();
@@ -229,7 +229,7 @@ const std::string & glgrib_containerFA::getNextExt (const std::string & ext)
   return empty;
 }
 
-const std::string & glgrib_containerFA::getPrevExt (const std::string & ext) 
+const std::string & glGribcontainerFA::getPrevExt (const std::string & ext) 
 {
   if ((ext == empty) && (names.size () > 0))
     return names.back ();
@@ -277,12 +277,12 @@ glGribContainer * glGribContainer::create (const std::string & file, bool keep)
                                       file + std::string (" for reading"));
             break;
           case LFI_UNKN:
-            cont = new glgrib_containerPlain (file);
+            cont = new glGribcontainerPlain (file);
             break;
           case LFI_NETW:
           case LFI_PURE:
           case LFI_ALTM:
-            cont = new glgrib_containerFA (file);
+            cont = new glGribcontainerFA (file);
             break;
         }
       if (keep)
@@ -297,7 +297,7 @@ void glGribContainer::clear ()
   contCache.clear ();
 }
 
-void glgrib_containerPlain::buildIndex ()
+void glGribcontainerPlain::buildIndex ()
 {
   if (index.size () > 0)
     return;
@@ -337,7 +337,7 @@ void glgrib_containerPlain::buildIndex ()
   this->close ();
 }
 
-codes_handle * glgrib_containerPlain::searchHandleByExt (const std::string & ext)
+codes_handle * glGribcontainerPlain::searchHandleByExt (const std::string & ext)
 {
   int err = 0;
   codes_handle * h = nullptr;
@@ -425,7 +425,7 @@ next:
   return h;
 }
 
-codes_handle * glgrib_containerPlain::getHandleByExt (const std::string & ext)
+codes_handle * glGribcontainerPlain::getHandleByExt (const std::string & ext)
 {
   int err = 0;
   codes_handle * h = nullptr;
@@ -450,7 +450,7 @@ codes_handle * glgrib_containerPlain::getHandleByExt (const std::string & ext)
   return h;
 }
 
-void glgrib_containerFA::open () 
+void glGribcontainerFA::open () 
 {
   LFI = &lficomm;
   strncpy (lficomm.cmagic, "LFI_FORT", 8);
@@ -466,7 +466,7 @@ void glgrib_containerFA::open ()
     throw std::runtime_error (std::string ("Error opening file ") + getFile ());
 
 }
-void glgrib_containerFA::close ()
+void glGribcontainerFA::close ()
 {
   integer64 IREP;
   character * CLSTTC = (character*)"KEEP"; 
@@ -474,7 +474,7 @@ void glgrib_containerFA::close ()
   lfifer_mt64_ (LFI, &IREP, &INUMER, CLSTTC, CLSTTC_len);
 }
 
-void glgrib_containerFA::buildIndex ()
+void glGribcontainerFA::buildIndex ()
 {
   if (names.size () != 0)
     return;
@@ -514,7 +514,7 @@ void glgrib_containerFA::buildIndex ()
   this->close ();
 }
 
-codes_handle * glgrib_containerFA::getHandleByExt (const std::string & ext)
+codes_handle * glGribcontainerFA::getHandleByExt (const std::string & ext)
 {
   codes_handle * h = nullptr;
 

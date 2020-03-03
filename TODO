@@ -7,36 +7,13 @@ Optimisations :
 - use compressed lat/lon
 - reduce CPU usage
 
-
 Temp object for unmapping buffers ?
 Template for openGL buffers depending on type being allocated ?
-
 
 Compress data for contour
 Allow for errors in field creation
 
-Iso contour pleins (en couleur), avec un geometry shader
-
-
-Use blocks for passing data from/to shaders, with included files :
-
-out VS_OUT
-{
-    vec2 TexCoords;
-} vs_out;
-
-in VS_OUT
-{
-    vec2 TexCoords;
-} fs_in;
-
 Make VAOs object with automatic destruction.
 
 Use namespaces
-
-
-
-
-
-
 

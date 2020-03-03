@@ -19,9 +19,8 @@ void setDiffOptions (glGribOptionsField & opts1, glGribOptionsField & opts2,
 }
 
 glGribWindowDiffSet::glGribWindowDiffSet (const glGribOptions & o)
+  : glGribWindowSet (o)
 {
-  opts = o;
-
   glGribOptions opts1 = opts, opts2 = opts;
 
   if (opts.diff.path.size () != 2)
@@ -102,43 +101,38 @@ const std::string glGribWindowDiffSet::getPrevExt () const
   return e;
 }
 
-void glGribWindowDiffSet::run (glGribShell * shell)
+void glGribWindowDiffSet::updateWindows ()
 {
-  while (! empty ())
-    {
-      handleMasterWindow ();
-      glGribWindow * gwindow1 = getWindowById (0);
-      glGribWindow * gwindow2 = getWindowById (1);
-      if ((gwindow1 != nullptr) && (gwindow2 != nullptr))
-        {
-          std::string e;
+  glGribWindow * gwindow1 = getWindowById (0);
+  glGribWindow * gwindow2 = getWindowById (1);
+  if ((gwindow1 == nullptr) || (gwindow2 == nullptr))
+    return;
 
-          if (gwindow1->getNext ())
-            e = getNextExt ();
-          
-          if (gwindow1->getPrev ())
-            e = getPrevExt ();
-          
+  std::string e;
+  
+  if (gwindow1->getNext ())
+    e = getNextExt ();
+  
+  if (gwindow1->getPrev ())
+    e = getPrevExt ();
+  
+  
+  if (e == "")
+    return;
 
-          if (e != "")
-            {
-              ext = e;
-
-              auto fopts1 = opts.field[0];
-              auto fopts2 = opts.field[0];
-
-              setDiffOptions (fopts1, fopts2, cont1->getFile () + "%" + ext, cont2->getFile () + "%" + ext);
-
-              // First window
-              gwindow1->makeCurrent ();
-              gwindow1->scene.setFieldOptions (0, fopts1);
-
-              // Second window
-              gwindow2->makeCurrent ();
-              gwindow2->scene.setFieldOptions (0, fopts2);
-            }
-
-        }
-      runShell (&shell);
-    }
+  ext = e;
+  
+  auto fopts1 = opts.field[0];
+  auto fopts2 = opts.field[0];
+  
+  setDiffOptions (fopts1, fopts2, cont1->getFile () + "%" + ext, cont2->getFile () + "%" + ext);
+  
+  // First window
+  gwindow1->makeCurrent ();
+  gwindow1->scene.setFieldOptions (0, fopts1);
+  
+  // Second window
+  gwindow2->makeCurrent ();
+  gwindow2->scene.setFieldOptions (0, fopts2);
 }
+

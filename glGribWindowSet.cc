@@ -52,12 +52,43 @@ void glGribWindowSet::runShell (glGribShell ** _shell)
   *_shell = shell;
 }
 
+void glGribWindowSet::updateWindows ()
+{
+  for (auto w : *this)
+    {
+      glGribField * f = w->scene.getCurrentField ();
+
+      if (f == nullptr)
+        continue;
+
+      w->makeCurrent ();
+
+      int d = 0.0f;
+
+      if (w->getNext ())
+        d = +1;
+      if (w->getPrev ())
+        d = -1;
+
+      if (d == 0)
+        continue;
+
+      int rank = w->scene.getCurrentFieldRank ();
+      auto fopts = opts.field[rank];
+
+      float slot = std::max (0.0f, std::min (float (f->getSlotMax ()-1), f->getSlot ()+d));
+
+      w->scene.setFieldOptions (rank, fopts, slot);
+
+    }
+}
 
 void glGribWindowSet::run (glGribShell * shell)
 {
   while (! empty ())
     {
       handleMasterWindow ();
+      updateWindows ();
       runShell (&shell);
     }
 }
@@ -93,6 +124,9 @@ glGribWindow * glGribWindowSet::create (const glGribOptions & opts)
   return gwindow;
 }
 
-
+glGribWindowSet::glGribWindowSet (const glGribOptions & o)
+{
+  opts = o;
+}
 
 

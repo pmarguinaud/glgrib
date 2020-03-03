@@ -24,7 +24,7 @@ static void errorCallback (int c, const char * desc)
 static
 glGribWindowSet * startRegularMode (const glGribOptions & opts)
 {
-  glGribWindowSet * wset = new glGribWindowSet ();
+  glGribWindowSet * wset = new glGribWindowSet (opts);
   wset->create (opts);
   return wset;
 }

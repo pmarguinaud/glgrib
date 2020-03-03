@@ -117,9 +117,14 @@ public:
   void saveOptions () const;
 
   virtual int getSlotMax () const  = 0;
-
+ 
+  float getSlot () const
+  {
+    return slot;
+  }
 
 protected:
+  float slot = 0.0f;
   template <typename T>
   void unpack (float *, const int, const float, 
                const float, const float, const T *);
@@ -133,7 +138,7 @@ protected:
   void loadHeight (glgrib_opengl_buffer_ptr, glGribLoader *);
   template <typename T>
   void bindHeight (int);
-  static void getUserPref (glGribOptionsField *, glGribLoader *);
+  static void getUserPref (glGribOptionsField *, glGribLoader *, int);
   glGribPalette palette = paletteColdHot;
   mutable glGribOptionsField opts;
   std::vector<glGribFieldMetadata> meta;

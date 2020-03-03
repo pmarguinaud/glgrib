@@ -202,13 +202,13 @@ const glGribOptionsField & glGribField::getOptions () const
 }
 
 
-void glGribField::getUserPref (glGribOptionsField * opts, glGribLoader * ld)
+void glGribField::getUserPref (glGribOptionsField * opts, glGribLoader * ld, int slot)
 {
   glGribOptionsField opts_sql = *opts;
   glGribOptionsField opts_ref;
   
   glGribFieldMetadata meta;
-  ld->load (nullptr, opts_sql.path, opts->geometry, 0, &meta);
+  ld->load (nullptr, opts_sql.path, opts->geometry, slot, &meta);
 
   glGribSQLite db (glGribResolve ("glGrib.db"));
   
@@ -248,7 +248,7 @@ glGribField * glGribField::create (const glGribOptionsField & opts, float slot, 
   glGribOptionsField opts1 = opts;
 
   if (opts.user_pref.on)
-    getUserPref (&opts1, ld);
+    getUserPref (&opts1, ld, slot);
 
   glGribField * fld = nullptr;
 
@@ -270,7 +270,7 @@ glGribField * glGribField::create (const glGribOptionsField & opts, float slot, 
     throw std::runtime_error (std::string ("Unknown field type : ") + type);
 
   fld->setup (ld, opts1, slot);
-
+  fld->slot = slot;
 
   return fld;
 }

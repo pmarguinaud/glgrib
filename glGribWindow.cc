@@ -26,7 +26,7 @@ static double currentTime ()
 
 static
 void APIENTRY debugCallback (unsigned int source, unsigned int type, GLuint id, unsigned int severity, 
-                              int length, const char * message, const void * data)
+                             int length, const char * message, const void * data)
 {
   glGribWindow * gwindow = (glGribWindow *)data;
   gwindow->debug (source, type, id, severity, length, message);

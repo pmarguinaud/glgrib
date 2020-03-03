@@ -119,7 +119,7 @@ void glGribFieldStream::setup (glGribLoader * ld, const glGribOptionsField & o, 
   ld->load (&data_u, opts.path, opts.geometry, slot, &meta_u, 2, 0);
   ld->load (&data_v, opts.path, opts.geometry, slot, &meta_v, 2, 1);
 
-  geometry = glGribGeometry::load (ld, opts.path[0], opts.geometry);
+  geometry = glGribGeometry::load (ld, opts.path[int (2 * slot)], opts.geometry);
 
 //geometry->checkTriangles ();
 

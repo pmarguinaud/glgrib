@@ -171,7 +171,7 @@ void glGribFieldScalar::setup (glGribLoader * ld, const glGribOptionsField & o, 
 
   palette = glGribPalette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
 
-  geometry = glGribGeometry::load (ld, opts.path[0], opts.geometry);
+  geometry = glGribGeometry::load (ld, opts.path[int (slot)], opts.geometry);
 
   if (opts.hilo.on)
     setupHilo (data);

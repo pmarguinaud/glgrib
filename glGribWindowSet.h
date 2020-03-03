@@ -2,11 +2,14 @@
 
 #include "glGribWindow.h"
 #include "glGribShell.h"
+#include "glGribOptions.h"
 
 class glGribWindowSet : public std::set<glGribWindow*> 
 {
 public:
+  glGribWindowSet (const glGribOptions &);
   virtual void run (glGribShell * = nullptr);
+  virtual void updateWindows ();
   glGribWindow * getWindowById (int);
   glGribWindow * getFirstWindow () 
     { 
@@ -20,5 +23,7 @@ public:
   virtual glGribWindow * create (const glGribOptions &);
   void runShell (glGribShell **);
   void handleMasterWindow ();
+protected:
+  glGribOptions opts;
 };
 

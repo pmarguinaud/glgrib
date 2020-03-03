@@ -38,25 +38,33 @@ public:
   void display () const;
   void displayObj (const glGribObject *) const;
 
+  int getCurrentFieldRank () const
+  {
+    return d.currentFieldRank;
+  }
+
   glGribField * getCurrentField () 
-    { 
-      return d.currentFieldRank < fieldlist.size () ? fieldlist[d.currentFieldRank] : nullptr; 
-    }
+  { 
+    return d.currentFieldRank < fieldlist.size () ? fieldlist[d.currentFieldRank] : nullptr; 
+  }
 
   void getLightPos (float * lon, float * lat) const
-    {
-      *lon = d.opts.scene.light.lon;
-      *lat = d.opts.scene.light.lat;
-    }
+  {
+    *lon = d.opts.scene.light.lon;
+    *lat = d.opts.scene.light.lat;
+  }
+
   void setLightPos (float lon, float lat) 
-    { 
-      d.opts.scene.light.lon = lon;
-      d.opts.scene.light.lat = lat;
-    }
+  { 
+    d.opts.scene.light.lon = lon;
+    d.opts.scene.light.lat = lat;
+  }
+
   void setLight ()
-    {
-      d.opts.scene.light.on = true;
-    }
+  {
+    d.opts.scene.light.on = true;
+  }
+
   void unsetLight () { d.opts.scene.light.on = false; }
   bool hasLight () const { return d.opts.scene.light.on; }
   void update ();

@@ -17,7 +17,7 @@ static cache_t cache;
 
 glgrib_geometry_ptr glGribGeometry::load (glGribLoader * ld, const std::string & file, const glGribOptionsGeometry & opts, const int Nj)
 {
-  glgrib_handle_ptr ghp;
+  glGribHandlePtr ghp;
   codes_handle * h = nullptr;
  
   if (file != "")

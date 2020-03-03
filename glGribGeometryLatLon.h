@@ -13,8 +13,8 @@ public:
   std::string md5 () const override;
   int latlon2index (float, float) const override;
   void index2latlon (int, float *, float *) const override;
-  glGribGeometryLatLon (glgrib_handle_ptr);
-  void setup (glgrib_handle_ptr, const glGribOptionsGeometry &) override;
+  glGribGeometryLatLon (glGribHandlePtr);
+  void setup (glGribHandlePtr, const glGribOptionsGeometry &) override;
   int size () const override;
   virtual ~glGribGeometryLatLon ();
   void applyNormScale (float *) const override {}

@@ -14,7 +14,7 @@
 #include <errno.h>
 #include <time.h>
 
-glgrib_handle_ptr glGribLoader::handleFromFile (const std::string & f)
+glGribHandlePtr glGribLoader::handleFromFile (const std::string & f)
 {
   // Search cache
   for (cache_t::iterator it = cache.begin (); it != cache.end (); it++)
@@ -49,7 +49,7 @@ glgrib_handle_ptr glGribLoader::handleFromFile (const std::string & f)
 
   glGribContainer::remove (cont);
 
-  glgrib_handle_ptr ghp = std::make_shared<glGribHandle>(h);
+  glGribHandlePtr ghp = std::make_shared<glGribHandle>(h);
 
   if (this->size > 0)
     {
@@ -174,7 +174,7 @@ void glGribLoader::load (glGribFieldFloatBufferPtr * ptr, const std::vector<std:
 void glGribLoader::load (glGribFieldFloatBufferPtr * ptr, const std::string & file, 
 		          const glGribOptionsGeometry & opts_geom, glGribFieldMetadata * meta)
 {
-  glgrib_handle_ptr ghp = handleFromFile (file);
+  glGribHandlePtr ghp = handleFromFile (file);
   codes_handle * h = ghp->getCodesHandle ();
 
   size_t v_len = 0;

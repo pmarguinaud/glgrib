@@ -6,14 +6,14 @@
 #include <map>
 
 
-typedef std::map <std::string,glgrib_font_ptr> cache_t;
+typedef std::map <std::string,glGribFontPtr> cache_t;
 static cache_t cache;
 
 
-glgrib_font_ptr newGlgribFontPtr (const glGribOptionsFont & opts)
+glGribFontPtr newGlgribFontPtr (const glGribOptionsFont & opts)
 {
   auto it = cache.find (opts.bitmap);
-  glgrib_font_ptr font;
+  glGribFontPtr font;
   if (it != cache.end ())
     { 
       font = it->second;
@@ -22,7 +22,7 @@ glgrib_font_ptr newGlgribFontPtr (const glGribOptionsFont & opts)
     {
       font = std::make_shared<glGribFont> ();
       font->setup (opts);
-      cache.insert (std::pair<std::string,glgrib_font_ptr> (opts.bitmap, font));
+      cache.insert (std::pair<std::string,glGribFontPtr> (opts.bitmap, font));
     }
   return font;
 }

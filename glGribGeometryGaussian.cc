@@ -731,7 +731,7 @@ glGribGeometryGaussian::glGribGeometryGaussian (int _Nj)
 
 }
 
-glGribGeometryGaussian::glGribGeometryGaussian (glgrib_handle_ptr ghp)
+glGribGeometryGaussian::glGribGeometryGaussian (glGribHandlePtr ghp)
 {
   codes_handle * h = ghp->getCodesHandle ();
 
@@ -1112,7 +1112,7 @@ void glGribGeometryGaussian::tryFitLatitudes (int _kind, latfit_t * latfit)
 
 }
 
-void glGribGeometryGaussian::setup (glgrib_handle_ptr ghp, const glGribOptionsGeometry & o)
+void glGribGeometryGaussian::setup (glGribHandlePtr ghp, const glGribOptionsGeometry & o)
 {
   opts = o;
 

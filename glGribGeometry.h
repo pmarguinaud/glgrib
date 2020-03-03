@@ -28,7 +28,7 @@ public:
   {
     return isEqual (geom);
   }
-  virtual void setup (glgrib_handle_ptr, const glGribOptionsGeometry &) = 0;
+  virtual void setup (glGribHandlePtr, const glGribOptionsGeometry &) = 0;
   virtual int size () const = 0;
   virtual int latlon2index (float, float) const = 0;
   virtual void index2latlon (int, float *, float *) const = 0;

@@ -17,9 +17,9 @@ public:
   std::string md5 () const override;
   int latlon2index (float, float) const override;
   void index2latlon (int, float *, float *) const override;
-  glGribGeometryGaussian (glgrib_handle_ptr);
+  glGribGeometryGaussian (glGribHandlePtr);
   glGribGeometryGaussian (int);
-  void setup (glgrib_handle_ptr, const glGribOptionsGeometry &) override;
+  void setup (glGribHandlePtr, const glGribOptionsGeometry &) override;
   int size () const override;
   virtual ~glGribGeometryGaussian ();
   void applyNormScale (float *) const override;

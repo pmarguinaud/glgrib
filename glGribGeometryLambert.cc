@@ -68,7 +68,7 @@ int glGribGeometryLambert::size () const
   return Nx * Ny;
 }
 
-glGribGeometryLambert::glGribGeometryLambert (glgrib_handle_ptr ghp)
+glGribGeometryLambert::glGribGeometryLambert (glGribHandlePtr ghp)
 {
   codes_handle * h = ghp->getCodesHandle ();
   codes_get_long (h, "Nx", &Nx);
@@ -125,7 +125,7 @@ void glGribGeometryLambert::setupFrame ()
 }
 
 
-void glGribGeometryLambert::setup (glgrib_handle_ptr ghp, const glGribOptionsGeometry & o)
+void glGribGeometryLambert::setup (glGribHandlePtr ghp, const glGribOptionsGeometry & o)
 {
   opts = o;
 

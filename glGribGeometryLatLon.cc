@@ -34,7 +34,7 @@ int glGribGeometryLatLon::size () const
   return Ni * Nj;
 }
 
-glGribGeometryLatLon::glGribGeometryLatLon (glgrib_handle_ptr ghp)
+glGribGeometryLatLon::glGribGeometryLatLon (glGribHandlePtr ghp)
 {
   codes_handle * h = ghp->getCodesHandle ();
   codes_get_long (h, "Ni", &Ni);
@@ -70,7 +70,7 @@ void glGribGeometryLatLon::setupCoordinates ()
   vertexbuffer->unmap ();
 }
 
-void glGribGeometryLatLon::setup (glgrib_handle_ptr ghp, const glGribOptionsGeometry & o)
+void glGribGeometryLatLon::setup (glGribHandlePtr ghp, const glGribOptionsGeometry & o)
 {
   opts = o;
 

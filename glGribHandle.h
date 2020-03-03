@@ -26,6 +26,6 @@ private:
   codes_handle * h = nullptr;
 };
 
-typedef std::shared_ptr<glGribHandle> glgrib_handle_ptr;
+typedef std::shared_ptr<glGribHandle> glGribHandlePtr;
 
 

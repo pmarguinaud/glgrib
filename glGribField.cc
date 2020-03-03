@@ -137,7 +137,7 @@ void glGribField::setupHilo (glGribFieldFloatBufferPtr data)
         }
     }
 
-  glgrib_font_ptr font = newGlgribFontPtr (opts.hilo.font);
+  glGribFontPtr font = newGlgribFontPtr (opts.hilo.font);
 
   hilo.setShared (false);
   hilo.setChange (true);

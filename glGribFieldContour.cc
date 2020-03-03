@@ -141,7 +141,7 @@ float getLabelAngle (const std::vector<float> & lonlat, const std::vector<float>
 
 void glGribFieldContour::setupLabels (isoline_t * iso, const isoline_data_t & iso_data)
 {
-  glgrib_font_ptr font = newGlgribFontPtr (opts.contour.labels.font);
+  glGribFontPtr font = newGlgribFontPtr (opts.contour.labels.font);
   char tmp[256];
 
   sprintf (tmp, opts.contour.labels.format.c_str (), iso->level);

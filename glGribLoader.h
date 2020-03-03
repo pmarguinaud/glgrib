@@ -25,7 +25,7 @@ public:
                      glGribFieldMetadata &, 
                      glGribFieldMetadata &);
 
-  glgrib_handle_ptr handleFromFile (const std::string &);
+  glGribHandlePtr handleFromFile (const std::string &);
   void load (glGribFieldFloatBufferPtr *, const std::vector<std::string> &, const glGribOptionsGeometry &, float, glGribFieldMetadata *, int = 1, int = 0, bool diff = false);
   void load (glGribFieldFloatBufferPtr *, const std::string &, const glGribOptionsGeometry &, glGribFieldMetadata *);
   void setSize (int _size) { size = _size; }
@@ -36,7 +36,7 @@ private:
   {
   public:
     std::string file;
-    glgrib_handle_ptr ghp;
+    glGribHandlePtr ghp;
   };
 
   typedef std::list<entry_t> cache_t;

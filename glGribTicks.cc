@@ -331,7 +331,7 @@ void glGribTicks::resize (const glGribView & view)
       labels.setShared (false);
       labels.setChange (false);
 
-      glgrib_font_ptr font = newGlgribFontPtr (opts.labels.font); 
+      glGribFontPtr font = newGlgribFontPtr (opts.labels.font); 
 
       labels.setup2D (font, S, X, Y, opts.labels.font.scale, align, A);
       labels.setForegroundColor (opts.labels.font.color.foreground);

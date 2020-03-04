@@ -283,6 +283,10 @@ glGrib::Field * glGrib::Field::create (const glGrib::OptionsField & opts, float 
     }
   catch (const std::runtime_error & e)
     {
+
+      if (opts.fatal.on)
+        throw e;
+
       std::cout << "Cannot load field : " << e.what () << std::endl;
 
       if (fld != nullptr)

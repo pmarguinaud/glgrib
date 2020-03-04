@@ -731,6 +731,7 @@ public:
     INCLUDE (stream);
     INCLUDE (geometry);
     INCLUDE_H (mpiview);
+    DESC (fatal.on,        Fatal error if field fails to be created);
   }
   std::set<std::string> seen;
 
@@ -765,6 +766,11 @@ public:
   bool parseUnseen (const char *);
   OptionsGeometry geometry;
   OptionsMpiview mpiview;
+
+  struct
+  {
+    bool on = false;
+  } fatal;
 };
 
 

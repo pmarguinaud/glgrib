@@ -992,8 +992,7 @@ void glGrib::GeometryGaussian::setupCoordinates ()
               float Y = sinlon * coslat;
               float Z =          sinlat;
   
-              glm::vec3 XYZ = glm::vec3 (X, Y, Z);
-              XYZ = rot * XYZ;
+              glm::vec3 XYZ = rot * glm::vec3 (X, Y, Z);
   
               lonlat[2*jglo+0] = atan2 (XYZ.y, XYZ.x);
               lonlat[2*jglo+1] = asin (XYZ.z);
@@ -1249,15 +1248,10 @@ void glGrib::GeometryGaussian::latlon2coordxy (float lat, float lon,
 
   lonlat2xyz (lon, lat, &x, &y, &z);
 
-  glm::vec3 xyz = glm::vec3 (x, y, z);
-  glm::vec3 XYZ = glm::inverse (rot) * xyz;
+  glm::vec3 XYZ = glm::inverse (rot) * glm::vec3 (x, y, z);
 
-  float X = XYZ.x;
-  float Y = XYZ.y;
-  float Z = XYZ.z;
-
-  lon = atan2 (Y, X); 
-  lat = asin (Z);
+  lon = atan2 (XYZ.y, XYZ.x); 
+  lat = asin (XYZ.z);
 
   coordx = lon;
   float sinlat = sin (lat);
@@ -1364,7 +1358,7 @@ void glGrib::GeometryGaussian::applyUVangle (float * angle) const
       float sinlon0 = sin (deg2rad * longitudeOfStretchingPoleInDegrees);
       float coslat0 = cos (deg2rad * latitudeOfStretchingPoleInDegrees);
       float sinlat0 = sin (deg2rad * latitudeOfStretchingPoleInDegrees);
-      glm::vec3 xyz0 = glm::vec3 (coslon0 * coslat0, sinlon0 * coslat0, sinlat0);
+      glm::vec3 XYZ0 = glm::vec3 (coslon0 * coslat0, sinlon0 * coslat0, sinlat0);
    
 #pragma omp parallel for 
       for (int jlat = 0; jlat < Nj; jlat++)
@@ -1382,11 +1376,10 @@ void glGrib::GeometryGaussian::applyUVangle (float * angle) const
               float coslon = cos (lon); float sinlon = sin (lon);
   
               glm::vec3 XYZ = rot * glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
-              glm::vec3 xyz = glm::vec3 (XYZ.x, XYZ.y, XYZ.z);
   
-              glm::vec3 u1 = glm::normalize (glm::cross (xyz0 - xyz, xyz));
-              glm::vec3 u0 = glm::normalize (glm::cross (glm::vec3 (0.0f, 0.0f, 1.0f), xyz));
-              glm::vec3 v0 = glm::cross (xyz, u0);
+              glm::vec3 u1 = glm::normalize (glm::cross (XYZ0 - XYZ, XYZ));
+              glm::vec3 u0 = glm::normalize (glm::cross (glm::vec3 (0.0f, 0.0f, 1.0f), XYZ));
+              glm::vec3 v0 = glm::cross (XYZ, u0);
               float u0u1 = glm::dot (u0, u1);
               float v0u1 = glm::dot (v0, u1);
   
@@ -1685,10 +1678,7 @@ glm::vec3 glGrib::GeometryGaussian::conformal2xyz (const glm::vec2 & merc) const
   if (! rotated)
     return glm::vec3 (X, Y, Z);
   
-  glm::vec3 XYZ = glm::vec3 (X, Y, Z);
-  XYZ = rot * XYZ;
- 
-  return glm::vec3 (XYZ.x, XYZ.y, XYZ.z);
+  return rot * glm::vec3 (X, Y, Z);
 }
 
 glm::vec2 glGrib::GeometryGaussian::conformal2latlon (const glm::vec2 & merc) const

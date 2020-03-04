@@ -81,10 +81,7 @@ private:
     if (! rotated)
       return glm::vec3 (X, Y, Z);
    
-    glm::vec3 XYZ = glm::vec3 (X, Y, Z);
-    XYZ = rot * XYZ;
- 
-    return glm::vec3 (XYZ.x, XYZ.y, XYZ.z);
+    return rot * glm::vec3 (X, Y, Z);
   }
   glm::vec2 jlonlat2lonlat (const jlonlat_t & jlonlat) const
   {

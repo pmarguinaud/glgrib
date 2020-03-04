@@ -66,7 +66,7 @@ private:
   int width, height;
   ProjectionSet ps;
   glm::mat4 model, view, projection, MVP;
-  glm::mat4 zoom_roti, zoom_rotd;
+  glm::mat3 zoom_roti, zoom_rotd;
   glm::vec4 viewport;
 };
 

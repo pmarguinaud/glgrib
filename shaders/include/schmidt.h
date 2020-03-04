@@ -1,6 +1,6 @@
 
-uniform mat4 schmidt_rotd;
-uniform mat4 schmidt_roti;
+uniform mat3 schmidt_rotd;
+uniform mat3 schmidt_roti;
 uniform float schmidt_opc2 = 1.25;
 uniform float schmidt_omc2 = 0.75;
 uniform bool schmidt_apply = false;
@@ -10,10 +10,8 @@ vec3 applySchmidt (vec3 pos)
   if (! schmidt_apply)
     return pos;
 
-  vec4 XYZ = vec4 (pos.x, pos.y, pos.z, 0.0f);
-  
-  XYZ = schmidt_roti * XYZ;
-  XYZ.xyz = XYZ.xyz / length (XYZ.xyz);
+  vec3 XYZ = schmidt_roti * pos;
+  XYZ = XYZ / length (XYZ);
   
   float lon = atan (XYZ.y, XYZ.x);
   float lat = asin (XYZ.z);
@@ -31,11 +29,11 @@ vec3 applySchmidt (vec3 pos)
   float coslat = cos (lat), sinlat = sin (lat);
   float coslon = cos (lon), sinlon = sin (lon);
   
-  XYZ = vec4 (coslon * coslat, sinlon * coslat, sinlat, 0.0f);
+  XYZ = vec3 (coslon * coslat, sinlon * coslat, sinlat);
   XYZ = schmidt_rotd * XYZ;
-  XYZ.xyz = XYZ.xyz / length (XYZ.xyz);
+  XYZ = XYZ / length (XYZ);
   
-  return XYZ.xyz;
+  return XYZ;
 }
 
 

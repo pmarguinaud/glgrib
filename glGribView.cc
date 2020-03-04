@@ -235,7 +235,8 @@ void glGrib::View::calcZoom ()
   float lonP = opts.zoom.lon, latP = opts.zoom.lat;
   float stretch = opts.zoom.stretch;
 
-  zoom_rotd = glm::rotate (glm::mat4 (1.0f),
+  glm::mat4 zoom4rotd, zoom4roti;
+  zoom4rotd = glm::rotate (glm::mat4 (1.0f),
                            glm::radians (+90.0f-(float)latP), 
                            glm::vec3 (-sinf (glm::radians (lonP)),
                                       +cosf (glm::radians (lonP)),
@@ -245,7 +246,7 @@ void glGrib::View::calcZoom ()
                            glm::vec3 (0.0f, 0.0f, 1.0f));
 
 
-  zoom_roti = glm::rotate (glm::mat4 (1.0f),
+  zoom4roti = glm::rotate (glm::mat4 (1.0f),
               glm::radians (-180.0f-(float)lonP),
               glm::vec3 (0.0f, 0.0f, 1.0f))
             * glm::rotate (glm::mat4 (1.0f),
@@ -253,4 +254,7 @@ void glGrib::View::calcZoom ()
                            glm::vec3 (-sinf (glm::radians (lonP)),
                                       +cosf (glm::radians (lonP)),
                                       0.0f));
+
+  zoom_rotd = zoom4rotd;
+  zoom_roti = zoom4roti;
 }

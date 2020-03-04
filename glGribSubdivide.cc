@@ -10,7 +10,10 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-static
+
+namespace
+{
+
 float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2) 
 {
   return acos (std::max (-1.0f, 
@@ -256,7 +259,7 @@ public:
 
 
 // Subdivide a single ring
-static
+
 void subdivideRing1 (std::vector<glm::vec3> & xyz,
                      std::vector<unsigned int> & ind,
                      int indr1, int indr2, 
@@ -309,6 +312,8 @@ void subdivideRing1 (std::vector<glm::vec3> & xyz,
   for (int i = indt1; i < indt2; i++)
     if (triangles[i-indt1].getSubTriangles ())
       triangles[i-indt1].subdivide (eidx, ind, &jtri);
+
+}
 
 }
 

@@ -197,6 +197,10 @@ const
 
 }
 
+
+namespace
+{
+
 class arrow_t
 {
 public:
@@ -222,6 +226,8 @@ public:
       glDrawElementsInstanced (GL_LINES, numPoints, GL_UNSIGNED_INT, &ind[0], numberOfPoints);
   }
 };
+
+}
 
 void glGrib::FieldVector::renderArrow (const glGrib::View & view, 
                                        const glGrib::OptionsLight & light) 

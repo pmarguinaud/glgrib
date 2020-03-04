@@ -99,6 +99,9 @@ void glGrib::FieldIsoFill::setupVertexAttributes ()
     }
 }
 
+namespace
+{
+
 class isoband_maker_t
 {
 public:
@@ -183,8 +186,6 @@ public:
  
 };
 
-
-static
 void processTriangle2 (std::vector<isoband_maker_t> * isomake, 
                        const float v[3], const glm::vec3 xyz[3],
                        const std::vector<float> & levels)
@@ -294,7 +295,6 @@ void processTriangle2 (std::vector<isoband_maker_t> * isomake,
   close (isomake->back ());
 }
 
-static
 void processTriangle1 (std::vector<isoband_maker_t> * isomake, 
                        glGrib::const_GeometryPtr geometry,
                        const float * val, int it, 
@@ -330,6 +330,8 @@ void processTriangle1 (std::vector<isoband_maker_t> * isomake,
     }
 
   processTriangle2 (isomake, v, xyz, levels);
+}
+
 }
 
 void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)

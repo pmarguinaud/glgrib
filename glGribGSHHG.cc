@@ -9,7 +9,11 @@
 
 #include <stdexcept>
 
-static void iswap (void * _a, const void * _b, int t, int n, int d)
+
+namespace
+{
+
+void iswap (void * _a, const void * _b, int t, int n, int d)
 {
   char * a = (char*)_a;
   const char * b = (const char *)_b;
@@ -69,7 +73,7 @@ public:
   int32_t y;
 };
 
-static int read_GSHHG_POINT_list (std::vector<GSHHG_POINT_t> * gpl, int n, FILE * fp)
+int read_GSHHG_POINT_list (std::vector<GSHHG_POINT_t> * gpl, int n, FILE * fp)
 {
   gpl->resize (n);
   void * ptr = &(*gpl)[0];
@@ -80,6 +84,7 @@ static int read_GSHHG_POINT_list (std::vector<GSHHG_POINT_t> * gpl, int n, FILE 
   return ret;
 }
 
+}
 
 void glGrib::GSHHG::read (const glGrib::OptionsLines & opts, int * numberOfPoints, 
 		         unsigned int * numberOfLines, std::vector<float> * lonlat,

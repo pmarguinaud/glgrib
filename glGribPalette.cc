@@ -31,6 +31,9 @@ glGrib::Palette paletteWhiteBlack
     255, 255, 255, 255
   );
 
+namespace
+{
+
 class hsva_t
 {
 public:
@@ -46,7 +49,7 @@ public:
   }
 };
 
-static
+
 hsva_t rgba2hsva (const glGrib::OptionColor & rgba)
 {
   float r = float (rgba.r) / 255.0f, g = float (rgba.g) / 255.0f;
@@ -75,7 +78,7 @@ hsva_t rgba2hsva (const glGrib::OptionColor & rgba)
   return hsva_t (h, s, v, a);
 }
 
-static
+
 glGrib::OptionColor hsva2rgba (const hsva_t & hsva)
 {
   float h = hsva.h, s = hsva.s, v = hsva.v, a = hsva.a;
@@ -103,6 +106,7 @@ glGrib::OptionColor hsva2rgba (const hsva_t & hsva)
 		              int (255.0f * b), int (255.0f * a));
 }
 
+}
 
 glGrib::Palette glGrib::Palette::create 
         (const glGrib::OptionsPalette & o,  

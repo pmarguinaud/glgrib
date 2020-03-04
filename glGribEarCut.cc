@@ -43,6 +43,9 @@ void Diag (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
 
 }
 
+namespace
+{
+
 class node_t
 {
 public:
@@ -198,17 +201,16 @@ private:
   
 };
 
-
 // Longitude interval management
 
-static float in02pi (float x)
+float in02pi (float x)
 {
   while (x <         0.0f ) x += glGrib::twopi;
   while (x > glGrib::twopi) x -= glGrib::twopi;
   return x;
 }
 
-static void xint (float & x1, float & x2)
+void xint (float & x1, float & x2)
 {
   x1 = in02pi (x1);
   x2 = in02pi (x2);
@@ -299,7 +301,7 @@ public:
         
 
 // Get longitude extent of a set of nodes
-static
+
 void getLonRange (const std::vector<node_t> & nodevec, 
                   const std::vector<float> & lonlat,
                   float * lonmin, float * lonmax)
@@ -340,7 +342,7 @@ void getLonRange (const std::vector<node_t> & nodevec,
 
 // Get latitude extent of a pair of nodes, taking into account
 // the fact that latitudes may overshoot because of arc drawing
-static
+
 void getLatRange (const glm::vec2 & lonlat1, const glm::vec2 & lonlat2, 
                   float * latmin, float * latmax)
 {
@@ -387,7 +389,7 @@ void getLatRange (const glm::vec2 & lonlat1, const glm::vec2 & lonlat2,
 }
 
 // Latitude extent of set of nodes
-static
+
 void getLatRange (const std::vector<node_t> & nodevec, 
                   const std::vector<float> & lonlat,
                   float * latmin, float * latmax)
@@ -723,7 +725,7 @@ private:
 
 // Ear cutting algorithm, using an index to find nearby nodes 
 // with negative angle
-static 
+
 void earCut (node_t ** nodelist,  
              const std::vector<glm::vec3> & xyz,
              const std::vector<float> & xy,
@@ -843,7 +845,7 @@ void earCut (node_t ** nodelist,
 // Find best coordinates for processing this ring :
 // X axis is chosen using average point
 // Y axis is chosen so that it matches maximum extent
-static 
+
 glm::mat3 getRotMat (glGrib::Diag_t diag, const std::vector<glm::vec3> & xyz, bool openmp)
 {
 
@@ -928,6 +930,7 @@ glm::mat3 getRotMat (glGrib::Diag_t diag, const std::vector<glm::vec3> & xyz, bo
   return RST;
 }
 
+}
 
 // Process a single ring
 void glGrib::EarCut::processRing (const std::vector<float> & lonlat1, 

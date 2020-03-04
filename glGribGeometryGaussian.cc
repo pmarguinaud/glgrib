@@ -996,10 +996,12 @@ void glGrib::GeometryGaussian::setupCoordinates ()
   vertexbuffer->unmap ();
 }
 
-namespace glGrib::GeometryGaussianGLSL
+namespace 
 {
 
 using namespace std;
+using namespace glGrib;
+
 #include "shaders/include/geometry/gaussian/kinds.h"
 
 static std::vector<int> jgloff_dum;
@@ -1062,7 +1064,7 @@ void glGrib::GeometryGaussian::tryFitLatitudes (int _kind, latfit_t * latfit)
 
   latfit->kind  = _kind;
 
-  glGrib::GeometryGaussianGLSL::guessJlat gj;
+  guessJlat                                gj;
   gj.geometry_gaussian_Nj                = Nj;
   gj.geometry_gaussian_numberOfPoints    = numberOfPoints;
   gj.geometry_gaussian_kind              = _kind;

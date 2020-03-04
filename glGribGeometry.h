@@ -18,7 +18,7 @@ namespace glGrib
 class Geometry;
 
 typedef std::shared_ptr<Geometry> GeometryPtr;
-typedef std::shared_ptr<const Geometry> const_glGribGeometryPtr;
+typedef std::shared_ptr<const Geometry> const_GeometryPtr;
 
 class Geometry
 {

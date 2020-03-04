@@ -49,7 +49,7 @@ glGrib::String::~String ()
   clear ();
 }
 
-void glGrib::String::setup3D (const_glGribFontPtr ff, const std::vector<std::string> & str, 
+void glGrib::String::setup3D (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
 	                    const std::vector<float> & _X, const std::vector<float> & _Y,
 	                    const std::vector<float> & _Z, const std::vector<float> & _A,
 	                    float s, align_t _align)
@@ -63,13 +63,13 @@ void glGrib::String::setup3D (const_glGribFontPtr ff, const std::vector<std::str
   setup (ff, str, _x, _y, s, std::vector<align_t>{_align}, _X, _Y, _Z, _A);
 }
 
-void glGrib::String::setup2D (const_glGribFontPtr ff, const std::vector<std::string> & str, 
+void glGrib::String::setup2D (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
                             float x, float y, float s, align_t align)
 {
   setup (ff, str, std::vector<float>{x}, std::vector<float>{y}, s, std::vector<align_t>{align});
 }
 
-void glGrib::String::setup2D (const_glGribFontPtr ff, const std::vector<std::string> & str, 
+void glGrib::String::setup2D (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
                             const std::vector<float> & x, const std::vector<float> & y, 
 			    float s, align_t align,
                             const std::vector<float> & a)
@@ -78,7 +78,7 @@ void glGrib::String::setup2D (const_glGribFontPtr ff, const std::vector<std::str
          std::vector<float>{}, std::vector<float>{}, std::vector<float>{}, a);
 }
 
-void glGrib::String::setup2D (const_glGribFontPtr ff, const std::vector<std::string> & str, 
+void glGrib::String::setup2D (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
                             const std::vector<float> & x, const std::vector<float> & y, 
 			    float s, const std::vector<align_t> & align,
                             const std::vector<float> & a)
@@ -87,7 +87,7 @@ void glGrib::String::setup2D (const_glGribFontPtr ff, const std::vector<std::str
          std::vector<float>{}, std::vector<float>{}, std::vector<float>{}, a);
 }
 
-void glGrib::String::setup (const_glGribFontPtr ff, const std::vector<std::string> & str, 
+void glGrib::String::setup (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
                           const std::vector<float> & _x, const std::vector<float> & _y, 
                           float s, const std::vector<align_t> & _align,
 			  const std::vector<float> & _X, const std::vector<float> & _Y,
@@ -244,7 +244,7 @@ void glGrib::String::setupVertexAttributes ()
 }
 
 
-void glGrib::String::setup2D (const_glGribFontPtr ff, const std::string & str, 
+void glGrib::String::setup2D (glGrib::const_FontPtr ff, const std::string & str, 
                             float x, float y, float s, align_t align)
 {
   std::vector<std::string> _str = {str};

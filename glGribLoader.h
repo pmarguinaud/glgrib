@@ -18,7 +18,7 @@ class Loader
 {
 public:
 
-  static void uv2nd (const_glGribGeometryPtr,
+  static void uv2nd (const_GeometryPtr,
                      const FieldFloatBufferPtr, 
                      const FieldFloatBufferPtr,
                      FieldFloatBufferPtr &, 

@@ -88,8 +88,8 @@ void glGrib::Loader::load (glGrib::FieldFloatBufferPtr * ptr, const std::vector<
   const std::string file1 = file[mult*(islot+0)+base];
   const std::string file2 = file[mult*(islot+1)+base];
 
-  const_glGribGeometryPtr geom1 = glGrib::Geometry::load (this, file1, opts_geom);
-  const_glGribGeometryPtr geom2 = glGrib::Geometry::load (this, file2, opts_geom);
+  glGrib::const_GeometryPtr geom1 = glGrib::Geometry::load (this, file1, opts_geom);
+  glGrib::const_GeometryPtr geom2 = glGrib::Geometry::load (this, file2, opts_geom);
 
   if (! geom1->isEqual (*geom2))
     {
@@ -300,7 +300,7 @@ void glGrib::Loader::load (glGrib::FieldFloatBufferPtr * ptr, const std::string 
 
 }
 
-void glGrib::Loader::uv2nd (const_glGribGeometryPtr geometry,
+void glGrib::Loader::uv2nd (glGrib::const_GeometryPtr geometry,
                            const glGrib::FieldFloatBufferPtr data_u, 
                            const glGrib::FieldFloatBufferPtr data_v,
                            glGrib::FieldFloatBufferPtr & data_n, 

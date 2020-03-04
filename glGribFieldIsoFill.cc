@@ -296,7 +296,7 @@ void processTriangle2 (std::vector<isoband_maker_t> * isomake,
 
 static
 void processTriangle1 (std::vector<isoband_maker_t> * isomake, 
-                       glGrib::const_glGribGeometryPtr geometry,
+                       glGrib::const_GeometryPtr geometry,
                        const float * val, int it, 
                        const std::vector<float> & levels)
 {

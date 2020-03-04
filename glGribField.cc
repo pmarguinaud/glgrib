@@ -34,7 +34,7 @@ DEF (unsigned short)
 DEF (unsigned int)
 
 static
-int hiloCount (glGrib::const_glGribGeometryPtr geometry, glGrib::FieldFloatBufferPtr data,
+int hiloCount (glGrib::const_GeometryPtr geometry, glGrib::FieldFloatBufferPtr data,
                 int jglo0, int radius, bool lo)
 {
   const float * val = data->data ();

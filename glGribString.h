@@ -41,25 +41,25 @@ public:
   }
 
   String & operator= (const String &);
-  void setup2D (const_glGribFontPtr, const std::string &, float, 
+  void setup2D (const_FontPtr, const std::string &, float, 
                float, float = 1.0f, align_t = SW);
-  void setup2D (const_glGribFontPtr, const std::vector<std::string> &, 
+  void setup2D (const_FontPtr, const std::vector<std::string> &, 
 	       const std::vector<float> & = std::vector<float>{}, 
 	       const std::vector<float> & = std::vector<float>{}, 
 	       float = 1.0f, align_t = SW, const std::vector<float> & = std::vector<float>{});
-  void setup2D (const_glGribFontPtr, const std::vector<std::string> &, 
+  void setup2D (const_FontPtr, const std::vector<std::string> &, 
                 const std::vector<float> &, const std::vector<float> &, 
                 float, const std::vector<align_t> &, const std::vector<float> &);
-  void setup3D (const_glGribFontPtr, const std::vector<std::string> &, 
+  void setup3D (const_FontPtr, const std::vector<std::string> &, 
 	       const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
 	       const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
 	       float = 1.0f, align_t = SW);
-  void setup (const_glGribFontPtr, const std::vector<std::string> &, 
+  void setup (const_FontPtr, const std::vector<std::string> &, 
              const std::vector<float> &, const std::vector<float> &, 
 	     float = 1.0f, const std::vector<align_t> & = std::vector<align_t>{SW},
 	     const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
 	     const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{});
-  void setup2D (const_glGribFontPtr, const std::vector<std::string> &, float, 
+  void setup2D (const_FontPtr, const std::vector<std::string> &, float, 
                float, float = 1.0f, align_t = SW);
   void render (const glm::mat4 &) const;
   void render (const View &) const;
@@ -104,7 +104,7 @@ private:
     float scaleXYZ = 1.0f;
     int len;    // Total number of characters
     OpenGLBufferPtr xyzbuffer, vertexbuffer, letterbuffer;
-    const_glGribFontPtr font = nullptr; 
+    const_FontPtr font = nullptr; 
   } d;
 };
 

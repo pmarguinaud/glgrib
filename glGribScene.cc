@@ -147,13 +147,18 @@ void glGrib::Scene::updateLight ()
     }
 }
 
-static float ffmod (float x, float y)
+namespace
+{
+
+float ffmod (float x, float y)
 {
   while (x < 0)
     x += y;
   while (x > y)
     x -= y;
   return x;
+}
+
 }
 
 void glGrib::Scene::updateView ()

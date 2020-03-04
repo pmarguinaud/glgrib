@@ -213,8 +213,10 @@ error:
   throw std::runtime_error ("Cannot parse hexa color");
 }
 
+namespace
+{
 typedef std::map<std::string,std::string> name2hexa_t;
-static name2hexa_t name2hexa = 
+name2hexa_t name2hexa = 
 {
    {"red",   "#ff0000"},
    {"green", "#00ff00"},
@@ -222,6 +224,7 @@ static name2hexa_t name2hexa =
    {"white", "#ffffff"},
    {"black", "#000000"}
 };
+}
 
 glGrib::OptionColor glGrib::OptionColor::colorByName (const std::string & n)
 {

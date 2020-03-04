@@ -54,11 +54,16 @@ void glGrib::Landscape::setupVertexAttributes ()
   glBindVertexArray (0); 
 }
 
-static bool endsWith (const std::string & str, const std::string & end)
+namespace
+{
+
+bool endsWith (const std::string & str, const std::string & end)
 {
   int i0 = std::max (str.length () - end.length (), (size_t)0);
   int i1 = end.length ();
   return end == str.substr (i0, i1);
+}
+
 }
 
 void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandscape & o)

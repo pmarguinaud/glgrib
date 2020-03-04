@@ -4,7 +4,9 @@
 
 
 
-static
+namespace
+{
+
 void setDiffOptions (glGrib::OptionsField & opts1, glGrib::OptionsField & opts2, 
                      const std::string & path1, const std::string & path2)
 {
@@ -16,6 +18,8 @@ void setDiffOptions (glGrib::OptionsField & opts1, glGrib::OptionsField & opts2,
   opts1.user_pref.on = false;
   opts2.path.clear ();
   opts2.path.push_back (path2);
+}
+
 }
 
 glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)

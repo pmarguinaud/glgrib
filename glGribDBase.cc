@@ -8,7 +8,9 @@
 #include <iostream>
 
 
-static std::string trim (const std::string & str)
+namespace
+{
+std::string trim (const std::string & str)
 {
   int i, j;
   for (i = 0; i < str.length (); i++)
@@ -20,6 +22,7 @@ static std::string trim (const std::string & str)
   if (i > j)
     return std::string ("");
   return str.substr (i, j-i+1);
+}
 }
 
 bool glGrib::DBase::open (const std::string & path)

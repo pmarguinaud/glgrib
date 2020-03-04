@@ -33,7 +33,10 @@ DEF (unsigned char)
 DEF (unsigned short)
 DEF (unsigned int)
 
-static
+
+namespace
+{
+
 int hiloCount (glGrib::const_GeometryPtr geometry, glGrib::FieldFloatBufferPtr data,
                 int jglo0, int radius, bool lo)
 {
@@ -85,6 +88,8 @@ int hiloCount (glGrib::const_GeometryPtr geometry, glGrib::FieldFloatBufferPtr d
     }
 
   return radius;
+}
+
 }
 
 void glGrib::Field::setupHilo (glGrib::FieldFloatBufferPtr data)

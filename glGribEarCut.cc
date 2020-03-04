@@ -14,7 +14,10 @@ namespace glGrib
 typedef void Diag_t (const glm::dmat2 &, glm::dmat2 *, glm::dvec2 *);
 }
 
-static
+
+namespace
+{
+
 float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2) 
 {
   float ang =
@@ -25,8 +28,6 @@ float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2)
 }
 
 
-namespace glGrib
-{
 // Symmetric 2x2 matrix diagonalization
 
 void Diag (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
@@ -40,11 +41,6 @@ void Diag (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
   (*Q)[0] = -glm::normalize (glm::dvec2 (2.0 * c, b - a - D));
   (*Q)[1] = -glm::normalize (glm::dvec2 (2.0 * c, b - a + D));
 }
-
-}
-
-namespace
-{
 
 class node_t
 {
@@ -959,7 +955,7 @@ void glGrib::EarCut::processRing (const std::vector<float> & lonlat1,
   // Change coordinate system : choose an XYZ where most
   // points are far enough from the poles
   glm::mat3 R;
-  R = getRotMat (glGrib::Diag, xyz1, openmp);
+  R = getRotMat (Diag, xyz1, openmp);
 
   std::vector<glm::vec3> xyz2;
   std::vector<float> lonlat2;

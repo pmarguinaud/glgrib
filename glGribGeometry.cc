@@ -12,8 +12,11 @@
 #include <map>
 #include <stdexcept>
 
-typedef std::map <std::string,glGrib::GeometryPtr> cache_t;
-static cache_t cache;
+namespace
+{
+class cache_t : public std::map <std::string,glGrib::GeometryPtr> {};
+cache_t cache;
+}
 
 glGrib::GeometryPtr glGrib::Geometry::load (glGrib::Loader * ld, const std::string & file, const glGrib::OptionsGeometry & opts, const int Nj)
 {

@@ -4,11 +4,15 @@
 #include <stdlib.h>
 #include <stdexcept>
 
-static int S4 (unsigned char * h)
+namespace
+{
+
+int S4 (unsigned char * h)
 {
   return h[0] + 256 * (h[1] + 256 * (h[2] + 256 * h[3]));
 }
   
+}
   
 void glGrib::Bitmap (const std::string & file, unsigned char ** rgb, int * width, int * height)
 {

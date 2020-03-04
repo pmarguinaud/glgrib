@@ -3,14 +3,18 @@
 #include <vector>
 #include <stdexcept>
 
+namespace
+{
+
 template <typename TYPE>
-static
 TYPE ipow (TYPE x, int n)
 {
   TYPE p = 1.;
   for (int i = 0; i < n; i++)
     p = p * x;
   return p;
+}
+
 }
 
 template <typename TYPE>

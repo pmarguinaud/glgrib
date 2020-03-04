@@ -6,8 +6,13 @@
 #include <map>
 
 
-typedef std::map <std::string,glGrib::FontPtr> cache_t;
-static cache_t cache;
+namespace
+{
+class cache_t : public std::map <std::string,glGrib::FontPtr>
+{
+};
+cache_t cache;
+};
 
 
 glGrib::FontPtr glGrib::newGlgribFontPtr (const glGrib::OptionsFont & opts)

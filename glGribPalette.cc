@@ -12,17 +12,13 @@
 const float glGrib::Palette::defaultMin = std::numeric_limits<float>::max();
 const float glGrib::Palette::defaultMax = std::numeric_limits<float>::min();
 
-typedef std::map<std::string,glGrib::Palette> name2palette_t;
-static name2palette_t name2palette;
 
-glGrib::Palette & glGrib::Palette::register_ (const glGrib::Palette & p)
+namespace
 {
-  name2palette.insert (std::pair<std::string, glGrib::Palette>(opts.name, p));
-  name2palette_t::iterator it = name2palette.find (opts.name);
-  return it->second;
-}
 
-static
+typedef std::map<std::string,glGrib::Palette> name2palette_t;
+name2palette_t name2palette;
+
 glGrib::Palette paletteWhiteBlack
   (
     "white_black",
@@ -30,6 +26,15 @@ glGrib::Palette paletteWhiteBlack
       0,   0,   0, 255,
     255, 255, 255, 255
   );
+
+}
+
+glGrib::Palette & glGrib::Palette::register_ (const glGrib::Palette & p)
+{
+  name2palette.insert (std::pair<std::string, glGrib::Palette>(opts.name, p));
+  name2palette_t::iterator it = name2palette.find (opts.name);
+  return it->second;
+}
 
 namespace
 {

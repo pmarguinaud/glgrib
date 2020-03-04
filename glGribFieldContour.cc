@@ -106,7 +106,9 @@ void glGrib::FieldContour::setupVertexAttributes ()
     }
 }
 
-static
+namespace
+{
+
 float getLabelAngle (const std::vector<float> & lonlat, const std::vector<float> & length, int j, int width = 2)
 {
   const glm::vec3 N = glm::vec3 (0.0f, 0.0f, 1.0f);
@@ -138,6 +140,7 @@ float getLabelAngle (const std::vector<float> & lonlat, const std::vector<float>
   return angle;
 }
 
+}
 
 void glGrib::FieldContour::setupLabels (isoline_t * iso, const isoline_data_t & iso_data)
 {

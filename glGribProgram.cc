@@ -14,11 +14,14 @@
 #include <map>
 #include <stdexcept>
 
+
+namespace
+{
 typedef std::map<std::string,glGrib::Program> name2prog_t;
-static name2prog_t name2prog;
+name2prog_t name2prog;
 
 
-static
+
 std::string kind2name (glGrib::Program::kind_t kind)
 {
 #define KIND(k) do { if (kind == glGrib::Program::k) return #k; } while (0)
@@ -44,7 +47,7 @@ std::string kind2name (glGrib::Program::kind_t kind)
   throw std::runtime_error (std::string ("Unknown program kind"));
 }
 
-static
+
 std::string slurp (const std::string & file, bool fatal = true)
 {
   struct stat st;
@@ -62,6 +65,8 @@ std::string slurp (const std::string & file, bool fatal = true)
   if (fatal)
     throw std::runtime_error (std::string ("Cannot open ") + file);
   return "";
+}
+
 }
 
 void glGrib::Program::read (const std::string & file)

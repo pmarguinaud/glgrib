@@ -14,7 +14,10 @@
 #include <algorithm>
 #include <exception>
 
-static
+
+namespace
+{
+
 void computeLatgauss (int kn, double * latgauss)
 {
   const double pi = M_PI;
@@ -122,24 +125,24 @@ void computeLatgauss (int kn, double * latgauss)
   delete [] zfn;
 }
 
-static int MODULO (int x, int y)
+int MODULO (int x, int y)
 {
   return ((x)%(y));
 }
 
 #define JDLON(JLON1, JLON2) (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1))
 
-static int JNEXT (int JLON, int ILOEN)
+int JNEXT (int JLON, int ILOEN)
 {
   return ((JLON) == (ILOEN) ? 1 : (JLON)+1);
 }
 
-static int JPREV (int JLON, int ILOEN)
+int JPREV (int JLON, int ILOEN)
 {
    return ((JLON)-1 > 0 ? (JLON)-1 : (ILOEN));
 }
 
-static 
+
 void processLat (int jlat, int iloen1, int iloen2, 
                   int jglooff1, int jglooff2,
 	          unsigned int ** p_inds_strip, int dir)  
@@ -298,7 +301,7 @@ void processLat (int jlat, int iloen1, int iloen2,
 }
   
 
-static 
+
 void computeTrigaussStrip (const long int Nj, const std::vector<long int> & pl, 
                              unsigned int * ind_strip,
 	                     int ind_stripcnt_per_lat[], 
@@ -359,7 +362,7 @@ void computeTrigaussStrip (const long int Nj, const std::vector<long int> & pl,
 }
 
 
-static 
+
 void computeTrigauss (const long int Nj, const std::vector<long int> & pl, unsigned int * ind, 
                        const int indoff[], const int indcnt[], int triu[], int trid[])
 {
@@ -485,6 +488,8 @@ void computeTrigauss (const long int Nj, const std::vector<long int> & pl, unsig
 
 
     }
+
+}
 
 }
 
@@ -785,7 +790,8 @@ glGrib::GeometryGaussian::GeometryGaussian (glGrib::HandlePtr ghp)
 
 }
 
-static
+namespace
+{
 void roll3 (int jglo[3])
 {
   int l = std::min_element (jglo, jglo + 3) - &jglo[0];
@@ -798,6 +804,7 @@ void roll3 (int jglo[3])
     {
       int t = jglo[0]; jglo[0] = jglo[2]; jglo[2] = jglo[1]; jglo[1] = t;
     }
+}
 }
         
 void glGrib::GeometryGaussian::checkTriangleComputation () const

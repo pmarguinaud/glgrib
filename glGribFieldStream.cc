@@ -10,13 +10,18 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
-static
+
+namespace
+{
+
 double getTime ()
 {
   struct timeval tv;
   struct timezone tz;
   gettimeofday (&tv, &tz);
   return double (tv.tv_sec) + 0.000001 * double (tv.tv_usec);
+}
+
 }
 
 glGrib::FieldStream::FieldStream (const glGrib::FieldStream & field)

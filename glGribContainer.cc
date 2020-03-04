@@ -132,7 +132,10 @@ private:
 
 }
 
-static std::string empty  = "";
+namespace
+{
+const std::string empty  = "";
+}
 
 const std::string & containerPlain::getNextExt (const std::string & ext) 
 {
@@ -265,7 +268,11 @@ public:
    }
 };
 
-static container_cache_t contCache;
+namespace
+{
+container_cache_t contCache;
+}
+
 
 void glGrib::Container::remove (glGrib::Container * cont)
 {

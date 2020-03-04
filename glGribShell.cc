@@ -61,9 +61,12 @@ glGrib::Shell::Shell ()
   rl_attempted_completion_function = shellCompletion;
 }
 
-static void help ()
+namespace
+{
+void help ()
 {
   std::cout << "Unknown command" << std::endl;
+}
 }
 
 void glGrib::Shell::execute (const std::string & _line, glGrib::Window * gwindow)
@@ -315,7 +318,9 @@ do { \
 
 }
 
-static 
+namespace
+{
+
 void * _run (void * data)
 {
   glGrib::Shell * shell = (glGrib::Shell *)data;
@@ -323,6 +328,7 @@ void * _run (void * data)
   return nullptr;
 }
 
+}
 
 void glGrib::Shell::start (glGrib::WindowSet * ws)
 {

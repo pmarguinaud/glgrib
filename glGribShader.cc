@@ -7,8 +7,10 @@
 
 #include <stdexcept>
 
+namespace
+{
 
-static GLuint compileShader (const std::string & name, const std::string & code, GLuint type)
+GLuint compileShader (const std::string & name, const std::string & code, GLuint type)
 {
   int len;
   GLint res = GL_FALSE;
@@ -28,6 +30,8 @@ static GLuint compileShader (const std::string & name, const std::string & code,
     }
 
   return id;
+}
+
 }
 
 GLuint glGrib::LoadShader (const std::string & name,

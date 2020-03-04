@@ -3,8 +3,12 @@
 
 #include <iostream>
 
-static glm::vec3 intersectPlane (const glm::vec3 & xa, const glm::vec3 & xb,
-                                  const glm::vec3 & p, const glm::vec3 & v) 
+
+namespace
+{
+
+glm::vec3 intersectPlane (const glm::vec3 & xa, const glm::vec3 & xb,
+                          const glm::vec3 & p, const glm::vec3 & v) 
 {
 // The plane is defined by the normal v and p which belongs to the plane
   glm::vec3 u = xb - xa;
@@ -14,8 +18,8 @@ static glm::vec3 intersectPlane (const glm::vec3 & xa, const glm::vec3 & xb,
   return xa + lambda * u;
 }
 
-static glm::vec3 intersectSphere (const glm::vec3 & xa, const glm::vec3 & xb,
-                                   const glm::vec3 & c, const float & r) 
+glm::vec3 intersectSphere (const glm::vec3 & xa, const glm::vec3 & xb,
+                           const glm::vec3 & c, const float & r) 
 {
 // The sphere is defined by the radius r and its centre c
   glm::vec3 u = xb - xa;
@@ -34,14 +38,15 @@ static glm::vec3 intersectSphere (const glm::vec3 & xa, const glm::vec3 & xb,
   return xa + lambda * u;
 }
 
-
-static glm::vec3 compNormedPos (const glm::vec3 & xyz)
+glm::vec3 compNormedPos (const glm::vec3 & xyz)
 {
   float x = xyz.x;
   float y = xyz.y;
   float z = xyz.z;
   float r = 1.0f / sqrt (x * x + y * y + z * z); 
   return glm::vec3 (x * r, y * r, z * r);
+}
+
 }
 
 glm::vec3 glGrib::ProjectionXYZ::project (const glm::vec3 & xyz) const

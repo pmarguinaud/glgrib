@@ -15,13 +15,15 @@
 #include <iostream>
 
 
-static void errorCallback (int c, const char * desc)
+namespace
+{
+
+void errorCallback (int c, const char * desc)
 {
   fprintf (stderr, "Error: %4d | %s\n", c, desc);
   abort ();
 }
 
-static
 glGrib::WindowSet * startRegularMode (const glGrib::Options & opts)
 {
   glGrib::WindowSet * wset = new glGrib::WindowSet (opts);
@@ -29,11 +31,12 @@ glGrib::WindowSet * startRegularMode (const glGrib::Options & opts)
   return wset;
 }
 
-static
 glGrib::WindowSet * startDiffMode (const glGrib::Options & opts)
 {
   glGrib::WindowDiffSet * wset = new glGrib::WindowDiffSet (opts);
   return wset;
+}
+
 }
 
 int main (int argc, const char * argv[])

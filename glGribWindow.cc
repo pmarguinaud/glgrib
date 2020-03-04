@@ -16,7 +16,11 @@
 #include <iostream>
 #include <stdexcept>
 
-static double currentTime ()
+
+namespace
+{
+
+double currentTime ()
 {
   struct timeval tv;
   struct timezone tz;
@@ -24,7 +28,7 @@ static double currentTime ()
   return (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
 }
 
-static
+
 void APIENTRY debugCallback (unsigned int source, unsigned int type, GLuint id, unsigned int severity, 
                              int length, const char * message, const void * data)
 {
@@ -32,39 +36,41 @@ void APIENTRY debugCallback (unsigned int source, unsigned int type, GLuint id, 
   gwindow->debug (source, type, id, severity, length, message);
 }
 
-static 
+
 void cursorPositionCallback (GLFWwindow * window, double xpos, double ypos)
 {
   glGrib::Window * gwindow = (glGrib::Window *)glfwGetWindowUserPointer (window);
   gwindow->displayCursorPosition (xpos, ypos);
 }
 
-static
+
 void mouseButtonCallback (GLFWwindow * window, int button, int action, int mods)
 {
   glGrib::Window * gwindow = (glGrib::Window *)glfwGetWindowUserPointer (window);
   gwindow->onclick (button, action, mods);
 }
 
-static
+
 void scrollCallback (GLFWwindow * window, double xoffset, double yoffset)
 {
   glGrib::Window * gwindow = (glGrib::Window *)glfwGetWindowUserPointer (window);
   gwindow->scroll (xoffset, yoffset);
 }
 
-static 
+
 void resizeCallback (GLFWwindow * window, int width, int height)
 {
   glGrib::Window * gwindow = (glGrib::Window *)glfwGetWindowUserPointer (window);
   gwindow->resize (width, height);
 }
 
-static 
+
 void keyCallback (GLFWwindow * window, int key, int scancode, int action, int mods)
 {
   glGrib::Window * gwindow = (glGrib::Window *)glfwGetWindowUserPointer (window);
   gwindow->onkey (key, scancode, action, mods);
+}
+
 }
 
 void glGrib::Window::showHelpItem (const char * mm, const char * k, const char * desc, const char * action)
@@ -232,7 +238,10 @@ void glGrib::Window::showHelp ()
   onkey (0, 0, 0, 0, true);
 }
 
-static glGrib::FieldVector * getVector (glGrib::Scene & scene)
+namespace
+{
+
+glGrib::FieldVector * getVector (glGrib::Scene & scene)
 {
   glGrib::Field * f = scene.getCurrentField ();
 
@@ -251,6 +260,8 @@ static glGrib::FieldVector * getVector (glGrib::Scene & scene)
     }
 
   return v;
+}
+
 }
 
 void glGrib::Window::toggleShowVector ()
@@ -851,7 +862,10 @@ void glGrib::Window::setHints ()
 
 }
 
-static int idcount = 0;
+namespace
+{
+int idcount = 0;
+}
 
 glGrib::Window::Window ()
 {
@@ -979,8 +993,12 @@ glGrib::Window * glGrib::Window::clone ()
   return w;
 }
 
+namespace
+{
+
+
 #define GLMESS(x) case GL_DEBUG_SOURCE_##x: return #x
-static const char * debugSource (unsigned int source)
+const char * debugSource (unsigned int source)
 {
   switch (source)
     {
@@ -992,7 +1010,7 @@ static const char * debugSource (unsigned int source)
 #undef GLMESS
 
 #define GLMESS(x) case GL_DEBUG_TYPE_##x: return #x
-static const char * debugType (unsigned int type)
+const char * debugType (unsigned int type)
 {
   switch (type)
     {
@@ -1005,7 +1023,7 @@ static const char * debugType (unsigned int type)
 #undef GLMESS
 
 #define GLMESS(x) case GL_DEBUG_SEVERITY_##x: return #x
-static const char * debugSeverity (unsigned int severity)
+const char * debugSeverity (unsigned int severity)
 {
   switch (severity)
     {
@@ -1015,6 +1033,8 @@ static const char * debugSeverity (unsigned int severity)
   return "UNKNOWN";
 }
 #undef GLMESS
+
+}
 
 void glGrib::Window::debug (unsigned int source, unsigned int type, GLuint id, 
 		           unsigned int severity, int length, const char * message)

@@ -10,10 +10,5 @@ Optimisations :
 Temp object for unmapping buffers ?
 Template for openGL buffers depending on type being allocated ?
 
-Compress data for contour
-Allow for errors in field creation
-
 Make VAOs object with automatic destruction.
-
-Use namespaces
 

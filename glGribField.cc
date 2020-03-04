@@ -247,35 +247,51 @@ found:
 glGrib::Field * glGrib::Field::create (const glGrib::OptionsField & opts, float slot, glGrib::Loader * ld)
 {
 
+  glGrib::Field * fld = nullptr;
+
   if (opts.path.size () == 0)
     return nullptr;
 
-  glGrib::OptionsField opts1 = opts;
+  try
+    {
 
-  if (opts.user_pref.on)
-    getUserPref (&opts1, ld, slot);
+      glGrib::OptionsField opts1 = opts;
+     
+      if (opts.user_pref.on)
+        getUserPref (&opts1, ld, slot);
+     
+     
+      std::string type = opts1.type;
+     
+      std::transform (type.begin (), type.end (), type.begin (), ::toupper);
+     
+      if (type == "VECTOR")
+        fld = new glGrib::FieldVector ();
+      else if (type == "STREAM")
+        fld = new glGrib::FieldStream ();
+      else if (type == "CONTOUR")
+        fld = new glGrib::FieldContour ();
+      else if (type == "SCALAR")
+        fld = new glGrib::FieldScalar ();
+      else if (type == "ISOFILL")
+        fld = new glGrib::FieldIsoFill ();
+      else
+        throw std::runtime_error (std::string ("Unknown field type : ") + type);
+     
+      fld->setup (ld, opts1, slot);
+      fld->slot = slot;
+    }
+  catch (const std::runtime_error & e)
+    {
+      std::cout << "Cannot load field : " << e.what () << std::endl;
 
-  glGrib::Field * fld = nullptr;
-
-  std::string type = opts1.type;
-
-  std::transform (type.begin (), type.end (), type.begin (), ::toupper);
-
-  if (type == "VECTOR")
-    fld = new glGrib::FieldVector ();
-  else if (type == "STREAM")
-    fld = new glGrib::FieldStream ();
-  else if (type == "CONTOUR")
-    fld = new glGrib::FieldContour ();
-  else if (type == "SCALAR")
-    fld = new glGrib::FieldScalar ();
-  else if (type == "ISOFILL")
-    fld = new glGrib::FieldIsoFill ();
-  else
-    throw std::runtime_error (std::string ("Unknown field type : ") + type);
-
-  fld->setup (ld, opts1, slot);
-  fld->slot = slot;
+      if (fld != nullptr)
+        {
+          fld->clear ();
+          delete fld;
+	  fld = nullptr;
+	}
+    }
 
   return fld;
 }

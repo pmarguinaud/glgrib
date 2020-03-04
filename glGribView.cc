@@ -21,41 +21,19 @@ void glGrib::View::setMVP (glGrib::Program * program) const
   program->set ("MVP", MVP);
   program->set ("proj", ps.current ()->getType ());
 
-  if (false)
-{
-  float lonP = 2.0f, latP = 46.7f;
-  float stretch = 0.2f;
 
-  glm::mat4 rotd, roti;
+  program->set ("schmidt_apply", opts.zoom.on);
 
-  rotd = glm::rotate (glm::mat4 (1.0f),
-                      glm::radians (+90.0f-(float)latP), 
-                      glm::vec3 (-sinf (glm::radians (lonP)),
-                                 +cosf (glm::radians (lonP)),
-                                 0.0f)) 
-       * glm::rotate (glm::mat4 (1.0f),
-                      glm::radians (+180.0f+(float)lonP),
-                      glm::vec3 (0.0f, 0.0f, 1.0f));
-
-
-  roti = glm::rotate (glm::mat4 (1.0f),
-         glm::radians (-180.0f-(float)lonP),
-         glm::vec3 (0.0f, 0.0f, 1.0f))
-       * glm::rotate (glm::mat4 (1.0f),
-                      glm::radians (-90.0f+(float)latP), 
-                      glm::vec3 (-sinf (glm::radians (lonP)),
-                                 +cosf (glm::radians (lonP)),
-                                 0.0f));
-
-
-
-  float omc2 = 1.0f - 1.0f / (stretch * stretch);
-  float opc2 = 1.0f + 1.0f / (stretch * stretch);
-  program->set ("schmidt_rotd", rotd);
-  program->set ("schmidt_roti", roti);
-  program->set ("schmidt_omc2", omc2);
-  program->set ("schmidt_opc2", opc2);
-}
+  if (opts.zoom.on)
+    {
+      float stretch = opts.zoom.stretch;
+      float omc2 = 1.0f - 1.0f / (stretch * stretch);
+      float opc2 = 1.0f + 1.0f / (stretch * stretch);
+      program->set ("schmidt_rotd", zoom_rotd);
+      program->set ("schmidt_roti", zoom_roti);
+      program->set ("schmidt_omc2", omc2);
+      program->set ("schmidt_opc2", opc2);
+    }
 
 
   float lon0 = opts.lon + 180.0f;
@@ -228,6 +206,7 @@ void glGrib::View::setup (const glGrib::OptionsView & o)
 {
   opts = o;
   calcMVP ();
+  calcZoom ();
 }
 
 glGrib::View::transform_type glGrib::View::typeFromString (std::string str)
@@ -251,5 +230,27 @@ void glGrib::View::toggleTransformType ()
 }
 
 
+void glGrib::View::calcZoom ()
+{
+  float lonP = opts.zoom.lon, latP = opts.zoom.lat;
+  float stretch = opts.zoom.stretch;
+
+  zoom_rotd = glm::rotate (glm::mat4 (1.0f),
+                           glm::radians (+90.0f-(float)latP), 
+                           glm::vec3 (-sinf (glm::radians (lonP)),
+                                      +cosf (glm::radians (lonP)),
+                                      0.0f)) 
+            * glm::rotate (glm::mat4 (1.0f),
+                           glm::radians (+180.0f+(float)lonP),
+                           glm::vec3 (0.0f, 0.0f, 1.0f));
 
 
+  zoom_roti = glm::rotate (glm::mat4 (1.0f),
+              glm::radians (-180.0f-(float)lonP),
+              glm::vec3 (0.0f, 0.0f, 1.0f))
+            * glm::rotate (glm::mat4 (1.0f),
+                           glm::radians (-90.0f+(float)latP), 
+                           glm::vec3 (-sinf (glm::radians (lonP)),
+                                      +cosf (glm::radians (lonP)),
+                                      0.0f));
+}

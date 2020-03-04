@@ -58,13 +58,15 @@ public:
   const glm::mat4 & getMVP () const { return MVP; }
 
   const OptionsView & getOptions () const { return opts; }
-  void setOptions (const OptionsView & o) { opts = o; calcMVP (); }
+  void setOptions (const OptionsView & o) { opts = o; calcMVP (); calcZoom (); }
   float getRatio () const { return (float)width/(float)height; }
+  void calcZoom ();
 private:
   OptionsView opts;
   int width, height;
   ProjectionSet ps;
   glm::mat4 model, view, projection, MVP;
+  glm::mat4 zoom_roti, zoom_rotd;
   glm::vec4 viewport;
 };
 

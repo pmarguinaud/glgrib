@@ -1269,6 +1269,10 @@ public:
     DESC (clip.xmax,          Max viewport x coordinate);
     DESC (clip.ymin,          Min viewport y coordinate);
     DESC (clip.ymax,          Max viewport y coordinate);
+    DESC (zoom.on,            Enable zoom with Schmidt transform);
+    DESC (zoom.lon,           Longitude of zoom);
+    DESC (zoom.lat,           Latitude of zoom);
+    DESC (zoom.stretch,       Stretching factor);
   }
   string  projection  = "XYZ";
   string  transformation  = "PERSPECTIVE";
@@ -1280,6 +1284,13 @@ public:
   {
     bool on = true;
   } center;
+  struct
+  {
+    bool on = false;
+    float lon = 2.0f;
+    float lat = 46.7f;
+    float stretch = 0.5f;
+  } zoom;
   struct
   {
     float dlon = 10.0f;

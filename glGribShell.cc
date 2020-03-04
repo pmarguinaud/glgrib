@@ -143,7 +143,7 @@ void glGrib::Shell::execute (const std::string & _line, glGrib::Window * gwindow
 
       int argc = 1 + args.size ();
       const char * argv[argc];
-      argv[0] = "glGrib::";
+      argv[0] = "glGrib";
       
       for (int i = 0; i < args.size (); i++)
         argv[1+i] = args[i].c_str ();
@@ -339,11 +339,11 @@ void glGrib::Shell::start (glGrib::WindowSet * ws)
 
 void glGrib::Shell::runInt ()
 {
-  if (read_history (".glGrib::History") != 0)
-    write_history (".glGrib::History");
+  if (read_history (".glGribHistory") != 0)
+    write_history (".glGribHistory");
   while (wset->size () > 0)
     {
-      char * line = readline ("glGrib::> ");
+      char * line = readline ("glGrib> ");
 
       if (line == nullptr)
         {
@@ -369,7 +369,7 @@ void glGrib::Shell::runInt ()
       }
       unlock ();
       
-      append_history (1, ".glGrib::History");
+      append_history (1, ".glGribHistory");
 
       free (line);
       

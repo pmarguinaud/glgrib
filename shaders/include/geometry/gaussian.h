@@ -17,7 +17,7 @@ layout (std430, binding=geometry_gaussian_glat_idx) buffer geometry_gaussian3
 };
 
 uniform int   geometry_gaussian_Nj;
-uniform mat4  geometry_gaussian_rot;
+uniform mat3  geometry_gaussian_rot;
 uniform bool  geometry_gaussian_rotated;
 uniform float geometry_gaussian_omc2;
 uniform float geometry_gaussian_opc2;
@@ -74,7 +74,7 @@ vec2 getGaussianVertexLonLat (int jglo)
       float Y = sinlon * coslat;
       float Z =          sinlat;
   
-      vec4 XYZ = vec4 (X, Y, Z, 0.0f);
+      vec3 XYZ = vec3 (X, Y, Z);
       XYZ = geometry_gaussian_rot * XYZ;
   
       lon = atan (XYZ.y, XYZ.x);

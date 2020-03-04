@@ -81,7 +81,7 @@ private:
     if (! rotated)
       return glm::vec3 (X, Y, Z);
    
-    glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
+    glm::vec3 XYZ = glm::vec3 (X, Y, Z);
     XYZ = rot * XYZ;
  
     return glm::vec3 (XYZ.x, XYZ.y, XYZ.z);
@@ -141,7 +141,7 @@ private:
   double longitudeOfStretchingPoleInDegrees = 0.0f;
   float omc2 = 0.0f;
   float opc2 = 2.0f;
-  glm::mat4 rot = glm::mat4 (1.0f);
+  glm::mat3 rot = glm::mat4 (1.0f);
   bool rotated = false;
   // Keep the following as pointers for performance
   unsigned int * ind = nullptr;

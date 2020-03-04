@@ -762,21 +762,25 @@ glGrib::GeometryGaussian::GeometryGaussian (glGrib::HandlePtr ghp)
       opc2 = 1.0f + 1.0f / (stretchingFactor * stretchingFactor);
     }
   
+  glm::mat4 rot4;
+
   if (do_rot_str) 
   if ((latitudeOfStretchingPoleInDegrees != 90.0f && longitudeOfStretchingPoleInDegrees != 0.0f)
    || (latitudeOfStretchingPoleInDegrees != 0.0f && longitudeOfStretchingPoleInDegrees != 0.0f))
     {
-      rot = glm::rotate (glm::mat4 (1.0f),
-                         glm::radians (90.0f-(float)latitudeOfStretchingPoleInDegrees), 
-                         glm::vec3 (-sinf (glm::radians (longitudeOfStretchingPoleInDegrees)),
+      rot4 = glm::rotate (glm::mat4 (1.0f),
+                          glm::radians (90.0f-(float)latitudeOfStretchingPoleInDegrees), 
+                          glm::vec3 (-sinf (glm::radians (longitudeOfStretchingPoleInDegrees)),
                                     +cosf (glm::radians (longitudeOfStretchingPoleInDegrees)),
                                     0.0f));
-      rot = rot *
+      rot4 = rot4 *
             glm::rotate (glm::mat4 (1.0f),
                          glm::radians (180.0f+(float)longitudeOfStretchingPoleInDegrees),
                          glm::vec3 (0.0f, 0.0f, 1.0f));
       rotated = true;
     }
+
+  rot = rot4;
 
   size_t pl_len;
   codes_get_long (h, "Nj", &Nj);
@@ -988,7 +992,7 @@ void glGrib::GeometryGaussian::setupCoordinates ()
               float Y = sinlon * coslat;
               float Z =          sinlat;
   
-              glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
+              glm::vec3 XYZ = glm::vec3 (X, Y, Z);
               XYZ = rot * XYZ;
   
               lonlat[2*jglo+0] = atan2 (XYZ.y, XYZ.x);
@@ -1245,8 +1249,8 @@ void glGrib::GeometryGaussian::latlon2coordxy (float lat, float lon,
 
   lonlat2xyz (lon, lat, &x, &y, &z);
 
-  glm::vec4 xyz = glm::vec4 (x, y, z, 0.0f);
-  glm::vec4 XYZ = glm::inverse (rot) * xyz;
+  glm::vec3 xyz = glm::vec3 (x, y, z);
+  glm::vec3 XYZ = glm::inverse (rot) * xyz;
 
   float X = XYZ.x;
   float Y = XYZ.y;
@@ -1377,7 +1381,7 @@ void glGrib::GeometryGaussian::applyUVangle (float * angle) const
               float lon = coordx;
               float coslon = cos (lon); float sinlon = sin (lon);
   
-              glm::vec4 XYZ = rot * glm::vec4 (coslon * coslat, sinlon * coslat, sinlat, 0.0f);
+              glm::vec3 XYZ = rot * glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
               glm::vec3 xyz = glm::vec3 (XYZ.x, XYZ.y, XYZ.z);
   
               glm::vec3 u1 = glm::normalize (glm::cross (xyz0 - xyz, xyz));
@@ -1681,7 +1685,7 @@ glm::vec3 glGrib::GeometryGaussian::conformal2xyz (const glm::vec2 & merc) const
   if (! rotated)
     return glm::vec3 (X, Y, Z);
   
-  glm::vec4 XYZ = glm::vec4 (X, Y, Z, 0.0f);
+  glm::vec3 XYZ = glm::vec3 (X, Y, Z);
   XYZ = rot * XYZ;
  
   return glm::vec3 (XYZ.x, XYZ.y, XYZ.z);

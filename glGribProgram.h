@@ -125,6 +125,13 @@ public:
       glUniformMatrix4fv (id, 1, GL_FALSE, &mat[0][0]);
   }
 
+  void set (const std::string & key, const glm::mat3 & mat)
+  {
+    int id = glGetUniformLocation (programID, key.c_str ());
+    if (id != -1)
+      glUniformMatrix3fv (id, 1, GL_FALSE, &mat[0][0]);
+  }
+
   void set (const OptionsLight &);
 
   void compile ();

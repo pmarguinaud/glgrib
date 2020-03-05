@@ -916,9 +916,7 @@ void glGrib::Window::createGFLWwindow (GLFWwindow * context)
 
   if (window == nullptr)
     {
-      fprintf (stderr, "Failed to open GLFW window. "
-                       "If you have an Intel GPU, they are not 3.3 compatible. "
-                       "Try the 2.1 version of the tutorials.\n");
+      fprintf (stderr, "Failed to open GLFW window.");
       glfwTerminate ();
       return;
     }

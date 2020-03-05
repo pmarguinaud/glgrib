@@ -214,18 +214,5 @@ private:
   std::string title = "";
 };
 
-#define glGribWindowIfKey(mm, k, desc, action) \
-do { \
-if (help)                                       \
-  {                                             \
-    showHelpItem (#mm, #k, #desc, #action);     \
-  }                                             \
-else if ((key == GLFW_KEY_##k) && (Window::mm == mods)) \
-  {                                             \
-    action;                                     \
-    return;                                     \
-  }                                             \
-} while (0)
-
 
 }

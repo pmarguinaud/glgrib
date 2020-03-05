@@ -97,6 +97,19 @@ void glGrib::Window::showHelpItem (const char * mm, const char * k, const char *
 void glGrib::Window::onkey (int key, int scancode, int action, int mods, bool help)
 {
 
+#define glGribWindowIfKey(mm, k, desc, action) \
+do { \
+if (help)                                       \
+  {                                             \
+    showHelpItem (#mm, #k, #desc, #action);     \
+  }                                             \
+else if ((key == GLFW_KEY_##k) && (Window::mm == mods)) \
+  {                                             \
+    action;                                     \
+    return;                                     \
+  }                                             \
+} while (0)
+
   if ((action == GLFW_PRESS || action == GLFW_REPEAT) || help)
     {
       glGribWindowIfKey (NONE,    PAGE_UP     ,  One field forward,  next = true);
@@ -186,6 +199,7 @@ void glGrib::Window::onkey (int key, int scancode, int action, int mods, bool he
 
 
     }
+#undef glGribWindowIfKey
 
 }
 

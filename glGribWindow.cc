@@ -802,7 +802,7 @@ void glGrib::Window::scroll (double xoffset, double yoffset)
 
 }
 
-void glGrib::Window::renderFrame ()
+void glGrib::Window::renderFrame (glGrib::Shell * shell)
 {
 
   nframes++;
@@ -811,21 +811,21 @@ void glGrib::Window::renderFrame ()
 
   scene.update ();
 
-  if (Shell0.started ())
-    Shell0.lock ();
+  if (shell && shell->started ())
+    shell->lock ();
 
   scene.display (); 
 
   glfwSwapBuffers (window);
 
-  if (Shell0.started ())
-    Shell0.unlock ();
+  if (shell && shell->started ())
+    shell->unlock ();
 
 }
 
 void glGrib::Window::run (glGrib::Shell * shell)
 {
-  renderFrame ();
+  renderFrame (shell);
   glfwPollEvents ();
   
   if ((glfwGetKey (window, GLFW_KEY_ESCAPE) == GLFW_PRESS)

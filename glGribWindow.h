@@ -13,6 +13,8 @@
 namespace glGrib
 {
 
+class Shell;
+
 class Window
 {
 public:
@@ -29,7 +31,7 @@ public:
   Window (const Options &);
   virtual void setHints ();
   virtual ~Window ();
-  virtual void renderFrame ();
+  virtual void renderFrame (glGrib::Shell *);
   virtual void run (class Shell * = nullptr);
   void makeCurrent () { glfwMakeContextCurrent (window); }
   void debug (unsigned int, unsigned int, GLuint, unsigned int, int, const char *);

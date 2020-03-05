@@ -39,6 +39,10 @@ char * glGrib::Shell::optionGenerator (const char * text, int state)
   return nullptr;
 }
 
+
+namespace
+{
+
 char * shellOptionGenerator (const char * text, int state)
 {
   return glGrib::Shell0.optionGenerator (text, state);
@@ -50,6 +54,8 @@ char ** shellCompletion (const char * text, int start, int end)
   if ((strncmp (line, "set ", 4) == 0) || (strncmp (line, "get ", 4) == 0))
     return rl_completion_matches (text, shellOptionGenerator);
   return nullptr;
+}
+
 }
 
 glGrib::Shell::Shell ()
@@ -400,7 +406,7 @@ void glGrib::Shell::runOff ()
         }
       if (opts.prompt.on)
         {
-         runInt ();
+          runInt ();
         }
       else
         {

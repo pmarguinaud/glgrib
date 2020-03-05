@@ -333,7 +333,7 @@ void * _run (void * data)
 void glGrib::Shell::start (glGrib::WindowSet * ws)
 {
   wset = ws;
-  pthread_create(&thread, nullptr, _run, this);
+  pthread_create (&thread, nullptr, _run, this);
 }
 
 

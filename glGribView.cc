@@ -255,6 +255,6 @@ void glGrib::View::calcZoom ()
                                       +cosf (glm::radians (lonP)),
                                       0.0f));
 
-  zoom_rotd = zoom4rotd;
-  zoom_roti = zoom4roti;
+  zoom_rotd = glm::mat3 (zoom4rotd);
+  zoom_roti = glm::mat3 (zoom4roti);
 }

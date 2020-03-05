@@ -780,7 +780,7 @@ glGrib::GeometryGaussian::GeometryGaussian (glGrib::HandlePtr ghp)
       rotated = true;
     }
 
-  rot = rot4;
+  rot = glm::mat3 (rot4);
 
   size_t pl_len;
   codes_get_long (h, "Nj", &Nj);

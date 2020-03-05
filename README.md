@@ -1162,11 +1162,19 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].stream.motion.on --field[0].path 
     testdata/advection_850.grib%shortName="u" 
     testdata/advection_850.grib%shortName="v" --field[0].type STREAM 
-    --field[0].palette.colors blue red --land.on --grid.on 
-    --grid.resolution 18 --grid.color black --landscape.on 
-    --landscape.path landscape/white.bmp --landscape.scale 0.99 --view.lon 
-    -10.364 --view.lat 46.8244 --view.fov 5.3 --view.projection XYZ 
-    --window.width 1200 --field[0].stream.width 0.5 --field[0].scale 1.001 
+    --field[0].palette.name cold_hot --land.on --grid.on --grid.resolution 
+    18 --grid.color black --landscape.on --landscape.path 
+    landscape/white.bmp --landscape.scale 0.99 --view.lon -10.364 
+    --view.lat 46.8244 --view.fov 5.3 --view.projection XYZ --window.width 
+    1200 --field[0].stream.width 0.5 --field[0].scale 1.001 
     --ticks.labels.on --ticks.labels.font.color.foreground black 
     --window.offscreen.on --window.offscreen.frames 36 
+```
+## Zoom with Schmidt transform                                       -- zoomschmidt1
+![](test.ref/zoomschmidt1/TEST_0000.png)
+
+```
+    --field[0].path testdata/wind+temp/t1798/S105TEMPERATURE.grb 
+    --view.zoom.on --coast.on --coast.lines.color black --view.lon 2 
+    --view.lat 46.7 --view.zoom.stretch 0.2 --grid.off 
 ```

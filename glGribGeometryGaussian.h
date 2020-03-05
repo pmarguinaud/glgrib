@@ -138,7 +138,7 @@ private:
   double longitudeOfStretchingPoleInDegrees = 0.0f;
   float omc2 = 0.0f;
   float opc2 = 2.0f;
-  glm::mat3 rot = glm::mat4 (1.0f);
+  glm::mat3 rot = glm::mat3 (1.0f);
   bool rotated = false;
   // Keep the following as pointers for performance
   unsigned int * ind = nullptr;

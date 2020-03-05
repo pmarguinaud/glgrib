@@ -19,7 +19,7 @@ public:
   virtual void setup (const OptionsShell &)  = 0;
   virtual void start (class WindowSet *)  = 0;
   virtual void run ()  = 0;
-  void execute (const std::vector<std::string> &, class Window *);
+  virtual void execute (const std::vector<std::string> &, class Window *);
   bool closed () { return close; }
   void lock () { pthread_mutex_lock (&mutex); }
   void unlock () { pthread_mutex_unlock (&mutex); }
@@ -31,14 +31,15 @@ protected:
   int close = 0;
   int windowid = 0;
 
-  virtual void do_get      (const std::vector<std::string> &, glGrib::Window *) = 0;
-  virtual void do_close    (const std::vector<std::string> &, glGrib::Window *) = 0;
-  virtual void do_snapshot (const std::vector<std::string> &, glGrib::Window *) = 0;
-  virtual void do_sleep    (const std::vector<std::string> &, glGrib::Window *) = 0;
-  virtual void do_clone    (const std::vector<std::string> &, glGrib::Window *) = 0;
-  virtual void do_show     (const std::vector<std::string> &, glGrib::Window *) = 0;
-  virtual void do_set      (const std::vector<std::string> &, glGrib::Window *) = 0;
-  virtual void do_window   (const std::vector<std::string> &, glGrib::Window *) = 0;
+  virtual void do_get           (const std::vector<std::string> &, glGrib::Window *) = 0;
+  virtual void do_close         (const std::vector<std::string> &, glGrib::Window *);
+  virtual void do_snapshot      (const std::vector<std::string> &, glGrib::Window *);
+  virtual void do_sleep         (const std::vector<std::string> &, glGrib::Window *);
+  virtual void do_clone         (const std::vector<std::string> &, glGrib::Window *);
+  virtual void do_set           (const std::vector<std::string> &, glGrib::Window *);
+  virtual void do_window        (const std::vector<std::string> &, glGrib::Window *);
+  virtual void do_window_select (const std::vector<std::string> &, glGrib::Window *);
+  virtual void do_window_list   (const std::vector<std::string> &, glGrib::Window *) = 0;
 
   OptionsShell opts;
   WindowSet * wset = nullptr;
@@ -54,21 +55,13 @@ public:
   void start (class WindowSet *) override;
   void run () override;
   char * optionGenerator (const char *, int);
-  std::vector<std::string> tokenize (const std::string &);
-
-  
 private:
+  std::vector<std::string> tokenize (const std::string &);
   void runInt ();
   void runOff ();
 
-  void do_get      (const std::vector<std::string> &, glGrib::Window *) override;
-  void do_close    (const std::vector<std::string> &, glGrib::Window *) override;
-  void do_snapshot (const std::vector<std::string> &, glGrib::Window *) override;
-  void do_sleep    (const std::vector<std::string> &, glGrib::Window *) override;
-  void do_clone    (const std::vector<std::string> &, glGrib::Window *) override;
-  void do_show     (const std::vector<std::string> &, glGrib::Window *) override;
-  void do_set      (const std::vector<std::string> &, glGrib::Window *) override;
-  void do_window   (const std::vector<std::string> &, glGrib::Window *) override;
+  void do_get           (const std::vector<std::string> &, glGrib::Window *) override;
+  void do_window_list   (const std::vector<std::string> &, glGrib::Window *) override;
 
 
   std::vector<std::string> getsetoptions;

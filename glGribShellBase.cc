@@ -207,12 +207,56 @@ void glGrib::ShellBase::do_window_select (const std::vector<std::string> & args,
     }
 }
 
-void glGrib::ShellBase::do_window (const std::vector<std::string> & args, glGrib::Window * gwindow)
+std::vector<int>
+glGrib::ShellBase::do_window (const std::vector<std::string> & args, glGrib::Window * gwindow)
 {
+
   if (args.size () == 1)
-    do_window_list (args, gwindow);
+    return do_window_list (args, gwindow);
   else if (args.size () == 2)
     do_window_select (args, gwindow);
+
+  return std::vector<int> ();
+}
+
+std::string
+glGrib::ShellBase::do_help (const std::vector<std::string> & args, glGrib::Window * gwindow)
+{
+  std::string help;
+
+  glGrib::Options opts = gwindow->scene.getOptions ();
+  glGrib::OptionsParser p;
+  opts.traverse ("", &p);
+ 
+  for (int i = 1; i < args.size (); i++)
+    help += p.getHelp (args[i], true);      
+
+  return help;
+}
+
+
+std::vector<std::string>
+glGrib::ShellBase::do_get (const std::vector<std::string> & args, glGrib::Window * gwindow)
+{
+  std::vector<std::string> list;
+
+  glGrib::Options opts = gwindow->scene.getOptions ();
+  glGrib::OptionsParser p;
+  opts.traverse ("", &p);
+
+  for (int i = 1; i < args.size (); i++)
+    p.getValue (&list, args[i], true);
+
+  return list;
+}
+
+std::vector<int>
+glGrib::ShellBase::do_window_list (const std::vector<std::string> & args, glGrib::Window * gwindow)
+{
+  std::vector<int> list;
+  for (const auto w : *wset)
+    list.push_back (w->id ());
+  return list;
 }
 
 void glGrib::ShellBase::execute (const std::vector<std::string> & args, glGrib::Window * gwindow)
@@ -223,7 +267,7 @@ void glGrib::ShellBase::execute (const std::vector<std::string> & args, glGrib::
 #define glGribShellIfCommand(command) \
   do                                                       \
   {                                                        \
-    if (#command == args[0]) do_##command (args, gwindow); \
+    if (#command == args[0]) process_##command (args, gwindow); \
   } while (0)
 
 
@@ -234,6 +278,7 @@ void glGrib::ShellBase::execute (const std::vector<std::string> & args, glGrib::
   glGribShellIfCommand (get);
   glGribShellIfCommand (set);
   glGribShellIfCommand (window);
+  glGribShellIfCommand (help);
 
 #undef glGribShellIfCommand
   

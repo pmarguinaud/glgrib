@@ -260,7 +260,8 @@ public:
   static void print (class Options &);
   bool parse (int, const char * [], const std::set<std::string> * = nullptr);
   void showHelp ();
-  void display (const std::string &, bool = false);
+  std::string getHelp (const std::string &, bool = false);
+  void getValue (std::vector<std::string> *, const std::string &, bool = false);
   ~OptionsParser ()
   {
     for (name2option_t::iterator it = name2option.begin (); 

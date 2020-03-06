@@ -68,34 +68,55 @@ glGrib::Shell::Shell ()
   rl_attempted_completion_function = shellCompletion;
 }
 
-namespace
+void glGrib::Shell::process_help (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-void help ()
-{
-  std::cout << "Unknown command" << std::endl;
-}
+  std::cout << do_help (args, gwindow);
 }
 
-void glGrib::Shell::do_get (const std::vector<std::string> & args, glGrib::Window * gwindow)
+void glGrib::Shell::process_get (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-  glGrib::Options opts = gwindow->scene.getOptions ();
-  glGrib::OptionsParser p;
-  opts.traverse ("", &p);
- 
-  for (int i = 1; i < args.size (); i++)
-    p.display (args[i], true);      
+  std::vector<std::string> list = do_get (args, gwindow);
+  for (const auto & x : list)
+     std::cout << x << " ";
+  std::cout << std::endl;
 }
 
-void glGrib::Shell::do_window_list (const std::vector<std::string> & args, glGrib::Window * gwindow)
+void glGrib::Shell::process_close (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-  std::cout << "Window list:" << std::endl;
-  for (const auto w : *wset)
+  do_close (args, gwindow);
+}
+
+void glGrib::Shell::process_snapshot (const std::vector<std::string> & args, glGrib::Window * gwindow) 
+{
+  do_snapshot (args, gwindow);
+}
+
+void glGrib::Shell::process_sleep (const std::vector<std::string> & args, glGrib::Window * gwindow) 
+{
+  do_sleep (args, gwindow);
+}
+
+void glGrib::Shell::process_clone (const std::vector<std::string> & args, glGrib::Window * gwindow) 
+{
+  do_clone (args, gwindow);
+}
+
+void glGrib::Shell::process_set (const std::vector<std::string> & args, glGrib::Window * gwindow) 
+{
+  do_set (args, gwindow);
+}
+
+void glGrib::Shell::process_window (const std::vector<std::string> & args, glGrib::Window * gwindow) 
+{
+  std::vector<int> list = do_window (args, gwindow);
+
+  if (list.size () > 0)
     {
-      int id = w->id ();
-      std::cout << (windowid == id ? " > " : "   ") << id << std::endl;
+      std::cout << "Window list:" << std::endl;
+      for (const auto id : list)
+        std::cout << (windowid == id ? " > " : "   ") << id << std::endl;
     }
 }
-
 
 std::vector<std::string> glGrib::Shell::tokenize (const std::string & _line)
 {

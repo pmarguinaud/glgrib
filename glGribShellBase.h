@@ -32,15 +32,25 @@ protected:
   int close = 0;
   int windowid = 0;
 
-  virtual void do_get           (const std::vector<std::string> &, glGrib::Window *) = 0;
-  virtual void do_close         (const std::vector<std::string> &, glGrib::Window *);
-  virtual void do_snapshot      (const std::vector<std::string> &, glGrib::Window *);
-  virtual void do_sleep         (const std::vector<std::string> &, glGrib::Window *);
-  virtual void do_clone         (const std::vector<std::string> &, glGrib::Window *);
-  virtual void do_set           (const std::vector<std::string> &, glGrib::Window *);
-  virtual void do_window        (const std::vector<std::string> &, glGrib::Window *);
-  virtual void do_window_select (const std::vector<std::string> &, glGrib::Window *);
-  virtual void do_window_list   (const std::vector<std::string> &, glGrib::Window *) = 0;
+  std::string              do_help          (const std::vector<std::string> &, glGrib::Window *);
+  std::vector<std::string> do_get           (const std::vector<std::string> &, glGrib::Window *);
+  void                     do_close         (const std::vector<std::string> &, glGrib::Window *);
+  void                     do_snapshot      (const std::vector<std::string> &, glGrib::Window *);
+  void                     do_sleep         (const std::vector<std::string> &, glGrib::Window *);
+  void                     do_clone         (const std::vector<std::string> &, glGrib::Window *);
+  void                     do_set           (const std::vector<std::string> &, glGrib::Window *);
+  std::vector<int>         do_window        (const std::vector<std::string> &, glGrib::Window *);
+  void                     do_window_select (const std::vector<std::string> &, glGrib::Window *);
+  std::vector<int>         do_window_list   (const std::vector<std::string> &, glGrib::Window *);
+
+  virtual void process_help          (const std::vector<std::string> &, glGrib::Window *) = 0;
+  virtual void process_get           (const std::vector<std::string> &, glGrib::Window *) = 0;
+  virtual void process_close         (const std::vector<std::string> &, glGrib::Window *) = 0;
+  virtual void process_snapshot      (const std::vector<std::string> &, glGrib::Window *) = 0;
+  virtual void process_sleep         (const std::vector<std::string> &, glGrib::Window *) = 0;
+  virtual void process_clone         (const std::vector<std::string> &, glGrib::Window *) = 0;
+  virtual void process_set           (const std::vector<std::string> &, glGrib::Window *) = 0;
+  virtual void process_window        (const std::vector<std::string> &, glGrib::Window *) = 0;
 
   OptionsShell opts;
   WindowSet * wset = nullptr;

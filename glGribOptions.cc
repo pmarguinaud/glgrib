@@ -20,18 +20,18 @@ float glGrib::OptionsIsofill::defaultMax = glGrib::Palette::defaultMax;
 namespace glGrib::OptionsParserDetail
 {
 
-template <> std::string optionTmpl     <int>                ::type () { return std::string ("INTEGER"); }
-template <> std::string optionTmpl     <float>              ::type () { return std::string ("FLOAT"); }
-template <> std::string optionTmplList<int>                ::type () { return std::string ("LIST OF INTEGERS"); }
-template <> std::string optionTmplList<float>              ::type () { return std::string ("LIST OF FLOATS"); }
+template <> std::string optionTmpl    <int>                 ::type () { return std::string ("INTEGER"); }
+template <> std::string optionTmpl    <float>               ::type () { return std::string ("FLOAT"); }
+template <> std::string optionTmplList<int>                 ::type () { return std::string ("LIST OF INTEGERS"); }
+template <> std::string optionTmplList<float>               ::type () { return std::string ("LIST OF FLOATS"); }
 template <> std::string optionTmpl     <glGrib::OptionDate> ::type () { return std::string ("YYYY/MM/DD_hh:mm:ss"); }
 template <> std::string optionTmpl     <glGrib::OptionColor>::type () { return std::string ("COLOR #rrggbb(aa)"); }
 template <> std::string optionTmpl     <std::string>        ::type () { return std::string ("STRING"); }
-template <> std::string optionTmpl     <std::string>        ::asString () const { return '"' + *value + '"'; }
+template <> std::string optionTmpl     <std::string>        ::asString () const { return *value; }
 template <> std::string optionTmpl     <std::string>        ::asOption () const { return name + " " + glGrib::OptionsUtil::escape (*value); }
-template <> std::string optionTmplList<glGrib::OptionColor>::type () { return std::string ("LIST OF COLORS #rrggbb(aa)"); }
-template <> std::string optionTmplList<std::string>        ::type () { return std::string ("LIST OF STRINGS"); }
-template <> std::string optionTmplList<std::string>        ::asString () const 
+template <> std::string optionTmplList<glGrib::OptionColor> ::type () { return std::string ("LIST OF COLORS #rrggbb(aa)"); }
+template <> std::string optionTmplList<std::string>         ::type () { return std::string ("LIST OF STRINGS"); }
+template <> std::string optionTmplList<std::string>         ::asString () const 
 { 
   std::string str; 
   for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); it++)
@@ -558,8 +558,8 @@ bool glGrib::OptionsParser::seenOption (const std::string & name) const
 
 void glGrib::OptionsParser::showHelp ()
 {
-  printf ("Usage:\n");
-  display (std::string ("--"));
+  std::cout << "Usage:" << std::endl;
+  std::cout << getHelp ("--");
 }
 
 std::string glGrib::OptionsParser::asOption (glGrib::OptionsParser & p2) 
@@ -582,8 +582,28 @@ std::string glGrib::OptionsParser::asOption (glGrib::OptionsParser & p2)
   return str;
 }
 
-void glGrib::OptionsParser::display (const std::string & prefix, bool show_hidden)
+void glGrib::OptionsParser::getValue (std::vector<std::string> * list, const std::string & prefix, bool show_hidden)
 {
+  int len = prefix.size ();
+
+  for (name2option_t::iterator it = name2option.begin (); 
+       it != name2option.end (); it++)
+    if (it->first.substr (0, len) == prefix)
+      {   
+	glGrib::OptionsParserDetail::optionBase * opt = it->second;
+        if ((! show_hidden) && (opt->hidden))
+          continue;
+	list->push_back (it->first);
+	if (opt->hasArg ())
+	  list->push_back (opt->asString ());
+      }   
+ 
+}
+
+std::string glGrib::OptionsParser::getHelp (const std::string & prefix, bool show_hidden)
+{
+  std::string help;
+
   size_t name_size = 0, type_size = 0;
   int len = prefix.size ();
 
@@ -595,7 +615,12 @@ void glGrib::OptionsParser::display (const std::string & prefix, bool show_hidde
         type_size = std::max (it->second->type ().length (), type_size);
       }   
   char format[64];
-  sprintf (format, " %%-%lds : %%-%lds :", name_size, type_size);
+  sprintf (format, 
+           " %%-%lds : %%-%lds :"
+	   "      %%s\n" 
+	   "      %%s\n"
+	   "\n",
+	   name_size, type_size);
   for (name2option_t::iterator it = name2option.begin (); 
        it != name2option.end (); it++)
     if (it->first.substr (0, len) == prefix)
@@ -603,11 +628,12 @@ void glGrib::OptionsParser::display (const std::string & prefix, bool show_hidde
 	glGrib::OptionsParserDetail::optionBase * opt = it->second;
         if ((! show_hidden) && (opt->hidden))
           continue;
-        printf (format, it->first.c_str (), opt->type ().c_str ());
-        printf ("      %s\n", opt->asString ().c_str ());
-        printf ("      %s\n", opt->desc.c_str ());
-        printf ("\n");
+	char str[256];
+        sprintf (&str[0], format, it->first.c_str (), opt->type ().c_str (), opt->asString ().c_str (), opt->desc.c_str ());
+	help += std::string (str);
       }   
+
+  return help;
 }
 
 void glGrib::OptionsParser::print (glGrib::Options & opts1)

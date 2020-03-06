@@ -16,6 +16,13 @@ CODE:
     {
     glGrib::ShellPerl & shell = glGrib::ShellPerl::getInstance ();
     shell.start (nullptr);
+
+
+    for (const auto & s : shell.getListStr ())
+      {
+        std::cerr << s << std::endl;
+      }
+
     fprintf(stderr,"coucou\n");
     sleep (10);
     }

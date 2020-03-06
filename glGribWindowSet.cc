@@ -128,6 +128,7 @@ glGrib::Window * glGrib::WindowSet::create (const glGrib::Options & opts)
 glGrib::WindowSet::WindowSet (const glGrib::Options & o)
 {
   opts = o;
+  create (opts);
 }
 
 

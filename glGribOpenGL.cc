@@ -104,3 +104,31 @@ template <> GLenum getOpenGLType<unsigned short> () { return GL_UNSIGNED_SHORT; 
 template <> GLenum getOpenGLType<unsigned int  > () { return GL_UNSIGNED_INT  ; }
 template <> GLenum getOpenGLType<float         > () { return GL_FLOAT         ; }
 }
+
+namespace
+{
+
+void errorCallback (int c, const char * desc)
+{
+  fprintf (stderr, "Error: %4d | %s\n", c, desc);
+  abort ();
+}
+
+}
+
+void glGrib::glfwStart ()
+{
+  glfwSetErrorCallback (errorCallback);
+
+  if (! glfwInit ())
+    {
+      fprintf (stderr, "Failed to initialize GLFW\n");
+      exit (EXIT_FAILURE);
+    }
+}
+
+void glGrib::glfwStop ()
+{
+  glfwTerminate ();
+}
+

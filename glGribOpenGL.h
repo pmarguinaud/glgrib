@@ -47,6 +47,9 @@ OpenGLTexturePtr newGlgribOpenGLTexturePtr (int, int, const void *);
 
 void glInit ();
 
+void glfwStart ();
+void glfwStop ();
+
 template <typename T> GLenum getOpenGLType ();
 template <> GLenum getOpenGLType<unsigned char > ();
 template <> GLenum getOpenGLType<unsigned short> ();

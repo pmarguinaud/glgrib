@@ -6,20 +6,18 @@
 #include "XSUB.h"
 #include "ppport.h"
 
-extern "C"
-{
-  extern void lfiouv_mt64_ ();
-}
-
 
 MODULE = glGrib		PACKAGE = glGrib		
+
 
 void
 hello()
 CODE:
     {
-    fprintf (stderr, "Hello, world! 0x%llx\n", lfiouv_mt64_);
-    glGrib::Shell & shell = glGrib::ShellPerl::getInstance ();
+    glGrib::ShellPerl & shell = glGrib::ShellPerl::getInstance ();
+    shell.start (nullptr);
+    fprintf(stderr,"coucou\n");
+    sleep (10);
     }
     
 

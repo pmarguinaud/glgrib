@@ -13,6 +13,8 @@
 #include <string.h>
 #include <unistd.h>
 
+
+
 glGrib::ShellPerl glGrib::ShellPerl::shellperl = glGrib::ShellPerl ();
 
 glGrib::ShellPerl::ShellPerl ()
@@ -21,12 +23,12 @@ glGrib::ShellPerl::ShellPerl ()
 
 void glGrib::ShellPerl::process_help (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-//std::cout << do_help (args, gwindow);
+  str = do_help (args, gwindow);
 }
 
 void glGrib::ShellPerl::process_get (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-  std::vector<std::string> list = do_get (args, gwindow);
+  listStr = do_get (args, gwindow);
 }
 
 void glGrib::ShellPerl::process_close (const std::vector<std::string> & args, glGrib::Window * gwindow) 
@@ -56,7 +58,22 @@ void glGrib::ShellPerl::process_set (const std::vector<std::string> & args, glGr
 
 void glGrib::ShellPerl::process_window (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-  std::vector<int> list = do_window (args, gwindow);
+  listInt = do_window (args, gwindow);
+}
+
+void glGrib::ShellPerl::runWset ()
+{
+  glGrib::Options opts;
+
+  glGrib::glfwStart ();
+
+  wset = glGrib::WindowSet::create (opts);
+
+  wset->run (this);
+
+  delete wset;
+
+  glGrib::glfwStop ();
 }
 
 namespace
@@ -65,19 +82,7 @@ namespace
 void * _run (void * data)
 {
   glGrib::ShellPerl * shell = static_cast<glGrib::ShellPerl *>(data);
-
-  glGrib::Options opts;
-
-  glGrib::glfwStart ();
-
-  glGrib::WindowSet * wset = glGrib::WindowSet::create (opts);
-
-  wset->run (shell);
-
-  delete wset;
-
-  glGrib::glfwStop ();
-
+  shell->runWset ();
   return nullptr;
 }
 
@@ -85,7 +90,6 @@ void * _run (void * data)
 
 void glGrib::ShellPerl::start (glGrib::WindowSet * ws)
 {
-  wset = ws;
   pthread_create (&thread, nullptr, _run, this);
 }
 

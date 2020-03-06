@@ -16,9 +16,6 @@ OBJECTS=glGribShellRegular.o glGribContainer.o glGribWindowDiffSet.o glGribWindo
 glGrib.x: $(OBJECTS) glGrib.cc
 	g++ $(CXXFLAGS) -o glGrib.x glGrib.cc $(OBJECTS) $(LDFLAGS) 
 
-glGribTestit.x: $(OBJECTS) glGribTestit.cc
-	g++ $(CXXFLAGS) -o glGribTestit.x glGribTestit.cc $(OBJECTS) $(LDFLAGS) 
-
 glGribDBase2SQLite.x: glGribDBase2SQLite.o glGribDBase.o
 	g++ $(CXXFLAGS) -o glGribDBase2SQLite.x glGribDBase2SQLite.o glGribDBase.o -lsqlite3
 

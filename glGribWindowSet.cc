@@ -1,6 +1,7 @@
 #include "glGribWindowSet.h"
 #include "glGribWindow.h"
 #include "glGribWindowOffscreen.h"
+#include "glGribShellRegular.h"
 
 
 void glGrib::WindowSet::handleMasterWindow ()

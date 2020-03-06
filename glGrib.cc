@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "glGribScene.h"
-#include "glGribShell.h"
+#include "glGribShellRegular.h"
 #include "glGribWindow.h"
 #include "glGribWindowSet.h"
 #include "glGribWindowDiffSet.h"

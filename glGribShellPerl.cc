@@ -60,17 +60,22 @@ void glGrib::ShellPerl::process_window (const std::vector<std::string> & args, g
 namespace
 {
 
-typedef struct
-{
-  char ** argv;
-  int argc;
-  glGrib::ShellPerl * shell;
-} start_t;
-
 void * _run (void * data)
 {
-  glGrib::ShellPerl * shell = (glGrib::ShellPerl *)data;
-  shell->run ();
+  glGrib::ShellPerl * shell = static_cast<glGrib::ShellPerl *>(data);
+
+  glGrib::Options opts;
+
+  glGrib::glfwStart ();
+
+  glGrib::WindowSet * wset = glGrib::WindowSet::create (opts);
+
+  wset->run (shell);
+
+  delete wset;
+
+  glGrib::glfwStop ();
+
   return nullptr;
 }
 

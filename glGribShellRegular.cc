@@ -158,7 +158,7 @@ namespace
 
 void * _run (void * data)
 {
-  glGrib::ShellRegular * shell = (glGrib::ShellRegular *)data;
+  glGrib::ShellRegular * shell = static_cast<glGrib::ShellRegular *>(data);
   shell->run ();
   return nullptr;
 }

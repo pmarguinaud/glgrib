@@ -17,10 +17,8 @@
 #include <readline/history.h>
 
 
-namespace glGrib
-{
-glGrib::ShellRegular Shell0;
-}
+
+glGrib::ShellRegular glGrib::ShellRegular::shellregular = glGrib::ShellRegular ();
 
 char * glGrib::ShellRegular::optionGenerator (const char * text, int state)
 {
@@ -46,7 +44,7 @@ namespace
 
 char * shellOptionGenerator (const char * text, int state)
 {
-  return glGrib::Shell0.optionGenerator (text, state);
+  return glGrib::ShellRegular::getInstance ().optionGenerator (text, state);
 }
 
 char ** shellCompletion (const char * text, int start, int end)

@@ -28,9 +28,9 @@ void glGrib::WindowSet::runShell (glGrib::Shell ** _shell)
     {
       if ((! shell) && (w->getStartShell ()))
         {
-          Shell0.setup (w->scene.getOptions ().shell);
-          Shell0.start (this);
-          shell = &Shell0;
+          shell = &glGrib::ShellRegular::getInstance ();
+          shell->setup (w->scene.getOptions ().shell);
+          shell->start (this);
         }
   
       w->run (shell);

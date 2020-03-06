@@ -18,12 +18,22 @@ class Window;
 class ShellRegular : public Shell
 {
 public:
-  ShellRegular ();
   void setup (const OptionsShell &) override;
   void start (class WindowSet *) override;
   void run () override;
   char * optionGenerator (const char *, int);
+  static ShellRegular & getInstance () 
+  {
+    return shellregular;
+  }
 private:
+  ShellRegular ();
+  ~ShellRegular () {}
+  ShellRegular & operator= (const ShellRegular &) { return *this; }
+  ShellRegular (const ShellRegular &) {}
+
+  static ShellRegular shellregular;
+
   std::vector<std::string> tokenize (const std::string &);
   void runInt ();
   void runOff ();
@@ -43,7 +53,5 @@ private:
     int list_index, text_len;
   } og;
 };
-
-extern ShellRegular Shell0;
 
 }

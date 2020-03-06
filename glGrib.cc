@@ -30,18 +30,20 @@ int main (int argc, const char * argv[])
       ? new glGrib::WindowDiffSet (opts)
       : new glGrib::WindowSet (opts);
 
+  glGrib::Shell & shell = glGrib::ShellRegular::getInstance ();
+
   if (opts.shell.on)
     {
-      glGrib::Shell0.setup (opts.shell);
-      glGrib::Shell0.start (wset);
-      wset->run (&glGrib::Shell0);
+      shell.setup (opts.shell);
+      shell.start (wset);
+      wset->run (&shell);
     }
   else
     {
       wset->run ();
     }
 
-  glGrib::Shell0.wait ();
+  shell.wait ();
 
   delete wset;
 

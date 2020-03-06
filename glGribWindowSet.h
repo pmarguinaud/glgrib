@@ -23,9 +23,10 @@ public:
         return nullptr;
     }
   void close ();
-  virtual Window * create (const Options &);
+  virtual Window * createWindow (const Options &);
   void runShell (Shell **);
   void handleMasterWindow ();
+  static WindowSet * create (const glGrib::Options &);
 protected:
   Options opts;
 };

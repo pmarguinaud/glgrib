@@ -62,7 +62,7 @@ glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
                   opts.diff.path[0] + "%" + ext, 
                   opts.diff.path[1] + "%" + ext);
 
-  glGrib::Window * gwindow1 = create (opts1);
+  glGrib::Window * gwindow1 = createWindow (opts1);
   glGrib::Window * gwindow2 = gwindow1->clone ();
 
   gwindow2->setOptions (opts2.window);

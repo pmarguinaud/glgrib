@@ -26,10 +26,7 @@ int main (int argc, const char * argv[])
 
   glGrib::glfwStart ();
 
-  glGrib::WindowSet * wset = opts.diff.on
-      ? new glGrib::WindowDiffSet (opts)
-      : new glGrib::WindowSet (opts);
-
+  glGrib::WindowSet * wset = glGrib::WindowSet::create (opts);
   glGrib::Shell & shell = glGrib::ShellRegular::getInstance ();
 
   if (opts.shell.on)

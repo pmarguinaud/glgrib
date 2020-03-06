@@ -15,22 +15,16 @@
 
 glGrib::ShellPerl::ShellPerl ()
 {
-  glGrib::Options opts;
-  glGrib::OptionsParser p;
-  opts.traverse ("", &p);
 }
 
 void glGrib::ShellPerl::process_help (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-  std::cout << do_help (args, gwindow);
+//std::cout << do_help (args, gwindow);
 }
 
 void glGrib::ShellPerl::process_get (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
   std::vector<std::string> list = do_get (args, gwindow);
-  for (const auto & x : list)
-     std::cout << x << " ";
-  std::cout << std::endl;
 }
 
 void glGrib::ShellPerl::process_close (const std::vector<std::string> & args, glGrib::Window * gwindow) 
@@ -61,17 +55,17 @@ void glGrib::ShellPerl::process_set (const std::vector<std::string> & args, glGr
 void glGrib::ShellPerl::process_window (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
   std::vector<int> list = do_window (args, gwindow);
-
-  if (list.size () > 0)
-    {
-      std::cout << "Window list:" << std::endl;
-      for (const auto id : list)
-        std::cout << (windowid == id ? " > " : "   ") << id << std::endl;
-    }
 }
 
 namespace
 {
+
+typedef struct
+{
+  char ** argv;
+  int argc;
+  glGrib::ShellPerl * shell;
+} start_t;
 
 void * _run (void * data)
 {

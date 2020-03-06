@@ -259,9 +259,11 @@ glGrib::Shell::do_window_list (const std::vector<std::string> & args, glGrib::Wi
   return list;
 }
 
-void glGrib::Shell::execute (const std::vector<std::string> & args, glGrib::Window * gwindow)
+void glGrib::Shell::execute (const std::vector<std::string> & args)
 {
   
+  glGrib::Window * gwindow = wset->getWindowById (windowid);
+
   gwindow->makeCurrent ();
 
 #define glGribShellIfCommand(command) \

@@ -20,7 +20,7 @@ public:
   virtual void setup (const OptionsShell &)  = 0;
   virtual void start (class WindowSet *)  = 0;
   virtual void run ()  = 0;
-  virtual void execute (const std::vector<std::string> &, class Window *);
+  virtual void execute (const std::vector<std::string> &);
   bool closed () { return close; }
   void lock () { pthread_mutex_lock (&mutex); }
   void unlock () { pthread_mutex_unlock (&mutex); }

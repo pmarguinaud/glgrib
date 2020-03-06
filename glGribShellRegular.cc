@@ -199,7 +199,7 @@ void glGrib::ShellRegular::runInt ()
 	    if (gwindow == nullptr)
               gwindow = wset->getFirstWindow ();
             if (gwindow != nullptr)
-              execute (tokenize (line), gwindow);
+              execute (tokenize (line));
 	  }
       }
       unlock ();
@@ -230,7 +230,7 @@ void glGrib::ShellRegular::runOff ()
           if (gwindow == nullptr)
             gwindow = wset->getFirstWindow ();
           if (gwindow != nullptr)
-            execute (tokenize (line), gwindow);
+            execute (tokenize (line));
           unlock ();
         }
       if (opts.prompt.on)

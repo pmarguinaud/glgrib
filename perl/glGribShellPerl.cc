@@ -13,6 +13,8 @@
 #include <string.h>
 #include <unistd.h>
 
+glGrib::ShellPerl glGrib::ShellPerl::shellperl = glGrib::ShellPerl ();
+
 glGrib::ShellPerl::ShellPerl ()
 {
 }
@@ -95,6 +97,8 @@ void glGrib::ShellPerl::setup (const glGrib::OptionsShell & o)
 { 
   opts = o;
 }
+
+
 
 
 

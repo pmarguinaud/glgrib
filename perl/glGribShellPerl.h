@@ -41,6 +41,10 @@ public:
 
   void runWset ();
 
+  void stop ();
+
+  void start (int, const char * []);
+
 private:
   ShellPerl ();
   ~ShellPerl () {}
@@ -62,6 +66,7 @@ private:
   std::vector<std::string> listStr;
   std::vector<int> listInt;
 
+  glGrib::Options gopts;
 };
 
 }

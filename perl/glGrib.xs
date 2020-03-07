@@ -1,4 +1,5 @@
 #include "glGribShellPerl.h"
+#include "glGribResolve.h"
 #define PERL_NO_GET_CONTEXT
 
 #include "EXTERN.h"
@@ -10,21 +11,63 @@
 MODULE = glGrib		PACKAGE = glGrib		
 
 
+BOOT:
+      glGrib::glGribPrefix = GLGRIB_PREFIX;
+
+
 void
-hello()
+start (...)
 CODE:
     {
-    glGrib::ShellPerl & shell = glGrib::ShellPerl::getInstance ();
-    shell.start (nullptr);
+      glGrib::ShellPerl & shell = glGrib::ShellPerl::getInstance ();
 
+      int argc = items + 1;
+      const char * argv[argc];
 
-    for (const auto & s : shell.getListStr ())
-      {
-        std::cerr << s << std::endl;
-      }
+      for (int i = 0; i < items; i++)
+        argv[i+1] = (const char *)SvPV_nolen (ST (i));
 
-    fprintf(stderr,"coucou\n");
-    sleep (10);
+      shell.start (argc, argv);
+    }
+
+void
+stop ()
+CODE:
+    {
+      glGrib::ShellPerl & shell = glGrib::ShellPerl::getInstance ();
+      shell.stop ();
     }
     
+void 
+set (...)
+CODE:
+    {
+      glGrib::ShellPerl & shell = glGrib::ShellPerl::getInstance ();
+      std::vector<std::string> args = {"set"};
+
+      for (int i = 0; i < items; i++)
+        args.push_back (std::string ((const char *)SvPV_nolen (ST (i))));
+
+      shell.execute (args);
+    }
+
+void
+get (...)
+PPCODE:
+    {
+      glGrib::ShellPerl & shell = glGrib::ShellPerl::getInstance ();
+      std::vector<std::string> args = {"get"};
+
+      for (int i = 0; i < items; i++)
+        args.push_back (std::string ((const char *)SvPV_nolen (ST (i))));
+
+      shell.execute (args);
+
+      const std::vector<std::string> res = shell.getListStr ();
+
+      EXTEND (SP, res.size ());
+
+      for (const auto & s : res)
+        PUSHs (sv_2mortal (newSVpv(s.c_str (), 0)));
+    }
 

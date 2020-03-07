@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+std::string glGrib::glGribPrefix;
 
 std::string glGrib::Resolve (const std::string & file)
 {
@@ -17,9 +18,16 @@ std::string glGrib::Resolve (const std::string & file)
   std::string HOME = std::string (home);
   std::string path = HOME + "/.glgribrc/" + file;
   struct stat st;
+
   if (stat (path.c_str (), &st) == 0)
     return path;
 
+  if (glGribPrefix != "")
+    {
+      std::string path = glGribPrefix + "/" + file;
+      if (stat (path.c_str (), &st) == 0)
+        return path;
+    }
 
   // Try install directory
   int len = 256;

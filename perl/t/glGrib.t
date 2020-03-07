@@ -16,5 +16,17 @@ BEGIN { use_ok('glGrib') };
 # Insert your test code below, the Test::More module is use()ed here so read
 # its man page ( perldoc Test::More ) for help writing this test script.
 
-&glGrib::hello ();
+&glGrib::start ('--grid.on', '--landscape.on');
+
+sleep (2);
+
+&glGrib::set ('--grid.off');
+
+sleep (2);
+
+use Data::Dumper;
+
+print STDERR &Dumper ([&glGrib::get ('--view')]);
+
+&glGrib::stop ();
 

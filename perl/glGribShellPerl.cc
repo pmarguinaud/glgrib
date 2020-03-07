@@ -63,11 +63,9 @@ void glGrib::ShellPerl::process_window (const std::vector<std::string> & args, g
 
 void glGrib::ShellPerl::runWset ()
 {
-  glGrib::Options opts;
-
   glGrib::glfwStart ();
 
-  wset = glGrib::WindowSet::create (opts);
+  wset = glGrib::WindowSet::create (gopts);
 
   wset->run (this);
 
@@ -102,6 +100,19 @@ void glGrib::ShellPerl::setup (const glGrib::OptionsShell & o)
   opts = o;
 }
 
+void glGrib::ShellPerl::stop ()
+{
+  lock ();
+  wset->close ();
+  unlock ();
+  wait ();
+}
+
+void glGrib::ShellPerl::start (int argc, const char * argv[])
+{
+  gopts.parse (argc, argv);
+  start (nullptr);
+}
 
 
 

@@ -13,7 +13,7 @@ WriteMakefile(
     PREREQ_PM         => {}, 
     ABSTRACT_FROM     => 'lib/glGrib.pm', 
     AUTHOR            => 'Philippe Marguinaud <phi001@giedi-prime>',
-    DEFINE            => '', 
+    DEFINE            => "-DGLGRIB_PREFIX='\"$HOME/3d/glgrib\"'", 
     INC               => '-I. -I..', 
     OBJECT            => 'glGribShellPerl.o glGrib.o',
     LIBS              => join (' ', map { "-L$_ -Wl,-rpath,$_" } @lib) .

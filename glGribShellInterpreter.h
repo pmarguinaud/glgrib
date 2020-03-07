@@ -1,0 +1,51 @@
+#pragma once
+
+#include "glGribShell.h"
+#include "glGribOptions.h"
+
+#include <pthread.h>
+#include <string>
+#include <vector>
+#include <map>
+#include <list>
+#include <functional>
+
+namespace glGrib
+{
+
+class Window;
+
+class ShellInterpreter : public Shell
+{
+public:
+  void setup (const OptionsShell &) override;
+  void start (class WindowSet *) override;
+  void run () override;
+
+  static ShellInterpreter & getInstance () 
+  {
+    return shellperl;
+  }
+
+  void runWset ();
+
+  void stop ();
+
+  void start (int, const char * []);
+
+  const std::vector<std::string> & getList ()
+  {
+    return listStr;
+  }
+
+private:
+  ShellInterpreter ();
+  ~ShellInterpreter () {}
+  ShellInterpreter & operator= (const ShellInterpreter &) { return *this; }
+  ShellInterpreter (const ShellInterpreter &) {}
+  static ShellInterpreter shellperl;
+
+  glGrib::Options gopts;
+};
+
+}

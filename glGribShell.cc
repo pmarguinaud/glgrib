@@ -24,7 +24,7 @@ void glGrib::Shell::do_close (const std::vector<std::string> & args, glGrib::Win
 
 void glGrib::Shell::do_snapshot (const std::vector<std::string> & args, glGrib::Window * gwindow)
 {
-   gwindow->framebuffer ();
+  gwindow->framebuffer ();
 }
 
 void glGrib::Shell::do_sleep (const std::vector<std::string> & args, glGrib::Window * gwindow)
@@ -207,20 +207,15 @@ void glGrib::Shell::do_window_select (const std::vector<std::string> & args, glG
     }
 }
 
-std::vector<int>
-glGrib::Shell::do_window (const std::vector<std::string> & args, glGrib::Window * gwindow)
+void glGrib::Shell::do_window (const std::vector<std::string> & args, glGrib::Window * gwindow)
 {
-
   if (args.size () == 1)
-    return do_window_list (args, gwindow);
+    do_window_list (args, gwindow);
   else if (args.size () == 2)
     do_window_select (args, gwindow);
-
-  return std::vector<int> ();
 }
 
-std::string
-glGrib::Shell::do_help (const std::vector<std::string> & args, glGrib::Window * gwindow)
+void glGrib::Shell::do_help (const std::vector<std::string> & args, glGrib::Window * gwindow)
 {
   std::string help;
 
@@ -231,45 +226,43 @@ glGrib::Shell::do_help (const std::vector<std::string> & args, glGrib::Window * 
   for (int i = 1; i < args.size (); i++)
     help += p.getHelp (args[i], true);      
 
-  return help;
+  listStr.push_back (help);
 }
 
 
-std::vector<std::string>
-glGrib::Shell::do_get (const std::vector<std::string> & args, glGrib::Window * gwindow)
+void glGrib::Shell::do_get (const std::vector<std::string> & args, glGrib::Window * gwindow)
 {
-  std::vector<std::string> list;
-
   glGrib::Options opts = gwindow->scene.getOptions ();
   glGrib::OptionsParser p;
   opts.traverse ("", &p);
 
   for (int i = 1; i < args.size (); i++)
-    p.getValue (&list, args[i], true);
-
-  return list;
+    p.getValue (&listStr, args[i], true);
 }
 
-std::vector<int>
-glGrib::Shell::do_window_list (const std::vector<std::string> & args, glGrib::Window * gwindow)
+void glGrib::Shell::do_window_list (const std::vector<std::string> & args, glGrib::Window * gwindow)
 {
-  std::vector<int> list;
   for (const auto w : *wset)
-    list.push_back (w->id ());
-  return list;
+    listStr.push_back (std::to_string (w->id ()));
 }
 
 void glGrib::Shell::execute (const std::vector<std::string> & args)
 {
   
+  listStr.clear ();
+
   glGrib::Window * gwindow = wset->getWindowById (windowid);
 
   gwindow->makeCurrent ();
 
 #define glGribShellIfCommand(command) \
-  do                                                       \
-  {                                                        \
-    if (#command == args[0]) process_##command (args, gwindow); \
+  do                                       \
+  {                                        \
+    if (#command == args[0])               \
+      {                                    \
+        do_##command      (args, gwindow); \
+        process_##command (args, gwindow); \
+      }                                    \
   } while (0)
 
 

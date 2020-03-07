@@ -15,7 +15,7 @@ WriteMakefile(
     AUTHOR            => 'Philippe Marguinaud <phi001@giedi-prime>',
     DEFINE            => "-DGLGRIB_PREFIX='\"$HOME/3d/glgrib\"'", 
     INC               => '-I. -I..', 
-    OBJECT            => 'glGribShellPerl.o glGrib.o',
+    OBJECT            => 'glGrib.o',
     LIBS              => join (' ', map { "-L$_ -Wl,-rpath,$_" } @lib) .
                          ' -lglGrib -llfi -lGLEW -lGL -lglfw -lpng -lreadline -lncurses ' .
                          '-ltinfo -lssl -lcrypto -lpthread -lsqlite3 -Llfi -llfi -lcurl ' .

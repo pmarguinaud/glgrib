@@ -40,11 +40,6 @@ private:
 
   void process_help          (const std::vector<std::string> &, glGrib::Window *) override;
   void process_get           (const std::vector<std::string> &, glGrib::Window *) override;
-  void process_close         (const std::vector<std::string> &, glGrib::Window *) override;
-  void process_snapshot      (const std::vector<std::string> &, glGrib::Window *) override;
-  void process_sleep         (const std::vector<std::string> &, glGrib::Window *) override;
-  void process_clone         (const std::vector<std::string> &, glGrib::Window *) override;
-  void process_set           (const std::vector<std::string> &, glGrib::Window *) override;
   void process_window        (const std::vector<std::string> &, glGrib::Window *) override;
 
   std::vector<std::string> getsetoptions;

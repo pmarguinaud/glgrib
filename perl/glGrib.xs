@@ -1,4 +1,4 @@
-#include "glGribShellPerl.h"
+#include "glGribShellInterpreter.h"
 #include "glGribResolve.h"
 #define PERL_NO_GET_CONTEXT
 
@@ -23,7 +23,7 @@ void
 start (...)
 CODE:
     {
-      glGrib::ShellPerl & shell = glGrib::ShellPerl::getInstance ();
+      glGrib::ShellInterpreter & shell = glGrib::ShellInterpreter::getInstance ();
 
       int argc = items + 1;
       const char * argv[argc];
@@ -39,7 +39,7 @@ void
 stop ()
 CODE:
     {
-      glGrib::ShellPerl & shell = glGrib::ShellPerl::getInstance ();
+      glGrib::ShellInterpreter & shell = glGrib::ShellInterpreter::getInstance ();
       shell.stop ();
     }
     
@@ -47,7 +47,7 @@ void
 set (...)
 CODE:
     {
-      glGrib::ShellPerl & shell = glGrib::ShellPerl::getInstance ();
+      glGrib::ShellInterpreter & shell = glGrib::ShellInterpreter::getInstance ();
       std::vector<std::string> args = {"set"};
 
       for (int i = 0; i < items; i++)
@@ -61,7 +61,7 @@ void
 get (...)
 PPCODE:
     {
-      glGrib::ShellPerl & shell = glGrib::ShellPerl::getInstance ();
+      glGrib::ShellInterpreter & shell = glGrib::ShellInterpreter::getInstance ();
 
       std::vector<std::string> args = {"get"};
 

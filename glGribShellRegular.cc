@@ -68,51 +68,24 @@ glGrib::ShellRegular::ShellRegular ()
 
 void glGrib::ShellRegular::process_help (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-  std::cout << do_help (args, gwindow);
+  for (const auto & h : listStr)
+    std::cout << h;
 }
 
 void glGrib::ShellRegular::process_get (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-  std::vector<std::string> list = do_get (args, gwindow);
-  for (const auto & x : list)
-     std::cout << x << " ";
+  for (const auto & o : listStr)
+     std::cout << o << " ";
   std::cout << std::endl;
-}
-
-void glGrib::ShellRegular::process_close (const std::vector<std::string> & args, glGrib::Window * gwindow) 
-{
-  do_close (args, gwindow);
-}
-
-void glGrib::ShellRegular::process_snapshot (const std::vector<std::string> & args, glGrib::Window * gwindow) 
-{
-  do_snapshot (args, gwindow);
-}
-
-void glGrib::ShellRegular::process_sleep (const std::vector<std::string> & args, glGrib::Window * gwindow) 
-{
-  do_sleep (args, gwindow);
-}
-
-void glGrib::ShellRegular::process_clone (const std::vector<std::string> & args, glGrib::Window * gwindow) 
-{
-  do_clone (args, gwindow);
-}
-
-void glGrib::ShellRegular::process_set (const std::vector<std::string> & args, glGrib::Window * gwindow) 
-{
-  do_set (args, gwindow);
 }
 
 void glGrib::ShellRegular::process_window (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-  std::vector<int> list = do_window (args, gwindow);
-
-  if (list.size () > 0)
+  if (listStr.size () > 0)
     {
       std::cout << "Window list:" << std::endl;
-      for (const auto id : list)
-        std::cout << (windowid == id ? " > " : "   ") << id << std::endl;
+      for (const auto id : listStr)
+        std::cout << (std::to_string (windowid) == id ? " > " : "   ") << id << std::endl;
     }
 }
 

@@ -26,17 +26,9 @@ public:
     return shellperl;
   }
 
-  const std::string & getStr () const 
+  const std::vector<std::string> & getList () const
   {
-    return str;
-  }
-  const std::vector<std::string> & getListStr () const
-  {
-    return listStr;
-  }
-  const std::vector<int> & getListInt () const
-  {
-    return listInt;
+    return list;
   }
 
   void runWset ();
@@ -62,9 +54,7 @@ private:
   void process_set           (const std::vector<std::string> &, glGrib::Window *) override;
   void process_window        (const std::vector<std::string> &, glGrib::Window *) override;
 
-  std::string str;
-  std::vector<std::string> listStr;
-  std::vector<int> listInt;
+  std::vector<std::string> list;
 
   glGrib::Options gopts;
 };

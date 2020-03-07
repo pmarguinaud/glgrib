@@ -23,42 +23,50 @@ glGrib::ShellPerl::ShellPerl ()
 
 void glGrib::ShellPerl::process_help (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-  str = do_help (args, gwindow);
+  list.clear ();
+  list.push_back (do_help (args, gwindow));
 }
 
 void glGrib::ShellPerl::process_get (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-  listStr = do_get (args, gwindow);
+  list = do_get (args, gwindow);
 }
 
 void glGrib::ShellPerl::process_close (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
+  list.clear ();
   do_close (args, gwindow);
 }
 
 void glGrib::ShellPerl::process_snapshot (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
+  list.clear ();
   do_snapshot (args, gwindow);
 }
 
 void glGrib::ShellPerl::process_sleep (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
+  list.clear ();
   do_sleep (args, gwindow);
 }
 
 void glGrib::ShellPerl::process_clone (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
+  list.clear ();
   do_clone (args, gwindow);
 }
 
 void glGrib::ShellPerl::process_set (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
+  list.clear ();
   do_set (args, gwindow);
 }
 
 void glGrib::ShellPerl::process_window (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-  listInt = do_window (args, gwindow);
+  list.clear ();
+  for (auto i : do_window (args, gwindow))
+    list.push_back (std::to_string (i));
 }
 
 void glGrib::ShellPerl::runWset ()

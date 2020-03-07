@@ -8,6 +8,10 @@
 #include "ppport.h"
 
 
+
+
+
+
 MODULE = glGrib		PACKAGE = glGrib		
 
 
@@ -28,6 +32,7 @@ CODE:
         argv[i+1] = (const char *)SvPV_nolen (ST (i));
 
       shell.start (argc, argv);
+
     }
 
 void
@@ -49,6 +54,7 @@ CODE:
         args.push_back (std::string ((const char *)SvPV_nolen (ST (i))));
 
       shell.execute (args);
+
     }
 
 void
@@ -56,6 +62,7 @@ get (...)
 PPCODE:
     {
       glGrib::ShellPerl & shell = glGrib::ShellPerl::getInstance ();
+
       std::vector<std::string> args = {"get"};
 
       for (int i = 0; i < items; i++)
@@ -63,11 +70,10 @@ PPCODE:
 
       shell.execute (args);
 
-      const std::vector<std::string> res = shell.getListStr ();
+      const std::vector<std::string> & res = shell.getList ();   
+      EXTEND (SP, res.size ());                                  
+      for (const auto & s : res)                                 
+        PUSHs (sv_2mortal (newSVpv(s.c_str (), 0)));             
 
-      EXTEND (SP, res.size ());
-
-      for (const auto & s : res)
-        PUSHs (sv_2mortal (newSVpv(s.c_str (), 0)));
     }
 

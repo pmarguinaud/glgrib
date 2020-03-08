@@ -23,7 +23,7 @@ void setDiffOptions (glGrib::OptionsField & opts1, glGrib::OptionsField & opts2,
 }
 
 glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
-  : glGrib::WindowSet (o)
+  : glGrib::WindowSet (o, false)
 {
   glGrib::Options opts1 = opts, opts2 = opts;
 
@@ -45,12 +45,15 @@ glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
   int maxWidth, maxHeight;
   glGrib::Window::getScreenSize (&maxWidth, &maxHeight);
 
-
   opts1.window.position.x = 0;
   opts1.window.position.y = 0;
+  opts1.window.width = maxWidth / 2;
+  opts1.window.height = maxWidth / 2;
 
   opts2.window.position.x = opts1.window.position.x + opts1.window.width;
   opts2.window.position.y = 0;
+  opts2.window.width = maxWidth / 2;
+  opts2.window.height = maxWidth / 2;
 
   cont1 = glGrib::Container::create (opts.diff.path[0], true);
   cont2 = glGrib::Container::create (opts.diff.path[1], true);

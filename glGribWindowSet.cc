@@ -126,10 +126,11 @@ glGrib::Window * glGrib::WindowSet::createWindow (const glGrib::Options & opts)
   return gwindow;
 }
 
-glGrib::WindowSet::WindowSet (const glGrib::Options & o)
+glGrib::WindowSet::WindowSet (const glGrib::Options & o, bool newwin)
 {
   opts = o;
-  createWindow (opts);
+  if (newwin)
+    createWindow (opts);
 }
 
 glGrib::WindowSet * glGrib::WindowSet::create (const glGrib::Options & opts)

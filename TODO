@@ -11,6 +11,4 @@ Temp object for unmapping buffers ?
 Template for openGL buffers depending on type being allocated ?
 
 Make VAOs object with automatic destruction.
-Python, Perl interface
 
-Retry window fullscreen, screen width/height

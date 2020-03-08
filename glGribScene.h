@@ -82,7 +82,7 @@ public:
   void setViewport (int, int);
 
   void setMessage (const std::string & mess) { if (d.strmess.isReady ()) d.strmess.update (mess); }
-  void resize ();
+  void reSize ();
   const OptionDate * getDate ();
 
   std::vector<Field*> fieldlist;

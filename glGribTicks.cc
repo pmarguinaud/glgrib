@@ -298,7 +298,7 @@ void glGrib::Ticks::createStr
 }
 
 
-void glGrib::Ticks::resize (const glGrib::View & view)
+void glGrib::Ticks::reSize (const glGrib::View & view)
 {
   if ((! opts.labels.on) && (! opts.lines.on) && (! opts.frame.on))
     return;

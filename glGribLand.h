@@ -18,7 +18,7 @@ public:
   virtual ~Land () { clear (); }
   virtual void clear ();
   virtual void setup (const OptionsLand &);
-  void resize (const View &) override {}
+  void reSize (const View &) override {}
   void setupVertexAttributes ();
   float getScale () const override { return opts.layers[0].scale; }
 private:

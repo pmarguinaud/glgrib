@@ -21,7 +21,7 @@ public:
   void setFlat (bool f) { opts.flat.on = f; }
   void toggleFlat () { opts.flat.on = ! opts.flat.on; }
   void setupVertexAttributes ();
-  void resize (const View &) override {}
+  void reSize (const View &) override {}
   void toggleWireframe () { opts.wireframe.on = ! opts.wireframe.on; }
   const OptionsLandscape & getOptions () const { return opts; }
   void setPositionOptions (const OptionsLandscapePosition & o) { opts.lonlat.position = o; }

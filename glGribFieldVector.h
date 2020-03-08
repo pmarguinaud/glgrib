@@ -26,7 +26,7 @@ public:
   void reSample (const View &);
   void toggleShowVector () { opts.vector.arrow.on = ! opts.vector.arrow.on; }
   void toggleShowNorm () { opts.vector.norm.on = ! opts.vector.norm.on; }
-  void resize (const View &) override;
+  void reSize (const View &) override;
   float getNormedMinValue () const override
   {
     std::vector<float> val = getMinValue ();

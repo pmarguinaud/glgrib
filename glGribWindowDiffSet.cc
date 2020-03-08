@@ -42,6 +42,9 @@ glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
   fixOpts (&opts1);
   fixOpts (&opts2);
 
+  int maxWidth, maxHeight;
+  glGrib::Window::getScreenSize (&maxWidth, &maxHeight);
+
 
   opts1.window.position.x = 0;
   opts1.window.position.y = 0;

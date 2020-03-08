@@ -88,7 +88,7 @@ public:
     return sqrt (n);
   }
   void clear () override;
-  void resize (const View &) override {}
+  void reSize (const View &) override {}
   const std::vector<FieldMetadata> & getMeta () const
   {
     return meta;

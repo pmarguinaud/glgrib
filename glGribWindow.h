@@ -19,6 +19,8 @@ class Window
 {
 public:
 
+  static void getScreenSize (int *, int *);
+
   enum
   {
     NONE    = 0,
@@ -54,7 +56,7 @@ public:
     o0.projection     = o.projection;
     o0.transformation = o.transformation;
     scene.d.view.setOptions (o0);
-    scene.resize ();
+    scene.reSize ();
   }
   void toggleRotate       () 
   { 
@@ -118,7 +120,7 @@ public:
   }
   void toggleWireframe ();
 
-  void resize (int, int);
+  void reSize (int, int);
   void scroll (double, double);
   void onclick (int, int, int);
   virtual void onkey (int, int, int, int, bool = false);
@@ -161,6 +163,7 @@ public:
   void resampleCurrentField ();
   void toggleShowVector ();
   void toggleShowNorm ();
+  void toggleFullScreen ();
   void showHelp ();
 
   bool isMaster () const { return master; }
@@ -197,6 +200,7 @@ public:
     prev = false;
     return _prev;
   }
+  void moveTo (int, int);
 protected:
   void showHelpItem (const char *, const char *, const char *, const char *);
   void createGFLWwindow (GLFWwindow * = nullptr);
@@ -212,6 +216,11 @@ private:
   double t0;
   int nframes = 0;
   std::string title = "";
+  struct
+  {
+    bool on = false;
+    int x, y, w, h;
+  } fullscreen;
 };
 
 

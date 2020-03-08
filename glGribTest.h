@@ -14,7 +14,7 @@ public:
   virtual ~Test () { clear (); }
   virtual void clear ();
   virtual void setup ();
-  void resize (const View &) override {}
+  void reSize (const View &) override {}
   float getScale () const override { return 1; }
 protected:
   OpenGLBufferPtr vertexbuffer, elementbuffer;

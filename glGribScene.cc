@@ -193,7 +193,7 @@ void glGrib::Scene::updateView ()
           o.lat = lat1 + dlat * a;
           o.fov = fov1 + dfov * a;
 
-	  resize ();
+	  reSize ();
         }
     }
   else if ((d.opts.scene.lon_at_hour >= 0.0f) && 
@@ -218,7 +218,7 @@ void glGrib::Scene::updateView ()
 
   d.view.setOptions (o);
 
-  d.ticks.resize (d.view);
+  d.ticks.reSize (d.view);
 }
 
 void glGrib::Scene::updateInterpolation ()
@@ -375,7 +375,7 @@ void glGrib::Scene::setup (const glGrib::Options & o)
         }
     }
 
-  resize ();
+  reSize ();
 }
 
 void glGrib::Scene::setViewport (int _width, int _height)
@@ -391,18 +391,18 @@ void glGrib::Scene::setViewport (int _width, int _height)
           * glm::lookAt (glm::vec3 (+1.0f,0.0f,0.0f), glm::vec3 (0,0,0), glm::vec3 (0,0,1));
 }
 
-void glGrib::Scene::resize ()
+void glGrib::Scene::reSize ()
 {
-  d.landscape.resize (d.view);
-  d.coast.resize (d.view);
-  d.border.resize (d.view);
-  d.rivers.resize (d.view);
-  d.departements.resize (d.view);
-  d.grid.resize (d.view);
-  d.ticks.resize (d.view);
+  d.landscape.reSize (d.view);
+  d.coast.reSize (d.view);
+  d.border.reSize (d.view);
+  d.rivers.reSize (d.view);
+  d.departements.reSize (d.view);
+  d.grid.reSize (d.view);
+  d.ticks.reSize (d.view);
   for (auto f : fieldlist)
     if (f)
-      f->resize (d.view);
+      f->reSize (d.view);
 }
 
 glGrib::Options glGrib::Scene::getOptions () const
@@ -457,7 +457,7 @@ void glGrib::Scene::setTicksOptions (const glGrib::OptionsTicks & o)
 {
   d.ticks.clear ();
   d.ticks.setup (o);
-  d.ticks.resize (d.view);
+  d.ticks.reSize (d.view);
 }
 
 void glGrib::Scene::setCoastOptions (const glGrib::OptionsCoast & o)

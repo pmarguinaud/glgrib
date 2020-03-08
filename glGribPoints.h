@@ -25,7 +25,7 @@ public:
   void setup (const OptionsPoints &, const std::vector<float> &, const std::vector<float> &, const std::vector<float> &);
   void render (const View &, const OptionsLight &) const override;
   const OptionsPoints & getOptions () const { return d.opts; }
-  void resize (const View &) override {}
+  void reSize (const View &) override {}
 private:
   struct
   {

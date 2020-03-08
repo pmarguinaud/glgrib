@@ -18,7 +18,7 @@ public:
   void show () { hidden = false; }
   bool visible () const { return ! hidden; }
   void clear () { ready_ = false; }
-  virtual void resize (const View &) = 0;
+  virtual void reSize (const View &) = 0;
   virtual float getScale () const  = 0;
 private:
   bool ready_ = false;

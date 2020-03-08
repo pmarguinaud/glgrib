@@ -13,7 +13,7 @@ public:
   Grid & operator=(const Grid &);
   void setup (const OptionsGrid &);
   void render (const View &, const OptionsLight &) const override;
-  void resize (const View &) override {}
+  void reSize (const View &) override {}
   const OptionsGrid & getOptions () const { return opts; }
   void setColorOptions (const OptionColor & o)
   {

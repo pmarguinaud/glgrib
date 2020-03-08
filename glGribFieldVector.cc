@@ -371,7 +371,7 @@ void glGrib::FieldVector::reSample (const glGrib::View & view)
 
 }
 
-void glGrib::FieldVector::resize (const glGrib::View & view)
+void glGrib::FieldVector::reSize (const glGrib::View & view)
 {
   reSample (view);
 }

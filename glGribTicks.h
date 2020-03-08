@@ -14,7 +14,7 @@ public:
   Ticks & operator=(const Ticks &);
   void setup (const OptionsTicks &);
   void render (const glm::mat4 &) const;
-  void resize (const View &);
+  void reSize (const View &);
   const OptionsTicks & getOptions () const { return opts; }
   void setupVertexAttributes ();
   void clear ();

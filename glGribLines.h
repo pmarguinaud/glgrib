@@ -15,7 +15,7 @@ public:
   void setup (const OptionsLines &, const std::vector<unsigned int> & = {0x00000000}, 
              const std::vector<unsigned int> & = {0x00000000});
   void render (const View &, const OptionsLight &) const override;
-  void resize (const View &) override {}
+  void reSize (const View &) override {}
   const OptionsLines & getOptions () const { return opts; }
 private:
   OptionsLines opts;

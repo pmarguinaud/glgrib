@@ -58,10 +58,10 @@ void scrollCallback (GLFWwindow * window, double xoffset, double yoffset)
 }
 
 
-void resizeCallback (GLFWwindow * window, int width, int height)
+void reSizeCallback (GLFWwindow * window, int width, int height)
 {
   glGrib::Window * gwindow = (glGrib::Window *)glfwGetWindowUserPointer (window);
-  gwindow->resize (width, height);
+  gwindow->reSize (width, height);
 }
 
 
@@ -94,6 +94,37 @@ void glGrib::Window::showHelpItem (const char * mm, const char * k, const char *
   printf ("%s", line);
 }
 
+void glGrib::Window::getScreenSize (int * width, int * height)
+{
+  GLFWmonitor * monitor = glfwGetPrimaryMonitor ();
+  const GLFWvidmode * vmode = glfwGetVideoMode (monitor);
+  *width = vmode->width;
+  *height = vmode->height;
+}
+
+void glGrib::Window::toggleFullScreen ()
+{
+  if (fullscreen.on)
+    {
+      fullscreen.on = false;
+      glfwSetWindowSize (window, fullscreen.w, fullscreen.h);
+      moveTo (fullscreen.x, fullscreen.y);
+    }
+  else
+    {
+      fullscreen.on = true;
+      glfwGetWindowPos (window, &fullscreen.x, &fullscreen.y);
+      glfwGetWindowSize (window, &fullscreen.w, &fullscreen.h);
+
+      int maxWidth, maxHeight;
+      getScreenSize (&maxWidth, &maxHeight);
+
+      glfwSetWindowSize (window, maxWidth, maxHeight);
+
+      moveTo (0, 0);
+   }
+}
+
 void glGrib::Window::onkey (int key, int scancode, int action, int mods, bool help)
 {
 
@@ -112,6 +143,7 @@ else if ((key == GLFW_KEY_##k) && (Window::mm == mods)) \
 
   if ((action == GLFW_PRESS || action == GLFW_REPEAT) || help)
     {
+      glGribWindowIfKey (CONTROL, F           ,  Toggle full screen mode, toggleFullScreen ());
       glGribWindowIfKey (NONE,    PAGE_UP     ,  One field forward,  next = true);
       glGribWindowIfKey (NONE,    PAGE_DOWN   ,  One field backward, prev = true);
       glGribWindowIfKey (NONE,    T     ,  Hide/show location & field value at cursor position  , toggleCursorposDisplay ());
@@ -812,7 +844,7 @@ void glGrib::Window::scroll (double xoffset, double yoffset)
         o.fov = 0.1f;
     }
   scene.d.view.setOptions (o);
-  scene.resize ();
+  scene.reSize ();
 
 }
 
@@ -849,7 +881,7 @@ void glGrib::Window::run (glGrib::Shell * shell)
 }
 
 
-void glGrib::Window::resize (int w, int h)
+void glGrib::Window::reSize (int w, int h)
 {
 
   opts.width = w;
@@ -963,7 +995,7 @@ void glGrib::Window::createGFLWwindow (GLFWwindow * context)
   glfwSetKeyCallback (window, keyCallback);
   glfwSetScrollCallback (window, scrollCallback);
   glfwSetMouseButtonCallback (window, mouseButtonCallback);
-  glfwSetFramebufferSizeCallback (window, resizeCallback);  
+  glfwSetFramebufferSizeCallback (window, reSizeCallback);  
 
 
 }
@@ -1062,7 +1094,7 @@ void glGrib::Window::setOptions (const glGrib::OptionsWindow & o)
 {
   if ((o.width != opts.width) || (o.height != opts.height))
     {
-      glfwSetWindowSize(window, o.width, o.height);
+      glfwSetWindowSize (window, o.width, o.height);
       opts.width = o.width;
       opts.height = o.height;
     }
@@ -1072,9 +1104,13 @@ void glGrib::Window::setOptions (const glGrib::OptionsWindow & o)
       glfwSetWindowTitle (window, opts.title.c_str ());
     }
   if ((o.position.x != opts.position.x) || (o.position.y != opts.position.y))
-    {
-      opts.position = o.position;
-      glfwSetWindowPos (window, opts.position.x, opts.position.y);
-    }
+    moveTo (o.position.x, o.position.y);
 }
+
+void glGrib::Window::moveTo (int x, int y)
+{
+  opts.position.x = x; opts.position.y = y;
+  glfwSetWindowPos (window, opts.position.x, opts.position.y);
+}
+
 

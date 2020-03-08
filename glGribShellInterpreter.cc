@@ -72,9 +72,25 @@ void glGrib::ShellInterpreter::stop ()
   wait ();
 }
 
+void glGrib::ShellInterpreter::start (const std::vector <std::string> & args)
+{
+  int argc = args.size ();
+  const char * argv[argc];
+  for (int i = 0; i < args.size (); i++)
+    argv[i] = args[i].c_str ();
+  start (argc, argv);
+}
+
 void glGrib::ShellInterpreter::start (int argc, const char * argv[])
 {
   gopts.parse (argc, argv);
   start (nullptr);
+}
+
+void glGrib::ShellInterpreter::execute (const std::vector<std::string> & args)
+{
+  if (args[0] == "start")
+    return start (args);
+  glGrib::Shell::execute (args);
 }
 

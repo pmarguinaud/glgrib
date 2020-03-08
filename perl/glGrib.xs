@@ -24,15 +24,12 @@ start (...)
 CODE:
     {
       glGrib::ShellInterpreter & shell = glGrib::ShellInterpreter::getInstance ();
-
-      int argc = items + 1;
-      const char * argv[argc];
+      std::vector<std::string> args = {"start"};
 
       for (int i = 0; i < items; i++)
-        argv[i+1] = (const char *)SvPV_nolen (ST (i));
+        args.push_back (std::string ((const char *)SvPV_nolen (ST (i))));
 
-      shell.start (argc, argv);
-
+      shell.start (args);
     }
 
 void

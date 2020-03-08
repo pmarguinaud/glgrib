@@ -32,6 +32,8 @@ public:
   void stop ();
 
   void start (int, const char * []);
+  void start (const std::vector<std::string> &);
+  void execute (const std::vector<std::string> &) override;
 
   const std::vector<std::string> & getList ()
   {

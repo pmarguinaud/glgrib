@@ -1,6 +1,7 @@
 *.x
 *.a
 *.o
+*.so
 *.swp
 *.rpm
 usr

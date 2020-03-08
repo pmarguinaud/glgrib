@@ -248,7 +248,6 @@ void glGrib::Shell::do_window_list (const std::vector<std::string> & args, glGri
 
 void glGrib::Shell::execute (const std::vector<std::string> & args)
 {
-  
   listStr.clear ();
 
   glGrib::Window * gwindow = wset->getWindowById (windowid);

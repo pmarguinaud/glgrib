@@ -13,7 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 
-glGrib::ShellInterpreter glGrib::ShellInterpreter::shellperl = glGrib::ShellInterpreter ();
+glGrib::ShellInterpreter glGrib::ShellInterpreter::shellinterp = glGrib::ShellInterpreter ();
 
 glGrib::ShellInterpreter::ShellInterpreter ()
 {
@@ -24,10 +24,14 @@ void glGrib::ShellInterpreter::runWset ()
   glGrib::glfwStart ();
 
   wset = glGrib::WindowSet::create (gopts);
+ 
+  hasstarted = true;
 
   wset->run (this);
 
   delete wset;
+
+  wset = nullptr;
 
   glGrib::glfwStop ();
 }
@@ -47,6 +51,8 @@ void * _run (void * data)
 void glGrib::ShellInterpreter::start (glGrib::WindowSet * ws)
 {
   pthread_create (&thread, nullptr, _run, this);
+
+  while (! hasstarted);
 }
 
 void glGrib::ShellInterpreter::run ()

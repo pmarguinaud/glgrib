@@ -1,12 +1,4 @@
-
-
-ECCODES_PREFIX=$(HOME)/install/eccodes-2.14.0
-
-LDFLAGS=-fopenmp -lGLEW -lGL -lglfw -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto -lpthread -lsqlite3 -Llfi -Wl,-rpath,$(HOME)/3d/glgrib/lfi -llfi -lcurl -lshp -L$(ECCODES_PREFIX)/lib -Wl,-rpath,$(ECCODES_PREFIX)/lib -leccodes -L$(HOME)/3d/usr/lib64 -Wl,-rpath,$(HOME)/3d/usr/lib64 -L$(HOME)/3d/usr/lib -Wl,-rpath,$(HOME)/3d/usr/lib
-RUNTEST=./runtest.pl $@ ./glGrib.x
-
-
-CXXFLAGS=-fPIC -O2 -fopenmp -std=c++11 -g -I$(HOME)/3d/usr/include -I$(ECCODES_PREFIX)/include  
+include makefile.inc
 
 all: glGrib.x 
 	@./shaders/expand.pl
@@ -17,10 +9,10 @@ libglGrib.so: $(OBJECTS)
 	g++ -shared -o libglGrib.so $(OBJECTS)
 
 glGrib.x: glGrib.cc libglGrib.so
-	g++ $(CXXFLAGS) -o glGrib.x glGrib.cc -Wl,-rpath,$(HOME)/3d/glgrib -L. -lglGrib $(LDFLAGS) 
+	g++ $(CXXFLAGS) -o glGrib.x glGrib.cc -Wl,-rpath,$(HOME)/3d/glgrib -L. $(LDFLAGS) 
 
 glGribDBase2SQLite.x: glGribDBase2SQLite.o glGribDBase.o
-	g++ $(CXXFLAGS) -o glGribDBase2SQLite.x glGribDBase2SQLite.o glGribDBase.o -lsqlite3
+	g++ $(CXXFLAGS) -o glGribDBase2SQLite.x glGribDBase2SQLite.o glGribDBase.o $(LDFLAGS)
 
 %.o: %.cc
 	g++ $(CXXFLAGS) -o $@ -c $<

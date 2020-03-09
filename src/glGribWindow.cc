@@ -96,23 +96,26 @@ void glGrib::Window::showHelpItem (const char * mm, const char * k, const char *
 
 void glGrib::Window::getScreenSize (int * width, int * height)
 {
+  int _width, _height;
+  if (width == nullptr)
+    width = &_width;
+  if (height == nullptr)
+    height = &_height;
   GLFWmonitor * monitor = glfwGetPrimaryMonitor ();
   const GLFWvidmode * vmode = glfwGetVideoMode (monitor);
   *width = vmode->width;
   *height = vmode->height;
 }
 
-void glGrib::Window::toggleFullScreen ()
+void glGrib::Window::setFullScreen ()
 {
-  if (fullscreen.on)
+  if (! opts.fullscreen.on)
     {
-      fullscreen.on = false;
       glfwSetWindowSize (window, fullscreen.w, fullscreen.h);
       moveTo (fullscreen.x, fullscreen.y);
     }
   else
     {
-      fullscreen.on = true;
       glfwGetWindowPos (window, &fullscreen.x, &fullscreen.y);
       glfwGetWindowSize (window, &fullscreen.w, &fullscreen.h);
 
@@ -123,6 +126,13 @@ void glGrib::Window::toggleFullScreen ()
 
       moveTo (0, 0);
    }
+}
+
+
+void glGrib::Window::toggleFullScreen ()
+{
+  opts.fullscreen.on = ! opts.fullscreen.on;
+  setFullScreen ();
 }
 
 void glGrib::Window::onkey (int key, int scancode, int action, int mods, bool help)
@@ -200,7 +210,7 @@ else if ((key == GLFW_KEY_##k) && (Window::mm == mods)) \
       glGribWindowIfKey (NONE,    L     ,  Turn on/off the light                                , toggleLight             ());
       glGribWindowIfKey (CONTROL, L     ,  Make current window master window                    , toggleMaster             ());
 
-      if (opts.fixLandscape.on)
+      if (opts.fixlandscape.on)
       {
       glGribWindowIfKey (CONTROL, UP    ,                                                       , fixLandscape (+1,  0,  0,  0));
       glGribWindowIfKey (CONTROL, DOWN  ,                                                       , fixLandscape (-1,  0,  0,  0));
@@ -919,9 +929,11 @@ glGrib::Window::Window ()
 }
 
 
-glGrib::Window::Window (const glGrib::Options & opts)
+glGrib::Window::Window (const glGrib::Options & _opts)
 {
-  create (opts);
+  create (_opts);
+  scene.setup (_opts);
+  reSize (opts.width, opts.height);
 }
 
 void glGrib::Window::create (const glGrib::Options & o)
@@ -956,8 +968,19 @@ void glGrib::Window::create (const glGrib::Options & o)
 void glGrib::Window::createGFLWwindow (GLFWwindow * context)
 {
   setHints ();
+
+  if (opts.fullscreen.on)
+    getScreenSize (&opts.width, &opts.height);
+  else if (opts.fullscreen.x.on)
+    getScreenSize (&opts.width, nullptr);
+  else if (opts.fullscreen.y.on)
+    getScreenSize (nullptr, &opts.height);
   
   window = glfwCreateWindow (opts.width, opts.height, title.c_str (), nullptr, context);
+
+  if (opts.fullscreen.on || opts.fullscreen.x.on || opts.fullscreen.y.on)
+    moveTo (0, 0);
+
   glfwSetWindowUserPointer (window, this);
 
   if (window == nullptr)
@@ -996,7 +1019,6 @@ void glGrib::Window::createGFLWwindow (GLFWwindow * context)
   glfwSetScrollCallback (window, scrollCallback);
   glfwSetMouseButtonCallback (window, mouseButtonCallback);
   glfwSetFramebufferSizeCallback (window, reSizeCallback);  
-
 
 }
 
@@ -1105,6 +1127,8 @@ void glGrib::Window::setOptions (const glGrib::OptionsWindow & o)
     }
   if ((o.position.x != opts.position.x) || (o.position.y != opts.position.y))
     moveTo (o.position.x, o.position.y);
+  if (opts.fullscreen.on != o.fullscreen.on)
+    toggleFullScreen ();
 }
 
 void glGrib::Window::moveTo (int x, int y)

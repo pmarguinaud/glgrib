@@ -119,8 +119,6 @@ glGrib::Window * glGrib::WindowSet::createWindow (const glGrib::Options & opts)
   else
     gwindow = new glGrib::Window (opts);
 
-  gwindow->scene.setup (opts);
-
   insert (gwindow);
   
   return gwindow;

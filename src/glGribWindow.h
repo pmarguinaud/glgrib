@@ -164,6 +164,7 @@ public:
   void toggleShowVector ();
   void toggleShowNorm ();
   void toggleFullScreen ();
+  void setFullScreen ();
   void showHelp ();
 
   bool isMaster () const { return master; }
@@ -218,8 +219,7 @@ private:
   std::string title = "";
   struct
   {
-    bool on = false;
-    int x, y, w, h;
+    int x = 100, y = 100, w = 800, h = 800;
   } fullscreen;
 };
 

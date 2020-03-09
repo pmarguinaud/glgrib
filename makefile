@@ -1,5 +1,6 @@
 
 all:
+	@mkdir -p bin lib
 	cd src/lfi && make -j4 && cd .. && make -j4
 
 clean:

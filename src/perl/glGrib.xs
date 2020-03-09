@@ -16,7 +16,7 @@ MODULE = glGrib		PACKAGE = glGrib
 
 
 BOOT:
-      glGrib::glGribPrefix = GLGRIB_PREFIX;
+      glGrib::glGribPrefix = GLGRIB_PREFIX "/share";
 
 
 void

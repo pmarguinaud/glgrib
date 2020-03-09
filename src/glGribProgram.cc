@@ -71,9 +71,9 @@ std::string slurp (const std::string & file, bool fatal = true)
 
 void glGrib::Program::read (const std::string & file)
 {
-  VertexShaderCode   = slurp (glGrib::Resolve (".shaders/" + file + ".vs"));
-  FragmentShaderCode = slurp (glGrib::Resolve (".shaders/" + file + ".fs"));
-  GeometryShaderCode = slurp (glGrib::Resolve (".shaders/" + file + ".gs"), false);
+  VertexShaderCode   = slurp (glGrib::Resolve ("/shaders/" + file + ".vs"));
+  FragmentShaderCode = slurp (glGrib::Resolve ("/shaders/" + file + ".fs"));
+  GeometryShaderCode = slurp (glGrib::Resolve ("/shaders/" + file + ".gs"), false);
   name = file;
 }
 

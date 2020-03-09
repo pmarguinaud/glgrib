@@ -1,6 +1,6 @@
 package glGrib;
 
-use 5.026001;
+use 5.024000;
 use strict;
 use warnings;
 

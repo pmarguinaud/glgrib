@@ -109,7 +109,7 @@ createCommand (help, SCAL);
 PyMODINIT_FUNC
 initglGrib ()
 {
-  glGrib::glGribPrefix = GLGRIB_PREFIX;
+  glGrib::glGribPrefix = GLGRIB_PREFIX "/share";
   glGribMethods.push_back ({NULL, NULL, 0, NULL});
   Py_InitModule ("glGrib", &glGribMethods[0]);
 }

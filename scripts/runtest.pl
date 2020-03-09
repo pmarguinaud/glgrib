@@ -43,13 +43,13 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
       next unless ($opts =~ m/^--/o);
       print "## $desc -- $name\n";
 
-      if (-f "share/test.ref/$name/TEST.gif")
+      if (-f "share/test/$name/TEST.gif")
         {
-          print "![](share/test.ref/$name/TEST.gif)\n";
+          print "![](share/test/$name/TEST.gif)\n";
         }
       else
         {
-          print "![](share/test.ref/$name/TEST_0000.png)\n";
+          print "![](share/test/$name/TEST_0000.png)\n";
         }
 
       print "\n";
@@ -279,7 +279,7 @@ for my $name (@name)
             my $thumb = "test.run/$name/thumb_$png";
             rename ($png, $new);
 #           system ('convert', -geometry => 300, $new, $thumb);
-            my $ref = "test.ref/$name/$png";
+            my $ref = "share/test/$name/$png";
             my $dif = "test.run/$name/diff_$png";
             if ((-f $ref) && ($comp))
               {

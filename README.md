@@ -1,7 +1,7 @@
 
 Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, gaussian grid.
   ## Clouds, 3 layers, t1198c2.2                                       -- t1198_3l
-![](share/test.ref/t1198_3l/TEST_0000.png)
+![](share/test/t1198_3l/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb 
@@ -13,7 +13,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[2].palette.name cloud 
 ```
 ## Clouds, 3 layers, t1798c2.2                                       -- t1798_3l
-![](share/test.ref/t1798_3l/TEST_0000.png)
+![](share/test/t1798_3l/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1798/Z.grb 
@@ -24,7 +24,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     cloud --field[1].palette.name cloud --field[2].palette.name cloud 
 ```
 ## AROME, Lambert geometry                                           -- aro
-![](share/test.ref/aro/TEST_0000.png)
+![](share/test/aro/TEST_0000.png)
 
 ```
     --field[0].path share/data/aro2.5/SURFIND.TERREMER.grb 
@@ -32,7 +32,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.lon 2.0 --view.fov 5 --coast.on --grid.on 
 ```
 ## AROME, Lambert geometry, polar stereo                             -- aro_polar
-![](share/test.ref/aro_polar/TEST_0000.png)
+![](share/test/aro_polar/TEST_0000.png)
 
 ```
     --field[0].path share/data/aro2.5/SURFIND.TERREMER.grb 
@@ -41,7 +41,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     POLAR_NORTH --view.lat 70 --view.fov 12 
 ```
 ## Font background color                                             -- background
-![](share/test.ref/background/TEST_0000.png)
+![](share/test/background/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb 
@@ -51,7 +51,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --scene.date.font.color.background white 
 ```
 ## Enable debug mode                                                 -- debug
-![](share/test.ref/debug/TEST_0000.png)
+![](share/test/debug/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb 
@@ -59,14 +59,14 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --window.debug.on 
 ```
 ## Select palette automatically                                      -- bw
-![](share/test.ref/bw/TEST_0000.png)
+![](share/test/bw/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb 
     --field[0].path share/data/t1198c2.2/N.grb --field[0].scale 1.03 
 ```
 ## Cities                                                            -- cities
-![](share/test.ref/cities/TEST_0000.png)
+![](share/test/cities/TEST_0000.png)
 
 ```
     --landscape.on --cities.on --cities.points.scale 1.01 
@@ -76,7 +76,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --cities.labels.font.scale 0.04 
 ```
 ## Colorbar                                                          -- colorbar
-![](share/test.ref/colorbar/TEST_0000.png)
+![](share/test/colorbar/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb 
@@ -85,7 +85,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     1000 
 ```
 ## Low-res contour                                                   -- contour1
-![](share/test.ref/contour1/TEST_0000.png)
+![](share/test/contour1/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --landscape.on 
@@ -94,7 +94,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     CONTOUR 
 ```
 ## Medium-res contour                                                -- contour2
-![](share/test.ref/contour2/TEST_0000.png)
+![](share/test/contour2/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --landscape.on 
@@ -103,7 +103,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     CONTOUR 
 ```
 ## High-res contour                                                  -- contour3
-![](share/test.ref/contour3/TEST_0000.png)
+![](share/test/contour3/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --landscape.on 
@@ -112,7 +112,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     CONTOUR 
 ```
 ## Contour & raster, Lambert geometry                                -- contour_aro1
-![](share/test.ref/contour_aro1/TEST_0000.png)
+![](share/test/contour_aro1/TEST_0000.png)
 
 ```
     --field[0].path share/data/aro_small/S041WIND.U.PHYS.grb 
@@ -122,7 +122,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     0.5 --coast.on --grid.on 
 ```
 ## Contour & raster, Lambert geometry                                -- contour_aro2
-![](share/test.ref/contour_aro2/TEST_0000.png)
+![](share/test/contour_aro2/TEST_0000.png)
 
 ```
     --field[0].path share/data/aro2.5/S090WIND.U.PHYS.grb --field[0].scale 
@@ -132,7 +132,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --coast.on --grid.on 
 ```
 ## Contour in diff mode, global lat/lon geometry                     -- contour_diff
-![](share/test.ref/contour_diff/TEST_0000.png)
+![](share/test/contour_diff/TEST_0000.png)
 
 ```
     --field[0].diff.on --field[0].type CONTOUR --field[0].path 
@@ -141,7 +141,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     1.01 
 ```
 ## Low-res simple contour, limited area lat/lon geometry             -- contour_latlon1
-![](share/test.ref/contour_latlon1/TEST_0000.png)
+![](share/test/contour_latlon1/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --landscape.on 
@@ -150,7 +150,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     CONTOUR 
 ```
 ## Low-res simple contour, limited area lat/lon geometry             -- contour_latlon2
-![](share/test.ref/contour_latlon2/TEST_0000.png)
+![](share/test/contour_latlon2/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --landscape.on 
@@ -159,7 +159,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].type CONTOUR 
 ```
 ## Medium-res contour, limited area lat/lon geometry                 -- contour_latlon3
-![](share/test.ref/contour_latlon3/TEST_0000.png)
+![](share/test/contour_latlon3/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --landscape.on 
@@ -168,7 +168,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].type CONTOUR 
 ```
 ## Medium-res contour and raster, global geometry                    -- contour_latlon4
-![](share/test.ref/contour_latlon4/TEST_0000.png)
+![](share/test/contour_latlon4/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --field[0].path 
@@ -178,7 +178,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[1].scale 1.001 
 ```
 ## Contour on stretched/rotated gaussian geometry                    -- contour_stretched
-![](share/test.ref/contour_stretched/TEST_0000.png)
+![](share/test/contour_stretched/TEST_0000.png)
 
 ```
     --window.width 1024 --window.height 1024 --field[0].path 
@@ -186,7 +186,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     CONTOUR 
 ```
 ## Contour with dashed lines, gaussian geometry                      -- dashed1
-![](share/test.ref/dashed1/TEST_0000.png)
+![](share/test/dashed1/TEST_0000.png)
 
 ```
     --landscape.on --landscape.wireframe.on --landscape.geometry_path 
@@ -197,7 +197,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.fov 5 
 ```
 ## Contour with dashed thick lines, gaussian geometry                -- dashed2
-![](share/test.ref/dashed2/TEST_0000.png)
+![](share/test/dashed2/TEST_0000.png)
 
 ```
     --landscape.on --landscape.wireframe.on --landscape.geometry_path 
@@ -208,7 +208,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     XXXXXXXXX-X- --view.fov 5 --field[0].contour.widths 5 
 ```
 ## Contour with dashed thick colored lines, gaussian geometry        -- dashed3
-![](share/test.ref/dashed3/TEST_0000.png)
+![](share/test/dashed3/TEST_0000.png)
 
 ```
     --landscape.on --landscape.wireframe.on --landscape.geometry_path 
@@ -219,7 +219,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].contour.widths 5 --field[0].palette.colors red green blue 
 ```
 ## Display French departements                                       -- departements
-![](share/test.ref/departements/TEST_0000.png)
+![](share/test/departements/TEST_0000.png)
 
 ```
     --departements.on --departements.lines.color blue 
@@ -228,7 +228,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.lat 46.7 --view.fov 5 --coast.on 
 ```
 ## Temperature field on Europe, over global cloud fields             -- eurat01
-![](share/test.ref/eurat01/TEST_0000.png)
+![](share/test/eurat01/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb 
@@ -238,14 +238,14 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[1].palette.name cold_hot 
 ```
 ## Test FA format, display sea fraction                              -- fa
-![](share/test.ref/fa/TEST_0000.png)
+![](share/test/fa/TEST_0000.png)
 
 ```
     --field[0].path share/data/fa/PGD.t479.fa%SFX.FRAC_SEA 
     --field[0].scale 1.03 
 ```
 ## Surface temperature, global lat/lon field                         -- glob01
-![](share/test.ref/glob01/TEST_0000.png)
+![](share/test/glob01/TEST_0000.png)
 
 ```
     --field[0].path share/data/glob01/lfpw_0_0_0_sfc_0_t.grib2 
@@ -253,7 +253,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --grid.on 
 ```
 ## Lambert geometry, French Guyana                                   -- guyane
-![](share/test.ref/guyane/TEST_0000.png)
+![](share/test/guyane/TEST_0000.png)
 
 ```
     --landscape.on --field[0].user_pref.off --field[0].path 
@@ -262,7 +262,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.fov 3 --coast.on --grid.on 
 ```
 ## Image on top of cloud fields                                      -- image
-![](share/test.ref/image/TEST_0000.png)
+![](share/test/image/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb 
@@ -272,7 +272,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --scene.image.y1 0.1 
 ```
 ## Interpolate field over time                                       -- interpolation
-![](share/test.ref/interpolation/TEST_0000.png)
+![](share/test/interpolation/TEST_0000.png)
 
 ```
     --field[0].path share/data/interp/01.grb share/data/interp/36.grb 
@@ -283,20 +283,20 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     red --scene.date.on --coast.on --grid.on 
 ```
 ## Landscape over Europe only                                        -- landscape_eurat01
-![](share/test.ref/landscape_eurat01/TEST_0000.png)
+![](share/test/landscape_eurat01/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path 
     share/data/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --coast.on --grid.on 
 ```
 ## Display mapscale                                                  -- mapscale
-![](share/test.ref/mapscale/TEST_0000.png)
+![](share/test/mapscale/TEST_0000.png)
 
 ```
     --landscape.on --mapscale.on 
 ```
 ## Display contour field using Mercator projection                   -- mercator
-![](share/test.ref/mercator/TEST_0000.png)
+![](share/test/mercator/TEST_0000.png)
 
 ```
     --field[0].diff.on --field[0].type CONTOUR --field[0].path 
@@ -305,14 +305,14 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     1.01 --view.projection MERCATOR --landscape.on 
 ```
 ## Display field with missing values                                 -- missingvalue
-![](share/test.ref/missingvalue/TEST_0000.png)
+![](share/test/missingvalue/TEST_0000.png)
 
 ```
     --field[0].path share/data/t49/SFX.CLAY.grb --coast.on --grid.on 
     --field[0].user_pref.off 
 ```
 ## Display field with keeping field values in RAM                    -- novalue
-![](share/test.ref/novalue/TEST_0000.png)
+![](share/test/novalue/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1798/Z.grb 
@@ -320,7 +320,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     1.03 --field[0].palette.name cloud_auto --field[0].no_value_pointer.on 
 ```
 ## Display field in offscreen mode                                   -- offscreen
-![](share/test.ref/offscreen/TEST_0000.png)
+![](share/test/offscreen/TEST.gif)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb 
@@ -333,13 +333,13 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --scene.light.rotate.rate 10 
 ```
 ## Display field with options in file                                -- optionsfile
-![](share/test.ref/optionsfile/TEST_0000.png)
+![](share/test/optionsfile/TEST_0000.png)
 
 ```
     --{share/data/options.list} 
 ```
 ## Display field with palette gradient color                         -- palette_values_grad
-![](share/test.ref/palette_values_grad/TEST_0000.png)
+![](share/test/palette_values_grad/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb 
@@ -350,7 +350,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --colorbar.on --window.width 1200 
 ```
 ## Display field with discrete palette                               -- palette_values
-![](share/test.ref/palette_values/TEST_0000.png)
+![](share/test/palette_values/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb 
@@ -361,7 +361,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --colorbar.on --window.width 1200 
 ```
 ## Display field difference                                          -- scalar_diff
-![](share/test.ref/scalar_diff/TEST_0000.png)
+![](share/test/scalar_diff/TEST_0000.png)
 
 ```
     --field[0].diff.on --field[0].path share/data/interp/01.grb 
@@ -370,7 +370,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     +10 }- 
 ```
 ## Select field from GRIB file                                       -- select_grib
-![](share/test.ref/select_grib/TEST_0000.png)
+![](share/test/select_grib/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb 
@@ -379,7 +379,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].scale 1.03 
 ```
 ## Test interactive shell                                            -- shell
-![](share/test.ref/shell/TEST_0000.png)
+![](share/test/shell/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb 
@@ -387,7 +387,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --shell.on 
 ```
 ## Wind on small AROME domain (raster & vector)                      -- small_aro
-![](share/test.ref/small_aro/TEST_0000.png)
+![](share/test/small_aro/TEST_0000.png)
 
 ```
     --field[0].type VECTOR --field[0].path 
@@ -396,7 +396,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.lon 26.64 --view.lat 67.36 --view.fov 0.5 --coast.on --grid.on 
 ```
 ## Low-res ARPEGE resolution                                         -- small
-![](share/test.ref/small/TEST_0000.png)
+![](share/test/small/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t49/Z.grb 
@@ -404,7 +404,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --coast.on --grid.on --field[0].user_pref.off 
 ```
 ## Display text                                                      -- text
-![](share/test.ref/text/TEST_0000.png)
+![](share/test/text/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb 
@@ -415,7 +415,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --scene.text.font.color.background white 
 ```
 ## Display title (field name)                                        -- title
-![](share/test.ref/title/TEST_0000.png)
+![](share/test/title/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb 
@@ -423,7 +423,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --scene.title.on 
 ```
 ## Test travelling option                                            -- travelling
-![](share/test.ref/travelling/TEST_0000.png)
+![](share/test/travelling/TEST_0000.png)
 
 ```
     --scene.travelling.on --scene.travelling.pos1.lon 0 
@@ -434,7 +434,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     share/data/t1198c2.2/N.grb --field[0].scale 1.03 
 ```
 ## Display vector norm & arrow, Lambert geometry                     -- vector
-![](share/test.ref/vector/TEST_0000.png)
+![](share/test/vector/TEST_0000.png)
 
 ```
     --field[0].type VECTOR --field[0].path 
@@ -444,7 +444,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.fov 5 --coast.on --grid.on 
 ```
 ## Display vector norm, global lat/lon geometry                      -- vector_glob25
-![](share/test.ref/vector_glob25/TEST_0000.png)
+![](share/test/vector_glob25/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path 
@@ -454,7 +454,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --coast.on --grid.on 
 ```
 ## Vector arrow, stretched/rotated gaussian geometry                 -- vector_t1798
-![](share/test.ref/vector_t1798/TEST_0000.png)
+![](share/test/vector_t1798/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path 
@@ -463,7 +463,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].scale 1.01 --coast.on --grid.on 
 ```
 ## Display landscape in WebMercator projection                       -- webmercator
-![](share/test.ref/webmercator/TEST_0000.png)
+![](share/test/webmercator/TEST_0000.png)
 
 ```
     --landscape-{ --on --path 
@@ -471,7 +471,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --projection WEBMERCATOR }- --grid.on 
 ```
 ## Display wind on stretched/rotated gaussian geometry               -- wind_arp
-![](share/test.ref/wind_arp/TEST_0000.png)
+![](share/test/wind_arp/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path share/data/t31c2.4/Z.grb 
@@ -481,7 +481,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --coast.on --grid.on 
 ```
 ## Wind on global lat/lon geometry                                   -- wind_glob25
-![](share/test.ref/wind_glob25/TEST_0000.png)
+![](share/test/wind_glob25/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path 
@@ -492,7 +492,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     1.01 --coast.on --grid.on 
 ```
 ## Wind on stretched/rotated gaussian geometry                       -- wind_t1798
-![](share/test.ref/wind_t1798/TEST_0000.png)
+![](share/test/wind_t1798/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path 
@@ -502,7 +502,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --coast.on --grid.on 
 ```
 ## Streamlines on t1198c2.2 (surface)                                -- stream_t1198c22
-![](share/test.ref/stream_t1198c22/TEST_0000.png)
+![](share/test/stream_t1198c22/TEST_0000.png)
 
 ```
     --field[0].scale 1.01 --field[0].path 
@@ -519,7 +519,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     landscape/white.png 
 ```
 ## Streamlines on GLOB025 (high level)                               -- stream_glob025
-![](share/test.ref/stream_glob025/TEST_0000.png)
+![](share/test/stream_glob025/TEST_0000.png)
 
 ```
     --field[0].path share/data/wind+temp/glob025/P020WIND.U.PHYS.grb 
@@ -534,7 +534,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --coast.lines.color pink 
 ```
 ## Streamlines on EURAT01 (surface)                                  -- stream_eurat01
-![](share/test.ref/stream_eurat01/TEST_0000.png)
+![](share/test/stream_eurat01/TEST_0000.png)
 
 ```
     --field[0].path share/data/wind+temp/eurat01/H020WIND.U.PHYS.grb 
@@ -549,7 +549,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --coast.lines.color pink --view.lat 45 --view.lon 5 --view.fov 10 
 ```
 ## Streamlines on AROME 2.5km (surface)                              -- stream_lambert
-![](share/test.ref/stream_lambert/TEST_0000.png)
+![](share/test/stream_lambert/TEST_0000.png)
 
 ```
     --field[0].path share/data/aro2.5/S090WIND.U.PHYS.grb 
@@ -565,7 +565,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     2 --view.lat 46.7 --view.fov 4 
 ```
 ## Gaussian grid wireframe                                           -- gauss_wireframe
-![](share/test.ref/gauss_wireframe/TEST_0000.png)
+![](share/test/gauss_wireframe/TEST_0000.png)
 
 ```
     --field[0]-{ --path share/data/wind+temp/t0149c2.2/S105TEMPERATURE.grb 
@@ -573,7 +573,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.fov 5 
 ```
 ## Scalar field displayed using points                               -- points_scalar
-![](share/test.ref/points_scalar/TEST_0000.png)
+![](share/test/points_scalar/TEST_0000.png)
 
 ```
     --field[0]-{ --path share/data/wind+temp/t0224/S105TEMPERATURE.grb 
@@ -581,7 +581,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --size.factor.off }- }- --coast.on --coast.lines.color green 
 ```
 ## Scalar field with points (stretched/rotated grid)                 -- points_scalar_rot
-![](share/test.ref/points_scalar_rot/TEST_0000.png)
+![](share/test/points_scalar_rot/TEST_0000.png)
 
 ```
     --field[0]-{ --scale 1.01 --path 
@@ -590,7 +590,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --coast.on --coast.lines.color green --landscape.on 
 ```
 ## Scalar field on octahedral grid                                   -- gauss_octahedral
-![](share/test.ref/gauss_octahedral/TEST_0000.png)
+![](share/test/gauss_octahedral/TEST_0000.png)
 
 ```
     --field[0].path ./share/data/ecmwf/ecmf_0_1_0_ml_137_q.grib2 
@@ -598,7 +598,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     0.005 0.03 --colorbar.on --window.width 1200 
 ```
 ## Landscape with orography (T479)                                   -- land_orography
-![](share/test.ref/land_orography/TEST_0000.png)
+![](share/test/land_orography/TEST_0000.png)
 
 ```
     --landscape.on --landscape.geometry_path ./share/data/t479/Z.grb 
@@ -607,7 +607,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --landscape.flat.off 
 ```
 ## Spherical harmonic (T1198)                                        -- harmonic
-![](share/test.ref/harmonic/TEST_0000.png)
+![](share/test/harmonic/TEST_0000.png)
 
 ```
     --field[0].path share/data/harmonics/SPEC.+0008.+0004.grb 
@@ -616,7 +616,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.fov 25 --view.lon 20 --scene.light.on 
 ```
 ## Spherical harmonic (T1198C2.2)                                    -- harmonic_stretch
-![](share/test.ref/harmonic_stretch/TEST_0000.png)
+![](share/test/harmonic_stretch/TEST_0000.png)
 
 ```
     --field[0].path share/data/harmonics/SPEC.+0008.+0004_stretched.grb 
@@ -625,14 +625,14 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.fov 25 --view.lon 20 --scene.light.on 
 ```
 ## Orography with height                                             -- orography_height
-![](share/test.ref/orography_height/TEST_0000.png)
+![](share/test/orography_height/TEST_0000.png)
 
 ```
     --field[0].path ./share/data/t1798/Z.grb --field[0].palette.name topo 
     --field[0].scale 1.005 --landscape.on --field[0].geometry.height.on 
 ```
 ## Height = vector norm value                                        -- height_vector
-![](share/test.ref/height_vector/TEST_0000.png)
+![](share/test/height_vector/TEST_0000.png)
 
 ```
     --field[0].type VECTOR --field[0].path 
@@ -642,7 +642,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].vector.arrow.color red --field[0].palette.name summer 
 ```
 ## Height = scalar norm value                                        -- height_scalar
-![](share/test.ref/height_scalar/TEST_0000.png)
+![](share/test/height_scalar/TEST_0000.png)
 
 ```
     --field[0].path share/data/wind+temp/t0224/S105TEMPERATURE.grb 
@@ -650,7 +650,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.fov 24 
 ```
 ## Orography (raster & contour) with height                          -- contour_height
-![](share/test.ref/contour_height/TEST_0000.png)
+![](share/test/contour_height/TEST_0000.png)
 
 ```
     --field[0].path share/data/t479/Z.grb --field[0].scale 1.005 
@@ -659,20 +659,20 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].geometry.height.on --view.lat -16 --view.lon 134 
 ```
 ## Grid labels                                                       -- grid_labels
-![](share/test.ref/grid_labels/TEST_0000.png)
+![](share/test/grid_labels/TEST_0000.png)
 
 ```
     --grid.on --grid.labels.on --landscape.on 
 ```
 ## Display low & high                                                -- hilo
-![](share/test.ref/hilo/TEST_0000.png)
+![](share/test/hilo/TEST_0000.png)
 
 ```
     --field[0].path share/data/wind+temp/t0224/S105TEMPERATURE.grb 
     --field[0].hilo.on --field[0].hilo.font.color.foreground green 
 ```
 ## Contour shading                                                   -- contour5
-![](share/test.ref/contour5/TEST_0000.png)
+![](share/test/contour5/TEST_0000.png)
 
 ```
     --field[0].path share/data/t850.grb --field[0].palette-{ --colors 
@@ -688,7 +688,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     278.15 283.15 293.15 303.15 --field[0].palette.linear.on 
 ```
 ## Wind & vorticity                                                  -- wind4
-![](share/test.ref/wind4/TEST_0000.png)
+![](share/test/wind4/TEST_0000.png)
 
 ```
     --field[0].path share/data/wind4/vorticity.grib 
@@ -711,7 +711,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --window.width 1500 --grid.resolution 18 
 ```
 ## Display sphere partitionning (t1198)                              -- myproc
-![](share/test.ref/myproc/TEST_0000.png)
+![](share/test/myproc/TEST_0000.png)
 
 ```
     --field[0].scalar.discrete.on --field[0].path 
@@ -723,7 +723,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     36 --view.lon -15 
 ```
 ## Display sphere partitionning (t1192c2.2)                          -- myproc22
-![](share/test.ref/myproc22/TEST_0000.png)
+![](share/test/myproc22/TEST_0000.png)
 
 ```
     --field[0].scalar.discrete.on --field[0].path 
@@ -735,7 +735,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     }- 
 ```
 ## SST on lat/lon grid                                               -- sst
-![](share/test.ref/sst/TEST_0000.png)
+![](share/test/sst/TEST_0000.png)
 
 ```
     --field[0].scale 1.001 --field[0].path share/data/sst.grib 
@@ -750,7 +750,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.fov 13 --grid.color gray 
 ```
 ## 2m temperature                                                    -- contour9
-![](share/test.ref/contour9/TEST_0000.png)
+![](share/test/contour9/TEST_0000.png)
 
 ```
     --field[0]-{ --path share/data/2m_temperature.grib --palette.values 
@@ -769,13 +769,13 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.lat 52 --view.fov 3 --view.clip.xmin 0.15 
 ```
 ## Display land surface                                              -- land
-![](share/test.ref/land/TEST_0000.png)
+![](share/test/land/TEST_0000.png)
 
 ```
     --land.on 
 ```
 ## Display land surface (high resolution)                            -- land_high
-![](share/test.ref/land_high/TEST_0000.png)
+![](share/test/land_high/TEST_0000.png)
 
 ```
     --land.on --land.layers[0].path coastlines/shp/GSHHS_h_L1.shp 
@@ -785,7 +785,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.lat 60 --view.fov 2 
 ```
 ## MPI view                                                          -- mpiview
-![](share/test.ref/mpiview/TEST_0000.png)
+![](share/test/mpiview/TEST_0000.png)
 
 ```
     --field[0].path share/data/discrete/SURFTEMPERATURE.grb 
@@ -794,7 +794,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     31 --view.lat 41 
 ```
 ## Lat/lon streamlines                                               -- latlonstream
-![](share/test.ref/latlonstream/TEST_0000.png)
+![](share/test/latlonstream/TEST_0000.png)
 
 ```
     --field[0].path share/data/advection_850.grib%shortName="u" 
@@ -810,7 +810,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --window.width 1200 
 ```
 ## Wind on global lat/lon grid                                       -- windlatlon
-![](share/test.ref/windlatlon/TEST_0000.png)
+![](share/test/windlatlon/TEST_0000.png)
 
 ```
     --field[0].path share/data/data_uv.grib%shortName="u" 
@@ -824,7 +824,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.projection LATLON --window.width 1650 --window.height 750 
 ```
 ## Z500, T850                                                        -- z500t850
-![](share/test.ref/z500t850/TEST_0000.png)
+![](share/test/z500t850/TEST_0000.png)
 
 ```
     --coast.lines.color black --coast.on --colorbar.font.color.foreground 
@@ -847,7 +847,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --window.width 1200 
 ```
 ## Joachim storm                                                     -- joachim
-![](share/test.ref/joachim/TEST_0000.png)
+![](share/test/joachim/TEST_0000.png)
 
 ```
     --field[0].scale 1.0005 --field[0].path 
@@ -881,7 +881,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.lon 4 --view.lat 51 --view.fov 3 
 ```
 ## Isofill test                                                      -- isofill
-![](share/test.ref/isofill/TEST_0000.png)
+![](share/test/isofill/TEST_0000.png)
 
 ```
     --field[0].path share/data/wind+temp/t1798/S105TEMPERATURE.grb 
@@ -891,7 +891,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --window.width 1200 
 ```
 ## Isofill test wireframe                                            -- isofillwire
-![](share/test.ref/isofillwire/TEST_0000.png)
+![](share/test/isofillwire/TEST_0000.png)
 
 ```
     --field[0].path share/data/wind+temp/t1798/S105TEMPERATURE.grb 
@@ -901,7 +901,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.lon 14.12 --view.fov 0.5 --window.width 1200 
 ```
 ## Isofill temperature                                               -- isofilltemp
-![](share/test.ref/isofilltemp/TEST_0000.png)
+![](share/test/isofilltemp/TEST_0000.png)
 
 ```
     --field[0].path share/data/wind+temp/t1798/S105TEMPERATURE.grb 
@@ -909,7 +909,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --colorbar.on --window.width 1200 --coast.on --coast.lines.color black 
 ```
 ## Isofill Lambert                                                   -- isofilllambert
-![](share/test.ref/isofilllambert/TEST_0000.png)
+![](share/test/isofilllambert/TEST_0000.png)
 
 ```
     --landscape.on --field[0].type ISOFILL --field[0].user_pref.off 
@@ -919,7 +919,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --window.width 1200 --coast.lines.scale 1.02 --coast.lines.color black 
 ```
 ## Isofill latlon                                                    -- isofilllatlon
-![](share/test.ref/isofilllatlon/TEST_0000.png)
+![](share/test/isofilllatlon/TEST_0000.png)
 
 ```
     --landscape.on --field[0].type ISOFILL --field[0].path 
@@ -929,14 +929,14 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --coast.lines.color black 
 ```
 ## Old ARPEGE                                                        -- oldarpege
-![](share/test.ref/oldarpege/TEST_0000.png)
+![](share/test/oldarpege/TEST_0000.png)
 
 ```
     --field[0].path share/data/arpege.123.fa%SURFTEMPERATURE 
     --scene.date.on --scene.date.font.scale 0.03 
 ```
 ## Contour with labels (dummy field)                                 -- contourlabels
-![](share/test.ref/contourlabels/TEST_0000.png)
+![](share/test/contourlabels/TEST_0000.png)
 
 ```
     --landscape.on --field[0].path share/data/contour/latlon18x13.grb 
@@ -947,7 +947,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --font.color.background black }- --coast.on --coast.lines.color pink 
 ```
 ## Contour with labels                                               -- contourlabels2
-![](share/test.ref/contourlabels2/TEST_0000.png)
+![](share/test/contourlabels2/TEST_0000.png)
 
 ```
     --landscape.on --field[0].path share/data/z500.grb --field[0].scale 
@@ -960,7 +960,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --font.scale 0.04 --format %.0f }- --coast.on --coast.lines.color pink 
 ```
 ## AROME 1.3km                                                       -- arome13
-![](share/test.ref/arome13/TEST_0000.png)
+![](share/test/arome13/TEST_0000.png)
 
 ```
     --field[0].path share/data/aro1.3/CLSVENT.ZONAL.grb 
@@ -970,7 +970,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --coast.lines.color cyan --coast.on 
 ```
 ## Polynesie                                                         -- polynesie
-![](share/test.ref/polynesie/TEST_0000.png)
+![](share/test/polynesie/TEST_0000.png)
 
 ```
     --field[0].path share/data/polynesie/SURFTEMPERATURE.grb --view.lat 
@@ -979,7 +979,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     1200 --colorbar.font.color.background black 
 ```
 ## Wind Australia                                                    -- windaustralia
-![](share/test.ref/windaustralia/TEST_0000.png)
+![](share/test/windaustralia/TEST_0000.png)
 
 ```
     --field[0].path share/data/uv200.grib%paramId=131 
@@ -992,7 +992,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].vector.scale 10 --window.width 1200 --field[0].scale 1.001 
 ```
 ## Wind Australia                                                    -- windaustralia2
-![](share/test.ref/windaustralia2/TEST_0000.png)
+![](share/test/windaustralia2/TEST_0000.png)
 
 ```
     --field[0].path share/data/uv200.grib%paramId=131 
@@ -1006,7 +1006,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].vector.density 10 
 ```
 ## Wind Australia                                                    -- windaustralia3
-![](share/test.ref/windaustralia3/TEST_0000.png)
+![](share/test/windaustralia3/TEST_0000.png)
 
 ```
     --field[0].path share/data/uv200.grib%paramId=131 
@@ -1025,7 +1025,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --colorbar.on --field[0].vector.density 20 --field[0].vector.scale 2 
 ```
 ## Precipitations Europe                                             -- precipeurope
-![](share/test.ref/precipeurope/TEST_0000.png)
+![](share/test/precipeurope/TEST_0000.png)
 
 ```
     --field[0].path share/data/total_precipitation.grib --coast.on 
@@ -1047,7 +1047,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.clip.xmin 0.15 
 ```
 ## Z500                                                              -- z500europe
-![](share/test.ref/z500europe/TEST_0000.png)
+![](share/test/z500europe/TEST_0000.png)
 
 ```
     --field[0]-{ --contour.labels.format %5.0f --contour.widths 1 2 1 1 2 
@@ -1061,7 +1061,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.projection POLAR_NORTH 
 ```
 ## Temperature, contour, colors                                      -- tempcontour
-![](share/test.ref/tempcontour/TEST_0000.png)
+![](share/test/tempcontour/TEST_0000.png)
 
 ```
     --field[0].scale 1.001 --field[0].path share/data/t850.grib 
@@ -1080,7 +1080,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --grid.resolution 18 --grid.on 
 ```
 ## Wind Australia                                                    -- windaustralia4
-![](share/test.ref/windaustralia4/TEST_0000.png)
+![](share/test/windaustralia4/TEST_0000.png)
 
 ```
     --field[0].path share/data/uv200.grib%paramId=131 
@@ -1095,7 +1095,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     15 
 ```
 ## Wind + geopotential                                               -- windgeop
-![](share/test.ref/windgeop/TEST_0000.png)
+![](share/test/windgeop/TEST_0000.png)
 
 ```
     --field[0].palette.colors black --field[0].contour.widths 1 2 1 1 2 1 
@@ -1112,7 +1112,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --grid.resolution 18 
 ```
 ## Simple shading                                                    -- shading
-![](share/test.ref/shading/TEST_0000.png)
+![](share/test/shading/TEST_0000.png)
 
 ```
     --field[0].path share/data/t850.grb --field[0].palette.values 245.15 
@@ -1126,7 +1126,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     0.04 --window.width 1200 --view.lat 34 --view.lon 20 
 ```
 ## Coastlines                                                        -- coastlines
-![](share/test.ref/coastlines/TEST_0000.png)
+![](share/test/coastlines/TEST_0000.png)
 
 ```
     --landscape.on --landscape.scale 0.999 --land.on --landscape.color 
@@ -1138,7 +1138,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.lat 44.5394 --view.lon 27.5924 --window.width 1200 
 ```
 ## Rain, southern America                                            -- southamerica
-![](share/test.ref/southamerica/TEST_0000.png)
+![](share/test/southamerica/TEST_0000.png)
 
 ```
     --field[0].path share/data/total_precipitation.grib 
@@ -1151,7 +1151,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.lon -60.4499 --grid.on --grid.color black 
 ```
 ## Grid ticks & labels                                               -- tickslabels
-![](share/test.ref/tickslabels/TEST_0000.png)
+![](share/test/tickslabels/TEST_0000.png)
 
 ```
     --landscape-{ --on --scale 0.999 }- --grid-{ --on --resolution 18 }- 
@@ -1160,7 +1160,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --view.fov 7 --view.lat 50 --view.lon 0 
 ```
 ## Stream motion                                                     -- streammotion
-![](share/test.ref/streammotion/TEST_0000.png)
+![](share/test/streammotion/TEST.gif)
 
 ```
     --field[0].stream.motion.on --field[0].path 
@@ -1175,7 +1175,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --window.offscreen.on --window.offscreen.frames 36 
 ```
 ## Zoom with Schmidt transform                                       -- zoomschmidt1
-![](share/test.ref/zoomschmidt1/TEST_0000.png)
+![](share/test/zoomschmidt1/TEST_0000.png)
 
 ```
     --field[0].path share/data/wind+temp/t1798/S105TEMPERATURE.grb 

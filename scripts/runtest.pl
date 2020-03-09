@@ -43,13 +43,13 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
       next unless ($opts =~ m/^--/o);
       print "## $desc -- $name\n";
 
-      if (-f "test.ref/$name/TEST.gif")
+      if (-f "share/test.ref/$name/TEST.gif")
         {
-          print "![](test.ref/$name/TEST.gif)\n";
+          print "![](share/test.ref/$name/TEST.gif)\n";
         }
       else
         {
-          print "![](test.ref/$name/TEST_0000.png)\n";
+          print "![](share/test.ref/$name/TEST_0000.png)\n";
         }
 
       print "\n";

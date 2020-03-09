@@ -113,7 +113,6 @@ void glGrib::WindowSet::close ()
 glGrib::Window * glGrib::WindowSet::createWindow (const glGrib::Options & opts)
 {
   glGrib::Window * gwindow = nullptr;
-
   if (opts.window.offscreen.on)
     gwindow = new glGrib::WindowOffscreen (opts);
   else

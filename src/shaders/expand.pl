@@ -42,7 +42,9 @@ sub expand
   return @code;
 }
 
-mkdir ('.shaders');
+my $TOP = shift (@ARGV) || '.';
+
+mkdir ("$TOP/.shaders");
 
 for my $f (<shaders/src/*.vs>, <shaders/src/*.fs>, <shaders/src/*.gs>)
   {
@@ -55,5 +57,5 @@ for my $f (<shaders/src/*.vs>, <shaders/src/*.fs>, <shaders/src/*.gs>)
         @text = @code;
       }
     $f = &basename ($f);
-    'FileHandle'->new (">.shaders/$f")->print (join ('', @code));
+    'FileHandle'->new (">$TOP/.shaders/$f")->print (join ('', @code));
   }

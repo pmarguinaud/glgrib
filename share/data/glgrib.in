@@ -1,6 +1,6 @@
 #set --shell.prompt.on
 set --landscape.on
-set --field[0].path testdata/t49/Z.grb --field[0].scale 1.01
+set --field[0].path share/data/t49/Z.grb --field[0].scale 1.01
 sleep 5
 
 

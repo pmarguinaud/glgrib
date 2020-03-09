@@ -1,1 +1,1 @@
---landscape.on --landscape.geometry_path testdata/t1198c2.2/Z.grb --field\[0\].path testdata/t1198c2.2/N.grb --field\[0\].scale 1.03
+--landscape.on --landscape.geometry_path share/data/t1198c2.2/Z.grb --field\[0\].path share/data/t1198c2.2/N.grb --field\[0\].scale 1.03

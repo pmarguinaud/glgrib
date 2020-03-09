@@ -1,9 +1,9 @@
-use 5.026001;
+use 5.024000;
 use ExtUtils::MakeMaker;
 
 my $HOME = $ENV{HOME};
 
-my @lib = ("$HOME/3d/glgrib", "$HOME/3d/glgrib/lfi", "$HOME/install/eccodes-2.14.0/lib", "$HOME/3d/usr/lib");
+my @lib = ("$HOME/3d/glgrib/lib", "$HOME/install/eccodes-2.14.0/lib", "$HOME/3d/usr/lib64", "$HOME/3d/usr/lib");
 
 WriteMakefile(
     LD                => 'g++ -std=c++11 -fopenmp',
@@ -17,7 +17,7 @@ WriteMakefile(
     INC               => '-I. -I..', 
     OBJECT            => 'glGrib.o',
     LIBS              => join (' ', map { "-L$_ -Wl,-rpath,$_" } @lib) .
-                         ' -lglGrib -llfi -lGLEW -lGL -lglfw -lpng -lreadline -lncurses ' .
-                         '-ltinfo -lssl -lcrypto -lpthread -lsqlite3 -Llfi -llfi -lcurl ' .
+                         ' -lglGrib -lLFI -lGLEW -lGL -lglfw -lpng -lreadline -lncurses ' .
+                         '-ltinfo -lssl -lcrypto -lpthread -lsqlite3 -lcurl ' .
                          '-lshp -leccodes',
 );

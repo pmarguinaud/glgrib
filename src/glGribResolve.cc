@@ -40,7 +40,7 @@ std::string glGrib::Resolve (const std::string & file)
       if (p != std::string::npos)
         {
           std::string dir = PROG.substr (0, p + 1);
-	  std::string path = dir + file;
+	  std::string path = dir + "/../share/" + file;
 	  if (stat (path.c_str (), &st) == 0)
 	    return path;
 	}

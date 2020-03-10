@@ -202,6 +202,8 @@ public:
     return _prev;
   }
   void moveTo (int, int);
+  void zoom (double, double);
+  void zoomSchmidt (double, double);
 protected:
   void showHelpItem (const char *, const char *, const char *, const char *);
   void createGFLWwindow (GLFWwindow * = nullptr);

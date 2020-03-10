@@ -153,6 +153,10 @@ else if ((key == GLFW_KEY_##k) && (Window::mm == mods)) \
 
   if ((action == GLFW_PRESS || action == GLFW_REPEAT) || help)
     {
+
+//    std::cout << glfwGetKeyName (key, scancode) << std::endl;
+//    std::cout << glfwGetKeyName (key, glfwGetKeyScancode (key)) << std::endl;
+
       glGribWindowIfKey (CONTROL, F           ,  Toggle full screen mode, toggleFullScreen ());
       glGribWindowIfKey (NONE,    PAGE_UP     ,  One field forward,  next = true);
       glGribWindowIfKey (NONE,    PAGE_DOWN   ,  One field backward, prev = true);
@@ -798,6 +802,9 @@ if ((button == GLFW_MOUSE_BUTTON_##k) && (mm == mods)) \
       ifClick (CONTROL, LEFT, centerLightAtCursorPos ());
       ifClick (ALT,     LEFT, debugTriangleNumber ());
     }
+
+#undef ifClick
+
 }
 
 void glGrib::Window::centerLightAtCursorPos ()
@@ -830,9 +837,8 @@ void glGrib::Window::debugTriangleNumber ()
     }
 }
 
-void glGrib::Window::scroll (double xoffset, double yoffset)
+void glGrib::Window::zoom (double xoffset, double yoffset)
 {
-
   makeCurrent ();
 
   glGrib::OptionsView o = scene.d.view.getOptions ();
@@ -853,8 +859,68 @@ void glGrib::Window::scroll (double xoffset, double yoffset)
       if (o.fov <= 0.0f)
         o.fov = 0.1f;
     }
+
   scene.d.view.setOptions (o);
   scene.reSize ();
+
+}
+
+void glGrib::Window::zoomSchmidt (double xoffset, double yoffset)
+{
+  makeCurrent ();
+
+  glGrib::OptionsView o = scene.d.view.getOptions ();
+
+  if (! o.zoom.on)
+    {
+      o.zoom.on = true;
+      o.zoom.stretch = 1.0f;
+    }
+
+  o.zoom.lon = o.lon;
+  o.zoom.lat = o.lat;
+
+  if (yoffset > 0)
+    o.zoom.stretch *= 1.01;
+  else 
+    o.zoom.stretch *= 0.99;
+
+  scene.d.view.setOptions (o);
+  scene.reSize ();
+
+}
+
+void glGrib::Window::scroll (double xoffset, double yoffset)
+{
+
+  enum
+  {
+    NONE    = 0,
+    RIGHT_SHIFT   = GLFW_KEY_RIGHT_SHIFT,
+    RIGHT_CONTROL = GLFW_KEY_RIGHT_CONTROL,
+    RIGHT_ALT     = GLFW_KEY_RIGHT_ALT,
+    LEFT_SHIFT    = GLFW_KEY_LEFT_SHIFT,
+    LEFT_CONTROL  = GLFW_KEY_LEFT_CONTROL,
+    LEFT_ALT      = GLFW_KEY_LEFT_ALT 
+  };
+
+  glfwSetInputMode (window, GLFW_STICKY_KEYS, GL_FALSE);
+
+#define ifScroll(mm, action) \
+do { \
+if ((mm == NONE) || (glfwGetKey (window, mm) == GLFW_PRESS)) \
+  {                                                          \
+    action;                                                  \
+    return;                                                  \
+  }                                                          \
+} while (0)
+
+  ifScroll (LEFT_CONTROL, zoomSchmidt (xoffset, yoffset));
+  ifScroll (NONE,         zoom        (xoffset, yoffset));
+
+#undef ifScroll
+
+  glfwSetInputMode (window, GLFW_STICKY_KEYS, GL_TRUE);
 
 }
 

@@ -29,7 +29,7 @@ public:
 
   void runWset ();
 
-  void stop ();
+  void stop (const std::vector<std::string> &);
 
   void start (int, const char * []);
   void start (const std::vector<std::string> &);

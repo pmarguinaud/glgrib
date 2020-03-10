@@ -22,8 +22,8 @@ public:
   virtual void run ()  = 0;
   virtual void execute (const std::vector<std::string> &);
   bool closed () { return close; }
-  void lock () { pthread_mutex_lock (&mutex); }
-  void unlock () { pthread_mutex_unlock (&mutex); }
+  void lock ();
+  void unlock ();
   const OptionsShell & getOptions () const { return opts; }
   void wait () { if (wset) pthread_join (thread, nullptr); }
   bool started () { return wset != nullptr; }

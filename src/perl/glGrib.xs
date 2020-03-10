@@ -29,7 +29,7 @@ CODE:
       for (int i = 0; i < items; i++)
         args.push_back (std::string ((const char *)SvPV_nolen (ST (i))));
 
-      shell.start (args);
+      shell.execute (args);
     }
 
 void
@@ -37,7 +37,12 @@ stop ()
 CODE:
     {
       glGrib::ShellInterpreter & shell = glGrib::ShellInterpreter::getInstance ();
-      shell.stop ();
+      std::vector<std::string> args = {"stop"};
+
+      for (int i = 0; i < items; i++)
+        args.push_back (std::string ((const char *)SvPV_nolen (ST (i))));
+
+      shell.execute (args);
     }
     
 void 
@@ -51,7 +56,6 @@ CODE:
         args.push_back (std::string ((const char *)SvPV_nolen (ST (i))));
 
       shell.execute (args);
-
     }
 
 void
@@ -72,5 +76,18 @@ PPCODE:
       for (const auto & s : res)                                 
         PUSHs (sv_2mortal (newSVpv(s.c_str (), 0)));             
 
+    }
+
+void
+snapshot (...)
+CODE:
+    {
+      glGrib::ShellInterpreter & shell = glGrib::ShellInterpreter::getInstance ();
+      std::vector<std::string> args = {"snapshot"};
+
+      for (int i = 0; i < items; i++)
+        args.push_back (std::string ((const char *)SvPV_nolen (ST (i))));
+
+      shell.execute (args);
     }
 

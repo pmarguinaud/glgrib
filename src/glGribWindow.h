@@ -213,7 +213,7 @@ private:
   bool next = false; // Next field
   bool prev = false; // Prev field
   bool start_shell = false; // Start shell
-  int id_;
+  int id_ = 0;
   double t0;
   int nframes = 0;
   std::string title = "";

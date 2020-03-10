@@ -129,7 +129,6 @@ void glGrib::Landscape::render (const glGrib::View & view, const glGrib::Options
   glGrib::Program * program = glGrib::Program::load (glGrib::Program::LANDSCAPE);
   program->use ();
 
-
   view.setMVP (program);
   program->set (light);
   program->set ("isflat", opts.flat.on);

@@ -50,9 +50,18 @@ void * _run (void * data)
 
 void glGrib::ShellInterpreter::start (glGrib::WindowSet * ws)
 {
-  pthread_create (&thread, nullptr, _run, this);
 
-  while (! hasstarted);
+  if (gopts.window.offscreen.on)
+    {
+      hasstarted = true;
+      glGrib::glfwStart ();
+      wset = glGrib::WindowSet::create (gopts);
+    }
+  else
+    {
+      pthread_create (&thread, nullptr, _run, this);
+      while (! hasstarted);
+    }
 }
 
 void glGrib::ShellInterpreter::run ()
@@ -64,12 +73,23 @@ void glGrib::ShellInterpreter::setup (const glGrib::OptionsShell & o)
   opts = o;
 }
 
-void glGrib::ShellInterpreter::stop ()
+void glGrib::ShellInterpreter::stop (const std::vector <std::string> & args)
 {
-  lock ();
-  wset->close ();
   unlock ();
-  wait ();
+
+  wset->close ();
+
+  if (gopts.window.offscreen.on)
+    {
+      glGrib::glfwStop ();
+    }
+  else
+    {
+      wait ();
+    }
+    
+  wset = nullptr;
+  hasstarted = false;
 }
 
 void glGrib::ShellInterpreter::start (const std::vector <std::string> & args)
@@ -91,6 +111,10 @@ void glGrib::ShellInterpreter::execute (const std::vector<std::string> & args)
 {
   if (args[0] == "start")
     return start (args);
+  lock ();
+  if (args[0] == "stop")
+    return stop (args);
   glGrib::Shell::execute (args);
+  unlock ();
 }
 

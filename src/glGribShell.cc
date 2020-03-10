@@ -251,6 +251,17 @@ void glGrib::Shell::execute (const std::vector<std::string> & args)
   listStr.clear ();
 
   glGrib::Window * gwindow = wset->getWindowById (windowid);
+  if (gwindow == nullptr)
+    {
+      for (auto w : *wset)
+        {
+          gwindow = w;
+          break;
+	}
+      if (gwindow == nullptr)
+        return;
+      windowid = gwindow->id ();
+    }
 
   gwindow->makeCurrent ();
 
@@ -278,3 +289,12 @@ void glGrib::Shell::execute (const std::vector<std::string> & args)
   
 }
 
+void glGrib::Shell::lock () 
+{ 
+  pthread_mutex_lock (&mutex); 
+}
+
+void glGrib::Shell::unlock () 
+{ 
+  pthread_mutex_unlock (&mutex); 
+}

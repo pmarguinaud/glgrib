@@ -3,7 +3,7 @@ use ExtUtils::MakeMaker;
 
 my $HOME = $ENV{HOME};
 
-my @lib = ("$HOME/3d/glgrib/lib", "$HOME/install/eccodes-2.14.0/lib", "$HOME/3d/usr/lib64", "$HOME/3d/usr/lib");
+my @lib = ("$HOME/3d/glgrib/lib", "$HOME/install/eccodes-2.14.0/lib");
 
 WriteMakefile(
     LD                => 'g++ -std=c++11 -fopenmp',

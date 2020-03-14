@@ -16,4 +16,5 @@ set (SRC
 )
 
 add_library (LFI SHARED ${SRC})
+install (TARGETS LFI DESTINATION lib)
 

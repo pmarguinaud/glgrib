@@ -1,11 +1,4 @@
 
-cmake_minimum_required (VERSION 3.0 FATAL_ERROR)
-
-project (glGrib C CXX)
-
-set (CMAKE_CXX_STANDARD 11)
-set (CMAKE_CXX_STANDARD_REQUIRED ON)
-
 # glGribDBase2SQLite.cc
 
 set (SRC
@@ -69,33 +62,33 @@ set (SRC
 )
 
 add_subdirectory (lfi)
-
-find_package (OpenMP REQUIRED)
-find_package (glfw3 3.3 REQUIRED)
-find_package (GLEW 2.1 REQUIRED)
-find_package (eccodes 2.14.0 REQUIRED)
-find_package (OpenGL 1.2 REQUIRED)
-find_package (SQLite3 3.28.0 REQUIRED)
-find_package (PNG 1.6.37 REQUIRED)
-find_package (OpenSSL 1.1.0 REQUIRED)
-find_package (CURL REQUIRED)
+add_library (glGrib SHARED ${SRC})
 
 
+add_executable (glgrib glGrib.cc)
+
+target_link_libraries (glgrib 
+                       PUBLIC glGrib 
+                       PUBLIC eccodes PUBLIC glfw PUBLIC GLEW PUBLIC GL PUBLIC sqlite3
+                       PUBLIC readline PUBLIC png PUBLIC shp PUBLIC ${OPENSSL_SSL_LIBRARY} 
+                       PUBLIC ${OPENSSL_CRYPTO_LIBRARY} PUBLIC OpenMP::OpenMP_CXX PUBLIC LFI
+                       PUBLIC ${CURL_LIBRARIES})
+
+set_target_properties (glgrib PROPERTIES 
+                       INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib)
 
 
-#get_cmake_property(_variableNames VARIABLES)
-#list (SORT _variableNames)
-#foreach (_variableName ${_variableNames})
-#    message(STATUS "${_variableName}=${${_variableName}}")
-#endforeach()
+if (Python_FOUND)
+  file (COPY python DESTINATION ${CMAKE_BINARY_DIR})
+endif ()
 
-add_executable (glGrib.x glGrib.cc ${SRC})
+if (Perl_FOUND)
+  file (COPY perl DESTINATION ${CMAKE_BINARY_DIR})
+endif ()
 
-target_link_libraries (glGrib.x 
-   PUBLIC eccodes PUBLIC glfw PUBLIC GLEW PUBLIC GL PUBLIC ${SQLite3_LIBRARIES} 
-   PUBLIC readline PUBLIC png PUBLIC shp PUBLIC ${OPENSSL_SSL_LIBRARY} 
-   PUBLIC ${OPENSSL_CRYPTO_LIBRARY} PUBLIC OpenMP::OpenMP_CXX PUBLIC LFI
-   PUBLIC ${CURL_LIBRARIES})
+install (TARGETS glgrib DESTINATION bin)
+install (TARGETS glGrib DESTINATION lib)
+
 
 
 

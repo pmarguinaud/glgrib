@@ -5,6 +5,7 @@ use File::Path;
 use Data::Dumper;
 use Text::ParseWords;
 use FileHandle;
+use FindBin qw ($Bin);
 
 
 my (%test, @test);
@@ -225,7 +226,7 @@ for my $name (@name)
     
     (my $test = $test{$name}) or die ("Unknown test `$name'\n");
     
-    my $exec = "./bin/glGrib.x";
+    my $exec = "$Bin/../bin/glgrib";
 
     
     chdir ('src');

@@ -77,18 +77,18 @@ target_link_libraries (glgrib
 set_target_properties (glgrib PROPERTIES 
                        INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib)
 
+get_target_property (LIBS glgrib LINK_LIBRARIES)
 
 if (Python_FOUND)
   file (COPY python DESTINATION ${CMAKE_BINARY_DIR})
+  configure_file (python/setup.py.in ${CMAKE_BINARY_DIR}/python/setup.py @ONLY)
 endif ()
 
 if (Perl_FOUND)
   file (COPY perl DESTINATION ${CMAKE_BINARY_DIR})
+  configure_file (perl/Makefile.PL.in ${CMAKE_BINARY_DIR}/perl/Makefile.PL @ONLY)
 endif ()
 
 install (TARGETS glgrib DESTINATION bin)
 install (TARGETS glGrib DESTINATION lib)
-
-
-
 

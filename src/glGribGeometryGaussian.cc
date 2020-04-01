@@ -762,7 +762,7 @@ glGrib::GeometryGaussian::GeometryGaussian (glGrib::HandlePtr ghp)
       opc2 = 1.0f + 1.0f / (stretchingFactor * stretchingFactor);
     }
   
-  glm::mat4 rot4;
+  glm::mat4 rot4 = glm::mat4 (1.0f);
 
   if (do_rot_str) 
   if ((latitudeOfStretchingPoleInDegrees != 90.0f && longitudeOfStretchingPoleInDegrees != 0.0f)

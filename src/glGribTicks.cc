@@ -155,6 +155,9 @@ void glGrib::Ticks::createStr
       case glGrib::String::W: nxy = ny; break;
       case glGrib::String::N: nxy = nx; break;
       case glGrib::String::S: nxy = nx; break;
+      default: 
+        throw std::runtime_error (std::string ("Unexpected alignment"));
+        break;
     }
          
   // Start at 1, finish at nxy-1 : avoid corners
@@ -188,6 +191,9 @@ void glGrib::Ticks::createStr
           case glGrib::String::S: 
 	    x = cx ();                   y = height * (vopts.clip.ymin + dyminf); 
 	    break;
+          default:
+            throw std::runtime_error (std::string ("Unexpected alignment"));
+            break;
         }
          
       int c = view.getLatLonFromScreenCoords (x, y, &lat, &lon);
@@ -198,16 +204,16 @@ void glGrib::Ticks::createStr
 
   const bool NSWE = sopts.nswe.on;
 
-  for (int i = 0; i < xyllv.size ()-1; i++)
-    if (xyllv[i+0].valid && xyllv[i+1].valid)
+  for (size_t i = 1; i < xyllv.size (); i++)
+    if (xyllv[i-1].valid && xyllv[i+0].valid)
       {
         switch (_align)
           {
             case glGrib::String::E:
             case glGrib::String::W:
               {
-                float y0 = xyllv[i+0].y, y1 = xyllv[i+1].y, x = xyllv[i].x;
-                float lat0 = xyllv[i+0].lat, lat1 = xyllv[i+1].lat;
+                float y0 = xyllv[i-1].y, y1 = xyllv[i+0].y, x = xyllv[i-1].x;
+                float lat0 = xyllv[i-1].lat, lat1 = xyllv[i+0].lat;
                 int ilat0 = (lat0 + 90.0f) / sopts.dlat;
                 int ilat1 = (lat1 + 90.0f) / sopts.dlat;
                 for (int ilat = ilat0; ilat <= ilat1; ilat++)
@@ -243,8 +249,8 @@ void glGrib::Ticks::createStr
             case glGrib::String::N:
             case glGrib::String::S:
               {
-                float x0 = xyllv[i+0].x, x1 = xyllv[i+1].x, y = xyllv[i+0].y;
-                float lon0 = xyllv[i+0].lon, lon1 = xyllv[i+1].lon;
+                float x0 = xyllv[i-1].x, x1 = xyllv[i+0].x, y = xyllv[i-1].y;
+                float lon0 = xyllv[i-1].lon, lon1 = xyllv[i+0].lon;
 
                 while (lon0 < 0) lon0 += 360.0f;
                 while (lon1 < 0) lon1 += 360.0f;
@@ -291,8 +297,9 @@ void glGrib::Ticks::createStr
                   }
 	      }
 	    break;
+            default:
+              break;
 	  }
-
       }
 
 }
@@ -344,7 +351,7 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
       // Coordinates of ticks
       std::vector<glm::vec3> XYa (S.size ());
 
-      for (int i = 0; i < XYa.size (); i++)
+      for (size_t i = 0; i < XYa.size (); i++)
         {
           XYa[i].x = X[i];
           XYa[i].y = Y[i];

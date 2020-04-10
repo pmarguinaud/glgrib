@@ -61,7 +61,7 @@ int hiloCount (glGrib::const_GeometryPtr geometry, glGrib::FieldFloatBufferPtr d
         {
           int jglo1 = *it;
           geometry->getPointNeighbours (jglo1, &neigh);
-          for (int i = 0; i < neigh.size (); i++)
+          for (size_t i = 0; i < neigh.size (); i++)
             {
               int jglo2 = neigh[i];
               if (seen.find (jglo2) != seen.end ())
@@ -114,15 +114,12 @@ void glGrib::Field::setupHilo (glGrib::FieldFloatBufferPtr data)
 
   const float radius = deg2rad * opts.hilo.radius;
 
-  const float * val = data->data ();
-
 #pragma omp parallel for
   for (int jglo = 0; jglo < np; jglo++)
     {
-      float x, y, z;
       float mesh = geometry->getLocalMeshSize (jglo);
 
-      int r = (int)(radius / mesh);
+      int r = static_cast<int> (radius / mesh);
       int chi = hiloCount (geometry, data, jglo, r, false);
       int clo = hiloCount (geometry, data, jglo, r, true);
 

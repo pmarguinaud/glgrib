@@ -25,7 +25,7 @@ double currentTime ()
   struct timeval tv;
   struct timezone tz;
   gettimeofday (&tv, &tz);
-  return (double)tv.tv_sec + (double)tv.tv_usec / 1e6;
+  return static_cast<double> (tv.tv_sec) + static_cast<double> (tv.tv_usec) / 1e6;
 }
 
 
@@ -267,9 +267,6 @@ void glGrib::Window::fixLandscape (float dy, float dx, float sy, float sx)
 {
   glGrib::OptionsLandscapePosition o = scene.d.landscape.getOptions ().lonlat.position;
 
-  float dlat = o.lat2 - o.lat1;
-  float dlon = o.lon2 - o.lon1;
-
   o.lat1 += dy * 0.01;
   o.lat2 += dy * 0.01;
   o.lon1 += dx * 0.01;
@@ -375,7 +372,7 @@ void glGrib::Window::saveCurrentPalette ()
 void glGrib::Window::removeField (int rank)
 {
   glGrib::Field * f = nullptr;
-  if ((rank < 0) || (rank > scene.fieldlist.size ()-1))
+  if ((rank < 0) || (rank > static_cast<int> (scene.fieldlist.size ())-1))
     return;
   if (scene.fieldlist[rank] != nullptr)
     delete scene.fieldlist[rank];
@@ -393,7 +390,7 @@ void glGrib::Window::loadField (const glGrib::OptionsField & opts, int rank)
   glGrib::Field * f = new glGrib::FieldScalar ();
   f->setup (&scene.ld, opts);
 
-  if (rank > scene.fieldlist.size () - 1)
+  if (rank > static_cast<int> (scene.fieldlist.size ()) - 1)
     scene.fieldlist.push_back (f);
   else
     scene.fieldlist[rank] = f;
@@ -557,7 +554,7 @@ void glGrib::Window::snapshot (const std::string & format)
 
   const glGrib::OptionDate * date = scene.getDate ();
   std::string dstr = date ? date->asString () : "";
-  for (int i = 0; i < dstr.size (); i++)
+  for (size_t i = 0; i < dstr.size (); i++)
     if ((dstr[i] == ' ') || (dstr[i] == '/'))
       dstr[i] = ':';
 

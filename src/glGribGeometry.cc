@@ -26,7 +26,7 @@ glGrib::GeometryPtr glGrib::Geometry::load (glGrib::Loader * ld, const std::stri
   if (file != "")
     {
       ghp = ld->handleFromFile (file);
-      h = ghp->getCodesHandle ();
+      h = ghp == nullptr ? nullptr : ghp->getCodesHandle ();
     }
 
   long int gridDefinitionTemplateNumber = -1;
@@ -169,6 +169,9 @@ void glGrib::Geometry::renderTriangles () const
 void glGrib::Geometry::setProgramParameters (glGrib::Program * program) const 
 {
 #include "shaders/include/geometry/types.h"
+  
+  (void)dumm_type;
+
   program->set ("geometry_type", geometry_none);
 }
 

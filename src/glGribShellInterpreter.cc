@@ -96,7 +96,7 @@ void glGrib::ShellInterpreter::start (const std::vector <std::string> & args)
 {
   int argc = args.size ();
   const char * argv[argc];
-  for (int i = 0; i < args.size (); i++)
+  for (size_t i = 0; i < args.size (); i++)
     argv[i] = args[i].c_str ();
   start (argc, argv);
 }

@@ -35,7 +35,7 @@ glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
   {
     opts->diff.on = false;
     opts->diff.path.clear ();
-    for (int i = 0; i < opts->field.size (); i++)
+    for (size_t i = 0; i < opts->field.size (); i++)
       opts->field[i].path.clear ();
   };
 

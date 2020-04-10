@@ -36,7 +36,7 @@ std::string glGrib::Resolve (const std::string & file)
   if (readlink (exe, prog, len) > 0)
     {
       std::string PROG = std::string (prog);
-      int p = PROG.find_last_of ('/');
+      size_t p = PROG.find_last_of ('/');
       if (p != std::string::npos)
         {
           std::string dir = PROG.substr (0, p + 1);

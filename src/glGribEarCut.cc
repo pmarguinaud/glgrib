@@ -84,7 +84,6 @@ public:
   {
     if (dirty)
       {
-        int numberOfPoints1 = xyz.size () - 1;
         int j = index;
         int i = prev->index;
         int k = next->index;
@@ -291,11 +290,13 @@ public:
 
   }
 
-  float xmin, xmax;
+  float xmin = 0.0, xmax = 0.0;
   bool full = false;
 };
         
 
+namespace
+{
 // Get longitude extent of a set of nodes
 
 void getLonRange (const std::vector<node_t> & nodevec, 
@@ -303,9 +304,10 @@ void getLonRange (const std::vector<node_t> & nodevec,
                   float * lonmin, float * lonmax)
 {
   inter_t minmax;
+
   bool init = false;
 
-  for (int i = 0; i < nodevec.size (); i++)
+  for (size_t i = 0; i < nodevec.size (); i++)
     {
       const node_t * n1 = &nodevec[i];
       const node_t * n2 = n1->getNext ();
@@ -335,6 +337,8 @@ void getLonRange (const std::vector<node_t> & nodevec,
   *lonmax = minmax.xmax;
 
 }
+
+};
 
 // Get latitude extent of a pair of nodes, taking into account
 // the fact that latitudes may overshoot because of arc drawing
@@ -391,7 +395,7 @@ void getLatRange (const std::vector<node_t> & nodevec,
                   float * latmin, float * latmax)
 {
   *latmax = *latmin = lonlat[2*0+1];
-  for (int i = 0; i < nodevec.size (); i++)
+  for (size_t i = 0; i < nodevec.size (); i++)
     {
       float lat = lonlat[2*i+1];
       *latmin = std::min (lat, *latmin);
@@ -438,8 +442,8 @@ public:
     getLonRange (nodevec, xy, &lonmin, &lonmax);
     getLatRange (nodevec, xy, &latmin, &latmax);
 
-    nx = std::max (2, (int)(glGrib::rad2deg * (lonmax - lonmin)));
-    ny = std::max (2, (int)(glGrib::rad2deg * (latmax - latmin)));
+    nx = std::max (2, static_cast<int>(glGrib::rad2deg * (lonmax - lonmin)));
+    ny = std::max (2, static_cast<int>(glGrib::rad2deg * (latmax - latmin)));
 
     float ddy = std::max ((latmax - latmin) / ny, 0.1f * glGrib::deg2rad);
 
@@ -464,7 +468,7 @@ public:
     off.resize (nx * ny);
     len.resize (nx * ny);
 
-    for (int i = 0; i < nodevec.size (); i++)
+    for (size_t i = 0; i < nodevec.size (); i++)
       {
         if (nodevec[i].getAngle (xyz) < 0.0f)
           {
@@ -474,14 +478,14 @@ public:
       }
 
     off[0] = 0;
-    for (int k = 1; k < off.size (); k++)
+    for (size_t k = 1; k < off.size (); k++)
       off[k] = off[k-1] + len[k-1];
 
     nodes.resize (off.back () + len.back ());
 
     std::vector<int> cur = off;
     
-    for (int i = 0; i < nodevec.size (); i++)
+    for (size_t i = 0; i < nodevec.size (); i++)
       {
         if (nodevec[i].getAngle (xyz) < 0.0f)
           {
@@ -496,7 +500,7 @@ public:
   void update (const std::vector<glm::vec3> & xyz)
   {
 #pragma omp parallel for if (openmp)
-    for (int i = 0; i < len.size (); i++)
+    for (size_t i = 0; i < len.size (); i++)
       for (int j = off[i]; j < off[i] + len[i]; j++)
         if ((! nodes[j]->linked ()) || (nodes[j]->getAngle (xyz) >= 0.0f))
           {
@@ -660,10 +664,6 @@ public:
         ymax = std::max (ymax, yymax);
       }
 
-    float x0 = n.            getX (xy);
-    float x1 = n.getNext ()->getX (xy);
-    float x2 = n.getPrev ()->getX (xy);
-
     inter_t int01, int02;
 
     {
@@ -701,7 +701,7 @@ public:
   int size () const 
   {
     int s = 0;
-    for (int i = 0; i < len.size (); i++)
+    for (size_t i = 0; i < len.size (); i++)
       s += len[i];
     return s;
   }
@@ -825,12 +825,12 @@ void earCut (node_t ** nodelist,
     offset[c] = offset[c-1] + ind1[c-1].size ();
 
   // Check for ind bounds
-  if (offset[pools-1] + ind1[pools-1].size () > indrmax)
+  if (offset[pools-1] + ind1[pools-1].size () > static_cast<size_t> (indrmax))
     abort ();
 
 #pragma omp parallel for if (openmp)
   for (int c = 0; c < pools; c++)
-    for (int i = 0; i < ind1[c].size (); i++)
+    for (size_t i = 0; i < ind1[c].size (); i++)
       (*ind)[offset[c]+i] = ind1[c][i];
 
   // Update ind pointer
@@ -855,28 +855,28 @@ glm::mat3 getRotMat (glGrib::Diag_t diag, const std::vector<glm::vec3> & xyz, bo
   w.resize (xyz.size ());
 
 #pragma omp parallel for if (openmp)
-  for (int i = 0; i < xyz.size (); i++)
+  for (size_t i = 0; i < xyz.size (); i++)
     {
-      int j = i != xyz.size () - 1 ? i + 1 : 0;
+      int j = static_cast<int> (i) != static_cast<int> (xyz.size ()) - 1 ? i + 1 : 0;
       w[i] = getAngle (xyz[i], xyz[j]);
     }
 
-  for (int i = 0; i < xyz.size (); i++)
+  for (size_t i = 0; i < xyz.size (); i++)
     W += w[i];
 
   if (W == 0.0f)
     {
       W = xyz.size ();
-      for (int i = 0; i < xyz.size (); i++)
+      for (size_t i = 0; i < xyz.size (); i++)
         w[i] = 1.0f;
     }
 
 #pragma omp parallel for if (openmp)
-  for (int i = 0; i < xyz.size (); i++)
+  for (size_t i = 0; i < xyz.size (); i++)
     w[i] = w[i] / W;
 
 
-  for (int i = 0; i < xyz.size (); i++)
+  for (size_t i = 0; i < xyz.size (); i++)
     dxyzm += w[i] * xyz[i];
 
   // Covariance
@@ -893,14 +893,14 @@ glm::mat3 getRotMat (glGrib::Diag_t diag, const std::vector<glm::vec3> & xyz, bo
   glm::vec3 s = glm::normalize (glm::cross (glm::vec3 (0.0f, 0.0f, 1.0f), r));
   glm::vec3 t = glm::normalize (glm::cross (r, s));
 #pragma omp parallel for if (openmp)
-  for (int i = 0; i < xyz.size (); i++)
+  for (size_t i = 0; i < xyz.size (); i++)
     XY[i] = glm::vec2 (glm::dot (s, xyz[i]), glm::dot (t, xyz[i]));
 
 
 #pragma omp parallel for collapse (2) if (openmp)
   for (int i = 0; i < 2; i++)
   for (int j = 0; j < 2; j++)
-  for (int k = 0; k < XY.size (); k++)
+  for (size_t k = 0; k < XY.size (); k++)
     A[i][j] += w[k] * XY[k][i] * XY[k][j];
 
   if (fabs (glm::determinant (A)) < 1e-8)
@@ -917,7 +917,7 @@ glm::mat3 getRotMat (glGrib::Diag_t diag, const std::vector<glm::vec3> & xyz, bo
     return glm::mat3 (1.0f);
 
   glm::vec3 r_ = r;
-  glm::vec3 s_ = (float)Q[1][0] * s + (float)Q[1][1] * t;
+  glm::vec3 s_ = static_cast<float> (Q[1][0]) * s + static_cast<float> (Q[1][1]) * t;
   glm::vec3 t_ = glm::cross (r_, s_);
 
   glm::mat3 RST (r_, s_, t_);
@@ -964,7 +964,7 @@ void glGrib::EarCut::processRing (const std::vector<float> & lonlat1,
   lonlat2.resize (2 * xyz1.size ());
 
 #pragma omp parallel for if (openmp)
-  for (int i = 0; i < xyz1.size (); i++)
+  for (size_t i = 0; i < xyz1.size (); i++)
     {
       xyz2[i] = R * xyz1[i];
       lonlat2[2*i+0] = atan2 (xyz2[i].y, xyz2[i].x); 

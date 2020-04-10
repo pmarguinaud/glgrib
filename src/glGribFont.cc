@@ -65,14 +65,14 @@ void glGrib::Font::setup (const glGrib::OptionsFont & o)
   for (int i = 0, p = w * (h - 2); i < w; i++, p += 1)
     if ((rgb[3*p+0] == 255) && (rgb[3*p+1] == 0) && (rgb[3*p+2] == 0))
       {
-        xoff.push_back ((float)(i+1)/(float)w);
+        xoff.push_back (static_cast<float> (i+1)/ static_cast<float> (w));
         ioff.push_back (i+1);
       }
 
   for (int j = 0, p = 1; j < h; j++, p += w)
     if ((rgb[3*p+0] == 255) && (rgb[3*p+1] == 0) && (rgb[3*p+2] == 0))
       {
-        yoff.push_back ((float)(j+1)/(float)h);
+        yoff.push_back (static_cast<float> (j+1)/ static_cast<float> (h));
         joff.push_back (j+1);
       }
 
@@ -105,7 +105,7 @@ void glGrib::Font::setup (const glGrib::OptionsFont & o)
           }
       }
 found_b:
-  posb = (float)pp / (float)(joff[1] - joff[0]);
+  posb = static_cast<float> (pp) / static_cast<float> (joff[1] - joff[0]);
   
   // Look at number of pixels above letter 'F'
   rank = map ('F'); ix = rank % nx; iy = rank / nx;
@@ -122,10 +122,10 @@ found_b:
           }
       }
 found_u:
-  posu = (float)pp / (float)(joff[1] - joff[0]);
+  posu = static_cast<float> (pp) / static_cast<float> (joff[1] - joff[0]);
 
   
-  aspect = ((float)w / (float)nx) / ((float)h / (float)ny);
+  aspect = (static_cast<float> (w) / static_cast<float> (nx)) / (static_cast<float> (h) / static_cast<float> (ny));
 
   glGenTextures (1, &texture);
   glBindTexture (GL_TEXTURE_2D, texture); 

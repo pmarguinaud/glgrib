@@ -60,7 +60,7 @@ hsva_t rgba2hsva (const glGrib::OptionColor & rgba)
   float r = float (rgba.r) / 255.0f, g = float (rgba.g) / 255.0f;
   float b = float (rgba.b) / 255.0f, a = float (rgba.a) / 255.0f;
 
-  float h, s, v;
+  float h = 0.0f, s, v;
   float min = std::min (std::min (r, g), b);
   float max = std::max (std::max (r, g), b);
 
@@ -95,7 +95,7 @@ glGrib::OptionColor hsva2rgba (const hsva_t & hsva)
   float m = v * (1.0f - f * s);
   float n = v * (1.0f - (1.0f - f) * s);
 
-  float r, g, b;
+  float r = 0.0f, g = 0.0f, b = 0.0f;
 
   switch (hi)
     {
@@ -146,7 +146,6 @@ glGrib::Palette glGrib::Palette::create
         {
           const int n = p.opts.generate.levels;
           std::vector<float> values;
-	  const float d = (p.opts.values.back () - p.opts.values.front ()) / (n-1);
 
           for (int i = 0; i < n; i++)
             {
@@ -198,7 +197,8 @@ glGrib::Palette glGrib::Palette::create
       // Generate gradient
       if (p.opts.values.size () == p.opts.colors.size ())
         {
-          for (int i = 1, j = 0; i < 256; i++)
+          size_t j = 0;
+          for (int i = 1; i < 256; i++)
             {
               float val = (i-1) * (p.opts.max - p.opts.min) / 255 + p.opts.min;
               while (j < p.opts.values.size ())
@@ -228,7 +228,8 @@ glGrib::Palette glGrib::Palette::create
       // Discrete
       else
         {
-          for (int i = 1, j = 0; i < 256; i++)
+          size_t j = 0;
+          for (int i = 1; i < 256; i++)
             {
               float val = (i-1) * (p.opts.max - p.opts.min) / 254 + p.opts.min;
               while (j < p.opts.values.size ())
@@ -278,7 +279,7 @@ glGrib::Palette & glGrib::Palette::createByName (const std::string & name)
 
   if ((found = st.fetchRow (&hexa)))
     {
-      for (int i = 0; 8 * i + 7 < hexa.length (); i++)
+      for (size_t i = 0; 8 * i + 7 < hexa.length (); i++)
         {
           int r, g, b, a;
           if (sscanf (&hexa[8*i], "%2x%2x%2x%2x", &r, &g, &b, &a) != 4)
@@ -405,8 +406,8 @@ void glGrib::Palette::getRGBA255 (float RGBA0[256][4]) const
       int i1 = 1 + (255 * j1) / (n - 1);
       for (int i = i0; i < i1; i++)
         {
-          float w0 = (float)(i1-i) / (float)(i1-i0);
-          float w1 = (float)(i-i0) / (float)(i1-i0);
+          float w0 = static_cast<float> (i1-i) / static_cast<float> (i1-i0);
+          float w1 = static_cast<float> (i-i0) / static_cast<float> (i1-i0);
           RGBA0[i][0] = (rgba[j0].r * w0 + rgba[j1].r * w1) / 255.;
           RGBA0[i][1] = (rgba[j0].g * w0 + rgba[j1].g * w1) / 255.;
           RGBA0[i][2] = (rgba[j0].b * w0 + rgba[j1].b * w1) / 255.;
@@ -451,13 +452,13 @@ glGrib::OptionColor glGrib::Palette::getColor (float val) const
 {
   float RGBA0[256][4];
   getRGBA255 (RGBA0);
-  int pal = std::max (1, std::min ((int)(1 + 254 * (val - opts.min) / (opts.max - opts.min)), 255));
+  int pal = std::max (1, std::min (static_cast<int>(1 + 254 * (val - opts.min) / (opts.max - opts.min)), 255));
   return glGrib::OptionColor (255 * RGBA0[pal][0], 255 * RGBA0[pal][1], 255 * RGBA0[pal][2], 255 * RGBA0[pal][3]);
 }
 
 int glGrib::Palette::getColorIndex (float val) const
 {
-  int pal = std::max (1, std::min ((int)(1 + 254 * (val - opts.min) / (opts.max - opts.min)), 255));
+  int pal = std::max (1, std::min (static_cast<int>(1 + 254 * (val - opts.min) / (opts.max - opts.min)), 255));
   return pal;
 }
 

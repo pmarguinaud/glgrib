@@ -31,7 +31,7 @@ void glGrib::Land::render (const glGrib::View & view, const glGrib::OptionsLight
 
   view.setMVP (program);
 
-  for (int i = 0; i < d.size (); i++)
+  for (size_t i = 0; i < d.size (); i++)
   if (opts.layers[i].on)
     {
      
@@ -52,7 +52,7 @@ void glGrib::Land::render (const glGrib::View & view, const glGrib::OptionsLight
 void glGrib::Land::clear ()
 {
   if (isReady ())
-    for (int i = 0; i < VertexArrayID.size (); i++)
+    for (size_t i = 0; i < VertexArrayID.size (); i++)
     if (opts.layers[i].on)
       glDeleteVertexArrays (1, &VertexArrayID[i]);
   VertexArrayID.clear ();
@@ -81,7 +81,7 @@ void glGrib::Land::triangulate (std::vector<int> * _pos_offset,
   pos_offset.push_back (+0);
   pos_length.push_back (-1);
 
-  for (int i = 0; i < indl.size (); i++)
+  for (size_t i = 0; i < indl.size (); i++)
     {
       if (indl[i] == 0xffffffff)
         {
@@ -100,7 +100,7 @@ void glGrib::Land::triangulate (std::vector<int> * _pos_offset,
   // Sort rings (bigger first)
   ord.resize (pos_length.size ());
 
-  for (int i = 0; i < pos_length.size (); i++)
+  for (size_t i = 0; i < pos_length.size (); i++)
     ord[i] = i;
 
   std::sort (ord.begin (), ord.end (), [&pos_length] (int i, int j) 
@@ -112,7 +112,7 @@ void glGrib::Land::triangulate (std::vector<int> * _pos_offset,
   ind_length.resize (ord.size ());
 
   int ind_size = 0;
-  for (int k = 0; k < ord.size (); k++)
+  for (size_t k = 0; k < ord.size (); k++)
     {
       if (pos_length[k] > 2)
         {
@@ -128,7 +128,7 @@ void glGrib::Land::triangulate (std::vector<int> * _pos_offset,
   ind.resize (ind_size);
 
   // Process big blocks serially, with OpenMP on inner loops
-  int k = 0;
+  size_t k = 0;
   for (k = 0; k < ord.size (); k++)
     {
       int j = ord[k];
@@ -143,7 +143,7 @@ void glGrib::Land::triangulate (std::vector<int> * _pos_offset,
 
   // Process small blocks in parallel
 #pragma omp parallel for
-  for (int l = k; l < ord.size (); l++)
+  for (size_t l = k; l < ord.size (); l++)
     {
       int j = ord[l];
       if (pos_length[j] > 2)
@@ -266,7 +266,7 @@ void glGrib::Land::setup (const glGrib::OptionsLand & o)
   opts = o;
 
   d.resize (opts.layers.size ());
-  for (int i = 0; i < opts.layers.size (); i++)
+  for (size_t i = 0; i < opts.layers.size (); i++)
   if (opts.layers[i].on)
     {
       int numberOfPoints;
@@ -324,7 +324,7 @@ void glGrib::Land::setupVertexAttributes ()
 {
   VertexArrayID.resize (d.size ());
 
-  for (int i = 0; i < d.size (); i++)
+  for (size_t i = 0; i < d.size (); i++)
   if (opts.layers[i].on)
     {
       glGenVertexArrays (1, &VertexArrayID[i]);

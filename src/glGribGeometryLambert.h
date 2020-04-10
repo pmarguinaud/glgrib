@@ -18,7 +18,7 @@ public:
   public:
     latlon_t () {}
     latlon_t (double _lon, double _lat) : lon (_lon), lat (_lat) {}
-    double lat = 0.0, lon = 0.0;
+    double lon = 0.0, lat = 0.0;
   };
   class latlon_j_t
   {

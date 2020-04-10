@@ -135,7 +135,6 @@ glGrib::OptionDate glGrib::OptionDate::date_from_t (time_t time)
 
 time_t glGrib::OptionDate::tFromDate (const glGrib::OptionDate & d)
 {
-  time_t time;
   struct tm t;                  
   memset (&t, 0, sizeof (t));
   t.tm_sec    = d.second;       
@@ -152,7 +151,7 @@ glGrib::OptionDate glGrib::OptionDate::interpolate
   const glGrib::OptionDate & d1, const glGrib::OptionDate & d2, const float alpha
 )
 {
-  return date_from_t (round ((double)alpha * tFromDate (d1) + (1.0 - (double)alpha) * tFromDate (d2)));
+  return date_from_t (round (static_cast<double> (alpha) * tFromDate (d1) + (1.0 - static_cast<double> (alpha)) * tFromDate (d2)));
 }
 
 namespace glGrib
@@ -271,7 +270,7 @@ std::string glGrib::OptionsUtil::escape (const std::string & token)
 { 
   std::string tok;
 
-  for (int i = 0; i < token.length (); i++)
+  for (size_t i = 0; i < token.length (); i++)
     {
       if (token[i] == '"') 
         tok.push_back ('\\');
@@ -416,7 +415,7 @@ bool glGrib::OptionsParser::parse (int _argc, const char * _argv[],
                     {
                       std::string a = arg.substr (2);
                       arg = "";
-                      for (int i = 0; i < ctx.size (); i++)
+                      for (size_t i = 0; i < ctx.size (); i++)
                         if (i == 0)
                           arg = ctx[i];
                         else
@@ -510,7 +509,7 @@ bool glGrib::OptionsBase::parse (const char * args,
   int argc = 1 + list.size ();
   const char * argv [argc];
 
-  for (int i = 0; i < list.size (); i++)
+  for (size_t i = 0; i < list.size (); i++)
     argv[1+i] = list[i].c_str ();
 
   glGrib::OptionsParser p;
@@ -529,7 +528,7 @@ bool glGrib::Options::parse (int argc, const char * argv[],
   std::set<std::string> seen = p.getSeenOptions ();
 
   // Should go in method like postProcessOption
-  for (int i = 0; i < field.size (); i++)
+  for (size_t i = 0; i < field.size (); i++)
     {
       std::string prefix = "--field[" +  std::to_string (i) + "]";
       for (std::set<std::string>::iterator it = seen.begin (); it != seen.end (); it++)
@@ -648,7 +647,7 @@ void glGrib::OptionsParser::print (glGrib::Options & opts1)
   p1.getOptions (&options_list);
 
 
-  for (int i = 0; i < options_list.size (); i++)
+  for (size_t i = 0; i < options_list.size (); i++)
     {
       const std::string & name = options_list[i];
       const glGrib::OptionsParserDetail::optionBase * o1 = p1.getOption (name);

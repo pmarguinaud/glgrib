@@ -69,7 +69,7 @@ void glGrib::ShapeLib::read (const glGrib::OptionsLines & opts, int * numberOfPo
   };
 
   int ip = 0;
-  for (int k = 0; k < list.size (); k++)
+  for (size_t k = 0; k < list.size (); k++)
     {
       int i = list[k];
 
@@ -81,19 +81,18 @@ void glGrib::ShapeLib::read (const glGrib::OptionsLines & opts, int * numberOfPo
 
       for (int j = 0, ipart = 0; j < shape->nVertices; j++)
         {
-          const char * type;
           bool newpart = false;
 
           if (j == 0 && shape->nParts > 0)
             {
-              type = SHPPartTypeName (shape->panPartType[ipart]);
+              SHPPartTypeName (shape->panPartType[ipart]);
               ipart++;
               newpart = true;
             }
           
           if ((ipart < shape->nParts) && (shape->panPartStart[ipart] == j))
             {
-              type = SHPPartTypeName (shape->panPartType[ipart]);
+              SHPPartTypeName (shape->panPartType[ipart]);
               ipart++;
               newpart = true;
             }

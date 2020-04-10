@@ -14,6 +14,7 @@ public:
   static void remove (Container *);
   static void clear ();
   Container (const std::string & _file) : file (_file) {}
+  virtual ~Container () {}
   virtual codes_handle * getHandleByExt (const std::string &) = 0;
   virtual bool hasExt (const std::string &) const = 0;
   const std::string & getFile () const { return file; }
@@ -27,6 +28,7 @@ protected:
     virtual void incr () = 0;
     virtual const std::string & str () = 0;
     virtual bool isEqual (const _iterator *) const = 0;
+    virtual ~_iterator () {}
   };
 public:
   class iterator
@@ -39,7 +41,7 @@ public:
       it->incr ();
       return *this;
     }
-    ~iterator ()
+    virtual ~iterator ()
     {
       delete it;
     }

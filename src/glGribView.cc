@@ -51,7 +51,6 @@ void glGrib::View::setMVP (glGrib::Program * program) const
        || (type == glGrib::Projection::MERCATOR))
         {
           float xpos1, xpos2, ypos1, ypos2;
-          float dlon = 10.0f, dlat = 5.0f;
           float lon1 = lon0 + opts.clip.dlon, lon2 = lon0 - opts.clip.dlon, 
                 lat1 = -90.0f + opts.clip.dlat, lat2 = +90.0f - opts.clip.dlat;
 
@@ -76,9 +75,9 @@ void glGrib::View::calcMVP ()
      opts.distance * glm::sin (glm::radians (opts.lon)) * glm::cos (glm::radians (opts.lat)),
      opts.distance *                                      glm::sin (glm::radians (opts.lat)));
 
-  viewport   = glm::vec4 (0.0f, 0.0f, (float)width, (float)height);
+  viewport   = glm::vec4 (0.0f, 0.0f, static_cast<float> (width), static_cast<float> (height));
 
-  float ratio = (float)width/(float)height;
+  float ratio = static_cast<float> (width) / static_cast<float> (height);
 
   glm::mat4 trans = glm::mat4 (1.0f);
 
@@ -122,9 +121,6 @@ int glGrib::View::getScreenCoordsFromLatLon (float * xpos, float * ypos, float l
 {
   lat = glm::radians (lat); 
   lon = glm::radians (lon);
-
-  float coslon = glm::cos (lon), sinlon = glm::sin (lon);
-  float coslat = glm::cos (lat), sinlat = glm::sin (lat);
 
   glm::vec3 pos = lonlat2xyz (lon, lat); 
 
@@ -211,7 +207,7 @@ void glGrib::View::setup (const glGrib::OptionsView & o)
 
 glGrib::View::transform_type glGrib::View::typeFromString (std::string str)
 {
-  for (int i = 0; i < str.length (); i++)
+  for (size_t i = 0; i < str.length (); i++)
     str[i] = std::toupper (str[i]);
 #define if_type(x) if (str == #x) return x
     if_type (PERSPECTIVE);
@@ -233,24 +229,23 @@ void glGrib::View::toggleTransformType ()
 void glGrib::View::calcZoom ()
 {
   float lonP = opts.zoom.lon, latP = opts.zoom.lat;
-  float stretch = opts.zoom.stretch;
 
   glm::mat4 zoom4rotd, zoom4roti;
   zoom4rotd = glm::rotate (glm::mat4 (1.0f),
-                           glm::radians (+90.0f-(float)latP), 
+                           glm::radians (+90.0f-static_cast<float> (latP)), 
                            glm::vec3 (-sinf (glm::radians (lonP)),
                                       +cosf (glm::radians (lonP)),
                                       0.0f)) 
             * glm::rotate (glm::mat4 (1.0f),
-                           glm::radians (+180.0f+(float)lonP),
+                           glm::radians (+180.0f+static_cast<float> (lonP)),
                            glm::vec3 (0.0f, 0.0f, 1.0f));
 
 
   zoom4roti = glm::rotate (glm::mat4 (1.0f),
-              glm::radians (-180.0f-(float)lonP),
+              glm::radians (-180.0f-static_cast<float> (lonP)),
               glm::vec3 (0.0f, 0.0f, 1.0f))
             * glm::rotate (glm::mat4 (1.0f),
-                           glm::radians (-90.0f+(float)latP), 
+                           glm::radians (-90.0f+static_cast<float> (latP)), 
                            glm::vec3 (-sinf (glm::radians (lonP)),
                                       +cosf (glm::radians (lonP)),
                                       0.0f));

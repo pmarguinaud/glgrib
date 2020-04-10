@@ -24,8 +24,6 @@ glGrib::FieldIsoFill::FieldIsoFill (const glGrib::FieldIsoFill & field)
 
 glGrib::FieldIsoFill * glGrib::FieldIsoFill::clone () const
 {
-  if (this == nullptr)
-    return nullptr;
   glGrib::FieldIsoFill * fld = new glGrib::FieldIsoFill ();
   *fld = *this;
   return fld;
@@ -230,7 +228,7 @@ void processTriangle2 (std::vector<isoband_maker_t> * isomake,
       }
   };
 
-  for (int ll = 0; ll < levels.size (); ll++)
+  for (size_t ll = 0; ll < levels.size (); ll++)
     {
       float lev = levels[ll];
 
@@ -259,8 +257,6 @@ void processTriangle2 (std::vector<isoband_maker_t> * isomake,
 	      glm::vec2 lonlat_j = glGrib::xyz2lonlat (xyz_j),
 	                lonlat_k = glGrib::xyz2lonlat (xyz_k);
               
-	      int ind0 = ib.lonlat.size () / 2;
-
 	      if (ctx.I == -1)
                 {
                   if (b[i])
@@ -312,9 +308,9 @@ void processTriangle1 (std::vector<isoband_maker_t> * isomake,
   if ((v[0] > levels.back  ()) && (v[1] > levels.back  ()) && (v[2] > levels.back  ()))
     return;
 
-  for (int i = 0; i < levels.size ()-1; i++)
-    if (((v[0] > levels[i+0]) && (v[1] > levels[i+0]) && (v[2] > levels[i+0]))
-     && ((v[0] < levels[i+1]) && (v[1] < levels[i+1]) && (v[2] < levels[i+1])))
+  for (size_t i = 1; i < levels.size (); i++)
+    if (((v[0] > levels[i-1]) && (v[1] > levels[i-1]) && (v[2] > levels[i-1]))
+     && ((v[0] < levels[i+0]) && (v[1] < levels[i+0]) && (v[2] < levels[i+0])))
       return;
 
   // At this point, we know the triangle will not have an homogeneous color;
@@ -373,12 +369,12 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
   std::vector<int> colorIndex (d.isoband.size ());
 
-  for (int i = 0; i < d.isoband.size (); i++)
+  for (size_t i = 0; i < d.isoband.size (); i++)
     {
       float v;
       if (i == 0)
         v = levels.front () * 0.99f - 1.0f;
-      else if (i == d.isoband.size () - 1)
+      else if (static_cast<int> (i) == static_cast<int> (d.isoband.size ()) - 1)
         v = levels.back  () * 1.01f + 1.0f;
       else
         v = (levels[i-1] + levels[i+0]) / 2.0f;
@@ -410,10 +406,10 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
         else if (v > levels.back ())
           color[i] = colorIndex.back  ();
         else
-          for (int j = 0; j < levels.size ()-1; j++)
-            if ((levels[j] < v) && (v < levels[j+1]))
+          for (size_t j = 1; j < levels.size (); j++)
+            if ((levels[j-1] < v) && (v < levels[j+0]))
               {
-                color[i] = colorIndex[j+1];
+                color[i] = colorIndex[j+0];
                 break;
               }
       }
@@ -425,7 +421,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
   val = nullptr;
 
-  for (int i = 0; i < d.isoband.size (); i++)
+  for (size_t i = 0; i < d.isoband.size (); i++)
     {
 
       // Compute offset/length of each thread for the current band
@@ -451,7 +447,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
                                     (length_indice * sizeof (unsigned int));
 
       {
-        unsigned int * indice = (unsigned int *)d.isoband[i].elementbuffer->map ();
+        unsigned int * indice = static_cast<unsigned int *> (d.isoband[i].elementbuffer->map ());
 
         // Pack all indices into the buffer, after adding an offset
 #pragma omp parallel for
@@ -473,7 +469,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
                                     (length_lonlat * sizeof (float));
 
       {
-        float * lonlat = (float *)d.isoband[i].vertexbuffer->map ();
+        float * lonlat = static_cast<float *> (d.isoband[i].vertexbuffer->map ());
 
         // Pack all lon/lat pairs into the buffer
 #pragma omp parallel for
@@ -505,8 +501,6 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
 void glGrib::FieldIsoFill::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  const glGrib::Palette & p = palette;
-
   if (opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
   

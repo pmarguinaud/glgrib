@@ -112,7 +112,7 @@ void glGrib::WritePng (const std::string & filename, int width, int height, unsi
   png_bytes = new png_byte[nvals];
   png_rows = new png_bytep[height];
 
-  for (int i = 0; i < nvals; i++)
+  for (size_t i = 0; i < nvals; i++)
     png_bytes[i] = pixels[i];
 
   for (int i = 0; i < height; i++)

@@ -78,7 +78,7 @@ void glGrib::Mapscale::render (const glm::mat4 & MVP, const glGrib::View & view)
 
   int ndigits = 0;
   float pow10 = 1;
-  while ((int)(dist1 / pow10))
+  while (static_cast<int>(dist1 / pow10))
     {
       ndigits++;
       pow10 = pow10 * 10;
@@ -87,14 +87,14 @@ void glGrib::Mapscale::render (const glm::mat4 & MVP, const glGrib::View & view)
   ndigits--;
   pow10 = pow10 / 10;
 
-  dist1 = pow10 * (int)(dist1 / pow10);
+  dist1 = pow10 * static_cast<int>(dist1 / pow10);
   frac1 = frac0 * dist1 / dist0;
 
   std::string str;
   if (dist1 > 1000)
-    str = std::to_string ((int)(dist1/1000)) + " km";
+    str = std::to_string (static_cast<int>(dist1/1000)) + " km";
   else
-    str = std::to_string ((int)dist1) + " m";
+    str = std::to_string (static_cast<int>(dist1)) + " m";
 
   str = str.substr (0, 15);
   

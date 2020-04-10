@@ -120,7 +120,7 @@ public:
             if (count[i] > 1.0f)
               {
                 edge_t & e = eidx->add (rank1, rank2);
-                e.count = (int)count[i];
+                e.count = static_cast<int>(count[i]);
                 e.angle = angle;
               }
           }
@@ -140,11 +140,11 @@ public:
     std::sort (ord, ord + 3, [this] (int i, int j) { return this->count[j] < this->count[i]; });
     // Number of triangles we can get now
     if (count[ord[2]] > 1)
-      return 1 + (int)count[ord[0]] + (int)count[ord[1]];
+      return 1 + static_cast<int> (count[ord[0]]) + static_cast<int> (count[ord[1]]);
     else if (count[ord[1]] > 1)
-      return 1 + (int)count[ord[0]] + (int)count[ord[1]];
+      return 1 + static_cast<int> (count[ord[0]]) + static_cast<int> (count[ord[1]]);
     else if (count[ord[0]] > 1)
-      return 1 + (int)count[ord[0]];
+      return 1 + static_cast<int> (count[ord[0]]);
     return 0;
   }
 
@@ -287,7 +287,6 @@ void subdivideRing1 (std::vector<glm::vec3> & xyz,
   for (edge_idx_t::iterator it = eidx.begin (); it != eidx.end (); it++)
     {
       edge_t & e = it->second;
-      int i = it->first.first, j = it->first.second;
       e.rankb = xyz.size () + ixyz;
       ixyz += e.count;
     }
@@ -342,7 +341,7 @@ void glGrib::Subdivide::init (const std::vector<float> & lonlat,
           if ((in[0] == in[1]) && (in[1] == in[2]))
             continue;
           for (int i = 0; i < 3; i++)
-            if ((in[i] < indp1) || (in[i] > indp2))
+            if ((static_cast<int> (in[i]) < indp1) || (static_cast<int> (in[i]) > indp2))
               abort ();
         }
     }
@@ -365,7 +364,7 @@ void glGrib::Subdivide::init (const std::vector<float> & lonlat,
   // Change indices base index
   for (int i = indr1; i < indr2; i++)
     {
-      if (ind[i] < indp1)
+      if (static_cast<int>(ind[i]) < indp1)
         ind1[i-indr1] = 0;
       else
         ind1[i-indr1] = ind[i]-indp1;
@@ -390,7 +389,7 @@ void glGrib::Subdivide::append (std::vector<float> & lonlat, std::vector<unsigne
                                int points_offset, int triangles_offset)
 {
   // Append new points
-  for (int i = xyz1_size; i < xyz1.size (); i++)
+  for (size_t i = xyz1_size; i < xyz1.size (); i++)
     {   
       glm::vec2 ll = xyz2lonlat (xyz1[i]);
       int j = points_offset + i - xyz1_size;
@@ -398,11 +397,11 @@ void glGrib::Subdivide::append (std::vector<float> & lonlat, std::vector<unsigne
     }   
  
   // Append new triangles
-  for (int i = ind1_size; i < ind1.size (); i++)
+  for (size_t i = ind1_size; i < ind1.size (); i++)
     {   
       int j = triangles_offset + i - ind1_size;
       // Two cases 
-      if (ind1[i] < xyz1_size)     // This vertex already existed
+      if (static_cast<int>(ind1[i]) < xyz1_size)     // This vertex already existed
         ind[j] = ind1[i] + indp1;
       else                         // New vertex
         ind[j] = ind1[i] - xyz1_size + points_offset;

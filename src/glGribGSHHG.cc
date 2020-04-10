@@ -77,8 +77,8 @@ int read_GSHHG_POINT_list (std::vector<GSHHG_POINT_t> * gpl, int n, FILE * fp)
 {
   gpl->resize (n);
   void * ptr = &(*gpl)[0];
-  memset (ptr, sizeof (GSHHG_POINT_t) * n, 0);
-  int ret = fread (ptr, sizeof (GSHHG_POINT_t), n, fp) == n;
+  memset (ptr, 0, sizeof (GSHHG_POINT_t) * n);
+  int ret = fread (ptr, sizeof (GSHHG_POINT_t), n, fp) == static_cast<size_t> (n);
   if (ret)
     iswap (ptr, ptr, sizeof (int32_t), 2 * n, 1);
   return ret;
@@ -127,7 +127,7 @@ void glGrib::GSHHG::read (const glGrib::OptionsLines & opts, int * numberOfPoint
 
       bool ok = false;
 
-      for (int i = 0; i < mask.size (); i++)
+      for (size_t i = 0; i < mask.size (); i++)
         ok = ok || ((h.flag & mask[i]) == code[i]);
       
       if (ok)

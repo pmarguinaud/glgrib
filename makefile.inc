@@ -8,5 +8,5 @@ LDFLAGS=-fopenmp \
         -L$(ECCODES_PREFIX)/lib -Wl,-rpath,$(ECCODES_PREFIX)/lib -leccodes \
         -lGLEW -lGL -lglfw -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto -lpthread -lsqlite3 -lcurl -lshp 
 
-CXXFLAGS=-fPIC -O2 -fopenmp -std=c++11 -g -I$(ECCODES_PREFIX)/include  
+CXXFLAGS=-fPIC -O2 -fopenmp -std=c++11 -g -I$(ECCODES_PREFIX)/include  -Wall
 

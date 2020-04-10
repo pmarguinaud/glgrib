@@ -36,8 +36,6 @@ glGrib::FieldStream::FieldStream (const glGrib::FieldStream & field)
 
 glGrib::FieldStream * glGrib::FieldStream::clone () const
 {
-  if (this == nullptr)
-    return nullptr;
   glGrib::FieldStream * fld = new glGrib::FieldStream ();
   *fld = *this;
   return fld;
@@ -64,7 +62,7 @@ void glGrib::FieldStream::clear ()
 {
   if (isReady ()) 
     {
-      for (int i = 0; i < stream.size (); i++)
+      for (size_t i = 0; i < stream.size (); i++)
         glDeleteVertexArrays (1, &stream[i].VertexArrayID);
     }
   glGrib::Field::clear ();
@@ -75,7 +73,7 @@ void glGrib::FieldStream::setupVertexAttributes ()
   numberOfPoints = geometry->getNumberOfPoints ();
   numberOfTriangles = geometry->getNumberOfTriangles ();
 
-  for (int i = 0; i < stream.size (); i++)
+  for (size_t i = 0; i < stream.size (); i++)
     {
       glGenVertexArrays (1, &stream[i].VertexArrayID);
       glBindVertexArray (stream[i].VertexArrayID);
@@ -128,8 +126,6 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
 //geometry->checkTriangles ();
 
-  int size = geometry->size ();
-
   glGrib::FieldFloatBufferPtr data_n, data_d;
 
   glGrib::Loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
@@ -151,8 +147,8 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
   for (int i = 0; i < nt; i++)
     sample[i] = 0;
 
-  int np = (int)sqrt (geometry->getNumberOfPoints ());
-  int level = (int)(opts.stream.density * np / 40.0f);
+  int np = static_cast<int> (sqrt (geometry->getNumberOfPoints ()));
+  int level = static_cast<int> (opts.stream.density * np / 40.0f);
 
   geometry->sampleTriangle (sample, 1, level);
 
@@ -434,7 +430,7 @@ void glGrib::FieldStream::computeStreamLine (int it0, const float * ru, const fl
   // Add points to stream
   for (int i = listb.size () - 1; i >= 0; i--)
     stream->push (geometry->conformal2xyz (glm::vec2 (listb[i].x, listb[i].y)), listb[i].z);
-  for (int i = 0; i < listf.size (); i++)
+  for (size_t i = 0; i < listf.size (); i++)
     stream->push (geometry->conformal2xyz (glm::vec2 (listf[i].x, listf[i].y)), listf[i].z);
 
   if (listb.size () + listf.size () > 0)
@@ -447,7 +443,6 @@ void glGrib::FieldStream::render (const glGrib::View & view, const glGrib::Optio
 {
   glGrib::Program * program = glGrib::Program::load (glGrib::Program::STREAM);
   program->use ();
-  const glGrib::Palette & p = palette;
 
   view.setMVP (program);
   program->set ("scale0", opts.scale);
@@ -472,7 +467,7 @@ void glGrib::FieldStream::render (const glGrib::View & view, const glGrib::Optio
   program->set ("motion", opts.stream.motion.on);
   program->set ("scalenorm", ! opts.stream.motion.on);
 
-  for (int i = 0; i < stream.size (); i++)
+  for (size_t i = 0; i < stream.size (); i++)
     {
       glBindVertexArray (stream[i].VertexArrayID);
       if (wide)

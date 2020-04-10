@@ -12,7 +12,9 @@ namespace
 {
 std::string trim (const std::string & str)
 {
-  int i, j;
+  size_t i, j;
+  if (str.length () == 0)
+    return str;
   for (i = 0; i < str.length (); i++)
     if (str[i] != ' ')
       break;
@@ -59,14 +61,14 @@ bool glGrib::DBase::read (record_t * record)
 
   char tmp[header.record_length], * ptr = &tmp[0];
   _read (tmp, header.record_length, fp);
-  for (int i = 0; i < fields.size (); i++)
+  for (size_t i = 0; i < fields.size (); i++)
     {
       std::string str (ptr, fields[i].length);
       record->push_back (trim (str));
       ptr += fields[i].length;
     }
   
-  if (count == header.count)
+  if (static_cast<uint32_t> (count) == header.count)
     {
       fclose (fp);
       fp = nullptr;
@@ -89,7 +91,7 @@ void glGrib::DBase::convert2sqlite (const std::string & path)
   record_t record;
 
   sql = "CREATE TABLE dbase (";
-  for (int i = 0; i < fields.size (); i++)
+  for (size_t i = 0; i < fields.size (); i++)
     {
       char tmp[256];
       sprintf (tmp, "%s VARCHAR (%d)", fields[i].name, fields[i].length);
@@ -104,7 +106,7 @@ void glGrib::DBase::convert2sqlite (const std::string & path)
   db.execute ("BEGIN");
 
   sql = "INSERT INTO dbase VALUES (";
-  for (int i = 0; i < fields.size (); i++)
+  for (size_t i = 0; i < fields.size (); i++)
     {
       sql += "?";
       if (i != fields.size () - 1)
@@ -116,7 +118,7 @@ void glGrib::DBase::convert2sqlite (const std::string & path)
 
   while (read (&record))
     {
-      for (int i = 0; i < fields.size (); i++)
+      for (size_t i = 0; i < fields.size (); i++)
         st.bind (i, &record[i]);
       st.execute ();
       st.reset ();

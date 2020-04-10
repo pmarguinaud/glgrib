@@ -87,6 +87,7 @@ namespace OptionsParserDetail
   {
   public:
     optionBase (const std::string & n, const std::string & d) : name (n), desc (d) {}
+    virtual ~optionBase () {}
     virtual int hasArg () const { return 1; }
     virtual void set (const std::string &) 
     { throw std::runtime_error (std::string ("Set method is not defined")); }

@@ -43,7 +43,7 @@ void glGrib::FitPolynomial
   for (int i = 0; i < tnp1; i++) 
     {
       X[i] = 0;
-      for (int j = 0; j < N; j++)
+      for (size_t j = 0; j < N; j++)
         X[i] += ipow (x[j], i);
     }
 
@@ -62,7 +62,7 @@ void glGrib::FitPolynomial
   for (int i = 0; i < np1; ++i) 
     {
       Y[i] = 0;
-      for (int j = 0; j < N; ++j) 
+      for (size_t j = 0; j < N; ++j) 
         Y[i] += ipow (x[j], i) * y[j];
     }
 

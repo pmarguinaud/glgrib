@@ -23,7 +23,7 @@ public:
   }
   codes_handle * getCodesHandle () 
   {
-    return this == nullptr ? nullptr : h;
+    return h;
   }
 private:
   codes_handle * h = nullptr;

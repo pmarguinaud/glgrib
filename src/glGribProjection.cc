@@ -169,7 +169,7 @@ glm::mat4 glGrib::ProjectionPolarSouth::getView (const glm::vec3 & p, const floa
 
 glGrib::Projection::type glGrib::Projection::typeFromString (std::string str)
 {
-  for (int i = 0; i < str.length (); i++)
+  for (size_t i = 0; i < str.length (); i++)
     str[i] = std::toupper (str[i]);
 #define if_type(x) if (str == #x) return x
   if_type (XYZ);

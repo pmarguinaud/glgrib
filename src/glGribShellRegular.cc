@@ -31,7 +31,8 @@ char * glGrib::ShellRegular::optionGenerator (const char * text, int state)
 
   std::string tt = text;
 
-  for (; og.list_index < getsetoptions.size (); og.list_index++)
+  for (; static_cast<size_t> (og.list_index) < getsetoptions.size (); 
+       og.list_index++)
     if (getsetoptions[og.list_index].substr (0, og.text_len) == tt)
       return strdup (getsetoptions[og.list_index++].c_str ());  // Note the ++
 

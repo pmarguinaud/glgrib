@@ -23,8 +23,6 @@ glGrib::FieldContour::FieldContour (const glGrib::FieldContour & field)
 
 glGrib::FieldContour * glGrib::FieldContour::clone () const
 {
-  if (this == nullptr)
-    return nullptr;
   glGrib::FieldContour * fld = new glGrib::FieldContour ();
   *fld = *this;
   return fld;
@@ -113,8 +111,6 @@ float getLabelAngle (const std::vector<float> & lonlat, const std::vector<float>
 {
   const glm::vec3 N = glm::vec3 (0.0f, 0.0f, 1.0f);
 
-  float lon = lonlat[2*j+0], lat = lonlat[2*j+1];
-
   glm::vec3 P = glGrib::lonlat2xyz (glm::vec2 (lonlat[2*j+0], lonlat[2*j+1]));
   std::vector<glm::vec3> V (2 * width);
 
@@ -166,16 +162,16 @@ void glGrib::FieldContour::setupLabels (isoline_t * iso, const isoline_data_t & 
   std::vector<int> mnd (ind.size ());
 
 #pragma omp parallel for
-  for (int i = 0; i < ind.size ()-1; i++)
-    for (int j = ind[i]+1; j < ind[i+1]; j++)
-      if (ind[i+1] - ind[i] > 5)
-      if ((iso_data.length[j] - iso_data.length[ind[i]+1]) > 
-          (iso_data.length[ind[i+1]-1] - iso_data.length[ind[i]+1]) / 2)
+  for (size_t i = 1; i < ind.size (); i++)
+    for (size_t j = ind[i-1]+1; j < static_cast<size_t> (ind[i]); j++)
+      if (ind[i] - ind[i-1] > 5)
+      if ((iso_data.length[j] - iso_data.length[ind[i-1]+1]) > 
+          (iso_data.length[ind[i]-1] - iso_data.length[ind[i-1]+1]) / 2)
         {
-          if (iso_data.length[ind[i+1]-1] - iso_data.length[ind[i]+1] > opts.contour.labels.distmin * deg2rad)
-            mnd[i] = j;
+          if (iso_data.length[ind[i]-1] - iso_data.length[ind[i-1]+1] > opts.contour.labels.distmin * deg2rad)
+            mnd[i-1] = j;
           else
-            mnd[i] = 0;
+            mnd[i-1] = 0;
           break;
         }
 
@@ -233,9 +229,6 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
       ld->load (&height, opts.geometry.height.path, opts.geometry, &meta_height);
     }
 
-  int size = geometry->size ();
-  float minval = *std::min_element (data->data (), data->data () + size);
-
   std::vector<float> levels = opts.contour.levels;
 
   if (levels.size () == 0)
@@ -252,7 +245,7 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
   float * val = data->data ();
 
 #pragma omp parallel for
-  for (int i = 0; i < levels.size (); i++)
+  for (size_t i = 0; i < levels.size (); i++)
     {
       bool * seen = new bool[geometry->getNumberOfTriangles () + 1];
 
@@ -277,7 +270,7 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
   iso.resize (levels.size ());
 
-  for (int i = 0; i < levels.size (); i++)
+  for (size_t i = 0; i < levels.size (); i++)
     {
       iso[i].level = levels[i];
       iso[i].vertexbuffer   = newGlgribOpenGLBufferPtr (iso_data[i].lonlat.size () * sizeof (float), 
@@ -297,7 +290,7 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
       if ((i < opts.contour.lengths.size ()) && (i < opts.contour.patterns.size ()))
         {
           iso[i].dash = (iso[i].length = opts.contour.lengths[i]);
-          for (int j = 0; j < opts.contour.patterns[i].length (); j++)
+          for (size_t j = 0; j < opts.contour.patterns[i].length (); j++)
             iso[i].pattern.push_back (opts.contour.patterns[i][j] == opts.contour.patterns[i][0]);
         }
 
@@ -453,7 +446,6 @@ void glGrib::FieldContour::render (const glGrib::View & view, const glGrib::Opti
 {
   glGrib::Program * program = glGrib::Program::load (glGrib::Program::CONTOUR);
   program->use ();
-  const glGrib::Palette & p = palette;
 
   view.setMVP (program);
   program->set ("scale0", opts.scale);
@@ -471,7 +463,7 @@ void glGrib::FieldContour::render (const glGrib::View & view, const glGrib::Opti
         {
           float length = view.pixelToDistAtNadir (is.length);
           program->set ("length", length);
-          program->set ("N", (int)is.pattern.size ());
+          program->set ("N", static_cast<int> (is.pattern.size ()));
           program->set ("pattern", is.pattern);
         }
       if (is.wide)

@@ -48,7 +48,7 @@ public:
 
   Field * getCurrentField () 
   { 
-    return d.currentFieldRank < fieldlist.size () ? fieldlist[d.currentFieldRank] : nullptr; 
+    return static_cast<size_t> (d.currentFieldRank) < fieldlist.size () ? fieldlist[d.currentFieldRank] : nullptr; 
   }
 
   void getLightPos (float * lon, float * lat) const

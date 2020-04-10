@@ -13,6 +13,9 @@
 void glGrib::GeometryLatLon::setProgramParameters (glGrib::Program * program) const 
 {
 #include "shaders/include/geometry/types.h"
+
+  (void)dumm_type;
+
   if (vertexbuffer != nullptr)
     {
       program->set ("geometry_type", geometry_none);
@@ -36,7 +39,7 @@ int glGrib::GeometryLatLon::size () const
 
 glGrib::GeometryLatLon::GeometryLatLon (glGrib::HandlePtr ghp)
 {
-  codes_handle * h = ghp->getCodesHandle ();
+  codes_handle * h = ghp == nullptr ? nullptr : ghp->getCodesHandle ();
   codes_get_long (h, "Ni", &Ni);
   codes_get_long (h, "Nj", &Nj);
   codes_get_double (h, "latitudeOfFirstGridPointInDegrees"   , &latitudeOfFirstGridPointInDegrees  );
@@ -50,16 +53,16 @@ void glGrib::GeometryLatLon::setupCoordinates ()
 {
   vertexbuffer = newGlgribOpenGLBufferPtr (2 * numberOfPoints * sizeof (float));
 
-  float * lonlat = (float *)vertexbuffer->map ();
+  float * lonlat = static_cast <float *> (vertexbuffer->map ());
 
   // Generation of coordinates
 #pragma omp parallel for
   for (int j = 0; j < Nj; j++)
     {
-      float lat = lat0 - dlat * (float)j;
+      float lat = lat0 - dlat * static_cast<float> (j);
       for (int i = 0; i < Ni; i++)
         {
-          float lon = lon0 + dlon * (float)i;
+          float lon = lon0 + dlon * static_cast<float> (i);
           int p = j * Ni + i;
 	  lonlat[2*p+0] = lon;
 	  lonlat[2*p+1] = lat;
@@ -74,7 +77,6 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
 {
   opts = o;
 
-  codes_handle * h = ghp->getCodesHandle ();
   periodic = false;
 
   dlat = deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees) / (Nj - 1);
@@ -103,7 +105,7 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
   if (! opts.triangle_strip.on)
     {
       elementbuffer = newGlgribOpenGLBufferPtr (3 * numberOfTriangles * sizeof (unsigned int));
-      unsigned int * ind = (unsigned int *)elementbuffer->map ();
+      unsigned int * ind = static_cast<unsigned int *> (elementbuffer->map ());
       for (int j = 0, t = 0; j < Nj-1; j++)
         {
           for (int i = 0; i < Ni-1; i++)
@@ -130,7 +132,7 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
         ind_strip_size = (2 * Ni + 1) * (Nj - 1);
 
       elementbuffer = newGlgribOpenGLBufferPtr (3 * ind_strip_size * sizeof (unsigned int));
-      unsigned int * ind_strip = (unsigned int *)elementbuffer->map ();
+      unsigned int * ind_strip = static_cast<unsigned int *> (elementbuffer->map ());
       for (int j = 0, t = 0; j < Nj-1; j++)
         {
           for (int i = 0; i < Ni; i++)
@@ -167,14 +169,14 @@ void glGrib::GeometryLatLon::setupFrame ()
   vertexbuffer_frame = newGlgribOpenGLBufferPtr (3 * (numberOfPoints_frame + 2) 
                                                      * sizeof (float));
 
-  float * lonlat = (float *)vertexbuffer_frame->map ();
+  float * lonlat = static_cast<float *> (vertexbuffer_frame->map ());
 
   int p = 0;
 
   auto push = [lonlat, &p, this] (int i, int j, int latcst)
   {
-    float lat = lat0 - dlat * (float)j;
-    float lon = lon0 + dlon * (float)i;
+    float lat = lat0 - dlat * static_cast<float> (j);
+    float lon = lon0 + dlon * static_cast<float> (i);
     lonlat[3*p+0] = lon;
     lonlat[3*p+1] = lat;
     lonlat[3*p+2] = latcst == 0 ? 1.0f : 0.0f;
@@ -214,8 +216,8 @@ int glGrib::GeometryLatLon::latlon2index (float lat, float lon) const
   while (dl >= 2 * pi)
     dl -= 2 * pi;
 
-  int i = (int)(0.5 + dl / dlon);
-  int j = (int)(0.5 + (lat0 - lat) / dlat);
+  int i = static_cast<int>(0.5 + dl / dlon);
+  int j = static_cast<int>(0.5 + (lat0 - lat) / dlat);
 
   if ((periodic) && (i >= Ni))
     i = 0;
@@ -233,8 +235,8 @@ void glGrib::GeometryLatLon::index2latlon (int jglo, float * lat, float * lon) c
   int i = jglo % Ni;
   int j = jglo / Ni;
 
-  *lat = lat0 - dlat * (float)j;
-  *lon = lon0 + dlon * (float)i;
+  *lat = lat0 - dlat * static_cast<float> (j);
+  *lon = lon0 + dlon * static_cast<float> (i);
 }
 
 std::string glGrib::GeometryLatLon::md5 () const
@@ -285,7 +287,7 @@ void glGrib::GeometryLatLon::sample (unsigned char * p, const unsigned char p0, 
 
   for (int jlat = 0; jlat < Nj; jlat++)
     {
-      float lat = lat0 - dlat * (float)jlat;
+      float lat = lat0 - dlat * static_cast<float> (jlat);
       float coslat = cos (lat);
       int lon_stride = abs (2 * (lat_stride * Dlat) / (Dlon * coslat));
       lon_stride = std::max (1, lon_stride);
@@ -329,10 +331,10 @@ const
   int ind0 = (j + 0) * Ni + (i + 0), ind1 = periodic && (i == Ni-1) ? (j + 0) * Ni : (j + 0) * Ni + (i + 1); 
   int ind2 = (j + 1) * Ni + (i + 0), ind3 = periodic && (i == Ni-1) ? (j + 1) * Ni : (j + 1) * Ni + (i + 1); 
 
-  xlon0 = lon0 + dlon * (float)(i + 0);
-  xlon1 = lon0 + dlon * (float)(i + 1);
-  xlat0 = lat0 - dlat * (float)(j + 0);
-  xlat1 = lat0 - dlat * (float)(j + 1);
+  xlon0 = lon0 + dlon * static_cast<float> (i + 0);
+  xlon1 = lon0 + dlon * static_cast<float> (i + 1);
+  xlat0 = lat0 - dlat * static_cast<float> (j + 0);
+  xlat1 = lat0 - dlat * static_cast<float> (j + 1);
 
   if (t021)
     {
@@ -449,7 +451,7 @@ void glGrib::GeometryLatLon::sampleTriangle (unsigned char * s, const unsigned c
 
   for (int jlat = 0; jlat < Nj-1; jlat++)
     {
-      float lat = lat0 - dlat * (float)jlat;
+      float lat = lat0 - dlat * static_cast<float> (jlat);
 
       if (fabsf (lat - pi / 2.0f) < 1e-6)
         continue;
@@ -478,8 +480,8 @@ int glGrib::GeometryLatLon::getTriangle (float lon, float lat) const
   while (dl >= 2 * pi)
     dl -= 2 * pi;
 
-  int i = (int)(dl / dlon);
-  int j = (int)((lat0 - lat) / dlat);
+  int i = static_cast<int>(dl / dlon);
+  int j = static_cast<int>((lat0 - lat) / dlat);
 
   std::cout << " Ni, Nj = " << Ni << ", " << Nj << std::endl;
   std::cout << " i, j = " << i << ", " << j << std::endl;

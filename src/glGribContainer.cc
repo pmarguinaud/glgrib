@@ -28,6 +28,7 @@ class containerPlain : public glGrib::Container
 {
 public:
   containerPlain (const std::string & file) : glGrib::Container (file) {}
+  virtual ~containerPlain () {}
   codes_handle * getHandleByExt (const std::string &) override;
   const std::string & getNextExt (const std::string &) override;
   const std::string & getPrevExt (const std::string &) override;
@@ -87,6 +88,9 @@ private:
     _iteratorPlain () 
     {
     }
+    virtual ~_iteratorPlain ()
+    {
+    }
     void incr () override
     {
       rank++;
@@ -103,13 +107,13 @@ private:
 
       // At end or not
       if (_other == nullptr)
-        return rank == cont->index.size ();
+        return static_cast<size_t> (rank) == cont->index.size ();
 
       const _iteratorPlain * other = dynamic_cast<const _iteratorPlain *>(_other);
 
       // At end ?
       if (this == nullptr)
-        return other->rank == other->cont->index.size ();
+        return static_cast<size_t> (other->rank) == other->cont->index.size ();
 
       // Do we operate on same container
       if (cont != other->cont)
@@ -141,7 +145,7 @@ const std::string & containerPlain::getNextExt (const std::string & ext)
 {
   if ((ext == empty) && (index.size () > 0))
     return index.front ().ext;
-  for (int i = 0; i < index.size ()-1; i++)
+  for (size_t i = 0; i < index.size ()-1; i++)
     if (index[i].ext == ext)
       return index[i+1].ext;
   return empty;
@@ -151,7 +155,7 @@ const std::string & containerPlain::getPrevExt (const std::string & ext)
 {
   if ((ext == empty) && (index.size () > 0))
     return index.back ().ext;
-  for (int i = 1; i < index.size (); i++)
+  for (size_t i = 1; i < index.size (); i++)
     if (index[i].ext == ext)
       return index[i-1].ext;
   return empty;
@@ -164,6 +168,7 @@ class containerFA : public glGrib::Container
 {
 public:
   containerFA (const std::string & file) : glGrib::Container (file) {}
+  virtual ~containerFA () {}
   codes_handle * getHandleByExt (const std::string &) override;
   const std::string & getNextExt (const std::string &) override;
   const std::string & getPrevExt (const std::string &) override;
@@ -204,13 +209,13 @@ private:
 
       // At end or not
       if (_other == nullptr)
-        return rank == cont->names.size ();
+        return static_cast<size_t> (rank) == cont->names.size ();
 
       const _iteratorFA * other = dynamic_cast<const _iteratorFA *>(_other);
      
       // At end ?
       if (this == nullptr)
-        return other->rank == other->cont->names.size (); 
+        return static_cast<size_t> (other->rank) == other->cont->names.size (); 
 
       // Do we operate on same container
       if (cont != other->cont)
@@ -236,9 +241,9 @@ const std::string & containerFA::getNextExt (const std::string & ext)
 {
   if ((ext == empty) && (names.size () > 0))
     return names.front ();
-  for (int i = 0; i < names.size ()-1; i++)
-    if (names[i] == ext)
-      return names[i+1];
+  for (size_t i = 1; i < names.size (); i++)
+    if (names[i-1] == ext)
+      return names[i];
   return empty;
 }
 
@@ -246,7 +251,7 @@ const std::string & containerFA::getPrevExt (const std::string & ext)
 {
   if ((ext == empty) && (names.size () > 0))
     return names.back ();
-  for (int i = 1; i < names.size (); i++)
+  for (size_t i = 1; i < names.size (); i++)
     if (names[i] == ext)
       return names[i-1];
   return empty;
@@ -368,7 +373,7 @@ codes_handle * containerPlain::searchHandleByExt (const std::string & ext)
       // Parse GRIB selector and see if current handle complies
       while (e.length ())
         {
-          int p;
+          size_t p;
 	  p = e.find_first_of (',');
 	  std::string m;
 
@@ -444,7 +449,6 @@ next:
 
 codes_handle * containerPlain::getHandleByExt (const std::string & ext)
 {
-  int err = 0;
   codes_handle * h = nullptr;
 
   if (index.size () > 0)

@@ -19,8 +19,6 @@ glGrib::FieldVector::FieldVector (const glGrib::FieldVector & field)
 
 glGrib::FieldVector * glGrib::FieldVector::clone () const
 {
-  if (this == nullptr)
-    return nullptr;
   glGrib::FieldVector * fld = new glGrib::FieldVector ();
   *fld = *this;
   return fld;
@@ -126,7 +124,6 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
   unsigned char * col_d = (unsigned char *)d.buffer_d->map ();
   pack<unsigned char> (data_d->data (), geometry->getNumberOfPoints (), meta_d.valmin, meta_d.valmax, meta_d.valmis, col_d);
 
-  float resolution = geometry->resolution ();
   const int npts = opts.vector.density;
   geometry->sample (col_d, 0, npts);
 
@@ -209,7 +206,7 @@ public:
   arrow_t (int _numPoints, GLenum _linemode = GL_LINE_STRIP) 
       : numPoints (_numPoints), fillable (false), linemode (_linemode) {}
   arrow_t (const std::vector<unsigned int> & _ind) 
-      : ind (_ind), fillable (false), linemode (GL_LINES), numPoints (_ind.size ()) {}
+      : ind (_ind), numPoints (_ind.size ()), fillable (false), linemode (GL_LINES) {}
   // Shapes of arrows
   std::vector<unsigned int> ind = {0, 0, 0};
   // Number of points for each arrow kind

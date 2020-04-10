@@ -37,7 +37,6 @@ void glGrib::Test::clear ()
 void glGrib::Test::setup ()
 {
   return;
-  int numberOfPoints = 3;
 
   std::vector<unsigned int> ind {0, 1, 2};
   std::vector<float> lonlat {0.0f, 0.0f, halfpi, 0.0f, 0.0f, halfpi};

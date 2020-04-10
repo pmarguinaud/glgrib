@@ -78,7 +78,7 @@ void glGrib::Scene::display () const
   for (auto obj : obj_list)
     displayObj (obj);
 
-  const glGrib::Field * fld = d.currentFieldRank < fieldlist.size () 
+  const glGrib::Field * fld = d.currentFieldRank < static_cast<int> (fieldlist.size ())
                            ? fieldlist[d.currentFieldRank] : nullptr;
   d.image.render (d.MVP_L);
 
@@ -170,7 +170,7 @@ void glGrib::Scene::updateView ()
   if (d.opts.scene.travelling.on)
     {
       float frames = d.opts.scene.travelling.frames;
-      float a = (float)d.nupdate / frames;
+      float a = static_cast<float> (d.nupdate) / frames;
       if (a <= 1)
         {
           float lon1 = d.opts.scene.travelling.pos1.lon;
@@ -233,11 +233,11 @@ void glGrib::Scene::updateInterpolation ()
 
       slotmax--;
 
-      float slot = (float)d.nupdate / (float)d.opts.scene.interpolation.frames;
+      float slot = static_cast<float> (d.nupdate) / static_cast<float> (d.opts.scene.interpolation.frames);
       if (slot > slotmax)
         slot = slotmax;
 
-      for (int j = 0; j < fieldlist.size (); j++)
+      for (size_t j = 0; j < fieldlist.size (); j++)
         setFieldOptions (j, d.opts.field[j], slot);
     }
 }
@@ -352,7 +352,7 @@ void glGrib::Scene::setup (const glGrib::Options & o)
   for (auto f : d.opts.field)
     fieldlist.push_back ((glGrib::Field *)nullptr);
 
-  for (int i = 0; i < d.opts.field.size (); i++)
+  for (size_t i = 0; i < d.opts.field.size (); i++)
     setFieldOptions (i, d.opts.field[i]);
 
   setDateOptions (d.opts.scene.date);
@@ -420,7 +420,7 @@ glGrib::Options glGrib::Scene::getOptions () const
   o.cities         = d.cities.getOptions ();
   o.mapscale       = d.mapscale.getOptions ();
 
-  for (int i = 0; i < fieldlist.size (); i++)
+  for (size_t i = 0; i < fieldlist.size (); i++)
     if (fieldlist[i] != nullptr)
       o.field[i] = fieldlist[i]->getOptions ();
 
@@ -538,7 +538,7 @@ void glGrib::Scene::setTextOptions (const glGrib::OptionsText & o)
   if (d.opts.scene.text.on)
     {
       glGrib::FontPtr font = newGlgribFontPtr (d.opts.scene.text.font);
-      for (int i = 0; i < d.opts.scene.text.s.size (); i++)
+      for (size_t i = 0; i < d.opts.scene.text.s.size (); i++)
         {
           glGrib::String str;
           d.str.push_back (str);

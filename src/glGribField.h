@@ -50,7 +50,7 @@ public:
   virtual std::vector<float> getValue (int index) const 
   { 
     std::vector<float> val;
-    for (int i = 0; i < values.size (); i++)
+    for (size_t i = 0; i < values.size (); i++)
       if (values[i]->data () != nullptr)
         val.push_back (values[i]->data ()[index]);
     return val;
@@ -58,13 +58,13 @@ public:
   virtual std::vector<float> getMaxValue () const 
   { 
     std::vector<float> val; 
-    for (int i = 0; i < meta.size (); i++) val.push_back (meta[i].valmax); 
+    for (size_t i = 0; i < meta.size (); i++) val.push_back (meta[i].valmax); 
     return val; 
   }
   virtual std::vector<float> getMinValue () const 
   { 
     std::vector<float> val; 
-    for (int i = 0; i < meta.size (); i++) val.push_back (meta[i].valmin); 
+    for (size_t i = 0; i < meta.size (); i++) val.push_back (meta[i].valmin); 
     return val; 
   }
   virtual float getNormedMinValue () const 
@@ -73,7 +73,7 @@ public:
     if (val.size () == 1)
       return val[0];
     float n = 0.0f;
-    for (int i = 0; i < val.size (); i++)
+    for (size_t i = 0; i < val.size (); i++)
       n += val[i] * val[i];
     return sqrt (n);
   }
@@ -83,7 +83,7 @@ public:
     if (val.size () == 1)
       return val[0];
     float n = 0.0f;
-    for (int i = 0; i < val.size (); i++)
+    for (size_t i = 0; i < val.size (); i++)
       n += val[i] * val[i];
     return sqrt (n);
   }

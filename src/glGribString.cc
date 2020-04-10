@@ -55,7 +55,7 @@ void glGrib::String::setup3D (glGrib::const_FontPtr ff, const std::vector<std::s
 	                    float s, align_t _align)
 {
   std::vector<float> _x, _y;
-  for (int i = 0; i < str.size (); i++)
+  for (size_t i = 0; i < str.size (); i++)
     {
       _x.push_back (0.0f);
       _y.push_back (0.0f);
@@ -101,7 +101,7 @@ void glGrib::String::setup (glGrib::const_FontPtr ff, const std::vector<std::str
   d.align = _align;
   
   d.len = 0; // Total number of letters
-  for (int i = 0; i < d.data.size (); i++)
+  for (size_t i = 0; i < d.data.size (); i++)
     d.len += d.data[i].size ();
 
   std::vector<float> xy, let, xyz;
@@ -119,10 +119,10 @@ void glGrib::String::setup (glGrib::const_FontPtr ff, const std::vector<std::str
   float posu = dy * d.font->getPosAbove ();
   float dym  = dy - posu - posb;
 
-  float x0, y0; // last coordinates used
+  float x0 = 0.0f, y0 = 0.0f; // last coordinates used
 
   // For each string
-  for (int j = 0, ii = 0; j < d.data.size (); j++)
+  for (size_t j = 0, ii = 0; j < d.data.size (); j++)
     {
       int len = d.data[j].size ();
      
@@ -317,25 +317,25 @@ void glGrib::String::update (const std::vector<std::string> & str)
 
   if (str.size () > d.data.size ())
     return;
-  for (int i = 0; i < str.size (); i++)
+  for (size_t i = 0; i < str.size (); i++)
     if (str[i].size () > d.data[i].size ())
       return;
 
-  for (int i = 0; i < str.size (); i++)
+  for (size_t i = 0; i < str.size (); i++)
     {
-      for (int j = 0; j < str[i].size (); j++)
+      for (size_t j = 0; j < str[i].size (); j++)
         d.data[i][j] = str[i][j];
-      for (int j = str[i].size (); j < d.data[i].size (); j++)
+      for (size_t j = str[i].size (); j < d.data[i].size (); j++)
         d.data[i][j] = ' ';
     }
-  for (int i = str.size (); i < d.data.size (); i++)
-    for (int j = 0; j < d.data[i].size (); j++)
+  for (size_t i = str.size (); i < d.data.size (); i++)
+    for (size_t j = 0; j < d.data[i].size (); j++)
       d.data[i][j] = ' ';
 
-  float * let = (float *)d.letterbuffer->map ();
+  float * let = static_cast<float *> (d.letterbuffer->map ());
 
-  for (int j = 0, ii = 0; j < d.data.size (); j++)
-    for (int i = 0; i < d.data[j].size (); i++, ii++) 
+  for (size_t j = 0, ii = 0; j < d.data.size (); j++)
+    for (size_t i = 0; i < d.data[j].size (); i++, ii++) 
       {
         int rank = d.font->map (d.data[j][i]);
         let[ii] = rank; 

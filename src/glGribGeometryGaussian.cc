@@ -49,7 +49,7 @@ void computeLatgauss (int kn, double * latgauss)
       zfn[jn*(kn+1)+jn] = zfnn;
       for (int jgl = 2; jgl <= jn-iodd; jgl += 2)
         zfn[jn*(kn+1)+jn-jgl] = zfn[jn*(kn+1)+jn-jgl+2] 
-         * (double)((jgl-1)*(2*jn-jgl+2)) / (double)(jgl*(2*jn-jgl+1));
+         * static_cast<double>((jgl-1)*(2*jn-jgl+2)) / static_cast<double>(jgl*(2*jn-jgl+1));
     }
   
   int iodd = kn % 2;
@@ -130,7 +130,6 @@ int MODULO (int x, int y)
   return ((x)%(y));
 }
 
-#define JDLON(JLON1, JLON2) (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1))
 
 int JNEXT (int JLON, int ILOEN)
 {
@@ -149,6 +148,10 @@ void processLat (int jlat, int iloen1, int iloen2,
 {
 // iloen1 > iloen2
 
+  auto JDLON = [&iloen1, &iloen2] (int JLON1, int JLON2)
+  {
+    return (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1));
+  };
 
   int jlon1 = 1;
   int jlon2 = 1;
@@ -287,7 +290,7 @@ void processLat (int jlat, int iloen1, int iloen2,
               else if (jlon2 == 1) 
                 while (jlon1 != 1)
                   {
-                    int jlon1n = JNEXT (jlon1, iloen1);
+                    jlon1n = JNEXT (jlon1, iloen1);
                     AV1 ();
                     RS2 ();
                   }
@@ -300,8 +303,6 @@ void processLat (int jlat, int iloen1, int iloen2,
   *p_inds_strip = inds_strip;
 }
   
-
-
 void computeTrigaussStrip (const long int Nj, const std::vector<long int> & pl, 
                              unsigned int * ind_strip,
 	                     int ind_stripcnt_per_lat[], 
@@ -392,6 +393,11 @@ void computeTrigauss (const long int Nj, const std::vector<long int> & pl, unsig
       int jglooff1 = iglooff[jlat-1] + 0;
       int jglooff2 = iglooff[jlat-1] + iloen1;
      
+      auto JDLON = [&iloen1, &iloen2] (int JLON1, int JLON2)
+      {
+        return (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1));
+      };
+
       auto PRINT = [&] (int a,int b,int c) 
       {
         ind[ik++] = (a)-1; ind[ik++] = (b) - 1; ind[ik++] = (c)-1;  
@@ -465,28 +471,21 @@ void computeTrigauss (const long int Nj, const std::vector<long int> & pl, unsig
                   if (jlon1 == 1)
                     while (jlon2 != 1)
                       {
-                        int jlon2n = JNEXT (jlon2, iloen2);
+                        jlon2n = JNEXT (jlon2, iloen2);
                         AV2 ();
                         PRINT (ica, icb, icc);
                       }
                   else if (jlon2 == 1)
                     while (jlon1 != 1)
                       {
-                        int jlon1n = JNEXT (jlon1, iloen1);
+                        jlon1n = JNEXT (jlon1, iloen1);
                         AV1 ();
-                       PRINT (ica, icb, icc);
+                        PRINT (ica, icb, icc);
                       }
                   break;
                 }
-
-     
-      
             }
-        
-        
         }
-
-
     }
 
 }
@@ -501,6 +500,11 @@ int glGrib::GeometryGaussian::computeLowerTriangle (int jlat, int jlon) const
   int iloen2 = pl[jlat];
   int jlon1 = jlon;
   
+  auto JDLON = [&iloen1, &iloen2] (int JLON1, int JLON2)
+  {
+    return (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1));
+  };
+
   int jlon1n = jlon1 + 1;
   int jlon2 = 1 + ((jlon1n-1) * iloen2) / iloen1;
   
@@ -522,6 +526,11 @@ int glGrib::GeometryGaussian::computeUpperTriangle (int jlat, int jlon) const
   int iloen1 = pl[jlat-2];
   int iloen2 = pl[jlat-1];
   int jlon2 = jlon;
+
+  auto JDLON = [&iloen1, &iloen2] (int JLON1, int JLON2)
+  {
+    return (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1));
+  };
 
   int jlon2n = jlon2 + 1;
   int jlon1 = 1 + ((jlon2n-1) * iloen1) / iloen2;
@@ -572,11 +581,16 @@ void glGrib::GeometryGaussian::computeTriangleVertices (int itri, int jglo[3]) c
   int iloen1 = pl[jlat1-1];
   int iloen2 = pl[jlat2-1];
 
+  auto JDLON = [&iloen1, &iloen2] (int JLON1, int JLON2)
+  {
+    return (MODULO ((JLON1) - 1, (iloen1)) * (iloen2) - MODULO ((JLON2) - 1, (iloen2)) * (iloen1));
+  };
+
   int jtri = itri - indoff_per_lat[jlat1-1];
 
-  int jlon1, jlon2;
+  int jlon1 = std::numeric_limits<int>::max (), jlon2 = std::numeric_limits<int>::max ();
   int itriu2 = 0, itrid1 = 0;
-  int dtri;
+  int dtri = 0;
 
   if (iloen1 == iloen2)
     {
@@ -693,6 +707,8 @@ void glGrib::GeometryGaussian::setProgramParameters (glGrib::Program * program) 
 #include "shaders/include/geometry/buffer_index.h"
 #include "shaders/include/geometry/types.h"
 
+  (void)dumm_type;
+
   if (vertexbuffer != nullptr)
     {
       program->set ("geometry_type", geometry_none);
@@ -725,7 +741,7 @@ glGrib::GeometryGaussian::GeometryGaussian (int _Nj)
 
   for (int jlat = 1; jlat <= Nj; jlat++)
     {   
-      float lat = pi * (0.5 - (float)jlat / (float)(Nj + 1));
+      float lat = pi * (0.5 - static_cast<float> (jlat) / static_cast<float> (Nj + 1));
       float coslat = cos (lat);
       pl[jlat-1] = (2. * Nj * coslat);
     }   
@@ -738,7 +754,7 @@ glGrib::GeometryGaussian::GeometryGaussian (int _Nj)
 
 glGrib::GeometryGaussian::GeometryGaussian (glGrib::HandlePtr ghp)
 {
-  codes_handle * h = ghp->getCodesHandle ();
+  codes_handle * h = ghp == nullptr ? nullptr : ghp->getCodesHandle ();
 
   if (codes_is_defined (h, "stretchingFactor"))
     codes_get_double (h, "stretchingFactor", &stretchingFactor);
@@ -769,13 +785,13 @@ glGrib::GeometryGaussian::GeometryGaussian (glGrib::HandlePtr ghp)
    || (latitudeOfStretchingPoleInDegrees != 0.0f && longitudeOfStretchingPoleInDegrees != 0.0f))
     {
       rot4 = glm::rotate (glm::mat4 (1.0f),
-                          glm::radians (90.0f-(float)latitudeOfStretchingPoleInDegrees), 
+                          glm::radians (90.0f-static_cast<float> (latitudeOfStretchingPoleInDegrees)), 
                           glm::vec3 (-sinf (glm::radians (longitudeOfStretchingPoleInDegrees)),
                                     +cosf (glm::radians (longitudeOfStretchingPoleInDegrees)),
                                     0.0f));
       rot4 = rot4 *
             glm::rotate (glm::mat4 (1.0f),
-                         glm::radians (180.0f+(float)longitudeOfStretchingPoleInDegrees),
+                         glm::radians (180.0f+static_cast<float> (longitudeOfStretchingPoleInDegrees)),
                          glm::vec3 (0.0f, 0.0f, 1.0f));
       rotated = true;
     }
@@ -874,7 +890,7 @@ void glGrib::GeometryGaussian::checkTriangleComputation () const
 
   printf ("-----IND-----\n");
 
-  for (int it = 0; it < numberOfTriangles; it++)
+  for (int it = 0; it < static_cast<int> (numberOfTriangles); it++)
     {
       int jglo0[3];
       int jglo1[3];
@@ -895,7 +911,6 @@ void glGrib::GeometryGaussian::checkTriangleComputation () const
               jglo1[0], jglo1[1], jglo1[2], diff ? "X" : " ");
     }
 
-end:
   return;
 }
 
@@ -906,7 +921,7 @@ void glGrib::GeometryGaussian::setupSSBO ()
   if (! opts.gaussian.fit.on)
     {
       ssbo_jlat = newGlgribOpenGLBufferPtr (numberOfPoints * sizeof (int));
-      int * jlat = (int *)ssbo_jlat->map ();
+      int * jlat = static_cast<int*> (ssbo_jlat->map ());
 
 #pragma omp parallel for
       for (int ilat = 0; ilat < Nj; ilat++)
@@ -925,7 +940,7 @@ void glGrib::GeometryGaussian::setupSSBO ()
   // Gaussian latitudes
  
   ssbo_glat = newGlgribOpenGLBufferPtr (Nj * sizeof (float));
-  float * glat = (float *)ssbo_glat->map ();
+  float * glat = static_cast<float*> (ssbo_glat->map ());
 
   for (int i = 0; i < Nj; i++)
     glat[i] = latgauss[i];
@@ -938,13 +953,14 @@ void glGrib::GeometryGaussian::setupSSBO ()
 void glGrib::GeometryGaussian::setupCoordinates ()
 {
   vertexbuffer = newGlgribOpenGLBufferPtr (2 * numberOfPoints * sizeof (float));
-  float * lonlat = (float *)vertexbuffer->map ();
+  float * lonlat = static_cast<float *> (vertexbuffer->map ());
   
   int iglooff[Nj];
   iglooff[0] = 0;
   for (int jlat = 2; jlat <= Nj; jlat++)
     iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
 
+  float nan = std::numeric_limits<float>::signaling_NaN ();
 
   // Generation of coordinates
 #pragma omp parallel for 
@@ -963,7 +979,7 @@ void glGrib::GeometryGaussian::setupCoordinates ()
           lat = coordy;
         }
   
-      float coslat, sinlat;
+      float coslat = nan, sinlat = nan;
   
       if (rotated)
         {
@@ -976,7 +992,7 @@ void glGrib::GeometryGaussian::setupCoordinates ()
       for (int jlon = 1; jlon <= pl[jlat-1]; jlon++, jglo++)
         {
   
-          float coordx = twopi * (float)(jlon-1) / (float)pl[jlat-1];
+          float coordx = twopi * static_cast<float> (jlon-1) / static_cast<float> (pl[jlat-1]);
           float lon = coordx;
   
           if (! rotated)
@@ -1048,6 +1064,9 @@ private:
 void glGrib::GeometryGaussian::setupFitLatitudes ()
 {
 #include "shaders/include/geometry/gaussian/kinds.h"
+
+  (void)dumm_kind;
+
   latfit_t latfit[2];
 
   tryFitLatitudes (geometry_gaussian_kind_lin, &latfit[0]);
@@ -1071,6 +1090,8 @@ void glGrib::GeometryGaussian::setupFitLatitudes ()
 void glGrib::GeometryGaussian::tryFitLatitudes (int _kind, latfit_t * latfit)
 {
 #include "shaders/include/geometry/gaussian/kinds.h"
+
+  (void)dumm_kind;
 
   latfit->kind  = _kind;
 
@@ -1128,8 +1149,6 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
 {
   opts = o;
 
-  codes_handle * h = ghp ? ghp->getCodesHandle () : nullptr;
-
   // Compute number of triangles
   numberOfTriangles = 0;
   for (int jlat = 1; jlat < Nj; jlat++)
@@ -1179,7 +1198,7 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
         ind_strip_size += ind_stripcnt_per_lat[jlat-1];
 
       elementbuffer = newGlgribOpenGLBufferPtr (ind_strip_size * sizeof (unsigned int));
-      unsigned int * ind_strip = (unsigned int*)elementbuffer->map ();
+      unsigned int * ind_strip = static_cast <unsigned int*> (elementbuffer->map ());
 
       computeTrigaussStrip (Nj, pl, ind_strip, ind_stripcnt_per_lat, ind_stripoff_per_lat); 
 
@@ -1268,7 +1287,7 @@ int glGrib::GeometryGaussian::latlon2jlatjlon (float lat, float lon, int & jlat,
   lon = lon * deg2rad;
 
   jlat = round ((0.5 - coordy / pi) * (Nj + 1)); // First approximation
-  jlat = std::max (1, std::min (jlat, (int)Nj));
+  jlat = std::max (1, std::min (jlat, static_cast<int> (Nj)));
 
   float dlat = fabs (latgauss[jlat-1] - coordy);
 
@@ -1371,7 +1390,7 @@ void glGrib::GeometryGaussian::applyUVangle (float * angle) const
             {
               int jglo = jglooff[jlat] + jlon;
 
-              float coordx = twopi * (float)jlon / (float)pl[jlat];
+              float coordx = twopi * static_cast<float> (jlon) / static_cast<float> (pl[jlat]);
               float lon = coordx;
               float coslon = cos (lon); float sinlon = sin (lon);
   
@@ -1397,13 +1416,13 @@ void glGrib::GeometryGaussian::applyUVangle (float * angle) const
 
 void glGrib::GeometryGaussian::sample (unsigned char * p, const unsigned char p0, const int level) const
 {
-  int lat_stride = (float)Nj / (float)level;
+  int lat_stride = static_cast<float> (Nj) / static_cast<float> (level);
   if (lat_stride == 0)
     lat_stride = 1;
 #pragma omp parallel for 
   for (int jlat = 0; jlat < Nj; jlat++)
     {
-      float lat = pi * (0.5 - (float)(jlat+1) / (float)(Nj + 1));
+      float lat = pi * (0.5 - static_cast<float> (jlat+1) / static_cast<float> (Nj + 1));
       int lon_stride = lat_stride / cos (lat);
       if (lon_stride == 0)
         lon_stride = 1;
@@ -1442,7 +1461,7 @@ void glGrib::GeometryGaussian::getTriangleNeighbours (int it, int jglo[3], int i
   jlonlat_t jlonlatB = jlonlat (jgloB);
   jlonlat_t jlonlatC = jlonlat (jgloC);
   
-  int jglo0, jglo1, jglo2;
+  int jglo0 = 0, jglo1 = 0, jglo2 = 0;
   jlonlat_t jlonlat0, jlonlat1, jlonlat2;
   
   if (jlonlatA.jlat == jlonlatB.jlat)
@@ -1607,7 +1626,7 @@ int glGrib::GeometryGaussian::getTriangle (float lon, float lat) const
   lon = lon * deg2rad;
 
   jlat = round ((0.5 - coordy / pi) * (Nj + 1)); // First approximation
-  jlat = std::max (1, std::min (jlat, (int)Nj));
+  jlat = std::max (1, std::min (jlat, static_cast<int> (Nj)));
 
   float dlat;
 
@@ -1643,7 +1662,7 @@ int glGrib::GeometryGaussian::getTriangle (float lon, float lat) const
 
   if (coordx < 0.0f)
     coordx += twopi;
-  jlon = (int) (pl[jlat-1] * (coordx / twopi));
+  jlon = static_cast<int> (pl[jlat-1] * (coordx / twopi));
 
   jlat = jlat - 1; // Start at zero
 

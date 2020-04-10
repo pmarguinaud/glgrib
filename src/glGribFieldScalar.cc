@@ -28,8 +28,6 @@ void glGrib::FieldScalar::clear ()
 
 glGrib::FieldScalar * glGrib::FieldScalar::clone () const
 {
-  if (this == nullptr)
-    return nullptr;
   glGrib::FieldScalar * fld = new glGrib::FieldScalar ();
   *fld = *this;
   return fld;
@@ -177,7 +175,7 @@ void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField
     setupHilo (data);
 
   colorbuffer = newGlgribOpenGLBufferPtr (geometry->getNumberOfPoints () * sizeof (T));
-  T * col = (T *)colorbuffer->map ();
+  T * col = static_cast<T *> (colorbuffer->map ());
   pack<T>  (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
             meta1.valmax, meta1.valmis, col);
   col = nullptr;
@@ -209,11 +207,9 @@ void glGrib::FieldScalar::setupMpiView (glGrib::Loader * ld, const glGrib::Optio
 
   float * data = mpiview->data ();
 
-  float pmin = *std::min_element (data, data + size);
   float pmax = *std::max_element (data, data + size);
 
-  int min = (int)pmin;
-  int max = (int)pmax;
+  int max = static_cast<int> (pmax);
 
   glm::vec3 Disp[max];
   glm::vec2 Disl[max];
@@ -230,21 +226,21 @@ void glGrib::FieldScalar::setupMpiView (glGrib::Loader * ld, const glGrib::Optio
       float lon, lat;
       geometry->index2latlon (i, &lat, &lon);
 
-      int j = (int)(*mpiview)[i]-1;
+      int j = static_cast<int> ((*mpiview)[i]-1);
 
       Disp[j] += lonlat2xyz (glm::vec2 (lon, lat));
       count[j]++;
     }
 
   for (int i = 0; i < max; i++)
-    Disl[i] = xyz2lonlat (glm::normalize (Disp[i] / (float)count[i]));
+    Disl[i] = xyz2lonlat (glm::normalize (Disp[i] / static_cast<float> (count[i])));
 
   if(0)
   for (int i = 0; i < max; i++)
     printf (" %8d | %12.2f, %12.2f\n", i, rad2deg * Disl[i].x, rad2deg * Disl[i].y);
 
   mpivbuffer = newGlgribOpenGLBufferPtr (3 * size * sizeof (float));
-  float * mpiv = (float *)mpivbuffer->map ();
+  float * mpiv = static_cast<float *> (mpivbuffer->map ());
   for (int i = 0; i < size; i++)
     {
       int j = (*mpiview)[i]-1;

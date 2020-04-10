@@ -44,7 +44,7 @@ void glGrib::Shell::do_set (const std::vector<std::string> & args, glGrib::Windo
   int argc = args.size ();
   const char * argv[argc];
   
-  for (int i = 0; i < args.size (); i++)
+  for (size_t i = 0; i < args.size (); i++)
     argv[i] = args[i].c_str ();
   
   glGrib::Options opts = gwindow->scene.getOptions ();
@@ -223,7 +223,7 @@ void glGrib::Shell::do_help (const std::vector<std::string> & args, glGrib::Wind
   glGrib::OptionsParser p;
   opts.traverse ("", &p);
  
-  for (int i = 1; i < args.size (); i++)
+  for (size_t i = 1; i < args.size (); i++)
     help += p.getHelp (args[i], true);      
 
   listStr.push_back (help);
@@ -236,7 +236,7 @@ void glGrib::Shell::do_get (const std::vector<std::string> & args, glGrib::Windo
   glGrib::OptionsParser p;
   opts.traverse ("", &p);
 
-  for (int i = 1; i < args.size (); i++)
+  for (size_t i = 1; i < args.size (); i++)
     p.getValue (&listStr, args[i], true);
 }
 

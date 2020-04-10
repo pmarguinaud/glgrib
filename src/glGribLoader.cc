@@ -66,9 +66,9 @@ glGrib::HandlePtr glGrib::Loader::handleFromFile (const std::string & f)
 }
 
 void glGrib::Loader::load (glGrib::FieldFloatBufferPtr * ptr, const std::vector<std::string> & file, const glGrib::OptionsGeometry & opts_geom, 
-		          float fslot, glGrib::FieldMetadata * meta, int mult, int base, bool diff)
+		           float fslot, glGrib::FieldMetadata * meta, int mult, int base, bool diff)
 {
-  int islot = (int)fslot;
+  int islot = static_cast<int> (fslot);
   float a, b;
 
   if (diff)
@@ -78,9 +78,9 @@ void glGrib::Loader::load (glGrib::FieldFloatBufferPtr * ptr, const std::vector<
     }
   else
     {
-      b = fslot - (float)islot;
+      b = fslot - static_cast<float> (islot);
       a = 1.0f  - b;
-      if (fslot == (float)islot)
+      if (fslot == static_cast<float> (islot))
         return load (ptr, file[mult*islot+base], opts_geom, meta);
     }
 
@@ -116,7 +116,7 @@ void glGrib::Loader::load (glGrib::FieldFloatBufferPtr * ptr, const std::vector<
     
       float valmin = std::numeric_limits<float>::max (), 
             valmax = std::numeric_limits<float>::min (), 
-            valmis;
+            valmis = 0.0;
       bool valmis_ok = true;
     
       for (int i = 0; i < size; i++)
@@ -151,9 +151,12 @@ void glGrib::Loader::load (glGrib::FieldFloatBufferPtr * ptr, const std::vector<
       if (diff)
         {
           float valm = std::max (fabs (valmin), fabs (valmax));
+
+
           meta->valmin = - valm;
           meta->valmax = + valm;
           meta->valmis = valmis;
+
           meta->CLNOMA            = "diff";
           meta->discipline        = 255;
           meta->parameterCategory = 255;
@@ -175,7 +178,7 @@ void glGrib::Loader::load (glGrib::FieldFloatBufferPtr * ptr, const std::string 
 		          const glGrib::OptionsGeometry & opts_geom, glGrib::FieldMetadata * meta)
 {
   glGrib::HandlePtr ghp = handleFromFile (file);
-  codes_handle * h = ghp->getCodesHandle ();
+  codes_handle * h = ghp == nullptr ? nullptr : ghp->getCodesHandle ();
 
   size_t v_len = 0;
   codes_get_size (h, "values", &v_len);
@@ -192,7 +195,7 @@ void glGrib::Loader::load (glGrib::FieldFloatBufferPtr * ptr, const std::string 
 
       glGrib::FieldFloatBufferPtr val = newGlgribFieldFloatBufferPtr (v_len);
 
-      for (int i = 0; i < v_len; i++)
+      for (size_t i = 0; i < v_len; i++)
         (*val)[i] = v[i];
 
       delete [] v;

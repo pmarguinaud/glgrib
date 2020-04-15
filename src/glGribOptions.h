@@ -399,6 +399,7 @@ public:
     DESC (frame.dlat,         Latitude interval);
     DESC (gencoords.on,       Generate coordinates on GPU when possible);
     DESC (gaussian.fit.on,    Fit Gaussian latitude retrieval);
+    DESC (gaussian.apply_norm_scale.on, Apply norm scaling);
   }
   struct
   {
@@ -433,6 +434,10 @@ public:
     {
       bool on = false;
     } fit;
+    struct
+    {
+      bool on = true;
+    } apply_norm_scale;
   } gaussian;
 };
 

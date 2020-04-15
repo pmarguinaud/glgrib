@@ -1578,6 +1578,8 @@ bool glGrib::GeometryGaussian::triangleIsEdge (int it) const
 
 void glGrib::GeometryGaussian::applyNormScale (float * data) const 
 {
+  if (! opts.gaussian.apply_norm_scale.on)
+    return;
   if (stretchingFactor == 1.0f)
     return;
 #pragma omp parallel for 

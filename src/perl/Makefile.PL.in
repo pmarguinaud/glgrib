@@ -1,8 +1,6 @@
 use 5.024000;
 use ExtUtils::MakeMaker;
 
-my $HOME = $ENV{HOME};
-
 my $prefix = "@CMAKE_INSTALL_PREFIX@";
 
 my @lib = ("$prefix/lib");

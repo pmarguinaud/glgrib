@@ -1,5 +1,6 @@
 #include "glGribWindowSet.h"
 #include "glGribWindowDiffSet.h"
+#include "glGribWindowReviewSet.h"
 #include "glGribWindow.h"
 #include "glGribWindowOffscreen.h"
 #include "glGribShellRegular.h"
@@ -132,7 +133,11 @@ glGrib::WindowSet::WindowSet (const glGrib::Options & o, bool newwin)
 
 glGrib::WindowSet * glGrib::WindowSet::create (const glGrib::Options & opts)
 {
-  return opts.diff.on ? new glGrib::WindowDiffSet (opts) : new glGrib::WindowSet (opts);
+  if (opts.diff.on)
+    return new glGrib::WindowDiffSet (opts);
+  if (opts.review.on)
+    return new glGrib::WindowReviewSet (opts);
+  return new glGrib::WindowSet (opts);
 }
 
 

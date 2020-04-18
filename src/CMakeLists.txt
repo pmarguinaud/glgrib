@@ -2,6 +2,7 @@
 # glGribDBase2SQLite.cc
 
 set (SRC
+  glGribWindowReviewSet.cc
   glGribBitmap.cc
   glGribBorder.cc
   glGribCities.cc

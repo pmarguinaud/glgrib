@@ -1562,9 +1562,16 @@ public:
     INCLUDE (departements);
     INCLUDE (shell);
     INCLUDE (land);
+    DESC (review.on, "Enable review mode");
+    DESC (review.path, "File to review");
     DESC (diff.on, "Enable difference mode");
     DESC (diff.path, "Files to show in diff mode");
   }
+  struct
+  {
+    bool on = false;
+    std::string path;
+  } review;
   struct
   {
     std::vector<std::string> path;

@@ -24,23 +24,25 @@ std::string glGrib::Resolve (const std::string & file)
 
   if (glGribPrefix != "")
     {
-      std::string path = glGribPrefix + "/" + file;
+      path = glGribPrefix + "/" + file;
       if (stat (path.c_str (), &st) == 0)
         return path;
     }
 
   // Try install directory
-  int len = 256;
+  const int len = 1024;
+  int llen;
   char exe[32], prog[len+1];
   sprintf (exe, "/proc/%d/exe", getpid ());
-  if (readlink (exe, prog, len) > 0)
+  if ((llen = readlink (exe, prog, len)) > 0)
     {
+      prog[llen] = '\0';
       std::string PROG = std::string (prog);
       size_t p = PROG.find_last_of ('/');
       if (p != std::string::npos)
         {
           std::string dir = PROG.substr (0, p + 1);
-	  std::string path = dir + "/../share/" + file;
+	  path = dir + "/../share/" + file;
 	  if (stat (path.c_str (), &st) == 0)
 	    return path;
 	}

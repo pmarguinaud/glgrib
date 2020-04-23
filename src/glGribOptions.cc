@@ -10,13 +10,6 @@
 #include <map>
 #include <list>
 
-float glGrib::OptionsPalette::defaultMin = glGrib::Palette::defaultMin;
-float glGrib::OptionsPalette::defaultMax = glGrib::Palette::defaultMax;
-float glGrib::OptionsContour::defaultMin = glGrib::Palette::defaultMin;
-float glGrib::OptionsContour::defaultMax = glGrib::Palette::defaultMax;
-float glGrib::OptionsIsofill::defaultMin = glGrib::Palette::defaultMin;
-float glGrib::OptionsIsofill::defaultMax = glGrib::Palette::defaultMax;
-
 namespace glGrib::OptionsParserDetail
 {
 

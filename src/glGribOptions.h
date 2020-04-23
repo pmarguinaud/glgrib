@@ -7,10 +7,12 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <limits>
 #include <algorithm>
 #include <string.h>
 #include <time.h>
 #include <string.h>
+
 
 namespace glGrib
 {
@@ -466,8 +468,8 @@ public:
 class OptionsContour : public OptionsBase
 {
 public:
-  static float defaultMin;
-  static float defaultMax;
+  static float defaultMin () { return std::numeric_limits<float>::max (); }
+  static float defaultMax () { return std::numeric_limits<float>::min (); }
   DEFINE
   {
     DESC (number,        Number of levels);
@@ -484,8 +486,8 @@ public:
   }
   int number = 10;
   std::vector<float> levels;
-  float min = defaultMin;
-  float max = defaultMax;
+  float min = defaultMin ();
+  float max = defaultMax ();
   std::vector<float> widths;
   std::vector<std::string> patterns;
   std::vector<float> lengths;
@@ -501,8 +503,8 @@ public:
 class OptionsIsofill : public OptionsBase
 {
 public:
-  static float defaultMin;
-  static float defaultMax;
+  static float defaultMin () { return std::numeric_limits<float>::max (); }
+  static float defaultMax () { return std::numeric_limits<float>::min (); }
   DEFINE
   {
     DESC (number,        Number of levels);
@@ -512,8 +514,8 @@ public:
   }
   int number = 10;
   std::vector<float> levels;
-  float min = defaultMin;
-  float max = defaultMax;
+  float min = defaultMin ();
+  float max = defaultMax ();
 };
 
 class OptionsStream : public OptionsBase
@@ -605,8 +607,8 @@ public:
 class OptionsPalette : public OptionsBase
 {
 public:
-  static float defaultMin;
-  static float defaultMax;
+  static float defaultMin () { return std::numeric_limits<float>::max (); }
+  static float defaultMax () { return std::numeric_limits<float>::min (); }
   OptionsPalette () {}
   OptionsPalette (const std::string & n) : name (n) {}
   DEFINE
@@ -625,8 +627,8 @@ public:
     DESC (generate.levels,    Number of values to generate);
   }
   string name = "default";
-  float min = defaultMin;
-  float max = defaultMax;
+  float min = defaultMin ();
+  float max = defaultMax ();
   std::vector<float> values;
   std::vector<OptionColor> colors;
   struct

@@ -102,8 +102,6 @@ void glGrib::ShellInterpreter::start (const std::vector <std::string> & args)
 
 void glGrib::ShellInterpreter::start (int argc, const char * argv[])
 {
-  glGrib::Options gopts_;
-  gopts = gopts_;
   gopts.parse (argc, argv);
   start (nullptr);
 }

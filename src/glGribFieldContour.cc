@@ -233,8 +233,8 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
   if (levels.size () == 0)
     {
-      float min = opts.contour.min == glGrib::OptionsContour::defaultMin ? meta1.valmin : opts.contour.min;
-      float max = opts.contour.max == glGrib::OptionsContour::defaultMax ? meta1.valmax : opts.contour.max;
+      float min = opts.contour.min == glGrib::OptionsContour::defaultMin () ? meta1.valmin : opts.contour.min;
+      float max = opts.contour.max == glGrib::OptionsContour::defaultMax () ? meta1.valmax : opts.contour.max;
       for (int i = 0; i < opts.contour.number; i++)
         levels.push_back (min + (i + 1) * (max - min) / (opts.contour.number + 1));
     }

@@ -17,13 +17,13 @@ namespace glGrib
 class Palette
 {
 public:
-  static const float defaultMin;
-  static const float defaultMax;
+  static float defaultMin () { return std::numeric_limits<float>::max (); }
+  static float defaultMax () { return std::numeric_limits<float>::min (); }
 
-  static Palette next (const Palette &, float = defaultMin, float = defaultMax);
+  static Palette next (const Palette &, float = defaultMin (), float = defaultMax ());
 
   static Palette create (const OptionsPalette &,  
-                                float = defaultMin, float = defaultMax);
+                         float = defaultMin (), float = defaultMax ());
 
   const std::string & getName () { return opts.name; }
 
@@ -31,8 +31,8 @@ public:
   std::vector<OptionColor> rgba;
   float getMin () const { return opts.min; }
   float getMax () const { return opts.max; }
-  bool hasMin () const { return opts.min != defaultMin; }
-  bool hasMax () const { return opts.max != defaultMax; }
+  bool hasMin () const { return opts.min != defaultMin (); }
+  bool hasMax () const { return opts.max != defaultMax (); }
   Palette (std::ifstream &);
   Palette () {}
   Palette (const std::string & n, bool) 

@@ -9,8 +9,6 @@
 #include <string.h>
 #include <math.h>
 
-const float glGrib::Palette::defaultMin = std::numeric_limits<float>::max();
-const float glGrib::Palette::defaultMax = std::numeric_limits<float>::min();
 
 
 namespace
@@ -125,18 +123,18 @@ glGrib::Palette glGrib::Palette::create
 
       if (p.opts.values.size () == 0)
         {
-          if (p.opts.min == defaultMin)
+          if (p.opts.min == defaultMin ())
             p.opts.min = min;
-          if (p.opts.max == defaultMax)
+          if (p.opts.max == defaultMax ())
             p.opts.max = max;
           int n = p.opts.colors.size () + 1;
           for (int i = 0; i < n; i++)
             p.opts.values.push_back (p.opts.min + ((p.opts.max - p.opts.min) * i) / (n-1));
         }
 
-      if (p.opts.min == defaultMin)
+      if (p.opts.min == defaultMin ())
         p.opts.min = o.values.front ();
-      if (p.opts.max == defaultMax)
+      if (p.opts.max == defaultMax ())
         p.opts.max = o.values.back ();
 
       p.rgba_mis = glGrib::OptionColor (0, 0, 0, 0);
@@ -251,9 +249,9 @@ glGrib::Palette glGrib::Palette::create
       p.opts = o;
     }
 
-  if (p.opts.min == defaultMin)
+  if (p.opts.min == defaultMin ())
     p.opts.min = min;
-  if (p.opts.max == defaultMax)
+  if (p.opts.max == defaultMax ())
     p.opts.max = max;
 
   return p;

@@ -50,7 +50,6 @@ void * _run (void * data)
 
 void glGrib::ShellInterpreter::start (glGrib::WindowSet * ws)
 {
-
   if (gopts.window.offscreen.on)
     {
       hasstarted = true;
@@ -103,6 +102,8 @@ void glGrib::ShellInterpreter::start (const std::vector <std::string> & args)
 
 void glGrib::ShellInterpreter::start (int argc, const char * argv[])
 {
+  glGrib::Options gopts_;
+  gopts = gopts_;
   gopts.parse (argc, argv);
   start (nullptr);
 }

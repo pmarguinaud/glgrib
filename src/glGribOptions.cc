@@ -356,8 +356,14 @@ bool glGrib::OptionsParser::parse (int _argc, const char * _argv[],
   bool do_skip = false;
 
   std::list<std::string> argv;
-  for (int i = 1; i < argc; i++)
+  for (int i = 1; i < argc; i++){
     argv.push_back (_argv[i]);
+    //debug
+    std::cout <<"args:"<<std::endl;
+    std::cout <<_argv[i]<<", " ;
+    std::cout <<std::endl;
+  }
+
   try
     {
       glGrib::OptionsParserDetail::optionBase * opt = nullptr;
@@ -368,6 +374,7 @@ bool glGrib::OptionsParser::parse (int _argc, const char * _argv[],
           std::string arg = *it;
           argv.pop_front ();
           int len = arg.length ();
+          std::cout <<"parse arg:"<<arg<<std::endl;
 
           // Options read from file
           if ((len > 4) && (arg.substr (0, 3) == "--{") && (arg[len-1] == '}'))
@@ -429,7 +436,7 @@ bool glGrib::OptionsParser::parse (int _argc, const char * _argv[],
                     }
 
                   bool found = name2option.find (arg) != name2option.end ();
-
+                  std::cout <<arg<<" "<<found<<std::endl;
                   if (found) // Set option
                     {
                       do_skip = skip && (skip->find (arg) != skip->end ());

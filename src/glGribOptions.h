@@ -203,27 +203,27 @@ namespace OptionsParserDetail
     }
   };
 
-  template <> std::string optionTmpl     <int>                ::type ();
-  template <> std::string optionTmpl     <float>              ::type ();
+  template <> std::string optionTmpl     <int>               ::type ();
+  template <> std::string optionTmpl     <float>             ::type ();
   template <> std::string optionTmplList<int>                ::type ();
   template <> std::string optionTmplList<float>              ::type ();
   template <> std::string optionTmpl     <OptionDate> ::type ();
   template <> std::string optionTmpl     <OptionColor>::type ();
-  template <> std::string optionTmpl     <std::string>        ::type ();
-  template <> std::string optionTmpl     <std::string>        ::asString () const;
-  template <> std::string optionTmpl     <std::string>        ::asOption () const;
-  template <> std::string optionTmplList<OptionColor>::type ();
+  template <> std::string optionTmpl     <std::string>       ::type ();
+  template <> std::string optionTmpl     <std::string>       ::asString () const;
+  template <> std::string optionTmpl     <std::string>       ::asOption () const;
+  template <> std::string optionTmplList<OptionColor>        ::type ();
   template <> std::string optionTmplList<std::string>        ::type ();
   template <> std::string optionTmplList<std::string>        ::asString () const;
   template <> std::string optionTmplList<std::string>        ::asOption () const;
-  template <> std::string optionTmpl     <bool>               ::type ();
-  template <> void optionTmpl     <bool>::set        ();
-  template <> void optionTmplList<std::string>::set (const std::string &);
-  template <> void optionTmpl     <std::string>::set (const std::string &);
-  template <> void optionTmpl<bool>::clear ();
-  template <> std::string optionTmpl<bool>::asString () const;
-  template <> std::string optionTmpl<bool>::asOption () const;
-  template <> int optionTmpl<bool>::hasArg () const;
+  template <> std::string optionTmpl     <bool>              ::type ();
+  template <> void optionTmpl            <bool>              ::set ();
+  template <> void optionTmplList        <std::string>       ::set (const std::string &);
+  template <> void optionTmpl            <std::string>       ::set (const std::string &);
+  template <> void optionTmpl            <bool>              ::clear ();
+  template <> std::string optionTmpl     <bool>              ::asString () const;
+  template <> std::string optionTmpl     <bool>              ::asOption () const;
+  template <> int optionTmpl             <bool>              ::hasArg () const;
 
 };
 
@@ -263,7 +263,9 @@ public:
   static void print (class Options &);
   bool parse (int, const char * [], const std::set<std::string> * = nullptr);
   void showHelp ();
+  void showJSON ();
   std::string getHelp (const std::string &, bool = false);
+  std::string getJSON (const std::string &, bool = false);
   void getValue (std::vector<std::string> *, const std::string &, bool = false);
   ~OptionsParser ()
   {
@@ -332,12 +334,12 @@ private:
   }
 
 #define DEF_APPLY(T,C) \
-  void apply (const std::string & path, const std::string & name,                      \
+  void apply (const std::string & path, const std::string & name,              \
               OptionsBase *, const std::string & desc, T * data,               \
-              const OptionsCallback::opt * o = nullptr)                           \
-  {                                                                                    \
-    std::string opt_name = getOptName (path, name);                                  \
-    createOption (opt_name, new C (opt_name, desc, data), o);                          \
+              const OptionsCallback::opt * o = nullptr)                        \
+  {                                                                            \
+    std::string opt_name = getOptName (path, name);                            \
+    createOption (opt_name, new C (opt_name, desc, data), o);                  \
   }
 
   DEF_APPLY (float                             , OptionsParserDetail::optionTmpl<float> );
@@ -347,9 +349,9 @@ private:
   DEF_APPLY (std::string                       , OptionsParserDetail::optionTmpl<std::string>);
   DEF_APPLY (std::vector<float>                , OptionsParserDetail::optionTmplList<float>);
   DEF_APPLY (std::vector<int>                  , OptionsParserDetail::optionTmplList<int>);
-  DEF_APPLY (OptionColor               , OptionsParserDetail::optionTmpl<OptionColor>);
-  DEF_APPLY (std::vector<OptionColor>  , OptionsParserDetail::optionTmplList<OptionColor>);
-  DEF_APPLY (OptionDate                , OptionsParserDetail::optionTmpl<OptionDate>);
+  DEF_APPLY (OptionColor                       , OptionsParserDetail::optionTmpl<OptionColor>);
+  DEF_APPLY (std::vector<OptionColor>          , OptionsParserDetail::optionTmplList<OptionColor>);
+  DEF_APPLY (OptionDate                        , OptionsParserDetail::optionTmpl<OptionDate>);
 
 #undef DEF_APPLY
 
@@ -708,9 +710,9 @@ class OptionsMpiview : public OptionsBase
 public:
   DEFINE
   { 
-    DESC (path,  "Path to MPI distribution field");
-    DESC (on,    "Enable MPI view");
-    DESC (scale, "Displacement scale");
+    DESC (path,  Path to MPI distribution field);
+    DESC (on,    Enable MPI view);
+    DESC (scale, Displacement scale);
   }
 
   std::vector<std::string> path;
@@ -887,14 +889,14 @@ public:
                            :  path (_path), scale (_scale), color (_color) {}
   DEFINE
   {
-    DESC (selector,           "Shape selection");
-    DESC (path,               "Path to coastlines");
-    DESC (subdivision.angle,  "Angle max for subdivision");
-    DESC (subdivision.on,     "Enable subdivision");
-    DESC (on,                 "Enable");
-    DESC (scale,              "Scale");
-    DESC (color,              "Land color");
-    DESC_H (debug.on,         "Debug");
+    DESC (selector,           Shape selection);
+    DESC (path,               Path to coastlines);
+    DESC (subdivision.angle,  Angle max for subdivision);
+    DESC (subdivision.on,     Enable subdivision);
+    DESC (on,                 Enable);
+    DESC (scale,              Scale);
+    DESC (color,              Land color);
+    DESC_H (debug.on,         Debug);
   }
   std::string selector = "";
   std::string path     = "coastlines/shp/GSHHS_c_L1.shp";
@@ -921,7 +923,7 @@ public:
     INCLUDE_H (layers[1]);
     INCLUDE_H (layers[2]);
     INCLUDE_H (layers[3]);
-    DESC (on, "Enable land");
+    DESC (on, Enable land);
   }
   
   bool on = false;
@@ -1224,12 +1226,12 @@ class OptionsTitle : public OptionsBase
 public:
   DEFINE
   {
-    DESC (on, "Enable title");
-    DESC (x,  "Coordinates");
-    DESC (y,  "Coordinates");
-    DESC (a,  "Alignment");
+    DESC (on, Enable title);
+    DESC (x,  Coordinates);
+    DESC (y,  Coordinates);
+    DESC (a,  Alignment);
     INCLUDE (font);
-    DESC (text, "Title");
+    DESC (text, Title);
   }
   bool on = false;
   float x = 0.;
@@ -1361,7 +1363,7 @@ public:
     INCLUDE (font);
     DESC (levels.number, Colorbar number of levels);
     DESC (levels.values, Colorbar level values);
-    DESC (format, "Format (sprintf) use to display numbers");
+    DESC (format, Format (sprintf) use to display numbers);
     DESC (position.xmin, Colorbar position);
     DESC (position.xmax, Colorbar position); 
     DESC (position.ymin, Colorbar position); 
@@ -1564,10 +1566,10 @@ public:
     INCLUDE (departements);
     INCLUDE (shell);
     INCLUDE (land);
-    DESC (review.on, "Enable review mode");
-    DESC (review.path, "File to review");
-    DESC (diff.on, "Enable difference mode");
-    DESC (diff.path, "Files to show in diff mode");
+    DESC (review.on, Enable review mode);
+    DESC (review.path, File to review);
+    DESC (diff.on, Enable difference mode);
+    DESC (diff.path, Files to show in diff mode);
   }
   struct
   {

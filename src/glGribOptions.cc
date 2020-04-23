@@ -415,6 +415,13 @@ bool glGrib::OptionsParser::parse (int _argc, const char * _argv[],
                           arg = arg + "." + ctx[i];
                       arg = "--" + arg + "." + a;
                     }
+
+                  if (arg == "--json")
+                    {
+                      showJSON ();
+                      return false;
+                    }
+
                   if (arg == "--help")
                     {
                       showHelp ();
@@ -548,6 +555,11 @@ bool glGrib::OptionsParser::seenOption (const std::string & name) const
   return false;
 }
 
+void glGrib::OptionsParser::showJSON ()
+{
+  std::cout << getJSON ("--", true);
+}
+
 void glGrib::OptionsParser::showHelp ()
 {
   std::cout << "Usage:" << std::endl;
@@ -626,6 +638,32 @@ std::string glGrib::OptionsParser::getHelp (const std::string & prefix, bool sho
       }   
 
   return help;
+}
+
+std::string glGrib::OptionsParser::getJSON (const std::string & prefix, bool show_hidden)
+{
+  std::string json = "[";
+
+  int len = prefix.size ();
+
+  for (name2option_t::iterator it = name2option.begin (); 
+       it != name2option.end (); it++)
+    if (it->first.substr (0, len) == prefix)
+      {   
+	glGrib::OptionsParserDetail::optionBase * opt = it->second;
+        if ((! show_hidden) && (opt->hidden))
+          continue;
+
+        if (json.length () > 1)
+          json += ",";
+
+        const std::string op = "[\"", sp = "\",\"", cl = "\"]";
+        json += op + it->first + sp + opt->type () + sp + opt->desc + cl;
+      }   
+
+  json += "]";
+
+  return json;
 }
 
 void glGrib::OptionsParser::print (glGrib::Options & opts1)

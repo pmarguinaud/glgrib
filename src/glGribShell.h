@@ -35,6 +35,7 @@ protected:
   // Run command and store result in listStr
   void do_help          (const std::vector<std::string> &, glGrib::Window *);
   void do_get           (const std::vector<std::string> &, glGrib::Window *);
+  void do_json          (const std::vector<std::string> &, glGrib::Window *);
   void do_close         (const std::vector<std::string> &, glGrib::Window *);
   void do_snapshot      (const std::vector<std::string> &, glGrib::Window *);
   void do_sleep         (const std::vector<std::string> &, glGrib::Window *);
@@ -47,6 +48,7 @@ protected:
   // Process command output
   virtual void process_help          (const std::vector<std::string> &, glGrib::Window *) {}
   virtual void process_get           (const std::vector<std::string> &, glGrib::Window *) {}
+  virtual void process_json          (const std::vector<std::string> &, glGrib::Window *) {}
   virtual void process_close         (const std::vector<std::string> &, glGrib::Window *) {}
   virtual void process_snapshot      (const std::vector<std::string> &, glGrib::Window *) {}
   virtual void process_sleep         (const std::vector<std::string> &, glGrib::Window *) {}

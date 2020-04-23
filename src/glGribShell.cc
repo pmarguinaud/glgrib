@@ -48,6 +48,7 @@ void glGrib::Shell::do_set (const std::vector<std::string> & args, glGrib::Windo
     argv[i] = args[i].c_str ();
   
   glGrib::Options opts = gwindow->scene.getOptions ();
+
   opts.window = gwindow->getOptions ();
   opts.shell = this->opts;
   

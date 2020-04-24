@@ -231,6 +231,14 @@ void glGrib::Shell::do_help (const std::vector<std::string> & args, glGrib::Wind
 }
 
 
+void glGrib::Shell::do_json (const std::vector<std::string> & args, glGrib::Window * gwindow)
+{
+  glGrib::Options opts = gwindow->scene.getOptions ();
+  glGrib::OptionsParser p;
+  opts.traverse ("", &p);
+  listStr.push_back (p.getJSON ("--", true));
+}
+
 void glGrib::Shell::do_get (const std::vector<std::string> & args, glGrib::Window * gwindow)
 {
   glGrib::Options opts = gwindow->scene.getOptions ();
@@ -282,6 +290,7 @@ void glGrib::Shell::execute (const std::vector<std::string> & args)
   glGribShellIfCommand (sleep);
   glGribShellIfCommand (clone);
   glGribShellIfCommand (get);
+  glGribShellIfCommand (json);
   glGribShellIfCommand (set);
   glGribShellIfCommand (window);
   glGribShellIfCommand (help);

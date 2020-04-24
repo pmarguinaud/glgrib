@@ -319,7 +319,7 @@ void glGrib::Loader::uv2nd (glGrib::const_GeometryPtr geometry,
   meta_n = meta_u; // TODO : handle this differently
   meta_d = meta_u;
   
-  meta_n.valmin = glGrib::Palette::defaultMin;
+  meta_n.valmin = glGrib::Palette::defaultMin ();
   meta_n.valmax = 0.0f;
   meta_d.valmin = -180.0f;
   meta_d.valmax = +180.0f;

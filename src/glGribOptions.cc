@@ -10,13 +10,6 @@
 #include <map>
 #include <list>
 
-float glGrib::OptionsPalette::defaultMin = glGrib::Palette::defaultMin;
-float glGrib::OptionsPalette::defaultMax = glGrib::Palette::defaultMax;
-float glGrib::OptionsContour::defaultMin = glGrib::Palette::defaultMin;
-float glGrib::OptionsContour::defaultMax = glGrib::Palette::defaultMax;
-float glGrib::OptionsIsofill::defaultMin = glGrib::Palette::defaultMin;
-float glGrib::OptionsIsofill::defaultMax = glGrib::Palette::defaultMax;
-
 namespace glGrib::OptionsParserDetail
 {
 
@@ -28,6 +21,7 @@ template <> std::string optionTmpl     <glGrib::OptionDate> ::type () { return s
 template <> std::string optionTmpl     <glGrib::OptionColor>::type () { return std::string ("COLOR #rrggbb(aa)"); }
 template <> std::string optionTmpl     <std::string>        ::type () { return std::string ("STRING"); }
 template <> std::string optionTmpl     <std::string>        ::asString () const { return *value; }
+template <> std::string optionTmpl     <std::string>        ::asJSON   () const { return glGrib::OptionsUtil::escape (*value); }
 template <> std::string optionTmpl     <std::string>        ::asOption () const { return name + " " + glGrib::OptionsUtil::escape (*value); }
 template <> std::string optionTmplList<glGrib::OptionColor> ::type () { return std::string ("LIST OF COLORS #rrggbb(aa)"); }
 template <> std::string optionTmplList<std::string>         ::type () { return std::string ("LIST OF STRINGS"); }
@@ -37,6 +31,17 @@ template <> std::string optionTmplList<std::string>         ::asString () const
   for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); it++)
     str = str + " " + *it;
   return str;
+}
+template <> std::string optionTmplList<std::string>         ::asJSON () const 
+{ 
+  std::string json; 
+  for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); it++)
+    {
+      if (it != value->begin ())
+        json += ",";
+      json += glGrib::OptionsUtil::escape (*it);
+    }
+  return std::string ("[") + json + std::string ("]");
 }
 template <> std::string optionTmplList<std::string>        ::asOption () const 
 { 
@@ -71,6 +76,11 @@ template <> void optionTmpl<bool>::clear ()
 template <> std::string optionTmpl<bool>::asString () const
 {
   return *value ? std::string ("TRUE") : std::string ("FALSE");
+}
+
+template <> std::string optionTmpl<bool>::asJSON () const
+{
+  return "";
 }
 
 template <> std::string optionTmpl<bool>::asOption () const
@@ -429,6 +439,13 @@ bool glGrib::OptionsParser::parse (int _argc, const char * _argv[],
                           arg = arg + "." + ctx[i];
                       arg = "--" + arg + "." + a;
                     }
+
+                  if (arg == "--json")
+                    {
+                      showJSON ();
+                      return false;
+                    }
+
                   if (arg == "--help")
                     {
                       showHelp ();
@@ -562,6 +579,11 @@ bool glGrib::OptionsParser::seenOption (const std::string & name) const
   return false;
 }
 
+void glGrib::OptionsParser::showJSON ()
+{
+  std::cout << getJSON ("--", true);
+}
+
 void glGrib::OptionsParser::showHelp ()
 {
   std::cout << "Usage:" << std::endl;
@@ -640,6 +662,37 @@ std::string glGrib::OptionsParser::getHelp (const std::string & prefix, bool sho
       }   
 
   return help;
+}
+
+std::string glGrib::OptionsParser::getJSON (const std::string & prefix, bool show_hidden)
+{
+  std::string json = "[";
+
+  int len = prefix.size ();
+
+  for (name2option_t::iterator it = name2option.begin (); 
+       it != name2option.end (); it++)
+    if (it->first.substr (0, len) == prefix)
+      {   
+	glGrib::OptionsParserDetail::optionBase * opt = it->second;
+        if ((! show_hidden) && (opt->hidden))
+          continue;
+
+        if (json.length () > 1)
+          json += ",";
+
+        const std::string json_opt = opt->asJSON ();
+        json += std::string ("[\"") + it->first + "\",\"" + opt->type () + "\",\"" + opt->desc + "\"";
+ 
+        if (json_opt.length () > 0)
+          json += std::string (",") + json_opt;
+ 
+        json += "]";
+      }   
+
+  json += "]";
+
+  return json;
 }
 
 void glGrib::OptionsParser::print (glGrib::Options & opts1)

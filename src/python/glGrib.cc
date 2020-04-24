@@ -40,7 +40,7 @@ int buildArgList (std::vector<std::string> * argslist, PyObject * args)
 PyObject * createReturnList (const std::vector<std::string> & listStr)
 {
   PyObject * list = PyList_New (listStr.size ());
-  for (int i = 0; i < listStr.size (); i++)
+  for (size_t i = 0; i < listStr.size (); i++)
     PyList_SetItem (list, i, Py_BuildValue ("s", listStr[i].c_str ()));
   return list;
 }
@@ -81,6 +81,8 @@ PyObject * processCommand (const char * command, PyObject * _args, return_t ret)
         return createReturnList (shell.getList ());
       case SCAL:
         return createReturnScal (shell.getList ());
+      case NONE:
+        break;
     }
 
   Py_RETURN_NONE;
@@ -102,6 +104,7 @@ createCommand (window, LIST);
 createCommand (snapshot, NONE);
 createCommand (clone, NONE);
 createCommand (help, SCAL);
+createCommand (json, SCAL);
 
 }
 

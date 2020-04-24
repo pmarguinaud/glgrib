@@ -349,9 +349,9 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
   if (levels.size () == 0)
     {
-      float min = opts.isofill.min == glGrib::OptionsIsofill::defaultMin 
+      float min = opts.isofill.min == glGrib::OptionsIsofill::defaultMin ()
                 ? meta1.valmin : opts.isofill.min;
-      float max = opts.isofill.max == glGrib::OptionsIsofill::defaultMax 
+      float max = opts.isofill.max == glGrib::OptionsIsofill::defaultMax ()
                 ? meta1.valmax : opts.isofill.max;
       for (int i = 0; i < opts.isofill.number; i++)
         levels.push_back (min + (i + 1) * (max - min) / (opts.isofill.number + 1));

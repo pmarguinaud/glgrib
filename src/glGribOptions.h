@@ -41,6 +41,10 @@ public:
     sprintf (str, "#%2.2x%2.2x%2.2x%2.2x", r, g, b, a); 
     return std::string (str); 
   }
+  std::string asJSON () const 
+  {
+    return std::string ("\"") + asString () + std::string ("\"");
+  }
   friend std::ostream & operator << (std::ostream &, const OptionColor &);
   friend std::istream & operator >> (std::istream &, OptionColor &);
   friend bool operator== (OptionColor const & col1, OptionColor const & col2)
@@ -68,6 +72,7 @@ public:
   static OptionDate date_from_t (time_t);
   static time_t tFromDate (const OptionDate &);
   std::string asString () const;
+  std::string asJSON () const;
   friend std::ostream & operator << (std::ostream &, const OptionDate &);
   friend std::istream & operator >> (std::istream &, OptionDate &);
   friend bool operator== (OptionDate const & d1, OptionDate const & d2)
@@ -99,6 +104,7 @@ namespace OptionsParserDetail
     std::string desc;
     virtual std::string type ()  = 0;
     virtual std::string asString () const = 0;
+    virtual std::string asJSON   () const = 0;
     virtual std::string asOption () const = 0;
     virtual void clear () = 0;
     virtual bool isEqual (const optionBase *) const = 0;
@@ -112,6 +118,7 @@ namespace OptionsParserDetail
     optionTmpl (const std::string & n, const std::string & d, T * v = nullptr) : optionBase (n, d), value (v) {}
     T * value = nullptr;
     std::string asString () const { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
+    std::string asJSON   () const { return OptionsUtil::escape (asString ()); }
     std::string asOption () const { return name + " " + OptionsUtil::escape (asString ()); }
     void set ()
     {
@@ -171,6 +178,19 @@ namespace OptionsParserDetail
         ss << (*it) << " ";
       return std::string (ss.str ());
     }
+    std::string asJSON () const
+    {
+      std::string json;
+      for (typename std::vector<T>::iterator it = value->begin(); it != value->end (); it++)
+        {
+          std::ostringstream ss;
+          ss << (*it);
+          if (it != value->begin ())
+            json += ",";
+          json += OptionsUtil::escape (std::string (ss.str ()));
+        }
+      return std::string ("[") + json + std::string ("]");
+    }
     void set (const std::string & v)  
     {   
       try 
@@ -211,10 +231,12 @@ namespace OptionsParserDetail
   template <> std::string optionTmpl     <OptionColor>::type ();
   template <> std::string optionTmpl     <std::string>       ::type ();
   template <> std::string optionTmpl     <std::string>       ::asString () const;
+  template <> std::string optionTmpl     <std::string>       ::asJSON   () const;
   template <> std::string optionTmpl     <std::string>       ::asOption () const;
   template <> std::string optionTmplList<OptionColor>        ::type ();
   template <> std::string optionTmplList<std::string>        ::type ();
   template <> std::string optionTmplList<std::string>        ::asString () const;
+  template <> std::string optionTmplList<std::string>        ::asJSON   () const;
   template <> std::string optionTmplList<std::string>        ::asOption () const;
   template <> std::string optionTmpl     <bool>              ::type ();
   template <> void optionTmpl            <bool>              ::set ();
@@ -222,6 +244,7 @@ namespace OptionsParserDetail
   template <> void optionTmpl            <std::string>       ::set (const std::string &);
   template <> void optionTmpl            <bool>              ::clear ();
   template <> std::string optionTmpl     <bool>              ::asString () const;
+  template <> std::string optionTmpl     <bool>              ::asJSON   () const;
   template <> std::string optionTmpl     <bool>              ::asOption () const;
   template <> int optionTmpl             <bool>              ::hasArg () const;
 

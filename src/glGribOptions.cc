@@ -21,6 +21,7 @@ template <> std::string optionTmpl     <glGrib::OptionDate> ::type () { return s
 template <> std::string optionTmpl     <glGrib::OptionColor>::type () { return std::string ("COLOR #rrggbb(aa)"); }
 template <> std::string optionTmpl     <std::string>        ::type () { return std::string ("STRING"); }
 template <> std::string optionTmpl     <std::string>        ::asString () const { return *value; }
+template <> std::string optionTmpl     <std::string>        ::asJSON   () const { return glGrib::OptionsUtil::escape (*value); }
 template <> std::string optionTmpl     <std::string>        ::asOption () const { return name + " " + glGrib::OptionsUtil::escape (*value); }
 template <> std::string optionTmplList<glGrib::OptionColor> ::type () { return std::string ("LIST OF COLORS #rrggbb(aa)"); }
 template <> std::string optionTmplList<std::string>         ::type () { return std::string ("LIST OF STRINGS"); }
@@ -30,6 +31,17 @@ template <> std::string optionTmplList<std::string>         ::asString () const
   for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); it++)
     str = str + " " + *it;
   return str;
+}
+template <> std::string optionTmplList<std::string>         ::asJSON () const 
+{ 
+  std::string json; 
+  for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); it++)
+    {
+      if (it != value->begin ())
+        json += ",";
+      json += glGrib::OptionsUtil::escape (*it);
+    }
+  return std::string ("[") + json + std::string ("]");
 }
 template <> std::string optionTmplList<std::string>        ::asOption () const 
 { 
@@ -64,6 +76,11 @@ template <> void optionTmpl<bool>::clear ()
 template <> std::string optionTmpl<bool>::asString () const
 {
   return *value ? std::string ("TRUE") : std::string ("FALSE");
+}
+
+template <> std::string optionTmpl<bool>::asJSON () const
+{
+  return "";
 }
 
 template <> std::string optionTmpl<bool>::asOption () const
@@ -657,8 +674,13 @@ std::string glGrib::OptionsParser::getJSON (const std::string & prefix, bool sho
         if (json.length () > 1)
           json += ",";
 
-        const std::string op = "[\"", sp = "\",\"", cl = "\"]";
-        json += op + it->first + sp + opt->type () + sp + opt->desc + cl;
+        const std::string json_opt = opt->asJSON ();
+        json += std::string ("[\"") + it->first + "\",\"" + opt->type () + "\",\"" + opt->desc + "\"";
+ 
+        if (json_opt.length () > 0)
+          json += std::string (",") + json_opt;
+ 
+        json += "]";
       }   
 
   json += "]";

@@ -59,6 +59,7 @@ def main(file_path=None,info=None,field=None,diff=None):
             listCmd.append('--field[0].palette.name')
             listCmd.append('cold_hot')
             command=(listCmd)  
+            print(*command)
             glGrib.start(*command)
             glGrib.sleep(200)
 

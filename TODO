@@ -12,3 +12,5 @@ Template for openGL buffers depending on type being allocated ?
 
 Make VAOs object with automatic destruction.
 
+
+PgUp/PgDown sur la fenetre de droite en mode diff

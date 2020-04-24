@@ -120,10 +120,10 @@ void glGrib::WindowDiffSet::updateWindows ()
 
   std::string e;
   
-  if (gwindow1->getNext ())
+  if (gwindow1->getNext () || gwindow2->getNext ())
     e = getNextExt ();
   
-  if (gwindow1->getPrev ())
+  if (gwindow1->getPrev () || gwindow2->getPrev ())
     e = getPrevExt ();
   
   

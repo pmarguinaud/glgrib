@@ -134,9 +134,6 @@ public:
   void scaleFieldUp ();
   void scaleFieldDown ();
   void toggleHideField ();
-  void scalePaletteUp ();
-  void scalePaletteDown ();
-  void nextPalette ();
   void hideAllFields ();
   void showAllFields ();
   void toggleLight ();

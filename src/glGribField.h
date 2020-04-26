@@ -38,9 +38,6 @@ public:
   virtual Field * clone () const  = 0;
   virtual void setup (Loader *, const OptionsField &, float = 0) = 0;
   void setPaletteOptions (const OptionsPalette &);
-  void setNextPalette ();
-  void scalePaletteUp (float = 0.025);
-  void scalePaletteDown (float = 0.025);
   void setupHilo (FieldFloatBufferPtr);
   void renderHilo (const View &) const;
   void setupVertexAttributesFrame ();

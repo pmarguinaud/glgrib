@@ -208,9 +208,6 @@ else if ((key == GLFW_KEY_##k) && (Window::mm == mods)) \
       glGribWindowIfKey (NONE,    H     ,  Show/hide selected field                             , toggleHideField        ());
       glGribWindowIfKey (NONE,    G     ,  Increase size of current field                       , scaleFieldUp           ());
       glGribWindowIfKey (CONTROL, G     ,  Decrease size of current field                       , scaleFieldDown         ());
-      glGribWindowIfKey (NONE,    F     ,  Increase palette range                               , scalePaletteUp         ());
-      glGribWindowIfKey (CONTROL, F     ,  Decrease palette range                               , scalePaletteDown       ());
-      glGribWindowIfKey (NONE,    J     ,  Try next palette                                     , nextPalette             ());
       glGribWindowIfKey (NONE,    L     ,  Turn on/off the light                                , toggleLight             ());
       glGribWindowIfKey (CONTROL, L     ,  Make current window master window                    , toggleMaster             ());
 
@@ -450,29 +447,6 @@ void glGrib::Window::toggleLight ()
     scene.unsetLight ();
   else
     scene.setLight ();
-}
-
-void glGrib::Window::nextPalette ()
-{
-  glGrib::Field * f = scene.getCurrentField ();
-  if (f != nullptr)
-    f->setNextPalette ();
-}
-
-void glGrib::Window::scalePaletteUp ()
-{
-  glGrib::Field * fld  = scene.getCurrentField ();
-  if (fld == nullptr)
-    return;
-  fld->scalePaletteUp ();
-}
-
-void glGrib::Window::scalePaletteDown ()
-{
-  glGrib::Field * fld  = scene.getCurrentField ();
-  if (fld == nullptr)
-    return;
-  fld->scalePaletteDown ();
 }
 
 void glGrib::Window::selectField (int ifield)

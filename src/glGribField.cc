@@ -155,11 +155,6 @@ void glGrib::Field::setPaletteOptions (const glGrib::OptionsPalette & o)
   palette = glGrib::Palette::create (o, getNormedMinValue (), getNormedMaxValue ());
 }
 
-void glGrib::Field::setNextPalette ()
-{
-  palette = glGrib::Palette::next (palette, getNormedMinValue (), getNormedMaxValue ());
-}
-
 void glGrib::Field::clear ()
 {
   values.clear ();
@@ -168,28 +163,6 @@ void glGrib::Field::clear ()
   if (isReady ())
     glDeleteVertexArrays (1, &VertexArrayID_frame);
   glGrib::World::clear ();
-}
-
-void glGrib::Field::scalePaletteUp (float x)
-{
-  if (! palette.hasMin ()) 
-    palette.setMin (getNormedMinValue ());
-  if (! palette.hasMax ()) 
-    palette.setMax (getNormedMaxValue ()); 
-  float d = palette.getMax () - palette.getMin ();
-  palette.setMin (palette.getMin () - d * x);
-  palette.setMax (palette.getMax () + d * x);
-}
-
-void glGrib::Field::scalePaletteDown (float x)
-{
-  if (! palette.hasMin ()) 
-    palette.setMin (getNormedMinValue ()); 
-  if (! palette.hasMax ()) 
-    palette.setMax (getNormedMaxValue ()); 
-  float d = palette.getMax () - palette.getMin ();
-  palette.setMin (palette.getMin () + d * x);
-  palette.setMax (palette.getMax () - d * x);
 }
 
 const glGrib::Palette & glGrib::Field::getPalette () const

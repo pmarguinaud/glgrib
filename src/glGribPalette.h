@@ -20,8 +20,6 @@ public:
   static float defaultMin () { return std::numeric_limits<float>::max (); }
   static float defaultMax () { return std::numeric_limits<float>::min (); }
 
-  static Palette next (const Palette &, float = defaultMin (), float = defaultMax ());
-
   static Palette create (const OptionsPalette &,  
                          float = defaultMin (), float = defaultMax ());
 

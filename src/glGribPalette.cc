@@ -308,24 +308,6 @@ glGrib::Palette::Palette (std::ifstream & fh)
     rgba.push_back (glGrib::OptionColor (r, g, b, a));
 }
 
-glGrib::Palette glGrib::Palette::next (const glGrib::Palette & p, float min, float max)
-{
-  name2palette_t::iterator it = name2palette.find (p.opts.name);
-  if (it != name2palette.end ())
-    it++;
-
-  if (it == name2palette.end ())
-    it = name2palette.begin ();
-  
-  glGrib::Palette p1 = it->second;
-
-  p1.opts.min = min;
-  p1.opts.max = max;
-
-  return p1;
-}
-
-
 namespace glGrib
 {
 

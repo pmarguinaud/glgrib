@@ -139,7 +139,7 @@ protected:
   template <typename T>
   void bindHeight (int);
   static void getUserPref (OptionsField *, Loader *, int);
-  Palette palette = paletteColdHot;
+  Palette palette;
   mutable OptionsField opts;
   std::vector<FieldMetadata> meta;
   std::vector<FieldFloatBufferPtr> values;

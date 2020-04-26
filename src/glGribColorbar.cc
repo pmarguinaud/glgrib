@@ -60,7 +60,7 @@ glGrib::Colorbar::~Colorbar ()
 }
 
 void glGrib::Colorbar::render (const glm::mat4 & MVP, const glGrib::Palette & p,
-                              float valmin, float valmax) const
+                               float valmin, float valmax) const
 {
   if (! ready)
     return;

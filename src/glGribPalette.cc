@@ -14,29 +14,6 @@
 namespace
 {
 
-typedef std::map<std::string,glGrib::Palette> name2palette_t;
-name2palette_t name2palette;
-
-glGrib::Palette paletteWhiteBlack
-  (
-    "white_black",
-      0,   0,   0,   0,
-      0,   0,   0, 255,
-    255, 255, 255, 255
-  );
-
-}
-
-glGrib::Palette & glGrib::Palette::register_ (const glGrib::Palette & p)
-{
-  name2palette.insert (std::pair<std::string, glGrib::Palette>(opts.name, p));
-  name2palette_t::iterator it = name2palette.find (opts.name);
-  return it->second;
-}
-
-namespace
-{
-
 class hsva_t
 {
 public:
@@ -245,7 +222,7 @@ glGrib::Palette glGrib::Palette::create
     }
   else
     {
-      p = createByName (o.name);
+      p = createByName (o.name, min, max);
       p.opts = o;
     }
 
@@ -257,13 +234,9 @@ glGrib::Palette glGrib::Palette::create
   return p;
 }
 
-glGrib::Palette & glGrib::Palette::createByName (const std::string & name)
+
+glGrib::Palette glGrib::Palette::createByName (const std::string & name, float min, float max)
 {
-  name2palette_t::iterator it = name2palette.find (name);
-
-  if (it != name2palette.end ())
-    return it->second;
-
   glGrib::Palette p;
 
 
@@ -289,85 +262,39 @@ glGrib::Palette & glGrib::Palette::createByName (const std::string & name)
         }
       p.opts.name = name;
     }
-
-    
-  return found ? p.register_ (p) : paletteWhiteBlack;
-}
-
-glGrib::Palette::Palette (std::ifstream & fh)
-{
-  std::string head;
-  std::getline (fh, head);
-  if (head[0] == '-')
+  else
     {
+
+      auto defp = [&] (const std::vector<OptionColor> & colors,
+                       const float min, const float max)
+      {
+        glGrib::OptionsPalette opts;
+        opts.colors = colors;
+        for (size_t i = 0; i < colors.size (); i++)
+          opts.values.push_back (min + (max - min) * static_cast<float>(i)
+                               / static_cast<float>(colors.size ()));
+        p = create (opts, min, max);
+        p.opts.name = name;
+      };
+
+      if (name == "cold_hot_temp")
+        defp (std::vector<OptionColor>{OptionColor ("blue"), OptionColor ("white"), 
+                                       OptionColor ("red")}, 253.15, 313.15);
+      else if (name == "cold_hot")
+        defp (std::vector<OptionColor>{OptionColor ("blue"), OptionColor ("white"), 
+                                       OptionColor ("red")}, min, max);
+      else if (name == "cloud")
+        defp (std::vector<OptionColor>{OptionColor ("#ffffff00"), OptionColor ("white")}, 0, 100);
+      else if (name == "cloud_auto")
+        defp (std::vector<OptionColor>{OptionColor ("#ffffff00"), OptionColor ("white")}, min, max);
+      else
+        defp (std::vector<OptionColor>{OptionColor ("black"), OptionColor ("white")}, min, max);
+
+       
+
     }
-  int r, g, b, a;
-  fh >> r >> g >> b >> a;
-  rgba_mis = glGrib::OptionColor (r, g, b, a);
-  while (fh >> r >> g >> b >> a)
-    rgba.push_back (glGrib::OptionColor (r, g, b, a));
-}
 
-namespace glGrib
-{
-
-glGrib::Palette paletteZsdiffBig
-  (
-     -350.0f, +350.0f,
-     "zsdiff_big",
-       0,   0,   0,   0,
-       0,   0, 255, 255,
-     255, 255, 255, 255,
-     255,   0,   0, 255 
-  );
-
-glGrib::Palette paletteColdHotTemp
-  (
-     253.15, 313.15,
-     "cold_hot_temp",
-       0,   0,   0,   0,
-       0,   0, 255, 255,
-     255, 255, 255, 255,
-     255,   0,   0, 255 
-  );
-
-glGrib::Palette paletteColdHot
-  (
-//   253.15, 293.15,
-     "cold_hot",
-       0,   0,   0,   0,
-       0,   0, 255, 255,
-     255, 255, 255, 255,
-     255,   0,   0, 255 
-  );
-
-glGrib::Palette paletteCloud
-  (
-     0., 100.,
-     "cloud",
-       0,   0,   0,   0,
-     255, 255, 255,   0,
-     255, 255, 255, 255
-  );
-
-glGrib::Palette paletteCloudAuto
-  (
-     "cloud_auto",
-       0,   0,   0,   0,
-     255, 255, 255,   0,
-     255, 255, 255, 255
-  );
-
-}
-
-std::ostream & operator << (std::ostream & out, const glGrib::Palette & p)
-{
-  out << p.rgba_mis << std::endl;
-  out << "[";
-  for (std::vector<glGrib::OptionColor>::const_iterator it = p.rgba.begin (); it != p.rgba.end (); it++)
-    out << *it << ",";
-  out << "]" << std::endl;
-  return out;
+  return p;    
 }
 
 void glGrib::Palette::getRGBA255 (float RGBA0[256][4]) const

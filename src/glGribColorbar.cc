@@ -59,8 +59,83 @@ glGrib::Colorbar::~Colorbar ()
   clear ();
 }
 
-void glGrib::Colorbar::render (const glm::mat4 & MVP, const glGrib::Palette & p,
-                               float valmin, float valmax) const
+void glGrib::Colorbar::muteNonLinear (const float min, const float max, 
+                                      std::vector<float> & x, std::vector <float> & y,
+                                      std::vector<std::string> & str) const
+{
+  std::vector<float> values;
+  const std::vector<float> & values_pal = pref.getValues ();
+
+  if (opts.levels.values.size () > 0)
+    {
+      for (size_t i = 0; i < opts.levels.values.size (); i++)
+        if ((min <= opts.levels.values[i]) && (opts.levels.values[i] <= max))
+          values.push_back (opts.levels.values[i]);
+    }
+  else if (values_pal.size () > 0)
+    {
+      for (size_t i = 0; i < values_pal.size (); i++)
+        if ((min <= values_pal[i]) && (values_pal[i] <= max))
+          values.push_back (values_pal[i]);
+    }
+  else
+    {
+      float d = (max - min) / (opts.levels.number - 1);
+      for (int i = 0; i < opts.levels.number; i++)
+        values.push_back (min + d * i);
+    }
+  
+  for (size_t i = 0; i < values.size (); i++)
+    {
+      float val = values[i];
+      char tmp[32];
+      sprintf (tmp, opts.format.c_str (), pref.getOffset () + val * pref.getScale ());
+      std::string s = std::string (tmp);
+      while (s.length () < 6)
+        s += " ";
+      str.push_back (s);
+      x.push_back (opts.position.xmin-0.01f);
+      y.push_back ((opts.position.ymax - opts.position.ymin) * (val - pref.getMin ()) 
+                    / (pref.getMax () - pref.getMin ()) + opts.position.ymin);
+    }
+
+  for (int i = 0; i < 256; i++)
+    rank2rgba[i] = i;
+}
+
+void glGrib::Colorbar::muteLinear (const float min, const float max, 
+                                   std::vector<float> & x, std::vector <float> & y,
+                                   std::vector<std::string> & str) const
+{
+  const std::vector<float> & values_pal = pref.getValues ();
+
+  for (size_t i = 0; i < values_pal.size (); i++)
+    {
+      float val = values_pal[i];
+      char tmp[32];
+      sprintf (tmp, opts.format.c_str (), pref.getOffset () + val * pref.getScale ());
+      std::string s = std::string (tmp);
+      while (s.length () < 6)
+        s += " ";
+      str.push_back (s);
+      x.push_back (opts.position.xmin-0.01f);
+      y.push_back ((opts.position.ymax - opts.position.ymin) * i 
+                    / (values_pal.size () - 1) + opts.position.ymin);
+    }
+
+  rank2rgba[0] = 0;
+  for (size_t i = 0; i < values_pal.size () - 1; i++)
+    {
+      int j1 = 1 + (255 * (i + 0)) / (values_pal.size () - 1);
+      int j2 = 1 + (255 * (i + 1)) / (values_pal.size () - 1);
+      int k = pref.getColorIndex (values_pal[i+1]);
+      for (int j = j1; j < j2; j++)
+        rank2rgba[j] = k;
+    }
+}
+
+
+void glGrib::Colorbar::render (const glm::mat4 & MVP, const glGrib::Palette & p) const
 {
   if (! ready)
     return;
@@ -80,74 +155,10 @@ void glGrib::Colorbar::render (const glm::mat4 & MVP, const glGrib::Palette & p,
       std::vector<std::string> str;
       std::vector<float> x, y;
 
-      std::vector<float> values;
-
-      const std::vector<float> & values_pal = pref.getValues ();
-
       if (! pref.isLinear ())
-        {
-          if (opts.levels.values.size () > 0)
-            {
-              for (size_t i = 0; i < opts.levels.values.size (); i++)
-                if ((min <= opts.levels.values[i]) && (opts.levels.values[i] <= max))
-                  values.push_back (opts.levels.values[i]);
-            }
-          else if (values_pal.size () > 0)
-            {
-              for (size_t i = 0; i < values_pal.size (); i++)
-                if ((min <= values_pal[i]) && (values_pal[i] <= max))
-                  values.push_back (values_pal[i]);
-            }
-          else
-            {
-              float d = (max - min) / (opts.levels.number - 1);
-              for (int i = 0; i < opts.levels.number; i++)
-                values.push_back (min + d * i);
-            }
-          
-          for (size_t i = 0; i < values.size (); i++)
-            {
-              float val = values[i];
-              char tmp[32];
-              sprintf (tmp, opts.format.c_str (), pref.getOffset () + val * pref.getScale ());
-              std::string s = std::string (tmp);
-              while (s.length () < 6)
-                s += " ";
-              str.push_back (s);
-              x.push_back (opts.position.xmin-0.01f);
-              y.push_back ((opts.position.ymax - opts.position.ymin) * (val - pref.getMin ()) 
-                            / (pref.getMax () - pref.getMin ()) + opts.position.ymin);
-            }
-
-          for (int i = 0; i < 256; i++)
-            rank2rgba[i] = i;
-        }
+        muteNonLinear (min, max, x, y, str);
       else
-        {
-          for (size_t i = 0; i < values_pal.size (); i++)
-            {
-              float val = values_pal[i];
-              char tmp[32];
-              sprintf (tmp, opts.format.c_str (), pref.getOffset () + val * pref.getScale ());
-              std::string s = std::string (tmp);
-              while (s.length () < 6)
-                s += " ";
-              str.push_back (s);
-              x.push_back (opts.position.xmin-0.01f);
-              y.push_back ((opts.position.ymax - opts.position.ymin) * i 
-                            / (values_pal.size () - 1) + opts.position.ymin);
-            }
-
-	  rank2rgba[0] = 0;
-          for (size_t i = 0; i < values_pal.size () - 1; i++)
-            {
-              int j1 = 1 + (255 * (i + 0)) / (values_pal.size () - 1);
-              int j2 = 1 + (255 * (i + 1)) / (values_pal.size () - 1);
-              int k = pref.getColorIndex (values_pal[i+1]);
-              for (int j = j1; j < j2; j++)
-                rank2rgba[j] = k;
-	    }
-        }
+        muteLinear (min, max, x, y, str);
 
       label.setup2D (font, str, x, y, opts.font.scale, glGrib::String::SE);
       label.setForegroundColor (opts.font.color.foreground);

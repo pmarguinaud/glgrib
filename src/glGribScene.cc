@@ -84,10 +84,7 @@ void glGrib::Scene::display () const
 
   if ((fld != nullptr) && (! d.colorbar.getHidden ()))
     if (fld->useColorBar ())
-      d.colorbar.render (d.MVP_L, 
-                         fld->getPalette (), 
-                         fld->getNormedMinValue (), 
-                         fld->getNormedMaxValue ());
+      d.colorbar.render (d.MVP_L, fld->getPalette ());
 
   d.mapscale.render (d.MVP_L, d.view);
 

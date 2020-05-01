@@ -21,7 +21,7 @@ public:
   static float defaultMax () { return std::numeric_limits<float>::min (); }
 
   Palette (const OptionsPalette &,  
-           float = defaultMin (), float = defaultMax ());
+           const float = defaultMin (), const float = defaultMax ());
 
   const std::string & getName () const { return opts.name; }
 
@@ -41,8 +41,8 @@ public:
   }
   const std::vector<float> & getValues () const { return opts.values; }
 
-  OptionColor getColor (float) const;
-  int getColorIndex (float) const;
+  OptionColor getColor (const float) const;
+  int getColorIndex (const float) const;
 
   bool isLinear () const
   {
@@ -63,9 +63,20 @@ public:
 private:
   OptionColor rgba_mis;
   std::vector<OptionColor> rgba;
+  void setMinMax (const float min, const float max) 
+  { 
+    if (opts.min == defaultMin ()) 
+      opts.min = min; 
+    if (opts.max == defaultMax ()) 
+      opts.max = max; 
+  }
   void getRGBA255 (float RGBA0[256][4]) const;
-  void createByName (const std::string &, float, float);
+  void createByName (const std::string &, const float, const float);
   void createByOpts (const glGrib::OptionsPalette &, float, float);
+  void createValueLinearRange (const float, const float, const int);
+  void createRainbow ();
+  void createGradient ();
+  void createDiscrete ();
   OptionsPalette opts;
 };
 

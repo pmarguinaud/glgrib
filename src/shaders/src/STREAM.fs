@@ -1,12 +1,12 @@
 
 #include "version.h"
+#include "palette.h"
 
 in 
 #include "STREAM_VS.h"
 
 out vec4 color;
 
-uniform vec4 RGBA0[256];
 uniform float palmin;
 uniform float palmax;
 uniform float valmin;
@@ -39,7 +39,7 @@ void main ()
       k = min (255, 1 + int (n * 254.0));
     }
   
-  color = RGBA0[k];
+  color = rgba_[k];
 
 }
 

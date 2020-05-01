@@ -1,10 +1,5 @@
 
-
-uniform int rgba_size = 0;
-layout (std430, binding=33) buffer rgba_buffer
-{
-  vec4 rgba_[];
-};
+#include "palette.h"
 
 uniform vec4 RGBAM = vec4 (0.0f, 0.0f, 0.0f, 0.0f);
 uniform float valmin, valmax;

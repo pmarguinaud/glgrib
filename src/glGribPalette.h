@@ -1,6 +1,9 @@
 #pragma once
 
+#include <glm/glm.hpp>
+
 #include "glGribOpenGL.h"
+#include "glGribProgram.h"
 #include "glGribOptions.h"
 #include "glGribFieldMetadata.h"
 
@@ -30,7 +33,7 @@ public:
   bool hasMin () const { return opts.min != defaultMin (); }
   bool hasMax () const { return opts.max != defaultMax (); }
   Palette () {}
-  void setRGBA255 (GLuint) const;
+  void bind (glGrib::Program *) const;
 
   friend bool operator== (const Palette &, const Palette &);
   friend bool operator!= (const Palette &, const Palette &);
@@ -61,8 +64,10 @@ public:
 
 
 private:
+  int ncolors = 256;
   OptionColor rgba_mis;
   std::vector<OptionColor> rgba;
+  std::vector<glm::vec4> rgba_;
   void setMinMax (const float min, const float max) 
   { 
     if (opts.min == defaultMin ()) 
@@ -70,7 +75,7 @@ private:
     if (opts.max == defaultMax ()) 
       opts.max = max; 
   }
-  void getRGBA255 (float RGBA0[256][4]) const;
+  void computergba_255 ();
   void createByName (const std::string &, const float, const float);
   void createByOpts (const glGrib::OptionsPalette &, float, float);
   void createValueLinearRange (const float, const float, const int);

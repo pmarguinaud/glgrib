@@ -107,7 +107,7 @@ void glGrib::Points::render (const glGrib::View & view, const glGrib::OptionsLig
 
   if (d.opts.palette.name != "none")
     {
-      d.p.setRGBA255 (program->programID);
+      d.p.bind (program);
       program->set ("lcolor0", false);
     }
   else

@@ -447,7 +447,7 @@ void glGrib::FieldStream::render (const glGrib::View & view, const glGrib::Optio
   view.setMVP (program);
   program->set ("scale0", opts.scale);
 
-  palette.setRGBA255 (program->programID);
+  palette.bind (program);
 
   std::vector<float> valmin = getMinValue ();
   std::vector<float> valmax = getMaxValue ();

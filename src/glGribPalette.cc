@@ -92,6 +92,7 @@ glGrib::Palette::Palette (const glGrib::OptionsPalette & o,
                           float min, float max)
 {
   createByOpts (o, min, max);
+  computergba_255 ();
 }
 
 void glGrib::Palette::createValueLinearRange (const float min, const float max, const int n)
@@ -147,9 +148,10 @@ void glGrib::Palette::createRainbow ()
 void glGrib::Palette::createGradient ()
 {
   size_t j = 0;
-  for (int i = 1; i < 256; i++)
+  for (int i = 1; i < ncolors-1; i++)
     {
-      float val = (i-1) * (opts.max - opts.min) / 255 + opts.min;
+      float val = (i-1) * (opts.max - opts.min) / static_cast<float> (ncolors - 1) 
+               + opts.min;
       while (j < opts.values.size ())
         {
           if (val < opts.values[j])
@@ -178,9 +180,10 @@ void glGrib::Palette::createGradient ()
 void glGrib::Palette::createDiscrete ()
 {
   size_t j = 0;
-  for (int i = 1; i < 256; i++)
+  for (int i = 1; i < ncolors; i++)
     {
-      float val = (i-1) * (opts.max - opts.min) / 254 + opts.min;
+      float val = (i-1) * (opts.max - opts.min) / static_cast<float> (ncolors-2) 
+               + opts.min;
       while (j < opts.values.size ())
         {
           if (val < opts.values[j])
@@ -298,12 +301,13 @@ void glGrib::Palette::createByName (const std::string & name, const float min, c
 
 }
 
-void glGrib::Palette::getRGBA255 (float RGBA0[256][4]) const
+void glGrib::Palette::computergba_255 () 
 {
+  rgba_.resize (ncolors);
   int n = rgba.size ();
 
-  RGBA0[0][0] = rgba_mis.r; RGBA0[0][1] = rgba_mis.b;
-  RGBA0[0][2] = rgba_mis.g; RGBA0[0][3] = rgba_mis.a;
+  rgba_[0][0] = rgba_mis.r / 255.0; rgba_[0][1] = rgba_mis.b / 255.0;
+  rgba_[0][2] = rgba_mis.g / 255.0; rgba_[0][3] = rgba_mis.a / 255.0;
 
 #pragma omp parallel for
   for (int j = 0; j < n-1; j++)
@@ -316,21 +320,18 @@ void glGrib::Palette::getRGBA255 (float RGBA0[256][4]) const
         {
           float w0 = static_cast<float> (i1-i) / static_cast<float> (i1-i0);
           float w1 = static_cast<float> (i-i0) / static_cast<float> (i1-i0);
-          RGBA0[i][0] = (rgba[j0].r * w0 + rgba[j1].r * w1) / 255.;
-          RGBA0[i][1] = (rgba[j0].g * w0 + rgba[j1].g * w1) / 255.;
-          RGBA0[i][2] = (rgba[j0].b * w0 + rgba[j1].b * w1) / 255.;
-          RGBA0[i][3] = (rgba[j0].a * w0 + rgba[j1].a * w1) / 255.;
+          rgba_[i][0] = (rgba[j0].r * w0 + rgba[j1].r * w1) / 255.;
+          rgba_[i][1] = (rgba[j0].g * w0 + rgba[j1].g * w1) / 255.;
+          rgba_[i][2] = (rgba[j0].b * w0 + rgba[j1].b * w1) / 255.;
+          rgba_[i][3] = (rgba[j0].a * w0 + rgba[j1].a * w1) / 255.;
         }
     }
 
-
 }
 
-void glGrib::Palette::setRGBA255 (GLuint programID) const
+void glGrib::Palette::bind (glGrib::Program * program) const
 {
-  float RGBA0[256][4];
-  getRGBA255 (RGBA0);
-  glUniform4fv (glGetUniformLocation (programID, "RGBA0"), 256, &RGBA0[0][0]);
+  glUniform4fv (glGetUniformLocation (program->programID, "RGBA0"), ncolors, &rgba_[0][0]);
 }
 
 namespace glGrib
@@ -358,15 +359,15 @@ bool operator!= (const glGrib::Palette & p1, const glGrib::Palette & p2)
  
 glGrib::OptionColor glGrib::Palette::getColor (const float val) const
 {
-  float RGBA0[256][4];
-  getRGBA255 (RGBA0);
   int pal = std::max (1, std::min (static_cast<int>(1 + 254 * (val - opts.min) / (opts.max - opts.min)), 255));
-  return glGrib::OptionColor (255 * RGBA0[pal][0], 255 * RGBA0[pal][1], 255 * RGBA0[pal][2], 255 * RGBA0[pal][3]);
+  return glGrib::OptionColor (255 * rgba_[pal][0], 255 * rgba_[pal][1], 255 * rgba_[pal][2], 255 * rgba_[pal][3]);
 }
 
 int glGrib::Palette::getColorIndex (const float val) const
 {
-  int pal = std::max (1, std::min (static_cast<int>(1 + 254 * (val - opts.min) / (opts.max - opts.min)), 255));
+  int pal = std::max (1, 
+                      std::min (static_cast<int>(1 + (ncolors - 2) * (val - opts.min) 
+                              / (opts.max - opts.min)), ncolors - 1));
   return pal;
 }
 

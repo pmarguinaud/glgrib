@@ -160,7 +160,7 @@ void glGrib::Colorbar::render (const glm::mat4 & MVP, const glGrib::Palette & p,
 
   program.use ();
 
-  pref.setRGBA255 (program.programID);
+  pref.bind (&program);
 
   program.set ("MVP", MVP);
   program.set ("rank2rgba", rank2rgba);

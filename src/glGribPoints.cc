@@ -50,9 +50,9 @@ void glGrib::Points::setupVertexAttributes ()
 }
 
 void glGrib::Points::setup (const glGrib::OptionsPoints & o, 
-		          const std::vector<float> & lon, 
-                          const std::vector<float> & lat, 
-                          const std::vector<float> & val)
+		            const std::vector<float> & lon, 
+                            const std::vector<float> & lat, 
+                            const std::vector<float> & val)
 {
   d.opts = o;
 
@@ -76,6 +76,8 @@ void glGrib::Points::setup (const glGrib::OptionsPoints & o,
     d.opts.palette.min = d.min;
   if (d.opts.palette.max == glGrib::Palette::defaultMax ())
     d.opts.palette.max = d.max;
+
+  d.p = glGrib::Palette::create (d.opts.palette, d.opts.palette.min, d.opts.palette.max);
 
   setupVertexAttributes ();
   setReady ();
@@ -105,8 +107,7 @@ void glGrib::Points::render (const glGrib::View & view, const glGrib::OptionsLig
 
   if (d.opts.palette.name != "none")
     {
-      glGrib::Palette palette = glGrib::Palette::create (d.opts.palette);
-      palette.setRGBA255 (program->programID);
+      d.p.setRGBA255 (program->programID);
       program->set ("lcolor0", false);
     }
   else

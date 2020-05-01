@@ -39,9 +39,6 @@ public:
   {
     return opts;
   }
-  void setMin (float min) { opts.min = min; }
-  void setMax (float max) { opts.max = max; }
-
   const std::vector<float> & getValues () const { return opts.values; }
 
   OptionColor getColor (float) const;

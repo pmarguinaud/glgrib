@@ -1,5 +1,11 @@
 
 
+uniform int enlight_RGBA0_size = 0;
+layout (std430, binding=33) buffer enlight_RGBA0_buffer
+{
+  vec4 enlight_RGBA0[];
+};
+
 uniform vec4 RGBA0[256];
 uniform vec4 RGBAM = vec4 (0.0f, 0.0f, 0.0f, 0.0f);
 uniform float valmin, valmax;

@@ -67,18 +67,11 @@ void glGrib::Colorbar::render (const glm::mat4 & MVP, const glGrib::Palette & p,
 
   rank2rgba.resize (256);
 
-  glGrib::Palette p1 = p;
-  if (! p1.hasMin ())
-    p1.setMin (valmin);
-  if (! p1.hasMax ())
-    p1.setMax (valmax);
-
-
-  if (p1 != pref)
+  if (p != pref)
     {
       label.clear ();
 
-      pref = p1;
+      pref = p;
 
       float min = pref.getMin (), max = pref.getMax ();
 

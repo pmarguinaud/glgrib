@@ -6,6 +6,7 @@
 #include "glGribPalette.h"
 #include "glGribView.h"
 #include "glGribObject.h"
+#include "glGribPalette.h"
 #include <string>
 #include <vector>
 
@@ -33,6 +34,7 @@ private:
     OptionsPoints opts;
     int len;
     OpenGLBufferPtr llsbuffer;
+    glGrib::Palette p;
   } d;
   GLuint VertexArrayID = 0;
 };

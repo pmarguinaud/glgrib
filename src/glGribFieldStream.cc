@@ -130,7 +130,7 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   glGrib::Loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
-  palette = glGrib::Palette::create (opts.palette, 0.0f, meta_n.valmax);
+  palette = glGrib::Palette (opts.palette, 0.0f, meta_n.valmax);
 
   std::vector<streamline_data_t> stream_data;
 

@@ -88,62 +88,65 @@ glGrib::OptionColor hsva2rgba (const hsva_t & hsva)
 
 }
 
-glGrib::Palette glGrib::Palette::create 
-        (const glGrib::OptionsPalette & o,  
-         float min, float max)
+glGrib::Palette::Palette (const glGrib::OptionsPalette & o,  
+                          float min, float max)
 {
-  glGrib::Palette p;
+  createByOpts (o, min, max);
+}
 
+void glGrib::Palette::createByOpts (const glGrib::OptionsPalette & o,  
+                                    float min, float max)
+{
   if (o.colors.size () != 0)
     {
-      p.opts = o;
+      opts = o;
 
-      if (p.opts.values.size () == 0)
+      if (opts.values.size () == 0)
         {
-          if (p.opts.min == defaultMin ())
-            p.opts.min = min;
-          if (p.opts.max == defaultMax ())
-            p.opts.max = max;
-          int n = p.opts.colors.size () + 1;
+          if (opts.min == defaultMin ())
+            opts.min = min;
+          if (opts.max == defaultMax ())
+            opts.max = max;
+          int n = opts.colors.size () + 1;
           for (int i = 0; i < n; i++)
-            p.opts.values.push_back (p.opts.min + ((p.opts.max - p.opts.min) * i) / (n-1));
+            opts.values.push_back (opts.min + ((opts.max - opts.min) * i) / (n-1));
         }
 
-      if (p.opts.min == defaultMin ())
-        p.opts.min = o.values.front ();
-      if (p.opts.max == defaultMax ())
-        p.opts.max = o.values.back ();
+      if (opts.min == defaultMin ())
+        opts.min = o.values.front ();
+      if (opts.max == defaultMax ())
+        opts.max = o.values.back ();
 
-      p.rgba_mis = glGrib::OptionColor (0, 0, 0, 0);
+      rgba_mis = glGrib::OptionColor (0, 0, 0, 0);
 
       // Generate values
-      if (p.opts.generate.on)
+      if (opts.generate.on)
         {
-          const int n = p.opts.generate.levels;
+          const int n = opts.generate.levels;
           std::vector<float> values;
 
           for (int i = 0; i < n; i++)
             {
               float a = float (i) / float (n-1);
-              values.push_back (a * p.opts.values.back () + (1.0f - a) * p.opts.values.front ());
+              values.push_back (a * opts.values.back () + (1.0f - a) * opts.values.front ());
 	    }
 
-	  p.opts.values = values;
+	  opts.values = values;
         }
       
       // Generate rainbow (HSV rotation)
-      if (p.opts.rainbow.on)
+      if (opts.rainbow.on)
         {
-          hsva_t hsva1 = rgba2hsva (p.opts.colors.front ());
-          hsva_t hsva2 = rgba2hsva (p.opts.colors.back  ());
+          hsva_t hsva1 = rgba2hsva (opts.colors.front ());
+          hsva_t hsva2 = rgba2hsva (opts.colors.back  ());
 
 	  std::vector<glGrib::OptionColor> colors;
 
-	  colors.push_back (p.opts.colors.front ());
+	  colors.push_back (opts.colors.front ());
 
           float h1 = hsva1.h, h2 = hsva2.h;
 
-	  if (p.opts.rainbow.direct.on)
+	  if (opts.rainbow.direct.on)
 	    while (h2 < h1)
               h2 += 360.f;
 	  else
@@ -151,7 +154,7 @@ glGrib::Palette glGrib::Palette::create
               h2 -= 360.0f;
 
 
-	  const int n = p.opts.values.size ();
+	  const int n = opts.values.size ();
 	  for (int i = 1; i < n-2; i++)
             {
               float c = float (i) / float (n-2);
@@ -164,39 +167,39 @@ glGrib::Palette glGrib::Palette::create
 	      colors.push_back (color);
 	    }
 
-          colors.push_back (p.opts.colors.back ());
+          colors.push_back (opts.colors.back ());
 
-	  p.opts.colors = colors;
+	  opts.colors = colors;
 	}
 
       // Generate gradient
-      if (p.opts.values.size () == p.opts.colors.size ())
+      if (opts.values.size () == opts.colors.size ())
         {
           size_t j = 0;
           for (int i = 1; i < 256; i++)
             {
-              float val = (i-1) * (p.opts.max - p.opts.min) / 255 + p.opts.min;
-              while (j < p.opts.values.size ())
+              float val = (i-1) * (opts.max - opts.min) / 255 + opts.min;
+              while (j < opts.values.size ())
                 {
-                  if (val < p.opts.values[j])
+                  if (val < opts.values[j])
                     break;
                   j++;
                 }
-              if (j >= p.opts.values.size ())
-                p.rgba.push_back (p.opts.colors.back ());
+              if (j >= opts.values.size ())
+                rgba.push_back (opts.colors.back ());
               else if (j == 0)
-                p.rgba.push_back (p.opts.colors.front ());
+                rgba.push_back (opts.colors.front ());
               else
                 {
                   glGrib::OptionColor c;
                   int ia = j-1, ib = j+0;
-                  float vala = p.opts.values[ia], valb = p.opts.values[ib];
+                  float vala = opts.values[ia], valb = opts.values[ib];
                   float b = (val - vala) / (valb - vala), a = 1.0 - b;
-                  c.r = a * p.opts.colors[ia].r + b * p.opts.colors[ib].r;
-                  c.g = a * p.opts.colors[ia].g + b * p.opts.colors[ib].g;
-                  c.b = a * p.opts.colors[ia].b + b * p.opts.colors[ib].b;
-                  c.a = a * p.opts.colors[ia].a + b * p.opts.colors[ib].a;
-                  p.rgba.push_back (c);
+                  c.r = a * opts.colors[ia].r + b * opts.colors[ib].r;
+                  c.g = a * opts.colors[ia].g + b * opts.colors[ib].g;
+                  c.b = a * opts.colors[ia].b + b * opts.colors[ib].b;
+                  c.a = a * opts.colors[ia].a + b * opts.colors[ib].a;
+                  rgba.push_back (c);
                 }
             }
         }
@@ -206,40 +209,36 @@ glGrib::Palette glGrib::Palette::create
           size_t j = 0;
           for (int i = 1; i < 256; i++)
             {
-              float val = (i-1) * (p.opts.max - p.opts.min) / 254 + p.opts.min;
-              while (j < p.opts.values.size ())
+              float val = (i-1) * (opts.max - opts.min) / 254 + opts.min;
+              while (j < opts.values.size ())
                 {
-                  if (val < p.opts.values[j])
+                  if (val < opts.values[j])
                     break;
                   j++;
                 }
-              if (j >= p.opts.values.size ())
-                p.rgba.push_back (p.opts.colors.back ());
+              if (j >= opts.values.size ())
+                rgba.push_back (opts.colors.back ());
               else
-                p.rgba.push_back (p.opts.colors[j-1]);
+                rgba.push_back (opts.colors[j-1]);
             }
          }
     }
   else
     {
-      p = createByName (o.name, min, max);
-      p.opts = o;
+      createByName (o.name, min, max);
+      opts = o;
     }
 
-  if (p.opts.min == defaultMin ())
-    p.opts.min = min;
-  if (p.opts.max == defaultMax ())
-    p.opts.max = max;
+  if (opts.min == defaultMin ())
+    opts.min = min;
+  if (opts.max == defaultMax ())
+    opts.max = max;
 
-  return p;
 }
 
 
-glGrib::Palette glGrib::Palette::createByName (const std::string & name, float min, float max)
+void glGrib::Palette::createByName (const std::string & name, float min, float max)
 {
-  glGrib::Palette p;
-
-
   glGrib::SQLite db (glGrib::Resolve ("glGrib.db"));
   glGrib::SQLite::stmt st = db.prepare ("SELECT hexa FROM PALETTES WHERE name = ?;");
   st.bindall (&name);
@@ -256,11 +255,11 @@ glGrib::Palette glGrib::Palette::createByName (const std::string & name, float m
           if (sscanf (&hexa[8*i], "%2x%2x%2x%2x", &r, &g, &b, &a) != 4)
             throw std::runtime_error ("Cannot parse hexa color");
           if (i == 0)
-            p.rgba_mis = glGrib::OptionColor (r, g, b, a);
+            rgba_mis = glGrib::OptionColor (r, g, b, a);
           else
-            p.rgba.push_back (glGrib::OptionColor (r, g, b, a));
+            rgba.push_back (glGrib::OptionColor (r, g, b, a));
         }
-      p.opts.name = name;
+      opts.name = name;
     }
   else
     {
@@ -273,8 +272,8 @@ glGrib::Palette glGrib::Palette::createByName (const std::string & name, float m
         for (size_t i = 0; i < colors.size (); i++)
           opts.values.push_back (min + (max - min) * static_cast<float>(i)
                                / static_cast<float>(colors.size ()));
-        p = create (opts, min, max);
-        p.opts.name = name;
+        createByOpts (opts, min, max);
+        opts.name = name;
       };
 
       if (name == "cold_hot_temp")
@@ -294,7 +293,6 @@ glGrib::Palette glGrib::Palette::createByName (const std::string & name, float m
 
     }
 
-  return p;    
 }
 
 void glGrib::Palette::getRGBA255 (float RGBA0[256][4]) const

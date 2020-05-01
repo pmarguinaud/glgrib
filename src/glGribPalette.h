@@ -20,8 +20,8 @@ public:
   static float defaultMin () { return std::numeric_limits<float>::max (); }
   static float defaultMax () { return std::numeric_limits<float>::min (); }
 
-  static Palette create (const OptionsPalette &,  
-                         float = defaultMin (), float = defaultMax ());
+  Palette (const OptionsPalette &,  
+           float = defaultMin (), float = defaultMax ());
 
   const std::string & getName () const { return opts.name; }
 
@@ -64,7 +64,8 @@ private:
   OptionColor rgba_mis;
   std::vector<OptionColor> rgba;
   void getRGBA255 (float RGBA0[256][4]) const;
-  static Palette createByName (const std::string &, float, float);
+  void createByName (const std::string &, float, float);
+  void createByOpts (const glGrib::OptionsPalette &, float, float);
   OptionsPalette opts;
 };
 

@@ -152,7 +152,7 @@ void glGrib::Field::setupHilo (glGrib::FieldFloatBufferPtr data)
 
 void glGrib::Field::setPaletteOptions (const glGrib::OptionsPalette & o) 
 { 
-  palette = glGrib::Palette::create (o, getNormedMinValue (), getNormedMaxValue ());
+  palette = glGrib::Palette (o, getNormedMinValue (), getNormedMaxValue ());
 }
 
 void glGrib::Field::clear ()

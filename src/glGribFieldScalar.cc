@@ -167,7 +167,7 @@ void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField
   ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
 
-  palette = glGrib::Palette::create (opts.palette, getNormedMinValue (), getNormedMaxValue ());
+  palette = glGrib::Palette (opts.palette, getNormedMinValue (), getNormedMaxValue ());
 
   geometry = glGrib::Geometry::load (ld, opts.path[int (slot)], opts.geometry);
 

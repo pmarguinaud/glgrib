@@ -66,6 +66,13 @@ public:
       glUniform1fv (id, val.size (), val.data ());
   }
   
+  void set (const std::string & key, const std::vector<glm::vec4> & val)
+  {
+    int id = glGetUniformLocation (programID, key.c_str ());
+    if (id != -1)
+      glUniform4fv (id, val.size (), &val[0][0]);
+  }
+  
   void set (const std::string & key, const std::vector<int> & val)
   {
     int id = glGetUniformLocation (programID, key.c_str ());

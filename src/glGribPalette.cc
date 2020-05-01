@@ -329,9 +329,9 @@ void glGrib::Palette::computergba_255 ()
 
 }
 
-void glGrib::Palette::bind (glGrib::Program * program) const
+void glGrib::Palette::set (glGrib::Program * program) const
 {
-  glUniform4fv (glGetUniformLocation (program->programID, "RGBA0"), ncolors, &rgba_[0][0]);
+  program->set ("RGBA0", rgba_);
 }
 
 namespace glGrib

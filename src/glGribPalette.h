@@ -33,7 +33,7 @@ public:
   bool hasMin () const { return opts.min != defaultMin (); }
   bool hasMax () const { return opts.max != defaultMax (); }
   Palette () {}
-  void bind (glGrib::Program *) const;
+  void set (glGrib::Program *) const;
 
   friend bool operator== (const Palette &, const Palette &);
   friend bool operator!= (const Palette &, const Palette &);

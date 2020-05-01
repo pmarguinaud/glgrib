@@ -510,7 +510,7 @@ void glGrib::FieldIsoFill::render (const glGrib::View & view, const glGrib::Opti
 
   view.setMVP (program1);
   program1->set ("scale0", opts.scale);
-  palette.bind (program1);
+  palette.set (program1);
 
   glBindVertexArray (d.VertexArrayID);
 

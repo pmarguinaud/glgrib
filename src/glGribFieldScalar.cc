@@ -269,7 +269,7 @@ void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::Optio
 
   view.setMVP (program);
   program->set (light);
-  palette.bind (program);
+  palette.set (program);
   program->set ("scale0", scale0);
   program->set ("valmin", getNormedMinValue ());
   program->set ("valmax", getNormedMaxValue ());

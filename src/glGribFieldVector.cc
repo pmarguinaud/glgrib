@@ -172,7 +172,7 @@ const
 
   view.setMVP (program);
   program->set (light);
-  palette.bind (program);
+  palette.set (program);
 
   scale0 *= 0.99;
 
@@ -242,7 +242,7 @@ const
 
   view.setMVP (program);
   program->set (light);
-  palette.bind (program);
+  palette.set (program);
 
   program->set ("scale0", opts.scale);
   program->set ("palmin", palette.getMin ());

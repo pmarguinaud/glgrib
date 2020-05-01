@@ -1,12 +1,11 @@
 
 
-uniform int enlight_RGBA0_size = 0;
-layout (std430, binding=33) buffer enlight_RGBA0_buffer
+uniform int rgba_size = 0;
+layout (std430, binding=33) buffer rgba_buffer
 {
-  vec4 enlight_RGBA0[];
+  vec4 rgba_[];
 };
 
-uniform vec4 RGBA0[256];
 uniform vec4 RGBAM = vec4 (0.0f, 0.0f, 0.0f, 0.0f);
 uniform float valmin, valmax;
 uniform float palmin, palmax;
@@ -52,11 +51,11 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal,
       bool same = pal0 == pal1;
       float a1 = same ? 1. : pal - pal0;
       float a0 = same ? 0. : pal1 - pal;
-      color = RGBA0[pal0] * a0 + RGBA0[pal1] * a1;
+      color = rgba_[pal0] * a0 + rgba_[pal1] * a1;
     }
   else
     {
-      color = RGBA0[int (round (pal))];
+      color = rgba_[int (round (pal))];
     }
 
   color.rgb = total * color.rgb;

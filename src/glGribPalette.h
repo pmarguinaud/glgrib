@@ -83,6 +83,7 @@ private:
   void createGradient ();
   void createDiscrete ();
   OptionsPalette opts;
+  OpenGLBufferPtr rgba_buffer;
 };
 
 }

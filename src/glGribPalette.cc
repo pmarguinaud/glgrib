@@ -327,11 +327,17 @@ void glGrib::Palette::computergba_255 ()
         }
     }
 
+  rgba_buffer = newGlgribOpenGLBufferPtr (rgba_.size () * sizeof (rgba_[0]),
+                                          rgba_.data ()); 
+
+
 }
 
 void glGrib::Palette::set (glGrib::Program * program) const
 {
   program->set ("RGBA0", rgba_);
+  program->set ("rgba_size", ncolors);
+  rgba_buffer->bind (GL_SHADER_STORAGE_BUFFER, 33);
 }
 
 namespace glGrib

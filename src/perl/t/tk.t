@@ -3,18 +3,29 @@ use warnings;
 
 use Tk;
 use Data::Dumper;
+use JSON;
 
 use Test::More tests => 1;
 BEGIN { use_ok('glGrib') };
 
 sub rotate
 {
-  'glGrib'->set ('--scene.rotate_earth.on');
+  my ($opt) = 'glGrib'->get ('--scene.rotate_earth.on');
+  ($opt =~ s/\.on$/.off/o) or ($opt =~ s/\.off$/.on/o);
+  'glGrib'->set ($opt);
+}
+
+sub move
+{
+  'glGrib'->set (qw (--window.position.x 0 --window.position.y 0));
 }
 
 sub debug
 {
-  print &Dumper (['glGrib'->get ('--scene.rotate_earth')]);
+  my $json = 'glGrib'->json ();
+  my $h = &decode_json ($json);
+  print &Dumper ($h);
+  print &Dumper (['glGrib'->window ()]);
 }
 
 'glGrib'->start ('--grid.on', '--landscape.on');
@@ -29,6 +40,9 @@ $top->Button (-relief => 'raised', -text => 'Quit', -command => sub { $top->dest
     ->pack (-side => 'top', -fill => 'x', -expand => 1);
 
 $top->Button (-relief => 'raised', -text => 'Debug', -command => sub { &debug (); })
+    ->pack (-side => 'top', -fill => 'x', -expand => 1);
+
+$top->Button (-relief => 'raised', -text => 'Move', -command => sub { &move (); })
     ->pack (-side => 'top', -fill => 'x', -expand => 1);
 
 &MainLoop ();

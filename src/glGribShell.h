@@ -22,6 +22,7 @@ public:
   virtual void run ()  = 0;
   virtual void execute (const std::vector<std::string> &);
   bool closed () { return close; }
+  void setClosed () { close = true; }
   void lock ();
   void unlock ();
   const OptionsShell & getOptions () const { return opts; }

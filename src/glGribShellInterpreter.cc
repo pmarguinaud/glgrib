@@ -43,6 +43,9 @@ void * _run (void * data)
 {
   glGrib::ShellInterpreter * shell = static_cast<glGrib::ShellInterpreter *>(data);
   shell->runWset ();
+  shell->lock ();
+  shell->setClosed ();
+  shell->unlock ();
   return nullptr;
 }
 
@@ -74,6 +77,9 @@ void glGrib::ShellInterpreter::setup (const glGrib::OptionsShell & o)
 
 void glGrib::ShellInterpreter::stop (const std::vector <std::string> & args)
 {
+  if (closed ())
+    return;
+
   unlock ();
 
   wset->close ();
@@ -108,6 +114,8 @@ void glGrib::ShellInterpreter::start (int argc, const char * argv[])
 
 void glGrib::ShellInterpreter::execute (const std::vector<std::string> & args)
 {
+  if (closed ())
+    return;
   if (args[0] == "start")
     return start (args);
   lock ();

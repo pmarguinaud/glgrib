@@ -24,6 +24,8 @@ void main ()
 
   int k;
 
+  float rgba_size2 = float (rgba_size - 2);
+
   if (motion)
     {
       const float ra = 6000000.0f;
@@ -31,12 +33,12 @@ void main ()
       float distrefovervalmax = distref / valmax;
       float tscale = distrefovervalmax / nwaves;
       float y = (1 + sin ((ra * stream_vs.dist - timea * accelt) / tscale)) / 2;
-      k = 1 + int (254 * min (1, max (0, y)));
+      k = 1 + int (rgba_size2 * min (1, max (0, y)));
     }
   else
     {
       float n = stream_vs.norm / valmax;
-      k = min (255, 1 + int (n * 254.0));
+      k = min (rgba_size-1, 1 + int (n * rgba_size2));
     }
   
   color = rgba_[k];

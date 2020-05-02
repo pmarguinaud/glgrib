@@ -380,7 +380,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
         v = (levels[i-1] + levels[i+0]) / 2.0f;
 
       d.isoband[i].color = palette.getColor      (v);
-      colorIndex[i]     = palette.getColorIndex (v);
+      colorIndex[i]      = palette.getColorIndex (v);
     }
 
 

@@ -15,6 +15,8 @@ uniform bool lcolor0;
 
 void main()
 {
+  float rgba_size2 = float (rgba_size - 2);
+
   if (lcolor0)
     {
       color.r = color0.r;
@@ -24,7 +26,9 @@ void main()
     }
   else
     {
-      int pal = max (1, min (int (1 + 254 * (pointVal - palmin) / (palmax - palmin)), 255));
+      int pal = max (1, 
+                     min (int (1 + rgba_size2 * (pointVal - palmin) / (palmax - palmin)), 
+                     rgba_size-1));
       color.r = rgba_[pal].r;
       color.g = rgba_[pal].g;
       color.b = rgba_[pal].b;

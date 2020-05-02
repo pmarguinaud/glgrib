@@ -132,37 +132,42 @@ void glGrib::Colorbar::muteLinear (const float min, const float max,
     }
 }
 
+void glGrib::Colorbar::mute () const
+{
+  rank2rgba.resize (256);
+
+  label.clear ();
+  
+  const float min = pref.getMin (), max = pref.getMax ();
+  
+  glGrib::FontPtr font = newGlgribFontPtr (opts.font);
+  
+  std::vector<std::string> str;
+  std::vector<float> x, y;
+  
+  if (! pref.isLinear ())
+    muteNonLinear (min, max, x, y, str);
+  else
+    muteLinear (min, max, x, y, str);
+  
+  label.setup2D (font, str, x, y, opts.font.scale, glGrib::String::SE);
+  label.setForegroundColor (opts.font.color.foreground);
+  label.setBackgroundColor (opts.font.color.background);
+  
+  label.update (str);
+
+}
 
 void glGrib::Colorbar::render (const glm::mat4 & MVP, const glGrib::Palette & p) const
 {
   if (! ready)
     return;
 
-  rank2rgba.resize (256);
 
   if (p != pref)
     {
-      label.clear ();
-
       pref = p;
-
-      float min = pref.getMin (), max = pref.getMax ();
-
-      glGrib::FontPtr font = newGlgribFontPtr (opts.font);
-     
-      std::vector<std::string> str;
-      std::vector<float> x, y;
-
-      if (! pref.isLinear ())
-        muteNonLinear (min, max, x, y, str);
-      else
-        muteLinear (min, max, x, y, str);
-
-      label.setup2D (font, str, x, y, opts.font.scale, glGrib::String::SE);
-      label.setForegroundColor (opts.font.color.foreground);
-      label.setBackgroundColor (opts.font.color.background);
-
-      label.update (str);
+      mute ();
     }
 
   label.render (MVP);

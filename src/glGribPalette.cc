@@ -335,7 +335,6 @@ void glGrib::Palette::computergba_255 ()
 
 void glGrib::Palette::set (glGrib::Program * program) const
 {
-  program->set ("RGBA0", rgba_);
   program->set ("rgba_size", ncolors);
   rgba_buffer->bind (GL_SHADER_STORAGE_BUFFER, 33);
 }

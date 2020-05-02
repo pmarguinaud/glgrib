@@ -24,6 +24,7 @@ public:
   bool getHidden () const { return hidden; }
   const OptionsColorbar & getOptions () const { return opts; }
 private:
+  void mute () const;
   void muteLinear (const float, const float, std::vector<float> &, 
                    std::vector <float> &, std::vector<std::string> &) const;
   void muteNonLinear (const float, const float, std::vector<float> &, 

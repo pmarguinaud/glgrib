@@ -48,7 +48,7 @@ void glGrib::Colorbar::clear ()
       glDeleteVertexArrays (1, &VertexArrayID);
       label.clear ();
     }
-  pref = glGrib::Palette ();
+  palette = glGrib::Palette ();
   ready = false;
 }
 
@@ -57,76 +57,85 @@ glGrib::Colorbar::~Colorbar ()
   clear ();
 }
 
+void glGrib::Colorbar::createLabels (std::vector<float> & x, std::vector<float> & y, 
+                                     std::vector<std::string> & str,
+                                     const std::vector<float> & values, const bool nonlinear)
+{
+  for (size_t i = 0; i < values.size (); i++)
+    {
+      float val = values[i];
+      char tmp[32];
+      sprintf (tmp, opts.format.c_str (), palette.getOffset () + val * palette.getScale ());
+      std::string s = std::string (tmp);
+      while (s.length () < 6)
+        s += " ";
+      str.push_back (s);
+      x.push_back (opts.position.xmin-0.01f);
+
+      float yv;
+
+      if (nonlinear)
+        yv = (opts.position.ymax - opts.position.ymin) * (val - palette.getMin ()) 
+                    / (palette.getMax () - palette.getMin ()) + opts.position.ymin;
+      else
+        yv = (opts.position.ymax - opts.position.ymin) * static_cast<float> (i)
+                    / (values.size () - 1) + opts.position.ymin;
+
+      y.push_back (yv);
+
+    }
+}
+
 void glGrib::Colorbar::updateNonLinear (const float min, const float max, 
                                         std::vector<float> & x, std::vector <float> & y,
                                         std::vector<std::string> & str) 
 {
+  const std::vector<float> & values_pal = palette.getValues ();
   std::vector<float> values;
-  const std::vector<float> & values_pal = pref.getValues ();
 
   if (opts.levels.values.size () > 0)
     {
+      // Take values passed as options in [min..max]
       for (size_t i = 0; i < opts.levels.values.size (); i++)
         if ((min <= opts.levels.values[i]) && (opts.levels.values[i] <= max))
           values.push_back (opts.levels.values[i]);
     }
   else if (values_pal.size () > 0)
     {
+      // Take values from palette
       for (size_t i = 0; i < values_pal.size (); i++)
         if ((min <= values_pal[i]) && (values_pal[i] <= max))
           values.push_back (values_pal[i]);
     }
   else
     {
+      // Create a range
       float d = (max - min) / (opts.levels.number - 1);
       for (int i = 0; i < opts.levels.number; i++)
         values.push_back (min + d * i);
     }
   
-  for (size_t i = 0; i < values.size (); i++)
-    {
-      float val = values[i];
-      char tmp[32];
-      sprintf (tmp, opts.format.c_str (), pref.getOffset () + val * pref.getScale ());
-      std::string s = std::string (tmp);
-      while (s.length () < 6)
-        s += " ";
-      str.push_back (s);
-      x.push_back (opts.position.xmin-0.01f);
-      y.push_back ((opts.position.ymax - opts.position.ymin) * (val - pref.getMin ()) 
-                    / (pref.getMax () - pref.getMin ()) + opts.position.ymin);
-    }
+  createLabels (x, y, str, values, true);
 
+  size_t ncolors = palette.size ();
   for (int i = 0; i < 256; i++)
-    rank2rgba[i] = i;
+    rank2rgba[i] = (i * ncolors) / 256;
 }
 
 void glGrib::Colorbar::updateLinear (const float min, const float max, 
                                      std::vector<float> & x, std::vector <float> & y,
                                      std::vector<std::string> & str) 
 {
-  const std::vector<float> & values_pal = pref.getValues ();
+  const std::vector<float> & values_pal = palette.getValues ();
 
-  for (size_t i = 0; i < values_pal.size (); i++)
-    {
-      float val = values_pal[i];
-      char tmp[32];
-      sprintf (tmp, opts.format.c_str (), pref.getOffset () + val * pref.getScale ());
-      std::string s = std::string (tmp);
-      while (s.length () < 6)
-        s += " ";
-      str.push_back (s);
-      x.push_back (opts.position.xmin-0.01f);
-      y.push_back ((opts.position.ymax - opts.position.ymin) * i 
-                    / (values_pal.size () - 1) + opts.position.ymin);
-    }
+  createLabels (x, y, str, values_pal, false);
 
   rank2rgba[0] = 0;
   for (size_t i = 0; i < values_pal.size () - 1; i++)
     {
       int j1 = 1 + (255 * (i + 0)) / (values_pal.size () - 1);
       int j2 = 1 + (255 * (i + 1)) / (values_pal.size () - 1);
-      int k = pref.getColorIndex (values_pal[i+1]);
+      int k = palette.getColorIndex (values_pal[i+1]);
       for (int j = j1; j < j2; j++)
         rank2rgba[j] = k;
     }
@@ -138,23 +147,23 @@ void glGrib::Colorbar::update (const glGrib::Palette & p)
   if (! ready)
     return;
 
-  if (p == pref)
+  if (p == palette)
     return;
 
-  pref = p;
+  palette = p;
 
   rank2rgba.resize (256);
 
   label.clear ();
   
-  const float min = pref.getMin (), max = pref.getMax ();
+  const float min = palette.getMin (), max = palette.getMax ();
   
   glGrib::FontPtr font = newGlgribFontPtr (opts.font);
   
   std::vector<std::string> str;
   std::vector<float> x, y;
   
-  if (! pref.isLinear ())
+  if (! palette.isLinear ())
     updateNonLinear (min, max, x, y, str);
   else
     updateLinear (min, max, x, y, str);
@@ -178,7 +187,7 @@ void glGrib::Colorbar::render (const glm::mat4 & MVP) const
 
   program->use ();
 
-  pref.set (program);
+  palette.set (program);
 
   program->set ("MVP", MVP);
   program->set ("rank2rgba", rank2rgba);

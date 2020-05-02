@@ -38,7 +38,12 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal,
     }
 
   float val = unpack (fragmentVal, valmin, valmax);
-  float pal = max (1.0f, min (1.0f + 254.0f * (val - palmin) / (palmax - palmin), 255.0f));
+
+  float rgba_size1 = float (rgba_size - 1);
+  float rgba_size2 = float (rgba_size - 2);
+  float pal = max (1.0f, 
+              min (1.0f + rgba_size2 * (val - palmin) / (palmax - palmin), 
+                   rgba_size1));
 
   if (smoothed)
     {

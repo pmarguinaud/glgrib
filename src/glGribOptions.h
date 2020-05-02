@@ -643,6 +643,7 @@ public:
     DESC (max,         Palette max value);                              
     DESC (values,      Palette values);
     DESC (colors,      Palette colors);
+    DESC (ncolors,     Number of colors);
     DESC (linear.on,   Linear colorbar display);
     DESC (scale,       Scale for colorbar figures);
     DESC (offset,      Offset for colorbar figures);
@@ -656,6 +657,7 @@ public:
   float max = defaultMax ();
   std::vector<float> values;
   std::vector<OptionColor> colors;
+  int ncolors = 256;
   struct
   {
     bool on = false;

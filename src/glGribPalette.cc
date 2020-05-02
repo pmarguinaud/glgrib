@@ -148,9 +148,9 @@ void glGrib::Palette::createRainbow ()
 void glGrib::Palette::createGradient ()
 {
   size_t j = 0;
-  for (int i = 1; i < ncolors-1; i++)
+  for (int i = 1; i < opts.ncolors-1; i++)
     {
-      float val = (i-1) * (opts.max - opts.min) / static_cast<float> (ncolors - 1) 
+      float val = (i-1) * (opts.max - opts.min) / static_cast<float> (opts.ncolors - 1) 
                + opts.min;
       while (j < opts.values.size ())
         {
@@ -180,9 +180,9 @@ void glGrib::Palette::createGradient ()
 void glGrib::Palette::createDiscrete ()
 {
   size_t j = 0;
-  for (int i = 1; i < ncolors; i++)
+  for (int i = 1; i < opts.ncolors; i++)
     {
-      float val = (i-1) * (opts.max - opts.min) / static_cast<float> (ncolors-2) 
+      float val = (i-1) * (opts.max - opts.min) / static_cast<float> (opts.ncolors-2) 
                + opts.min;
       while (j < opts.values.size ())
         {
@@ -303,7 +303,7 @@ void glGrib::Palette::createByName (const std::string & name, const float min, c
 
 void glGrib::Palette::computergba_255 () 
 {
-  rgba_.resize (ncolors);
+  rgba_.resize (opts.ncolors);
   int n = rgba.size ();
 
   rgba_[0][0] = rgba_mis.r / 255.0; rgba_[0][1] = rgba_mis.b / 255.0;
@@ -314,16 +314,16 @@ void glGrib::Palette::computergba_255 ()
     {
       int j0 = j + 0;
       int j1 = j + 1;
-      int i0 = 1 + (255 * j0) / (n - 1);
-      int i1 = 1 + (255 * j1) / (n - 1);
+      int i0 = 1 + ((opts.ncolors-1) * j0) / (n - 1);
+      int i1 = 1 + ((opts.ncolors-1) * j1) / (n - 1);
       for (int i = i0; i < i1; i++)
         {
           float w0 = static_cast<float> (i1-i) / static_cast<float> (i1-i0);
           float w1 = static_cast<float> (i-i0) / static_cast<float> (i1-i0);
-          rgba_[i][0] = (rgba[j0].r * w0 + rgba[j1].r * w1) / 255.;
-          rgba_[i][1] = (rgba[j0].g * w0 + rgba[j1].g * w1) / 255.;
-          rgba_[i][2] = (rgba[j0].b * w0 + rgba[j1].b * w1) / 255.;
-          rgba_[i][3] = (rgba[j0].a * w0 + rgba[j1].a * w1) / 255.;
+          rgba_[i][0] = (rgba[j0].r * w0 + rgba[j1].r * w1) / 255.0f;
+          rgba_[i][1] = (rgba[j0].g * w0 + rgba[j1].g * w1) / 255.0f;
+          rgba_[i][2] = (rgba[j0].b * w0 + rgba[j1].b * w1) / 255.0f;
+          rgba_[i][3] = (rgba[j0].a * w0 + rgba[j1].a * w1) / 255.0f;
         }
     }
 
@@ -335,7 +335,7 @@ void glGrib::Palette::computergba_255 ()
 
 void glGrib::Palette::set (glGrib::Program * program) const
 {
-  program->set ("rgba_size", ncolors);
+  program->set ("rgba_size", opts.ncolors);
   rgba_buffer->bind (GL_SHADER_STORAGE_BUFFER, 33);
 }
 
@@ -364,15 +364,15 @@ bool operator!= (const glGrib::Palette & p1, const glGrib::Palette & p2)
  
 glGrib::OptionColor glGrib::Palette::getColor (const float val) const
 {
-  int pal = std::max (1, std::min (static_cast<int>(1 + 254 * (val - opts.min) / (opts.max - opts.min)), 255));
+  int pal = std::max (1, std::min (static_cast<int>(1 + (opts.ncolors-2) * (val - opts.min) / (opts.max - opts.min)), (opts.ncolors-1)));
   return glGrib::OptionColor (255 * rgba_[pal][0], 255 * rgba_[pal][1], 255 * rgba_[pal][2], 255 * rgba_[pal][3]);
 }
 
 int glGrib::Palette::getColorIndex (const float val) const
 {
   int pal = std::max (1, 
-                      std::min (static_cast<int>(1 + (ncolors - 2) * (val - opts.min) 
-                              / (opts.max - opts.min)), ncolors - 1));
+                      std::min (static_cast<int>(1 + (opts.ncolors - 2) * (val - opts.min) 
+                              / (opts.max - opts.min)), opts.ncolors - 1));
   return pal;
 }
 

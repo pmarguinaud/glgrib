@@ -25,6 +25,8 @@ public:
   const OptionsColorbar & getOptions () const { return opts; }
   void update (const Palette &);
 private:
+  void createLabels (std::vector<float> &, std::vector<float> &, 
+                     std::vector<std::string> &, const std::vector<float> &, const bool);
   void updateLinear (const float, const float, std::vector<float> &, 
                      std::vector <float> &, std::vector<std::string> &);
   void updateNonLinear (const float, const float, std::vector<float> &, 
@@ -37,7 +39,7 @@ private:
   int nt;
   std::vector<int> rank2rgba;
   String label;
-  Palette pref;
+  Palette palette;
 };
 
 

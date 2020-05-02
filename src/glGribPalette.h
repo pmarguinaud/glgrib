@@ -62,9 +62,13 @@ public:
     return opts.offset;
   }
 
+  size_t size () const
+  {
+    return rgba_.size ();
+  }
+
 
 private:
-  int ncolors = 256;
   OptionColor rgba_mis;
   std::vector<OptionColor> rgba;
   std::vector<glm::vec4> rgba_;

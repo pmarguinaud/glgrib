@@ -34,7 +34,7 @@ glGrib::FontPtr glGrib::newGlgribFontPtr (const glGrib::OptionsFont & opts)
 
 void glGrib::Font::select () const
 {
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::FONT);
+  glGrib::Program * program = glGrib::Program::load ("FONT");
   program->use ();
   program->set ("xoff", xoff);
   program->set ("yoff", yoff);

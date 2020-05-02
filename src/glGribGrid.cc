@@ -95,7 +95,7 @@ glGrib::Grid::~Grid ()
 
 void glGrib::Grid::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::GRID);
+  glGrib::Program * program = glGrib::Program::load ("GRID");
   program->use ();
 
   view.setMVP (program);

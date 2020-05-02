@@ -505,7 +505,7 @@ void glGrib::FieldIsoFill::render (const glGrib::View & view, const glGrib::Opti
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
   
 
-  glGrib::Program * program1 = glGrib::Program::load (glGrib::Program::ISOFILL1);
+  glGrib::Program * program1 = glGrib::Program::load ("ISOFILL1");
   program1->use ();
 
   view.setMVP (program1);
@@ -518,7 +518,7 @@ void glGrib::FieldIsoFill::render (const glGrib::View & view, const glGrib::Opti
   glBindVertexArray (0);
   view.delMVP (program1);
 
-  glGrib::Program * program2 = glGrib::Program::load (glGrib::Program::ISOFILL2);
+  glGrib::Program * program2 = glGrib::Program::load ("ISOFILL2");
   program2->use ();
 
   view.setMVP (program2);

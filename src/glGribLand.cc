@@ -26,7 +26,7 @@ glGrib::Land & glGrib::Land::operator=(const glGrib::Land & other)
 
 void glGrib::Land::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::LAND);
+  glGrib::Program * program = glGrib::Program::load ("LAND");
   program->use (); 
 
   view.setMVP (program);

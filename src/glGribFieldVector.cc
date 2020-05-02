@@ -165,7 +165,7 @@ const
   std::vector<float> valmax = getMaxValue ();
   std::vector<float> valmin = getMinValue ();
 
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::SCALAR);
+  glGrib::Program * program = glGrib::Program::load ("SCALAR");
   program->use ();
 
   geometry->setProgramParameters (program);
@@ -235,7 +235,7 @@ const
 
 // Display vectors
 
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::VECTOR);
+  glGrib::Program * program = glGrib::Program::load ("VECTOR");
   program->use ();
 
   geometry->setProgramParameters (program);

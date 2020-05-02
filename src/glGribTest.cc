@@ -10,7 +10,7 @@
 void glGrib::Test::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
   return;
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::TEST);
+  glGrib::Program * program = glGrib::Program::load ("TEST");
   program->use (); 
 
   view.setMVP (program);

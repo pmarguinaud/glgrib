@@ -260,9 +260,7 @@ void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::Optio
   if (opts.mpiview.on)
     scale0 = scale0 / (1.0f + opts.mpiview.scale);
 
-  glGrib::Program * program = glGrib::Program::load (opts.scalar.points.on 
-                                                 ? glGrib::Program::SCALAR_POINTS 
-                                                 : glGrib::Program::SCALAR);
+  glGrib::Program * program = glGrib::Program::load (opts.scalar.points.on ? "SCALAR_POINTS" : "SCALAR");
 
   program->use ();
 

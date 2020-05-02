@@ -444,7 +444,7 @@ void glGrib::FieldContour::processTriangle (int it0, float * r, float r0, float 
 
 void glGrib::FieldContour::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::CONTOUR);
+  glGrib::Program * program = glGrib::Program::load ("CONTOUR");
   program->use ();
 
   view.setMVP (program);

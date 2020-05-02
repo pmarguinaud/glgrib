@@ -48,7 +48,7 @@ void glGrib::Lines::setup (const glGrib::OptionsLines & o,
 
 void glGrib::Lines::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::MONO);
+  glGrib::Program * program = glGrib::Program::load ("MONO");
   program->use ();
   view.setMVP (program);
   program->set (light);

@@ -20,36 +20,6 @@ namespace
 typedef std::map<std::string,glGrib::Program> name2prog_t;
 name2prog_t name2prog;
 
-
-
-std::string kind2name (glGrib::Program::kind_t kind)
-{
-#define KIND(k) do { if (kind == glGrib::Program::k) return #k; } while (0)
-  KIND (MONO);
-  KIND (SCALAR);
-  KIND (LANDSCAPE);
-  KIND (VECTOR);
-  KIND (CONTOUR);
-  KIND (FONT);
-  KIND (IMAGE);
-  KIND (POINTS);
-  KIND (GRID);
-  KIND (STREAM);
-  KIND (SCALAR_POINTS);
-  KIND (FRAME);
-  KIND (LAND);
-  KIND (ISOFILL1);
-  KIND (ISOFILL2);
-  KIND (TICKS);
-  KIND (FTICKS);
-  KIND (COLORBAR);
-  KIND (MAPSCALE);
-  KIND (TEST);
-#undef KIND
-  throw std::runtime_error (std::string ("Unknown program kind"));
-}
-
-
 std::string slurp (const std::string & file, bool fatal = true)
 {
   struct stat st;
@@ -88,9 +58,8 @@ void glGrib::Program::compile ()
   loaded = true;
 }
 
-glGrib::Program * glGrib::Program::load (glGrib::Program::kind_t kind)
+glGrib::Program * glGrib::Program::load (const std::string & name)
 {
-  std::string name = kind2name (kind);
   if (name2prog.find (name) == name2prog.end ())
     {
       glGrib::Program prog;
@@ -98,7 +67,7 @@ glGrib::Program * glGrib::Program::load (glGrib::Program::kind_t kind)
       name2prog[name].read (name);
       name2prog[name].compile ();
     }
-  return &name2prog[kind2name (kind)];
+  return &name2prog[name];
 }
 
 glGrib::Program::~Program ()

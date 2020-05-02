@@ -50,7 +50,7 @@ void glGrib::Ticks::render (const glm::mat4 & MVP) const
 
   if (opts.lines.on)
     {
-      glGrib::Program * program = glGrib::Program::load (glGrib::Program::TICKS);
+      glGrib::Program * program = glGrib::Program::load ("TICKS");
       program->use ();
 
       int kind = std::min (1, std::max (0, opts.lines.kind));
@@ -91,7 +91,7 @@ void glGrib::Ticks::render (const glm::mat4 & MVP) const
 
   if (opts.frame.on)
     {
-      glGrib::Program * program = glGrib::Program::load (glGrib::Program::FTICKS);
+      glGrib::Program * program = glGrib::Program::load ("FTICKS");
       program->use ();
 
 

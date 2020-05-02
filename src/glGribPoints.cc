@@ -90,7 +90,7 @@ void glGrib::Points::render (const glGrib::View & view, const glGrib::OptionsLig
 
   float length = view.pixelToDistAtNadir (10);
 
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::POINTS);
+  glGrib::Program * program = glGrib::Program::load ("POINTS");
   program->use ();
 
   program->set ("scale0", d.opts.scale);

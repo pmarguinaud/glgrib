@@ -167,7 +167,7 @@ void glGrib::Colorbar::render (const glm::mat4 & MVP, const glGrib::Palette & p)
 
   label.render (MVP);
 
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::COLORBAR);
+  glGrib::Program * program = glGrib::Program::load ("COLORBAR");
 
   program->use ();
 

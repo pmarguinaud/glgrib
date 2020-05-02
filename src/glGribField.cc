@@ -409,7 +409,7 @@ void glGrib::Field::setupVertexAttributesFrame ()
 
 void glGrib::Field::renderFrame (const glGrib::View & view) const
 {
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::FRAME); 
+  glGrib::Program * program = glGrib::Program::load ("FRAME"); 
 
   program->use ();
   view.setMVP (program);

@@ -441,7 +441,7 @@ void glGrib::FieldStream::computeStreamLine (int it0, const float * ru, const fl
 
 void glGrib::FieldStream::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::STREAM);
+  glGrib::Program * program = glGrib::Program::load ("STREAM");
   program->use ();
 
   view.setMVP (program);

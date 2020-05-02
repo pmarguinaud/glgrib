@@ -65,7 +65,7 @@ void glGrib::Image::render (const glm::mat4 & MVP) const
   if (! ready)
     return;
 
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::IMAGE);
+  glGrib::Program * program = glGrib::Program::load ("IMAGE");
   program->use ();
 
   program->set ("MVP", MVP);

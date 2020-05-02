@@ -104,7 +104,7 @@ void glGrib::Mapscale::render (const glm::mat4 & MVP, const glGrib::View & view)
 
   label.render (MVP);
 
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::MAPSCALE);
+  glGrib::Program * program = glGrib::Program::load ("MAPSCALE");
 
   program->use ();
 

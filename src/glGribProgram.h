@@ -12,31 +12,7 @@ class Program
 {
 public:
 
-  typedef enum 
-  {
-    MONO,
-    SCALAR,
-    LANDSCAPE,
-    VECTOR,
-    CONTOUR,
-    FONT,
-    IMAGE,
-    POINTS,
-    GRID,
-    STREAM,
-    SCALAR_POINTS,
-    FRAME,
-    LAND,
-    ISOFILL1,
-    ISOFILL2,
-    TICKS,
-    FTICKS,
-    COLORBAR,
-    MAPSCALE,
-    TEST,
-  } kind_t;
-
-  static Program * load (Program::kind_t);
+  static Program * load (const std::string &);
 
   void set (const std::string & key, bool b)
   {

@@ -126,7 +126,7 @@ void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandsca
 
 void glGrib::Landscape::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  glGrib::Program * program = glGrib::Program::load (glGrib::Program::LANDSCAPE);
+  glGrib::Program * program = glGrib::Program::load ("LANDSCAPE");
   program->use ();
 
   view.setMVP (program);

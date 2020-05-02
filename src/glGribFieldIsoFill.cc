@@ -380,6 +380,11 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
         v = (levels[i-1] + levels[i+0]) / 2.0f;
 
       d.isoband[i].color = palette.getColor      (v);
+
+if(0){
+printf (" %8ld > %12.2e\n", i, v);
+std::cout << d.isoband[i].color << std::endl;
+}
       colorIndex[i]      = palette.getColorIndex (v);
     }
 

@@ -182,8 +182,9 @@ void glGrib::Palette::createDiscrete ()
   size_t j = 0;
   for (int i = 1; i < opts.ncolors; i++)
     {
-      float val = (i-1) * (opts.max - opts.min) / static_cast<float> (opts.ncolors-2) 
-               + opts.min;
+      float val = (i-1) * (opts.max - opts.min) 
+                / static_cast<float> (opts.ncolors-2) 
+                + opts.min;
       while (j < opts.values.size ())
         {
           if (val < opts.values[j])

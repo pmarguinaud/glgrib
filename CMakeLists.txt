@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.16.5 FATAL_ERROR)
+cmake_minimum_required (VERSION 3.16.3 FATAL_ERROR)
 
 project (glGrib VERSION 0.5 LANGUAGES C CXX)
 

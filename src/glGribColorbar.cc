@@ -37,8 +37,6 @@ void glGrib::Colorbar::setup (const glGrib::OptionsColorbar & o)
   
   delete [] ind;
 
-  program.compile ();
-
   ready = true;
 }
 
@@ -169,76 +167,22 @@ void glGrib::Colorbar::render (const glm::mat4 & MVP, const glGrib::Palette & p)
 
   label.render (MVP);
 
-  program.use ();
+  glGrib::Program * program = glGrib::Program::load (glGrib::Program::COLORBAR);
 
-  pref.set (&program);
+  program->use ();
 
-  program.set ("MVP", MVP);
-  program.set ("rank2rgba", rank2rgba);
+  pref.set (program);
 
-  program.set ("xmin", opts.position.xmin);
-  program.set ("xmax", opts.position.xmax);
-  program.set ("ymin", opts.position.ymin);
-  program.set ("ymax", opts.position.ymax);
+  program->set ("MVP", MVP);
+  program->set ("rank2rgba", rank2rgba);
+  program->set ("xmin", opts.position.xmin);
+  program->set ("xmax", opts.position.xmax);
+  program->set ("ymin", opts.position.ymin);
+  program->set ("ymax", opts.position.ymax);
 
   glBindVertexArray (VertexArrayID);
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, nullptr);
 
 
 }
-
-glGrib::Program glGrib::Colorbar::program = glGrib::Program
-(
-R"CODE(
-#version 330 core
-
-flat in int rank;
-
-out vec4 color;
-
-uniform vec4 RGBA0[256];
-uniform int rank2rgba[256];
-
-void main ()
-{
-  if(false){
-  color.r = float (rank) / 255.;
-  color.g = float (rank) / 255.;
-  color.b = float (rank) / 255.;
-  color.a = float (rank) / 255.;
-  }else{
-  color = RGBA0[rank2rgba[rank]];
-  }
-  if(false)
-  if(rank2rgba[rank] == 255)
-    color = vec4 (1., 1., 1., 1.);
-}
-)CODE",
-R"CODE(
-
-#version 330 core
-
-uniform mat4 MVP;
-uniform float xmin = 0.08;
-uniform float xmax = 0.10; 
-uniform float ymin = 0.05; 
-uniform float ymax = 0.95;
-
-flat out int rank;
-
-void main()
-{
-  rank = gl_VertexID / 4;
-  int corn = int (mod (gl_VertexID, 4));
-  int ix = int (mod (corn, 2));
-  int iy = corn / 2;
-  float x = xmin + (xmax - xmin) * ix;
-  float y = ymin + (rank + iy) * (ymax - ymin) / 255.0;
-  vec2 vertexPos = vec2 (x, y);
-  gl_Position =  MVP * vec4 (0., vertexPos.x, vertexPos.y, 1.);
-}
-
-
-)CODE");
-
 

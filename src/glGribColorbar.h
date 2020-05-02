@@ -29,7 +29,6 @@ private:
   void muteNonLinear (const float, const float, std::vector<float> &, 
                       std::vector <float> &, std::vector<std::string> &) const;
   OptionsColorbar opts;
-  static Program program;
   GLuint VertexArrayID;
   GLuint elementbuffer;
   bool ready = false;

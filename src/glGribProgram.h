@@ -31,6 +31,7 @@ public:
     ISOFILL2,
     TICKS,
     FTICKS,
+    COLORBAR,
     TEST,
   } kind_t;
 

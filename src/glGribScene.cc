@@ -35,7 +35,7 @@ glGrib::Scene::~Scene ()
       delete f;
 }
 
-void glGrib::Scene::displayObj (const glGrib::Object * obj) const
+void glGrib::Scene::renderObject (const glGrib::Object * obj) const
 {
   if (obj == nullptr)
     return;
@@ -46,7 +46,7 @@ void glGrib::Scene::displayObj (const glGrib::Object * obj) const
   obj->render (d.view, d.opts.scene.light);
 }
 
-void glGrib::Scene::display () const
+void glGrib::Scene::render () const
 {
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -76,15 +76,12 @@ void glGrib::Scene::display () const
 
 
   for (auto obj : obj_list)
-    displayObj (obj);
+    renderObject (obj);
 
-  const glGrib::Field * fld = d.currentFieldRank < static_cast<int> (fieldlist.size ())
-                           ? fieldlist[d.currentFieldRank] : nullptr;
   d.image.render (d.MVP_L);
 
-  if ((fld != nullptr) && (! d.colorbar.getHidden ()))
-    if (fld->useColorBar ())
-      d.colorbar.render (d.MVP_L, fld->getPalette ());
+  if (getFieldColorbar ())
+    d.colorbar.render (d.MVP_L);
 
   d.mapscale.render (d.MVP_L, d.view);
 
@@ -292,9 +289,16 @@ void glGrib::Scene::updateTitle ()
     }
 }
 
+void glGrib::Scene::updateColorbar ()
+{
+  const glGrib::Field * fld = getFieldColorbar ();
+  if (fld)
+    d.colorbar.update (fld->getPalette ());
+}
+
 void glGrib::Scene::update ()
 {
-
+  updateColorbar ();
   updateView ();
   updateLight ();
   updateInterpolation ();

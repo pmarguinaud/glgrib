@@ -57,9 +57,9 @@ glGrib::Colorbar::~Colorbar ()
   clear ();
 }
 
-void glGrib::Colorbar::muteNonLinear (const float min, const float max, 
-                                      std::vector<float> & x, std::vector <float> & y,
-                                      std::vector<std::string> & str) const
+void glGrib::Colorbar::updateNonLinear (const float min, const float max, 
+                                        std::vector<float> & x, std::vector <float> & y,
+                                        std::vector<std::string> & str) 
 {
   std::vector<float> values;
   const std::vector<float> & values_pal = pref.getValues ();
@@ -101,9 +101,9 @@ void glGrib::Colorbar::muteNonLinear (const float min, const float max,
     rank2rgba[i] = i;
 }
 
-void glGrib::Colorbar::muteLinear (const float min, const float max, 
-                                   std::vector<float> & x, std::vector <float> & y,
-                                   std::vector<std::string> & str) const
+void glGrib::Colorbar::updateLinear (const float min, const float max, 
+                                     std::vector<float> & x, std::vector <float> & y,
+                                     std::vector<std::string> & str) 
 {
   const std::vector<float> & values_pal = pref.getValues ();
 
@@ -132,8 +132,17 @@ void glGrib::Colorbar::muteLinear (const float min, const float max,
     }
 }
 
-void glGrib::Colorbar::mute () const
+void glGrib::Colorbar::update (const glGrib::Palette & p) 
 {
+
+  if (! ready)
+    return;
+
+  if (p == pref)
+    return;
+
+  pref = p;
+
   rank2rgba.resize (256);
 
   label.clear ();
@@ -146,9 +155,9 @@ void glGrib::Colorbar::mute () const
   std::vector<float> x, y;
   
   if (! pref.isLinear ())
-    muteNonLinear (min, max, x, y, str);
+    updateNonLinear (min, max, x, y, str);
   else
-    muteLinear (min, max, x, y, str);
+    updateLinear (min, max, x, y, str);
   
   label.setup2D (font, str, x, y, opts.font.scale, glGrib::String::SE);
   label.setForegroundColor (opts.font.color.foreground);
@@ -158,17 +167,10 @@ void glGrib::Colorbar::mute () const
 
 }
 
-void glGrib::Colorbar::render (const glm::mat4 & MVP, const glGrib::Palette & p) const
+void glGrib::Colorbar::render (const glm::mat4 & MVP) const
 {
   if (! ready)
     return;
-
-
-  if (p != pref)
-    {
-      pref = p;
-      mute ();
-    }
 
   label.render (MVP);
 

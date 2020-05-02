@@ -19,25 +19,25 @@ public:
   void clear ();
   ~Colorbar ();
   Colorbar & operator= (const Colorbar &);
-  void render (const glm::mat4 &, const Palette &) const;
+  void render (const glm::mat4 &) const;
   void toggleHidden () { hidden = ! hidden; }
   bool getHidden () const { return hidden; }
   const OptionsColorbar & getOptions () const { return opts; }
+  void update (const Palette &);
 private:
-  void mute () const;
-  void muteLinear (const float, const float, std::vector<float> &, 
-                   std::vector <float> &, std::vector<std::string> &) const;
-  void muteNonLinear (const float, const float, std::vector<float> &, 
-                      std::vector <float> &, std::vector<std::string> &) const;
+  void updateLinear (const float, const float, std::vector<float> &, 
+                     std::vector <float> &, std::vector<std::string> &);
+  void updateNonLinear (const float, const float, std::vector<float> &, 
+                        std::vector <float> &, std::vector<std::string> &);
   OptionsColorbar opts;
   GLuint VertexArrayID;
   GLuint elementbuffer;
   bool ready = false;
   bool hidden = false;
   int nt;
-  mutable std::vector<int> rank2rgba;
-  mutable String label;
-  mutable Palette pref;
+  std::vector<int> rank2rgba;
+  String label;
+  Palette pref;
 };
 
 

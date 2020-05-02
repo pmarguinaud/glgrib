@@ -639,7 +639,7 @@ void glGrib::Window::framebuffer (const std::string & format)
 
       glBindFramebuffer (GL_FRAMEBUFFER, framebufferMMSA);
    
-      scene.display ();
+      scene.render ();
 
       glBindFramebuffer (GL_READ_FRAMEBUFFER, framebufferMMSA);
       glBindFramebuffer (GL_DRAW_FRAMEBUFFER, framebufferPOST);
@@ -688,7 +688,7 @@ void glGrib::Window::framebuffer (const std::string & format)
       if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         throw std::runtime_error (std::string ("Framebuffer is not complete"));
    
-      scene.display ();
+      scene.render ();
    
       snapshot (format);
    
@@ -907,7 +907,7 @@ void glGrib::Window::renderFrame (glGrib::Shell * shell)
   if (shell && shell->started ())
     shell->lock ();
 
-  scene.display (); 
+  scene.render (); 
 
   glfwSwapBuffers (window);
 

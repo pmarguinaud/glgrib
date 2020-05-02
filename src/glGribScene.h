@@ -38,15 +38,15 @@ public:
   Scene & operator= (const Scene & other);
   virtual ~Scene ();
   void setup (const Options &);
-  void display () const;
-  void displayObj (const Object *) const;
+  void render () const;
+  void renderObject (const Object *) const;
 
   int getCurrentFieldRank () const
   {
     return d.currentFieldRank;
   }
 
-  Field * getCurrentField () 
+  Field * getCurrentField () const
   { 
     return static_cast<size_t> (d.currentFieldRank) < fieldlist.size () ? fieldlist[d.currentFieldRank] : nullptr; 
   }
@@ -71,6 +71,7 @@ public:
   void unsetLight () { d.opts.scene.light.on = false; }
   bool hasLight () const { return d.opts.scene.light.on; }
   void update ();
+  void updateColorbar ();
   void updateLight ();
   void updateInterpolation ();
   void updateView ();
@@ -78,6 +79,15 @@ public:
   void updateTitle ();
 
   void setCurrentFieldRank (int r) { d.currentFieldRank = r; }
+
+  const glGrib::Field * getFieldColorbar () const
+  {
+    const glGrib::Field * fld = getCurrentField ();
+    if ((fld != nullptr) && (! d.colorbar.getHidden ()))
+      if (fld->useColorBar ())
+        return fld;
+    return nullptr;
+  }
 
   void setViewport (int, int);
 

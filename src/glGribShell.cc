@@ -57,8 +57,6 @@ void glGrib::Shell::do_set (const std::vector<std::string> & args, glGrib::Windo
   
   if (p.parse (argc, argv))
     {
-  
-  
       typedef std::function<void ()> sof_t;
   
       class hof_t : public std::map<std::string,sof_t>

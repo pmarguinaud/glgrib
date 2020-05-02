@@ -80,7 +80,7 @@ template <> std::string optionTmpl<bool>::asString () const
 
 template <> std::string optionTmpl<bool>::asJSON () const
 {
-  return "";
+  return *value ? std::string ("true") : std::string ("false");
 }
 
 template <> std::string optionTmpl<bool>::asOption () const
@@ -614,9 +614,16 @@ void glGrib::OptionsParser::getValue (std::vector<std::string> * list, const std
 	glGrib::OptionsParserDetail::optionBase * opt = it->second;
         if ((! show_hidden) && (opt->hidden))
           continue;
-	list->push_back (it->first);
-	if (opt->hasArg ())
-	  list->push_back (opt->asString ());
+
+        if (opt->hasArg ())
+          {
+            list->push_back (it->first);
+            list->push_back (opt->asString ());
+          }
+        else
+          {
+            list->push_back (opt->asOption ());
+          }
       }   
  
 }

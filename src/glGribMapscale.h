@@ -25,7 +25,6 @@ public:
   const OptionsMapscale & getOptions () const { return opts; }
 private:
   OptionsMapscale opts;
-  static Program program;
   GLuint VertexArrayID;
   GLuint elementbuffer;
   bool ready = false;

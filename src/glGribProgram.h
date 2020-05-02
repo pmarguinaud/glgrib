@@ -32,6 +32,7 @@ public:
     TICKS,
     FTICKS,
     COLORBAR,
+    MAPSCALE,
     TEST,
   } kind_t;
 

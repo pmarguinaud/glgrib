@@ -43,6 +43,7 @@ std::string kind2name (glGrib::Program::kind_t kind)
   KIND (TICKS);
   KIND (FTICKS);
   KIND (COLORBAR);
+  KIND (MAPSCALE);
   KIND (TEST);
 #undef KIND
   throw std::runtime_error (std::string ("Unknown program kind"));

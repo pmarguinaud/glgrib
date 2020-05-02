@@ -227,13 +227,6 @@ for my $name (@name)
     (my $test = $test{$name}) or die ("Unknown test `$name'\n");
     
     my $exec = "$Bin/../bin/glgrib";
-
-    
-    chdir ('src');
-    system ('make')
-      && die;
-    chdir ('..');
-    
     
     my @args = @{ $test->[1] };
     

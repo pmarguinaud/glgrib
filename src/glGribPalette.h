@@ -32,6 +32,8 @@ public:
   float getMax () const { return opts.max; }
   bool hasMin () const { return opts.min != defaultMin (); }
   bool hasMax () const { return opts.max != defaultMax (); }
+  bool fixed () const { return opts.fixed.on; }
+
   Palette () {}
   void set (glGrib::Program *) const;
 

@@ -81,7 +81,9 @@ void glGrib::FieldScalar::setupVertexAttributes ()
   colorbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
 
-  glVertexAttribPointer (1, 1, getOpenGLType<T> (), GL_TRUE, 0,  nullptr); 
+  bool fixed = palette.fixed ();
+
+  glVertexAttribPointer (1, 1, getOpenGLType<T> (), fixed ? GL_FALSE : GL_TRUE, 0,  nullptr); 
 
   geometry->bindTriangles ();
 
@@ -176,8 +178,24 @@ void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   colorbuffer = newGlgribOpenGLBufferPtr (geometry->getNumberOfPoints () * sizeof (T));
   T * col = static_cast<T *> (colorbuffer->map ());
-  pack<T>  (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
-            meta1.valmax, meta1.valmis, col);
+
+  if (palette.fixed ())
+    {
+      const float * v = data->data ();
+      const int n = geometry->getNumberOfPoints ();
+      for (int i = 0; i < n; i++)
+        {
+          if (v[i] == meta1.valmis)
+            col[i] = 0.0;
+          else
+            col[i] = static_cast<float> (palette.getColorIndex (v[i]));
+        }
+    }
+  else
+    {
+      pack<T>  (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
+                meta1.valmax, meta1.valmis, col);
+    }
   col = nullptr;
   colorbuffer->unmap ();
 

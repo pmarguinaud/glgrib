@@ -205,6 +205,8 @@ void glGrib::Palette::createByOpts (const glGrib::OptionsPalette & o,
     {
       opts = o;
 
+      rgba_mis = glGrib::OptionColor (0, 0, 0, 0);
+
       if (opts.fixed.on)
         {
           opts.ncolors = 1 + opts.colors.size ();
@@ -222,8 +224,6 @@ void glGrib::Palette::createByOpts (const glGrib::OptionsPalette & o,
             {
               setMinMax (opts.values.front (), opts.values.back ());
             }
-
-          rgba_mis = glGrib::OptionColor (0, 0, 0, 0);
 
           // Generate values
           if (opts.generate.on)
@@ -319,23 +319,37 @@ void glGrib::Palette::computergba_255 ()
   rgba_[0][0] = rgba_mis.r / 255.0; rgba_[0][1] = rgba_mis.b / 255.0;
   rgba_[0][2] = rgba_mis.g / 255.0; rgba_[0][3] = rgba_mis.a / 255.0;
 
-#pragma omp parallel for
-  for (int j = 0; j < n-1; j++)
+
+
+  if (opts.fixed.on)
     {
-      int j0 = j + 0;
-      int j1 = j + 1;
-      int i0 = 1 + ((opts.ncolors-1) * j0) / (n - 1);
-      int i1 = 1 + ((opts.ncolors-1) * j1) / (n - 1);
-      for (int i = i0; i < i1; i++)
+      for (int i = 0; i < n; i++)
+        rgba_[1+i] = glm::vec4 (rgba[i].r / 255.0f, rgba[i].g / 255.0f,
+                                rgba[i].b / 255.0f, rgba[i].a / 255.0f);
+    }
+  else
+    {
+#pragma omp parallel for
+      for (int j = 0; j < n-1; j++)
         {
-          float w0 = static_cast<float> (i1-i) / static_cast<float> (i1-i0);
-          float w1 = static_cast<float> (i-i0) / static_cast<float> (i1-i0);
-          rgba_[i][0] = (rgba[j0].r * w0 + rgba[j1].r * w1) / 255.0f;
-          rgba_[i][1] = (rgba[j0].g * w0 + rgba[j1].g * w1) / 255.0f;
-          rgba_[i][2] = (rgba[j0].b * w0 + rgba[j1].b * w1) / 255.0f;
-          rgba_[i][3] = (rgba[j0].a * w0 + rgba[j1].a * w1) / 255.0f;
+          int j0 = j + 0;
+          int j1 = j + 1;
+          int i0 = 1 + ((opts.ncolors-1) * j0) / (n-1);
+          int i1 = 1 + ((opts.ncolors-1) * j1) / (n-1);
+
+          for (int i = i0; i < i1; i++)
+            {
+              float w0 = static_cast<float> (i1-i) / static_cast<float> (i1-i0);
+              float w1 = static_cast<float> (i-i0) / static_cast<float> (i1-i0);
+              rgba_[i][0] = (rgba[j0].r * w0 + rgba[j1].r * w1) / 255.0f;
+              rgba_[i][1] = (rgba[j0].g * w0 + rgba[j1].g * w1) / 255.0f;
+              rgba_[i][2] = (rgba[j0].b * w0 + rgba[j1].b * w1) / 255.0f;
+              rgba_[i][3] = (rgba[j0].a * w0 + rgba[j1].a * w1) / 255.0f;
+            }
         }
     }
+  
+
 
   rgba_buffer = newGlgribOpenGLBufferPtr (rgba_.size () * sizeof (rgba_[0]),
                                           rgba_.data ()); 
@@ -345,6 +359,7 @@ void glGrib::Palette::computergba_255 ()
 
 void glGrib::Palette::set (glGrib::Program * program) const
 {
+  program->set ("rgba_fixed", opts.fixed.on);
   program->set ("rgba_size", opts.ncolors);
   rgba_buffer->bind (GL_SHADER_STORAGE_BUFFER, 33);
 }
@@ -406,7 +421,7 @@ int glGrib::Palette::getColorIndex (const float val) const
       if (val >= opts.values.back ())
         return opts.colors.size ();
       for (size_t i = 0; i < opts.values.size ()-1; i++)
-        if (val < opts.values[i+1])
+        if (val <= opts.values[i+1])
           return 1 + i;
     }
   else

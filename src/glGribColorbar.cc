@@ -119,7 +119,7 @@ void glGrib::Colorbar::updateNonLinear (const float min, const float max,
 
   size_t ncolors = palette.size ();
   for (int i = 0; i < 256; i++)
-    rank2rgba[i] = (i * ncolors) / 256;
+    rank2rgba[i] = 1 + (i * (ncolors-1)) / 256;
 }
 
 void glGrib::Colorbar::updateLinear (const float min, const float max, 

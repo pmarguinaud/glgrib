@@ -37,25 +37,32 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal,
       total = frac + (1.0 - frac) * max (dot (fragmentPos, lightDir), 0.0);
     }
 
-  float val = unpack (fragmentVal, valmin, valmax);
-
-  float rgba_size1 = float (rgba_size - 1);
-  float rgba_size2 = float (rgba_size - 2);
-  float pal = max (1.0f, 
-              min (1.0f + rgba_size2 * (val - palmin) / (palmax - palmin), 
-                   rgba_size1));
-
-  if (smoothed)
+  if (rgba_fixed)
     {
-      int pal0 = int (floor (pal)), pal1 = int (ceil (pal));
-      bool same = pal0 == pal1;
-      float a1 = same ? 1. : pal - pal0;
-      float a0 = same ? 0. : pal1 - pal;
-      color = rgba_[pal0] * a0 + rgba_[pal1] * a1;
+      color = rgba_[int (fragmentValFlat)];
     }
   else
     {
-      color = rgba_[int (round (pal))];
+      float val = unpack (fragmentVal, valmin, valmax);
+     
+      float rgba_size1 = float (rgba_size - 1);
+      float rgba_size2 = float (rgba_size - 2);
+      float pal = max (1.0f, 
+                  min (1.0f + rgba_size2 * (val - palmin) / (palmax - palmin), 
+                       rgba_size1));
+     
+      if (smoothed)
+        {
+          int pal0 = int (floor (pal)), pal1 = int (ceil (pal));
+          bool same = pal0 == pal1;
+          float a1 = same ? 1. : pal - pal0;
+          float a0 = same ? 0. : pal1 - pal;
+          color = rgba_[pal0] * a0 + rgba_[pal1] * a1;
+        }
+      else
+        {
+          color = rgba_[int (round (pal))];
+        }
     }
 
   color.rgb = total * color.rgb;

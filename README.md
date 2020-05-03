@@ -1046,6 +1046,29 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --field[0].palette.scale 1000 --colorbar.font.color.background black 
     --view.clip.xmin 0.15 
 ```
+## Precipitations Europe (precise, with fixed palette)               -- precipfixed
+![](share/test/precipfixed/TEST_0000.png)
+
+```
+    --field[0].path share/data/total_precipitation.grib 
+    --field[0].palette.colors #00000000 #bbffff #00ffff #0080ff #0000ff 
+    #da00ff #ff00ff #ff8000 #ff0000 --field[0].palette.values 0. 0.0001 
+    0.0005 0.002 0.004 0.010 0.025 0.050 0.100 0.250 
+    --field[0].palette.linear.on --field[0].type ISOFILL 
+    --field[0].palette.fixed.on --field[0].isofill.levels 0. 0.0001 0.0005 
+    0.002 0.004 0.010 0.025 0.050 0.100 0.250 --coast.on 
+    --coast.lines.color black --landscape.color white --landscape.scale 
+    0.999 --landscape.on --window.width 1200 --grid.labels.on 
+    --grid.labels.font.color.foreground black --grid.labels.font.scale 
+    0.03 --grid.resolution 18 --field[0].palette.scale 1000 --view.lon 2 
+    --view.lat 46.2 --view.fov 5 --view.projection POLAR_NORTH --grid.on 
+    --grid.color black --colorbar.on --colorbar.font.color.background 
+    black --view.clip.xmin 0.15 --colorbar.font.color.foreground white 
+    --field[1].type CONTOUR --field[1].path 
+    share/data/total_precipitation.grib --field[1].scale 1.001 
+    --field[1].contour.levels 0. 0.0001 0.0005 0.002 0.004 0.010 0.025 
+    0.050 0.100 0.250 --field[1].palette.colors black 
+```
 ## Z500                                                              -- z500europe
 ![](share/test/z500europe/TEST_0000.png)
 

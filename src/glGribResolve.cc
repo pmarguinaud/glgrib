@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <sys/stat.h>
+#include <cstdlib>
 
 #include <iostream>
 
@@ -11,20 +12,35 @@ std::string glGrib::glGribPrefix;
 
 std::string glGrib::Resolve (const std::string & file)
 {
+  struct stat st;
+
+  // Try current directory
+ 
+  if (stat (file.c_str (), &st) == 0)
+    return file;
+
   // Try user directory
 
   struct passwd *pw = getpwuid (getuid ());
   const char * home = pw->pw_dir;
   std::string HOME = std::string (home);
   std::string path = HOME + "/.glgribrc/" + file;
-  struct stat st;
 
   if (stat (path.c_str (), &st) == 0)
     return path;
 
+  const char * GLGRIB_PREFIX = std::getenv ("GLGRIB_PREFIX");
+  if (GLGRIB_PREFIX != nullptr)
+    {
+      const std::string prefix (GLGRIB_PREFIX);
+      path = prefix + "/share/" + file;
+      if (stat (path.c_str (), &st) == 0)
+        return path;
+    }
+
   if (glGribPrefix != "")
     {
-      path = glGribPrefix + "/" + file;
+      path = glGribPrefix + "/share/" + file;
       if (stat (path.c_str (), &st) == 0)
         return path;
     }

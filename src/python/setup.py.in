@@ -21,8 +21,8 @@ setup (
     libraries=['glGrib', 'LFI', 'GLEW', 'GL', 'glfw', 'png', 'readline', 'ncurses',
                'tinfo', 'ssl', 'crypto', 'pthread', 'sqlite3', 'curl',
                'shp', 'eccodes'],
-    runtime_library_dirs=[prefix + "/lib"],
-    library_dirs=[prefix + "/lib"])],
+    runtime_library_dirs=[prefix + "/lib", "../lib"],
+    library_dirs=[prefix + "/lib", "../lib"])],
 
   );
 

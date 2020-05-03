@@ -4,6 +4,8 @@ use warnings;
 use Tk;
 use Data::Dumper;
 use JSON;
+use FindBin qw ($Bin);
+$ENV{GLGRIB_PREFIX} = "$Bin/../..";
 
 use Test::More tests => 1;
 BEGIN { use_ok('glGrib') };
@@ -22,7 +24,7 @@ sub move
 
 sub debug
 {
-  my $json = 'glGrib'->json ();
+  my $json = 'glGrib'->json ('--');
   my $h = &decode_json ($json);
   print &Dumper ($h);
   print &Dumper (['glGrib'->window ()]);

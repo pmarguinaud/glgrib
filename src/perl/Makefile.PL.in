@@ -3,7 +3,7 @@ use ExtUtils::MakeMaker;
 
 my $prefix = "@CMAKE_INSTALL_PREFIX@";
 
-my @lib = ("$prefix/lib");
+my @lib = ("$prefix/lib", "../lib");
 
 &WriteMakefile
 (

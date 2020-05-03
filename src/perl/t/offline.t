@@ -1,5 +1,7 @@
 use strict;
 use warnings;
+use FindBin qw ($Bin);
+$ENV{GLGRIB_PREFIX} = "$Bin/../..";
 
 use Test::More tests => 1;
 BEGIN { use_ok('glGrib') };

@@ -80,6 +80,13 @@ void glGrib::ShellRegular::process_get (const std::vector<std::string> & args, g
   std::cout << std::endl;
 }
 
+void glGrib::ShellRegular::process_json (const std::vector<std::string> & args, glGrib::Window * gwindow)
+{
+  for (const auto & o : listStr)
+     std::cout << o << " ";
+  std::cout << std::endl;
+}
+
 void glGrib::ShellRegular::process_window (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
   if (listStr.size () > 0)

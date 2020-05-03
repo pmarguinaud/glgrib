@@ -38,6 +38,8 @@ public:
   friend bool operator== (const Palette &, const Palette &);
   friend bool operator!= (const Palette &, const Palette &);
 
+  bool isEqual (const Palette & p) const;
+
   const OptionsPalette & getOptions () const
   {
     return opts;

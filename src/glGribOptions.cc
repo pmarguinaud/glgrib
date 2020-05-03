@@ -738,4 +738,22 @@ bool glGrib::OptionsField::parseUnseen (const char * args)
   return true;
 }
 
+namespace glGrib
+{
 
+bool operator== (const glGrib::OptionsBase & o1, const glGrib::OptionsBase & o2)
+{
+  glGrib::OptionsBase * _o1 = (glGrib::OptionsBase*) (&o1);
+  glGrib::OptionsBase * _o2 = (glGrib::OptionsBase*) (&o2);
+  glGrib::OptionsParser p1, p2;
+  _o1->traverse ("", &p1);
+  _o2->traverse ("", &p2);
+  std::vector<std::string> str1, str2;
+
+  p1.getValue (&str1, "--", true);
+  p2.getValue (&str2, "--", true);
+
+  return str1 == str2;
+}
+
+}

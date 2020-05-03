@@ -205,34 +205,43 @@ void glGrib::Palette::createByOpts (const glGrib::OptionsPalette & o,
     {
       opts = o;
 
-      if (opts.values.size () == 0)
+      if (opts.fixed.on)
         {
-          setMinMax (min, max);
-          createValueLinearRange (opts.min, opts.max, opts.colors.size () + 1);
-        }
-      else
-        {
+          opts.ncolors = 1 + opts.colors.size ();
+          rgba = opts.colors;
           setMinMax (opts.values.front (), opts.values.back ());
         }
-
-      rgba_mis = glGrib::OptionColor (0, 0, 0, 0);
-
-      // Generate values
-      if (opts.generate.on)
-        createValueLinearRange (opts.values.front (), 
-                                opts.values.back (), 
-                                opts.generate.levels);
-      
-      // Generate rainbow (HSV rotation)
-      if (opts.rainbow.on)
-        createRainbow ();
-
-      // Generate gradient
-      if (opts.values.size () == opts.colors.size ())
-        createGradient ();
       else
-      // Discrete palette
-        createDiscrete ();
+        {
+          if (opts.values.size () == 0)
+            {
+              setMinMax (min, max);
+              createValueLinearRange (opts.min, opts.max, opts.colors.size () + 1);
+            }
+          else
+            {
+              setMinMax (opts.values.front (), opts.values.back ());
+            }
+
+          rgba_mis = glGrib::OptionColor (0, 0, 0, 0);
+
+          // Generate values
+          if (opts.generate.on)
+            createValueLinearRange (opts.values.front (), 
+                                    opts.values.back (), 
+                                    opts.generate.levels);
+          
+          // Generate rainbow (HSV rotation)
+          if (opts.rainbow.on)
+            createRainbow ();
+
+          // Generate gradient
+          if (opts.values.size () == opts.colors.size ())
+            createGradient ();
+          else
+          // Discrete palette
+            createDiscrete ();
+        }
     }
   else
     {
@@ -345,35 +354,68 @@ namespace glGrib
 
 bool operator== (const glGrib::Palette & p1, const glGrib::Palette & p2)
 {
-  if (p1.rgba_mis != p2.rgba_mis)
-    return false;
-  if (p1.opts.min != p2.opts.min)
-    return false;
-  if (p1.opts.max != p2.opts.max)
-    return false;
-  if (p1.rgba != p2.rgba)
-    return false;
-  return true;
+  return p1.isEqual (p2);
 }
  
 bool operator!= (const glGrib::Palette & p1, const glGrib::Palette & p2)
 {
-  return ! (p1 == p2);
+  return ! p1.isEqual (p2);
 }
 
 }
  
+bool glGrib::Palette::isEqual (const glGrib::Palette & p) const
+{
+#define TEST(x) \
+  if (x != p.x) return false;
+  TEST (opts.min);
+  TEST (opts.max);
+  TEST (rgba_mis);
+  TEST (rgba_);
+  return true;
+}
+
 glGrib::OptionColor glGrib::Palette::getColor (const float val) const
 {
-  int pal = std::max (1, std::min (static_cast<int>(1 + (opts.ncolors-2) * (val - opts.min) / (opts.max - opts.min)), (opts.ncolors-1)));
-  return glGrib::OptionColor (255 * rgba_[pal][0], 255 * rgba_[pal][1], 255 * rgba_[pal][2], 255 * rgba_[pal][3]);
+  if (opts.fixed.on)
+    {
+      if (val < opts.values.front ())
+        return opts.colors.front ();
+      if (val >= opts.values.back ())
+        return opts.colors.back ();
+      for (size_t i = 0; i < opts.values.size ()-1; i++)
+        if (val < opts.values[i+1])
+          return opts.colors[i];
+    }
+  else
+    {
+      int pal = std::max (1, 
+                std::min (static_cast<int>(1 + (opts.ncolors-2) * (val - opts.min) / (opts.max - opts.min)), 
+                          (opts.ncolors-1)));
+      return glGrib::OptionColor (255 * rgba_[pal][0], 255 * rgba_[pal][1], 255 * rgba_[pal][2], 255 * rgba_[pal][3]);
+    }
+  return rgba_mis;
 }
 
 int glGrib::Palette::getColorIndex (const float val) const
 {
-  int pal = std::max (1, 
-                      std::min (static_cast<int>(1 + (opts.ncolors - 2) * (val - opts.min) 
-                              / (opts.max - opts.min)), opts.ncolors - 1));
-  return pal;
+  if (opts.fixed.on)
+    {
+      if (val < opts.values.front ())
+        return 1;
+      if (val >= opts.values.back ())
+        return opts.colors.size ();
+      for (size_t i = 0; i < opts.values.size ()-1; i++)
+        if (val < opts.values[i+1])
+          return 1 + i;
+    }
+  else
+    {
+      int pal = std::max (1, 
+                          std::min (static_cast<int>(1 + (opts.ncolors - 2) * (val - opts.min) 
+                                  / (opts.max - opts.min)), opts.ncolors - 1));
+      return pal;
+    }
+  return 0;
 }
 

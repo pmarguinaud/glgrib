@@ -391,6 +391,7 @@ public:
   virtual bool parse (int, const char * [], const std::set<std::string> * = nullptr);
   virtual bool parse (const char *, const std::set<std::string> * = nullptr);
   virtual std::string asOption (OptionsBase &);
+  friend bool operator== (const OptionsBase &, const OptionsBase &);
 };
 
 
@@ -403,10 +404,10 @@ public:
 
 #define INCLUDE_H(name) \
   do { OptionsParser::opt o; o.hidden = true; \
-       name.traverse (p + ( p == "" ? "" : ".") + #name, cb, &o); } while (0)
+       name.traverse (p + ( p == "" ? "" : ".") + #name, cb, &o); } while (0) \
 
 #define DEFINE virtual void traverse (const std::string & p, OptionsCallback * cb, \
-                                      const OptionsCallback::opt * o = nullptr)
+                                      const OptionsCallback::opt * o = nullptr)    
 
 class OptionsGeometry : public OptionsBase
 {
@@ -651,6 +652,7 @@ public:
     DESC (rainbow.direct.on,  Direct/indirect rainbow);
     DESC (generate.on,        Generate values);
     DESC (generate.levels,    Number of values to generate);
+    DESC (fixed.on,           Fixed palette);
   }
   string name = "default";
   float min = defaultMin ();
@@ -677,6 +679,10 @@ public:
   } generate;
   float scale = 1.0f;
   float offset = 0.0f;
+  struct
+  {
+    bool on = false;
+  } fixed;
 };
 
 class OptionsScalar : public OptionsBase
@@ -1355,27 +1361,6 @@ public:
     float xmin = 0.0f, xmax = 1.0f, ymin = 0.0f, ymax = 1.0f;
     bool on = true;
   } clip;
-
-  friend bool operator== (const OptionsView & v1, const OptionsView & v2)
-  {
-#define EQ(a) if (v1.a != v2.a) return false;
-    EQ (projection);
-    EQ (transformation);
-    EQ (lon);
-    EQ (lat);
-    EQ (fov);
-    EQ (distance);
-    EQ (center.on);
-    EQ (clip.on);
-    EQ (clip.dlon);
-    EQ (clip.dlat);
-    EQ (clip.xmin);
-    EQ (clip.xmax);
-    EQ (clip.ymin);
-    EQ (clip.ymax);
-#undef EQ
-    return true;
-  }
 };
 
 

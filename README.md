@@ -1215,3 +1215,23 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --linear.on }- --field[0].type ISOFILL --colorbar.on --window.width 
     1200 --coast.on --coast.lines.color black 
 ```
+## Temperature with fixed palette (smooth)                           -- fixedpalscalsmooth
+![](share/test/fixedpalscalsmooth/TEST_0000.png)
+
+```
+    --field[0].path share/data/wind+temp/t0224/S105TEMPERATURE.grb 
+    --field[0].user_pref.off --field[0].palette-{ --colors blue pink 
+    orange yellow cyan --values 260 270 280 290 300 320 --fixed.on 
+    --linear.on }- --colorbar.on --window.width 1200 --coast.on 
+    --coast.lines.color black --field[0].scalar.smooth.on 
+```
+## Temperature with fixed palette (rough)                            -- fixedpalscalrough
+![](share/test/fixedpalscalrough/TEST_0000.png)
+
+```
+    --field[0].path share/data/wind+temp/t0224/S105TEMPERATURE.grb 
+    --field[0].user_pref.off --field[0].palette-{ --colors blue pink 
+    orange yellow cyan --values 260 270 280 290 300 320 --fixed.on 
+    --linear.on }- --colorbar.on --window.width 1200 --coast.on 
+    --coast.lines.color black 
+```

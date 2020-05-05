@@ -39,7 +39,26 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal,
 
   if (rgba_fixed)
     {
-      color = rgba_[int (fragmentValFlat)];
+      //color = rgba_[int (fragmentValFlat)];
+      float pal = fragmentVal;
+      int pal0 = int (floor (pal)), pal1 = int (ceil (pal));
+      bool same = pal0 == pal1;
+      float a1 = same ? 1. : pal - pal0;
+      float a0 = same ? 0. : pal1 - pal;
+      if (smoothed)
+        {
+          // Smooth
+          color = rgba_[pal0] * a0 + rgba_[pal1] * a1;
+        }
+      else
+        {
+          // Rough
+          if (a1 > a0)
+           color = rgba_[pal1];
+          else
+           color = rgba_[pal0];
+        }
+   
     }
   else
     {

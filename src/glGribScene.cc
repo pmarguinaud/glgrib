@@ -510,8 +510,8 @@ void glGrib::Scene::setColorBarOptions (const glGrib::OptionsColorbar & o)
                         d.opts.colorbar.font.scale, glGrib::String::NE);
       d.strmess.setForegroundColor (d.opts.colorbar.font.color.foreground);
       d.colorbar.setup (d.opts.colorbar);
+      updateColorbar ();
     }
-
 }
 
 void glGrib::Scene::setMapScaleOptions (const glGrib::OptionsMapscale & o)

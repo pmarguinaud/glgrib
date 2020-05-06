@@ -1494,10 +1494,14 @@ public:
     DESC (on, Display geopoints);
     INCLUDE (points);
     DESC (path, "Path");
+    DESC (lon, "Longitude field name");
+    DESC (lat, "Latitude field name");
+    DESC (val, "Value field name");
   }
   bool on = false;
   OptionsPoints points;
   std::string path;
+  std::string lon, lat, val;
 };
 
 class OptionsCities : public OptionsBase

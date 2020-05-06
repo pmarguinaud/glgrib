@@ -60,6 +60,7 @@ set (SRC
   glGribWindowOffscreen.cc
   glGribWindowSet.cc
   glGribWorld.cc
+  glGribGeoPoints.cc
 )
 
 add_subdirectory (lfi)

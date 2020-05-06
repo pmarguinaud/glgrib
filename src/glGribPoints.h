@@ -27,6 +27,12 @@ public:
   void render (const View &, const OptionsLight &) const override;
   const OptionsPoints & getOptions () const { return d.opts; }
   void reSize (const View &) override {}
+  
+  const glGrib::Palette & getPalette () const
+  {
+    return d.p;
+  }
+
 private:
   struct
   {

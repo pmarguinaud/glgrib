@@ -1486,6 +1486,20 @@ public:
   } size;
 };
 
+class OptionsGeoPoints : public OptionsBase
+{
+public:
+  DEFINE 
+  {
+    DESC (on, Display geopoints);
+    INCLUDE (points);
+    DESC (path, "Path");
+  }
+  bool on = false;
+  OptionsPoints points;
+  std::string path;
+};
+
 class OptionsCities : public OptionsBase
 {
 public:
@@ -1563,6 +1577,7 @@ public:
     INCLUDE_H (field[8]); INCLUDE_H (field[9]); 
     INCLUDE (coast);
     INCLUDE (cities);
+    INCLUDE (geopoints);
     INCLUDE (border);
     INCLUDE (rivers);
     INCLUDE (window);
@@ -1599,6 +1614,7 @@ public:
      OptionsField (), OptionsField ()};
   OptionsCoast coast;
   OptionsCities cities;
+  OptionsGeoPoints geopoints;
   OptionsBorder border;
   OptionsRivers rivers;
   OptionsColorbar colorbar;

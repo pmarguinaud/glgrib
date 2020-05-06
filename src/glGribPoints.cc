@@ -72,12 +72,7 @@ void glGrib::Points::setup (const glGrib::OptionsPoints & o,
 
   d.llsbuffer = newGlgribOpenGLBufferPtr (lls.size () * sizeof (float), lls.data ());
 
-  if (d.opts.palette.min == glGrib::Palette::defaultMin ())
-    d.opts.palette.min = d.min;
-  if (d.opts.palette.max == glGrib::Palette::defaultMax ())
-    d.opts.palette.max = d.max;
-
-  d.p = glGrib::Palette (d.opts.palette, d.opts.palette.min, d.opts.palette.max);
+  d.p = glGrib::Palette (d.opts.palette, d.min, d.max);
 
   setupVertexAttributes ();
   setReady ();

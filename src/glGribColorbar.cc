@@ -28,23 +28,28 @@ void glGrib::Colorbar::setup (const glGrib::OptionsColorbar & o)
       jj += 4;
     }
 
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
-  
-  glGenBuffers (1, &elementbuffer);
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), ind , GL_STATIC_DRAW);
-  
+
+  elementbuffer = newGlgribOpenGLBufferPtr (3 * nt * sizeof (unsigned int), ind);
+
+  setupVertexAttributes ();
+
   delete [] ind;
 
   ready = true;
+}
+
+void glGrib::Colorbar::setupVertexAttributes () const
+{
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
+  elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+  glBindVertexArray (0);
 }
 
 void glGrib::Colorbar::clear ()
 {
   if (ready)
     {
-      glDeleteBuffers (1, &elementbuffer);
       glDeleteVertexArrays (1, &VertexArrayID);
       label.clear ();
     }

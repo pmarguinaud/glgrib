@@ -16,6 +16,7 @@ class Colorbar
 {
 public:
   void setup (const OptionsColorbar &);
+  void setupVertexAttributes () const;
   void clear ();
   ~Colorbar ();
   Colorbar & operator= (const Colorbar &);
@@ -32,8 +33,8 @@ private:
   void updateNonLinear (const float, const float, std::vector<float> &, 
                         std::vector <float> &, std::vector<std::string> &);
   OptionsColorbar opts;
-  GLuint VertexArrayID;
-  GLuint elementbuffer;
+  mutable GLuint VertexArrayID;
+  OpenGLBufferPtr elementbuffer;
   bool ready = false;
   bool hidden = false;
   int nt;

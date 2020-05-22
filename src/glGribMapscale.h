@@ -16,6 +16,7 @@ class Mapscale
 {
 public:
   void setup (const OptionsMapscale &);
+  void setupVertexAttributes () const;
   void clear ();
   ~Mapscale ();
   Mapscale & operator= (const Mapscale &);
@@ -25,8 +26,8 @@ public:
   const OptionsMapscale & getOptions () const { return opts; }
 private:
   OptionsMapscale opts;
-  GLuint VertexArrayID;
-  GLuint elementbuffer;
+  mutable GLuint VertexArrayID;
+  OpenGLBufferPtr elementbuffer;
   bool ready = false;
   bool hidden = false;
   int nt;

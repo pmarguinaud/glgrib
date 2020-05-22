@@ -28,12 +28,8 @@ void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
       jj += 4;
     }
 
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
-  
-  glGenBuffers (1, &elementbuffer);
-  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-  glBufferData (GL_ELEMENT_ARRAY_BUFFER, 3 * nt * sizeof (unsigned int), ind , GL_STATIC_DRAW);
+  elementbuffer = newGlgribOpenGLBufferPtr (3 * nt * sizeof (unsigned int), ind);
+  setupVertexAttributes ();
   
   delete [] ind;
 
@@ -46,11 +42,18 @@ void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
   ready = true;
 }
 
+void glGrib::Mapscale::setupVertexAttributes () const
+{
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
+  elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+  glBindVertexArray (0);
+}
+
 void glGrib::Mapscale::clear ()
 {
   if (ready)
     {
-      glDeleteBuffers (1, &elementbuffer);
       glDeleteVertexArrays (1, &VertexArrayID);
     }
   ready = false;

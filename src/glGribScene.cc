@@ -301,6 +301,11 @@ void glGrib::Scene::updateColorbar ()
     d.colorbar.update (d.geopoints.getPalette ());
 }
 
+void glGrib::Scene::updateGeoPoints ()
+{
+  d.geopoints.update ();
+}
+
 void glGrib::Scene::update ()
 {
   updateColorbar ();
@@ -309,6 +314,7 @@ void glGrib::Scene::update ()
   updateInterpolation ();
   updateDate ();
   updateTitle ();
+  updateGeoPoints ();
 
   d.nupdate++;
 

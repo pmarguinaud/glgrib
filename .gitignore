@@ -13,3 +13,4 @@ big
 *.mp4
 .shaders
 .*istory
+share/shaders

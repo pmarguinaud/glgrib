@@ -14,7 +14,7 @@ public:
   }
   FieldScalar * clone () const;
   FieldScalar & operator= (const FieldScalar &);
-  FieldScalar () { }
+  FieldScalar () : VAID_scalar (this), VAID_points (this) { }
   FieldScalar (const FieldScalar &);
   void setup (Loader *, const OptionsField &, float = 0) override;
   void render (const View &, const OptionsLight &) const override;
@@ -31,7 +31,8 @@ private:
   void setupVertexAttributes () const;
   template <typename T>
   void setup (Loader *, const OptionsField &, float = 0);
-  mutable GLuint VertexArrayIDpoints = 0;
+  mutable OpenGLVertexArray<FieldScalar> VAID_scalar;
+  mutable OpenGLVertexArray<FieldScalar> VAID_points;
   void clear () override;
 };
 

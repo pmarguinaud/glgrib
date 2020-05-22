@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 #include <memory>
+#include <iostream>
 
 
 namespace glGrib
@@ -50,14 +51,23 @@ template <typename T>
 class OpenGLVertexArray
 {
 public:
+  void unbind () 
+  {
+    glBindVertexArray (0); 
+  }
+
   OpenGLVertexArray (T * _object) : object (_object) {}
   OpenGLVertexArray & operator= (const OpenGLVertexArray & other)
   {
     if (this != &other) 
-      cleanup ();
+      clear ();
     return *this;
   }
-  void cleanup ()
+  ~OpenGLVertexArray ()
+  {
+    clear ();
+  }
+  void clear ()
   { 
     if (ready)
       glDeleteVertexArrays (1, &VertexArrayID);
@@ -66,7 +76,7 @@ public:
   }
   void setup ()
   {
-    cleanup ();
+    clear ();
     glGenVertexArrays (1, &VertexArrayID);
     ready = true;
   }

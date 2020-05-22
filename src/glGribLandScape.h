@@ -30,6 +30,7 @@ private:
   OptionsLandscape opts;
   OpenGLTexturePtr texture;
   OpenGLBufferPtr heightbuffer;
+  mutable GLuint VertexArrayID = 0;
 };
 
 

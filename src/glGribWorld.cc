@@ -8,8 +8,6 @@
 
 void glGrib::World::clear ()
 {
-  if (isReady ())
-    glDeleteVertexArrays (1, &VertexArrayID);
   glGrib::Object::clear ();
 }
 

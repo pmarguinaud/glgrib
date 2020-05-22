@@ -144,6 +144,7 @@ protected:
   std::vector<FieldMetadata> meta;
   std::vector<FieldFloatBufferPtr> values;
   String hilo;
+  mutable GLuint VertexArrayID_frame = 0;
 };
 
 

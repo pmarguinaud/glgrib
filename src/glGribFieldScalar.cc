@@ -8,7 +8,8 @@
 #include <iostream>
 #include <algorithm>
 
-glGrib::FieldScalar::FieldScalar (const glGrib::FieldScalar & field)
+glGrib::FieldScalar::FieldScalar (const glGrib::FieldScalar & field) 
+  : VAID_scalar (this), VAID_points (this)
 {
   if (field.isReady ())
     {
@@ -20,8 +21,6 @@ glGrib::FieldScalar::FieldScalar (const glGrib::FieldScalar & field)
 
 void glGrib::FieldScalar::clear ()
 {
-  if (isReady ())
-    glDeleteVertexArrays (1, &VertexArrayIDpoints);
   glGrib::Field::clear ();
 }
 
@@ -70,8 +69,8 @@ void glGrib::FieldScalar::setupVertexAttributes () const
 template <typename T>
 void glGrib::FieldScalar::setupVertexAttributes () const
 {
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
+  VAID_scalar.setup ();
+  VAID_scalar.bind ();
 
   geometry->bindCoordinates (0);
 
@@ -91,7 +90,6 @@ void glGrib::FieldScalar::setupVertexAttributes () const
       mpivbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (3); 
       glVertexAttribPointer (3, 3, GL_FLOAT, GL_FALSE, 0, nullptr); 
-//    glVertexAttribDivisor (3, 1);
     }
   else
     {
@@ -99,12 +97,11 @@ void glGrib::FieldScalar::setupVertexAttributes () const
       glVertexAttrib3f (3, 0.0f, 0.0f, 0.0f);
     }
 
-
-  glBindVertexArray (0); 
+  VAID_scalar.unbind ();
 
   // Points
-  glGenVertexArrays (1, &VertexArrayIDpoints);
-  glBindVertexArray (VertexArrayIDpoints);
+  VAID_points.setup ();
+  VAID_points.bind ();
 
   geometry->bindCoordinates (0);
   glVertexAttribDivisor (0, 1);
@@ -128,7 +125,7 @@ void glGrib::FieldScalar::setupVertexAttributes () const
     }
 
 
-  glBindVertexArray (0); 
+  VAID_points.unbind ();
 
   if (opts.geometry.frame.on)
     setupVertexAttributesFrame ();
@@ -311,13 +308,13 @@ void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::Optio
       program->set ("lpointZoo", opts.scalar.points.size.variable.on);
       program->set ("factor", opts.scalar.points.size.factor.on);
     
-      glBindVertexArray (VertexArrayIDpoints);
+      VAID_points.bind ();
     
       int numberOfPoints = geometry->getNumberOfPoints ();
       unsigned int ind[6] = {0, 1, 2, 2, 3, 0}; 
       glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, numberOfPoints);
     
-      glBindVertexArray (0);
+      VAID_points.unbind ();
     }
   else
     {
@@ -326,11 +323,11 @@ void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::Optio
       if (opts.scalar.wireframe.on)
         glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
     
-      glBindVertexArray (VertexArrayID);
+      VAID_scalar.bind ();
 
       geometry->renderTriangles ();
       
-      glBindVertexArray (0);
+      VAID_scalar.unbind ();
 
       if (opts.scalar.wireframe.on)
         glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);

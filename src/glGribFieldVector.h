@@ -43,7 +43,8 @@ public:
     return (int)opts.path.size () / 2;
   }
 private:
-  mutable GLuint VertexArrayIDvector = 0;
+  mutable GLuint VertexArrayID_scalar = 0;
+  mutable GLuint VertexArrayID_vector = 0;
   struct
     {
       OpenGLBufferPtr buffer_n, buffer_d;

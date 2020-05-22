@@ -46,8 +46,8 @@ void glGrib::FieldVector::setupVertexAttributes () const
 {
   // Norm/direction
 
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
+  glGenVertexArrays (1, &VertexArrayID_scalar);
+  glBindVertexArray (VertexArrayID_scalar);
 
   // Position
   geometry->bindCoordinates (0);
@@ -67,8 +67,8 @@ void glGrib::FieldVector::setupVertexAttributes () const
 
   // Vector
 
-  glGenVertexArrays (1, &VertexArrayIDvector);
-  glBindVertexArray (VertexArrayIDvector);
+  glGenVertexArrays (1, &VertexArrayID_vector);
+  glBindVertexArray (VertexArrayID_vector);
 
   // Position
   geometry->bindCoordinates (0);
@@ -183,7 +183,7 @@ const
   program->set ("discrete", false);
   program->set ("mpiview_scale", 0.0f);
 
-  glBindVertexArray (VertexArrayID);
+  glBindVertexArray (VertexArrayID_scalar);
   geometry->renderTriangles ();
   glBindVertexArray (0);
 
@@ -309,7 +309,7 @@ const
 
     }
 
-  glBindVertexArray (VertexArrayIDvector);
+  glBindVertexArray (VertexArrayID_vector);
 
   int numberOfPoints = geometry->getNumberOfPoints ();
   arrow->render (numberOfPoints, opts.vector.arrow.fill.on);
@@ -335,7 +335,10 @@ glGrib::FieldVector::~FieldVector ()
 void glGrib::FieldVector::clear ()
 {
   if (isReady ())
-    glDeleteVertexArrays (1, &VertexArrayIDvector);
+    {
+      glDeleteVertexArrays (1, &VertexArrayID_vector);
+      glDeleteVertexArrays (1, &VertexArrayID_scalar);
+    }
   glGrib::Field::clear ();
 }
 

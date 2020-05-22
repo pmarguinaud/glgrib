@@ -17,9 +17,6 @@ public:
 protected:
   OpenGLBufferPtr vertexbuffer, colorbuffer, elementbuffer, heightbuffer, mpivbuffer;
   const_GeometryPtr geometry;
-  mutable GLuint VertexArrayID = 0;
-//glGrib::OpenGLVertexArray VertexArray;
-  mutable GLuint VertexArrayID_frame = 0;
 };
 
 

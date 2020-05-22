@@ -72,29 +72,29 @@ void glGrib::Points::setup (const glGrib::OptionsPoints & o,
 
   d.llsbuffer = newGlgribOpenGLBufferPtr (lls.size () * sizeof (float), lls.data ());
 
-  if (d.opts.palette.min == glGrib::Palette::defaultMin ())
-    d.opts.palette.min = d.min;
-  if (d.opts.palette.max == glGrib::Palette::defaultMax ())
-    d.opts.palette.max = d.max;
-
-  d.p = glGrib::Palette (d.opts.palette, d.opts.palette.min, d.opts.palette.max);
+  d.p = glGrib::Palette (d.opts.palette, d.min, d.max);
 
   setupVertexAttributes ();
   setReady ();
 }
 
-void glGrib::Points::render (const glGrib::View & view, const glGrib::OptionsLight &) const
+void glGrib::Points::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+{
+  render (view, light, 0, d.len);
+}
+
+void glGrib::Points::render (const glGrib::View & view, const glGrib::OptionsLight &, const int offset, const int length) const
 {
   if (! isReady ())
     return;
 
-  float length = view.pixelToDistAtNadir (10);
+  float length10 = view.pixelToDistAtNadir (10);
 
   glGrib::Program * program = glGrib::Program::load ("POINTS");
   program->use ();
 
   program->set ("scale0", d.opts.scale);
-  program->set ("length10", length);
+  program->set ("length10", length10);
   program->set ("valmin", d.min);
   program->set ("valmax", d.max);
   program->set ("ratio", view.getRatio ());
@@ -120,7 +120,8 @@ void glGrib::Points::render (const glGrib::View & view, const glGrib::OptionsLig
 
   glBindVertexArray (VertexArrayID);
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0}; 
-  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, d.len);
+  glDrawElementsInstancedBaseInstance 
+    (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, length, offset);
   glBindVertexArray (0);
 
   view.delMVP (program);

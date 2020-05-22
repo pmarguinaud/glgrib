@@ -60,6 +60,7 @@ set (SRC
   glGribWindowOffscreen.cc
   glGribWindowSet.cc
   glGribWorld.cc
+  glGribGeoPoints.cc
 )
 
 add_subdirectory (lfi)
@@ -73,7 +74,7 @@ target_link_libraries (glgrib
                        PUBLIC eccodes PUBLIC glfw PUBLIC GLEW PUBLIC GL PUBLIC sqlite3
                        PUBLIC readline PUBLIC png PUBLIC shp PUBLIC ${OPENSSL_SSL_LIBRARY} 
                        PUBLIC ${OPENSSL_CRYPTO_LIBRARY} PUBLIC OpenMP::OpenMP_CXX PUBLIC LFI
-                       PUBLIC ${CURL_LIBRARIES})
+                       PUBLIC ${NETCDF_CXX_LIBRARIES} PUBLIC ${CURL_LIBRARIES})
 
 set_target_properties (glgrib PROPERTIES 
                        INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib)

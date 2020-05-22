@@ -20,6 +20,7 @@
 #include "glGribColorbar.h"
 #include "glGribMapscale.h"
 #include "glGribCities.h"
+#include "glGribGeoPoints.h"
 #include "glGribTest.h"
 #include "glGribLand.h"
 #include "glGribLoader.h"
@@ -111,6 +112,7 @@ public:
       Ticks ticks;
       Departements departements;
       Cities cities;
+      GeoPoints geopoints;
       Test test;
       Land land;
     private:
@@ -159,6 +161,7 @@ public:
   void setLightOptions (const OptionsLight &);
   void setSceneOptions (const OptionsScene &);
   void setCitiesOptions (const OptionsCities &);
+  void setGeoPointsOptions (const OptionsGeoPoints &);
   void setTitleOptions (const OptionsTitle &);
 
   Options getOptions () const;

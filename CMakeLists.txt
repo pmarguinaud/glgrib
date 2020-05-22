@@ -16,6 +16,7 @@ find_package (SQLite3 3.22.0 REQUIRED)
 find_package (PNG 1.6.34 REQUIRED)
 find_package (OpenSSL 1.1.0 REQUIRED)
 find_package (CURL REQUIRED)
+find_package (netCDF REQUIRED COMPONENTS CXX)
 find_package (Python COMPONENTS Interpreter Development)
 find_package (Perl COMPONENTS Interpreter Development)
 

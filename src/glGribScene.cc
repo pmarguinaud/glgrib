@@ -67,6 +67,7 @@ void glGrib::Scene::render () const
   obj_list.push_back (&d.departements);
   obj_list.push_back (&d.grid);
   obj_list.push_back (&d.cities);
+  obj_list.push_back (&d.geopoints);
   obj_list.push_back (&d.land);
 
 
@@ -81,6 +82,8 @@ void glGrib::Scene::render () const
   d.image.render (d.MVP_L);
 
   if (getFieldColorbar ())
+    d.colorbar.render (d.MVP_L);
+  else if (d.geopoints.isReady ())
     d.colorbar.render (d.MVP_L);
 
   d.mapscale.render (d.MVP_L, d.view);
@@ -294,6 +297,8 @@ void glGrib::Scene::updateColorbar ()
   const glGrib::Field * fld = getFieldColorbar ();
   if (fld)
     d.colorbar.update (fld->getPalette ());
+  else if (d.geopoints.isReady ())
+    d.colorbar.update (d.geopoints.getPalette ());
 }
 
 void glGrib::Scene::update ()
@@ -360,6 +365,7 @@ void glGrib::Scene::setup (const glGrib::Options & o)
   setTitleOptions (d.opts.scene.title);
   setTextOptions (d.opts.scene.text);
   setCitiesOptions (d.opts.cities);
+  setGeoPointsOptions (d.opts.geopoints);
   setColorBarOptions (d.opts.colorbar);
   setMapScaleOptions (d.opts.mapscale);
 
@@ -419,6 +425,7 @@ glGrib::Options glGrib::Scene::getOptions () const
   o.rivers         = d.rivers.getOptions ();
   o.departements   = d.departements.getOptions ();
   o.cities         = d.cities.getOptions ();
+  o.geopoints      = d.geopoints.getOptions ();
   o.mapscale       = d.mapscale.getOptions ();
 
   for (size_t i = 0; i < fieldlist.size (); i++)
@@ -566,6 +573,14 @@ void glGrib::Scene::setCitiesOptions (const glGrib::OptionsCities & o)
   d.cities.clear ();
   if (d.opts.cities.on)
     d.cities.setup (o);
+}
+
+void glGrib::Scene::setGeoPointsOptions (const glGrib::OptionsGeoPoints & o)
+{
+  d.opts.geopoints = o;
+  d.geopoints.clear ();
+  if (d.opts.geopoints.on)
+    d.geopoints.setup (o);
 }
 
 void glGrib::Scene::setGridColorOptions (const glGrib::OptionColor & color)

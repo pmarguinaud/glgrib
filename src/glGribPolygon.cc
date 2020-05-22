@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-void glGrib::Polygon::setupVertexAttributes ()
+void glGrib::Polygon::setupVertexAttributes () const
 {
 
   glGenVertexArrays (1, &VertexArrayID);

@@ -52,11 +52,8 @@ void glGrib::FieldContour::clear ()
   glGrib::Field::clear ();
 }
 
-void glGrib::FieldContour::setupVertexAttributes ()
+void glGrib::FieldContour::setupVertexAttributes () const
 {
-  numberOfPoints = geometry->getNumberOfPoints ();
-  numberOfTriangles = geometry->getNumberOfTriangles ();
-
   for (auto & is : iso)
     {
       glGenVertexArrays (1, &is.VertexArrayID);

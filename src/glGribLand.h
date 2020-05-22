@@ -19,7 +19,7 @@ public:
   virtual void clear ();
   virtual void setup (const OptionsLand &);
   void reSize (const View &) override {}
-  void setupVertexAttributes ();
+  void setupVertexAttributes () const;
   float getScale () const override { return opts.layers[0].scale; }
 private:
   void triangulate (std::vector<int> *, std::vector<int> *,
@@ -39,7 +39,7 @@ private:
     unsigned int numberOfTriangles;
   } layer_t;
   std::vector<layer_t> d;
-  std::vector<GLuint> VertexArrayID;
+  mutable std::vector<GLuint> VertexArrayID;
 };
 
 

@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "glGribOpenGL.h"
 #include "glGribOptions.h"
+#include "glGribObject.h"
 #include <string>
 #include <vector>
 
@@ -42,7 +43,7 @@ public:
   ~Image ();
   
   Image & operator= (const Image &);
-  void setupVertexAttributes ();
+  void setupVertexAttributes () const;
   void clear ();
 
   void setup (const OptionsImage &);
@@ -52,7 +53,7 @@ private:
   OptionsImage opts;
   bool ready = false;
   OpenGLTexturePtr texture;
-  GLuint VertexArrayID = 0;
+  mutable GLuint VertexArrayID = 0;
 };
 
 

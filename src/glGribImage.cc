@@ -32,7 +32,7 @@ glGrib::Image & glGrib::Image::operator= (const glGrib::Image & img)
   return *this;
 }
 
-void glGrib::Image::setupVertexAttributes ()
+void glGrib::Image::setupVertexAttributes () const
 {
 
   // We have no buffer at all, but for some reason, we have to define a vertex array

@@ -320,7 +320,7 @@ void glGrib::Land::setup (const glGrib::OptionsLand & o)
   setReady ();
 }
 
-void glGrib::Land::setupVertexAttributes ()
+void glGrib::Land::setupVertexAttributes () const
 {
   VertexArrayID.resize (d.size ());
 

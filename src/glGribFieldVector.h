@@ -22,7 +22,7 @@ public:
   void renderNorms (const View &, const OptionsLight &) const;
   void render (const View &, const OptionsLight &) const override;
   virtual ~FieldVector ();
-  void setupVertexAttributes ();
+  void setupVertexAttributes () const;
   void reSample (const View &);
   void toggleShowVector () { opts.vector.arrow.on = ! opts.vector.arrow.on; }
   void toggleShowNorm () { opts.vector.norm.on = ! opts.vector.norm.on; }
@@ -43,7 +43,7 @@ public:
     return (int)opts.path.size () / 2;
   }
 private:
-  GLuint VertexArrayIDvector = 0;
+  mutable GLuint VertexArrayIDvector = 0;
   struct
     {
       OpenGLBufferPtr buffer_n, buffer_d;

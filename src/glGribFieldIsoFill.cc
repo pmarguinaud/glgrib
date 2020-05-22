@@ -56,11 +56,8 @@ void glGrib::FieldIsoFill::clear ()
   glGrib::Field::clear ();
 }
 
-void glGrib::FieldIsoFill::setupVertexAttributes ()
+void glGrib::FieldIsoFill::setupVertexAttributes () const
 {
-  numberOfPoints = geometry->getNumberOfPoints ();
-  numberOfTriangles = geometry->getNumberOfTriangles ();
-
   // Triangles from original geometry
   glGenVertexArrays (1, &d.VertexArrayID);
   glBindVertexArray (d.VertexArrayID);

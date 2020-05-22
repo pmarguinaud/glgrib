@@ -19,7 +19,7 @@ public:
   void setup (Loader *, const OptionsField &, float = 0) override;
   void render (const View &, const OptionsLight &) const override;
   virtual ~FieldScalar ();
-  void setupVertexAttributes ();
+  void setupVertexAttributes () const;
   bool useColorBar () const override { return true; }
   int getSlotMax () const override
   {
@@ -28,10 +28,10 @@ public:
 private:
   void setupMpiView (Loader *, const OptionsField &, float = 0);
   template <typename T>
-  void setupVertexAttributes ();
+  void setupVertexAttributes () const;
   template <typename T>
   void setup (Loader *, const OptionsField &, float = 0);
-  GLuint VertexArrayIDpoints = 0;
+  mutable GLuint VertexArrayIDpoints = 0;
   void clear () override;
 };
 

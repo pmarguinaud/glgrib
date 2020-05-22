@@ -20,7 +20,7 @@ public:
   virtual ~Landscape ();
   void setFlat (bool f) { opts.flat.on = f; }
   void toggleFlat () { opts.flat.on = ! opts.flat.on; }
-  void setupVertexAttributes ();
+  void setupVertexAttributes () const;
   void reSize (const View &) override {}
   void toggleWireframe () { opts.wireframe.on = ! opts.wireframe.on; }
   const OptionsLandscape & getOptions () const { return opts; }

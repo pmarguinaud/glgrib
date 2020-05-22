@@ -17,10 +17,9 @@ public:
 protected:
   OpenGLBufferPtr vertexbuffer, colorbuffer, elementbuffer, heightbuffer, mpivbuffer;
   const_GeometryPtr geometry;
-  int numberOfPoints;
-  unsigned int numberOfTriangles;
-  GLuint VertexArrayID = 0;
-  GLuint VertexArrayID_frame = 0;
+  mutable GLuint VertexArrayID = 0;
+//glGrib::OpenGLVertexArray VertexArray;
+  mutable GLuint VertexArrayID_frame = 0;
 };
 
 

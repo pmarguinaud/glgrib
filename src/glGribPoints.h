@@ -20,7 +20,7 @@ public:
   ~Points ();
   
   Points & operator= (const Points &);
-  void setupVertexAttributes ();
+  void setupVertexAttributes () const;
   virtual void clear ();
 
   void setup (const OptionsPoints &, const std::vector<float> &, const std::vector<float> &, const std::vector<float> &);
@@ -43,7 +43,7 @@ private:
     OpenGLBufferPtr llsbuffer;
     glGrib::Palette p;
   } d;
-  GLuint VertexArrayID = 0;
+  mutable GLuint VertexArrayID = 0;
 };
 
 

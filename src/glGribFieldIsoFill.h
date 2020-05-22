@@ -19,7 +19,7 @@ public:
   void setup (Loader *, const OptionsField &, float = 0) override;
   void render (const View &, const OptionsLight &) const override;
   virtual ~FieldIsoFill ();
-  void setupVertexAttributes ();
+  void setupVertexAttributes () const;
   void clear () override; 
   bool useColorBar () const override { return true; }
   int getSlotMax () const override
@@ -33,7 +33,7 @@ private:
   {
   public:
     OptionColor color;
-    GLuint VertexArrayID = 0;
+    mutable GLuint VertexArrayID = 0;
     OpenGLBufferPtr vertexbuffer, elementbuffer;
     int size;
   };
@@ -41,7 +41,7 @@ private:
   struct
   {
     // Triangles with a single color
-    GLuint VertexArrayID = 0;
+    mutable GLuint VertexArrayID = 0;
     OpenGLBufferPtr colorbuffer;
 
     // Isoband

@@ -10,12 +10,12 @@ namespace glGrib
 class Polygon : public Object
 {
 public:
-  void setupVertexAttributes ();
+  void setupVertexAttributes () const;
   void render (const View &, const OptionsLight &) const override;
   virtual ~Polygon ();
   virtual void clear ();
 protected:
-  GLuint VertexArrayID;
+  mutable GLuint VertexArrayID;
   OpenGLBufferPtr vertexbuffer, elementbuffer;
   unsigned int numberOfLines;
   int numberOfPoints;

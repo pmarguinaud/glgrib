@@ -27,7 +27,7 @@ template void glGrib::Field::packUnpack<T>   \
           (const float *, float *, const int,   \
            const float, const float, const float); \
 template void glGrib::Field::loadHeight <T> (glGrib::OpenGLBufferPtr, glGrib::Loader *); \
-template void glGrib::Field::bindHeight <T> (int);
+template void glGrib::Field::bindHeight <T> (int) const;
 
 DEF (unsigned char)
 DEF (unsigned short)
@@ -333,7 +333,7 @@ void glGrib::Field::loadHeight (glGrib::OpenGLBufferPtr buf, glGrib::Loader * ld
 }
 
 template <typename T>
-void glGrib::Field::bindHeight (int attr)
+void glGrib::Field::bindHeight (int attr) const
 {
   if (heightbuffer)
     {
@@ -397,7 +397,7 @@ void glGrib::Field::packUnpack (const float * g, float * f, const int n, const f
 }
 
 
-void glGrib::Field::setupVertexAttributesFrame ()
+void glGrib::Field::setupVertexAttributesFrame () const
 {
   glGenVertexArrays (1, &VertexArrayID_frame);
   glBindVertexArray (VertexArrayID_frame);

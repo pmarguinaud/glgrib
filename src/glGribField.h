@@ -40,7 +40,7 @@ public:
   void setPaletteOptions (const OptionsPalette &);
   void setupHilo (FieldFloatBufferPtr);
   void renderHilo (const View &) const;
-  void setupVertexAttributesFrame ();
+  void setupVertexAttributesFrame () const;
   void renderFrame (const View &) const;
 
   virtual ~Field () {}
@@ -137,7 +137,7 @@ protected:
   template <typename T>
   void loadHeight (OpenGLBufferPtr, Loader *);
   template <typename T>
-  void bindHeight (int);
+  void bindHeight (int) const;
   static void getUserPref (OptionsField *, Loader *, int);
   Palette palette;
   mutable OptionsField opts;

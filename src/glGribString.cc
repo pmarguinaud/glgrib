@@ -16,6 +16,7 @@ glGrib::String & glGrib::String::operator= (const glGrib::String & str)
             {
               d = str.d;
 	      setupVertexAttributes ();
+              ready = true;
 	    }
 	  else if (d.change)
             {
@@ -206,6 +207,7 @@ void glGrib::String::setup (glGrib::const_FontPtr ff, const std::vector<std::str
   d.xyzbuffer = newGlgribOpenGLBufferPtr (xyz.size () * sizeof (float), xyz.data ());
 
   setupVertexAttributes ();
+  ready = true;
   
   if (! d.change)
     {
@@ -218,7 +220,7 @@ void glGrib::String::setup (glGrib::const_FontPtr ff, const std::vector<std::str
     }
 }
 
-void glGrib::String::setupVertexAttributes ()
+void glGrib::String::setupVertexAttributes () const
 {
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
@@ -240,7 +242,6 @@ void glGrib::String::setupVertexAttributes ()
   glBindVertexArray (0);
   
 
-  ready = true;
 }
 
 

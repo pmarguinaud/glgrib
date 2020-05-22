@@ -36,7 +36,7 @@ glGrib::Points & glGrib::Points::operator= (const glGrib::Points & points)
   return *this;
 }
 
-void glGrib::Points::setupVertexAttributes ()
+void glGrib::Points::setupVertexAttributes () const
 {
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);

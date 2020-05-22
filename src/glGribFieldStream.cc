@@ -68,11 +68,8 @@ void glGrib::FieldStream::clear ()
   glGrib::Field::clear ();
 }
 
-void glGrib::FieldStream::setupVertexAttributes ()
+void glGrib::FieldStream::setupVertexAttributes () const
 {
-  numberOfPoints = geometry->getNumberOfPoints ();
-  numberOfTriangles = geometry->getNumberOfTriangles ();
-
   for (size_t i = 0; i < stream.size (); i++)
     {
       glGenVertexArrays (1, &stream[i].VertexArrayID);

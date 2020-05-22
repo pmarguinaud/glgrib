@@ -77,7 +77,7 @@ public:
   void clear ();
   bool ready = false;
 
-  void setupVertexAttributes ();
+  void setupVertexAttributes () const;
 
   void setShared (bool);
   void setChange (bool);
@@ -89,7 +89,7 @@ public:
   }
 
 private:
-  GLuint VertexArrayID;
+  mutable GLuint VertexArrayID;
   struct 
   {
     bool shared = false;

@@ -20,7 +20,7 @@ public:
   void setup (Loader *, const OptionsField &, float = 0) override;
   void render (const View &, const OptionsLight &) const override;
   virtual ~FieldContour ();
-  void setupVertexAttributes ();
+  void setupVertexAttributes () const;
   void clear () override; 
   bool useColorBar () const override { return true; }
   int getSlotMax () const override
@@ -95,7 +95,7 @@ private:
     float length = 0.0f;
     OptionColor color;
     std::vector<int> pattern;
-    GLuint VertexArrayID;
+    mutable GLuint VertexArrayID;
     OpenGLBufferPtr vertexbuffer, heightbuffer, distancebuffer;
     GLuint size;
   };

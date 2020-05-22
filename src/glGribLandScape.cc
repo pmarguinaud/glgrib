@@ -27,11 +27,8 @@ glGrib::Landscape & glGrib::Landscape::operator= (const glGrib::Landscape & land
   return *this;
 }
 
-void glGrib::Landscape::setupVertexAttributes ()
+void glGrib::Landscape::setupVertexAttributes () const
 {
-  numberOfPoints = geometry->getNumberOfPoints ();
-  numberOfTriangles = geometry->getNumberOfTriangles ();
-
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
 

@@ -16,7 +16,7 @@ public:
   void render (const glm::mat4 &) const;
   void reSize (const View &);
   const OptionsTicks & getOptions () const { return opts; }
-  void setupVertexAttributes ();
+  void setupVertexAttributes () const;
   void clear ();
   ~Ticks ();
   void setReady ()

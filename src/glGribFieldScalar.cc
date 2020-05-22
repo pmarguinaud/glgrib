@@ -48,7 +48,7 @@ glGrib::FieldScalar & glGrib::FieldScalar::operator= (const glGrib::FieldScalar 
   return *this;
 }
 
-void glGrib::FieldScalar::setupVertexAttributes ()
+void glGrib::FieldScalar::setupVertexAttributes () const
 {
   switch (opts.scalar.pack.bits)
     {
@@ -68,11 +68,8 @@ void glGrib::FieldScalar::setupVertexAttributes ()
 }
 
 template <typename T>
-void glGrib::FieldScalar::setupVertexAttributes ()
+void glGrib::FieldScalar::setupVertexAttributes () const
 {
-  numberOfPoints = geometry->getNumberOfPoints ();
-  numberOfTriangles = geometry->getNumberOfTriangles ();
-
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
 
@@ -316,6 +313,7 @@ void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::Optio
     
       glBindVertexArray (VertexArrayIDpoints);
     
+      int numberOfPoints = geometry->getNumberOfPoints ();
       unsigned int ind[6] = {0, 1, 2, 2, 3, 0}; 
       glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, numberOfPoints);
     

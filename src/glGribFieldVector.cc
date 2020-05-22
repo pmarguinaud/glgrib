@@ -42,7 +42,7 @@ glGrib::FieldVector & glGrib::FieldVector::operator= (const glGrib::FieldVector 
 }
 
 
-void glGrib::FieldVector::setupVertexAttributes ()
+void glGrib::FieldVector::setupVertexAttributes () const
 {
   // Norm/direction
 
@@ -132,9 +132,6 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   meta.push_back (meta_n);
   meta.push_back (meta_d);
-
-  numberOfPoints = geometry->getNumberOfPoints ();
-  numberOfTriangles = geometry->getNumberOfTriangles ();
 
   setupVertexAttributes ();
 
@@ -314,6 +311,7 @@ const
 
   glBindVertexArray (VertexArrayIDvector);
 
+  int numberOfPoints = geometry->getNumberOfPoints ();
   arrow->render (numberOfPoints, opts.vector.arrow.fill.on);
 
   glBindVertexArray (0);

@@ -30,8 +30,8 @@ void glGrib::Ticks::clear ()
   labels.clear ();
   if (isReady ())
     {
-      glDeleteVertexArrays (1, &VertexArrayID);
-      glDeleteVertexArrays (1, &VertexArrayID_frame);
+      VAID_ticks.clear ();
+      VAID_frame.clear ();
     }
   width = 0;
   height = 0;
@@ -65,7 +65,7 @@ void glGrib::Ticks::render (const glm::mat4 & MVP) const
       program->set ("width", opts.lines.width);
       program->set ("kind", kind);
 
-      glBindVertexArray (VertexArrayID);
+      VAID_ticks.bind ();
 
       if (opts.lines.width == 0.0f)
         {
@@ -86,7 +86,7 @@ void glGrib::Ticks::render (const glm::mat4 & MVP) const
             }
         }
 
-      glBindVertexArray (0);
+      VAID_ticks.unbind ();
     }
 
   if (opts.frame.on)
@@ -107,10 +107,10 @@ void glGrib::Ticks::render (const glm::mat4 & MVP) const
       program->set ("color0", opts.frame.color);
 
 
-      glBindVertexArray (VertexArrayID_frame);
+      VAID_frame.bind ();
       unsigned int ind[6] = {0, 1, 2, 0, 2, 3};
       glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, 4);
-      glBindVertexArray (0);
+      VAID_frame.unbind ();
     }
 
 
@@ -360,15 +360,15 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
 
       vertexbuffer = newGlgribOpenGLBufferPtr (XYa.size () * sizeof (XYa[0]), XYa.data ());
 
-      glGenVertexArrays (1, &VertexArrayID);
-      glBindVertexArray (VertexArrayID);
+      VAID_ticks.setup ();
+      VAID_ticks.bind ();
       
       vertexbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (0); 
       glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, nullptr); 
       glVertexAttribDivisor (0, 1);
 
-      glBindVertexArray (0);
+      VAID_ticks.unbind ();
 
       numberOfTicks = XYa.size ();
     }
@@ -376,7 +376,7 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
   if (opts.frame.on)
     {
       // Needed to use a shader
-      glGenVertexArrays (1, &VertexArrayID_frame);
+      VAID_frame.setup ();
     }
 }
 

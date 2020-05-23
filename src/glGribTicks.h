@@ -11,6 +11,7 @@ namespace glGrib
 class Ticks 
 {
 public:
+  Ticks () : VAID_ticks (this), VAID_frame (this) {}
   Ticks & operator=(const Ticks &);
   void setup (const OptionsTicks &);
   void render (const glm::mat4 &) const;
@@ -39,8 +40,8 @@ private:
   int width = 0, height = 0;
   OptionsView vopts;
   bool ready = false;
-  GLuint VertexArrayID = 0;
-  GLuint VertexArrayID_frame = 0;
+  mutable OpenGLVertexArray<Ticks> VAID_ticks;
+  mutable OpenGLVertexArray<Ticks> VAID_frame;
   OpenGLBufferPtr vertexbuffer;
   unsigned int numberOfTicks;
 };

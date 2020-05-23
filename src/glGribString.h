@@ -41,8 +41,8 @@ public:
   }
 
   String & operator= (const String &);
-  String () = default;
-  String (const String & str)
+  String () : VAID (this) {}
+  String (const String & str) : VAID (this)
   {
     *this = str;
   }
@@ -95,7 +95,6 @@ public:
   }
 
 private:
-  mutable GLuint VertexArrayID;
   struct 
   {
     bool shared = false;
@@ -112,6 +111,7 @@ private:
     OpenGLBufferPtr xyzbuffer, vertexbuffer, letterbuffer;
     const_FontPtr font = nullptr; 
   } d;
+    mutable OpenGLVertexArray<String> VAID;
 };
 
 }

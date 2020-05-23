@@ -21,6 +21,8 @@ class Field : public World
 {
 public:
 
+  Field () : VAID_frame (this) {}
+
   static Field * create (const OptionsField &, float, Loader *);
 
   typedef enum
@@ -144,7 +146,7 @@ protected:
   std::vector<FieldMetadata> meta;
   std::vector<FieldFloatBufferPtr> values;
   String hilo;
-  mutable GLuint VertexArrayID_frame = 0;
+  mutable OpenGLVertexArray<Field> VAID_frame;
 };
 
 

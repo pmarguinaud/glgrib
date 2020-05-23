@@ -160,8 +160,7 @@ void glGrib::Field::clear ()
   values.clear ();
   meta.clear ();
   hilo.clear ();
-  if (isReady ())
-    glDeleteVertexArrays (1, &VertexArrayID_frame);
+  VAID_frame.clear ();
   glGrib::World::clear ();
 }
 
@@ -399,12 +398,12 @@ void glGrib::Field::packUnpack (const float * g, float * f, const int n, const f
 
 void glGrib::Field::setupVertexAttributesFrame () const
 {
-  glGenVertexArrays (1, &VertexArrayID_frame);
-  glBindVertexArray (VertexArrayID_frame);
+  VAID_frame.setup ();
+  VAID_frame.bind ();
 
   geometry->bindFrame (0);
 
-  glBindVertexArray (0); 
+  VAID_frame.unbind ();
 }
 
 void glGrib::Field::renderFrame (const glGrib::View & view) const
@@ -420,7 +419,7 @@ void glGrib::Field::renderFrame (const glGrib::View & view) const
   program->set ("dlon", opts.geometry.frame.dlon);
   program->set ("dlat", opts.geometry.frame.dlat);
 
-  glBindVertexArray (VertexArrayID_frame);
+  VAID_frame.bind ();
 
   if (opts.geometry.frame.width > 0.0f)
     {
@@ -435,6 +434,7 @@ void glGrib::Field::renderFrame (const glGrib::View & view) const
       glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, geometry->getFrameNumberOfPoints ());
     }
 
+  VAID_frame.unbind ();
 }
 
 

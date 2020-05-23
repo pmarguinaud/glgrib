@@ -29,8 +29,8 @@ glGrib::Landscape & glGrib::Landscape::operator= (const glGrib::Landscape & land
 
 void glGrib::Landscape::setupVertexAttributes () const
 {
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
+  VAID.setup ();
+  VAID.bind ();
 
   geometry->bindCoordinates (0);
  
@@ -45,10 +45,10 @@ void glGrib::Landscape::setupVertexAttributes () const
       glDisableVertexAttribArray (1);
       glVertexAttrib1f (1, 0.0f);
     }   
-
  
   geometry->bindTriangles ();
-  glBindVertexArray (0); 
+
+  VAID.unbind ();
 }
 
 namespace
@@ -180,17 +180,17 @@ void glGrib::Landscape::render (const glGrib::View & view, const glGrib::Options
       program->set ("IY1", IY1);
     }
 
-  glBindVertexArray (VertexArrayID);
+  VAID.bind ();
 
   if (opts.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 
   geometry->renderTriangles ();
 
-  glBindVertexArray (0);
-
   if (opts.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+
+  VAID.unbind ();
 
   view.delMVP (program);
 }

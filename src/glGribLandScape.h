@@ -14,6 +14,7 @@ namespace glGrib
 class Landscape : public World
 {
 public:
+  Landscape () : VAID (this) {}
   Landscape & operator=(const Landscape &);
   virtual void setup (Loader *, const OptionsLandscape &);
   void render (const View &, const OptionsLight &) const override;
@@ -30,7 +31,7 @@ private:
   OptionsLandscape opts;
   OpenGLTexturePtr texture;
   OpenGLBufferPtr heightbuffer;
-  mutable GLuint VertexArrayID = 0;
+  mutable OpenGLVertexArray<Landscape> VAID;
 };
 
 

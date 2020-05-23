@@ -41,6 +41,12 @@ public:
   }
 
   String & operator= (const String &);
+  String () = default;
+  String (const String & str)
+  {
+    *this = str;
+  }
+
   void setup2D (const_FontPtr, const std::string &, float, 
                float, float = 1.0f, align_t = SW);
   void setup2D (const_FontPtr, const std::vector<std::string> &, 

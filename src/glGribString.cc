@@ -6,22 +6,21 @@
 
 glGrib::String & glGrib::String::operator= (const glGrib::String & str)
 {
-
   if (this != &str)
     {
       clear ();
       if (str.ready)
         {
-          if (d.shared)
+          if (str.d.shared)
             {
               d = str.d;
 	      setupVertexAttributes ();
               ready = true;
 	    }
-	  else if (d.change)
+	  else if (str.d.change)
             {
               setup (str.d.font, str.d.data, str.d.x, str.d.y, str.d.scale, 
-                    str.d.align, str.d.X, str.d.Y, str.d.Z, str.d.A);
+                     str.d.align, str.d.X, str.d.Y, str.d.Z, str.d.A);
               d.color0 = str.d.color0;
               d.color1 = str.d.color1;
 	      d.shared = str.d.shared;
@@ -108,7 +107,7 @@ void glGrib::String::setup (glGrib::const_FontPtr ff, const std::vector<std::str
   std::vector<float> xy, let, xyz;
   xy.reserve (4 * d.len);
   let.reserve (d.len);
-  xyz.reserve (3 * d.len);
+  xyz.reserve (4 * d.len);
   
   d.font = ff;
   d.scale = s;
@@ -240,7 +239,6 @@ void glGrib::String::setupVertexAttributes () const
   glVertexAttribPointer (2, 4, GL_FLOAT, GL_FALSE, 0, nullptr); 
   glVertexAttribDivisor (2, 1);
   glBindVertexArray (0);
-  
 
 }
 

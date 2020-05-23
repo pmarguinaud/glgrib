@@ -15,7 +15,7 @@ public:
   }
   FieldVector * clone () const;
   FieldVector & operator= (const FieldVector &);
-  FieldVector () { }
+  FieldVector () : VAID_scalar (this), VAID_vector (this) { }
   FieldVector (const FieldVector &);
   void setup (Loader *, const OptionsField &, float = 0) override;
   void renderArrow (const View &, const OptionsLight &) const;
@@ -43,13 +43,13 @@ public:
     return (int)opts.path.size () / 2;
   }
 private:
-  mutable GLuint VertexArrayID_scalar = 0;
-  mutable GLuint VertexArrayID_vector = 0;
+  mutable OpenGLVertexArray<FieldVector> VAID_scalar;
+  mutable OpenGLVertexArray<FieldVector> VAID_vector;
   struct
-    {
-      OpenGLBufferPtr buffer_n, buffer_d;
-      float vscale;
-    } d;
+  {
+    OpenGLBufferPtr buffer_n, buffer_d;
+    float vscale;
+  } d;
 protected:
   void clear () override;
 };

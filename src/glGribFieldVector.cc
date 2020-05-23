@@ -7,7 +7,8 @@
 #include <stdio.h>
 #include <iostream>
 
-glGrib::FieldVector::FieldVector (const glGrib::FieldVector & field)
+glGrib::FieldVector::FieldVector (const glGrib::FieldVector & field) 
+  : VAID_scalar (this), VAID_vector (this)
 {
   if (field.isReady ())
     {
@@ -46,8 +47,8 @@ void glGrib::FieldVector::setupVertexAttributes () const
 {
   // Norm/direction
 
-  glGenVertexArrays (1, &VertexArrayID_scalar);
-  glBindVertexArray (VertexArrayID_scalar);
+  VAID_scalar.setup ();
+  VAID_scalar.bind ();
 
   // Position
   geometry->bindCoordinates (0);
@@ -62,13 +63,13 @@ void glGrib::FieldVector::setupVertexAttributes () const
 
   bindHeight <unsigned char> (2);
 
-  glBindVertexArray (0); 
+  VAID_scalar.unbind ();
 
 
   // Vector
 
-  glGenVertexArrays (1, &VertexArrayID_vector);
-  glBindVertexArray (VertexArrayID_vector);
+  VAID_vector.setup ();
+  VAID_vector.bind ();
 
   // Position
   geometry->bindCoordinates (0);
@@ -90,7 +91,7 @@ void glGrib::FieldVector::setupVertexAttributes () const
   bindHeight <unsigned char> (3);
   glVertexAttribDivisor (3, 1);  
 
-  glBindVertexArray (0); 
+  VAID_vector.unbind ();
 
 }
 
@@ -183,9 +184,9 @@ const
   program->set ("discrete", false);
   program->set ("mpiview_scale", 0.0f);
 
-  glBindVertexArray (VertexArrayID_scalar);
+  VAID_scalar.bind ();
   geometry->renderTriangles ();
-  glBindVertexArray (0);
+  VAID_scalar.unbind ();
 
   view.delMVP (program);
 
@@ -309,12 +310,10 @@ const
 
     }
 
-  glBindVertexArray (VertexArrayID_vector);
-
+  VAID_vector.bind ();
   int numberOfPoints = geometry->getNumberOfPoints ();
   arrow->render (numberOfPoints, opts.vector.arrow.fill.on);
-
-  glBindVertexArray (0);
+  VAID_vector.unbind ();
 
   view.delMVP (program);
 }
@@ -336,8 +335,8 @@ void glGrib::FieldVector::clear ()
 {
   if (isReady ())
     {
-      glDeleteVertexArrays (1, &VertexArrayID_vector);
-      glDeleteVertexArrays (1, &VertexArrayID_scalar);
+      VAID_vector.clear ();
+      VAID_scalar.clear ();
     }
   glGrib::Field::clear ();
 }

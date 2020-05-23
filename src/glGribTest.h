@@ -10,6 +10,7 @@ namespace glGrib
 class Test : public Object
 {
 public:
+  Test () : VAID (this) {}
   void render (const View &, const OptionsLight &) const override;
   virtual ~Test () { clear (); }
   virtual void clear ();
@@ -20,7 +21,7 @@ protected:
   OpenGLBufferPtr vertexbuffer, elementbuffer;
   int numberOfPoints;
   unsigned int numberOfTriangles;
-  GLuint VertexArrayID = 0;
+  mutable OpenGLVertexArray<Test> VAID;
 };
 
 

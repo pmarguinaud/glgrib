@@ -17,9 +17,9 @@ void glGrib::Test::render (const glGrib::View & view, const glGrib::OptionsLight
 
   glDisable (GL_CULL_FACE);
 
-  glBindVertexArray (VertexArrayID);
+  VAID.bind ();
   glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, nullptr);
-  glBindVertexArray (0);
+  VAID.unbind ();
 
   glEnable (GL_CULL_FACE);
 
@@ -30,7 +30,7 @@ void glGrib::Test::render (const glGrib::View & view, const glGrib::OptionsLight
 void glGrib::Test::clear ()
 {
   if (isReady ())
-    glDeleteVertexArrays (1, &VertexArrayID);
+    VAID.clear ();
   glGrib::Object::clear ();
 }
 
@@ -47,15 +47,14 @@ void glGrib::Test::setup ()
   vertexbuffer = newGlgribOpenGLBufferPtr (lonlat.size () * sizeof (lonlat[0]), lonlat.data ());
   elementbuffer = newGlgribOpenGLBufferPtr (ind.size () * sizeof (ind[0]), ind.data ());
 
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
+  VAID.setup ();
+  VAID.bind ();
 
   vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-    
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
-  glBindVertexArray (0); 
+  VAID.unbind ();
 
   setReady ();
 }

@@ -40,17 +40,17 @@ void glGrib::Colorbar::setup (const glGrib::OptionsColorbar & o)
 
 void glGrib::Colorbar::setupVertexAttributes () const
 {
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
+  VAID.setup ();
+  VAID.bind ();
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
-  glBindVertexArray (0);
+  VAID.unbind ();
 }
 
 void glGrib::Colorbar::clear ()
 {
   if (ready)
     {
-      glDeleteVertexArrays (1, &VertexArrayID);
+      VAID.clear ();
       label.clear ();
     }
   palette = glGrib::Palette ();
@@ -201,8 +201,9 @@ void glGrib::Colorbar::render (const glm::mat4 & MVP) const
   program->set ("ymin", opts.position.ymin);
   program->set ("ymax", opts.position.ymax);
 
-  glBindVertexArray (VertexArrayID);
+  VAID.bind ();
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, nullptr);
+  VAID.unbind ();
 
 
 }

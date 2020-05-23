@@ -15,6 +15,7 @@ namespace glGrib
 class Colorbar
 {
 public:
+  Colorbar () : VAID (this) {}
   void setup (const OptionsColorbar &);
   void setupVertexAttributes () const;
   void clear ();
@@ -33,7 +34,7 @@ private:
   void updateNonLinear (const float, const float, std::vector<float> &, 
                         std::vector <float> &, std::vector<std::string> &);
   OptionsColorbar opts;
-  mutable GLuint VertexArrayID;
+  mutable OpenGLVertexArray<Colorbar> VAID;
   OpenGLBufferPtr elementbuffer;
   bool ready = false;
   bool hidden = false;

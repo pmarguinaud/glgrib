@@ -17,6 +17,8 @@ namespace glGrib
 class Points : public Object
 {
 public:
+
+  Points () : d (this) { }
   ~Points ();
   
   Points & operator= (const Points &);
@@ -35,15 +37,18 @@ public:
   }
 
 private:
-  struct
+  class _d 
   {
+  public:
+    _d (Points * p) : VAID (p) {}
     float min, max;
     OptionsPoints opts;
     int len;
     OpenGLBufferPtr llsbuffer;
     glGrib::Palette p;
-  } d;
-  mutable GLuint VertexArrayID = 0;
+    mutable OpenGLVertexArray<Points> VAID;
+  };
+  _d d;
 };
 
 

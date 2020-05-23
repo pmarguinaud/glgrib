@@ -52,53 +52,57 @@ void glGrib::FieldContour::clear ()
   glGrib::Field::clear ();
 }
 
+void glGrib::FieldContour::isoline_t::setupVertexAttributes () const
+{
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
+  
+  vertexbuffer->bind (GL_ARRAY_BUFFER);
+  
+  for (int j = 0; j < 3; j++)
+    {
+      glEnableVertexAttribArray (j);
+      glVertexAttribPointer (j, 2, GL_FLOAT, GL_FALSE, 0, (const void *)(j * 2 * sizeof (float)));
+      glVertexAttribDivisor (j, 1);
+    }
+  
+  if (heightbuffer->allocated ())
+    {
+      heightbuffer->bind (GL_ARRAY_BUFFER);
+  
+      for (int j = 0; j < 2; j++)
+        {
+          glEnableVertexAttribArray (3 + j);
+          glVertexAttribPointer (3 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float)));
+          glVertexAttribDivisor (3 + j, 1);
+        }
+    }
+  else
+    {
+      for (int j = 0; j < 2; j++)
+        {
+          glDisableVertexAttribArray (3 + j);
+          glVertexAttrib1f (3 + j, 0.0f);
+        }
+    }
+  
+  distancebuffer->bind (GL_ARRAY_BUFFER);
+  
+  for (int j = 0; j < 2; j++)
+    {
+      glEnableVertexAttribArray (5 + j); 
+      glVertexAttribPointer (5 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float))); 
+      glVertexAttribDivisor (5 + j, 1);
+    }
+  
+  glBindVertexArray (0); 
+
+}
+
 void glGrib::FieldContour::setupVertexAttributes () const
 {
   for (auto & is : iso)
-    {
-      glGenVertexArrays (1, &is.VertexArrayID);
-      glBindVertexArray (is.VertexArrayID);
-
-      is.vertexbuffer->bind (GL_ARRAY_BUFFER);
-
-      for (int j = 0; j < 3; j++)
-        {
-          glEnableVertexAttribArray (j);
-          glVertexAttribPointer (j, 2, GL_FLOAT, GL_FALSE, 0, (const void *)(j * 2 * sizeof (float)));
-          glVertexAttribDivisor (j, 1);
-        }
-
-      if (opts.geometry.height.on)
-        {
-          is.heightbuffer->bind (GL_ARRAY_BUFFER);
-
-          for (int j = 0; j < 2; j++)
-            {
-              glEnableVertexAttribArray (3 + j);
-              glVertexAttribPointer (3 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float)));
-              glVertexAttribDivisor (3 + j, 1);
-            }
-        }
-      else
-        {
-          for (int j = 0; j < 2; j++)
-            {
-              glDisableVertexAttribArray (3 + j);
-              glVertexAttrib1f (3 + j, 0.0f);
-            }
-	}
-
-      is.distancebuffer->bind (GL_ARRAY_BUFFER);
-
-      for (int j = 0; j < 2; j++)
-        {
-          glEnableVertexAttribArray (5 + j); 
-          glVertexAttribPointer (5 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float))); 
-          glVertexAttribDivisor (5 + j, 1);
-        }
-
-      glBindVertexArray (0); 
-    }
+    is.setupVertexAttributes ();
 }
 
 namespace
@@ -135,12 +139,13 @@ float getLabelAngle (const std::vector<float> & lonlat, const std::vector<float>
 
 }
 
-void glGrib::FieldContour::setupLabels (isoline_t * iso, const isoline_data_t & iso_data)
+void glGrib::FieldContour::isoline_t::setupLabels (const glGrib::OptionsField & opts, 
+                                                   const isoline_data_t & iso_data)
 {
   glGrib::FontPtr font = newGlgribFontPtr (opts.contour.labels.font);
   char tmp[256];
 
-  sprintf (tmp, opts.contour.labels.format.c_str (), iso->level);
+  sprintf (tmp, opts.contour.labels.format.c_str (), level);
 
   std::string label = tmp;
 
@@ -189,12 +194,46 @@ void glGrib::FieldContour::setupLabels (isoline_t * iso, const isoline_data_t & 
       L[i] = label; 
     }
 
-  iso->labels.setup3D (font, L, X, Y, Z, A, opts.contour.labels.font.scale, 
+  labels.setup3D (font, L, X, Y, Z, A, opts.contour.labels.font.scale, 
                        glGrib::String::C);
-  iso->labels.setForegroundColor (opts.contour.labels.font.color.foreground);
-  iso->labels.setBackgroundColor (opts.contour.labels.font.color.background);
+  labels.setForegroundColor (opts.contour.labels.font.color.foreground);
+  labels.setBackgroundColor (opts.contour.labels.font.color.background);
 
-  iso->labels.setScaleXYZ (opts.scale * 1.001);
+  labels.setScaleXYZ (opts.scale * 1.001);
+
+}
+
+void glGrib::FieldContour::isoline_t::setup (const glGrib::OptionsField & opts, 
+                                             float _level, size_t rank, const glGrib::Palette & palette, 
+                                             const glGrib::FieldContour::isoline_data_t & data)
+{
+  level = _level;
+
+  vertexbuffer   = newGlgribOpenGLBufferPtr (data.lonlat.size () * sizeof (float), 
+                                                        data.lonlat.data ());
+  if (opts.geometry.height.on)
+    heightbuffer   = newGlgribOpenGLBufferPtr (data.height.size () * sizeof (float), 
+                                                          data.height.data ());
+  
+  distancebuffer = newGlgribOpenGLBufferPtr (data.length.size () * sizeof (float), 
+                                                        data.length.data ());
+  size = data.size () - 1;
+  
+  if (rank < opts.contour.widths.size ())
+    {
+      wide = (width = opts.contour.widths[rank]);
+    }
+  if ((rank < opts.contour.lengths.size ()) && (rank < opts.contour.patterns.size ()))
+    {
+      dash = (length = opts.contour.lengths[rank]);
+      for (size_t j = 0; j < opts.contour.patterns[rank].length (); j++)
+        pattern.push_back (opts.contour.patterns[rank][j] == opts.contour.patterns[rank][0]);
+    }
+  
+  color = palette.getColor (level);
+  
+  if (opts.contour.labels.on)
+    setupLabels (opts, data);
 
 }
 
@@ -268,39 +307,7 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
   iso.resize (levels.size ());
 
   for (size_t i = 0; i < levels.size (); i++)
-    {
-      iso[i].level = levels[i];
-      iso[i].vertexbuffer   = newGlgribOpenGLBufferPtr (iso_data[i].lonlat.size () * sizeof (float), 
-                                                            iso_data[i].lonlat.data ());
-      if (opts.geometry.height.on)
-        iso[i].heightbuffer   = newGlgribOpenGLBufferPtr (iso_data[i].height.size () * sizeof (float), 
-                                                              iso_data[i].height.data ());
-
-      iso[i].distancebuffer = newGlgribOpenGLBufferPtr (iso_data[i].length.size () * sizeof (float), 
-                                                            iso_data[i].length.data ());
-      iso[i].size = iso_data[i].size () - 1;
-
-      if (i < opts.contour.widths.size ())
-        {
-          iso[i].wide = (iso[i].width = opts.contour.widths[i]);
-        }
-      if ((i < opts.contour.lengths.size ()) && (i < opts.contour.patterns.size ()))
-        {
-          iso[i].dash = (iso[i].length = opts.contour.lengths[i]);
-          for (size_t j = 0; j < opts.contour.patterns[i].length (); j++)
-            iso[i].pattern.push_back (opts.contour.patterns[i][j] == opts.contour.patterns[i][0]);
-        }
-
-      iso[i].color = palette.getColor (levels[i]);
-
-      if (opts.contour.labels.on)
-        setupLabels (&iso[i], iso_data[i]);
-
-      iso_data[i].clear ();
-
-
-    }
-
+    iso[i].setup (opts, levels[i], i, palette, iso_data[i]);
 
   setupVertexAttributes ();
 

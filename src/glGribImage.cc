@@ -13,7 +13,7 @@ glGrib::Image::~Image ()
 void glGrib::Image::clear ()
 {
   if (ready)
-    glDeleteVertexArrays (1, &VertexArrayID);
+    VAID.clear ();
 }
 
 glGrib::Image & glGrib::Image::operator= (const glGrib::Image & img)
@@ -37,10 +37,7 @@ void glGrib::Image::setupVertexAttributes () const
 
   // We have no buffer at all, but for some reason, we have to define a vertex array
   // so that the shader work. I do not know why.
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
-  glBindVertexArray (0);
-
+  VAID.setup ();
 }
 
 void glGrib::Image::setup (const glGrib::OptionsImage & o)
@@ -74,7 +71,7 @@ void glGrib::Image::render (const glm::mat4 & MVP) const
   program->set ("x1", opts.x1);
   program->set ("y1", opts.y1);
 
-  glBindVertexArray (VertexArrayID);
+  VAID.bind ();
 
   glActiveTexture (GL_TEXTURE0); 
   glBindTexture (GL_TEXTURE_2D, texture->id ());
@@ -83,7 +80,7 @@ void glGrib::Image::render (const glm::mat4 & MVP) const
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0};
   glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind);
 
-  glBindVertexArray (0);
+  VAID.unbind ();
 
 }
 

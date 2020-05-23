@@ -40,6 +40,8 @@ public:
     return C;
   }
 
+
+  Image () : VAID (this) {}
   ~Image ();
   
   Image & operator= (const Image &);
@@ -53,7 +55,7 @@ private:
   OptionsImage opts;
   bool ready = false;
   OpenGLTexturePtr texture;
-  mutable GLuint VertexArrayID = 0;
+  mutable OpenGLVertexArray<Image> VAID;
 };
 
 

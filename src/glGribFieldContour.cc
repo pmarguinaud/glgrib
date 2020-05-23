@@ -11,100 +11,6 @@
 #include <numeric>
 
 
-glGrib::FieldContour::FieldContour (const glGrib::FieldContour & field)
-{
-  if (field.isReady ())
-    {
-      // Cleanup already existing VAOs
-      clear ();
-      operator= (field);
-    }
-}
-
-glGrib::FieldContour * glGrib::FieldContour::clone () const
-{
-  glGrib::FieldContour * fld = new glGrib::FieldContour ();
-  *fld = *this;
-  return fld;
-}
-
-glGrib::FieldContour & glGrib::FieldContour::operator= (const glGrib::FieldContour & field)
-{
-  if (this != &field)
-    {
-      clear ();
-      if (field.isReady ())
-        {
-          glGrib::Field::operator= (field);
-          iso = field.iso;
-          setupVertexAttributes ();
-          setReady ();
-        }
-    }
-  return *this;
-}
-
-void glGrib::FieldContour::clear ()
-{
-  if (isReady ()) 
-    for (auto & is : iso)
-      glDeleteVertexArrays (1, &is.VertexArrayID);
-  glGrib::Field::clear ();
-}
-
-void glGrib::FieldContour::isoline_t::setupVertexAttributes () const
-{
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
-  
-  vertexbuffer->bind (GL_ARRAY_BUFFER);
-  
-  for (int j = 0; j < 3; j++)
-    {
-      glEnableVertexAttribArray (j);
-      glVertexAttribPointer (j, 2, GL_FLOAT, GL_FALSE, 0, (const void *)(j * 2 * sizeof (float)));
-      glVertexAttribDivisor (j, 1);
-    }
-  
-  if (heightbuffer->allocated ())
-    {
-      heightbuffer->bind (GL_ARRAY_BUFFER);
-  
-      for (int j = 0; j < 2; j++)
-        {
-          glEnableVertexAttribArray (3 + j);
-          glVertexAttribPointer (3 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float)));
-          glVertexAttribDivisor (3 + j, 1);
-        }
-    }
-  else
-    {
-      for (int j = 0; j < 2; j++)
-        {
-          glDisableVertexAttribArray (3 + j);
-          glVertexAttrib1f (3 + j, 0.0f);
-        }
-    }
-  
-  distancebuffer->bind (GL_ARRAY_BUFFER);
-  
-  for (int j = 0; j < 2; j++)
-    {
-      glEnableVertexAttribArray (5 + j); 
-      glVertexAttribPointer (5 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float))); 
-      glVertexAttribDivisor (5 + j, 1);
-    }
-  
-  glBindVertexArray (0); 
-
-}
-
-void glGrib::FieldContour::setupVertexAttributes () const
-{
-  for (auto & is : iso)
-    is.setupVertexAttributes ();
-}
-
 namespace
 {
 
@@ -237,6 +143,133 @@ void glGrib::FieldContour::isoline_t::setup (const glGrib::OptionsField & opts,
 
 }
 
+void glGrib::FieldContour::isoline_t::setupVertexAttributes () const
+{
+  VAID.setup ();
+  VAID.bind ();
+  
+  vertexbuffer->bind (GL_ARRAY_BUFFER);
+  
+  for (int j = 0; j < 3; j++)
+    {
+      glEnableVertexAttribArray (j);
+      glVertexAttribPointer (j, 2, GL_FLOAT, GL_FALSE, 0, (const void *)(j * 2 * sizeof (float)));
+      glVertexAttribDivisor (j, 1);
+    }
+  
+  if (heightbuffer != nullptr)
+    {
+      heightbuffer->bind (GL_ARRAY_BUFFER);
+  
+      for (int j = 0; j < 2; j++)
+        {
+          glEnableVertexAttribArray (3 + j);
+          glVertexAttribPointer (3 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float)));
+          glVertexAttribDivisor (3 + j, 1);
+        }
+    }
+  else
+    {
+      for (int j = 0; j < 2; j++)
+        {
+          glDisableVertexAttribArray (3 + j);
+          glVertexAttrib1f (3 + j, 0.0f);
+        }
+    }
+  
+  distancebuffer->bind (GL_ARRAY_BUFFER);
+  
+  for (int j = 0; j < 2; j++)
+    {
+      glEnableVertexAttribArray (5 + j); 
+      glVertexAttribPointer (5 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float))); 
+      glVertexAttribDivisor (5 + j, 1);
+    }
+  
+  glBindVertexArray (0); 
+
+}
+
+void glGrib::FieldContour::isoline_t::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+{
+  glGrib::Program * program = glGrib::Program::load ("CONTOUR");
+
+  VAID.bind ();
+  
+  program->set ("dash", dash);
+  program->set ("color0", color);
+  
+  
+  if (dash)
+    {
+      float length = view.pixelToDistAtNadir (this->length);
+      program->set ("length", length);
+      program->set ("N", static_cast<int> (pattern.size ()));
+      program->set ("pattern", pattern);
+    }
+  if (wide)
+    {
+      float width = view.pixelToDistAtNadir (this->width);
+      program->set ("width", width);
+      unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
+      glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, size);
+    }
+  else
+    {
+      glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, size);
+    }
+  
+  VAID.unbind ();
+  
+}
+
+glGrib::FieldContour::FieldContour (const glGrib::FieldContour & field)
+{
+  if (field.isReady ())
+    {
+      // Cleanup already existing VAOs
+      clear ();
+      operator= (field);
+    }
+}
+
+glGrib::FieldContour * glGrib::FieldContour::clone () const
+{
+  glGrib::FieldContour * fld = new glGrib::FieldContour ();
+  *fld = *this;
+  return fld;
+}
+
+glGrib::FieldContour & glGrib::FieldContour::operator= (const glGrib::FieldContour & field)
+{
+  if (this != &field)
+    {
+      clear ();
+      if (field.isReady ())
+        {
+          glGrib::Field::operator= (field);
+          iso = field.iso;
+          setupVertexAttributes ();
+          setReady ();
+        }
+    }
+  return *this;
+}
+
+void glGrib::FieldContour::clear ()
+{
+  if (isReady ()) 
+    for (auto & is : iso)
+      is.clear ();
+  glGrib::Field::clear ();
+}
+
+void glGrib::FieldContour::setupVertexAttributes () const
+{
+  for (auto & is : iso)
+    is.setupVertexAttributes ();
+}
+
 void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
   opts = o;
@@ -311,15 +344,11 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
   setupVertexAttributes ();
 
-  if (opts.no_value_pointer.on)
-    {
-      values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
-    }
-  else
-    {
-      values.push_back (data);
-    }
 
+  if (opts.no_value_pointer.on)
+    values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
+  else
+    values.push_back (data);
 
   setReady ();
 }
@@ -456,34 +485,7 @@ void glGrib::FieldContour::render (const glGrib::View & view, const glGrib::Opti
   program->set ("height_scale", opts.geometry.height.scale);
 
   for (const auto & is : iso)
-    {
-      glBindVertexArray (is.VertexArrayID);
-
-      program->set ("dash", is.dash);
-      program->set ("color0", is.color);
-
-
-      if (is.dash)
-        {
-          float length = view.pixelToDistAtNadir (is.length);
-          program->set ("length", length);
-          program->set ("N", static_cast<int> (is.pattern.size ()));
-          program->set ("pattern", is.pattern);
-        }
-      if (is.wide)
-        {
-          float width = view.pixelToDistAtNadir (is.width);
-          program->set ("width", width);
-          unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
-          glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, is.size);
-        }
-      else
-        {
-          glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, is.size);
-        }
-      glBindVertexArray (0);
-    }
-
+    is.render (view, light);
 
   view.delMVP (program);
 

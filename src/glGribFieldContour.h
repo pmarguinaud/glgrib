@@ -87,9 +87,15 @@ private:
   class isoline_t
   {
   public:
+    isoline_t () : VAID (this) {}
     void setup (const OptionsField &, float, size_t, const Palette &, const isoline_data_t &);
     void setupVertexAttributes () const;
     void setupLabels (const OptionsField & opts, const isoline_data_t &);
+    void clear ()
+    {
+      VAID.clear ();
+    }
+    void render (const glGrib::View & view, const glGrib::OptionsLight & light) const;
     String labels;
     float level;
     bool wide = false;
@@ -98,7 +104,7 @@ private:
     float length = 0.0f;
     OptionColor color;
     std::vector<int> pattern;
-    mutable GLuint VertexArrayID;
+    mutable OpenGLVertexArray<isoline_t> VAID;
     OpenGLBufferPtr vertexbuffer, heightbuffer, distancebuffer;
     GLuint size;
   };

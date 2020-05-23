@@ -10,6 +10,7 @@ namespace glGrib
 class Grid : public Object
 {
 public:
+  Grid () : VAID (this) {}
   Grid & operator=(const Grid &);
   void setup (const OptionsGrid &);
   void render (const View &, const OptionsLight &) const override;
@@ -29,7 +30,7 @@ public:
 private:
   String labels;
   OptionsGrid opts;
-  GLuint VertexArrayID;
+  OpenGLVertexArray<Grid> VAID;
   int numberOfPoints;
 };
 

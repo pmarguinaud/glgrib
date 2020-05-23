@@ -25,8 +25,8 @@ void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
 {
   opts = o;
 
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
+  VAID.setup ();
+  VAID.bind ();
 
 
   if (opts.labels.on)
@@ -76,6 +76,7 @@ void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
       labels.setBackgroundColor (opts.labels.font.color.background);
     }
 
+  VAID.unbind ();
 
   setReady ();
 }
@@ -83,7 +84,7 @@ void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
 void glGrib::Grid::clear ()
 {
   if (isReady ()) 
-    glDeleteVertexArrays (1, &VertexArrayID);
+    VAID.clear ();
   glGrib::Object::clear (); 
   labels.clear ();
 }
@@ -110,7 +111,7 @@ void glGrib::Grid::render (const glGrib::View & view, const glGrib::OptionsLight
   program->set ("interval", opts.interval);
   program->set ("dash_length", opts.dash_length);
 
-  glBindVertexArray (VertexArrayID);
+  VAID.bind ();
 
   program->set ("do_lat", 0);
   program->set ("frag_do_lat", 0);
@@ -120,7 +121,7 @@ void glGrib::Grid::render (const glGrib::View & view, const glGrib::OptionsLight
   program->set ("frag_do_lat", 1);
   glDrawArrays (GL_LINE_STRIP, 0, 2 * opts.resolution * (opts.points / 2 + 1));
 
-  glBindVertexArray (0);
+  VAID.unbind ();
 
   view.delMVP (program);
 

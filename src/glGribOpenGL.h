@@ -51,7 +51,7 @@ template <typename T>
 class OpenGLVertexArray
 {
 public:
-  void unbind () 
+  void unbind () const
   {
     glBindVertexArray (0); 
   }
@@ -80,7 +80,7 @@ public:
     glGenVertexArrays (1, &VertexArrayID);
     ready = true;
   }
-  void bind ()
+  void bind () const
   {
     if (! ready)
       throw std::runtime_error (std::string ("OpenGLVertexArray is not ready"));

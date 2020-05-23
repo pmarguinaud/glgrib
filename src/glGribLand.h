@@ -22,24 +22,32 @@ public:
   void setupVertexAttributes () const;
   float getScale () const override { return opts.layers[0].scale; }
 private:
-  void triangulate (std::vector<int> *, std::vector<int> *,
-                    std::vector<int> *, std::vector<int> *,
-                    const std::vector<unsigned int> &,
-                    std::vector<float> *, std::vector<int> *,
-                    std::vector<unsigned int> *);
-  void subdivide (const std::vector<int> &, const std::vector<int> &,
-                  const std::vector<int> &, const std::vector<int> &,
-                  std::vector<unsigned int> *, std::vector<float> *,
-                  const float);
-private:
   OptionsLand opts;
-  typedef struct
+  class layer_t
   {
+  public:
+    layer_t () : VAID (this) {}
+    void clear ()
+    {
+      VAID.clear ();
+    }
+    void triangulate (std::vector<int> *, std::vector<int> *,
+                      std::vector<int> *, std::vector<int> *,
+                      const std::vector<unsigned int> &,
+                      std::vector<float> *, std::vector<int> *,
+                      std::vector<unsigned int> *);
+    void subdivide (const std::vector<int> &, const std::vector<int> &,
+                    const std::vector<int> &, const std::vector<int> &,
+                    std::vector<unsigned int> *, std::vector<float> *,
+                    const float);
+    void setupVertexAttributes () const;
+    void render (const glGrib::OptionsLandLayer &) const;
+    void setup (const glGrib::OptionsLandLayer &);
     OpenGLBufferPtr vertexbuffer, elementbuffer;
     unsigned int numberOfTriangles;
-  } layer_t;
-  std::vector<layer_t> d;
-  mutable std::vector<GLuint> VertexArrayID;
+    mutable OpenGLVertexArray<layer_t> VAID;
+  };
+  std::vector<layer_t> layers;
 };
 
 

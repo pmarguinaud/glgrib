@@ -15,6 +15,7 @@ namespace glGrib
 class Mapscale
 {
 public:
+  Mapscale () : VAID (this) {}
   void setup (const OptionsMapscale &);
   void setupVertexAttributes () const;
   void clear ();
@@ -26,7 +27,7 @@ public:
   const OptionsMapscale & getOptions () const { return opts; }
 private:
   OptionsMapscale opts;
-  mutable GLuint VertexArrayID;
+  mutable OpenGLVertexArray<Mapscale> VAID;
   OpenGLBufferPtr elementbuffer;
   bool ready = false;
   bool hidden = false;

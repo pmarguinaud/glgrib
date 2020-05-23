@@ -44,18 +44,16 @@ void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
 
 void glGrib::Mapscale::setupVertexAttributes () const
 {
-  glGenVertexArrays (1, &VertexArrayID);
-  glBindVertexArray (VertexArrayID);
+  VAID.setup ();
+  VAID.bind ();
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
-  glBindVertexArray (0);
+  VAID.unbind ();
 }
 
 void glGrib::Mapscale::clear ()
 {
   if (ready)
-    {
-      glDeleteVertexArrays (1, &VertexArrayID);
-    }
+    VAID.clear ();
   ready = false;
 }
 
@@ -116,9 +114,10 @@ void glGrib::Mapscale::render (const glm::mat4 & MVP, const glGrib::View & view)
   program->set ("xmax", opts.position.xmin + frac1);
   program->set ("ymin", opts.position.ymin);
   program->set ("ymax", opts.position.ymax);
-
-  glBindVertexArray (VertexArrayID);
+  
+  VAID.bind ();
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, nullptr);
+  VAID.unbind ();
 
 }
 

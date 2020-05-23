@@ -21,6 +21,8 @@ glGrib::FieldScalar::FieldScalar (const glGrib::FieldScalar & field)
 
 void glGrib::FieldScalar::clear ()
 {
+  VAID_scalar.clear ();
+  VAID_points.clear ();
   glGrib::Field::clear ();
 }
 

@@ -31,9 +31,9 @@ private:
   void setupVertexAttributes () const;
   template <typename T>
   void setup (Loader *, const OptionsField &, float = 0);
+  void clear () override;
   mutable OpenGLVertexArray<FieldScalar> VAID_scalar;
   mutable OpenGLVertexArray<FieldScalar> VAID_points;
-  void clear () override;
 };
 
 

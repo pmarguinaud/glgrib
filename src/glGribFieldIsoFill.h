@@ -14,7 +14,7 @@ public:
   }
   FieldIsoFill * clone () const;
   FieldIsoFill & operator= (const FieldIsoFill &);
-  FieldIsoFill () { }
+  FieldIsoFill () : d (this) { }
   FieldIsoFill (const FieldIsoFill &);
   void setup (Loader *, const OptionsField &, float = 0) override;
   void render (const View &, const OptionsLight &) const override;
@@ -32,22 +32,31 @@ private:
   class isoband_t
   {
   public:
+    isoband_t () : VAID (this) {}
+    void setupVertexAttributes () const;
+    void clear ()
+    {
+      VAID.clear ();
+    }
+    void render () const;
     OptionColor color;
-    mutable GLuint VertexArrayID = 0;
+    mutable OpenGLVertexArray<isoband_t> VAID;
     OpenGLBufferPtr vertexbuffer, elementbuffer;
     int size;
   };
 
-  struct
+  class _d
   {
+  public:
+    _d (FieldIsoFill * f) : VAID (f) {}
     // Triangles with a single color
-    mutable GLuint VertexArrayID = 0;
+    mutable OpenGLVertexArray<FieldIsoFill> VAID;
     OpenGLBufferPtr colorbuffer;
 
     // Isoband
     std::vector<isoband_t> isoband;
-  } d;
-
+  };
+  _d d;
 
 };
 

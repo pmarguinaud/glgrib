@@ -12,7 +12,7 @@
 #include <omp.h>
 
 
-glGrib::FieldIsoFill::FieldIsoFill (const glGrib::FieldIsoFill & field)
+glGrib::FieldIsoFill::FieldIsoFill (const glGrib::FieldIsoFill & field) : d (this)
 {
   if (field.isReady ())
     {
@@ -49,18 +49,35 @@ void glGrib::FieldIsoFill::clear ()
 {
   if (isReady ()) 
     {
-      glDeleteVertexArrays (1, &d.VertexArrayID);
+      d.VAID.clear ();
       for (auto & ib : d.isoband)
-        glDeleteVertexArrays (1, &ib.VertexArrayID);
+        ib.clear ();
     }
   glGrib::Field::clear ();
+}
+
+void glGrib::FieldIsoFill::isoband_t::setupVertexAttributes () const
+{
+  // New triangles
+  
+  VAID.setup ();
+  VAID.bind ();
+  
+  // Elements
+  elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+  vertexbuffer->bind (GL_ARRAY_BUFFER);
+  
+  glEnableVertexAttribArray (0);
+  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+  
+  VAID.unbind ();
 }
 
 void glGrib::FieldIsoFill::setupVertexAttributes () const
 {
   // Triangles from original geometry
-  glGenVertexArrays (1, &d.VertexArrayID);
-  glBindVertexArray (d.VertexArrayID);
+  d.VAID.setup ();
+  d.VAID.bind ();
 
   // Elements
   geometry->bindTriangles ();
@@ -75,23 +92,10 @@ void glGrib::FieldIsoFill::setupVertexAttributes () const
 
   glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_FALSE, 0,  nullptr);
 
-  glBindVertexArray (0); 
+  d.VAID.unbind ();
 
   for (auto & ib : d.isoband)
-    {
-      // New triangles
-      glGenVertexArrays (1, &ib.VertexArrayID);
-      glBindVertexArray (ib.VertexArrayID);
-  
-      // Elements
-      ib.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
-      ib.vertexbuffer->bind (GL_ARRAY_BUFFER);
-  
-      glEnableVertexAttribArray (0);
-      glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-  
-      glBindVertexArray (0); 
-    }
+    ib.setupVertexAttributes ();
 }
 
 namespace
@@ -496,6 +500,16 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
 }
 
+void glGrib::FieldIsoFill::isoband_t::render () const
+{
+  glGrib::Program * program2 = glGrib::Program::load ("ISOFILL2");
+
+  VAID.bind ();
+  program2->set ("color0", color);
+  glDrawElements (GL_TRIANGLES, size, GL_UNSIGNED_INT, nullptr);
+  VAID.unbind ();
+}
+
 void glGrib::FieldIsoFill::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
   if (opts.scalar.wireframe.on)
@@ -509,10 +523,10 @@ void glGrib::FieldIsoFill::render (const glGrib::View & view, const glGrib::Opti
   program1->set ("scale0", opts.scale);
   palette.set (program1);
 
-  glBindVertexArray (d.VertexArrayID);
-
+  d.VAID.bind ();
   geometry->renderTriangles ();
-  glBindVertexArray (0);
+  d.VAID.unbind ();
+
   view.delMVP (program1);
 
   glGrib::Program * program2 = glGrib::Program::load ("ISOFILL2");
@@ -522,12 +536,7 @@ void glGrib::FieldIsoFill::render (const glGrib::View & view, const glGrib::Opti
   program2->set ("scale0", opts.scale);
 
   for (const auto & ib : d.isoband)
-    {
-      glBindVertexArray (ib.VertexArrayID);
-      program2->set ("color0", ib.color);
-      glDrawElements (GL_TRIANGLES, ib.size, GL_UNSIGNED_INT, nullptr);
-      glBindVertexArray (0);
-    }
+    ib.render ();
 
   view.delMVP (program2);
 

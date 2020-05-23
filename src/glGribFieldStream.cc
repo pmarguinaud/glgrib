@@ -62,48 +62,62 @@ void glGrib::FieldStream::clear ()
 {
   if (isReady ()) 
     {
-      for (size_t i = 0; i < stream.size (); i++)
-        glDeleteVertexArrays (1, &stream[i].VertexArrayID);
+      for (auto & s : stream)
+        s.clear ();
     }
   glGrib::Field::clear ();
 }
 
+void glGrib::FieldStream::streamline_t::setupVertexAttributes () const
+{
+  VAID.setup ();
+  VAID.bind ();
+  
+  vertexbuffer->bind (GL_ARRAY_BUFFER);
+  
+  for (int j = 0; j < 3; j++)
+    {
+      glEnableVertexAttribArray (j);
+      glVertexAttribPointer (j, 2, GL_FLOAT, GL_FALSE, 0, (const void *)(j * 2 * sizeof (float)));
+      glVertexAttribDivisor (j, 1);
+    }
+  
+  normalbuffer->bind (GL_ARRAY_BUFFER);
+  
+  for (int j = 0; j < 2; j++)
+    {
+      glEnableVertexAttribArray (3 + j);
+      glVertexAttribPointer (3 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float)));
+      glVertexAttribDivisor (3 + j, 1);
+    }
+  
+  distancebuffer->bind (GL_ARRAY_BUFFER);
+  
+  for (int j = 0; j < 2; j++)
+    {
+      glEnableVertexAttribArray (5 + j); 
+      glVertexAttribPointer (5 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float))); 
+      glVertexAttribDivisor (5 + j, 1);
+    }
+  
+  VAID.unbind ();
+}
+
 void glGrib::FieldStream::setupVertexAttributes () const
 {
-  for (size_t i = 0; i < stream.size (); i++)
-    {
-      glGenVertexArrays (1, &stream[i].VertexArrayID);
-      glBindVertexArray (stream[i].VertexArrayID);
-     
-      stream[i].vertexbuffer->bind (GL_ARRAY_BUFFER);
-     
-      for (int j = 0; j < 3; j++)
-        {
-          glEnableVertexAttribArray (j);
-          glVertexAttribPointer (j, 2, GL_FLOAT, GL_FALSE, 0, (const void *)(j * 2 * sizeof (float)));
-          glVertexAttribDivisor (j, 1);
-        }
-     
-      stream[i].normalbuffer->bind (GL_ARRAY_BUFFER);
-     
-      for (int j = 0; j < 2; j++)
-        {
-          glEnableVertexAttribArray (3 + j);
-          glVertexAttribPointer (3 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float)));
-          glVertexAttribDivisor (3 + j, 1);
-        }
-     
-      stream[i].distancebuffer->bind (GL_ARRAY_BUFFER);
-     
-      for (int j = 0; j < 2; j++)
-        {
-          glEnableVertexAttribArray (5 + j); 
-          glVertexAttribPointer (5 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float))); 
-          glVertexAttribDivisor (5 + j, 1);
-        }
-     
-      glBindVertexArray (0); 
-    }
+  for (const auto & s : stream)
+    s.setupVertexAttributes ();
+}
+
+void glGrib::FieldStream::streamline_t::setup (const streamline_data_t & stream_data)
+{
+  vertexbuffer   = newGlgribOpenGLBufferPtr (stream_data.lonlat.size () 
+                        * sizeof (float), stream_data.lonlat.data ());
+  normalbuffer   = newGlgribOpenGLBufferPtr (stream_data.values.size () 
+                        * sizeof (float), stream_data.values.data ());
+  distancebuffer = newGlgribOpenGLBufferPtr (stream_data.length.size () 
+                        * sizeof (float), stream_data.length.data ());
+  size = stream_data.size () - 1;
 }
 
 void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
@@ -165,12 +179,7 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
     }
 
   for (int i = 0; i < N; i++)
-    {
-      stream[i].vertexbuffer   = newGlgribOpenGLBufferPtr (stream_data[i].lonlat.size () * sizeof (float), stream_data[i].lonlat.data ());
-      stream[i].normalbuffer   = newGlgribOpenGLBufferPtr (stream_data[i].values.size () * sizeof (float), stream_data[i].values.data ());
-      stream[i].distancebuffer = newGlgribOpenGLBufferPtr (stream_data[i].length.size () * sizeof (float), stream_data[i].length.data ());
-      stream[i].size = stream_data[i].size () - 1;
-    }
+    stream[i].setup (stream_data[i]);
 
   setupVertexAttributes ();
 
@@ -436,6 +445,24 @@ void glGrib::FieldStream::computeStreamLine (int it0, const float * ru, const fl
   return;
 }
 
+void glGrib::FieldStream::streamline_t::render (bool wide, float Width, const glGrib::View & view) const
+{
+  glGrib::Program * program = glGrib::Program::load ("STREAM");
+  VAID.bind ();
+  if (wide)
+    {
+      float width = view.pixelToDistAtNadir (Width);
+      program->set ("width", width);
+      unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
+      glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, size);
+    }
+  else
+    {
+      glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, size);
+    }
+  VAID.unbind ();
+}
+
 void glGrib::FieldStream::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
   glGrib::Program * program = glGrib::Program::load ("STREAM");
@@ -464,23 +491,8 @@ void glGrib::FieldStream::render (const glGrib::View & view, const glGrib::Optio
   program->set ("motion", opts.stream.motion.on);
   program->set ("scalenorm", ! opts.stream.motion.on);
 
-  for (size_t i = 0; i < stream.size (); i++)
-    {
-      glBindVertexArray (stream[i].VertexArrayID);
-      if (wide)
-        {
-          float width = view.pixelToDistAtNadir (Width);
-          program->set ("width", width);
-          unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
-          glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, stream[i].size);
-        }
-      else
-        {
-          glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, stream[i].size);
-        }
-    }
-
-  glBindVertexArray (0);
+  for (const auto & s : stream)
+    s.render (wide, Width, view);
 
   view.delMVP (program);
 

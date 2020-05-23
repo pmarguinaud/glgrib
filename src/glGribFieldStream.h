@@ -85,7 +85,7 @@ private:
       values.clear (); 
       length.clear (); 
     }
-    int size ()
+    int size () const
     {
       return values.size ();
     }
@@ -93,7 +93,15 @@ private:
   class streamline_t
   {
   public:
-    mutable GLuint VertexArrayID;
+    streamline_t () : VAID (this) {}
+    void setupVertexAttributes () const;
+    void setup (const streamline_data_t &);
+    void clear ()
+    {
+      VAID.clear ();
+    }
+    void render (bool, float, const glGrib::View &) const;
+    mutable OpenGLVertexArray<streamline_t> VAID;
     OpenGLBufferPtr vertexbuffer, normalbuffer, distancebuffer;
     GLuint size;
   };

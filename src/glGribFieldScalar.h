@@ -51,7 +51,7 @@ private:
       VAID.clear ();
     }
     template <typename T>
-    void setupVertexAttributes () const;
+    void setupVertexAttributes_typed () const;
     void setupVertexAttributes () const;
     void render (const glGrib::View & view) const;
     std::string getProgramName () const;
@@ -62,58 +62,10 @@ private:
     FieldScalar * field;
     mutable OpenGLVertexArray<field_t> VAID;
   };
-  class scalar_t
-  {
-  public:
-    scalar_t (FieldScalar * f) : field (f), VAID (this) {}
-    scalar_t & operator= (const scalar_t & s)
-    {
-      if (this != &s)
-        VAID = s.VAID;
-      return *this;
-    }
-    void clear ()
-    {
-      VAID.clear ();
-    }
-    template <typename T>
-    void setupVertexAttributes () const;
-    void setupVertexAttributes () const;
-    void render (const glGrib::View & view) const;
-    Program * getProgram () const
-    {
-      return glGrib::Program::load ("SCALAR");
-    }
-    FieldScalar * field;
-    mutable OpenGLVertexArray<scalar_t> VAID;
-  };
-  class points_t
-  {
-  public:
-    points_t (FieldScalar * f) : field (f), VAID (this) {}
-    points_t & operator= (const points_t & p)
-    {
-      if (this != &p)
-        VAID = p.VAID;
-      return *this;
-    }
-    void clear ()
-    {
-      VAID.clear ();
-    }
-    template <typename T>
-    void setupVertexAttributes () const;
-    void setupVertexAttributes () const;
-    void render (const glGrib::View & view) const;
-    Program * getProgram () const
-    {
-      return glGrib::Program::load ("SCALAR_POINTS");
-    }
-    FieldScalar * field;
-    mutable OpenGLVertexArray<points_t> VAID;
-  };
-  friend class scalar_t;
-  friend class points_t;
+  using scalar_t = field_t<SCALAR>;
+  using points_t = field_t<POINTS>;
+  friend class field_t<SCALAR>;
+  friend class field_t<POINTS>;
   scalar_t scalar;
   points_t points;
 };

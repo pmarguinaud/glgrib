@@ -60,18 +60,19 @@ void glGrib::FieldScalar::setupVertexAttributes () const
 }
 
 
-void glGrib::FieldScalar::scalar_t::setupVertexAttributes () const
+template <int N>
+void glGrib::FieldScalar::field_t<N>::setupVertexAttributes () const
 {
   switch (field->opts.scalar.pack.bits)
     {
       case  8:
-        setupVertexAttributes <unsigned char > ();
+        setupVertexAttributes_typed <unsigned char > ();
       break;
       case 16:
-        setupVertexAttributes <unsigned short> ();
+        setupVertexAttributes_typed <unsigned short> ();
       break;
       case 32:
-        setupVertexAttributes <unsigned int  > ();
+        setupVertexAttributes_typed <unsigned int  > ();
       break;
       default:
         throw std::runtime_error (std::string ("Wrong number of bits for packing field: ") +
@@ -79,27 +80,21 @@ void glGrib::FieldScalar::scalar_t::setupVertexAttributes () const
     }
 }
 
-void glGrib::FieldScalar::points_t::setupVertexAttributes () const
+template <>
+std::string glGrib::FieldScalar::scalar_t::getProgramName () const
 {
-  switch (field->opts.scalar.pack.bits)
-    {
-      case  8:
-        setupVertexAttributes <unsigned char > ();
-      break;
-      case 16:
-        setupVertexAttributes <unsigned short> ();
-      break;
-      case 32:
-        setupVertexAttributes <unsigned int  > ();
-      break;
-      default:
-        throw std::runtime_error (std::string ("Wrong number of bits for packing field: ") +
-                                  std::to_string (field->opts.scalar.pack.bits));
-    }
+  return "SCALAR";
 }
 
+template <>
+std::string glGrib::FieldScalar::points_t::getProgramName () const
+{
+  return "SCALAR_POINTS";
+}
+
+template <>
 template <typename T>
-void glGrib::FieldScalar::scalar_t::setupVertexAttributes () const
+void glGrib::FieldScalar::scalar_t::setupVertexAttributes_typed () const
 {
   VAID.setup ();
   VAID.bind ();
@@ -133,8 +128,9 @@ void glGrib::FieldScalar::scalar_t::setupVertexAttributes () const
 
 }
 
+template <>
 template <typename T>
-void glGrib::FieldScalar::points_t::setupVertexAttributes () const
+void glGrib::FieldScalar::points_t::setupVertexAttributes_typed () const
 {
   // Points
   VAID.setup ();
@@ -298,6 +294,7 @@ void glGrib::FieldScalar::setupMpiView (glGrib::Loader * ld, const glGrib::Optio
 
 }
 
+template <>
 void glGrib::FieldScalar::scalar_t::render (const glGrib::View & view) const
 {
   glGrib::Program * program = getProgram ();
@@ -316,6 +313,7 @@ void glGrib::FieldScalar::scalar_t::render (const glGrib::View & view) const
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 }
 
+template <>
 void glGrib::FieldScalar::points_t::render (const glGrib::View & view) const
 {
   glGrib::Program * program = getProgram ();

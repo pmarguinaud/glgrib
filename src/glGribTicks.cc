@@ -14,6 +14,8 @@ glGrib::Ticks & glGrib::Ticks::operator= (const glGrib::Ticks & other)
     {
       clear ();
       opts = other.opts;
+      ticks = other.ticks;
+      frame = other.frame;
       setReady ();
     }
   return *this;
@@ -30,8 +32,8 @@ void glGrib::Ticks::clear ()
   labels.clear ();
   if (isReady ())
     {
-      VAID_ticks.clear ();
-      VAID_frame.clear ();
+      ticks.clear ();
+      frame.clear ();
     }
   width = 0;
   height = 0;
@@ -43,76 +45,82 @@ glGrib::Ticks::~Ticks ()
   clear (); 
 }
 
+template <>
+void glGrib::Ticks::ticks_t::render (const glm::mat4 & MVP) const
+{
+  glGrib::Program * program = glGrib::Program::load ("TICKS");
+  program->use ();
+  
+  int kind = std::min (1, std::max (0, ticks->opts.lines.kind));
+  
+  program->set ("MVP", MVP);
+  program->set ("N", float (glGrib::String::N));
+  program->set ("S", float (glGrib::String::S));
+  program->set ("W", float (glGrib::String::W));
+  program->set ("E", float (glGrib::String::E));
+  program->set ("color0", ticks->opts.lines.color);
+  program->set ("length", ticks->opts.lines.length);
+  program->set ("width", ticks->opts.lines.width);
+  program->set ("kind", kind);
+  
+  VAID.bind ();
+  
+  if (ticks->opts.lines.width == 0.0f)
+    {
+      unsigned int ind[2] = {1, 2};
+      glDrawElementsInstanced (GL_LINES, 2, GL_UNSIGNED_INT, ind, ticks->numberOfTicks);
+    }
+  else
+    {
+      if (kind == 0)
+        {
+          unsigned int ind[6] = {0, 1, 2, 0, 2, 3};
+          glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, ticks->numberOfTicks);
+        }
+      else if (kind == 1)
+        {
+          unsigned int ind[3] = {0, 1, 2};
+          glDrawElementsInstanced (GL_TRIANGLES, 3, GL_UNSIGNED_INT, ind, ticks->numberOfTicks);
+        }
+    }
+  
+  VAID.unbind ();
+}
+
+template <>
+void glGrib::Ticks::frame_t::render (const glm::mat4 & MVP) const
+{
+  glGrib::Program * program = glGrib::Program::load ("FTICKS");
+  program->use ();
+  
+  program->set ("MVP", MVP);
+  
+  float ratio = float (ticks->width) / float (ticks->height);
+  
+  program->set ("xmin", ticks->vopts.clip.xmin * ratio);
+  program->set ("xmax", ticks->vopts.clip.xmax * ratio);
+  program->set ("ymin", ticks->vopts.clip.ymin);
+  program->set ("ymax", ticks->vopts.clip.ymax);
+  program->set ("width", ticks->opts.frame.width);
+  program->set ("color0", ticks->opts.frame.color);
+  
+  
+  VAID.bind ();
+  unsigned int ind[6] = {0, 1, 2, 0, 2, 3};
+  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, 4);
+  VAID.unbind ();
+}
+
 void glGrib::Ticks::render (const glm::mat4 & MVP) const
 {
   if (! ready)
     return;
 
   if (opts.lines.on)
-    {
-      glGrib::Program * program = glGrib::Program::load ("TICKS");
-      program->use ();
-
-      int kind = std::min (1, std::max (0, opts.lines.kind));
-
-      program->set ("MVP", MVP);
-      program->set ("N", float (glGrib::String::N));
-      program->set ("S", float (glGrib::String::S));
-      program->set ("W", float (glGrib::String::W));
-      program->set ("E", float (glGrib::String::E));
-      program->set ("color0", opts.lines.color);
-      program->set ("length", opts.lines.length);
-      program->set ("width", opts.lines.width);
-      program->set ("kind", kind);
-
-      VAID_ticks.bind ();
-
-      if (opts.lines.width == 0.0f)
-        {
-          unsigned int ind[2] = {1, 2};
-          glDrawElementsInstanced (GL_LINES, 2, GL_UNSIGNED_INT, ind, numberOfTicks);
-        }
-      else
-        {
-          if (kind == 0)
-            {
-              unsigned int ind[6] = {0, 1, 2, 0, 2, 3};
-              glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, numberOfTicks);
-            }
-          else if (kind == 1)
-            {
-              unsigned int ind[3] = {0, 1, 2};
-              glDrawElementsInstanced (GL_TRIANGLES, 3, GL_UNSIGNED_INT, ind, numberOfTicks);
-            }
-        }
-
-      VAID_ticks.unbind ();
-    }
+    ticks.render (MVP);
 
   if (opts.frame.on)
-    {
-      glGrib::Program * program = glGrib::Program::load ("FTICKS");
-      program->use ();
-
-
-      program->set ("MVP", MVP);
-  
-      float ratio = float (width) / float (height);
-
-      program->set ("xmin", vopts.clip.xmin * ratio);
-      program->set ("xmax", vopts.clip.xmax * ratio);
-      program->set ("ymin", vopts.clip.ymin);
-      program->set ("ymax", vopts.clip.ymax);
-      program->set ("width", opts.frame.width);
-      program->set ("color0", opts.frame.color);
-
-
-      VAID_frame.bind ();
-      unsigned int ind[6] = {0, 1, 2, 0, 2, 3};
-      glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, 4);
-      VAID_frame.unbind ();
-    }
-
+    frame.render (MVP);
 
   if (opts.labels.on)
     labels.render (MVP);
@@ -360,25 +368,42 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
 
       vertexbuffer = newGlgribOpenGLBufferPtr (XYa.size () * sizeof (XYa[0]), XYa.data ());
 
-      VAID_ticks.setup ();
-      VAID_ticks.bind ();
-      
-      vertexbuffer->bind (GL_ARRAY_BUFFER);
-      glEnableVertexAttribArray (0); 
-      glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, nullptr); 
-      glVertexAttribDivisor (0, 1);
-
-      VAID_ticks.unbind ();
-
       numberOfTicks = XYa.size ();
+
     }
 
-  if (opts.frame.on)
-    {
-      // Needed to use a shader
-      VAID_frame.setup ();
-    }
+  setupVertexAttributes ();
 }
 
+template <>
+void glGrib::Ticks::ticks_t::setupVertexAttributes () const
+{
+
+  VAID.setup ();
+  VAID.bind ();
+  
+  ticks->vertexbuffer->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (0); 
+  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, nullptr); 
+  glVertexAttribDivisor (0, 1);
+  
+  VAID.unbind ();
+
+}
+
+template <>
+void glGrib::Ticks::frame_t::setupVertexAttributes () const
+{
+  // Needed to use a shader
+  VAID.setup ();
+}
+
+void glGrib::Ticks::setupVertexAttributes () const
+{
+  if (opts.lines.on)
+    ticks.setupVertexAttributes ();
+  if (opts.frame.on)
+    frame.setupVertexAttributes ();
+}
 
 

@@ -9,7 +9,7 @@
 #include <algorithm>
 
 glGrib::FieldScalar::FieldScalar (const glGrib::FieldScalar & field) 
-  : VAID_scalar (this), VAID_points (this)
+  : scalar (this), points (this)
 {
   if (field.isReady ())
     {
@@ -21,8 +21,8 @@ glGrib::FieldScalar::FieldScalar (const glGrib::FieldScalar & field)
 
 void glGrib::FieldScalar::clear ()
 {
-  VAID_scalar.clear ();
-  VAID_points.clear ();
+  scalar.clear ();
+  points.clear ();
   glGrib::Field::clear ();
 }
 
@@ -41,6 +41,8 @@ glGrib::FieldScalar & glGrib::FieldScalar::operator= (const glGrib::FieldScalar 
       clear ();
       if (field.isReady ())
         {
+          scalar = field.scalar;
+          points = field.points;
           glGrib::Field::operator= (field);
           setupVertexAttributes ();
           setReady ();
@@ -51,7 +53,16 @@ glGrib::FieldScalar & glGrib::FieldScalar::operator= (const glGrib::FieldScalar 
 
 void glGrib::FieldScalar::setupVertexAttributes () const
 {
-  switch (opts.scalar.pack.bits)
+  scalar.setupVertexAttributes ();
+  points.setupVertexAttributes ();
+  if (opts.geometry.frame.on)
+    setupVertexAttributesFrame ();
+}
+
+
+void glGrib::FieldScalar::scalar_t::setupVertexAttributes () const
+{
+  switch (field->opts.scalar.pack.bits)
     {
       case  8:
         setupVertexAttributes <unsigned char > ();
@@ -64,32 +75,51 @@ void glGrib::FieldScalar::setupVertexAttributes () const
       break;
       default:
         throw std::runtime_error (std::string ("Wrong number of bits for packing field: ") +
-                                  std::to_string (opts.scalar.pack.bits));
+                                  std::to_string (field->opts.scalar.pack.bits));
+    }
+}
+
+void glGrib::FieldScalar::points_t::setupVertexAttributes () const
+{
+  switch (field->opts.scalar.pack.bits)
+    {
+      case  8:
+        setupVertexAttributes <unsigned char > ();
+      break;
+      case 16:
+        setupVertexAttributes <unsigned short> ();
+      break;
+      case 32:
+        setupVertexAttributes <unsigned int  > ();
+      break;
+      default:
+        throw std::runtime_error (std::string ("Wrong number of bits for packing field: ") +
+                                  std::to_string (field->opts.scalar.pack.bits));
     }
 }
 
 template <typename T>
-void glGrib::FieldScalar::setupVertexAttributes () const
+void glGrib::FieldScalar::scalar_t::setupVertexAttributes () const
 {
-  VAID_scalar.setup ();
-  VAID_scalar.bind ();
+  VAID.setup ();
+  VAID.bind ();
 
-  geometry->bindCoordinates (0);
+  field->geometry->bindCoordinates (0);
 
-  colorbuffer->bind (GL_ARRAY_BUFFER);
+  field->colorbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
 
-  bool fixed = palette.fixed ();
+  bool fixed = field->palette.fixed ();
 
   glVertexAttribPointer (1, 1, getOpenGLType<T> (), fixed ? GL_FALSE : GL_TRUE, 0,  nullptr); 
 
-  geometry->bindTriangles ();
+  field->geometry->bindTriangles ();
 
-  bindHeight <T> (2);
+  field->bindHeight <T> (2);
 
-  if (opts.mpiview.on)
+  if (field->opts.mpiview.on)
     {
-      mpivbuffer->bind (GL_ARRAY_BUFFER);
+      field->mpivbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (3); 
       glVertexAttribPointer (3, 3, GL_FLOAT, GL_FALSE, 0, nullptr); 
     }
@@ -99,23 +129,28 @@ void glGrib::FieldScalar::setupVertexAttributes () const
       glVertexAttrib3f (3, 0.0f, 0.0f, 0.0f);
     }
 
-  VAID_scalar.unbind ();
+  VAID.unbind ();
 
+}
+
+template <typename T>
+void glGrib::FieldScalar::points_t::setupVertexAttributes () const
+{
   // Points
-  VAID_points.setup ();
-  VAID_points.bind ();
+  VAID.setup ();
+  VAID.bind ();
 
-  geometry->bindCoordinates (0);
+  field->geometry->bindCoordinates (0);
   glVertexAttribDivisor (0, 1);
   
-  colorbuffer->bind (GL_ARRAY_BUFFER);
+  field->colorbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, 1, getOpenGLType<T> (), GL_TRUE, 0, nullptr); 
   glVertexAttribDivisor (1, 1);
 
-  if (heightbuffer)
+  if (field->heightbuffer)
     {
-      heightbuffer->bind (GL_ARRAY_BUFFER);
+      field->heightbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (2);
       glVertexAttribPointer (2, 1, getOpenGLType<T> (), GL_TRUE, 0, nullptr);
       glVertexAttribDivisor (2, 1);
@@ -127,11 +162,7 @@ void glGrib::FieldScalar::setupVertexAttributes () const
     }
 
 
-  VAID_points.unbind ();
-
-  if (opts.geometry.frame.on)
-    setupVertexAttributesFrame ();
-
+  VAID.unbind ();
 }
 
 void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
@@ -200,7 +231,7 @@ void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField
   if (opts.mpiview.on)
     setupMpiView (ld, o, slot);
 
-  setupVertexAttributes<T> ();
+  setupVertexAttributes ();
 
   if (opts.no_value_pointer.on)
     values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
@@ -267,6 +298,43 @@ void glGrib::FieldScalar::setupMpiView (glGrib::Loader * ld, const glGrib::Optio
 
 }
 
+void glGrib::FieldScalar::scalar_t::render (const glGrib::View & view) const
+{
+  glGrib::Program * program = getProgram ();
+  program->set ("smoothed", field->opts.scalar.smooth.on);
+  
+  if (field->opts.scalar.wireframe.on)
+    glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+  
+  VAID.bind ();
+
+  field->geometry->renderTriangles ();
+  
+  VAID.unbind ();
+
+  if (field->opts.scalar.wireframe.on)
+    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+}
+
+void glGrib::FieldScalar::points_t::render (const glGrib::View & view) const
+{
+  glGrib::Program * program = getProgram ();
+  float length = view.pixelToDistAtNadir (10);
+  
+  program->set ("length10", length);
+  program->set ("pointSiz", field->opts.scalar.points.size.value);
+  program->set ("lpointZoo", field->opts.scalar.points.size.variable.on);
+  program->set ("factor", field->opts.scalar.points.size.factor.on);
+  
+  VAID.bind ();
+  
+  int numberOfPoints = field->geometry->getNumberOfPoints ();
+  unsigned int ind[6] = {0, 1, 2, 2, 3, 0}; 
+  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, numberOfPoints);
+  
+  VAID.unbind ();
+}
+
 void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
   float scale0 = opts.scale;
@@ -274,10 +342,11 @@ void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::Optio
   if (opts.mpiview.on)
     scale0 = scale0 / (1.0f + opts.mpiview.scale);
 
-  glGrib::Program * program = glGrib::Program::load (opts.scalar.points.on ? "SCALAR_POINTS" : "SCALAR");
+  glGrib::Program * program = opts.scalar.points.on 
+                            ? points.getProgram () 
+                            : scalar.getProgram ();
 
   program->use ();
-
 
   view.setMVP (program);
   program->set (light);
@@ -302,38 +371,9 @@ void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::Optio
   program->set ("Nmax", Nmax-1);
     
   if (opts.scalar.points.on)
-    {
-      float length = view.pixelToDistAtNadir (10);
-    
-      program->set ("length10", length);
-      program->set ("pointSiz", opts.scalar.points.size.value);
-      program->set ("lpointZoo", opts.scalar.points.size.variable.on);
-      program->set ("factor", opts.scalar.points.size.factor.on);
-    
-      VAID_points.bind ();
-    
-      int numberOfPoints = geometry->getNumberOfPoints ();
-      unsigned int ind[6] = {0, 1, 2, 2, 3, 0}; 
-      glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, numberOfPoints);
-    
-      VAID_points.unbind ();
-    }
+    points.render (view);
   else
-    {
-      program->set ("smoothed", opts.scalar.smooth.on);
-    
-      if (opts.scalar.wireframe.on)
-        glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
-    
-      VAID_scalar.bind ();
-
-      geometry->renderTriangles ();
-      
-      VAID_scalar.unbind ();
-
-      if (opts.scalar.wireframe.on)
-        glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-    }
+    scalar.render (view);
 
   view.delMVP (program);
 

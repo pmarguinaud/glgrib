@@ -47,6 +47,8 @@ typedef std::shared_ptr<OpenGLTexture> OpenGLTexturePtr;
 OpenGLTexturePtr newGlgribOpenGLTexturePtr (const OpenGLTexturePtr &);
 OpenGLTexturePtr newGlgribOpenGLTexturePtr (int, int, const void *);
 
+
+
 template <typename T>
 class OpenGLVertexArray
 {
@@ -63,6 +65,12 @@ public:
       clear ();
     return *this;
   }
+  OpenGLVertexArray (const OpenGLVertexArray & other) 
+  {
+    ready = false;
+    VertexArrayID = 0;
+  }
+
   ~OpenGLVertexArray ()
   {
     clear ();

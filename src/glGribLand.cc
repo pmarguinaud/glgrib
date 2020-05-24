@@ -11,6 +11,7 @@
 #include <iostream>
 #include <omp.h>
 
+
 glGrib::Land & glGrib::Land::operator=(const glGrib::Land & other)
 {
   clear (); 

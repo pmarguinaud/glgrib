@@ -5,10 +5,9 @@
 
 void glGrib::Polygon::setupVertexAttributes () const
 {
-
   VAID.setup ();
   VAID.bind ();
-  
+
   vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr); 
@@ -26,7 +25,6 @@ void glGrib::Polygon::render (const glGrib::View & view, const glGrib::OptionsLi
   glDrawElements (GL_LINE_STRIP, numberOfLines, GL_UNSIGNED_INT, nullptr);
   glDisable (GL_PRIMITIVE_RESTART);
   VAID.unbind ();
-
 }
 
 glGrib::Polygon::~Polygon ()

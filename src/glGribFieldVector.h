@@ -15,7 +15,7 @@ public:
   }
   FieldVector * clone () const;
   FieldVector & operator= (const FieldVector &);
-  FieldVector () : VAID_scalar (this), VAID_vector (this) { }
+  FieldVector () : scalar (this), vector (this) { }
   FieldVector (const FieldVector &);
   void setup (Loader *, const OptionsField &, float = 0) override;
   void renderArrow (const View &, const OptionsLight &) const;
@@ -43,13 +43,45 @@ public:
     return (int)opts.path.size () / 2;
   }
 private:
-  mutable OpenGLVertexArray<FieldVector> VAID_scalar;
-  mutable OpenGLVertexArray<FieldVector> VAID_vector;
+  
+  enum
+  {
+    SCALAR=0,
+    VECTOR=1
+  };
+  template <int N>
+  class field_t
+  {
+  public:
+    field_t (FieldVector * f) : field (f), VAID (this) {}
+    field_t & operator= (const field_t & s)
+    {   
+      if (this != &s) 
+        VAID = s.VAID;
+      return *this;
+    }   
+    void clear ()
+    {   
+      VAID.clear (); 
+    }   
+    template <typename T>
+    void setupVertexAttributes_typed () const;
+    void setupVertexAttributes () const;
+    void render (const glGrib::View &, const glGrib::OptionsLight &) const;
+    FieldVector * field;
+    mutable OpenGLVertexArray<field_t> VAID;
+  };  
+  using scalar_t = field_t<SCALAR>;
+  using vector_t = field_t<VECTOR>;
+  friend class field_t<SCALAR>;
+  friend class field_t<VECTOR>;
   struct
   {
     OpenGLBufferPtr buffer_n, buffer_d;
     float vscale;
   } d;
+  scalar_t scalar;
+  vector_t vector;
 protected:
   void clear () override;
 };

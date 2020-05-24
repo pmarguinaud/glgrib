@@ -8,7 +8,7 @@
 #include <iostream>
 
 glGrib::FieldVector::FieldVector (const glGrib::FieldVector & field) 
-  : VAID_scalar (this), VAID_vector (this)
+  : scalar (this), vector (this)
 {
   if (field.isReady ())
     {
@@ -43,56 +43,66 @@ glGrib::FieldVector & glGrib::FieldVector::operator= (const glGrib::FieldVector 
 }
 
 
-void glGrib::FieldVector::setupVertexAttributes () const
+template <>
+void glGrib::FieldVector::scalar_t::setupVertexAttributes () const
 {
   // Norm/direction
 
-  VAID_scalar.setup ();
-  VAID_scalar.bind ();
+  VAID.setup ();
+  VAID.bind ();
 
   // Position
-  geometry->bindCoordinates (0);
+  field->geometry->bindCoordinates (0);
   
   // Norm
-  d.buffer_n->bind (GL_ARRAY_BUFFER);
+  field->d.buffer_n->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), nullptr); 
 
 
-  geometry->bindTriangles ();
+  field->geometry->bindTriangles ();
 
-  bindHeight <unsigned char> (2);
+  field->bindHeight <unsigned char> (2);
 
-  VAID_scalar.unbind ();
+  VAID.unbind ();
 
+}
 
+template <>
+void glGrib::FieldVector::vector_t::setupVertexAttributes () const
+{
   // Vector
 
-  VAID_vector.setup ();
-  VAID_vector.bind ();
+  VAID.setup ();
+  VAID.bind ();
 
   // Position
-  geometry->bindCoordinates (0);
+  field->geometry->bindCoordinates (0);
   glVertexAttribDivisor (0, 1);  
   
   // Norm
-  d.buffer_n->bind (GL_ARRAY_BUFFER);
+  field->d.buffer_n->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (1); 
   glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), nullptr); 
   glVertexAttribDivisor (1, 1);  
 
 
   // Direction
-  d.buffer_d->bind (GL_ARRAY_BUFFER);
+  field->d.buffer_d->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (2); 
   glVertexAttribPointer (2, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), nullptr); 
   glVertexAttribDivisor (2, 1);  
 
-  bindHeight <unsigned char> (3);
+  field->bindHeight <unsigned char> (3);
   glVertexAttribDivisor (3, 1);  
 
-  VAID_vector.unbind ();
+  VAID.unbind ();
+}
 
+void glGrib::FieldVector::setupVertexAttributes () const
+{
+  scalar.setupVertexAttributes ();
+  vector.setupVertexAttributes ();
 }
 
 void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
@@ -154,23 +164,27 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
   setReady ();
 }
 
-void glGrib::FieldVector::renderNorms (const glGrib::View & view, 
-                                       const glGrib::OptionsLight & light) 
+template <>
+void glGrib::FieldVector::scalar_t::render
+   (const glGrib::View & view, 
+    const glGrib::OptionsLight & light) 
 const
 {
+  const auto & opts = field->opts;
+  const auto & palette = field->palette;
   float scale0 = opts.scale;
 
-  std::vector<float> valmax = getMaxValue ();
-  std::vector<float> valmin = getMinValue ();
+  std::vector<float> valmax = field->getMaxValue ();
+  std::vector<float> valmin = field->getMinValue ();
 
   glGrib::Program * program = glGrib::Program::load ("SCALAR");
   program->use ();
 
-  geometry->setProgramParameters (program);
+  field->geometry->setProgramParameters (program);
 
   view.setMVP (program);
   program->set (light);
-  palette.set (program);
+  field->palette.set (program);
 
   scale0 *= 0.99;
 
@@ -184,12 +198,11 @@ const
   program->set ("discrete", false);
   program->set ("mpiview_scale", 0.0f);
 
-  VAID_scalar.bind ();
-  geometry->renderTriangles ();
-  VAID_scalar.unbind ();
+  VAID.bind ();
+  field->geometry->renderTriangles ();
+  VAID.unbind ();
 
   view.delMVP (program);
-
 }
 
 
@@ -224,23 +237,28 @@ public:
 
 }
 
-void glGrib::FieldVector::renderArrow (const glGrib::View & view, 
-                                       const glGrib::OptionsLight & light) 
+template <>
+void glGrib::FieldVector::vector_t::render 
+   (const glGrib::View & view, 
+    const glGrib::OptionsLight & light) 
 const
 {
-  std::vector<float> valmax = getMaxValue ();
-  std::vector<float> valmin = getMinValue ();
+  const auto & opts = field->opts;
+  const auto & palette = field->palette;
+
+  std::vector<float> valmax = field->getMaxValue ();
+  std::vector<float> valmin = field->getMinValue ();
 
 // Display vectors
 
   glGrib::Program * program = glGrib::Program::load ("VECTOR");
   program->use ();
 
-  geometry->setProgramParameters (program);
+  field->geometry->setProgramParameters (program);
 
   view.setMVP (program);
   program->set (light);
-  palette.set (program);
+  field->palette.set (program);
 
   program->set ("scale0", opts.scale);
   program->set ("palmin", palette.getMin ());
@@ -251,10 +269,11 @@ const
   program->set ("valmax_d", valmax[1]);
   program->set ("valmin", valmin[0]);
   program->set ("valmax", valmax[0]);
-  program->set ("vscale", d.vscale);
+  program->set ("vscale", field->d.vscale);
   program->set ("height_scale", opts.geometry.height.scale);
 
   const arrow_t * arrow = nullptr;
+
 
   if (opts.vector.arrow.on)
     {
@@ -310,20 +329,23 @@ const
 
     }
 
-  VAID_vector.bind ();
-  int numberOfPoints = geometry->getNumberOfPoints ();
+  VAID.bind ();
+  int numberOfPoints = field->geometry->getNumberOfPoints ();
   arrow->render (numberOfPoints, opts.vector.arrow.fill.on);
-  VAID_vector.unbind ();
+  VAID.unbind ();
 
   view.delMVP (program);
 }
 
-void glGrib::FieldVector::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+void glGrib::FieldVector::render 
+  (const glGrib::View & view, 
+   const glGrib::OptionsLight & light) 
+const
 {
   if (opts.vector.arrow.on || opts.vector.barb.on)
-    renderArrow (view, light);
+    vector.render (view, light);
   if (opts.vector.norm.on)
-    renderNorms (view, light);
+    scalar.render (view, light);
 }
 
 glGrib::FieldVector::~FieldVector ()
@@ -335,8 +357,8 @@ void glGrib::FieldVector::clear ()
 {
   if (isReady ())
     {
-      VAID_vector.clear ();
-      VAID_scalar.clear ();
+      vector.clear ();
+      scalar.clear ();
     }
   glGrib::Field::clear ();
 }

@@ -29,7 +29,6 @@ void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
     }
 
   elementbuffer = newGlgribOpenGLBufferPtr (3 * nt * sizeof (unsigned int), ind);
-  setupVertexAttributes ();
   
   delete [] ind;
 
@@ -44,10 +43,7 @@ void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
 
 void glGrib::Mapscale::setupVertexAttributes () const
 {
-  VAID.setup ();
-  VAID.bind ();
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
-  VAID.unbind ();
 }
 
 void glGrib::Mapscale::clear ()
@@ -115,7 +111,7 @@ void glGrib::Mapscale::render (const glm::mat4 & MVP, const glGrib::View & view)
   program->set ("ymin", opts.position.ymin);
   program->set ("ymax", opts.position.ymax);
   
-  VAID.bind ();
+  VAID.bindAuto ();
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, nullptr);
   VAID.unbind ();
 

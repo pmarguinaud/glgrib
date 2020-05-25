@@ -12,6 +12,7 @@ class Test : public Object
 public:
   Test () : VAID (this) {}
   void render (const View &, const OptionsLight &) const override;
+  void setupVertexAttributes () const;
   virtual ~Test () { clear (); }
   virtual void clear ();
   virtual void setup ();

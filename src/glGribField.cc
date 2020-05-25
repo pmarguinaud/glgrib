@@ -160,7 +160,7 @@ void glGrib::Field::clear ()
   values.clear ();
   meta.clear ();
   hilo.clear ();
-  VAID_frame.clear ();
+  frame.clear ();
   glGrib::World::clear ();
 }
 
@@ -396,18 +396,24 @@ void glGrib::Field::packUnpack (const float * g, float * f, const int n, const f
 }
 
 
-void glGrib::Field::setupVertexAttributesFrame () const
+void glGrib::Field::frame_t::setupVertexAttributes () const
 {
-  VAID_frame.setup ();
-  VAID_frame.bind ();
-
-  geometry->bindFrame (0);
-
-  VAID_frame.unbind ();
+  VAID.setup ();
+  VAID.bind ();
+  field->geometry->bindFrame (0);
+  VAID.unbind ();
 }
 
-void glGrib::Field::renderFrame (const glGrib::View & view) const
+void glGrib::Field::setupVertexAttributesFrame () const
 {
+  frame.setupVertexAttributes ();
+}
+
+void glGrib::Field::frame_t::render (const glGrib::View & view) const
+{
+  const auto & opts = field->opts;
+  const auto & geom = field->geometry;
+
   glGrib::Program * program = glGrib::Program::load ("FRAME"); 
 
   program->use ();
@@ -419,7 +425,7 @@ void glGrib::Field::renderFrame (const glGrib::View & view) const
   program->set ("dlon", opts.geometry.frame.dlon);
   program->set ("dlat", opts.geometry.frame.dlat);
 
-  VAID_frame.bind ();
+  VAID.bind ();
 
   if (opts.geometry.frame.width > 0.0f)
     {
@@ -427,14 +433,19 @@ void glGrib::Field::renderFrame (const glGrib::View & view) const
       program->set ("width", width);
       unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
       glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, 
-                               geometry->getFrameNumberOfPoints ());
+                               geom->getFrameNumberOfPoints ());
     }
   else
     {
-      glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, geometry->getFrameNumberOfPoints ());
+      glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, geom->getFrameNumberOfPoints ());
     }
 
-  VAID_frame.unbind ();
+  VAID.unbind ();
+}
+
+void glGrib::Field::renderFrame (const glGrib::View & view) const
+{
+  frame.render (view);
 }
 
 

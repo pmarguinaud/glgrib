@@ -21,7 +21,7 @@ class Field : public World
 {
 public:
 
-  Field () : VAID_frame (this) {}
+  Field () : frame (this) {}
 
   static Field * create (const OptionsField &, float, Loader *);
 
@@ -126,7 +126,6 @@ public:
   }
 
 protected:
-  float slot = 0.0f;
   template <typename T>
   void unpack (float *, const int, const float, 
                const float, const float, const T *);
@@ -141,12 +140,34 @@ protected:
   template <typename T>
   void bindHeight (int) const;
   static void getUserPref (OptionsField *, Loader *, int);
+
+  class frame_t
+  {
+  public:
+    frame_t (Field * f) : field (f), VAID (this) {}
+    frame_t & operator= (const frame_t & s)
+    {   
+      if (this != &s) 
+        VAID = s.VAID;
+      return *this;
+    }   
+    void clear ()
+    {
+      VAID.clear ();
+    }
+    void render (const View &) const;
+    void setupVertexAttributes () const;
+    Field * field = nullptr;
+    mutable OpenGLVertexArray<frame_t> VAID;
+  };
+
+  float slot = 0.0f;
   Palette palette;
   mutable OptionsField opts;
   std::vector<FieldMetadata> meta;
   std::vector<FieldFloatBufferPtr> values;
   String hilo;
-  mutable OpenGLVertexArray<Field> VAID_frame;
+  frame_t frame;
 };
 
 

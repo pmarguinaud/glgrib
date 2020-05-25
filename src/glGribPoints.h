@@ -18,7 +18,7 @@ class Points : public Object
 {
 public:
 
-  Points () : d (this) { }
+  Points () : VAID (this) { }
   ~Points ();
   
   Points & operator= (const Points &);
@@ -37,18 +37,15 @@ public:
   }
 
 private:
-  class _d 
+  struct
   {
-  public:
-    _d (Points * p) : VAID (p) {}
     float min, max;
     OptionsPoints opts;
     int len;
     OpenGLBufferPtr llsbuffer;
     glGrib::Palette p;
-    mutable OpenGLVertexArray<Points> VAID;
-  };
-  _d d;
+  } d;
+  mutable OpenGLVertexArray<Points> VAID;
 };
 
 

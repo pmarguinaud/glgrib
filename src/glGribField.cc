@@ -398,15 +398,7 @@ void glGrib::Field::packUnpack (const float * g, float * f, const int n, const f
 
 void glGrib::Field::frame_t::setupVertexAttributes () const
 {
-  VAID.setup ();
-  VAID.bind ();
   field->geometry->bindFrame (0);
-  VAID.unbind ();
-}
-
-void glGrib::Field::setupVertexAttributesFrame () const
-{
-  frame.setupVertexAttributes ();
 }
 
 void glGrib::Field::frame_t::render (const glGrib::View & view) const
@@ -425,7 +417,7 @@ void glGrib::Field::frame_t::render (const glGrib::View & view) const
   program->set ("dlon", opts.geometry.frame.dlon);
   program->set ("dlat", opts.geometry.frame.dlat);
 
-  VAID.bind ();
+  VAID.bindAuto ();
 
   if (opts.geometry.frame.width > 0.0f)
     {

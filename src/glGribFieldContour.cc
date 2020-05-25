@@ -145,9 +145,6 @@ void glGrib::FieldContour::isoline_t::setup (const glGrib::OptionsField & opts,
 
 void glGrib::FieldContour::isoline_t::setupVertexAttributes () const
 {
-  VAID.setup ();
-  VAID.bind ();
-  
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);
   
   for (int j = 0; j < 3; j++)
@@ -186,15 +183,13 @@ void glGrib::FieldContour::isoline_t::setupVertexAttributes () const
       glVertexAttribDivisor (5 + j, 1);
     }
   
-  glBindVertexArray (0); 
-
 }
 
 void glGrib::FieldContour::isoline_t::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
   glGrib::Program * program = glGrib::Program::load ("CONTOUR");
 
-  VAID.bind ();
+  VAID.bindAuto ();
   
   program->set ("dash", d.dash);
   program->set ("color0", d.color);
@@ -249,7 +244,6 @@ glGrib::FieldContour & glGrib::FieldContour::operator= (const glGrib::FieldConto
         {
           glGrib::Field::operator= (field);
           iso = field.iso;
-          setupVertexAttributes ();
           setReady ();
         }
     }
@@ -262,12 +256,6 @@ void glGrib::FieldContour::clear ()
     for (auto & is : iso)
       is.clear ();
   glGrib::Field::clear ();
-}
-
-void glGrib::FieldContour::setupVertexAttributes () const
-{
-  for (auto & is : iso)
-    is.setupVertexAttributes ();
 }
 
 void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
@@ -341,9 +329,6 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
   for (size_t i = 0; i < levels.size (); i++)
     iso[i].setup (opts, levels[i], i, palette, iso_data[i]);
-
-  setupVertexAttributes ();
-
 
   if (opts.no_value_pointer.on)
     values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));

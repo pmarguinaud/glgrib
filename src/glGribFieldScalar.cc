@@ -44,21 +44,11 @@ glGrib::FieldScalar & glGrib::FieldScalar::operator= (const glGrib::FieldScalar 
           scalar = field.scalar;
           points = field.points;
           glGrib::Field::operator= (field);
-          setupVertexAttributes ();
           setReady ();
         }
     }
   return *this;
 }
-
-void glGrib::FieldScalar::setupVertexAttributes () const
-{
-  scalar.setupVertexAttributes ();
-  points.setupVertexAttributes ();
-  if (opts.geometry.frame.on)
-    setupVertexAttributesFrame ();
-}
-
 
 template <int N>
 void glGrib::FieldScalar::field_t<N>::setupVertexAttributes () const
@@ -96,9 +86,6 @@ template <>
 template <typename T>
 void glGrib::FieldScalar::scalar_t::setupVertexAttributes_typed () const
 {
-  VAID.setup ();
-  VAID.bind ();
-
   field->geometry->bindCoordinates (0);
 
   field->colorbuffer->bind (GL_ARRAY_BUFFER);
@@ -123,9 +110,6 @@ void glGrib::FieldScalar::scalar_t::setupVertexAttributes_typed () const
       glDisableVertexAttribArray (3);
       glVertexAttrib3f (3, 0.0f, 0.0f, 0.0f);
     }
-
-  VAID.unbind ();
-
 }
 
 template <>
@@ -133,9 +117,6 @@ template <typename T>
 void glGrib::FieldScalar::points_t::setupVertexAttributes_typed () const
 {
   // Points
-  VAID.setup ();
-  VAID.bind ();
-
   field->geometry->bindCoordinates (0);
   glVertexAttribDivisor (0, 1);
   
@@ -156,9 +137,6 @@ void glGrib::FieldScalar::points_t::setupVertexAttributes_typed () const
       glDisableVertexAttribArray (2);
       glVertexAttrib1f (2, 0.0f);
     }
-
-
-  VAID.unbind ();
 }
 
 void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
@@ -226,8 +204,6 @@ void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   if (opts.mpiview.on)
     setupMpiView (ld, o, slot);
-
-  setupVertexAttributes ();
 
   if (opts.no_value_pointer.on)
     values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
@@ -303,7 +279,7 @@ void glGrib::FieldScalar::scalar_t::render (const glGrib::View & view) const
   if (field->opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
   
-  VAID.bind ();
+  VAID.bindAuto ();
 
   field->geometry->renderTriangles ();
   
@@ -324,7 +300,7 @@ void glGrib::FieldScalar::points_t::render (const glGrib::View & view) const
   program->set ("lpointZoo", field->opts.scalar.points.size.variable.on);
   program->set ("factor", field->opts.scalar.points.size.factor.on);
   
-  VAID.bind ();
+  VAID.bindAuto ();
   
   int numberOfPoints = field->geometry->getNumberOfPoints ();
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0}; 

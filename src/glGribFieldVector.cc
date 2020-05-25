@@ -35,7 +35,6 @@ glGrib::FieldVector & glGrib::FieldVector::operator= (const glGrib::FieldVector 
           glGrib::Field::operator= (other);
 	  d = other.d;
           d.buffer_d = newGlgribOpenGLBufferPtr (other.d.buffer_d);
-          setupVertexAttributes ();
           setReady ();
         }
     }
@@ -47,9 +46,6 @@ template <>
 void glGrib::FieldVector::scalar_t::setupVertexAttributes () const
 {
   // Norm/direction
-
-  VAID.setup ();
-  VAID.bind ();
 
   // Position
   field->geometry->bindCoordinates (0);
@@ -64,17 +60,12 @@ void glGrib::FieldVector::scalar_t::setupVertexAttributes () const
 
   field->bindHeight <unsigned char> (2);
 
-  VAID.unbind ();
-
 }
 
 template <>
 void glGrib::FieldVector::vector_t::setupVertexAttributes () const
 {
   // Vector
-
-  VAID.setup ();
-  VAID.bind ();
 
   // Position
   field->geometry->bindCoordinates (0);
@@ -96,13 +87,6 @@ void glGrib::FieldVector::vector_t::setupVertexAttributes () const
   field->bindHeight <unsigned char> (3);
   glVertexAttribDivisor (3, 1);  
 
-  VAID.unbind ();
-}
-
-void glGrib::FieldVector::setupVertexAttributes () const
-{
-  scalar.setupVertexAttributes ();
-  vector.setupVertexAttributes ();
 }
 
 void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
@@ -143,8 +127,6 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   meta.push_back (meta_n);
   meta.push_back (meta_d);
-
-  setupVertexAttributes ();
 
   if (opts.no_value_pointer.on)
     {
@@ -198,7 +180,7 @@ const
   program->set ("discrete", false);
   program->set ("mpiview_scale", 0.0f);
 
-  VAID.bind ();
+  VAID.bindAuto ();
   field->geometry->renderTriangles ();
   VAID.unbind ();
 
@@ -329,7 +311,7 @@ const
 
     }
 
-  VAID.bind ();
+  VAID.bindAuto ();
   int numberOfPoints = field->geometry->getNumberOfPoints ();
   arrow->render (numberOfPoints, opts.vector.arrow.fill.on);
   VAID.unbind ();

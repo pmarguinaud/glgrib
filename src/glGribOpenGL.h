@@ -52,19 +52,35 @@ OpenGLTexturePtr newGlgribOpenGLTexturePtr (int, int, const void *);
 template <typename T>
 class OpenGLVertexArray
 {
-public:
-  void unbind () const
+private:
+
+  class binding_t
   {
-    glBindVertexArray (0); 
-  }
+  public:
+    binding_t ()
+    {
+      glGetIntegerv (GL_VERTEX_ARRAY_BINDING, &VertexArrayID);
+      printf (" current = %8d\n", VertexArrayID);
+    }
+    ~binding_t ()
+    {
+      
+    }
+  private:
+    GLuint VertexArrayID = 0;
+  };
+
+public:
 
   OpenGLVertexArray (T * _object) : object (_object) {}
+
   OpenGLVertexArray & operator= (const OpenGLVertexArray & other)
   {
     if (this != &other) 
       clear ();
     return *this;
   }
+
   OpenGLVertexArray (const OpenGLVertexArray & other) 
   {
     ready = false;
@@ -75,6 +91,7 @@ public:
   {
     clear ();
   }
+
   void clear ()
   { 
     if (ready)
@@ -82,12 +99,14 @@ public:
     VertexArrayID = 0; 
     ready = false;
   }
+
   void setup ()
   {
     clear ();
     glGenVertexArrays (1, &VertexArrayID);
     ready = true;
   }
+
   void bind () const
   {
     if (! ready)
@@ -100,10 +119,31 @@ public:
     return object;
   }
 
+  void unbind () const
+  {
+    glBindVertexArray (0); 
+  }
+
+  void bindAuto () const
+  {
+    if (! ready)
+      {
+        glGenVertexArrays (1, &VertexArrayID);
+        ready = true;
+        glBindVertexArray (VertexArrayID);
+        object->setupVertexAttributes ();
+      }
+    else
+      {
+        glBindVertexArray (VertexArrayID);
+      }
+  }
+
 private:
-  T * object = nullptr;
-  bool ready = false;
-  GLuint VertexArrayID = 0;
+
+  const T * object = nullptr;
+  mutable bool ready = false;
+  mutable GLuint VertexArrayID = 0;
 };
 
 void glInit ();

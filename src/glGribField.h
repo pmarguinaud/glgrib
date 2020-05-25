@@ -42,7 +42,6 @@ public:
   void setPaletteOptions (const OptionsPalette &);
   void setupHilo (FieldFloatBufferPtr);
   void renderHilo (const View &) const;
-  void setupVertexAttributesFrame () const;
   void renderFrame (const View &) const;
 
   virtual ~Field () {}

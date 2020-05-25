@@ -20,5 +20,5 @@ my @lib = ("$prefix/lib", "../lib");
   LIBS              => join (' ', map { "-L$_ -Wl,-rpath,$_" } @lib) .
                        ' -lglGrib -lLFI -lGLEW -lGL -lglfw -lpng -lreadline -lncurses ' .
                        '-ltinfo -lssl -lcrypto -lpthread -lsqlite3 -lcurl ' .
-                       '-lshp -leccodes',
+                       '-lshp -leccodes -lnetcdf_c++4',
 );

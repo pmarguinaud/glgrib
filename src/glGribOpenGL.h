@@ -96,8 +96,10 @@ public:
   { 
     if (ready)
 {
+if (0){
 printf ("0x%llx ", (long long unsigned int)glfwGetCurrentContext ());
 std::cout << "glDeleteVertexArrays " << VertexArrayID << std::endl;
+}
       glDeleteVertexArrays (1, &VertexArrayID);
 }
     VertexArrayID = 0; 
@@ -119,8 +121,10 @@ std::cout << "glDeleteVertexArrays " << VertexArrayID << std::endl;
     if (! ready)
       {
         glGenVertexArrays (1, &VertexArrayID);
+if (0){
 printf ("0x%llx ", (long long unsigned int)glfwGetCurrentContext ());
 std::cout << " glGenVertexArrays " << VertexArrayID << std::endl;
+}
         ready = true;
         glBindVertexArray (VertexArrayID);
         object->setupVertexAttributes ();

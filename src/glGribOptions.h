@@ -1492,13 +1492,13 @@ public:
   DEFINE 
   {
     DESC (on, Display geopoints);
-    DESC (time.on, "Make points appear with time");
-    DESC (time.rate, "Number of points to add at each new frame");
+    DESC (time.on, Make points appear with time);
+    DESC (time.rate, Number of points to add at each new frame);
     INCLUDE (points);
-    DESC (path, "Path");
-    DESC (lon, "Longitude field name");
-    DESC (lat, "Latitude field name");
-    DESC (val, "Value field name");
+    DESC (path, Path);
+    DESC (lon, Longitude field name);
+    DESC (lat, Latitude field name);
+    DESC (val, Value field name);
   }
   bool on = false;
   struct

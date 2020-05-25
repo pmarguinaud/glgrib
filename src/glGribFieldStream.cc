@@ -50,7 +50,6 @@ glGrib::FieldStream & glGrib::FieldStream::operator= (const glGrib::FieldStream 
         {
           glGrib::Field::operator= (field);
           d = field.d;
-          setupVertexAttributes ();
           setReady ();
         }
     }
@@ -69,9 +68,6 @@ void glGrib::FieldStream::clear ()
 
 void glGrib::FieldStream::streamline_t::setupVertexAttributes () const
 {
-  VAID.setup ();
-  VAID.bind ();
-  
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);
   
   for (int j = 0; j < 3; j++)
@@ -99,13 +95,6 @@ void glGrib::FieldStream::streamline_t::setupVertexAttributes () const
       glVertexAttribDivisor (5 + j, 1);
     }
   
-  VAID.unbind ();
-}
-
-void glGrib::FieldStream::setupVertexAttributes () const
-{
-  for (const auto & s : d.stream)
-    s.setupVertexAttributes ();
 }
 
 void glGrib::FieldStream::streamline_t::setup (const streamline_data_t & stream_data)
@@ -179,8 +168,6 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   for (int i = 0; i < N; i++)
     d.stream[i].setup (stream_data[i]);
-
-  setupVertexAttributes ();
 
   meta.push_back (meta_n);
   meta.push_back (meta_d);
@@ -447,7 +434,7 @@ void glGrib::FieldStream::computeStreamLine (int it0, const float * ru, const fl
 void glGrib::FieldStream::streamline_t::render (bool wide, float Width, const glGrib::View & view) const
 {
   glGrib::Program * program = glGrib::Program::load ("STREAM");
-  VAID.bind ();
+  VAID.bindAuto ();
   if (wide)
     {
       float width = view.pixelToDistAtNadir (Width);

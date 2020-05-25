@@ -96,17 +96,20 @@ private:
       VAID.clear ();
     }
     void render (const glGrib::View & view, const glGrib::OptionsLight & light) const;
-    String labels;
-    float level;
-    bool wide = false;
-    float width = 0.0f;
-    bool dash = false;
-    float length = 0.0f;
-    OptionColor color;
-    std::vector<int> pattern;
+    struct
+    {
+      String labels;
+      float level;
+      bool wide = false;
+      float width = 0.0f;
+      bool dash = false;
+      float length = 0.0f;
+      OptionColor color;
+      std::vector<int> pattern;
+      OpenGLBufferPtr vertexbuffer, heightbuffer, distancebuffer;
+      GLuint size;
+    } d;
     mutable OpenGLVertexArray<isoline_t> VAID;
-    OpenGLBufferPtr vertexbuffer, heightbuffer, distancebuffer;
-    GLuint size;
   };
 
   std::vector<isoline_t> iso;

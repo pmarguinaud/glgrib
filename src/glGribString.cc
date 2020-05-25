@@ -13,8 +13,8 @@ glGrib::String & glGrib::String::operator= (const glGrib::String & str)
         {
           if (str.d.shared)
             {
-              d = str.d;
-	      setupVertexAttributes ();
+              d = str.d;   
+              VAID = str.VAID;
               ready = true;
 	    }
 	  else if (str.d.change)
@@ -205,7 +205,6 @@ void glGrib::String::setup (glGrib::const_FontPtr ff, const std::vector<std::str
   d.letterbuffer = newGlgribOpenGLBufferPtr (let.size () * sizeof (float), let.data ());
   d.xyzbuffer = newGlgribOpenGLBufferPtr (xyz.size () * sizeof (float), xyz.data ());
 
-  setupVertexAttributes ();
   ready = true;
   
   if (! d.change)
@@ -221,9 +220,6 @@ void glGrib::String::setup (glGrib::const_FontPtr ff, const std::vector<std::str
 
 void glGrib::String::setupVertexAttributes () const
 {
-  VAID.setup ();
-  VAID.bind ();
-  
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 4, GL_FLOAT, GL_FALSE, 0, nullptr); 
@@ -238,9 +234,6 @@ void glGrib::String::setupVertexAttributes () const
   glEnableVertexAttribArray (2); 
   glVertexAttribPointer (2, 4, GL_FLOAT, GL_FALSE, 0, nullptr); 
   glVertexAttribDivisor (2, 1);
-  
-  VAID.unbind ();
-
 }
 
 
@@ -275,7 +268,7 @@ void glGrib::String::render (const glGrib::View & view) const
   program->set ("length10", length);
   program->set ("scaleXYZ", d.scaleXYZ);
 
-  VAID.bind ();
+  VAID.bindAuto ();
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0};
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, d.len);
   VAID.unbind ();
@@ -299,7 +292,7 @@ void glGrib::String::render (const glm::mat4 & MVP) const
   program->set ("color0", d.color0);
   program->set ("color1", d.color1);
 
-  VAID.bind ();
+  VAID.bindAuto ();
   unsigned int ind[12] = {0, 1, 2, 2, 3, 0};
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, d.len);
   VAID.unbind ();

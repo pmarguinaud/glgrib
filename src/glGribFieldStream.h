@@ -106,10 +106,6 @@ private:
     GLuint size;
   };
 
-  std::vector<streamline_t> stream;
-  float normmax;
-  double time0 = 0.0f;
-
   class stream_seen_t : public std::set<int>
   {
   public:
@@ -140,6 +136,14 @@ private:
                              const glm::vec2 &, const glm::vec2 &,
                              stream_seen_t &, float, std::valarray<float>,
                              std::vector<glm::vec3> &);
+
+  struct
+  {
+    std::vector<streamline_t> stream;
+    float normmax;
+    double time0 = 0.0f;
+  } d;
+
 };
 
 

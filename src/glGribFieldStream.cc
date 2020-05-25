@@ -49,8 +49,7 @@ glGrib::FieldStream & glGrib::FieldStream::operator= (const glGrib::FieldStream 
       if (field.isReady ())
         {
           glGrib::Field::operator= (field);
-          stream = field.stream;
-	  time0  = field.time0;
+          d = field.d;
           setupVertexAttributes ();
           setReady ();
         }
@@ -62,7 +61,7 @@ void glGrib::FieldStream::clear ()
 {
   if (isReady ()) 
     {
-      for (auto & s : stream)
+      for (auto & s : d.stream)
         s.clear ();
     }
   glGrib::Field::clear ();
@@ -73,6 +72,8 @@ void glGrib::FieldStream::streamline_t::setupVertexAttributes () const
   VAID.setup ();
   VAID.bind ();
   
+  printf (" VAID.getObject () = 0x%llx\n", VAID.getObject ());
+
   vertexbuffer->bind (GL_ARRAY_BUFFER);
   
   for (int j = 0; j < 3; j++)
@@ -105,7 +106,7 @@ void glGrib::FieldStream::streamline_t::setupVertexAttributes () const
 
 void glGrib::FieldStream::setupVertexAttributes () const
 {
-  for (const auto & s : stream)
+  for (const auto & s : d.stream)
     s.setupVertexAttributes ();
 }
 
@@ -124,7 +125,7 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
 {
   opts = o;
 
-  time0 = getTime ();
+  d.time0 = getTime ();
 
   glGrib::FieldMetadata meta_u, meta_v;
   glGrib::FieldMetadata meta_n, meta_d;
@@ -148,7 +149,7 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
   int N = 16;
 
   stream_data.resize (N);
-  stream.resize (N);
+  d.stream.resize (N);
 
   std::vector<int> it;
 
@@ -179,7 +180,7 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
     }
 
   for (int i = 0; i < N; i++)
-    stream[i].setup (stream_data[i]);
+    d.stream[i].setup (stream_data[i]);
 
   setupVertexAttributes ();
 
@@ -482,7 +483,7 @@ void glGrib::FieldStream::render (const glGrib::View & view, const glGrib::Optio
   program->set ("accelt", opts.stream.motion.timeaccel);
   program->set ("nwaves", opts.stream.motion.nwaves);
 
-  double timea = getTime () - time0;
+  double timea = getTime () - d.time0;
   program->set ("timea", float (timea));
 
   bool wide = opts.stream.width > 0.0f;
@@ -491,7 +492,7 @@ void glGrib::FieldStream::render (const glGrib::View & view, const glGrib::Optio
   program->set ("motion", opts.stream.motion.on);
   program->set ("scalenorm", ! opts.stream.motion.on);
 
-  for (const auto & s : stream)
+  for (const auto & s : d.stream)
     s.render (wide, Width, view);
 
   view.delMVP (program);

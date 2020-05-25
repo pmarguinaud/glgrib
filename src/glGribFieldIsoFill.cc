@@ -63,8 +63,6 @@ void glGrib::FieldIsoFill::isoband_t::setupVertexAttributes () const
   VAID.setup ();
   VAID.bind ();
   
-  printf (" VAID.getObject () = 0x%llx\n", VAID.getObject ());
-
   // Elements
   d.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);

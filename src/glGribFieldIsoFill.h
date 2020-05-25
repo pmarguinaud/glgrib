@@ -33,6 +33,10 @@ private:
   {
   public:
     isoband_t () : VAID (this) {}
+    isoband_t (const isoband_t & iso) : VAID (this)
+    {
+      d = iso.d;
+    }
     void setupVertexAttributes () const;
     void clear ()
     {

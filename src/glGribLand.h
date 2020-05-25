@@ -27,6 +27,10 @@ private:
   {
   public:
     layer_t () : VAID (this) {}
+    layer_t (const layer_t & layer) : VAID (this)
+    {
+      d = layer.d;
+    }
     void clear ()
     {
       VAID.clear ();
@@ -43,8 +47,11 @@ private:
     void setupVertexAttributes () const;
     void render (const glGrib::OptionsLandLayer &) const;
     void setup (const glGrib::OptionsLandLayer &);
-    OpenGLBufferPtr vertexbuffer, elementbuffer;
-    unsigned int numberOfTriangles;
+    struct
+    {
+      OpenGLBufferPtr vertexbuffer, elementbuffer;
+      unsigned int numberOfTriangles;
+    } d;
     mutable OpenGLVertexArray<layer_t> VAID;
   };
   std::vector<layer_t> layers;

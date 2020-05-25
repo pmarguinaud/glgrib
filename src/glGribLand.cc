@@ -34,7 +34,7 @@ void glGrib::Land::layer_t::render (const glGrib::OptionsLandLayer & opts) const
   program->set ("debug", opts.debug.on);
      
   VAID.bind ();
-  glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, nullptr);
+  glDrawElements (GL_TRIANGLES, 3 * d.numberOfTriangles, GL_UNSIGNED_INT, nullptr);
   VAID.unbind ();
 }
 
@@ -296,14 +296,14 @@ void glGrib::Land::layer_t::setup (const glGrib::OptionsLandLayer & opts)
   
   
   
-  numberOfTriangles = ind.size () / 3;
+  d.numberOfTriangles = ind.size () / 3;
   
-  vertexbuffer = newGlgribOpenGLBufferPtr 
+  d.vertexbuffer = newGlgribOpenGLBufferPtr 
                       (
                         lonlat.size () * sizeof (lonlat[0]), 
                         lonlat.data ()
                       );
-  elementbuffer = newGlgribOpenGLBufferPtr 
+  d.elementbuffer = newGlgribOpenGLBufferPtr 
                        (
                          ind.size () * sizeof (ind[0]), 
                          ind.data ()
@@ -330,12 +330,12 @@ void glGrib::Land::layer_t::setupVertexAttributes () const
 {
   VAID.setup ();
   VAID.bind ();
-  
-  vertexbuffer->bind (GL_ARRAY_BUFFER);
+
+  d.vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr); 
   
-  elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+  d.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
   
   VAID.unbind ();
 }

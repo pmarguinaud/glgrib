@@ -38,7 +38,6 @@ glGrib::FieldIsoFill & glGrib::FieldIsoFill::operator= (const glGrib::FieldIsoFi
         {
           glGrib::Field::operator= (field);
           d = field.d;
-          setupVertexAttributes ();
           setReady ();
         }
     }
@@ -58,28 +57,18 @@ void glGrib::FieldIsoFill::clear ()
 
 void glGrib::FieldIsoFill::isoband_t::setupVertexAttributes () const
 {
-  // New triangles
-  
-  VAID.setup ();
-  VAID.bind ();
-  
   // Elements
   d.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);
   
   glEnableVertexAttribArray (0);
   glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-  
-  VAID.unbind ();
 }
 
 void glGrib::FieldIsoFill::setupVertexAttributes () const
 {
   // Triangles from original geometry
-  d.VAID.setup ();
-  d.VAID.bind ();
 
-  // Elements
   geometry->bindTriangles ();
 
   // Coordinates
@@ -91,11 +80,6 @@ void glGrib::FieldIsoFill::setupVertexAttributes () const
   glEnableVertexAttribArray (1);
 
   glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_FALSE, 0,  nullptr);
-
-  d.VAID.unbind ();
-
-  for (auto & ib : d.isoband)
-    ib.setupVertexAttributes ();
 }
 
 namespace
@@ -489,8 +473,6 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
     }
 
-  setupVertexAttributes ();
-
   if (opts.no_value_pointer.on)
     values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
   else
@@ -504,7 +486,7 @@ void glGrib::FieldIsoFill::isoband_t::render () const
 {
   glGrib::Program * program2 = glGrib::Program::load ("ISOFILL2");
 
-  VAID.bind ();
+  VAID.bindAuto ();
   program2->set ("color0", d.color);
   glDrawElements (GL_TRIANGLES, d.size, GL_UNSIGNED_INT, nullptr);
   VAID.unbind ();
@@ -523,7 +505,7 @@ void glGrib::FieldIsoFill::render (const glGrib::View & view, const glGrib::Opti
   program1->set ("scale0", opts.scale);
   palette.set (program1);
 
-  d.VAID.bind ();
+  d.VAID.bindAuto ();
   geometry->renderTriangles ();
   d.VAID.unbind ();
 

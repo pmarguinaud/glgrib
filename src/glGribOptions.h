@@ -288,7 +288,8 @@ public:
   void showHelp ();
   void showJSON ();
   std::string getHelp (const std::string &, bool = false);
-  std::string getJSON (const std::string &, bool = false);
+  std::string getJSON (const std::string &, bool = false, 
+                       glGrib::OptionsParser * = nullptr);
   void getValue (std::vector<std::string> *, const std::string &, bool = false);
   ~OptionsParser ()
   {

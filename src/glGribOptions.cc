@@ -664,28 +664,43 @@ std::string glGrib::OptionsParser::getHelp (const std::string & prefix, bool sho
   return help;
 }
 
-std::string glGrib::OptionsParser::getJSON (const std::string & prefix, bool show_hidden)
+std::string glGrib::OptionsParser::getJSON 
+   (const std::string & prefix, bool show_hidden, 
+    glGrib::OptionsParser * p1)
 {
+  glGrib::OptionsParser * p0 = this;
+
   std::string json = "[";
 
   int len = prefix.size ();
 
-  for (name2option_t::iterator it = name2option.begin (); 
-       it != name2option.end (); it++)
-    if (it->first.substr (0, len) == prefix)
+  for (name2option_t::iterator it0 = p0->name2option.begin (); 
+       it0 != p0->name2option.end (); it0++)
+    if (it0->first.substr (0, len) == prefix)
       {   
-	glGrib::OptionsParserDetail::optionBase * opt = it->second;
-        if ((! show_hidden) && (opt->hidden))
+	glGrib::OptionsParserDetail::optionBase * opt0 = it0->second;
+
+        if ((! show_hidden) && (opt0->hidden))
           continue;
+
+        const std::string json_opt0 = opt0->asJSON ();
+
+        if (p1 != nullptr)
+          {
+            auto it1 = p1->name2option.find (it0->first);
+            glGrib::OptionsParserDetail::optionBase * opt1 = it1->second;
+            const std::string json_opt1 = opt1->asJSON ();
+            if (json_opt0 == json_opt1)
+              continue;
+          }
 
         if (json.length () > 1)
           json += ",";
 
-        const std::string json_opt = opt->asJSON ();
-        json += std::string ("[\"") + it->first + "\",\"" + opt->type () + "\",\"" + opt->desc + "\"";
+        json += std::string ("[\"") + it0->first + "\",\"" + opt0->type () + "\",\"" + opt0->desc + "\"";
  
-        if (json_opt.length () > 0)
-          json += std::string (",") + json_opt;
+        if (json_opt0.length () > 0)
+          json += std::string (",") + json_opt0;
  
         json += "]";
       }   

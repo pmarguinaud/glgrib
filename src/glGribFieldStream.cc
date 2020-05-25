@@ -74,7 +74,7 @@ void glGrib::FieldStream::streamline_t::setupVertexAttributes () const
   
   printf (" VAID.getObject () = 0x%llx\n", VAID.getObject ());
 
-  vertexbuffer->bind (GL_ARRAY_BUFFER);
+  d.vertexbuffer->bind (GL_ARRAY_BUFFER);
   
   for (int j = 0; j < 3; j++)
     {
@@ -83,7 +83,7 @@ void glGrib::FieldStream::streamline_t::setupVertexAttributes () const
       glVertexAttribDivisor (j, 1);
     }
   
-  normalbuffer->bind (GL_ARRAY_BUFFER);
+  d.normalbuffer->bind (GL_ARRAY_BUFFER);
   
   for (int j = 0; j < 2; j++)
     {
@@ -92,7 +92,7 @@ void glGrib::FieldStream::streamline_t::setupVertexAttributes () const
       glVertexAttribDivisor (3 + j, 1);
     }
   
-  distancebuffer->bind (GL_ARRAY_BUFFER);
+  d.distancebuffer->bind (GL_ARRAY_BUFFER);
   
   for (int j = 0; j < 2; j++)
     {
@@ -112,13 +112,13 @@ void glGrib::FieldStream::setupVertexAttributes () const
 
 void glGrib::FieldStream::streamline_t::setup (const streamline_data_t & stream_data)
 {
-  vertexbuffer   = newGlgribOpenGLBufferPtr (stream_data.lonlat.size () 
-                        * sizeof (float), stream_data.lonlat.data ());
-  normalbuffer   = newGlgribOpenGLBufferPtr (stream_data.values.size () 
-                        * sizeof (float), stream_data.values.data ());
-  distancebuffer = newGlgribOpenGLBufferPtr (stream_data.length.size () 
-                        * sizeof (float), stream_data.length.data ());
-  size = stream_data.size () - 1;
+  d.vertexbuffer   = newGlgribOpenGLBufferPtr (stream_data.lonlat.size () 
+                             * sizeof (float), stream_data.lonlat.data ());
+  d.normalbuffer   = newGlgribOpenGLBufferPtr (stream_data.values.size () 
+                             * sizeof (float), stream_data.values.data ());
+  d.distancebuffer = newGlgribOpenGLBufferPtr (stream_data.length.size () 
+                             * sizeof (float), stream_data.length.data ());
+  d.size = stream_data.size () - 1;
 }
 
 void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
@@ -455,11 +455,11 @@ void glGrib::FieldStream::streamline_t::render (bool wide, float Width, const gl
       float width = view.pixelToDistAtNadir (Width);
       program->set ("width", width);
       unsigned int ind[12] = {1, 0, 2, 3, 1, 2, 1, 3, 4, 1, 4, 5};
-      glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, size);
+      glDrawElementsInstanced (GL_TRIANGLES, 12, GL_UNSIGNED_INT, ind, d.size);
     }
   else
     {
-      glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, size);
+      glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, d.size);
     }
   VAID.unbind ();
 }

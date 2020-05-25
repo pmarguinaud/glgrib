@@ -101,9 +101,12 @@ private:
       VAID.clear ();
     }
     void render (bool, float, const glGrib::View &) const;
+    struct
+    {
+      OpenGLBufferPtr vertexbuffer, normalbuffer, distancebuffer;
+      GLuint size;
+    } d;
     mutable OpenGLVertexArray<streamline_t> VAID;
-    OpenGLBufferPtr vertexbuffer, normalbuffer, distancebuffer;
-    GLuint size;
   };
 
   class stream_seen_t : public std::set<int>

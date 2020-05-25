@@ -19,7 +19,6 @@ glGrib::Land & glGrib::Land::operator=(const glGrib::Land & other)
     {   
       opts = other.opts;
       layers = other.layers;
-      setupVertexAttributes (); 
       setReady (); 
     }   
   return *this;
@@ -33,7 +32,7 @@ void glGrib::Land::layer_t::render (const glGrib::OptionsLandLayer & opts) const
   program->set ("color0", opts.color);
   program->set ("debug", opts.debug.on);
      
-  VAID.bind ();
+  VAID.bindAuto ();
   glDrawElements (GL_TRIANGLES, 3 * d.numberOfTriangles, GL_UNSIGNED_INT, nullptr);
   VAID.unbind ();
 }
@@ -321,30 +320,15 @@ void glGrib::Land::setup (const glGrib::OptionsLand & o)
     if (opts.layers[i].on)
       layers[i].setup (opts.layers[i]);
 
-  setupVertexAttributes ();
-
   setReady ();
 }
 
 void glGrib::Land::layer_t::setupVertexAttributes () const
 {
-  VAID.setup ();
-  VAID.bind ();
-
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr); 
-  
   d.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
-  
-  VAID.unbind ();
-}
-
-void glGrib::Land::setupVertexAttributes () const
-{
-  for (size_t i = 0; i < layers.size (); i++)
-    if (opts.layers[i].on)
-      layers[i].setupVertexAttributes ();
 }
 
 

@@ -94,6 +94,12 @@ public:
       throw std::runtime_error (std::string ("OpenGLVertexArray is not ready"));
     glBindVertexArray (VertexArrayID);
   }
+
+  const T * getObject () const
+  {
+    return object;
+  }
+
 private:
   T * object = nullptr;
   bool ready = false;

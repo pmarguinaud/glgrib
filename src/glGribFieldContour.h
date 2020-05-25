@@ -88,6 +88,10 @@ private:
   {
   public:
     isoline_t () : VAID (this) {}
+    isoline_t (const isoline_t & iso) : VAID (this) 
+    {
+      d = iso.d;
+    }
     void setup (const OptionsField &, float, size_t, const Palette &, const isoline_data_t &);
     void setupVertexAttributes () const;
     void setupLabels (const OptionsField & opts, const isoline_data_t &);

@@ -29,7 +29,7 @@ glGrib::Points & glGrib::Points::operator= (const glGrib::Points & points)
       if (points.isReady ())
         {
           d = points.d;
-          setupVertexAttributes (); 
+          VAID = points.VAID;
           setReady ();
         }
     }   
@@ -38,15 +38,11 @@ glGrib::Points & glGrib::Points::operator= (const glGrib::Points & points)
 
 void glGrib::Points::setupVertexAttributes () const
 {
-  VAID.setup ();
-  VAID.bind ();
   d.llsbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
 
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
   glVertexAttribDivisor (0, 1);
-
-  VAID.unbind ();
 }
 
 void glGrib::Points::setup (const glGrib::OptionsPoints & o, 
@@ -74,7 +70,6 @@ void glGrib::Points::setup (const glGrib::OptionsPoints & o,
 
   d.p = glGrib::Palette (d.opts.palette, d.min, d.max);
 
-  setupVertexAttributes ();
   setReady ();
 }
 
@@ -118,7 +113,7 @@ void glGrib::Points::render (const glGrib::View & view, const glGrib::OptionsLig
 
   view.setMVP (program);
 
-  VAID.bind ();
+  VAID.bindAuto ();
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0}; 
   glDrawElementsInstancedBaseInstance 
     (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, length, offset);

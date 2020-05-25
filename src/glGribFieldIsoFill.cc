@@ -63,9 +63,11 @@ void glGrib::FieldIsoFill::isoband_t::setupVertexAttributes () const
   VAID.setup ();
   VAID.bind ();
   
+  printf (" VAID.getObject () = 0x%llx\n", VAID.getObject ());
+
   // Elements
-  elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
-  vertexbuffer->bind (GL_ARRAY_BUFFER);
+  d.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+  d.vertexbuffer->bind (GL_ARRAY_BUFFER);
   
   glEnableVertexAttribArray (0);
   glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
@@ -380,8 +382,8 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
       else
         v = (levels[i-1] + levels[i+0]) / 2.0f;
 
-      d.isoband[i].color = palette.getColor      (v);
-      colorIndex[i]      = palette.getColorIndex (v);
+      d.isoband[i].d.color = palette.getColor      (v);
+      colorIndex[i]        = palette.getColorIndex (v);
     }
 
 
@@ -444,11 +446,11 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
 
       // Element buffer
-      d.isoband[i].elementbuffer = newGlgribOpenGLBufferPtr 
+      d.isoband[i].d.elementbuffer = newGlgribOpenGLBufferPtr 
                                     (length_indice * sizeof (unsigned int));
 
       {
-        unsigned int * indice = static_cast<unsigned int *> (d.isoband[i].elementbuffer->map ());
+        unsigned int * indice = static_cast<unsigned int *> (d.isoband[i].d.elementbuffer->map ());
 
         // Pack all indices into the buffer, after adding an offset
 #pragma omp parallel for
@@ -461,16 +463,16 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
           }
 
         indice = nullptr;
-        d.isoband[i].elementbuffer->unmap ();
+        d.isoband[i].d.elementbuffer->unmap ();
       }
 
 
       // Coordinate buffer
-      d.isoband[i].vertexbuffer  = newGlgribOpenGLBufferPtr 
+      d.isoband[i].d.vertexbuffer  = newGlgribOpenGLBufferPtr 
                                     (length_lonlat * sizeof (float));
 
       {
-        float * lonlat = static_cast<float *> (d.isoband[i].vertexbuffer->map ());
+        float * lonlat = static_cast<float *> (d.isoband[i].d.vertexbuffer->map ());
 
         // Pack all lon/lat pairs into the buffer
 #pragma omp parallel for
@@ -482,10 +484,10 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
           }
 
         lonlat = nullptr;
-        d.isoband[i].vertexbuffer->unmap ();
+        d.isoband[i].d.vertexbuffer->unmap ();
       }
 
-      d.isoband[i].size = length_indice;
+      d.isoband[i].d.size = length_indice;
 
     }
 
@@ -505,8 +507,8 @@ void glGrib::FieldIsoFill::isoband_t::render () const
   glGrib::Program * program2 = glGrib::Program::load ("ISOFILL2");
 
   VAID.bind ();
-  program2->set ("color0", color);
-  glDrawElements (GL_TRIANGLES, size, GL_UNSIGNED_INT, nullptr);
+  program2->set ("color0", d.color);
+  glDrawElements (GL_TRIANGLES, d.size, GL_UNSIGNED_INT, nullptr);
   VAID.unbind ();
 }
 

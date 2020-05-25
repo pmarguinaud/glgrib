@@ -39,10 +39,13 @@ private:
       VAID.clear ();
     }
     void render () const;
-    OptionColor color;
+    struct
+    {
+      OptionColor color;
+      OpenGLBufferPtr vertexbuffer, elementbuffer;
+      int size;
+    } d;
     mutable OpenGLVertexArray<isoband_t> VAID;
-    OpenGLBufferPtr vertexbuffer, elementbuffer;
-    int size;
   };
 
   class _d

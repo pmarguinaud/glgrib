@@ -31,8 +31,6 @@ void glGrib::Colorbar::setup (const glGrib::OptionsColorbar & o)
 
   elementbuffer = newGlgribOpenGLBufferPtr (3 * nt * sizeof (unsigned int), ind);
 
-  setupVertexAttributes ();
-
   delete [] ind;
 
   ready = true;
@@ -40,10 +38,7 @@ void glGrib::Colorbar::setup (const glGrib::OptionsColorbar & o)
 
 void glGrib::Colorbar::setupVertexAttributes () const
 {
-  VAID.setup ();
-  VAID.bind ();
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
-  VAID.unbind ();
 }
 
 void glGrib::Colorbar::clear ()
@@ -201,7 +196,7 @@ void glGrib::Colorbar::render (const glm::mat4 & MVP) const
   program->set ("ymin", opts.position.ymin);
   program->set ("ymax", opts.position.ymax);
 
-  VAID.bind ();
+  VAID.bindAuto ();
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, nullptr);
   VAID.unbind ();
 

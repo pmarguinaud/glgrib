@@ -19,9 +19,8 @@ glGrib::Landscape & glGrib::Landscape::operator= (const glGrib::Landscape & land
   if ((this != &landscape) && landscape.isReady ())
     {
       glGrib::World::operator= (landscape);
-      texture = landscape.texture;
-      opts    = landscape.opts;
-      setupVertexAttributes ();
+      d = landscape.d;
+      VAID = landscape.VAID;
       setReady ();
    }
   return *this;
@@ -29,14 +28,11 @@ glGrib::Landscape & glGrib::Landscape::operator= (const glGrib::Landscape & land
 
 void glGrib::Landscape::setupVertexAttributes () const
 {
-  VAID.setup ();
-  VAID.bind ();
-
   geometry->bindCoordinates (0);
  
-  if (heightbuffer)
+  if (d.heightbuffer)
     {   
-      heightbuffer->bind (GL_ARRAY_BUFFER);
+      d.heightbuffer->bind (GL_ARRAY_BUFFER);
       glEnableVertexAttribArray (1);
       glVertexAttribPointer (1, 1, GL_FLOAT, GL_FALSE, 0, nullptr);
     }   
@@ -47,8 +43,6 @@ void glGrib::Landscape::setupVertexAttributes () const
     }   
  
   geometry->bindTriangles ();
-
-  VAID.unbind ();
 }
 
 namespace
@@ -65,35 +59,36 @@ bool endsWith (const std::string & str, const std::string & end)
 
 void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandscape & o)
 {
-  opts = o;
+  d.opts = o;
 
-  geometry = glGrib::Geometry::load (ld, opts.geometry_path, opts.geometry, opts.number_of_latitudes);
+  geometry = glGrib::Geometry::load (ld, d.opts.geometry_path, d.opts.geometry, 
+                                     d.opts.number_of_latitudes);
 
-  if (opts.color == glGrib::OptionColor ("#00000000"))
+  if (d.opts.color == glGrib::OptionColor ("#00000000"))
     {
       unsigned char * rgb;
       int w, h;
      
      
-      if (endsWith (opts.path, ".png"))
-        glGrib::ReadPng (glGrib::Resolve (opts.path), &w, &h, &rgb);
-      else if (endsWith (opts.path, ".bmp"))
-        glGrib::Bitmap (glGrib::Resolve (opts.path), &rgb, &w, &h);
+      if (endsWith (d.opts.path, ".png"))
+        glGrib::ReadPng (glGrib::Resolve (d.opts.path), &w, &h, &rgb);
+      else if (endsWith (d.opts.path, ".bmp"))
+        glGrib::Bitmap (glGrib::Resolve (d.opts.path), &rgb, &w, &h);
       else
-        throw std::runtime_error (std::string ("Unknown image format :") + opts.path);
+        throw std::runtime_error (std::string ("Unknown image format :") + d.opts.path);
      
       GLint sizemax;
       glGetIntegerv (GL_MAX_TEXTURE_SIZE, &sizemax);
       if ((sizemax < w) || (sizemax < h))
-        throw std::runtime_error (std::string ("Image is too large to be used as a texture :") + opts.path);
+        throw std::runtime_error (std::string ("Image is too large to be used as a texture :") + d.opts.path);
      
-      texture = newGlgribOpenGLTexturePtr (w, h, rgb);
+      d.texture = newGlgribOpenGLTexturePtr (w, h, rgb);
       delete [] rgb;
     }
 
-  if (opts.geometry.height.on)
+  if (d.opts.geometry.height.on)
     {
-      glGrib::GeometryPtr geometry_height = glGrib::Geometry::load (ld, opts.geometry.height.path, opts.geometry);
+      glGrib::GeometryPtr geometry_height = glGrib::Geometry::load (ld, d.opts.geometry.height.path, d.opts.geometry);
 
       if (! geometry_height->isEqual (*geometry))
         throw std::runtime_error (std::string ("Landscape and height have different geometries"));
@@ -103,21 +98,19 @@ void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandsca
       glGrib::FieldFloatBufferPtr data;
       glGrib::FieldMetadata meta;
 
-      ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
+      ld->load (&data, d.opts.geometry.height.path, d.opts.geometry, &meta);
 
-      heightbuffer = newGlgribOpenGLBufferPtr (size * sizeof (float));
+      d.heightbuffer = newGlgribOpenGLBufferPtr (size * sizeof (float));
 
-      float * height = static_cast<float *> (heightbuffer->map ());
+      float * height = static_cast<float *> (d.heightbuffer->map ());
 #pragma omp parallel for
       for (int jglo = 0; jglo < size; jglo++)
-        height[jglo] = (*data)[jglo] == meta.valmis ? 0.0f : opts.geometry.height.scale * ((*data)[jglo]-meta.valmin) / (meta.valmax - meta.valmin);
+        height[jglo] = (*data)[jglo] == meta.valmis ? 0.0f : d.opts.geometry.height.scale * ((*data)[jglo]-meta.valmin) / (meta.valmax - meta.valmin);
 
-      heightbuffer->unmap (); 
+      d.heightbuffer->unmap (); 
     }
 
 
-  setupVertexAttributes ();
-  
   setReady ();
 }
 
@@ -128,38 +121,38 @@ void glGrib::Landscape::render (const glGrib::View & view, const glGrib::Options
 
   view.setMVP (program);
   program->set (light);
-  program->set ("isflat", opts.flat.on);
+  program->set ("isflat", d.opts.flat.on);
 
-  if (opts.color == glGrib::OptionColor ("#00000000"))
+  if (d.opts.color == glGrib::OptionColor ("#00000000"))
     {
       // the texture selection process is a bit obscure
       glActiveTexture (GL_TEXTURE0); 
-      glBindTexture (GL_TEXTURE_2D, texture->id ());
+      glBindTexture (GL_TEXTURE_2D, d.texture->id ());
       program->set ("texture", 0);
       program->set ("colored", 0);
     }
   else
     {
-      program->set ("color0", opts.color);
+      program->set ("color0", d.opts.color);
       program->set ("colored", 1);
     }
 
-  program->set ("scale0", opts.scale);
+  program->set ("scale0", d.opts.scale);
 
-  if (opts.projection == "LONLAT")
+  if (d.opts.projection == "LONLAT")
     {
       program->set ("texproj", 0);
-      program->set ("lonA", opts.lonlat.position.lon1 * deg2rad);
-      program->set ("lonB", opts.lonlat.position.lon2 * deg2rad);
-      program->set ("latA", opts.lonlat.position.lat1 * deg2rad);
-      program->set ("latB", opts.lonlat.position.lat2 * deg2rad);
+      program->set ("lonA", d.opts.lonlat.position.lon1 * deg2rad);
+      program->set ("lonB", d.opts.lonlat.position.lon2 * deg2rad);
+      program->set ("latA", d.opts.lonlat.position.lat1 * deg2rad);
+      program->set ("latB", d.opts.lonlat.position.lat2 * deg2rad);
     }
-  else if (opts.projection == "WEBMERCATOR")
+  else if (d.opts.projection == "WEBMERCATOR")
     {
       const float a = 6378137;
       int L, IY0, IX0, IY1, IX1;
 
-      std::string path = opts.path;
+      std::string path = d.opts.path;
 
       size_t i = path.find_last_of ("/");
       if (i != std::string::npos)
@@ -180,14 +173,14 @@ void glGrib::Landscape::render (const glGrib::View & view, const glGrib::Options
       program->set ("IY1", IY1);
     }
 
-  VAID.bind ();
+  VAID.bindAuto ();
 
-  if (opts.wireframe.on)
+  if (d.opts.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 
   geometry->renderTriangles ();
 
-  if (opts.wireframe.on)
+  if (d.opts.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 
   VAID.unbind ();

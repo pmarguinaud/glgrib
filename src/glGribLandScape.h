@@ -19,18 +19,21 @@ public:
   virtual void setup (Loader *, const OptionsLandscape &);
   void render (const View &, const OptionsLight &) const override;
   virtual ~Landscape ();
-  void setFlat (bool f) { opts.flat.on = f; }
-  void toggleFlat () { opts.flat.on = ! opts.flat.on; }
+  void setFlat (bool f) { d.opts.flat.on = f; }
+  void toggleFlat () { d.opts.flat.on = ! d.opts.flat.on; }
   void setupVertexAttributes () const;
   void reSize (const View &) override {}
-  void toggleWireframe () { opts.wireframe.on = ! opts.wireframe.on; }
-  const OptionsLandscape & getOptions () const { return opts; }
-  void setPositionOptions (const OptionsLandscapePosition & o) { opts.lonlat.position = o; }
-  float getScale () const override { return opts.scale; }
+  void toggleWireframe () { d.opts.wireframe.on = ! d.opts.wireframe.on; }
+  const OptionsLandscape & getOptions () const { return d.opts; }
+  void setPositionOptions (const OptionsLandscapePosition & o) { d.opts.lonlat.position = o; }
+  float getScale () const override { return d.opts.scale; }
 private:
-  OptionsLandscape opts;
-  OpenGLTexturePtr texture;
-  OpenGLBufferPtr heightbuffer;
+  struct
+  {
+    OptionsLandscape opts;
+    OpenGLTexturePtr texture;
+    OpenGLBufferPtr heightbuffer;
+  } d;
   mutable OpenGLVertexArray<Landscape> VAID;
 };
 

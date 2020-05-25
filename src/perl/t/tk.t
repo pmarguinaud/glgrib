@@ -24,7 +24,7 @@ sub move
 
 sub debug
 {
-  my $json = 'glGrib'->json ('--');
+  my $json = 'glGrib'->json ('++', '--');
   my $h = &decode_json ($json);
   print &Dumper ($h);
   print &Dumper (['glGrib'->window ()]);

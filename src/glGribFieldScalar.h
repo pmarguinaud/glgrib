@@ -18,7 +18,6 @@ public:
   FieldScalar (const FieldScalar &);
   void setup (Loader *, const OptionsField &, float = 0) override;
   void render (const View &, const OptionsLight &) const override;
-  virtual ~FieldScalar ();
   bool useColorBar () const override { return true; }
   int getSlotMax () const override
   {

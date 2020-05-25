@@ -42,7 +42,6 @@ public:
 
 
   Image () : VAID (this) {}
-  ~Image ();
   
   Image & operator= (const Image &);
   void setupVertexAttributes () const;

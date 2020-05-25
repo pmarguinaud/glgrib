@@ -330,11 +330,6 @@ const
     scalar.render (view, light);
 }
 
-glGrib::FieldVector::~FieldVector ()
-{
-}
-
-
 void glGrib::FieldVector::clear ()
 {
   if (isReady ())

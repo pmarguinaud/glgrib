@@ -87,11 +87,6 @@ void glGrib::Grid::clear ()
   d.labels.clear ();
 }
 
-glGrib::Grid::~Grid ()
-{
-  clear (); 
-}
-
 void glGrib::Grid::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
   glGrib::Program * program = glGrib::Program::load ("GRID");

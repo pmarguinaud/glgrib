@@ -52,11 +52,6 @@ void glGrib::Colorbar::clear ()
   ready = false;
 }
 
-glGrib::Colorbar::~Colorbar ()
-{
-  clear ();
-}
-
 void glGrib::Colorbar::createLabels (std::vector<float> & x, std::vector<float> & y, 
                                      std::vector<std::string> & str,
                                      const std::vector<float> & values, const bool nonlinear)

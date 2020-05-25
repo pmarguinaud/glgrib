@@ -26,7 +26,6 @@ public:
     d.opts.scale = s;
   }
   void clear ();
-  ~Grid ();
   float getScale () const override { return d.opts.scale; }
 
   void setupVertexAttributes () const;

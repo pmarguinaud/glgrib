@@ -482,8 +482,4 @@ void glGrib::FieldContour::render (const glGrib::View & view, const glGrib::Opti
 
 }
 
-glGrib::FieldContour::~FieldContour ()
-{
-}
-
 

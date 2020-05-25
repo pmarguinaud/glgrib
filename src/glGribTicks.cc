@@ -40,11 +40,6 @@ void glGrib::Ticks::clear ()
   ready = false;
 }
 
-glGrib::Ticks::~Ticks ()
-{
-  clear (); 
-}
-
 template <>
 void glGrib::Ticks::ticks_t::render (const glm::mat4 & MVP) const
 {

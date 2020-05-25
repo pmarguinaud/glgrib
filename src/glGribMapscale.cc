@@ -53,11 +53,6 @@ void glGrib::Mapscale::clear ()
   ready = false;
 }
 
-glGrib::Mapscale::~Mapscale ()
-{
-  clear ();
-}
-
 void glGrib::Mapscale::render (const glm::mat4 & MVP, const glGrib::View & view) const
 {
   if (! ready)

@@ -484,8 +484,4 @@ void glGrib::FieldStream::render (const glGrib::View & view, const glGrib::Optio
 
 }
 
-glGrib::FieldStream::~FieldStream ()
-{
-}
-
 

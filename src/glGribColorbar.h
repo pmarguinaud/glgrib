@@ -19,7 +19,6 @@ public:
   void setup (const OptionsColorbar &);
   void setupVertexAttributes () const;
   void clear ();
-  ~Colorbar ();
   Colorbar & operator= (const Colorbar &);
   void render (const glm::mat4 &) const;
   void toggleHidden () { hidden = ! hidden; }

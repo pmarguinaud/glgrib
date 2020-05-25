@@ -19,8 +19,6 @@ class Points : public Object
 public:
 
   Points () : VAID (this) { }
-  ~Points ();
-  
   Points & operator= (const Points &);
   void setupVertexAttributes () const;
   virtual void clear ();

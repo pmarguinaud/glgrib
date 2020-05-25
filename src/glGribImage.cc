@@ -5,11 +5,6 @@
 #include <stdlib.h>
 
 
-glGrib::Image::~Image ()
-{
-  clear ();
-}
-
 void glGrib::Image::clear ()
 {
   if (ready)

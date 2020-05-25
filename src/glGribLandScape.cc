@@ -188,11 +188,4 @@ void glGrib::Landscape::render (const glGrib::View & view, const glGrib::Options
   view.delMVP (program);
 }
 
-glGrib::Landscape::~Landscape ()
-{
-}
-
-
-
-
 

@@ -15,7 +15,6 @@ class Land : public Object
 public:
   Land & operator=(const Land &);
   void render (const View &, const OptionsLight &) const override;
-  virtual ~Land () { clear (); }
   virtual void clear ();
   virtual void setup (const OptionsLand &);
   void reSize (const View &) override {}

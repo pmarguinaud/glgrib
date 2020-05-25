@@ -21,7 +21,6 @@ public:
   void renderArrow (const View &, const OptionsLight &) const;
   void renderNorms (const View &, const OptionsLight &) const;
   void render (const View &, const OptionsLight &) const override;
-  virtual ~FieldVector ();
   void reSample (const View &);
   void toggleShowVector () { opts.vector.arrow.on = ! opts.vector.arrow.on; }
   void toggleShowNorm () { opts.vector.norm.on = ! opts.vector.norm.on; }

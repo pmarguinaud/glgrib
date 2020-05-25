@@ -18,7 +18,6 @@ public:
   FieldIsoFill (const FieldIsoFill &);
   void setup (Loader *, const OptionsField &, float = 0) override;
   void render (const View &, const OptionsLight &) const override;
-  virtual ~FieldIsoFill ();
   void setupVertexAttributes () const;
   void clear () override; 
   bool useColorBar () const override { return true; }

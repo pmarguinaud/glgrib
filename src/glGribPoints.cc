@@ -7,11 +7,6 @@
 #include <stdlib.h>
 
 
-glGrib::Points::~Points ()
-{
-  clear ();
-}
-
 void glGrib::Points::clear ()
 {
   if (isReady ())

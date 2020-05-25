@@ -527,8 +527,4 @@ void glGrib::FieldIsoFill::render (const glGrib::View & view, const glGrib::Opti
 
 }
 
-glGrib::FieldIsoFill::~FieldIsoFill ()
-{
-}
-
 

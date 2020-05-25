@@ -44,7 +44,6 @@ public:
   void renderHilo (const View &) const;
   void renderFrame (const View &) const;
 
-  virtual ~Field () {}
   virtual std::vector<float> getValue (int index) const 
   { 
     std::vector<float> val;

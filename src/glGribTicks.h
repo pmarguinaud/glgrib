@@ -18,7 +18,6 @@ public:
   void reSize (const View &);
   const OptionsTicks & getOptions () const { return opts; }
   void clear ();
-  ~Ticks ();
   void setReady ()
   {
     ready = true;

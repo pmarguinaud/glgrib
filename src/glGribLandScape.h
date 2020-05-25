@@ -23,7 +23,6 @@ public:
     glGrib::World::clear ();
   }
   void render (const View &, const OptionsLight &) const override;
-  virtual ~Landscape ();
   void setFlat (bool f) { d.opts.flat.on = f; }
   void toggleFlat () { d.opts.flat.on = ! d.opts.flat.on; }
   void setupVertexAttributes () const;

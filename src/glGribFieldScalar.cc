@@ -358,8 +358,4 @@ void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::Optio
 
 }
 
-glGrib::FieldScalar::~FieldScalar ()
-{
-}
-
 

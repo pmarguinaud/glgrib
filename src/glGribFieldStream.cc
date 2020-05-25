@@ -72,8 +72,6 @@ void glGrib::FieldStream::streamline_t::setupVertexAttributes () const
   VAID.setup ();
   VAID.bind ();
   
-  printf (" VAID.getObject () = 0x%llx\n", VAID.getObject ());
-
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);
   
   for (int j = 0; j < 3; j++)

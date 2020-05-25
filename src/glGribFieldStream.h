@@ -94,6 +94,10 @@ private:
   {
   public:
     streamline_t () : VAID (this) {}
+    streamline_t (const streamline_t & stream) : VAID (this)
+    {
+      d = stream.d;
+    }
     void setupVertexAttributes () const;
     void setup (const streamline_data_t &);
     void clear ()

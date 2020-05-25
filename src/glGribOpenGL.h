@@ -95,23 +95,13 @@ public:
   void clear ()
   { 
     if (ready)
+{
+printf ("0x%llx ", (long long unsigned int)glfwGetCurrentContext ());
+std::cout << "glDeleteVertexArrays " << VertexArrayID << std::endl;
       glDeleteVertexArrays (1, &VertexArrayID);
+}
     VertexArrayID = 0; 
     ready = false;
-  }
-
-  void setup ()
-  {
-    clear ();
-    glGenVertexArrays (1, &VertexArrayID);
-    ready = true;
-  }
-
-  void bind () const
-  {
-    if (! ready)
-      throw std::runtime_error (std::string ("OpenGLVertexArray is not ready"));
-    glBindVertexArray (VertexArrayID);
   }
 
   const T * getObject () const
@@ -124,11 +114,13 @@ public:
     glBindVertexArray (0); 
   }
 
-  void bindAuto () const
+  void bind () const
   {
     if (! ready)
       {
         glGenVertexArrays (1, &VertexArrayID);
+printf ("0x%llx ", (long long unsigned int)glfwGetCurrentContext ());
+std::cout << " glGenVertexArrays " << VertexArrayID << std::endl;
         ready = true;
         glBindVertexArray (VertexArrayID);
         object->setupVertexAttributes ();

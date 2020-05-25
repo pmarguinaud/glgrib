@@ -13,7 +13,7 @@ void glGrib::Polygon::setupVertexAttributes () const
 
 void glGrib::Polygon::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
-  VAID.bindAuto ();
+  VAID.bind ();
   glEnable (GL_PRIMITIVE_RESTART);
   glPrimitiveRestartIndex (0xffffffff);
   glDrawElements (GL_LINE_STRIP, numberOfLines, GL_UNSIGNED_INT, nullptr);

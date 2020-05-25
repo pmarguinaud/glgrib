@@ -173,7 +173,7 @@ void glGrib::Landscape::render (const glGrib::View & view, const glGrib::Options
       program->set ("IY1", IY1);
     }
 
-  VAID.bindAuto ();
+  VAID.bind ();
 
   if (d.opts.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);

@@ -268,7 +268,7 @@ void glGrib::String::render (const glGrib::View & view) const
   program->set ("length10", length);
   program->set ("scaleXYZ", d.scaleXYZ);
 
-  VAID.bindAuto ();
+  VAID.bind ();
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0};
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, d.len);
   VAID.unbind ();
@@ -292,7 +292,7 @@ void glGrib::String::render (const glm::mat4 & MVP) const
   program->set ("color0", d.color0);
   program->set ("color1", d.color1);
 
-  VAID.bindAuto ();
+  VAID.bind ();
   unsigned int ind[12] = {0, 1, 2, 2, 3, 0};
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, d.len);
   VAID.unbind ();

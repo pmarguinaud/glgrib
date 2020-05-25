@@ -417,7 +417,7 @@ void glGrib::Field::frame_t::render (const glGrib::View & view) const
   program->set ("dlon", opts.geometry.frame.dlon);
   program->set ("dlat", opts.geometry.frame.dlat);
 
-  VAID.bindAuto ();
+  VAID.bind ();
 
   if (opts.geometry.frame.width > 0.0f)
     {

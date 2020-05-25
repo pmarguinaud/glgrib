@@ -434,7 +434,7 @@ void glGrib::FieldStream::computeStreamLine (int it0, const float * ru, const fl
 void glGrib::FieldStream::streamline_t::render (bool wide, float Width, const glGrib::View & view) const
 {
   glGrib::Program * program = glGrib::Program::load ("STREAM");
-  VAID.bindAuto ();
+  VAID.bind ();
   if (wide)
     {
       float width = view.pixelToDistAtNadir (Width);

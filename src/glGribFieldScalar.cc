@@ -279,7 +279,7 @@ void glGrib::FieldScalar::scalar_t::render (const glGrib::View & view) const
   if (field->opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
   
-  VAID.bindAuto ();
+  VAID.bind ();
 
   field->geometry->renderTriangles ();
   
@@ -300,7 +300,7 @@ void glGrib::FieldScalar::points_t::render (const glGrib::View & view) const
   program->set ("lpointZoo", field->opts.scalar.points.size.variable.on);
   program->set ("factor", field->opts.scalar.points.size.factor.on);
   
-  VAID.bindAuto ();
+  VAID.bind ();
   
   int numberOfPoints = field->geometry->getNumberOfPoints ();
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0}; 

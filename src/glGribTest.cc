@@ -17,7 +17,7 @@ void glGrib::Test::render (const glGrib::View & view, const glGrib::OptionsLight
 
   glDisable (GL_CULL_FACE);
 
-  VAID.bindAuto ();
+  VAID.bind ();
   glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, nullptr);
   VAID.unbind ();
 

@@ -486,7 +486,7 @@ void glGrib::FieldIsoFill::isoband_t::render () const
 {
   glGrib::Program * program2 = glGrib::Program::load ("ISOFILL2");
 
-  VAID.bindAuto ();
+  VAID.bind ();
   program2->set ("color0", d.color);
   glDrawElements (GL_TRIANGLES, d.size, GL_UNSIGNED_INT, nullptr);
   VAID.unbind ();
@@ -505,7 +505,7 @@ void glGrib::FieldIsoFill::render (const glGrib::View & view, const glGrib::Opti
   program1->set ("scale0", opts.scale);
   palette.set (program1);
 
-  d.VAID.bindAuto ();
+  d.VAID.bind ();
   geometry->renderTriangles ();
   d.VAID.unbind ();
 

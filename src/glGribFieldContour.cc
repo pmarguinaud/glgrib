@@ -189,7 +189,7 @@ void glGrib::FieldContour::isoline_t::render (const glGrib::View & view, const g
 {
   glGrib::Program * program = glGrib::Program::load ("CONTOUR");
 
-  VAID.bindAuto ();
+  VAID.bind ();
   
   program->set ("dash", d.dash);
   program->set ("color0", d.color);

@@ -63,7 +63,7 @@ void glGrib::Ticks::ticks_t::render (const glm::mat4 & MVP) const
   program->set ("width", ticks->opts.lines.width);
   program->set ("kind", kind);
   
-  VAID.bindAuto ();
+  VAID.bind ();
   
   if (ticks->opts.lines.width == 0.0f)
     {
@@ -105,7 +105,7 @@ void glGrib::Ticks::frame_t::render (const glm::mat4 & MVP) const
   program->set ("color0", ticks->opts.frame.color);
   
   
-  VAID.bindAuto ();
+  VAID.bind ();
   unsigned int ind[6] = {0, 1, 2, 0, 2, 3};
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, 4);
   VAID.unbind ();

@@ -196,7 +196,7 @@ void glGrib::Colorbar::render (const glm::mat4 & MVP) const
   program->set ("ymin", opts.position.ymin);
   program->set ("ymax", opts.position.ymax);
 
-  VAID.bindAuto ();
+  VAID.bind ();
   glDrawElements (GL_TRIANGLES, 3 * nt, GL_UNSIGNED_INT, nullptr);
   VAID.unbind ();
 

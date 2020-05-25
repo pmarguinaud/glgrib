@@ -113,7 +113,7 @@ void glGrib::Points::render (const glGrib::View & view, const glGrib::OptionsLig
 
   view.setMVP (program);
 
-  VAID.bindAuto ();
+  VAID.bind ();
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0}; 
   glDrawElementsInstancedBaseInstance 
     (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, length, offset);

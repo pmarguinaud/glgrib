@@ -17,6 +17,11 @@ public:
   Landscape () : VAID (this) {}
   Landscape & operator=(const Landscape &);
   virtual void setup (Loader *, const OptionsLandscape &);
+  virtual void clear ()
+  {
+    VAID.clear ();
+    glGrib::World::clear ();
+  }
   void render (const View &, const OptionsLight &) const override;
   virtual ~Landscape ();
   void setFlat (bool f) { d.opts.flat.on = f; }

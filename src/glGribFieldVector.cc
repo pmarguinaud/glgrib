@@ -180,7 +180,7 @@ const
   program->set ("discrete", false);
   program->set ("mpiview_scale", 0.0f);
 
-  VAID.bindAuto ();
+  VAID.bind ();
   field->geometry->renderTriangles ();
   VAID.unbind ();
 
@@ -311,7 +311,7 @@ const
 
     }
 
-  VAID.bindAuto ();
+  VAID.bind ();
   int numberOfPoints = field->geometry->getNumberOfPoints ();
   arrow->render (numberOfPoints, opts.vector.arrow.fill.on);
   VAID.unbind ();

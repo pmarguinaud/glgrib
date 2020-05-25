@@ -69,7 +69,7 @@ void glGrib::Image::render (const glm::mat4 & MVP) const
   program->set ("x1", opts.x1);
   program->set ("y1", opts.y1);
 
-  VAID.bindAuto ();
+  VAID.bind ();
 
   glActiveTexture (GL_TEXTURE0); 
   glBindTexture (GL_TEXTURE_2D, texture->id ());

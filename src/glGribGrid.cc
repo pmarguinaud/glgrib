@@ -109,7 +109,7 @@ void glGrib::Grid::render (const glGrib::View & view, const glGrib::OptionsLight
   program->set ("interval", d.opts.interval);
   program->set ("dash_length", d.opts.dash_length);
 
-  VAID.bindAuto ();
+  VAID.bind ();
 
   program->set ("do_lat", 0);
   program->set ("frag_do_lat", 0);

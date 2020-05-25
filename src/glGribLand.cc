@@ -32,7 +32,7 @@ void glGrib::Land::layer_t::render (const glGrib::OptionsLandLayer & opts) const
   program->set ("color0", opts.color);
   program->set ("debug", opts.debug.on);
      
-  VAID.bindAuto ();
+  VAID.bind ();
   glDrawElements (GL_TRIANGLES, 3 * d.numberOfTriangles, GL_UNSIGNED_INT, nullptr);
   VAID.unbind ();
 }

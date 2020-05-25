@@ -15,23 +15,29 @@ public:
   void setup (const OptionsGrid &);
   void render (const View &, const OptionsLight &) const override;
   void reSize (const View &) override {}
-  const OptionsGrid & getOptions () const { return opts; }
+  const OptionsGrid & getOptions () const { return d.opts; }
+  
   void setColorOptions (const OptionColor & o)
   {
-    opts.color = o;
+    d.opts.color = o;
   }
   void setScaleOptions (float s)
   {
-    opts.scale = s;
+    d.opts.scale = s;
   }
   void clear ();
   ~Grid ();
-  float getScale () const override { return opts.scale; }
+  float getScale () const override { return d.opts.scale; }
+
+  void setupVertexAttributes () const;
+
 private:
-  String labels;
-  OptionsGrid opts;
+  struct
+  {
+    String labels;
+    OptionsGrid opts;
+  } d;
   OpenGLVertexArray<Grid> VAID;
-  int numberOfPoints;
 };
 
 

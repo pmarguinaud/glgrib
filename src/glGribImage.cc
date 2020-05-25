@@ -34,10 +34,8 @@ glGrib::Image & glGrib::Image::operator= (const glGrib::Image & img)
 
 void glGrib::Image::setupVertexAttributes () const
 {
-
   // We have no buffer at all, but for some reason, we have to define a vertex array
   // so that the shader work. I do not know why.
-  VAID.setup ();
 }
 
 void glGrib::Image::setup (const glGrib::OptionsImage & o)
@@ -71,7 +69,7 @@ void glGrib::Image::render (const glm::mat4 & MVP) const
   program->set ("x1", opts.x1);
   program->set ("y1", opts.y1);
 
-  VAID.bind ();
+  VAID.bindAuto ();
 
   glActiveTexture (GL_TEXTURE0); 
   glBindTexture (GL_TEXTURE_2D, texture->id ());

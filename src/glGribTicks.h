@@ -27,7 +27,6 @@ public:
   {
     return ready;
   }
-  void setupVertexAttributes () const;
 private:
   void createStr 
     (const OptionsTicksSide &,

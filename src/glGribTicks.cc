@@ -63,7 +63,7 @@ void glGrib::Ticks::ticks_t::render (const glm::mat4 & MVP) const
   program->set ("width", ticks->opts.lines.width);
   program->set ("kind", kind);
   
-  VAID.bind ();
+  VAID.bindAuto ();
   
   if (ticks->opts.lines.width == 0.0f)
     {
@@ -105,7 +105,7 @@ void glGrib::Ticks::frame_t::render (const glm::mat4 & MVP) const
   program->set ("color0", ticks->opts.frame.color);
   
   
-  VAID.bind ();
+  VAID.bindAuto ();
   unsigned int ind[6] = {0, 1, 2, 0, 2, 3};
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, 4);
   VAID.unbind ();
@@ -356,6 +356,8 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
 
   if (opts.lines.on)
     {
+      ticks.clear ();
+
       // Coordinates of ticks
       std::vector<glm::vec3> XYa (S.size ());
 
@@ -369,41 +371,23 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
       vertexbuffer = newGlgribOpenGLBufferPtr (XYa.size () * sizeof (XYa[0]), XYa.data ());
 
       numberOfTicks = XYa.size ();
-
     }
 
-  setupVertexAttributes ();
 }
 
 template <>
 void glGrib::Ticks::ticks_t::setupVertexAttributes () const
 {
-
-  VAID.setup ();
-  VAID.bind ();
-  
   ticks->vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, nullptr); 
   glVertexAttribDivisor (0, 1);
-  
-  VAID.unbind ();
-
 }
 
 template <>
 void glGrib::Ticks::frame_t::setupVertexAttributes () const
 {
   // Needed to use a shader
-  VAID.setup ();
-}
-
-void glGrib::Ticks::setupVertexAttributes () const
-{
-  if (opts.lines.on)
-    ticks.setupVertexAttributes ();
-  if (opts.frame.on)
-    frame.setupVertexAttributes ();
 }
 
 

@@ -11,7 +11,6 @@ class Grid : public Object
 {
 public:
   Grid () : VAID (this) {}
-  Grid & operator=(const Grid &);
   void setup (const OptionsGrid &);
   void render (const View &, const OptionsLight &) const override;
   void reSize (const View &) override {}
@@ -28,7 +27,9 @@ public:
   void clear ();
   float getScale () const override { return d.opts.scale; }
 
-  void setupVertexAttributes () const;
+  void setupVertexAttributes () const 
+  {
+  }
 
 private:
   struct

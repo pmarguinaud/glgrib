@@ -43,8 +43,10 @@ public:
 
   Image () : VAID (this) {}
   
-  Image & operator= (const Image &);
-  void setupVertexAttributes () const;
+  void setupVertexAttributes () const
+  {
+  }
+
   void clear ();
 
   void setup (const OptionsImage &);

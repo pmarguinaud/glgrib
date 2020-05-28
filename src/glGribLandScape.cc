@@ -13,19 +13,6 @@
 
 #include <math.h>
 
-glGrib::Landscape & glGrib::Landscape::operator= (const glGrib::Landscape & landscape)
-{
-  clear ();
-  if ((this != &landscape) && landscape.isReady ())
-    {
-      glGrib::World::operator= (landscape);
-      d = landscape.d;
-      VAID = landscape.VAID;
-      setReady ();
-   }
-  return *this;
-}
-
 void glGrib::Landscape::setupVertexAttributes () const
 {
   geometry->bindCoordinates (0);

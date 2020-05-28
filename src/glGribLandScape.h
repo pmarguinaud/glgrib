@@ -15,7 +15,6 @@ class Landscape : public World
 {
 public:
   Landscape () : VAID (this) {}
-  Landscape & operator=(const Landscape &);
   virtual void setup (Loader *, const OptionsLandscape &);
   virtual void clear ()
   {

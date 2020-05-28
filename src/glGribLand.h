@@ -13,7 +13,6 @@ namespace glGrib
 class Land : public Object
 {
 public:
-  Land & operator=(const Land &);
   void render (const View &, const OptionsLight &) const override;
   virtual void clear ();
   virtual void setup (const OptionsLand &);

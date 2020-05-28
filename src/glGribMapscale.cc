@@ -2,17 +2,6 @@
 #include "glGribShader.h"
 
 
-glGrib::Mapscale & glGrib::Mapscale::operator= (const glGrib::Mapscale & mapscale)
-{
-  if (this != &mapscale)
-    {
-      clear ();
-      if (mapscale.ready)
-        setup (mapscale.opts);
-    }
-  return *this;
-}
-
 void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
 {
   opts = o;

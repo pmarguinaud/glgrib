@@ -12,18 +12,6 @@
 #include <omp.h>
 
 
-glGrib::Land & glGrib::Land::operator=(const glGrib::Land & other)
-{
-  clear (); 
-  if ((this != &other) && other.isReady ()) 
-    {   
-      opts = other.opts;
-      layers = other.layers;
-      setReady (); 
-    }   
-  return *this;
-}
-
 void glGrib::Land::layer_t::render (const glGrib::OptionsLandLayer & opts) const
 {
   glGrib::Program * program = glGrib::Program::load ("LAND");

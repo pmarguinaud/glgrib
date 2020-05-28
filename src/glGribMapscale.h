@@ -19,7 +19,6 @@ public:
   void setup (const OptionsMapscale &);
   void setupVertexAttributes () const;
   void clear ();
-  Mapscale & operator= (const Mapscale &);
   void render (const glm::mat4 &, const View &) const;
   void toggleHidden () { hidden = ! hidden; }
   bool getHidden () const { return hidden; }

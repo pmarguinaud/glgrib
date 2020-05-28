@@ -8,24 +8,6 @@
 #include <iostream>
 #include <vector>
 
-glGrib::Grid & glGrib::Grid::operator= (const glGrib::Grid & other)
-{
-  clear ();
-  if ((this != &other) && other.isReady ())
-    {
-      glGrib::Object::operator= (other);
-      d = other.d;
-      VAID = other.VAID;
-      setReady ();
-    }
-  return *this;
-}
-
-void glGrib::Grid::setupVertexAttributes () const
-{
-  
-}
-
 void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
 {
   d.opts = o;

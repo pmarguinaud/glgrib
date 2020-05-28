@@ -11,28 +11,6 @@ void glGrib::Image::clear ()
     VAID.clear ();
 }
 
-glGrib::Image & glGrib::Image::operator= (const glGrib::Image & img)
-{
-  if (this != &img)
-    {   
-      clear (); 
-      if (img.ready)
-        {
-          opts = img.opts;
-          texture = img.texture;
-          setupVertexAttributes (); 
-          ready = true;
-        }
-    }   
-  return *this;
-}
-
-void glGrib::Image::setupVertexAttributes () const
-{
-  // We have no buffer at all, but for some reason, we have to define a vertex array
-  // so that the shader work. I do not know why.
-}
-
 void glGrib::Image::setup (const glGrib::OptionsImage & o)
 {
   unsigned char * rgb;

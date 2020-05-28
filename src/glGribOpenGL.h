@@ -70,6 +70,11 @@ private:
     GLuint VertexArrayID = 0;
   };
 
+  // Copy constructor should be managed by host object
+  OpenGLVertexArray (const OpenGLVertexArray & other) 
+  {
+  }
+
 public:
 
   OpenGLVertexArray (T * _object) : object (_object) {}
@@ -79,12 +84,6 @@ public:
     if (this != &other) 
       clear ();
     return *this;
-  }
-
-  OpenGLVertexArray (const OpenGLVertexArray & other) 
-  {
-    ready = false;
-    VertexArrayID = 0;
   }
 
   ~OpenGLVertexArray ()

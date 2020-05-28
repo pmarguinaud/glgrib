@@ -54,22 +54,6 @@ class OpenGLVertexArray
 {
 private:
 
-  class binding_t
-  {
-  public:
-    binding_t ()
-    {
-      glGetIntegerv (GL_VERTEX_ARRAY_BINDING, &VertexArrayID);
-      printf (" current = %8d\n", VertexArrayID);
-    }
-    ~binding_t ()
-    {
-      
-    }
-  private:
-    GLuint VertexArrayID = 0;
-  };
-
   // Copy constructor should be managed by host object
   OpenGLVertexArray (const OpenGLVertexArray & other) 
   {

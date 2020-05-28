@@ -91,13 +91,37 @@ public:
     clear ();
   }
 
-  template <typename A0>
-  void render (const A0 & a0) const
+  void render () const
+  {
+    bind ();
+    object->render ();
+    unbind ();
+  }
+
+  template <typename T0>
+  void render (const T0 & a0) const
   {
     bind ();
     object->render (a0);
     unbind ();
   }
+
+  template <typename T0, typename T1>
+  void render (const T0 & a0, const T1 & a1) const
+  {
+    bind ();
+    object->render (a0, a1);
+    unbind ();
+  }
+
+  template <typename T0, typename T1, typename T2>
+  void render (const T0 & a0, const T1 & a1, const T2 & a2) const
+  {
+    bind ();
+    object->render (a0, a1, a2);
+    unbind ();
+  }
+
 
   void clear ()
   { 

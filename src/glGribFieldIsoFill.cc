@@ -485,14 +485,13 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 void glGrib::FieldIsoFill::isoband_t::render () const
 {
   glGrib::Program * program2 = glGrib::Program::load ("ISOFILL2");
-
-  VAID.bind ();
   program2->set ("color0", d.color);
   glDrawElements (GL_TRIANGLES, d.size, GL_UNSIGNED_INT, nullptr);
-  VAID.unbind ();
 }
 
-void glGrib::FieldIsoFill::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+void glGrib::FieldIsoFill::render (const glGrib::View & view, 
+                                   const glGrib::OptionsLight & light) 
+const
 {
   if (opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -518,7 +517,7 @@ void glGrib::FieldIsoFill::render (const glGrib::View & view, const glGrib::Opti
   program2->set ("scale0", opts.scale);
 
   for (const auto & ib : d.isoband)
-    ib.render ();
+    ib.VAID.render ();
 
   view.delMVP (program2);
 

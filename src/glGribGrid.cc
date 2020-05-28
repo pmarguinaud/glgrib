@@ -15,7 +15,7 @@ glGrib::Grid & glGrib::Grid::operator= (const glGrib::Grid & other)
     {
       glGrib::Object::operator= (other);
       d = other.d;
-      VAID  = other.VAID;
+      VAID = other.VAID;
       setReady ();
     }
   return *this;

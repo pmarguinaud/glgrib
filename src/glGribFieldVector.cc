@@ -180,9 +180,7 @@ const
   program->set ("discrete", false);
   program->set ("mpiview_scale", 0.0f);
 
-  VAID.bind ();
   field->geometry->renderTriangles ();
-  VAID.unbind ();
 
   view.delMVP (program);
 }
@@ -311,10 +309,8 @@ const
 
     }
 
-  VAID.bind ();
   int numberOfPoints = field->geometry->getNumberOfPoints ();
   arrow->render (numberOfPoints, opts.vector.arrow.fill.on);
-  VAID.unbind ();
 
   view.delMVP (program);
 }
@@ -325,9 +321,9 @@ void glGrib::FieldVector::render
 const
 {
   if (opts.vector.arrow.on || opts.vector.barb.on)
-    vector.render (view, light);
+    vector.VAID.render (view, light);
   if (opts.vector.norm.on)
-    scalar.render (view, light);
+    scalar.VAID.render (view, light);
 }
 
 void glGrib::FieldVector::clear ()

@@ -417,8 +417,6 @@ void glGrib::Field::frame_t::render (const glGrib::View & view) const
   program->set ("dlon", opts.geometry.frame.dlon);
   program->set ("dlat", opts.geometry.frame.dlat);
 
-  VAID.bind ();
-
   if (opts.geometry.frame.width > 0.0f)
     {
       float width = view.pixelToDistAtNadir (opts.geometry.frame.width);
@@ -432,12 +430,11 @@ void glGrib::Field::frame_t::render (const glGrib::View & view) const
       glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, geom->getFrameNumberOfPoints ());
     }
 
-  VAID.unbind ();
 }
 
 void glGrib::Field::renderFrame (const glGrib::View & view) const
 {
-  frame.render (view);
+  frame.VAID.render (view);
 }
 
 

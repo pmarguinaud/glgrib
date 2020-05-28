@@ -58,8 +58,6 @@ void glGrib::Ticks::ticks_t::render (const glm::mat4 & MVP) const
   program->set ("width", ticks->opts.lines.width);
   program->set ("kind", kind);
   
-  VAID.bind ();
-  
   if (ticks->opts.lines.width == 0.0f)
     {
       unsigned int ind[2] = {1, 2};
@@ -79,7 +77,6 @@ void glGrib::Ticks::ticks_t::render (const glm::mat4 & MVP) const
         }
     }
   
-  VAID.unbind ();
 }
 
 template <>
@@ -100,10 +97,8 @@ void glGrib::Ticks::frame_t::render (const glm::mat4 & MVP) const
   program->set ("color0", ticks->opts.frame.color);
   
   
-  VAID.bind ();
   unsigned int ind[6] = {0, 1, 2, 0, 2, 3};
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, 4);
-  VAID.unbind ();
 }
 
 void glGrib::Ticks::render (const glm::mat4 & MVP) const
@@ -112,10 +107,10 @@ void glGrib::Ticks::render (const glm::mat4 & MVP) const
     return;
 
   if (opts.lines.on)
-    ticks.render (MVP);
+    ticks.VAID.render (MVP);
 
   if (opts.frame.on)
-    frame.render (MVP);
+    frame.VAID.render (MVP);
 
   if (opts.labels.on)
     labels.render (MVP);

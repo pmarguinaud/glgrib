@@ -189,8 +189,6 @@ void glGrib::FieldContour::isoline_t::render (const glGrib::View & view, const g
 {
   glGrib::Program * program = glGrib::Program::load ("CONTOUR");
 
-  VAID.bind ();
-  
   program->set ("dash", d.dash);
   program->set ("color0", d.color);
   
@@ -213,9 +211,6 @@ void glGrib::FieldContour::isoline_t::render (const glGrib::View & view, const g
     {
       glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, d.size);
     }
-  
-  VAID.unbind ();
-  
 }
 
 glGrib::FieldContour::FieldContour (const glGrib::FieldContour & field)
@@ -470,7 +465,7 @@ void glGrib::FieldContour::render (const glGrib::View & view, const glGrib::Opti
   program->set ("height_scale", opts.geometry.height.scale);
 
   for (const auto & is : iso)
-    is.render (view, light);
+    is.VAID.render (view, light);
 
   view.delMVP (program);
 

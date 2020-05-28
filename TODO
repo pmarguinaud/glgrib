@@ -13,6 +13,5 @@ Template for openGL buffers depending on type being allocated ?
 Make ALL actions (window bindings) go through options.
 
 Remove all operator= ?
-Binding object ?
 
 

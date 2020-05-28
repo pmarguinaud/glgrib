@@ -431,10 +431,10 @@ void glGrib::FieldStream::computeStreamLine (int it0, const float * ru, const fl
   return;
 }
 
-void glGrib::FieldStream::streamline_t::render (bool wide, float Width, const glGrib::View & view) const
+void glGrib::FieldStream::streamline_t::render 
+  (const bool & wide, const float & Width, const glGrib::View & view) const
 {
   glGrib::Program * program = glGrib::Program::load ("STREAM");
-  VAID.bind ();
   if (wide)
     {
       float width = view.pixelToDistAtNadir (Width);
@@ -446,7 +446,6 @@ void glGrib::FieldStream::streamline_t::render (bool wide, float Width, const gl
     {
       glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, d.size);
     }
-  VAID.unbind ();
 }
 
 void glGrib::FieldStream::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
@@ -478,7 +477,7 @@ void glGrib::FieldStream::render (const glGrib::View & view, const glGrib::Optio
   program->set ("scalenorm", ! opts.stream.motion.on);
 
   for (const auto & s : d.stream)
-    s.render (wide, Width, view);
+    s.VAID.render (wide, Width, view);
 
   view.delMVP (program);
 

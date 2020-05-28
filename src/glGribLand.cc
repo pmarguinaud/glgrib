@@ -32,9 +32,7 @@ void glGrib::Land::layer_t::render (const glGrib::OptionsLandLayer & opts) const
   program->set ("color0", opts.color);
   program->set ("debug", opts.debug.on);
      
-  VAID.bind ();
   glDrawElements (GL_TRIANGLES, 3 * d.numberOfTriangles, GL_UNSIGNED_INT, nullptr);
-  VAID.unbind ();
 }
 
 void glGrib::Land::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
@@ -46,7 +44,7 @@ void glGrib::Land::render (const glGrib::View & view, const glGrib::OptionsLight
 
   for (size_t i = 0; i < layers.size (); i++)
     if (opts.layers[i].on)
-      layers[i].render (opts.layers[i]);
+      layers[i].VAID.render (opts.layers[i]);
      
   view.delMVP (program);
 

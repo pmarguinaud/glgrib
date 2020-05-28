@@ -102,7 +102,7 @@ private:
     {
       VAID.clear ();
     }
-    void render (bool, float, const glGrib::View &) const;
+    void render (const bool &, const float &, const glGrib::View &) const;
     struct
     {
       OpenGLBufferPtr vertexbuffer, normalbuffer, distancebuffer;

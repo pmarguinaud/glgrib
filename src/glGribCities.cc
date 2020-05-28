@@ -65,6 +65,7 @@ void glGrib::Cities::setup (const glGrib::OptionsCities & o)
 
 }
 
+#ifdef UNDEF
 glGrib::Cities & glGrib::Cities::operator= (const glGrib::Cities & cities)
 {
   if (this != &cities)
@@ -79,6 +80,7 @@ glGrib::Cities & glGrib::Cities::operator= (const glGrib::Cities & cities)
     }
   return *this;
 }
+#endif
 
 void glGrib::Cities::clear ()
 {

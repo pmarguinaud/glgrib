@@ -57,18 +57,6 @@ void glGrib::GeoPoints::setup (const glGrib::OptionsGeoPoints & o)
   glGrib::Points::setup (opts.points, lon, lat, val);
 }
 
-glGrib::GeoPoints & glGrib::GeoPoints::operator= (const glGrib::GeoPoints & other)
-{
-  if (this != &other)
-    {
-      clear ();
-      glGrib::Points::operator= (other);
-      if (other.isReady ())
-        opts = other.opts;
-    }
-  return *this;
-}
-
 void glGrib::GeoPoints::clear ()
 {
   glGrib::Points::clear ();

@@ -16,21 +16,6 @@ void glGrib::Points::clear ()
     }
 }
 
-glGrib::Points & glGrib::Points::operator= (const glGrib::Points & points)
-{
-  if (this != &points)
-    {   
-      clear (); 
-      if (points.isReady ())
-        {
-          d = points.d;
-          VAID = points.VAID;
-          setReady ();
-        }
-    }   
-  return *this;
-}
-
 void glGrib::Points::setupVertexAttributes () const
 {
   d.llsbuffer->bind (GL_ARRAY_BUFFER);

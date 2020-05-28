@@ -279,12 +279,8 @@ void glGrib::FieldScalar::scalar_t::render (const glGrib::View & view) const
   if (field->opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
   
-  VAID.bind ();
-
   field->geometry->renderTriangles ();
   
-  VAID.unbind ();
-
   if (field->opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 }
@@ -300,13 +296,9 @@ void glGrib::FieldScalar::points_t::render (const glGrib::View & view) const
   program->set ("lpointZoo", field->opts.scalar.points.size.variable.on);
   program->set ("factor", field->opts.scalar.points.size.factor.on);
   
-  VAID.bind ();
-  
   int numberOfPoints = field->geometry->getNumberOfPoints ();
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0}; 
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, numberOfPoints);
-  
-  VAID.unbind ();
 }
 
 void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
@@ -345,9 +337,9 @@ void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::Optio
   program->set ("Nmax", Nmax-1);
     
   if (opts.scalar.points.on)
-    points.render (view);
+    points.VAID.render (view);
   else
-    scalar.render (view);
+    scalar.VAID.render (view);
 
   view.delMVP (program);
 

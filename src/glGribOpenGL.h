@@ -91,6 +91,14 @@ public:
     clear ();
   }
 
+  template <typename A0>
+  void render (const A0 & a0) const
+  {
+    bind ();
+    object->render (a0);
+    unbind ();
+  }
+
   void clear ()
   { 
     if (ready)

@@ -14,9 +14,7 @@ public:
     return Field::CONTOUR;
   }
   FieldContour * clone () const;
-  FieldContour & operator= (const FieldContour &);
   FieldContour () { }
-  FieldContour (const FieldContour &);
   void setup (Loader *, const OptionsField &, float = 0) override;
   void render (const View &, const OptionsLight &) const override;
   void clear () override; 
@@ -26,6 +24,7 @@ public:
     return (int)opts.path.size ();
   }
 private:
+  FieldContour (const FieldContour &);
   class isoline_data_t
   {
   public:

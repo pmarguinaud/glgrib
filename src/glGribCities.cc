@@ -65,23 +65,6 @@ void glGrib::Cities::setup (const glGrib::OptionsCities & o)
 
 }
 
-#ifdef UNDEF
-glGrib::Cities & glGrib::Cities::operator= (const glGrib::Cities & cities)
-{
-  if (this != &cities)
-    {
-      clear ();
-      glGrib::Points::operator= (cities);
-      if (cities.isReady ())
-        {
-          opts = cities.opts;
-          d = cities.d;
-	}
-    }
-  return *this;
-}
-#endif
-
 void glGrib::Cities::clear ()
 {
   glGrib::Points::clear ();

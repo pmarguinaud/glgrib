@@ -7,40 +7,12 @@
 #include <stdio.h>
 #include <iostream>
 
-glGrib::FieldVector::FieldVector (const glGrib::FieldVector & field) 
-  : scalar (this), vector (this)
-{
-  if (field.isReady ())
-    {
-      // Cleanup already existing VAOs
-      clear ();
-      operator= (field);
-    }
-}
-
 glGrib::FieldVector * glGrib::FieldVector::clone () const
 {
   glGrib::FieldVector * fld = new glGrib::FieldVector ();
   *fld = *this;
   return fld;
 }
-
-glGrib::FieldVector & glGrib::FieldVector::operator= (const glGrib::FieldVector & other)
-{
-  if (this != &other)
-    {
-      clear ();
-      if (other.isReady ())
-        {
-          glGrib::Field::operator= (other);
-	  d = other.d;
-          d.buffer_d = newGlgribOpenGLBufferPtr (other.d.buffer_d);
-          setReady ();
-        }
-    }
-  return *this;
-}
-
 
 template <>
 void glGrib::FieldVector::scalar_t::setupVertexAttributes () const

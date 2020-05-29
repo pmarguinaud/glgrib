@@ -14,9 +14,7 @@ public:
     return Field::VECTOR;
   }
   FieldVector * clone () const;
-  FieldVector & operator= (const FieldVector &);
   FieldVector () : scalar (this), vector (this) { }
-  FieldVector (const FieldVector &);
   void setup (Loader *, const OptionsField &, float = 0) override;
   void renderArrow (const View &, const OptionsLight &) const;
   void renderNorms (const View &, const OptionsLight &) const;

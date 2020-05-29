@@ -14,9 +14,7 @@ public:
     return Field::STREAM;
   }
   FieldStream * clone () const;
-  FieldStream & operator= (const FieldStream &);
   FieldStream () { }
-  FieldStream (const FieldStream &);
   void setup (Loader *, const OptionsField &, float = 0) override;
   void render (const View &, const OptionsLight &) const override;
   void clear () override;

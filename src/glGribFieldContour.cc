@@ -213,36 +213,11 @@ void glGrib::FieldContour::isoline_t::render (const glGrib::View & view, const g
     }
 }
 
-glGrib::FieldContour::FieldContour (const glGrib::FieldContour & field)
-{
-  if (field.isReady ())
-    {
-      // Cleanup already existing VAOs
-      clear ();
-      operator= (field);
-    }
-}
-
 glGrib::FieldContour * glGrib::FieldContour::clone () const
 {
   glGrib::FieldContour * fld = new glGrib::FieldContour ();
   *fld = *this;
   return fld;
-}
-
-glGrib::FieldContour & glGrib::FieldContour::operator= (const glGrib::FieldContour & field)
-{
-  if (this != &field)
-    {
-      clear ();
-      if (field.isReady ())
-        {
-          glGrib::Field::operator= (field);
-          iso = field.iso;
-          setReady ();
-        }
-    }
-  return *this;
 }
 
 void glGrib::FieldContour::clear ()

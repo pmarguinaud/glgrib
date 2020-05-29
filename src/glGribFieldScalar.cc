@@ -8,17 +8,6 @@
 #include <iostream>
 #include <algorithm>
 
-glGrib::FieldScalar::FieldScalar (const glGrib::FieldScalar & field) 
-  : scalar (this), points (this)
-{
-  if (field.isReady ())
-    {
-      // Cleanup already existing VAOs
-      clear ();
-      operator= (field);
-    }
-}
-
 void glGrib::FieldScalar::clear ()
 {
   scalar.clear ();

@@ -24,36 +24,11 @@ double getTime ()
 
 }
 
-glGrib::FieldStream::FieldStream (const glGrib::FieldStream & field)
-{
-  if (field.isReady ())
-    {
-      // Cleanup already existing VAOs
-      clear ();
-      operator= (field);
-    }
-}
-
 glGrib::FieldStream * glGrib::FieldStream::clone () const
 {
   glGrib::FieldStream * fld = new glGrib::FieldStream ();
   *fld = *this;
   return fld;
-}
-
-glGrib::FieldStream & glGrib::FieldStream::operator= (const glGrib::FieldStream & field)
-{
-  if (this != &field)
-    {
-      clear ();
-      if (field.isReady ())
-        {
-          glGrib::Field::operator= (field);
-          d = field.d;
-          setReady ();
-        }
-    }
-  return *this;
 }
 
 void glGrib::FieldStream::clear ()

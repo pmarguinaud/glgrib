@@ -15,9 +15,6 @@ class Cities : public Points
 {
 public:
   void render (const View &, const OptionsLight &) const;
-#ifdef UNDEF
-  Cities & operator= (const Cities &);
-#endif
   void clear ();
   void setup (const OptionsCities &);
   const OptionsCities & getOptions () const { return opts; }

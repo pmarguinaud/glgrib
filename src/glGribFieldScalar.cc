@@ -34,22 +34,6 @@ glGrib::FieldScalar * glGrib::FieldScalar::clone () const
   return fld;
 }
 
-glGrib::FieldScalar & glGrib::FieldScalar::operator= (const glGrib::FieldScalar & field)
-{
-  if (this != &field)
-    {
-      clear ();
-      if (field.isReady ())
-        {
-          scalar = field.scalar;
-          points = field.points;
-          glGrib::Field::operator= (field);
-          setReady ();
-        }
-    }
-  return *this;
-}
-
 template <int N>
 void glGrib::FieldScalar::field_t<N>::setupVertexAttributes () const
 {

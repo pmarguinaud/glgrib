@@ -13,7 +13,6 @@ public:
     return Field::SCALAR;
   }
   FieldScalar * clone () const;
-  FieldScalar & operator= (const FieldScalar &);
   FieldScalar () : scalar (this), points (this) { }
   FieldScalar (const FieldScalar &);
   void setup (Loader *, const OptionsField &, float = 0) override;

@@ -29,21 +29,6 @@ glGrib::FieldIsoFill * glGrib::FieldIsoFill::clone () const
   return fld;
 }
 
-glGrib::FieldIsoFill & glGrib::FieldIsoFill::operator= (const glGrib::FieldIsoFill & field)
-{
-  if (this != &field)
-    {
-      clear ();
-      if (field.isReady ())
-        {
-          glGrib::Field::operator= (field);
-          d = field.d;
-          setReady ();
-        }
-    }
-  return *this;
-}
-
 void glGrib::FieldIsoFill::clear ()
 {
   if (isReady ()) 

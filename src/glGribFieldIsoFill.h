@@ -13,7 +13,6 @@ public:
     return Field::ISOFILL;
   }
   FieldIsoFill * clone () const;
-  FieldIsoFill & operator= (const FieldIsoFill &);
   FieldIsoFill () : d (this) { }
   FieldIsoFill (const FieldIsoFill &);
   void setup (Loader *, const OptionsField &, float = 0) override;

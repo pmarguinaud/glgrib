@@ -10,19 +10,6 @@
 #include <iostream>
 #include <stdexcept>
 
-glGrib::Lines & glGrib::Lines::operator= (const glGrib::Lines & other)
-{
-  clear ();
-  if ((this != &other) && other.isReady ())
-    {
-      glGrib::Polygon::operator= (other);
-      opts = other.opts;
-      setupVertexAttributes ();
-      setReady ();
-    }
-  return *this;
-}
-
 void glGrib::Lines::setup (const glGrib::OptionsLines & o, 
                           const std::vector<unsigned int> & mask, 
                           const std::vector<unsigned int> & code)

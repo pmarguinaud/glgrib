@@ -11,7 +11,6 @@ namespace glGrib
 class Lines : public Polygon
 {
 public:
-  Lines & operator=(const Lines &);
   void setup (const OptionsLines &, const std::vector<unsigned int> & = {0x00000000}, 
              const std::vector<unsigned int> & = {0x00000000});
   void render (const View &, const OptionsLight &) const override;

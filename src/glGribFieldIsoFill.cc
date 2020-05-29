@@ -432,8 +432,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
                                     (length_indice * sizeof (unsigned int));
 
       {
-        unsigned int * indice = static_cast<unsigned int *> (d.isoband[i].d.elementbuffer->map ());
-
+        auto indice = d.isoband[i].d.elementbuffer->map<unsigned int> ();
         // Pack all indices into the buffer, after adding an offset
 #pragma omp parallel for
         for (int ith = 0; ith < nth; ith++)
@@ -443,9 +442,6 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
               indice[isomake[ith][i].offset_indice+j] = 
                 isomake[ith][i].indice[j] + offset;
           }
-
-        indice = nullptr;
-        d.isoband[i].d.elementbuffer->unmap ();
       }
 
 
@@ -454,7 +450,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
                                     (length_lonlat * sizeof (float));
 
       {
-        float * lonlat = static_cast<float *> (d.isoband[i].d.vertexbuffer->map ());
+        auto lonlat = d.isoband[i].d.vertexbuffer->map<float> ();
 
         // Pack all lon/lat pairs into the buffer
 #pragma omp parallel for
@@ -464,9 +460,6 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
               lonlat[isomake[ith][i].offset_lonlat+j] = 
                 isomake[ith][i].lonlat[j];
           }
-
-        lonlat = nullptr;
-        d.isoband[i].d.vertexbuffer->unmap ();
       }
 
       d.isoband[i].d.size = length_indice;

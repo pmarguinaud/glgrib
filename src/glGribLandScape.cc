@@ -89,12 +89,12 @@ void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandsca
 
       d.heightbuffer = newGlgribOpenGLBufferPtr (size * sizeof (float));
 
-      float * height = static_cast<float *> (d.heightbuffer->map ());
+      auto height = d.heightbuffer->map<float> ();
+
 #pragma omp parallel for
       for (int jglo = 0; jglo < size; jglo++)
         height[jglo] = (*data)[jglo] == meta.valmis ? 0.0f : d.opts.geometry.height.scale * ((*data)[jglo]-meta.valmin) / (meta.valmax - meta.valmin);
 
-      d.heightbuffer->unmap (); 
     }
 
 

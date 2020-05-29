@@ -15,7 +15,7 @@ void glGrib::GeometryLambert::setupCoordinates ()
 {
   vertexbuffer = newGlgribOpenGLBufferPtr (2 * numberOfPoints * sizeof (float));
 
-  float * lonlat = static_cast <float *> (vertexbuffer->map ());
+  auto lonlat = vertexbuffer->map<float> ();
 
   // Generation of coordinates
 #pragma omp parallel for
@@ -31,10 +31,6 @@ void glGrib::GeometryLambert::setupCoordinates ()
 	lonlat[2*p+0] = latlon.lon;
 	lonlat[2*p+1] = latlon.lat;
       }
-      
-
-  lonlat = nullptr;
-  vertexbuffer->unmap ();
 }
 
 void glGrib::GeometryLambert::setProgramParameters (glGrib::Program * program) const 
@@ -92,11 +88,11 @@ void glGrib::GeometryLambert::setupFrame ()
   vertexbuffer_frame = newGlgribOpenGLBufferPtr (3 * (numberOfPoints_frame + 2) 
                                                      * sizeof (float));
   
-  float * lonlat = static_cast<float *> (vertexbuffer_frame->map ());
+  auto lonlat = vertexbuffer_frame->map<float> ();
   
   int p = 0;
   
-  auto push = [lonlat, &p, this] (int i, int j, int latcst)
+  auto push = [&lonlat, &p, this] (int i, int j, int latcst)
   {
     xy_t pt_xy ((i - Nux / 2) * DxInMetres, (j - Nuy / 2) * DyInMetres);
     pt_xy = pt_xy + center_xy;
@@ -124,7 +120,6 @@ void glGrib::GeometryLambert::setupFrame ()
   for (int j = 0; j < 2; j++)
     push (0, j, 1);
   
-  vertexbuffer_frame->unmap ();
 }
 
 
@@ -142,7 +137,8 @@ void glGrib::GeometryLambert::setup (glGrib::HandlePtr ghp, const glGrib::Option
   if (! opts.triangle_strip.on)
     {
       elementbuffer = newGlgribOpenGLBufferPtr (3 * numberOfTriangles * sizeof (unsigned int));
-      unsigned int * ind = static_cast <unsigned int *> (elementbuffer->map ());
+      auto ind = elementbuffer->map<unsigned int> ();
+
       for (int j = 0, t = 0; j < Ny-1; j++)
         for (int i = 0; i < Nx-1; i++)
           {
@@ -156,7 +152,8 @@ void glGrib::GeometryLambert::setup (glGrib::HandlePtr ghp, const glGrib::Option
     {
       ind_strip_size = (2 * Nx + 5) * (Ny - 1);
       elementbuffer = newGlgribOpenGLBufferPtr (ind_strip_size * sizeof (unsigned int));
-      unsigned int * ind_strip = static_cast<unsigned int *> (elementbuffer->map ());
+  
+      auto ind_strip = elementbuffer->map<unsigned int> ();
 
       auto ind0 = [=] (int i, int j) { return (j + 0) * Nx + (i + 0); };
       auto ind2 = [=] (int i, int j) { return (j + 1) * Nx + (i + 0); };
@@ -186,11 +183,6 @@ void glGrib::GeometryLambert::setup (glGrib::HandlePtr ghp, const glGrib::Option
 	ind_strip[t] = 0xffffffff;
       
     }
-
-  elementbuffer->unmap ();
-
-
-
 
   p_pj = proj_t (deg2rad * LoVInDegrees, deg2rad * LaDInDegrees, projectionCentreFlag == 128 ? -1.0 : +1.0);
   center_xy = p_pj.latlonToXy (p_pj.ref_pt);

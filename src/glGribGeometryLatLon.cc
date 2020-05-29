@@ -53,7 +53,7 @@ void glGrib::GeometryLatLon::setupCoordinates ()
 {
   vertexbuffer = newGlgribOpenGLBufferPtr (2 * numberOfPoints * sizeof (float));
 
-  float * lonlat = static_cast <float *> (vertexbuffer->map ());
+  auto lonlat = vertexbuffer->map<float> ();
 
   // Generation of coordinates
 #pragma omp parallel for
@@ -69,8 +69,6 @@ void glGrib::GeometryLatLon::setupCoordinates ()
         }
     }
 
-  lonlat = nullptr;
-  vertexbuffer->unmap ();
 }
 
 void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::OptionsGeometry & o)
@@ -105,7 +103,9 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
   if (! opts.triangle_strip.on)
     {
       elementbuffer = newGlgribOpenGLBufferPtr (3 * numberOfTriangles * sizeof (unsigned int));
-      unsigned int * ind = static_cast<unsigned int *> (elementbuffer->map ());
+
+      auto ind = elementbuffer->map<unsigned int> ();
+
       for (int j = 0, t = 0; j < Nj-1; j++)
         {
           for (int i = 0; i < Ni-1; i++)
@@ -132,7 +132,9 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
         ind_strip_size = (2 * Ni + 1) * (Nj - 1);
 
       elementbuffer = newGlgribOpenGLBufferPtr (3 * ind_strip_size * sizeof (unsigned int));
-      unsigned int * ind_strip = static_cast<unsigned int *> (elementbuffer->map ());
+
+      auto ind_strip = elementbuffer->map<unsigned int> ();
+
       for (int j = 0, t = 0; j < Nj-1; j++)
         {
           for (int i = 0; i < Ni; i++)
@@ -151,7 +153,6 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
         }
     }
 
-  elementbuffer->unmap ();
 
 
   numberOfPoints  = Ni * Nj;
@@ -169,11 +170,11 @@ void glGrib::GeometryLatLon::setupFrame ()
   vertexbuffer_frame = newGlgribOpenGLBufferPtr (3 * (numberOfPoints_frame + 2) 
                                                      * sizeof (float));
 
-  float * lonlat = static_cast<float *> (vertexbuffer_frame->map ());
+  auto lonlat = vertexbuffer_frame->map<float> ();
 
   int p = 0;
 
-  auto push = [lonlat, &p, this] (int i, int j, int latcst)
+  auto push = [&lonlat, &p, this] (int i, int j, int latcst)
   {
     float lat = lat0 - dlat * static_cast<float> (j);
     float lon = lon0 + dlon * static_cast<float> (i);
@@ -198,7 +199,6 @@ void glGrib::GeometryLatLon::setupFrame ()
   for (int j = 0; j < 2; j++)
     push (0, j, 1);
   
-  vertexbuffer_frame->unmap ();
 }
 
 glGrib::GeometryLatLon::~GeometryLatLon ()

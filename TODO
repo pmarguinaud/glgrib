@@ -18,3 +18,6 @@ Use GLSL mix : x = (1-t) * a + t * b
 Use glNamedBufferStorage instead of glBufferData
 Use glMapNamedBuffer instead of glMapBufferRange
 Use glGetAttribLocation
+
+Make typed buffers ?
+

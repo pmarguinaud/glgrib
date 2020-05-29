@@ -320,11 +320,10 @@ void glGrib::Field::loadHeight (glGrib::OpenGLBufferPtr buf, glGrib::Loader * ld
 
           heightbuffer = newGlgribOpenGLBufferPtr (size * sizeof (T));
 
-          T * height = (T *)heightbuffer->map (); 
+          auto height = heightbuffer->map<T> ();
 
-	  pack<T> (data->data (), size, meta.valmin, meta.valmax, meta.valmis, height);
-
-          heightbuffer->unmap (); 
+	  pack<T> (data->data (), size, meta.valmin, meta.valmax, 
+                   meta.valmis, height.address ());
 
         }
     }

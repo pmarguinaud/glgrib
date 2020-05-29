@@ -327,7 +327,7 @@ void glGrib::String::update (const std::vector<std::string> & str)
     for (size_t j = 0; j < d.data[i].size (); j++)
       d.data[i][j] = ' ';
 
-  float * let = static_cast<float *> (d.letterbuffer->map ());
+  auto let = d.letterbuffer->map<float> ();
 
   for (size_t j = 0, ii = 0; j < d.data.size (); j++)
     for (size_t i = 0; i < d.data[j].size (); i++, ii++) 
@@ -335,8 +335,6 @@ void glGrib::String::update (const std::vector<std::string> & str)
         int rank = d.font->map (d.data[j][i]);
         let[ii] = rank; 
       }
-
-  d.letterbuffer->unmap ();
 }
 
 void glGrib::String::setShared (bool p)

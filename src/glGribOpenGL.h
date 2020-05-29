@@ -36,6 +36,10 @@ private:
       glUnmapNamedBuffer (buffer->id ());
       ptr = nullptr;
     }
+    T * address ()
+    {
+      return ptr;
+    }
   private:
     OpenGLBuffer * buffer;
     T * ptr = nullptr;
@@ -48,8 +52,6 @@ public:
   bool allocated () const { return allocated_; }
   void bind (GLenum, GLuint = 0) const;
   size_t buffersize () const { return size_; }
-  void * map ();
-  void unmap ();
 
   template <typename T>
   OpenGLBufferMapping<T> map ()

@@ -921,15 +921,13 @@ void glGrib::GeometryGaussian::setupSSBO ()
   if (! opts.gaussian.fit.on)
     {
       ssbo_jlat = newGlgribOpenGLBufferPtr (numberOfPoints * sizeof (int));
-      int * jlat = static_cast<int*> (ssbo_jlat->map ());
+      auto jlat = ssbo_jlat->map<int> ();
 
 #pragma omp parallel for
       for (int ilat = 0; ilat < Nj; ilat++)
       for (int ilon = 0; ilon < pl[ilat]; ilon++)
         jlat[jglooff[ilat]+ilon] = ilat;
 
-      jlat = nullptr;
-      ssbo_jlat->unmap ();
     }
 
   // jglooff
@@ -940,20 +938,17 @@ void glGrib::GeometryGaussian::setupSSBO ()
   // Gaussian latitudes
  
   ssbo_glat = newGlgribOpenGLBufferPtr (Nj * sizeof (float));
-  float * glat = static_cast<float*> (ssbo_glat->map ());
+  auto glat = ssbo_glat->map<float> ();
 
   for (int i = 0; i < Nj; i++)
     glat[i] = latgauss[i];
-
-  glat = nullptr;
-  ssbo_glat->unmap ();
 
 }
 
 void glGrib::GeometryGaussian::setupCoordinates ()
 {
   vertexbuffer = newGlgribOpenGLBufferPtr (2 * numberOfPoints * sizeof (float));
-  float * lonlat = static_cast<float *> (vertexbuffer->map ());
+  auto lonlat = vertexbuffer->map<float> ();
   
   int iglooff[Nj];
   iglooff[0] = 0;
@@ -1018,8 +1013,6 @@ void glGrib::GeometryGaussian::setupCoordinates ()
         }
     }
   
-  lonlat = nullptr;
-  vertexbuffer->unmap ();
 }
 
 namespace 
@@ -1198,14 +1191,13 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
         ind_strip_size += ind_stripcnt_per_lat[jlat-1];
 
       elementbuffer = newGlgribOpenGLBufferPtr (ind_strip_size * sizeof (unsigned int));
-      unsigned int * ind_strip = static_cast <unsigned int*> (elementbuffer->map ());
+      auto ind_strip = elementbuffer->map<unsigned int> ();
 
-      computeTrigaussStrip (Nj, pl, ind_strip, ind_stripcnt_per_lat, ind_stripoff_per_lat); 
+      computeTrigaussStrip (Nj, pl, ind_strip.address (), 
+                            ind_stripcnt_per_lat, ind_stripoff_per_lat); 
 
       delete [] ind_stripcnt_per_lat;
       delete [] ind_stripoff_per_lat;
-
-      elementbuffer->unmap ();
 
     }
 

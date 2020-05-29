@@ -31,18 +31,6 @@ glGrib::OpenGLBuffer::OpenGLBuffer (size_t size, const void * data)
   size_ = size;
 }
 
-void * glGrib::OpenGLBuffer::map ()
-{
-  bind (GL_ARRAY_BUFFER);
-  return glMapBufferRange (GL_ARRAY_BUFFER, 0, size_, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT);
-}
-
-void glGrib::OpenGLBuffer::unmap ()
-{
-  glFlushMappedBufferRange (GL_ARRAY_BUFFER, 0, size_);
-  glUnmapBuffer (GL_ARRAY_BUFFER);
-}
-
 glGrib::OpenGLBuffer::~OpenGLBuffer ()
 {
   if (allocated_)

@@ -178,7 +178,8 @@ void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField
     setupHilo (data);
 
   colorbuffer = newGlgribOpenGLBufferPtr (geometry->getNumberOfPoints () * sizeof (T));
-  T * col = static_cast<T *> (colorbuffer->map ());
+
+  auto col = colorbuffer->map<T> ();
 
   if (palette.fixed ())
     {
@@ -195,10 +196,8 @@ void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField
   else
     {
       pack<T>  (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
-                meta1.valmax, meta1.valmis, col);
+                meta1.valmax, meta1.valmis, col.address ());
     }
-  col = nullptr;
-  colorbuffer->unmap ();
 
   loadHeight <T> (colorbuffer, ld);
 
@@ -252,12 +251,10 @@ void glGrib::FieldScalar::setupMpiView (glGrib::Loader * ld, const glGrib::Optio
   for (int i = 0; i < max; i++)
     Disl[i] = xyz2lonlat (glm::normalize (Disp[i] / static_cast<float> (count[i])));
 
-  if(0)
-  for (int i = 0; i < max; i++)
-    printf (" %8d | %12.2f, %12.2f\n", i, rad2deg * Disl[i].x, rad2deg * Disl[i].y);
-
   mpivbuffer = newGlgribOpenGLBufferPtr (3 * size * sizeof (float));
-  float * mpiv = static_cast<float *> (mpivbuffer->map ());
+
+  auto mpiv = mpivbuffer->map<float> ();
+
   for (int i = 0; i < size; i++)
     {
       int j = (*mpiview)[i]-1;
@@ -265,8 +262,6 @@ void glGrib::FieldScalar::setupMpiView (glGrib::Loader * ld, const glGrib::Optio
       mpiv[3*i+1] = Disl[j].x;
       mpiv[3*i+2] = Disl[j].y;
     }
-  mpiv = nullptr;
-  mpivbuffer->unmap ();
 
 }
 

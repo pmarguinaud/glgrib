@@ -108,22 +108,30 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
   glGrib::Loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
   d.buffer_n = newGlgribOpenGLBufferPtr (geometry->getNumberOfPoints () * sizeof (unsigned char));
-  unsigned char * col_n = (unsigned char *)d.buffer_n->map ();
-  pack<unsigned char> (data_n->data (), geometry->getNumberOfPoints (), meta_n.valmin, meta_n.valmax, meta_n.valmis, col_n);
-  col_n = nullptr;
-  d.buffer_n->unmap ();
+
+  {
+    auto col_n = d.buffer_n->map<unsigned char> ();
+
+    pack<unsigned char> (data_n->data (), geometry->getNumberOfPoints (), 
+                         meta_n.valmin, meta_n.valmax, meta_n.valmis, 
+                         col_n.address ());
+  }
 
   loadHeight <unsigned char> (d.buffer_n, ld);
 
   d.buffer_d = newGlgribOpenGLBufferPtr (geometry->getNumberOfPoints () * sizeof (unsigned char));
-  unsigned char * col_d = (unsigned char *)d.buffer_d->map ();
-  pack<unsigned char> (data_d->data (), geometry->getNumberOfPoints (), meta_d.valmin, meta_d.valmax, meta_d.valmis, col_d);
 
   const int npts = opts.vector.density;
-  geometry->sample (col_d, 0, npts);
 
-  col_d = nullptr;
-  d.buffer_d->unmap ();
+  {
+    auto col_d = d.buffer_d->map<unsigned char> ();
+
+    pack<unsigned char> (data_d->data (), geometry->getNumberOfPoints (), 
+                         meta_d.valmin, meta_d.valmax, meta_d.valmis, 
+                         col_d.address ());
+
+    geometry->sample (col_d.address (), 0, npts);
+  }
 
   meta.push_back (meta_n);
   meta.push_back (meta_d);
@@ -338,7 +346,7 @@ void glGrib::FieldVector::clear ()
 
 void glGrib::FieldVector::reSample (const glGrib::View & view)
 {
-  unsigned char * col_d = (unsigned char *)d.buffer_d->map ();
+  auto col_d = d.buffer_d->map<unsigned char> ();
 
   float * data_d = values[1]->data ();
 
@@ -353,14 +361,13 @@ void glGrib::FieldVector::reSample (const glGrib::View & view)
 
   const int npts = 2 * opts.vector.density / w;
 
-  pack<unsigned char> (data_d, geometry->getNumberOfPoints (), meta_d.valmin, meta_d.valmax, meta_d.valmis, col_d);
+  pack<unsigned char> (data_d, geometry->getNumberOfPoints (), 
+                       meta_d.valmin, meta_d.valmax, meta_d.valmis, 
+                       col_d.address ());
 
-  geometry->sample (col_d, 0, npts);
+  geometry->sample (col_d.address (), 0, npts);
 
   d.vscale = opts.vector.scale * (pi / npts) / (meta_n.valmax || 1.0f);
-
-  d.buffer_d->unmap ();
-
 }
 
 void glGrib::FieldVector::reSize (const glGrib::View & view)

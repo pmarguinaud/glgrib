@@ -272,7 +272,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --scene.image.y1 0.1 
 ```
 ## Interpolate field over time                                       -- interpolation
-![](share/test/interpolation/TEST_0000.png)
+![](share/test/interpolation/TEST.gif)
 
 ```
     --field[0].path share/data/interp/01.grb share/data/interp/36.grb 
@@ -280,7 +280,8 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     2 --view.lat 46.7 --view.fov 5 --scene.interpolation.on 
     --scene.interpolation.frames 200 --window.width 1000 --window.height 
     1000 --scene.date.font.scale 0.03 --scene.date.font.color.foreground 
-    red --scene.date.on --coast.on --grid.on 
+    red --scene.date.on --coast.on --grid.on --window.offscreen.on 
+    --window.offscreen.frames 72 
 ```
 ## Landscape over Europe only                                        -- landscape_eurat01
 ![](share/test/landscape_eurat01/TEST_0000.png)

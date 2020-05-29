@@ -25,8 +25,12 @@ void glGrib::OpenGLBuffer::bind (GLenum target, GLuint index) const
 glGrib::OpenGLBuffer::OpenGLBuffer (size_t size, const void * data)
 {
   glGenBuffers (1, &id_);
+
+//glNamedBufferStorage (id_, size, data, GL_STATIC_DRAW);
+
   glBindBuffer (GL_ARRAY_BUFFER, id_);
   glBufferData (GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+
   allocated_ = true;
   size_ = size;
 }

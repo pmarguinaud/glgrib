@@ -304,9 +304,9 @@ void processLat (int jlat, int iloen1, int iloen2,
 }
   
 void computeTrigaussStrip (const long int Nj, const std::vector<long int> & pl, 
-                             unsigned int * ind_strip,
-	                     int ind_stripcnt_per_lat[], 
-	                     int ind_stripoff_per_lat[])
+                           unsigned int * ind_strip,
+	                   int ind_stripcnt_per_lat[], 
+	                   int ind_stripoff_per_lat[])
 {
   int iglooff[Nj];
   

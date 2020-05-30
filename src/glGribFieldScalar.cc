@@ -59,57 +59,62 @@ template <>
 template <typename T>
 void glGrib::FieldScalar::scalar_t::setupVertexAttributes_typed () const
 {
-  field->geometry->bindCoordinates (0);
+  auto program = getProgram ();
 
+  // Coordinates
+  field->geometry->bindCoordinates (program->getAttributeLocation ("vertexLonLat"));
+
+  // Values
+  auto vattr = program->getAttributeLocation ("vertexVal");
   field->colorbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (1); 
-
+  glEnableVertexAttribArray (vattr); 
   bool fixed = field->palette.fixed ();
+  glVertexAttribPointer (vattr, 1, getOpenGLType<T> (), fixed ? GL_FALSE : GL_TRUE, 0,  nullptr); 
 
-  glVertexAttribPointer (1, 1, getOpenGLType<T> (), fixed ? GL_FALSE : GL_TRUE, 0,  nullptr); 
+  // Height
+  field->bindHeight <T> (program->getAttributeLocation ("vertexHeight"));
 
-  field->geometry->bindTriangles ();
-
-  field->bindHeight <T> (2);
-
+  // MPI view
+  auto mattr = program->getAttributeLocation ("vertexMPIView");
   if (field->opts.mpiview.on)
     {
       field->mpivbuffer->bind (GL_ARRAY_BUFFER);
-      glEnableVertexAttribArray (3); 
-      glVertexAttribPointer (3, 3, GL_FLOAT, GL_FALSE, 0, nullptr); 
+      glEnableVertexAttribArray (mattr); 
+      glVertexAttribPointer (mattr, 3, GL_FLOAT, GL_FALSE, 0, nullptr); 
     }
   else
     {
-      glDisableVertexAttribArray (3);
-      glVertexAttrib3f (3, 0.0f, 0.0f, 0.0f);
+      glDisableVertexAttribArray (mattr);
+      glVertexAttrib3f (mattr, 0.0f, 0.0f, 0.0f);
     }
+
+  // Triangles
+  field->geometry->bindTriangles ();
 }
 
 template <>
 template <typename T>
 void glGrib::FieldScalar::points_t::setupVertexAttributes_typed () const
 {
-  // Points
-  field->geometry->bindCoordinates (0);
-  glVertexAttribDivisor (0, 1);
-  
-  field->colorbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, 1, getOpenGLType<T> (), GL_TRUE, 0, nullptr); 
-  glVertexAttribDivisor (1, 1);
+  auto program = getProgram ();
 
-  if (field->heightbuffer)
-    {
-      field->heightbuffer->bind (GL_ARRAY_BUFFER);
-      glEnableVertexAttribArray (2);
-      glVertexAttribPointer (2, 1, getOpenGLType<T> (), GL_TRUE, 0, nullptr);
-      glVertexAttribDivisor (2, 1);
-    }
-  else
-    {
-      glDisableVertexAttribArray (2);
-      glVertexAttrib1f (2, 0.0f);
-    }
+  // Coordinates
+  auto pattr = program->getAttributeLocation ("vertexLonLat");
+  field->geometry->bindCoordinates (pattr);
+  glVertexAttribDivisor (pattr, 1);
+  
+  // Values
+  auto vattr = program->getAttributeLocation ("vertexVal");
+  field->colorbuffer->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (vattr); 
+  glVertexAttribPointer (vattr, 1, getOpenGLType<T> (), GL_TRUE, 0, nullptr); 
+  glVertexAttribDivisor (vattr, 1);
+
+  // Height
+  auto hattr = program->getAttributeLocation ("vertexHeight");
+  field->bindHeight <T> (hattr);
+  glVertexAttribDivisor (hattr, 1);
+  
 }
 
 void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)

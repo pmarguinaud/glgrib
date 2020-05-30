@@ -130,6 +130,12 @@ public:
   void use () const;
   void read (const std::string &);
 
+  GLint getAttributeLocation (const std::string & name) const
+  {
+    return glGetAttribLocation (programID, name.c_str ());
+  }
+
+private:
   std::string FragmentShaderCode;
   std::string VertexShaderCode;
   std::string GeometryShaderCode;

@@ -235,7 +235,7 @@ void glGrib::Shell::do_json (const std::vector<std::string> & args, glGrib::Wind
   glGrib::OptionsParser p0;
   opts0.traverse ("", &p0);
 
-  if ((args.size () > 1) && (args[1] == "++"))
+  if ((args.size () > 1) && (args[1] == "--diff"))
     {
       std::vector<std::string> a;
       a.push_back (args[0]);
@@ -246,6 +246,14 @@ void glGrib::Shell::do_json (const std::vector<std::string> & args, glGrib::Wind
       opts1.traverse ("", &p1);
       for (size_t i = 1; i < a.size (); i++)
         listStr.push_back (p0.getJSON (a[i], true, &p1));
+    }
+  else if ((args.size () > 1) && (args[1] == "--base"))
+    {
+      glGrib::Options opts1;
+      glGrib::OptionsParser p1;
+      opts1.traverse ("", &p1);
+      for (size_t i = 2; i < args.size (); i++)
+        listStr.push_back (p1.getJSON (args[i], true));
     }
   else
     {

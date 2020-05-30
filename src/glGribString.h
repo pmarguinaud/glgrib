@@ -111,7 +111,7 @@ private:
     OpenGLBufferPtr xyzbuffer, vertexbuffer, letterbuffer;
     const_FontPtr font = nullptr; 
   } d;
-    mutable OpenGLVertexArray<String> VAID;
+  OpenGLVertexArray<String> VAID;
 };
 
 }

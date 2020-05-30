@@ -37,7 +37,7 @@ private:
     OpenGLTexturePtr texture;
     OpenGLBufferPtr heightbuffer;
   } d;
-  mutable OpenGLVertexArray<Landscape> VAID;
+  OpenGLVertexArray<Landscape> VAID;
 };
 
 

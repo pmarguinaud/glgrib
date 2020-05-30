@@ -18,7 +18,7 @@ protected:
   OpenGLBufferPtr vertexbuffer, elementbuffer;
   unsigned int numberOfLines;
   int numberOfPoints;
-  mutable OpenGLVertexArray<Polygon> VAID;
+  OpenGLVertexArray<Polygon> VAID;
 };
 
 

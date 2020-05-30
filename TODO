@@ -12,11 +12,9 @@ Template for openGL buffers depending on type being allocated ?
 
 Make ALL actions (window bindings) go through options.
 
-Remove all operator= ?
 Use GLSL mix : x = (1-t) * a + t * b
 
 Use glNamedBufferStorage instead of glBufferData
-Use glMapNamedBuffer instead of glMapBufferRange
 Use glGetAttribLocation
 
 Make typed buffers ?

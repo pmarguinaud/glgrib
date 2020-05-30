@@ -65,7 +65,7 @@ private:
     void setupVertexAttributes () const;
     void render (const glGrib::View &, const glGrib::OptionsLight &) const;
     FieldVector * field;
-    mutable OpenGLVertexArray<field_t> VAID;
+    OpenGLVertexArray<field_t> VAID;
   };  
   using scalar_t = field_t<SCALAR>;
   using vector_t = field_t<VECTOR>;

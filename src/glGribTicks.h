@@ -66,7 +66,7 @@ private:
     void render (const glm::mat4 &) const;
     void setupVertexAttributes () const;
     Ticks * ticks;
-    mutable OpenGLVertexArray<item_t> VAID;
+    OpenGLVertexArray<item_t> VAID;
   };
 
   using ticks_t = item_t<TICKS>;

@@ -26,10 +26,12 @@ glGrib::OpenGLBuffer::OpenGLBuffer (size_t size, const void * data)
 {
   glGenBuffers (1, &id_);
 
-//glNamedBufferStorage (id_, size, data, GL_STATIC_DRAW);
+//glNamedBufferData (id_, size, data, GL_STATIC_DRAW); does not work
+//glNamedBufferStorage (id_, size, data, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT); does not work
 
   glBindBuffer (GL_ARRAY_BUFFER, id_);
   glBufferData (GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+  glBindBuffer (GL_ARRAY_BUFFER, 0);
 
   allocated_ = true;
   size_ = size;

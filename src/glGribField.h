@@ -156,7 +156,7 @@ protected:
     void render (const View &) const;
     void setupVertexAttributes () const;
     Field * field = nullptr;
-    mutable OpenGLVertexArray<frame_t> VAID;
+    OpenGLVertexArray<frame_t> VAID;
   };
 
   float slot = 0.0f;

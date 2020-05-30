@@ -42,7 +42,7 @@ private:
     OpenGLBufferPtr llsbuffer;
     glGrib::Palette p;
   } d;
-  mutable OpenGLVertexArray<Points> VAID;
+  OpenGLVertexArray<Points> VAID;
 };
 
 

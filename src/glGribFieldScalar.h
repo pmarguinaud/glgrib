@@ -56,7 +56,7 @@ private:
       return glGrib::Program::load (getProgramName ());
     }
     FieldScalar * field;
-    mutable OpenGLVertexArray<field_t> VAID;
+    OpenGLVertexArray<field_t> VAID;
   };
   using scalar_t = field_t<SCALAR>;
   using points_t = field_t<POINTS>;

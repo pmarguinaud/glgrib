@@ -33,7 +33,7 @@ private:
   void updateNonLinear (const float, const float, std::vector<float> &, 
                         std::vector <float> &, std::vector<std::string> &);
   OptionsColorbar opts;
-  mutable OpenGLVertexArray<Colorbar> VAID;
+  OpenGLVertexArray<Colorbar> VAID;
   OpenGLBufferPtr elementbuffer;
   bool ready = false;
   bool hidden = false;

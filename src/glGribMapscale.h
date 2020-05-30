@@ -25,7 +25,7 @@ public:
   const OptionsMapscale & getOptions () const { return opts; }
 private:
   OptionsMapscale opts;
-  mutable OpenGLVertexArray<Mapscale> VAID;
+  OpenGLVertexArray<Mapscale> VAID;
   OpenGLBufferPtr elementbuffer;
   bool ready = false;
   bool hidden = false;

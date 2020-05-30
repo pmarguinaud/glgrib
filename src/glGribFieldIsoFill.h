@@ -47,7 +47,7 @@ private:
       OpenGLBufferPtr vertexbuffer, elementbuffer;
       int size;
     } d;
-    mutable OpenGLVertexArray<isoband_t> VAID;
+    OpenGLVertexArray<isoband_t> VAID;
   };
 
   class _d
@@ -55,7 +55,7 @@ private:
   public:
     _d (FieldIsoFill * f) : VAID (f) {}
     // Triangles with a single color
-    mutable OpenGLVertexArray<FieldIsoFill> VAID;
+    OpenGLVertexArray<FieldIsoFill> VAID;
     OpenGLBufferPtr colorbuffer;
 
     // Isoband

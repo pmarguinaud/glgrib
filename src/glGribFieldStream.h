@@ -106,7 +106,7 @@ private:
       OpenGLBufferPtr vertexbuffer, normalbuffer, distancebuffer;
       GLuint size;
     } d;
-    mutable OpenGLVertexArray<streamline_t> VAID;
+    OpenGLVertexArray<streamline_t> VAID;
   };
 
   class stream_seen_t : public std::set<int>

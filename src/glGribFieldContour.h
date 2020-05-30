@@ -110,7 +110,7 @@ private:
       OpenGLBufferPtr vertexbuffer, heightbuffer, distancebuffer;
       GLuint size;
     } d;
-    mutable OpenGLVertexArray<isoline_t> VAID;
+    OpenGLVertexArray<isoline_t> VAID;
   };
 
   std::vector<isoline_t> iso;

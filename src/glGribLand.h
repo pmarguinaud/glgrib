@@ -49,7 +49,7 @@ private:
       OpenGLBufferPtr vertexbuffer, elementbuffer;
       unsigned int numberOfTriangles;
     } d;
-    mutable OpenGLVertexArray<layer_t> VAID;
+    OpenGLVertexArray<layer_t> VAID;
   };
   std::vector<layer_t> layers;
 };

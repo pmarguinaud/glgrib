@@ -21,7 +21,7 @@ protected:
   OpenGLBufferPtr vertexbuffer, elementbuffer;
   int numberOfPoints;
   unsigned int numberOfTriangles;
-  mutable OpenGLVertexArray<Test> VAID;
+  OpenGLVertexArray<Test> VAID;
 };
 
 

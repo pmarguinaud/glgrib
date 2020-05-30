@@ -56,7 +56,7 @@ private:
   OptionsImage opts;
   bool ready = false;
   OpenGLTexturePtr texture;
-  mutable OpenGLVertexArray<Image> VAID;
+  OpenGLVertexArray<Image> VAID;
 };
 
 

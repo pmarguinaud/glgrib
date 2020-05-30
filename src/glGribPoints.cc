@@ -18,11 +18,14 @@ void glGrib::Points::clear ()
 
 void glGrib::Points::setupVertexAttributes () const
 {
-  d.llsbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (0); 
+  glGrib::Program * program = glGrib::Program::load ("POINTS");
+  auto attr = program->getAttributeLocation ("aPos");
 
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-  glVertexAttribDivisor (0, 1);
+  d.llsbuffer->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (attr); 
+
+  glVertexAttribPointer (attr, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+  glVertexAttribDivisor (attr, 1);
 }
 
 void glGrib::Points::setup (const glGrib::OptionsPoints & o, 

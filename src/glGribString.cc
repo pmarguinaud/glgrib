@@ -220,20 +220,26 @@ void glGrib::String::setup (glGrib::const_FontPtr ff, const std::vector<std::str
 
 void glGrib::String::setupVertexAttributes () const
 {
+  glGrib::Program * program = d.font->getProgram ();
+
+  auto pattr = program->getAttributeLocation ("letterPos");
+  auto vattr = program->getAttributeLocation ("letterVal");
+  auto xattr = program->getAttributeLocation ("letterXYZA");
+
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 4, GL_FLOAT, GL_FALSE, 0, nullptr); 
-  glVertexAttribDivisor (0, 1);
+  glEnableVertexAttribArray (pattr); 
+  glVertexAttribPointer (pattr, 4, GL_FLOAT, GL_FALSE, 0, nullptr); 
+  glVertexAttribDivisor (pattr, 1);
   
   d.letterbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, 1, GL_FLOAT, GL_FALSE, 0, nullptr); 
-  glVertexAttribDivisor (1, 1);
+  glEnableVertexAttribArray (vattr); 
+  glVertexAttribPointer (vattr, 1, GL_FLOAT, GL_FALSE, 0, nullptr); 
+  glVertexAttribDivisor (vattr, 1);
   
   d.xyzbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (2); 
-  glVertexAttribPointer (2, 4, GL_FLOAT, GL_FALSE, 0, nullptr); 
-  glVertexAttribDivisor (2, 1);
+  glEnableVertexAttribArray (xattr); 
+  glVertexAttribPointer (xattr, 4, GL_FLOAT, GL_FALSE, 0, nullptr); 
+  glVertexAttribDivisor (xattr, 1);
 }
 
 

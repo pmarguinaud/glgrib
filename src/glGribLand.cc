@@ -311,9 +311,11 @@ void glGrib::Land::setup (const glGrib::OptionsLand & o)
 
 void glGrib::Land::layer_t::setupVertexAttributes () const
 {
+  glGrib::Program * program = glGrib::Program::load ("LAND");
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr); 
+  auto attr = program->getAttributeLocation ("vertexLonLat");
+  glEnableVertexAttribArray (attr); 
+  glVertexAttribPointer (attr, 2, GL_FLOAT, GL_FALSE, 0, nullptr); 
   d.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 }
 

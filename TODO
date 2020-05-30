@@ -22,4 +22,9 @@ Make typed buffers ?
 Valeurs admissibles pour une option
 
 clear template
-make FieldScalar a template class
+make FieldScalar a template class ?
+
+hidden = option
+
+
+

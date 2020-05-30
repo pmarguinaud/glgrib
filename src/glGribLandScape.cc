@@ -15,18 +15,21 @@
 
 void glGrib::Landscape::setupVertexAttributes () const
 {
-  geometry->bindCoordinates (0);
+  glGrib::Program * program = glGrib::Program::load ("LANDSCAPE");
+
+  geometry->bindCoordinates (program->getAttributeLocation ("vertexLonLat"));
  
+  auto attr = program->getAttributeLocation ("vertexHeight");
   if (d.heightbuffer)
     {   
       d.heightbuffer->bind (GL_ARRAY_BUFFER);
-      glEnableVertexAttribArray (1);
-      glVertexAttribPointer (1, 1, GL_FLOAT, GL_FALSE, 0, nullptr);
+      glEnableVertexAttribArray (attr);
+      glVertexAttribPointer (attr, 1, GL_FLOAT, GL_FALSE, 0, nullptr);
     }   
   else
     {   
-      glDisableVertexAttribArray (1);
-      glVertexAttrib1f (1, 0.0f);
+      glDisableVertexAttribArray (attr);
+      glVertexAttrib1f (attr, 0.0f);
     }   
  
   geometry->bindTriangles ();

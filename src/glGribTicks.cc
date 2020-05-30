@@ -368,10 +368,12 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
 template <>
 void glGrib::Ticks::ticks_t::setupVertexAttributes () const
 {
+  glGrib::Program * program = glGrib::Program::load ("TICKS");
   ticks->vertexbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (0); 
-  glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 0, nullptr); 
-  glVertexAttribDivisor (0, 1);
+  auto attr = program->getAttributeLocation ("xya");
+  glEnableVertexAttribArray (attr); 
+  glVertexAttribPointer (attr, 3, GL_FLOAT, GL_FALSE, 0, nullptr); 
+  glVertexAttribDivisor (attr, 1);
 }
 
 template <>

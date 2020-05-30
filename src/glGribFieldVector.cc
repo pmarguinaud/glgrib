@@ -17,47 +17,59 @@ glGrib::FieldVector * glGrib::FieldVector::clone () const
 template <>
 void glGrib::FieldVector::scalar_t::setupVertexAttributes () const
 {
+  glGrib::Program * program = glGrib::Program::load ("SCALAR");
+
   // Norm/direction
 
   // Position
-  field->geometry->bindCoordinates (0);
+  field->geometry->bindCoordinates (program->getAttributeLocation ("vertexLonLat"));
   
   // Norm
   field->d.buffer_n->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), nullptr); 
 
+  auto vattr = program->getAttributeLocation ("vertexVal");
+  glEnableVertexAttribArray (vattr); 
+  glVertexAttribPointer (vattr, 1, GL_UNSIGNED_BYTE, GL_TRUE, 
+                         sizeof (unsigned char), nullptr); 
 
   field->geometry->bindTriangles ();
 
-  field->bindHeight <unsigned char> (2);
+  field->bindHeight <unsigned char> (program->getAttributeLocation ("vertexHeight"));
 
 }
 
 template <>
 void glGrib::FieldVector::vector_t::setupVertexAttributes () const
 {
+  glGrib::Program * program = glGrib::Program::load ("VECTOR");
+
   // Vector
 
   // Position
-  field->geometry->bindCoordinates (0);
-  glVertexAttribDivisor (0, 1);  
+  auto pattr = program->getAttributeLocation ("vertexLonLat");
+  field->geometry->bindCoordinates (pattr);
+  glVertexAttribDivisor (pattr, 1);  
   
   // Norm
   field->d.buffer_n->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (1); 
-  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), nullptr); 
-  glVertexAttribDivisor (1, 1);  
+  auto nattr = program->getAttributeLocation ("vertexVal_n");
+  glEnableVertexAttribArray (nattr); 
+  glVertexAttribPointer (nattr, 1, GL_UNSIGNED_BYTE, GL_TRUE, 
+                         sizeof (unsigned char), nullptr); 
+  glVertexAttribDivisor (nattr, 1);  
 
 
   // Direction
   field->d.buffer_d->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (2); 
-  glVertexAttribPointer (2, 1, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (unsigned char), nullptr); 
-  glVertexAttribDivisor (2, 1);  
+  auto dattr = program->getAttributeLocation ("vertexVal_d");
+  glEnableVertexAttribArray (dattr); 
+  glVertexAttribPointer (dattr, 1, GL_UNSIGNED_BYTE, GL_TRUE, 
+                         sizeof (unsigned char), nullptr); 
+  glVertexAttribDivisor (dattr, 1);  
 
-  field->bindHeight <unsigned char> (3);
-  glVertexAttribDivisor (3, 1);  
+  auto hattr = program->getAttributeLocation ("vertexHeight");
+  field->bindHeight <unsigned char> (hattr);
+  glVertexAttribDivisor (hattr, 1);  
 
 }
 

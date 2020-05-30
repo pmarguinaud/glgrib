@@ -95,7 +95,7 @@ private:
       d = stream.d;
     }
     void setupVertexAttributes () const;
-    void setup (const streamline_data_t &);
+    void setup (const streamline_data_t &, GLint [], GLint [], GLint []);
     void clear ()
     {
       VAID.clear ();
@@ -105,6 +105,9 @@ private:
     {
       OpenGLBufferPtr vertexbuffer, normalbuffer, distancebuffer;
       GLuint size;
+      GLint vertexLonLat_attr[3];
+      GLint norm_attr[2];
+      GLint dist_attr[2];
     } d;
     OpenGLVertexArray<streamline_t> VAID;
   };

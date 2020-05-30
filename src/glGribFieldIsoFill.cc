@@ -42,29 +42,35 @@ void glGrib::FieldIsoFill::clear ()
 
 void glGrib::FieldIsoFill::isoband_t::setupVertexAttributes () const
 {
+  glGrib::Program * program = glGrib::Program::load ("ISOFILL2");
+
   // Elements
   d.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+
+  // Values
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);
-  
-  glEnableVertexAttribArray (0);
-  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+  auto attr = program->getAttributeLocation ("vertexLonLat");
+  glEnableVertexAttribArray (attr);
+  glVertexAttribPointer (attr, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 }
 
 void glGrib::FieldIsoFill::setupVertexAttributes () const
 {
+  glGrib::Program * program = glGrib::Program::load ("ISOFILL1");
+
   // Triangles from original geometry
 
   geometry->bindTriangles ();
 
   // Coordinates
-  geometry->bindCoordinates (0);
-  glEnableVertexAttribArray (0);
-  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+  auto pattr = program->getAttributeLocation ("vertexLonLat");
+  geometry->bindCoordinates (pattr);
 
+  // Values
+  auto vattr = program->getAttributeLocation ("vertexColInd");
   d.colorbuffer->bind (GL_ARRAY_BUFFER);
-  glEnableVertexAttribArray (1);
-
-  glVertexAttribPointer (1, 1, GL_UNSIGNED_BYTE, GL_FALSE, 0,  nullptr);
+  glEnableVertexAttribArray (vattr);
+  glVertexAttribPointer (vattr, 1, GL_UNSIGNED_BYTE, GL_FALSE, 0,  nullptr);
 }
 
 namespace
@@ -462,8 +468,8 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
 void glGrib::FieldIsoFill::isoband_t::render () const
 {
-  glGrib::Program * program2 = glGrib::Program::load ("ISOFILL2");
-  program2->set ("color0", d.color);
+  glGrib::Program * program = glGrib::Program::load ("ISOFILL2");
+  program->set ("color0", d.color);
   glDrawElements (GL_TRIANGLES, d.size, GL_UNSIGNED_INT, nullptr);
 }
 
@@ -475,18 +481,18 @@ const
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
   
 
-  glGrib::Program * program1 = glGrib::Program::load ("ISOFILL1");
-  program1->use ();
+  glGrib::Program * program = glGrib::Program::load ("ISOFILL1");
+  program->use ();
 
-  view.setMVP (program1);
-  program1->set ("scale0", opts.scale);
-  palette.set (program1);
+  view.setMVP (program);
+  program->set ("scale0", opts.scale);
+  palette.set (program);
 
   d.VAID.bind ();
   geometry->renderTriangles ();
   d.VAID.unbind ();
 
-  view.delMVP (program1);
+  view.delMVP (program);
 
   glGrib::Program * program2 = glGrib::Program::load ("ISOFILL2");
   program2->use ();

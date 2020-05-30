@@ -145,13 +145,18 @@ void glGrib::FieldContour::isoline_t::setup (const glGrib::OptionsField & opts,
 
 void glGrib::FieldContour::isoline_t::setupVertexAttributes () const
 {
+  glGrib::Program * program = glGrib::Program::load ("CONTOUR");
+
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);
   
   for (int j = 0; j < 3; j++)
     {
-      glEnableVertexAttribArray (j);
-      glVertexAttribPointer (j, 2, GL_FLOAT, GL_FALSE, 0, (const void *)(j * 2 * sizeof (float)));
-      glVertexAttribDivisor (j, 1);
+      auto attr = program->getAttributeLocation (std::string ("vertexLonLat") 
+                                               + std::to_string (j));
+      glEnableVertexAttribArray (attr);
+      glVertexAttribPointer (attr, 2, GL_FLOAT, GL_FALSE, 0, 
+                             (const void *)(j * 2 * sizeof (float)));
+      glVertexAttribDivisor (attr, 1);
     }
   
   if (d.heightbuffer != nullptr)
@@ -160,17 +165,22 @@ void glGrib::FieldContour::isoline_t::setupVertexAttributes () const
   
       for (int j = 0; j < 2; j++)
         {
-          glEnableVertexAttribArray (3 + j);
-          glVertexAttribPointer (3 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float)));
-          glVertexAttribDivisor (3 + j, 1);
+          auto attr = program->getAttributeLocation (std::string ("vertexHeight") 
+                                                   + std::to_string (j));
+          glEnableVertexAttribArray (attr);
+          glVertexAttribPointer (attr, 1, GL_FLOAT, GL_FALSE, 0, 
+                                 (const void *)(j * sizeof (float)));
+          glVertexAttribDivisor (attr, 1);
         }
     }
   else
     {
       for (int j = 0; j < 2; j++)
         {
-          glDisableVertexAttribArray (3 + j);
-          glVertexAttrib1f (3 + j, 0.0f);
+          auto attr = program->getAttributeLocation (std::string ("vertexHeight") 
+                                                   + std::to_string (j));
+          glDisableVertexAttribArray (attr);
+          glVertexAttrib1f (attr, 0.0f);
         }
     }
   
@@ -178,9 +188,11 @@ void glGrib::FieldContour::isoline_t::setupVertexAttributes () const
   
   for (int j = 0; j < 2; j++)
     {
-      glEnableVertexAttribArray (5 + j); 
-      glVertexAttribPointer (5 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float))); 
-      glVertexAttribDivisor (5 + j, 1);
+      auto attr = program->getAttributeLocation (std::string ("dist") 
+                                               + std::to_string (j));
+      glEnableVertexAttribArray (attr);
+      glVertexAttribPointer (attr, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float))); 
+      glVertexAttribDivisor (attr, 1);
     }
   
 }

@@ -47,33 +47,48 @@ void glGrib::FieldStream::streamline_t::setupVertexAttributes () const
   
   for (int j = 0; j < 3; j++)
     {
-      glEnableVertexAttribArray (j);
-      glVertexAttribPointer (j, 2, GL_FLOAT, GL_FALSE, 0, (const void *)(j * 2 * sizeof (float)));
-      glVertexAttribDivisor (j, 1);
+      auto attr = d.vertexLonLat_attr[j];
+      glEnableVertexAttribArray (attr);
+      glVertexAttribPointer (attr, 2, GL_FLOAT, GL_FALSE, 0, 
+                             (const void *)(j * 2 * sizeof (float)));
+      glVertexAttribDivisor (attr, 1);
     }
   
   d.normalbuffer->bind (GL_ARRAY_BUFFER);
   
   for (int j = 0; j < 2; j++)
     {
-      glEnableVertexAttribArray (3 + j);
-      glVertexAttribPointer (3 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float)));
-      glVertexAttribDivisor (3 + j, 1);
+      auto attr = d.norm_attr[j];
+      glEnableVertexAttribArray (attr);
+      glVertexAttribPointer (attr, 1, GL_FLOAT, GL_FALSE, 0, 
+                             (const void *)(j * sizeof (float)));
+      glVertexAttribDivisor (attr, 1);
     }
   
   d.distancebuffer->bind (GL_ARRAY_BUFFER);
   
   for (int j = 0; j < 2; j++)
     {
-      glEnableVertexAttribArray (5 + j); 
-      glVertexAttribPointer (5 + j, 1, GL_FLOAT, GL_FALSE, 0, (const void *)(j * sizeof (float))); 
-      glVertexAttribDivisor (5 + j, 1);
+      auto attr = d.dist_attr[j];
+      glEnableVertexAttribArray (attr); 
+      glVertexAttribPointer (attr, 1, GL_FLOAT, GL_FALSE, 0, 
+                             (const void *)(j * sizeof (float))); 
+      glVertexAttribDivisor (attr, 1);
     }
   
 }
 
-void glGrib::FieldStream::streamline_t::setup (const streamline_data_t & stream_data)
+void glGrib::FieldStream::streamline_t::setup 
+  (const streamline_data_t & stream_data, GLint _vertexLonLat_attr[], 
+   GLint _norm_attr[], GLint _dist_attr[])
 {
+  for (int j = 0; j < 3; j++)
+    d.vertexLonLat_attr[j] = _vertexLonLat_attr[j];
+  for (int j = 0; j < 2; j++)
+    d.norm_attr[j] = _norm_attr[j];
+  for (int j = 0; j < 2; j++)
+    d.dist_attr[j] = _dist_attr[j];
+
   d.vertexbuffer   = newGlgribOpenGLBufferPtr (stream_data.lonlat.size () 
                              * sizeof (float), stream_data.lonlat.data ());
   d.normalbuffer   = newGlgribOpenGLBufferPtr (stream_data.values.size () 
@@ -85,6 +100,7 @@ void glGrib::FieldStream::streamline_t::setup (const streamline_data_t & stream_
 
 void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
+
   opts = o;
 
   d.time0 = getTime ();
@@ -97,8 +113,6 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
   ld->load (&data_v, opts.path, opts.geometry, slot, &meta_v, 2, 1);
 
   geometry = glGrib::Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry);
-
-//geometry->checkTriangles ();
 
   glGrib::FieldFloatBufferPtr data_n, data_d;
 
@@ -141,8 +155,24 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
         computeStreamLine (it[i], data_u->data (), data_v->data (), &stream_data[j]);
     }
 
+  glGrib::Program * program = glGrib::Program::load ("STREAM");
+
+  GLint vertexLonLat_attr[3];
+  GLint norm_attr[2];
+  GLint dist_attr[2];
+
+  for (int j = 0; j < 3; j++)
+    vertexLonLat_attr[j] = program->getAttributeLocation (std::string ("vertexLonLat")
+                                                        + std::to_string (j));
+  for (int j = 0; j < 2; j++)
+    norm_attr[j] = program->getAttributeLocation (std::string ("norm")
+                                                        + std::to_string (j));
+  for (int j = 0; j < 2; j++)
+    dist_attr[j] = program->getAttributeLocation (std::string ("dist")
+                                                        + std::to_string (j));
+
   for (int i = 0; i < N; i++)
-    d.stream[i].setup (stream_data[i]);
+    d.stream[i].setup (stream_data[i], vertexLonLat_attr, norm_attr, dist_attr);
 
   meta.push_back (meta_n);
   meta.push_back (meta_d);

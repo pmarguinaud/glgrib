@@ -207,7 +207,17 @@ glGrib::Field * glGrib::Field::create (const glGrib::OptionsField & opts, float 
       else if (type == "CONTOUR")
         fld = new glGrib::FieldContour ();
       else if (type == "SCALAR")
-        fld = new glGrib::FieldScalar ();
+        {
+          switch (opts1.scalar.pack.bits)
+            {
+              case  8: fld = new glGrib::FieldScalar< 8> (); break;
+              case 16: fld = new glGrib::FieldScalar<16> (); break;
+              case 32: fld = new glGrib::FieldScalar<32> (); break;
+              default:
+                throw std::runtime_error (std::string ("Wrong number of bits for packing field: ") +
+                                          std::to_string (opts1.scalar.pack.bits));
+            }
+        }
       else if (type == "ISOFILL")
         fld = new glGrib::FieldIsoFill ();
       else

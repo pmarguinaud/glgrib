@@ -366,34 +366,6 @@ void glGrib::Window::saveCurrentPalette ()
   f->saveOptions ();
 }
 
-void glGrib::Window::removeField (int rank)
-{
-  glGrib::Field * f = nullptr;
-  if ((rank < 0) || (rank > static_cast<int> (scene.fieldlist.size ())-1))
-    return;
-  if (scene.fieldlist[rank] != nullptr)
-    delete scene.fieldlist[rank];
-  scene.fieldlist[rank] = f;
-}
-
-void glGrib::Window::loadField (const glGrib::OptionsField & opts, int rank)
-{
-
-  if ((rank < 0) || (rank > 11))
-    return;
-
-  makeCurrent ();
-
-  glGrib::Field * f = new glGrib::FieldScalar ();
-  f->setup (&scene.ld, opts);
-
-  if (rank > static_cast<int> (scene.fieldlist.size ()) - 1)
-    scene.fieldlist.push_back (f);
-  else
-    scene.fieldlist[rank] = f;
-
-}
-
 void glGrib::Window::toggleTransformType ()
 {
   scene.d.view.toggleTransformType ();

@@ -5,10 +5,11 @@
 namespace glGrib
 {
 
-class FieldScalar : public FieldPacked<8>
+template <int N>
+class FieldScalar : public FieldPacked<N>
 {
 public:
-  using T = typename FieldPackingType<8>::type;
+  using T = typename FieldPackingType<N>::type;
   Field::kind getKind () const 
   {
     return Field::SCALAR;
@@ -20,17 +21,12 @@ public:
   bool useColorBar () const override { return true; }
   int getSlotMax () const override
   {
-    return (int)opts.path.size ();
+    return (int)this->opts.path.size ();
   }
 private:
   void setupMpiView (Loader *, const OptionsField &, float = 0);
   void clear () override;
-  enum
-  {
-    SCALAR=0,
-    POINTS=1
-  };
-  template <int N>
+
   class field_t
   {
   public:
@@ -45,9 +41,9 @@ private:
     {
       VAID.clear ();
     }
-    void setupVertexAttributes () const;
-    void render (const glGrib::View & view) const;
-    std::string getProgramName () const;
+    virtual void setupVertexAttributes () const = 0;
+    virtual void render (const glGrib::View & view) const = 0;
+    virtual std::string getProgramName () const = 0;
     Program * getProgram () const
     {
       return glGrib::Program::load (getProgramName ());
@@ -55,10 +51,31 @@ private:
     FieldScalar * field;
     OpenGLVertexArray<field_t> VAID;
   };
-  using scalar_t = field_t<SCALAR>;
-  using points_t = field_t<POINTS>;
-  friend class field_t<SCALAR>;
-  friend class field_t<POINTS>;
+
+  class scalar_t : public field_t
+  {
+  public:
+    scalar_t (FieldScalar * f) : field_t (f) {}
+    void setupVertexAttributes () const override;
+    void render (const glGrib::View & view) const override;
+    std::string getProgramName () const override
+    {
+      return "SCALAR";
+    }
+  };
+
+  class points_t : public field_t
+  {
+  public:
+    points_t (FieldScalar * f) : field_t (f) {}
+    void setupVertexAttributes () const override;
+    void render (const glGrib::View & view) const override;
+    std::string getProgramName () const override
+    {
+      return "SCALAR_POINTS";
+    }
+  };
+
   scalar_t scalar;
   points_t points;
 

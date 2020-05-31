@@ -8,7 +8,8 @@
 #include <iostream>
 #include <algorithm>
 
-void glGrib::FieldScalar::clear ()
+template <int N>
+void glGrib::FieldScalar<N>::clear ()
 {
   scalar.clear ();
   points.clear ();
@@ -16,29 +17,19 @@ void glGrib::FieldScalar::clear ()
 }
 
 
-glGrib::FieldScalar * glGrib::FieldScalar::clone () const
+template <int N>
+glGrib::FieldScalar<N> * glGrib::FieldScalar<N>::clone () const
 {
-  glGrib::FieldScalar * fld = new glGrib::FieldScalar ();
+  glGrib::FieldScalar<N> * fld = new glGrib::FieldScalar<N> ();
   *fld = *this;
   return fld;
 }
 
-template <>
-std::string glGrib::FieldScalar::scalar_t::getProgramName () const
+template <int N>
+void glGrib::FieldScalar<N>::scalar_t::setupVertexAttributes () const
 {
-  return "SCALAR";
-}
-
-template <>
-std::string glGrib::FieldScalar::points_t::getProgramName () const
-{
-  return "SCALAR_POINTS";
-}
-
-template <>
-void glGrib::FieldScalar::scalar_t::setupVertexAttributes () const
-{
-  auto program = getProgram ();
+  auto program = this->getProgram ();
+  const auto & field = this->field;
 
   // Coordinates
   field->geometry->bindCoordinates (program->getAttributeLocation ("vertexLonLat"));
@@ -71,10 +62,11 @@ void glGrib::FieldScalar::scalar_t::setupVertexAttributes () const
   field->geometry->bindTriangles ();
 }
 
-template <>
-void glGrib::FieldScalar::points_t::setupVertexAttributes () const
+template <int N>
+void glGrib::FieldScalar<N>::points_t::setupVertexAttributes () const
 {
-  auto program = getProgram ();
+  auto program = this->getProgram ();
+  const auto & field = this->field;
 
   // Coordinates
   auto pattr = program->getAttributeLocation ("vertexLonLat");
@@ -95,22 +87,29 @@ void glGrib::FieldScalar::points_t::setupVertexAttributes () const
   
 }
 
-void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
+template <int N>
+void glGrib::FieldScalar<N>::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
+  auto & opts = this->opts;
+  auto & palette = this->palette;
+  auto & geometry = this->geometry;
+
   opts = o;
 
   glGrib::FieldMetadata meta1;
 
   glGrib::FieldFloatBufferPtr data;
   ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
-  meta.push_back (meta1);
+  this->meta.push_back (meta1);
 
-  palette = glGrib::Palette (opts.palette, getNormedMinValue (), getNormedMaxValue ());
+  palette = glGrib::Palette (opts.palette, 
+                             this->getNormedMinValue (), 
+                             this->getNormedMaxValue ());
 
   geometry = glGrib::Geometry::load (ld, opts.path[int (slot)], opts.geometry);
 
   if (opts.hilo.on)
-    setupHilo (data);
+    this->setupHilo (data);
 
   colorbuffer = newGlgribOpenGLBufferPtr (geometry->getNumberOfPoints () * sizeof (T));
 
@@ -130,25 +129,28 @@ void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField
     }
   else
     {
-      pack (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
-            meta1.valmax, meta1.valmis, col.address ());
+      this->pack (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
+                  meta1.valmax, meta1.valmis, col.address ());
     }
 
-  loadHeight (colorbuffer, ld);
+  this->loadHeight (colorbuffer, ld);
 
   if (opts.mpiview.on)
     setupMpiView (ld, o, slot);
 
   if (opts.no_value_pointer.on)
-    values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
+    this->values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
   else
-    values.push_back (data);
+    this->values.push_back (data);
 
-  setReady ();
+  this->setReady ();
 }
 
-void glGrib::FieldScalar::setupMpiView (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
+template <int N>
+void glGrib::FieldScalar<N>::setupMpiView (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
+  auto & opts = this->opts;
+  auto & geometry = this->geometry;
   int size = geometry->getNumberOfPoints ();
 
   glGrib::FieldMetadata mpiview_meta;
@@ -200,10 +202,12 @@ void glGrib::FieldScalar::setupMpiView (glGrib::Loader * ld, const glGrib::Optio
 
 }
 
-template <>
-void glGrib::FieldScalar::scalar_t::render (const glGrib::View & view) const
+template <int N>
+void glGrib::FieldScalar<N>::scalar_t::render (const glGrib::View & view) const
 {
-  glGrib::Program * program = getProgram ();
+  glGrib::Program * program = this->getProgram ();
+  const auto & field = this->field;
+
   program->set ("smoothed", field->opts.scalar.smooth.on);
   
   if (field->opts.scalar.wireframe.on)
@@ -215,10 +219,12 @@ void glGrib::FieldScalar::scalar_t::render (const glGrib::View & view) const
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 }
 
-template <>
-void glGrib::FieldScalar::points_t::render (const glGrib::View & view) const
+template <int N>
+void glGrib::FieldScalar<N>::points_t::render (const glGrib::View & view) const
 {
-  glGrib::Program * program = getProgram ();
+  glGrib::Program * program = this->getProgram ();
+  const auto & field = this->field;
+
   float length = view.pixelToDistAtNadir (10);
   
   program->set ("length10", length);
@@ -231,8 +237,12 @@ void glGrib::FieldScalar::points_t::render (const glGrib::View & view) const
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, numberOfPoints);
 }
 
-void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+template <int N>
+void glGrib::FieldScalar<N>::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
+  const auto & opts = this->opts;
+  const auto & palette = this->palette;
+  const auto & geometry = this->geometry;
   float scale0 = opts.scale;
 
   if (opts.mpiview.on)
@@ -248,8 +258,8 @@ void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::Optio
   program->set (light);
   palette.set (program);
   program->set ("scale0", scale0);
-  program->set ("valmin", getNormedMinValue ());
-  program->set ("valmax", getNormedMaxValue ());
+  program->set ("valmin", this->getNormedMinValue ());
+  program->set ("valmax", this->getNormedMaxValue ());
   program->set ("palmin", palette.getMin ());
   program->set ("palmax", palette.getMax ());
   program->set ("height_scale", opts.geometry.height.scale);
@@ -273,11 +283,24 @@ void glGrib::FieldScalar::render (const glGrib::View & view, const glGrib::Optio
 
   view.delMVP (program);
 
-  renderHilo (view);
+  this->renderHilo (view);
   
   if (opts.geometry.frame.on)
-    renderFrame (view);
+    this->renderFrame (view);
 
 }
+
+
+#define DEF(N) \
+void load_##N ()  \
+{  \
+  glGrib::View view; glGrib::OptionsLight light; \
+  (new glGrib::FieldScalar<N> ())->render (view, light); \
+}
+
+DEF ( 8);
+DEF (16);
+DEF (32);
+
 
 

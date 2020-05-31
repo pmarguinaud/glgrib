@@ -154,8 +154,6 @@ public:
 
   void nextProjection ();
   void toggleTransformType ();
-  void loadField (const OptionsField &, int = 0);
-  void removeField (int);
   void saveCurrentPalette ();
   void resampleCurrentField ();
   void toggleShowVector ();

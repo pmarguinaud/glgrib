@@ -66,7 +66,7 @@ private:
   points_t points;
 
   OpenGLBufferPtr mpivbuffer;
-
+  OpenGLBufferPtr colorbuffer;
 };
 
 

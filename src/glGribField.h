@@ -189,7 +189,6 @@ protected:
   String hilo;
   frame_t frame;
   OpenGLBufferPtr heightbuffer;
-  OpenGLBufferPtr colorbuffer;
 };
 
 

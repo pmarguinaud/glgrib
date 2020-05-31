@@ -14,7 +14,8 @@ void glGrib::glInit ()
   glEnable (GL_MULTISAMPLE);
 }
   
-void glGrib::OpenGLBuffer::bind (GLenum target, GLuint index) const 
+template <typename T>
+void glGrib::OpenGLBuffer<T>::bind (GLenum target, GLuint index) const 
 {
   if (index == 0)
     glBindBuffer (target, id_);
@@ -22,7 +23,8 @@ void glGrib::OpenGLBuffer::bind (GLenum target, GLuint index) const
     glBindBufferBase (target, index, id_);
 }
 
-glGrib::OpenGLBuffer::OpenGLBuffer (size_t size, const void * data)
+template <typename T>
+glGrib::OpenGLBuffer<T>::OpenGLBuffer (size_t size, const T * data)
 {
   glGenBuffers (1, &id_);
 
@@ -30,38 +32,19 @@ glGrib::OpenGLBuffer::OpenGLBuffer (size_t size, const void * data)
 //glNamedBufferStorage (id_, size, data, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT); does not work
 
   glBindBuffer (GL_ARRAY_BUFFER, id_);
-  glBufferData (GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
+  glBufferData (GL_ARRAY_BUFFER, sizeof (T) * size, data, GL_STATIC_DRAW);
   glBindBuffer (GL_ARRAY_BUFFER, 0);
 
   allocated_ = true;
   size_ = size;
 }
 
-glGrib::OpenGLBuffer::~OpenGLBuffer ()
+template <typename T>
+glGrib::OpenGLBuffer<T>::~OpenGLBuffer ()
 {
   if (allocated_)
     glDeleteBuffers (1, &id_);
   allocated_ = false;
-}
-
-glGrib::OpenGLBufferPtr glGrib::newGlgribOpenGLBufferPtr (size_t size, const void * data)
-{
-  return std::make_shared<glGrib::OpenGLBuffer>(size, data);
-}
-
-glGrib::OpenGLBufferPtr glGrib::newGlgribOpenGLBufferPtr (const glGrib::OpenGLBufferPtr & oldptr)
-{
-  size_t size = oldptr->buffersize ();
-  glGrib::OpenGLBufferPtr newptr = glGrib::newGlgribOpenGLBufferPtr (size, nullptr);
-  oldptr->bind (GL_COPY_READ_BUFFER);
-  newptr->bind (GL_COPY_WRITE_BUFFER);
-
-  glCopyBufferSubData(GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, size);
-
-  glBindBuffer (GL_COPY_WRITE_BUFFER, 0);
-  glBindBuffer (GL_COPY_READ_BUFFER, 0);
-
-  return newptr;
 }
 
 glGrib::OpenGLTexture::OpenGLTexture (int width, int height, const void * data)

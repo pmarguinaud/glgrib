@@ -96,9 +96,10 @@ protected:
   unsigned int ind_strip_size = 0;
   int numberOfPoints = 0;
   unsigned int numberOfTriangles = 0;
-  OpenGLBufferPtr vertexbuffer, elementbuffer;
+  OpenGLBufferPtr<float> vertexbuffer;
+  OpenGLBufferPtr<unsigned int> elementbuffer;
   int numberOfPoints_frame = 0;
-  OpenGLBufferPtr vertexbuffer_frame;
+  OpenGLBufferPtr<float> vertexbuffer_frame;
   std::string md5string (const unsigned char []) const;
 };
 

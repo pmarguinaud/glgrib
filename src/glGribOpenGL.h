@@ -10,11 +10,11 @@
 namespace glGrib
 {
 
+template <typename T>
 class OpenGLBuffer
 {
 private:
 
-  template <typename T>
   class OpenGLBufferMapping
   {
   public:
@@ -46,17 +46,16 @@ private:
   };
 
 public:
-  OpenGLBuffer (size_t, const void * = nullptr);
+  OpenGLBuffer (size_t, const T * = nullptr);
   ~OpenGLBuffer ();
   GLuint id () { return id_; }
   bool allocated () const { return allocated_; }
   void bind (GLenum, GLuint = 0) const;
   size_t buffersize () const { return size_; }
 
-  template <typename T>
-  OpenGLBufferMapping<T> map ()
+  OpenGLBufferMapping map ()
   {
-    return OpenGLBufferMapping<T> (this);
+    return OpenGLBufferMapping (this);
   }
 
 private:
@@ -65,9 +64,17 @@ private:
   size_t size_;
 };
 
-typedef std::shared_ptr<OpenGLBuffer> OpenGLBufferPtr;
-OpenGLBufferPtr newGlgribOpenGLBufferPtr (size_t, const void * = nullptr);
-OpenGLBufferPtr newGlgribOpenGLBufferPtr (const OpenGLBufferPtr &);
+template <typename T>
+class OpenGLBufferPtr : public std::shared_ptr<OpenGLBuffer<T>>
+{
+public:
+  OpenGLBufferPtr () = default;
+  
+  OpenGLBufferPtr (size_t size, const T * data = nullptr)
+  : std::shared_ptr<OpenGLBuffer<T>>(size, data) 
+  {
+  }
+};
 
 class OpenGLTexture
 {

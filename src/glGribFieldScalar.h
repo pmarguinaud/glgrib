@@ -5,9 +5,10 @@
 namespace glGrib
 {
 
-class FieldScalar : public Field
+class FieldScalar : public FieldPacked<8>
 {
 public:
+  using T = typename FieldPackingType<8>::type;
   Field::kind getKind () const 
   {
     return Field::SCALAR;
@@ -23,8 +24,6 @@ public:
   }
 private:
   void setupMpiView (Loader *, const OptionsField &, float = 0);
-  template <typename T>
-  void setup (Loader *, const OptionsField &, float = 0);
   void clear () override;
   enum
   {
@@ -46,8 +45,6 @@ private:
     {
       VAID.clear ();
     }
-    template <typename T>
-    void setupVertexAttributes_typed () const;
     void setupVertexAttributes () const;
     void render (const glGrib::View & view) const;
     std::string getProgramName () const;

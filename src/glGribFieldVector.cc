@@ -34,7 +34,7 @@ void glGrib::FieldVector::scalar_t::setupVertexAttributes () const
 
   field->geometry->bindTriangles ();
 
-  field->bindHeight <unsigned char> (program->getAttributeLocation ("vertexHeight"));
+  field->bindHeight (program->getAttributeLocation ("vertexHeight"));
 
 }
 
@@ -68,7 +68,7 @@ void glGrib::FieldVector::vector_t::setupVertexAttributes () const
   glVertexAttribDivisor (dattr, 1);  
 
   auto hattr = program->getAttributeLocation ("vertexHeight");
-  field->bindHeight <unsigned char> (hattr);
+  field->bindHeight (hattr);
   glVertexAttribDivisor (hattr, 1);  
 
 }
@@ -96,12 +96,12 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
   {
     auto col_n = d.buffer_n->map<unsigned char> ();
 
-    pack<unsigned char> (data_n->data (), geometry->getNumberOfPoints (), 
-                         meta_n.valmin, meta_n.valmax, meta_n.valmis, 
-                         col_n.address ());
+    pack (data_n->data (), geometry->getNumberOfPoints (), 
+          meta_n.valmin, meta_n.valmax, meta_n.valmis, 
+          col_n.address ());
   }
 
-  loadHeight <unsigned char> (d.buffer_n, ld);
+  loadHeight (d.buffer_n, ld);
 
   d.buffer_d = newGlgribOpenGLBufferPtr (geometry->getNumberOfPoints () * sizeof (unsigned char));
 
@@ -110,9 +110,9 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
   {
     auto col_d = d.buffer_d->map<unsigned char> ();
 
-    pack<unsigned char> (data_d->data (), geometry->getNumberOfPoints (), 
-                         meta_d.valmin, meta_d.valmax, meta_d.valmis, 
-                         col_d.address ());
+    pack (data_d->data (), geometry->getNumberOfPoints (), 
+          meta_d.valmin, meta_d.valmax, meta_d.valmis, 
+          col_d.address ());
 
     geometry->sample (col_d.address (), 0, npts);
   }
@@ -345,9 +345,9 @@ void glGrib::FieldVector::reSample (const glGrib::View & view)
 
   const int npts = 2 * opts.vector.density / w;
 
-  pack<unsigned char> (data_d, geometry->getNumberOfPoints (), 
-                       meta_d.valmin, meta_d.valmax, meta_d.valmis, 
-                       col_d.address ());
+  pack (data_d, geometry->getNumberOfPoints (), 
+        meta_d.valmin, meta_d.valmax, meta_d.valmis, 
+        col_d.address ());
 
   geometry->sample (col_d.address (), 0, npts);
 

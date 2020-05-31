@@ -43,8 +43,6 @@ class Field : public World
 {
 public:
 
-  Field () : frame (this) {}
-
   static Field * create (const OptionsField &, float, Loader *);
 
   typedef enum
@@ -56,16 +54,23 @@ public:
     ISOFILL=4,
   } kind;
 
+  Field () : frame (this) {}
+
   virtual kind getKind () const = 0;
   virtual bool useColorBar () const  = 0;
 
   virtual Field * clone () const  = 0;
   virtual void setup (Loader *, const OptionsField &, float = 0) = 0;
-  void setPaletteOptions (const OptionsPalette &);
+  void setPaletteOptions (const OptionsPalette & o)
+  {
+    palette = glGrib::Palette (o, getNormedMinValue (), getNormedMaxValue ());
+  }
   void setupHilo (FieldFloatBufferPtr);
   void renderHilo (const View &) const;
-  void renderFrame (const View &) const;
-
+  void renderFrame (const View & view) const 
+  {
+    frame.VAID.render (view);
+  }
   virtual std::vector<float> getValue (int index) const 
   { 
     std::vector<float> val;
@@ -112,10 +117,17 @@ public:
   {
     return meta;
   }
-  const OptionsField & getOptions () const;
+  const OptionsField & getOptions () const
+  {
+    opts.palette = palette.getOptions ();
+    return opts; 
+  }
   void setScale (float s) { opts.scale = s; hilo.setScaleXYZ (s); }
   float getScale () const override { return opts.scale; }
-  const Palette & getPalette () const;
+  const Palette & getPalette () const
+  {
+    return palette;
+  }
   void toggleWireframe () 
   {
     if (opts.scalar.wireframe.on)
@@ -145,20 +157,6 @@ public:
     return slot;
   }
 
-protected:
-  template <typename T>
-  void unpack (float *, const int, const float, 
-               const float, const float, const T *);
-  template <typename T>
-  void pack (const float *, const int, const float, 
-             const float, const float, T *);
-  template <typename T>
-  void packUnpack (const float *, float *, const int, 
-		   const float, const float, const float);
-  template <typename T>
-  void loadHeight (OpenGLBufferPtr, Loader *);
-  template <typename T>
-  void bindHeight (int) const;
   static void getUserPref (OptionsField *, Loader *, int);
 
   class frame_t
@@ -176,7 +174,10 @@ protected:
       VAID.clear ();
     }
     void render (const View &) const;
-    void setupVertexAttributes () const;
+    void setupVertexAttributes () const
+    {
+      field->geometry->bindFrame (0);
+    }
     Field * field = nullptr;
     OpenGLVertexArray<frame_t> VAID;
   };
@@ -188,6 +189,26 @@ protected:
   std::vector<FieldFloatBufferPtr> values;
   String hilo;
   frame_t frame;
+};
+
+template <int N>
+class FieldPacked : public Field
+{
+public:
+
+  using T = typename FieldPackingType<N>::type;
+
+  FieldPacked () : Field () {}
+
+protected:
+  void unpack (float *, const int, const float, 
+               const float, const float, const T *);
+  void pack (const float *, const int, const float, 
+             const float, const float, T *);
+  void packUnpack (const float *, float *, const int, 
+		   const float, const float, const float);
+  void loadHeight (OpenGLBufferPtr, Loader *);
+  void bindHeight (int) const;
   OpenGLBufferPtr heightbuffer;
 };
 

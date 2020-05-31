@@ -12,16 +12,6 @@
 #include <omp.h>
 
 
-glGrib::FieldIsoFill::FieldIsoFill (const glGrib::FieldIsoFill & field) : d (this)
-{
-  if (field.isReady ())
-    {
-      // Cleanup already existing VAOs
-      clear ();
-      operator= (field);
-    }
-}
-
 glGrib::FieldIsoFill * glGrib::FieldIsoFill::clone () const
 {
   glGrib::FieldIsoFill * fld = new glGrib::FieldIsoFill ();

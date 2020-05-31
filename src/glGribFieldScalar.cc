@@ -23,26 +23,6 @@ glGrib::FieldScalar * glGrib::FieldScalar::clone () const
   return fld;
 }
 
-template <int N>
-void glGrib::FieldScalar::field_t<N>::setupVertexAttributes () const
-{
-  switch (field->opts.scalar.pack.bits)
-    {
-      case  8:
-        setupVertexAttributes_typed <unsigned char > ();
-      break;
-      case 16:
-        setupVertexAttributes_typed <unsigned short> ();
-      break;
-      case 32:
-        setupVertexAttributes_typed <unsigned int  > ();
-      break;
-      default:
-        throw std::runtime_error (std::string ("Wrong number of bits for packing field: ") +
-                                  std::to_string (field->opts.scalar.pack.bits));
-    }
-}
-
 template <>
 std::string glGrib::FieldScalar::scalar_t::getProgramName () const
 {
@@ -56,8 +36,7 @@ std::string glGrib::FieldScalar::points_t::getProgramName () const
 }
 
 template <>
-template <typename T>
-void glGrib::FieldScalar::scalar_t::setupVertexAttributes_typed () const
+void glGrib::FieldScalar::scalar_t::setupVertexAttributes () const
 {
   auto program = getProgram ();
 
@@ -72,7 +51,7 @@ void glGrib::FieldScalar::scalar_t::setupVertexAttributes_typed () const
   glVertexAttribPointer (vattr, 1, getOpenGLType<T> (), fixed ? GL_FALSE : GL_TRUE, 0,  nullptr); 
 
   // Height
-  field->bindHeight <T> (program->getAttributeLocation ("vertexHeight"));
+  field->bindHeight (program->getAttributeLocation ("vertexHeight"));
 
   // MPI view
   auto mattr = program->getAttributeLocation ("vertexMPIView");
@@ -93,8 +72,7 @@ void glGrib::FieldScalar::scalar_t::setupVertexAttributes_typed () const
 }
 
 template <>
-template <typename T>
-void glGrib::FieldScalar::points_t::setupVertexAttributes_typed () const
+void glGrib::FieldScalar::points_t::setupVertexAttributes () const
 {
   auto program = getProgram ();
 
@@ -112,32 +90,11 @@ void glGrib::FieldScalar::points_t::setupVertexAttributes_typed () const
 
   // Height
   auto hattr = program->getAttributeLocation ("vertexHeight");
-  field->bindHeight <T> (hattr);
+  field->bindHeight (hattr);
   glVertexAttribDivisor (hattr, 1);
   
 }
 
-void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
-{
-  opts = o;
-  switch (opts.scalar.pack.bits)
-    {
-      case  8:
-        setup<unsigned char > (ld, o, slot);
-      break;
-      case 16:
-        setup<unsigned short> (ld, o, slot);
-      break;
-      case 32:
-        setup<unsigned int  > (ld, o, slot);
-      break;
-      default:
-        throw std::runtime_error (std::string ("Wrong number of bits for packing field: ") +
-                                  std::to_string (opts.scalar.pack.bits));
-    }
-}
-
-template <typename T>
 void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
   opts = o;
@@ -173,11 +130,11 @@ void glGrib::FieldScalar::setup (glGrib::Loader * ld, const glGrib::OptionsField
     }
   else
     {
-      pack<T>  (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
-                meta1.valmax, meta1.valmis, col.address ());
+      pack (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
+            meta1.valmax, meta1.valmis, col.address ());
     }
 
-  loadHeight <T> (colorbuffer, ld);
+  loadHeight (colorbuffer, ld);
 
   if (opts.mpiview.on)
     setupMpiView (ld, o, slot);

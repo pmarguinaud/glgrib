@@ -2,11 +2,13 @@
 #include "glGribTrigonometry.h"
 #include "glGribProgram.h"
 #include "glGribPalette.h"
+
 #include "glGribFieldScalar.h"
 #include "glGribFieldVector.h"
 #include "glGribFieldContour.h"
 #include "glGribFieldIsoFill.h"
 #include "glGribFieldStream.h"
+
 #include "glGribResolve.h"
 #include "glGribSQLite.h"
 
@@ -15,24 +17,6 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
-
-#define DEF(T) \
-template void glGrib::Field::unpack<T>  \
-            (float *, const int, const float,   \
-             const float, const float, const T *);  \
-template void glGrib::Field::pack<T>  \
-          (const float *, const int, const float,   \
-             const float, const float, T *);  \
-template void glGrib::Field::packUnpack<T>   \
-          (const float *, float *, const int,   \
-           const float, const float, const float); \
-template void glGrib::Field::loadHeight <T> (glGrib::OpenGLBufferPtr, glGrib::Loader *); \
-template void glGrib::Field::bindHeight <T> (int) const;
-
-DEF (unsigned char)
-DEF (unsigned short)
-DEF (unsigned int)
-
 
 namespace
 {
@@ -150,11 +134,6 @@ void glGrib::Field::setupHilo (glGrib::FieldFloatBufferPtr data)
 
 }
 
-void glGrib::Field::setPaletteOptions (const glGrib::OptionsPalette & o) 
-{ 
-  palette = glGrib::Palette (o, getNormedMinValue (), getNormedMaxValue ());
-}
-
 void glGrib::Field::clear ()
 {
   values.clear ();
@@ -163,18 +142,6 @@ void glGrib::Field::clear ()
   frame.clear ();
   glGrib::World::clear ();
 }
-
-const glGrib::Palette & glGrib::Field::getPalette () const
-{
-  return palette;
-}
-
-const glGrib::OptionsField & glGrib::Field::getOptions () const 
-{ 
-  opts.palette = palette.getOptions ();
-  return opts; 
-}
-
 
 void glGrib::Field::getUserPref (glGrib::OptionsField * opts, glGrib::Loader * ld, int slot)
 {
@@ -215,7 +182,6 @@ found:
 
 glGrib::Field * glGrib::Field::create (const glGrib::OptionsField & opts, float slot, glGrib::Loader * ld)
 {
-
   glGrib::Field * fld = nullptr;
 
   if (opts.path.size () == 0)
@@ -295,8 +261,8 @@ void glGrib::Field::saveOptions () const
 
 }
 
-template <typename T>
-void glGrib::Field::loadHeight (glGrib::OpenGLBufferPtr buf, glGrib::Loader * ld)
+template <int N>
+void glGrib::FieldPacked<N>::loadHeight (glGrib::OpenGLBufferPtr buf, glGrib::Loader * ld)
 {
   if (opts.geometry.height.on)
     {
@@ -322,16 +288,16 @@ void glGrib::Field::loadHeight (glGrib::OpenGLBufferPtr buf, glGrib::Loader * ld
 
           auto height = heightbuffer->map<T> ();
 
-	  pack<T> (data->data (), size, meta.valmin, meta.valmax, 
-                   meta.valmis, height.address ());
+	  pack (data->data (), size, meta.valmin, meta.valmax, 
+                meta.valmis, height.address ());
 
         }
     }
 
 }
 
-template <typename T>
-void glGrib::Field::bindHeight (int attr) const
+template <int N>
+void glGrib::FieldPacked<N>::bindHeight (int attr) const
 {
   if (heightbuffer)
     {
@@ -352,8 +318,8 @@ void glGrib::Field::renderHilo (const glGrib::View & view) const
     hilo.render (view);
 }
 
-template <typename T>
-void glGrib::Field::pack (const float * f, const int n, const float valmin, 
+template <int N>
+void glGrib::FieldPacked<N>::pack (const float * f, const int n, const float valmin, 
 		         const float valmax, const float valmis, T * b)
 {
   const T nmax = std::numeric_limits<T>::max () - 1;
@@ -365,8 +331,8 @@ void glGrib::Field::pack (const float * f, const int n, const float valmin,
       b[i] = 1 + (T)round (nmax * (f[i] - valmin)/(valmax - valmin));
 }
 
-template <typename T>
-void glGrib::Field::unpack (float * f, const int n, const float valmin, 
+template <int N>
+void glGrib::FieldPacked<N>::unpack (float * f, const int n, const float valmin, 
 		           const float valmax, const float valmis, const T * b)
 {
   const T nmax = std::numeric_limits<T>::max () - 1;
@@ -378,8 +344,8 @@ void glGrib::Field::unpack (float * f, const int n, const float valmin,
       f[i] = valmin + (valmax - valmin) * (b[i] - 1) / nmax;
 }
 
-template <typename T>
-void glGrib::Field::packUnpack (const float * g, float * f, const int n, const float valmin, const float valmax, const float valmis)
+template <int N>
+void glGrib::FieldPacked<N>::packUnpack (const float * g, float * f, const int n, const float valmin, const float valmax, const float valmis)
 {
   const T nmax = std::numeric_limits<T>::max () - 1;
 #pragma omp parallel for
@@ -394,11 +360,6 @@ void glGrib::Field::packUnpack (const float * g, float * f, const int n, const f
 
 }
 
-
-void glGrib::Field::frame_t::setupVertexAttributes () const
-{
-  field->geometry->bindFrame (0);
-}
 
 void glGrib::Field::frame_t::render (const glGrib::View & view) const
 {
@@ -431,10 +392,23 @@ void glGrib::Field::frame_t::render (const glGrib::View & view) const
 
 }
 
-void glGrib::Field::renderFrame (const glGrib::View & view) const
-{
-  frame.VAID.render (view);
-}
+
+#define DEF(N) \
+template void glGrib::FieldPacked<N>::unpack  \
+            (float *, const int, const float,   \
+             const float, const float, const T *);  \
+template void glGrib::FieldPacked<N>::pack \
+          (const float *, const int, const float,   \
+             const float, const float, T *);  \
+template void glGrib::FieldPacked<N>::packUnpack   \
+          (const float *, float *, const int,   \
+           const float, const float, const float); \
+template void glGrib::FieldPacked<N>::loadHeight (glGrib::OpenGLBufferPtr, glGrib::Loader *); \
+template void glGrib::FieldPacked<N>::bindHeight (int) const;
+
+DEF ( 8);
+DEF (16);
+DEF (32);
 
 
 

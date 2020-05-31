@@ -6,9 +6,11 @@
 namespace glGrib
 {
 
-class FieldVector : public Field
+class FieldVector : public FieldPacked<8>
 {
 public:
+  using T = typename FieldPackingType<8>::type;
+  
   Field::kind getKind () const 
   {
     return Field::VECTOR;
@@ -60,8 +62,6 @@ private:
     {   
       VAID.clear (); 
     }   
-    template <typename T>
-    void setupVertexAttributes_typed () const;
     void setupVertexAttributes () const;
     void render (const glGrib::View &, const glGrib::OptionsLight &) const;
     FieldVector * field;

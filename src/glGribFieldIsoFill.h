@@ -5,7 +5,7 @@
 namespace glGrib
 {
 
-class FieldIsoFill : public Field
+class FieldIsoFill : public FieldPacked<8>
 {
 public:
   Field::kind getKind () const 
@@ -14,7 +14,6 @@ public:
   }
   FieldIsoFill * clone () const;
   FieldIsoFill () : d (this) { }
-  FieldIsoFill (const FieldIsoFill &);
   void setup (Loader *, const OptionsField &, float = 0) override;
   void render (const View &, const OptionsLight &) const override;
   void setupVertexAttributes () const;

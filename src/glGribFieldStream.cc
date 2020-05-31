@@ -89,12 +89,12 @@ void glGrib::FieldStream::streamline_t::setup
   for (int j = 0; j < 2; j++)
     d.dist_attr[j] = _dist_attr[j];
 
-  d.vertexbuffer   = newGlgribOpenGLBufferPtr (stream_data.lonlat.size () 
-                             * sizeof (float), stream_data.lonlat.data ());
-  d.normalbuffer   = newGlgribOpenGLBufferPtr (stream_data.values.size () 
-                             * sizeof (float), stream_data.values.data ());
-  d.distancebuffer = newGlgribOpenGLBufferPtr (stream_data.length.size () 
-                             * sizeof (float), stream_data.length.data ());
+  d.vertexbuffer   = glGrib::OpenGLBufferPtr<float> 
+                     (stream_data.lonlat.size (), stream_data.lonlat.data ());
+  d.normalbuffer   = glGrib::OpenGLBufferPtr<float> 
+                     (stream_data.values.size (), stream_data.values.data ());
+  d.distancebuffer = glGrib::OpenGLBufferPtr<float> 
+                     (stream_data.length.size (), stream_data.length.data ());
   d.size = stream_data.size () - 1;
 }
 

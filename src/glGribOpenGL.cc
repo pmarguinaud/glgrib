@@ -14,39 +14,6 @@ void glGrib::glInit ()
   glEnable (GL_MULTISAMPLE);
 }
   
-template <typename T>
-void glGrib::OpenGLBuffer<T>::bind (GLenum target, GLuint index) const 
-{
-  if (index == 0)
-    glBindBuffer (target, id_);
-  else
-    glBindBufferBase (target, index, id_);
-}
-
-template <typename T>
-glGrib::OpenGLBuffer<T>::OpenGLBuffer (size_t size, const T * data)
-{
-  glGenBuffers (1, &id_);
-
-//glNamedBufferData (id_, size, data, GL_STATIC_DRAW); does not work
-//glNamedBufferStorage (id_, size, data, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT); does not work
-
-  glBindBuffer (GL_ARRAY_BUFFER, id_);
-  glBufferData (GL_ARRAY_BUFFER, sizeof (T) * size, data, GL_STATIC_DRAW);
-  glBindBuffer (GL_ARRAY_BUFFER, 0);
-
-  allocated_ = true;
-  size_ = size;
-}
-
-template <typename T>
-glGrib::OpenGLBuffer<T>::~OpenGLBuffer ()
-{
-  if (allocated_)
-    glDeleteBuffers (1, &id_);
-  allocated_ = false;
-}
-
 glGrib::OpenGLTexture::OpenGLTexture (int width, int height, const void * data)
 {
   glGenTextures (1, &id_);

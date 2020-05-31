@@ -91,10 +91,10 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   glGrib::Loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
-  d.buffer_n = newGlgribOpenGLBufferPtr (geometry->getNumberOfPoints () * sizeof (unsigned char));
+  d.buffer_n = glGrib::OpenGLBufferPtr<unsigned char> (geometry->getNumberOfPoints ());
 
   {
-    auto col_n = d.buffer_n->map<unsigned char> ();
+    auto col_n = d.buffer_n->map ();
 
     pack (data_n->data (), geometry->getNumberOfPoints (), 
           meta_n.valmin, meta_n.valmax, meta_n.valmis, 
@@ -103,12 +103,12 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   loadHeight (d.buffer_n, ld);
 
-  d.buffer_d = newGlgribOpenGLBufferPtr (geometry->getNumberOfPoints () * sizeof (unsigned char));
+  d.buffer_d = glGrib::OpenGLBufferPtr<unsigned char> (geometry->getNumberOfPoints ());
 
   const int npts = opts.vector.density;
 
   {
-    auto col_d = d.buffer_d->map<unsigned char> ();
+    auto col_d = d.buffer_d->map ();
 
     pack (data_d->data (), geometry->getNumberOfPoints (), 
           meta_d.valmin, meta_d.valmax, meta_d.valmis, 
@@ -330,7 +330,7 @@ void glGrib::FieldVector::clear ()
 
 void glGrib::FieldVector::reSample (const glGrib::View & view)
 {
-  auto col_d = d.buffer_d->map<unsigned char> ();
+  auto col_d = d.buffer_d->map ();
 
   float * data_d = values[1]->data ();
 

@@ -49,7 +49,7 @@ void glGrib::Points::setup (const glGrib::OptionsPoints & o,
       lls.push_back (val[i]);
     }
 
-  d.llsbuffer = newGlgribOpenGLBufferPtr (lls.size () * sizeof (float), lls.data ());
+  d.llsbuffer = glGrib::OpenGLBufferPtr<float> (lls.size (), lls.data ());
 
   d.p = glGrib::Palette (d.opts.palette, d.min, d.max);
 

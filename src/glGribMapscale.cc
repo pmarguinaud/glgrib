@@ -17,7 +17,7 @@ void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
       jj += 4;
     }
 
-  elementbuffer = newGlgribOpenGLBufferPtr (3 * nt * sizeof (unsigned int), ind);
+  elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * nt, ind);
   
   delete [] ind;
 

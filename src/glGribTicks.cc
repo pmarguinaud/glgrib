@@ -358,7 +358,7 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
           XYa[i].z = align[i];
         }
 
-      vertexbuffer = newGlgribOpenGLBufferPtr (XYa.size () * sizeof (XYa[0]), XYa.data ());
+      vertexbuffer = glGrib::OpenGLBufferPtr<glm::vec3> (XYa.size (), XYa.data ());
 
       numberOfTicks = XYa.size ();
     }

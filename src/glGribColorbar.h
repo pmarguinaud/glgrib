@@ -34,7 +34,7 @@ private:
                         std::vector <float> &, std::vector<std::string> &);
   OptionsColorbar opts;
   OpenGLVertexArray<Colorbar> VAID;
-  OpenGLBufferPtr elementbuffer;
+  OpenGLBufferPtr<unsigned int> elementbuffer;
   bool ready = false;
   bool hidden = false;
   int nt;

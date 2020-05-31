@@ -18,7 +18,8 @@ public:
   void reSize (const View &) override {}
   float getScale () const override { return 1; }
 protected:
-  OpenGLBufferPtr vertexbuffer, elementbuffer;
+  OpenGLBufferPtr<float> vertexbuffer;
+  OpenGLBufferPtr<unsigned int> elementbuffer;
   int numberOfPoints;
   unsigned int numberOfTriangles;
   OpenGLVertexArray<Test> VAID;

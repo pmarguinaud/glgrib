@@ -207,9 +207,9 @@ protected:
              const float, const float, T *);
   void packUnpack (const float *, float *, const int, 
 		   const float, const float, const float);
-  void loadHeight (OpenGLBufferPtr, Loader *);
+  void loadHeight (OpenGLBufferPtr<T>, Loader *);
   void bindHeight (int) const;
-  OpenGLBufferPtr heightbuffer;
+  OpenGLBufferPtr<T> heightbuffer;
 };
 
 

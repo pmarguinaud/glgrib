@@ -28,4 +28,12 @@ hidden = option
 
 
 
+subclass shared_ptr for textures
 
+glGribPalette.cc:362 rgba_buffer->bind (GL_SHADER_STORAGE_BUFFER, 33);
+
+OpenGLBufferPtr constructor from vector
+
+unsigned char = byte, etc..
+
+Arrange FieldFloatBuffer

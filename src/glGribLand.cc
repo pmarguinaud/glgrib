@@ -283,16 +283,10 @@ void glGrib::Land::layer_t::setup (const glGrib::OptionsLandLayer & opts)
   
   d.numberOfTriangles = ind.size () / 3;
   
-  d.vertexbuffer = newGlgribOpenGLBufferPtr 
-                      (
-                        lonlat.size () * sizeof (lonlat[0]), 
-                        lonlat.data ()
-                      );
-  d.elementbuffer = newGlgribOpenGLBufferPtr 
-                       (
-                         ind.size () * sizeof (ind[0]), 
-                         ind.data ()
-                       );
+  d.vertexbuffer = glGrib::OpenGLBufferPtr<float>
+                      (lonlat.size (), lonlat.data ());
+  d.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int>
+                       (ind.size (), ind.data ());
 
 }
 

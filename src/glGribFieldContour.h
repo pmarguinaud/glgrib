@@ -107,7 +107,7 @@ private:
       float length = 0.0f;
       OptionColor color;
       std::vector<int> pattern;
-      OpenGLBufferPtr vertexbuffer, heightbuffer, distancebuffer;
+      OpenGLBufferPtr<float> vertexbuffer, heightbuffer, distancebuffer;
       GLuint size;
     } d;
     OpenGLVertexArray<isoline_t> VAID;

@@ -29,7 +29,7 @@ void glGrib::Colorbar::setup (const glGrib::OptionsColorbar & o)
     }
 
 
-  elementbuffer = newGlgribOpenGLBufferPtr (3 * nt * sizeof (unsigned int), ind);
+  elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * nt, ind);
 
   delete [] ind;
 

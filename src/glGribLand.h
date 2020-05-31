@@ -46,7 +46,8 @@ private:
     void setup (const glGrib::OptionsLandLayer &);
     struct
     {
-      OpenGLBufferPtr vertexbuffer, elementbuffer;
+      OpenGLBufferPtr<float> vertexbuffer;
+      OpenGLBufferPtr<unsigned int> elementbuffer;
       unsigned int numberOfTriangles;
     } d;
     OpenGLVertexArray<layer_t> VAID;

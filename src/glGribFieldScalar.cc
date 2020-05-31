@@ -111,9 +111,9 @@ void glGrib::FieldScalar<N>::setup (glGrib::Loader * ld, const glGrib::OptionsFi
   if (opts.hilo.on)
     this->setupHilo (data);
 
-  colorbuffer = newGlgribOpenGLBufferPtr (geometry->getNumberOfPoints () * sizeof (T));
+  colorbuffer = glGrib::OpenGLBufferPtr<T> (geometry->getNumberOfPoints ());
 
-  auto col = colorbuffer->map<T> ();
+  auto col = colorbuffer->map ();
 
   if (palette.fixed ())
     {
@@ -188,9 +188,9 @@ void glGrib::FieldScalar<N>::setupMpiView (glGrib::Loader * ld, const glGrib::Op
   for (int i = 0; i < max; i++)
     Disl[i] = xyz2lonlat (glm::normalize (Disp[i] / static_cast<float> (count[i])));
 
-  mpivbuffer = newGlgribOpenGLBufferPtr (3 * size * sizeof (float));
+  mpivbuffer = glGrib::OpenGLBufferPtr<float> (3 * size);
 
-  auto mpiv = mpivbuffer->map<float> ();
+  auto mpiv = mpivbuffer->map ();
 
   for (int i = 0; i < size; i++)
     {

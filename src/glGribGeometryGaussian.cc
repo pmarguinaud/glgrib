@@ -920,8 +920,8 @@ void glGrib::GeometryGaussian::setupSSBO ()
 
   if (! opts.gaussian.fit.on)
     {
-      ssbo_jlat = newGlgribOpenGLBufferPtr (numberOfPoints * sizeof (int));
-      auto jlat = ssbo_jlat->map<int> ();
+      ssbo_jlat = glGrib::OpenGLBufferPtr<int> (numberOfPoints);
+      auto jlat = ssbo_jlat->map ();
 
 #pragma omp parallel for
       for (int ilat = 0; ilat < Nj; ilat++)
@@ -932,13 +932,12 @@ void glGrib::GeometryGaussian::setupSSBO ()
 
   // jglooff
 
-  ssbo_jglo = newGlgribOpenGLBufferPtr (jglooff.size () * sizeof (jglooff[0]),
-                                            jglooff.data ());
+  ssbo_jglo = glGrib::OpenGLBufferPtr<int> (jglooff.size (), jglooff.data ());
 
   // Gaussian latitudes
  
-  ssbo_glat = newGlgribOpenGLBufferPtr (Nj * sizeof (float));
-  auto glat = ssbo_glat->map<float> ();
+  ssbo_glat = glGrib::OpenGLBufferPtr<float> (Nj);
+  auto glat = ssbo_glat->map ();
 
   for (int i = 0; i < Nj; i++)
     glat[i] = latgauss[i];
@@ -947,8 +946,8 @@ void glGrib::GeometryGaussian::setupSSBO ()
 
 void glGrib::GeometryGaussian::setupCoordinates ()
 {
-  vertexbuffer = newGlgribOpenGLBufferPtr (2 * numberOfPoints * sizeof (float));
-  auto lonlat = vertexbuffer->map<float> ();
+  vertexbuffer = glGrib::OpenGLBufferPtr<float> (2 * numberOfPoints);
+  auto lonlat = vertexbuffer->map ();
   
   int iglooff[Nj];
   iglooff[0] = 0;
@@ -1167,7 +1166,7 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
       trid = new int[numberOfPoints]; 
       // Generation of triangles
       computeTrigauss (Nj, pl, ind, indoff_per_lat, indcnt_per_lat, triu, trid);
-      elementbuffer = newGlgribOpenGLBufferPtr (3 * numberOfTriangles * sizeof (ind[0]), ind);
+      elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * numberOfTriangles, ind);
     }
   else
     {
@@ -1190,8 +1189,8 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
       for (int jlat = 1; jlat < Nj; jlat++)
         ind_strip_size += ind_stripcnt_per_lat[jlat-1];
 
-      elementbuffer = newGlgribOpenGLBufferPtr (ind_strip_size * sizeof (unsigned int));
-      auto ind_strip = elementbuffer->map<unsigned int> ();
+      elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind_strip_size);
+      auto ind_strip = elementbuffer->map ();
 
       computeTrigaussStrip (Nj, pl, ind_strip.address (), 
                             ind_stripcnt_per_lat, ind_stripoff_per_lat); 

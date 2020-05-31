@@ -13,9 +13,9 @@ const double glGrib::GeometryLambert::a = 6371229.0;
 
 void glGrib::GeometryLambert::setupCoordinates ()
 {
-  vertexbuffer = newGlgribOpenGLBufferPtr (2 * numberOfPoints * sizeof (float));
+  vertexbuffer = glGrib::OpenGLBufferPtr<float> (2 * numberOfPoints);
 
-  auto lonlat = vertexbuffer->map<float> ();
+  auto lonlat = vertexbuffer->map ();
 
   // Generation of coordinates
 #pragma omp parallel for
@@ -85,10 +85,9 @@ glGrib::GeometryLambert::GeometryLambert (glGrib::HandlePtr ghp)
 void glGrib::GeometryLambert::setupFrame ()
 {
   numberOfPoints_frame = 2 * (Nx + Ny - 2);
-  vertexbuffer_frame = newGlgribOpenGLBufferPtr (3 * (numberOfPoints_frame + 2) 
-                                                     * sizeof (float));
+  vertexbuffer_frame = glGrib::OpenGLBufferPtr<float> (3 * (numberOfPoints_frame + 2));
   
-  auto lonlat = vertexbuffer_frame->map<float> ();
+  auto lonlat = vertexbuffer_frame->map ();
   
   int p = 0;
   
@@ -136,8 +135,8 @@ void glGrib::GeometryLambert::setup (glGrib::HandlePtr ghp, const glGrib::Option
   
   if (! opts.triangle_strip.on)
     {
-      elementbuffer = newGlgribOpenGLBufferPtr (3 * numberOfTriangles * sizeof (unsigned int));
-      auto ind = elementbuffer->map<unsigned int> ();
+      elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * numberOfTriangles);
+      auto ind = elementbuffer->map ();
 
       for (int j = 0, t = 0; j < Ny-1; j++)
         for (int i = 0; i < Nx-1; i++)
@@ -151,9 +150,9 @@ void glGrib::GeometryLambert::setup (glGrib::HandlePtr ghp, const glGrib::Option
   else
     {
       ind_strip_size = (2 * Nx + 5) * (Ny - 1);
-      elementbuffer = newGlgribOpenGLBufferPtr (ind_strip_size * sizeof (unsigned int));
+      elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind_strip_size);
   
-      auto ind_strip = elementbuffer->map<unsigned int> ();
+      auto ind_strip = elementbuffer->map ();
 
       auto ind0 = [=] (int i, int j) { return (j + 0) * Nx + (i + 0); };
       auto ind2 = [=] (int i, int j) { return (j + 1) * Nx + (i + 0); };

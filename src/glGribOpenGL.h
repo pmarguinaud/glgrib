@@ -46,11 +46,36 @@ private:
   };
 
 public:
-  OpenGLBuffer (size_t, const T * = nullptr);
-  ~OpenGLBuffer ();
+  OpenGLBuffer (size_t size, const T * data = nullptr)
+  {
+    glGenBuffers (1, &id_);
+    
+//glNamedBufferData (id_, size, data, GL_STATIC_DRAW); does not work
+//glNamedBufferStorage (id_, size, data, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT); does not work
+
+    glBindBuffer (GL_ARRAY_BUFFER, id_);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (T) * size, data, GL_STATIC_DRAW);
+    glBindBuffer (GL_ARRAY_BUFFER, 0);
+
+    allocated_ = true;
+    size_ = size;
+  }
+  ~OpenGLBuffer ()
+  {
+    if (allocated_)
+      glDeleteBuffers (1, &id_);
+    allocated_ = false;
+  }
+
   GLuint id () { return id_; }
   bool allocated () const { return allocated_; }
-  void bind (GLenum, GLuint = 0) const;
+  void bind (GLenum target, GLuint index = 0) const
+  {
+    if (index == 0)
+      glBindBuffer (target, id_);
+    else
+      glBindBufferBase (target, index, id_);
+  }
   size_t buffersize () const { return size_; }
 
   OpenGLBufferMapping map ()
@@ -69,9 +94,8 @@ class OpenGLBufferPtr : public std::shared_ptr<OpenGLBuffer<T>>
 {
 public:
   OpenGLBufferPtr () = default;
-  
   OpenGLBufferPtr (size_t size, const T * data = nullptr)
-  : std::shared_ptr<OpenGLBuffer<T>>(size, data) 
+  : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(size, data))
   {
   }
 };

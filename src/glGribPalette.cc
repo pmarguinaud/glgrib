@@ -351,9 +351,7 @@ void glGrib::Palette::computergba_255 ()
   
 
 
-  rgba_buffer = newGlgribOpenGLBufferPtr (rgba_.size () * sizeof (rgba_[0]),
-                                          rgba_.data ()); 
-
+  rgba_buffer = glGrib::OpenGLBufferPtr<glm::vec4> (rgba_.size (), rgba_.data ()); 
 
 }
 

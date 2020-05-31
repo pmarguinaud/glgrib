@@ -39,7 +39,7 @@ private:
     float min, max;
     OptionsPoints opts;
     int len;
-    OpenGLBufferPtr llsbuffer;
+    OpenGLBufferPtr<float> llsbuffer;
     glGrib::Palette p;
   } d;
   OpenGLVertexArray<Points> VAID;

@@ -15,7 +15,8 @@ public:
   void render (const View &, const OptionsLight &) const override;
   virtual void clear ();
 protected:
-  OpenGLBufferPtr vertexbuffer, elementbuffer;
+  OpenGLBufferPtr<float> vertexbuffer;
+  OpenGLBufferPtr<unsigned int> elementbuffer;
   unsigned int numberOfLines;
   int numberOfPoints;
   OpenGLVertexArray<Polygon> VAID;

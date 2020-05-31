@@ -26,7 +26,7 @@ public:
 private:
   OptionsMapscale opts;
   OpenGLVertexArray<Mapscale> VAID;
-  OpenGLBufferPtr elementbuffer;
+  OpenGLBufferPtr<unsigned int> elementbuffer;
   bool ready = false;
   bool hidden = false;
   int nt;

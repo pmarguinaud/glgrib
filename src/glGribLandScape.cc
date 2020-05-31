@@ -90,9 +90,9 @@ void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandsca
 
       ld->load (&data, d.opts.geometry.height.path, d.opts.geometry, &meta);
 
-      d.heightbuffer = newGlgribOpenGLBufferPtr (size * sizeof (float));
+      d.heightbuffer = glGrib::OpenGLBufferPtr<float> (size);
 
-      auto height = d.heightbuffer->map<float> ();
+      auto height = d.heightbuffer->map ();
 
 #pragma omp parallel for
       for (int jglo = 0; jglo < size; jglo++)

@@ -43,7 +43,8 @@ private:
     struct
     {
       OptionColor color;
-      OpenGLBufferPtr vertexbuffer, elementbuffer;
+      OpenGLBufferPtr<float> vertexbuffer;
+      OpenGLBufferPtr<unsigned int> elementbuffer;
       int size;
     } d;
     OpenGLVertexArray<isoband_t> VAID;
@@ -55,7 +56,7 @@ private:
     _d (FieldIsoFill * f) : VAID (f) {}
     // Triangles with a single color
     OpenGLVertexArray<FieldIsoFill> VAID;
-    OpenGLBufferPtr colorbuffer;
+    OpenGLBufferPtr<unsigned char> colorbuffer;
 
     // Isoband
     std::vector<isoband_t> isoband;

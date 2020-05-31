@@ -73,7 +73,7 @@ private:
   using frame_t = item_t<FRAME>;
   friend class item_t<TICKS>;
   friend class item_t<FRAME>;
-  OpenGLBufferPtr vertexbuffer;
+  OpenGLBufferPtr<glm::vec3> vertexbuffer;
   unsigned int numberOfTicks;
   ticks_t ticks;
   frame_t frame;

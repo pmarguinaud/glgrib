@@ -79,8 +79,8 @@ private:
   scalar_t scalar;
   points_t points;
 
-  OpenGLBufferPtr mpivbuffer;
-  OpenGLBufferPtr colorbuffer;
+  OpenGLBufferPtr<float> mpivbuffer;
+  OpenGLBufferPtr<T> colorbuffer;
 };
 
 

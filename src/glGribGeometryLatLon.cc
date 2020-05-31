@@ -51,9 +51,9 @@ glGrib::GeometryLatLon::GeometryLatLon (glGrib::HandlePtr ghp)
 
 void glGrib::GeometryLatLon::setupCoordinates ()
 {
-  vertexbuffer = newGlgribOpenGLBufferPtr (2 * numberOfPoints * sizeof (float));
+  vertexbuffer = glGrib::OpenGLBufferPtr<float> (2 * numberOfPoints);
 
-  auto lonlat = vertexbuffer->map<float> ();
+  auto lonlat = vertexbuffer->map ();
 
   // Generation of coordinates
 #pragma omp parallel for
@@ -102,9 +102,9 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
   // Generation of triangles
   if (! opts.triangle_strip.on)
     {
-      elementbuffer = newGlgribOpenGLBufferPtr (3 * numberOfTriangles * sizeof (unsigned int));
+      elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * numberOfTriangles);
 
-      auto ind = elementbuffer->map<unsigned int> ();
+      auto ind = elementbuffer->map ();
 
       for (int j = 0, t = 0; j < Nj-1; j++)
         {
@@ -131,9 +131,9 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
       else
         ind_strip_size = (2 * Ni + 1) * (Nj - 1);
 
-      elementbuffer = newGlgribOpenGLBufferPtr (3 * ind_strip_size * sizeof (unsigned int));
+      elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * ind_strip_size);
 
-      auto ind_strip = elementbuffer->map<unsigned int> ();
+      auto ind_strip = elementbuffer->map ();
 
       for (int j = 0, t = 0; j < Nj-1; j++)
         {
@@ -167,10 +167,9 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
 void glGrib::GeometryLatLon::setupFrame ()
 {
   numberOfPoints_frame = 2 * (Ni + Nj - 2);
-  vertexbuffer_frame = newGlgribOpenGLBufferPtr (3 * (numberOfPoints_frame + 2) 
-                                                     * sizeof (float));
+  vertexbuffer_frame = glGrib::OpenGLBufferPtr<float> (3 * (numberOfPoints_frame + 2));
 
-  auto lonlat = vertexbuffer_frame->map<float> ();
+  auto lonlat = vertexbuffer_frame->map ();
 
   int p = 0;
 

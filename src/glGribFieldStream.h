@@ -103,7 +103,7 @@ private:
     void render (const bool &, const float &, const glGrib::View &) const;
     struct
     {
-      OpenGLBufferPtr vertexbuffer, normalbuffer, distancebuffer;
+      OpenGLBufferPtr<float> vertexbuffer, normalbuffer, distancebuffer;
       GLuint size;
       GLint vertexLonLat_attr[3];
       GLint norm_attr[2];

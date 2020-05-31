@@ -35,7 +35,7 @@ private:
   {
     OptionsLandscape opts;
     OpenGLTexturePtr texture;
-    OpenGLBufferPtr heightbuffer;
+    OpenGLBufferPtr<float> heightbuffer;
   } d;
   OpenGLVertexArray<Landscape> VAID;
 };

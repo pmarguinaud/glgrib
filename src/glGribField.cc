@@ -272,7 +272,7 @@ void glGrib::Field::saveOptions () const
 }
 
 template <int N>
-void glGrib::FieldPacked<N>::loadHeight (glGrib::OpenGLBufferPtr buf, glGrib::Loader * ld)
+void glGrib::FieldPacked<N>::loadHeight (glGrib::OpenGLBufferPtr<T> buf, glGrib::Loader * ld)
 {
   if (opts.geometry.height.on)
     {
@@ -294,9 +294,9 @@ void glGrib::FieldPacked<N>::loadHeight (glGrib::OpenGLBufferPtr buf, glGrib::Lo
 
           ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
 
-          heightbuffer = newGlgribOpenGLBufferPtr (size * sizeof (T));
+          heightbuffer = glGrib::OpenGLBufferPtr<T> (size);
 
-          auto height = heightbuffer->map<T> ();
+          auto height = heightbuffer->map ();
 
 	  pack (data->data (), size, meta.valmin, meta.valmax, 
                 meta.valmis, height.address ());
@@ -413,7 +413,7 @@ template void glGrib::FieldPacked<N>::pack \
 template void glGrib::FieldPacked<N>::packUnpack   \
           (const float *, float *, const int,   \
            const float, const float, const float); \
-template void glGrib::FieldPacked<N>::loadHeight (glGrib::OpenGLBufferPtr, glGrib::Loader *); \
+template void glGrib::FieldPacked<N>::loadHeight (glGrib::OpenGLBufferPtr<T>, glGrib::Loader *); \
 template void glGrib::FieldPacked<N>::bindHeight (int) const;
 
 DEF ( 8);

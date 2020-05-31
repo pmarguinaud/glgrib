@@ -73,7 +73,7 @@ private:
   friend class field_t<VECTOR>;
   struct
   {
-    OpenGLBufferPtr buffer_n, buffer_d;
+    OpenGLBufferPtr<unsigned char> buffer_n, buffer_d;
     float vscale;
   } d;
   scalar_t scalar;

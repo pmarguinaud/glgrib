@@ -380,7 +380,8 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
               }
       }
 
-    d.colorbuffer  = newGlgribOpenGLBufferPtr (size * sizeof (unsigned char), color);
+    d.colorbuffer  = glGrib::OpenGLBufferPtr<unsigned char> 
+                     (size, color);
     
     delete [] color;
   }
@@ -409,11 +410,11 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
 
       // Element buffer
-      d.isoband[i].d.elementbuffer = newGlgribOpenGLBufferPtr 
-                                    (length_indice * sizeof (unsigned int));
+      d.isoband[i].d.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int>
+                                    (length_indice);
 
       {
-        auto indice = d.isoband[i].d.elementbuffer->map<unsigned int> ();
+        auto indice = d.isoband[i].d.elementbuffer->map ();
         // Pack all indices into the buffer, after adding an offset
 #pragma omp parallel for
         for (int ith = 0; ith < nth; ith++)
@@ -427,11 +428,11 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
 
       // Coordinate buffer
-      d.isoband[i].d.vertexbuffer  = newGlgribOpenGLBufferPtr 
-                                    (length_lonlat * sizeof (float));
+      d.isoband[i].d.vertexbuffer  = glGrib::OpenGLBufferPtr<float>
+                                    (length_lonlat);
 
       {
-        auto lonlat = d.isoband[i].d.vertexbuffer->map<float> ();
+        auto lonlat = d.isoband[i].d.vertexbuffer->map ();
 
         // Pack all lon/lat pairs into the buffer
 #pragma omp parallel for

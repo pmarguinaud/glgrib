@@ -52,8 +52,8 @@ void glGrib::Test::setup ()
 
   numberOfTriangles = ind.size () / 3;
 
-  vertexbuffer = newGlgribOpenGLBufferPtr (lonlat.size () * sizeof (lonlat[0]), lonlat.data ());
-  elementbuffer = newGlgribOpenGLBufferPtr (ind.size () * sizeof (ind[0]), ind.data ());
+  vertexbuffer = glGrib::OpenGLBufferPtr<float> (lonlat.size (), lonlat.data ());
+  elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind.size (), ind.data ());
 
   setReady ();
 }

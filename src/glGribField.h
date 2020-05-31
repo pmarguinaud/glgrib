@@ -17,6 +17,28 @@
 namespace glGrib
 {
 
+
+template <int N>
+struct FieldPackingType
+{
+};
+
+template <> struct FieldPackingType<8>
+{
+  typedef unsigned char type;
+};
+
+template <> struct FieldPackingType<16>
+{
+  typedef unsigned short type;
+};
+
+template <> struct FieldPackingType<32>
+{
+  typedef unsigned int type;
+};
+
+
 class Field : public World
 {
 public:
@@ -166,6 +188,8 @@ protected:
   std::vector<FieldFloatBufferPtr> values;
   String hilo;
   frame_t frame;
+  OpenGLBufferPtr heightbuffer;
+  OpenGLBufferPtr colorbuffer;
 };
 
 

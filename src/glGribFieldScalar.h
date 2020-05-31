@@ -64,6 +64,9 @@ private:
   friend class field_t<POINTS>;
   scalar_t scalar;
   points_t points;
+
+  OpenGLBufferPtr mpivbuffer;
+
 };
 
 

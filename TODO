@@ -15,7 +15,6 @@ Make ALL actions (window bindings) go through options.
 Use GLSL mix : x = (1-t) * a + t * b
 
 Use glNamedBufferStorage instead of glBufferData
-Use glGetAttribLocation
 
 Make typed buffers ?
 

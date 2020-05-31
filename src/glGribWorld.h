@@ -15,7 +15,6 @@ public:
   const_GeometryPtr getGeometry () const { return geometry; }
   virtual void clear ();
 protected:
-  OpenGLBufferPtr vertexbuffer, colorbuffer, elementbuffer, heightbuffer, mpivbuffer;
   const_GeometryPtr geometry;
 };
 

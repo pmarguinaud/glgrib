@@ -120,10 +120,10 @@ public:
       Image image;
       Colorbar colorbar;
       Mapscale mapscale;
-      String strmess;
-      String strdate;
+      String2D strmess;
+      String2D strdate;
       String2D strtitle;
-      std::vector<String> str;
+      std::vector<String2D> str;
       int nupdate = 0;
       int currentFieldRank = 0;
       glm::mat4 MVP_R, MVP_L;

@@ -326,7 +326,7 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
 
       glGrib::FontPtr font = getGlGribFontPtr (opts.labels.font); 
 
-      labels.setup2D (font, S, X, Y, opts.labels.font.scale, align, A);
+      labels.setup (font, S, X, Y, opts.labels.font.scale, align, A);
       labels.setForegroundColor (opts.labels.font.color.foreground);
       labels.setBackgroundColor (opts.labels.font.color.background);
     }
@@ -334,7 +334,7 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
 
   if (opts.lines.on)
     {
-      clear (*this);
+      ticks.VAID.clear ();
 
       // Coordinates of ticks
       std::vector<glm::vec3> XYa (S.size ());

@@ -521,8 +521,8 @@ void glGrib::Scene::setColorBarOptions (const glGrib::OptionsColorbar & o)
   if (d.opts.colorbar.on)
     {
       glGrib::FontPtr font = getGlGribFontPtr (d.opts.colorbar.font);
-      d.strmess.setup2D (font, std::string (30, ' '), 1.0f, 1.0f, 
-                        d.opts.colorbar.font.scale, glGrib::String::NE);
+      d.strmess.setup (font, std::string (30, ' '), 1.0f, 1.0f, 
+                       d.opts.colorbar.font.scale, glGrib::String::NE);
       d.strmess.setForegroundColor (d.opts.colorbar.font.color.foreground);
       d.colorbar.setup (d.opts.colorbar);
       updateColorbar ();
@@ -556,7 +556,7 @@ void glGrib::Scene::setTextOptions (const glGrib::OptionsText & o)
       glGrib::FontPtr font = getGlGribFontPtr (d.opts.scene.text.font);
       for (size_t i = 0; i < d.opts.scene.text.s.size (); i++)
         {
-          glGrib::String str;
+          glGrib::String2D str;
           d.str.push_back (str);
 
           if (i >= d.opts.scene.text.x.size ())
@@ -567,8 +567,8 @@ void glGrib::Scene::setTextOptions (const glGrib::OptionsText & o)
           glGrib::String::align_t a = i < d.opts.scene.text.a.size () ? 
             glGrib::String::str2align (d.opts.scene.text.a[i]) : glGrib::String::C;
 
-          d.str[i].setup2D (font, d.opts.scene.text.s[i], d.opts.scene.text.x[i], 
-                           d.opts.scene.text.y[i], d.opts.scene.text.font.scale, a);
+          d.str[i].setup (font, d.opts.scene.text.s[i], d.opts.scene.text.x[i], 
+                          d.opts.scene.text.y[i], d.opts.scene.text.font.scale, a);
           d.str[i].setForegroundColor (d.opts.scene.text.font.color.foreground);
           d.str[i].setBackgroundColor (d.opts.scene.text.font.color.background);
         }
@@ -617,8 +617,8 @@ void glGrib::Scene::setDateOptions (const glGrib::OptionsDate & o)
   if (d.opts.scene.date.on)
     {
       glGrib::FontPtr font = getGlGribFontPtr (d.opts.scene.date.font);
-      d.strdate.setup2D (font, std::string (20, ' '), 1.0f, 0.0f, 
-                        d.opts.scene.date.font.scale, glGrib::String::SE);
+      d.strdate.setup (font, std::string (20, ' '), 1.0f, 0.0f, 
+                       d.opts.scene.date.font.scale, glGrib::String::SE);
       d.strdate.setForegroundColor (d.opts.scene.date.font.color.foreground);
       d.strdate.setBackgroundColor (d.opts.scene.date.font.color.background);
     }

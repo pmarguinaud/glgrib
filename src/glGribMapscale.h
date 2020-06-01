@@ -26,7 +26,7 @@ private:
   OpenGLBufferPtr<unsigned int> elementbuffer;
   bool ready = false;
   int nt;
-  mutable String label;
+  mutable String2D label;
   mutable std::string label_str;
 };
 

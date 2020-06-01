@@ -15,7 +15,7 @@ public:
   Ticks & operator=(const Ticks &);
   void setup (const OptionsTicks &);
   void render (const glm::mat4 &) const;
-  void reSize (const View &);
+  void reSize (const View &) override;
   const OptionsTicks & getOptions () const { return opts; }
   void setReady ()
   {
@@ -35,7 +35,7 @@ private:
 
   // No need to copy these
 
-  String labels;
+  String2D labels;
   OptionsTicks opts;
   int width = 0, height = 0;
   OptionsView vopts;

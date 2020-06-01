@@ -25,6 +25,8 @@ public:
     : std::shared_ptr<FieldFloatBuffer> (new FieldFloatBuffer (size))
   {
   }
+  float & operator[] (int i) { return (*get ())[i]; }
+  const float & operator[] (int i) const { return (*get ())[i]; }
 };
 
 }

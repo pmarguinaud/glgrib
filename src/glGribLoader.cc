@@ -121,15 +121,15 @@ void glGrib::Loader::load (glGrib::FieldFloatBufferPtr * ptr, const std::vector<
     
       for (int i = 0; i < size; i++)
         {
-          float v1 = (*val1)[i], v2 = (*val2)[i];
+          float v1 = val1[i], v2 = val2[i];
           if ((v1 == meta1.valmis) || (v2 == meta2.valmis))
             {
-              (*val)[i] = valmis;
+              val[i] = valmis;
             }
           else
             {
-              float v = a * (*val1)[i] + b * (*val2)[i];
-              (*val)[i] = v;
+              float v = a * val1[i] + b * val2[i];
+              val[i] = v;
               valmin = std::min (v, valmin);
               valmax = std::max (v, valmax);
               valmis_ok = valmis_ok && (v != valmis);
@@ -140,9 +140,9 @@ void glGrib::Loader::load (glGrib::FieldFloatBufferPtr * ptr, const std::vector<
           valmis = valmax * 1.1;
           for (int i = 0; i < size; i++)
             {
-              float v1 = (*val1)[i], v2 = (*val2)[i];
+              float v1 = val1[i], v2 = val2[i];
               if ((v1 == meta1.valmis) || (v2 == meta2.valmis))
-                (*val)[i] = valmis;
+                val[i] = valmis;
             }
         }
     
@@ -196,7 +196,7 @@ void glGrib::Loader::load (glGrib::FieldFloatBufferPtr * ptr, const std::string 
       glGrib::FieldFloatBufferPtr val = glGrib::FieldFloatBufferPtr (v_len);
 
       for (size_t i = 0; i < v_len; i++)
-        (*val)[i] = v[i];
+        val[i] = v[i];
 
       delete [] v;
       *ptr = val;
@@ -326,15 +326,15 @@ void glGrib::Loader::uv2nd (glGrib::const_GeometryPtr geometry,
 
 #pragma omp parallel for
   for (int i = 0; i < geometry->getNumberOfPoints (); i++)
-    if ((*data_u)[i] == meta_u.valmis)
+    if (data_u[i] == meta_u.valmis)
       {
-        (*data_n)[i] = meta_u.valmis;
-        (*data_d)[i] = meta_u.valmis;
+        data_n[i] = meta_u.valmis;
+        data_d[i] = meta_u.valmis;
       }
-    else if ((*data_v)[i] != meta_u.valmis)
+    else if (data_v[i] != meta_u.valmis)
       {
-        (*data_n)[i] = sqrt ((*data_u)[i] * (*data_u)[i] + (*data_v)[i] * (*data_v)[i]);
-        (*data_d)[i] = rad2deg * atan2 ((*data_v)[i], (*data_u)[i]);
+        data_n[i] = sqrt (data_u[i] * data_u[i] + data_v[i] * data_v[i]);
+        data_d[i] = rad2deg * atan2 (data_v[i], data_u[i]);
       }
     else
       throw std::runtime_error ("Inconsistent domain definition for U/V");
@@ -342,16 +342,16 @@ void glGrib::Loader::uv2nd (glGrib::const_GeometryPtr geometry,
   geometry->applyNormScale (data_n->data ());
 
   for (int i = 0; i < geometry->getNumberOfPoints (); i++)
-    if ((*data_u)[i] != meta_u.valmis)
+    if (data_u[i] != meta_u.valmis)
       {
-        if ((*data_n)[i] < meta_n.valmin)
-          meta_n.valmin = (*data_n)[i];
-        if ((*data_n)[i] > meta_n.valmax)
-          meta_n.valmax = (*data_n)[i];
+        if (data_n[i] < meta_n.valmin)
+          meta_n.valmin = data_n[i];
+        if (data_n[i] > meta_n.valmax)
+          meta_n.valmax = data_n[i];
       }
     else
       {
-        (*data_n)[i] = meta_u.valmis;
+        data_n[i] = meta_u.valmis;
       }
 
   geometry->applyUVangle (data_d->data ());

@@ -446,9 +446,9 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
     }
 
   if (opts.no_value_pointer.on)
-    values.push_back (newGlgribFieldFloatBufferPtr (0));
-  else
-    values.push_back (data);
+    data = glGrib::FieldFloatBufferPtr (0);
+
+  values.push_back (data);
 
   setReady ();
 

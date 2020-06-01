@@ -16,8 +16,4 @@ glGrib::FieldFloatBuffer::~FieldFloatBuffer ()
   size_ = 0;
 }
 
-glGrib::FieldFloatBufferPtr glGrib::newGlgribFieldFloatBufferPtr (size_t size)
-{
-  return std::make_shared<glGrib::FieldFloatBuffer>(size);
-}
 

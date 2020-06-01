@@ -176,14 +176,12 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   if (opts.no_value_pointer.on)
     {
-      values.push_back (newGlgribFieldFloatBufferPtr (0));
-      values.push_back (newGlgribFieldFloatBufferPtr (0));
+      data_n = glGrib::FieldFloatBufferPtr (0);
+      data_d = glGrib::FieldFloatBufferPtr (0);
     }
-  else
-    {
-      values.push_back (data_n);
-      values.push_back (data_d);
-    }
+
+  values.push_back (data_n);
+  values.push_back (data_d);
 
   setReady ();
 }

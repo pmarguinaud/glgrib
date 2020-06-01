@@ -112,7 +112,7 @@ void glGrib::Loader::load (glGrib::FieldFloatBufferPtr * ptr, const std::vector<
       load (&val2, file2, opts_geom, &meta2);
     
       int size = geom1->size ();
-      glGrib::FieldFloatBufferPtr val = newGlgribFieldFloatBufferPtr (size);
+      glGrib::FieldFloatBufferPtr val = glGrib::FieldFloatBufferPtr (size);
     
       float valmin = std::numeric_limits<float>::max (), 
             valmax = std::numeric_limits<float>::min (), 
@@ -193,7 +193,7 @@ void glGrib::Loader::load (glGrib::FieldFloatBufferPtr * ptr, const std::string 
       double * v = new double[v_len];
       codes_get_double_array (h, "values", v, &v_len);
 
-      glGrib::FieldFloatBufferPtr val = newGlgribFieldFloatBufferPtr (v_len);
+      glGrib::FieldFloatBufferPtr val = glGrib::FieldFloatBufferPtr (v_len);
 
       for (size_t i = 0; i < v_len; i++)
         (*val)[i] = v[i];
@@ -313,8 +313,8 @@ void glGrib::Loader::uv2nd (glGrib::const_GeometryPtr geometry,
                            glGrib::FieldMetadata & meta_n, 
                            glGrib::FieldMetadata & meta_d)
 {
-  data_n = newGlgribFieldFloatBufferPtr (geometry->getNumberOfPoints ());
-  data_d = newGlgribFieldFloatBufferPtr (geometry->getNumberOfPoints ());
+  data_n = glGrib::FieldFloatBufferPtr (geometry->getNumberOfPoints ());
+  data_d = glGrib::FieldFloatBufferPtr (geometry->getNumberOfPoints ());
 
   meta_n = meta_u; // TODO : handle this differently
   meta_d = meta_u;

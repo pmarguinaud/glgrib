@@ -139,9 +139,9 @@ void glGrib::FieldScalar<N>::setup (glGrib::Loader * ld, const glGrib::OptionsFi
     setupMpiView (ld, o, slot);
 
   if (opts.no_value_pointer.on)
-    this->values.push_back (newGlgribFieldFloatBufferPtr (0));
-  else
-    this->values.push_back (data);
+    data = glGrib::FieldFloatBufferPtr (0);
+
+  this->values.push_back (data);
 
   this->setReady ();
 }

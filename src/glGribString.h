@@ -41,6 +41,9 @@ public:
     return C;
   }
 
+  void setupVertexAttributes () const;
+
+private:
   String & operator= (const String &);
   String () : VAID (this) {}
   String (const String & str) : VAID (this)
@@ -48,28 +51,12 @@ public:
     *this = str;
   }
 
-  void setup2D (const_FontPtr, const std::string &, float, 
-               float, float = 1.0f, align_t = SW);
-  void setup2D (const_FontPtr, const std::vector<std::string> &, 
-	       const std::vector<float> & = std::vector<float>{}, 
-	       const std::vector<float> & = std::vector<float>{}, 
-	       float = 1.0f, align_t = SW, const std::vector<float> & = std::vector<float>{});
-  void setup2D (const_FontPtr, const std::vector<std::string> &, 
-                const std::vector<float> &, const std::vector<float> &, 
-                float, const std::vector<align_t> &, const std::vector<float> &);
-  void setup2D (const_FontPtr, const std::vector<std::string> &, float, 
-               float, float = 1.0f, align_t = SW);
-  void setup3D (const_FontPtr, const std::vector<std::string> &, 
-	       const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
-	       const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
-	       float = 1.0f, align_t = SW);
   void setup (const_FontPtr, const std::vector<std::string> &, 
-             const std::vector<float> &, const std::vector<float> &, 
-	     float = 1.0f, const std::vector<align_t> & = std::vector<align_t>{SW},
-	     const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
-	     const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{});
-  void render (const glm::mat4 &) const;
-  void render (const View &) const;
+              const std::vector<float> &, const std::vector<float> &, 
+              float = 1.0f, const std::vector<align_t> & = std::vector<align_t>{SW},
+              const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
+              const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{});
+
 
   void setForegroundColor (const OptionColor & color)
   {
@@ -82,7 +69,6 @@ public:
   void update (const std::vector<std::string> &);
   void update (const std::string &);
 
-  void setupVertexAttributes () const;
 
   void setShared (bool p)
   {

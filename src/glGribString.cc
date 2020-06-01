@@ -37,58 +37,11 @@ glGrib::String & glGrib::String::operator= (const glGrib::String & str)
   return *this;
 }
 
-void glGrib::String::setup3D (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
-	                    const std::vector<float> & _X, const std::vector<float> & _Y,
-	                    const std::vector<float> & _Z, const std::vector<float> & _A,
-	                    float s, align_t _align)
-{
-  std::vector<float> _x, _y;
-  for (size_t i = 0; i < str.size (); i++)
-    {
-      _x.push_back (0.0f);
-      _y.push_back (0.0f);
-    }
-  setup (ff, str, _x, _y, s, std::vector<align_t>{_align}, _X, _Y, _Z, _A);
-}
-
-void glGrib::String::setup2D (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
-                              float x, float y, float s, align_t align)
-{
-  setup (ff, str, std::vector<float>{x}, std::vector<float>{y}, s, std::vector<align_t>{align});
-}
-
-void glGrib::String::setup2D (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
-                              const std::vector<float> & x, const std::vector<float> & y, 
-                              float s, align_t align,
-                              const std::vector<float> & a)
-{
-  setup (ff, str, x, y, s, std::vector<align_t>{align},
-         std::vector<float>{}, std::vector<float>{}, std::vector<float>{}, a);
-}
-
-void glGrib::String::setup2D (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
-                              const std::vector<float> & x, const std::vector<float> & y, 
-                              float s, const std::vector<align_t> & align,
-                              const std::vector<float> & a)
-{
-  setup (ff, str, x, y, s, align, 
-         std::vector<float>{}, std::vector<float>{}, std::vector<float>{}, a);
-}
-
-void glGrib::String::setup2D (glGrib::const_FontPtr ff, const std::string & str, 
-                            float x, float y, float s, align_t align)
-{
-  std::vector<std::string> _str = {str};
-  std::vector<float>       _x   = {x};
-  std::vector<float>       _y   = {y};
-  setup (ff, _str, _x, _y, s, std::vector<align_t>{align});
-}
-
 void glGrib::String::setup (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
                             const std::vector<float> & _x, const std::vector<float> & _y, 
                             float s, const std::vector<align_t> & _align,
-          		  const std::vector<float> & _X, const std::vector<float> & _Y,
-          		  const std::vector<float> & _Z, const std::vector<float> & _A)
+                            const std::vector<float> & _X, const std::vector<float> & _Y,
+                            const std::vector<float> & _Z, const std::vector<float> & _A)
 {
   d.data = str;
   d.x = _x;
@@ -239,58 +192,6 @@ void glGrib::String::setupVertexAttributes () const
   glVertexAttribDivisor (xattr, 1);
 }
 
-
-void glGrib::String::render (const glGrib::View & view) const
-{
-  if (! d.ready)
-    return;
-
-  d.font->select ();
-
-  glGrib::Program * program = d.font->getProgram ();
-
-  view.setMVP (program);
-
-  float length = view.pixelToDistAtNadir (10);
-
-  program->set ("scale", d.scale);
-  program->set ("texture", 0);
-  program->set ("l3d", 1);
-  program->set ("ratio", view.getRatio ());
-  program->set ("color0", d.color0);
-  program->set ("color1", d.color1);
-  program->set ("length10", length);
-  program->set ("scaleXYZ", d.scaleXYZ);
-
-  VAID.bind ();
-  unsigned int ind[6] = {0, 1, 2, 2, 3, 0};
-  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, d.len);
-  VAID.unbind ();
-
-  view.delMVP (program);
-}
-
-void glGrib::String::render (const glm::mat4 & MVP) const
-{
-  if (! d.ready)
-    return;
-
-  d.font->select ();
-
-  glGrib::Program * program = d.font->getProgram ();
-  program->set ("MVP", MVP);
-  program->set ("scale", d.scale);
-  program->set ("scaleXYZ", 1.0f);
-  program->set ("texture", 0);
-  program->set ("l3d", 0);
-  program->set ("color0", d.color0);
-  program->set ("color1", d.color1);
-
-  VAID.bind ();
-  unsigned int ind[12] = {0, 1, 2, 2, 3, 0};
-  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, d.len);
-  VAID.unbind ();
-}
 
 void glGrib::String::update (const std::string & str)
 {

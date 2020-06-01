@@ -79,13 +79,12 @@ public:
   }
   void update (const std::vector<std::string> &);
   void update (const std::string &);
-  bool ready = false;
 
   void setupVertexAttributes () const;
 
   void setShared (bool);
   void setChange (bool);
-  bool isReady () const { return ready; }
+  bool isReady () const { return d.ready; }
 
   void setScaleXYZ (float s)
   {
@@ -97,6 +96,7 @@ private:
   {
     bool shared = false;
     bool change = true;
+    bool ready = false;
     std::vector<std::string> data;
     std::vector<float> x, y;       // Position of letters vertices
     std::vector<float> X, Y, Z, A; // Position & angle of each letter on the sphere

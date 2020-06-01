@@ -11,13 +11,13 @@ glGrib::String & glGrib::String::operator= (const glGrib::String & str)
     {
       clear (this->d);
       this->VAID.clear ();
-      if (str.ready)
+      if (str.d.ready)
         {
           if (str.d.shared)
             {
               d = str.d;   
               VAID = str.VAID;
-              ready = true;
+              d.ready = true;
 	    }
 	  else if (str.d.change)
             {
@@ -193,7 +193,7 @@ void glGrib::String::setup (glGrib::const_FontPtr ff, const std::vector<std::str
   d.letterbuffer = glGrib::OpenGLBufferPtr<float> (let);
   d.xyzbuffer = glGrib::OpenGLBufferPtr<float> (xyz);
 
-  ready = true;
+  d.ready = true;
   
   if (! d.change)
     {
@@ -242,7 +242,7 @@ void glGrib::String::setup2D (glGrib::const_FontPtr ff, const std::string & str,
 
 void glGrib::String::render (const glGrib::View & view) const
 {
-  if (! ready)
+  if (! d.ready)
     return;
 
   d.font->select ();
@@ -272,7 +272,7 @@ void glGrib::String::render (const glGrib::View & view) const
 
 void glGrib::String::render (const glm::mat4 & MVP) const
 {
-  if (! ready)
+  if (! d.ready)
     return;
 
   d.font->select ();
@@ -299,7 +299,7 @@ void glGrib::String::update (const std::string & str)
 
 void glGrib::String::update (const std::vector<std::string> & str)
 {
-  if (! ready)
+  if (! d.ready)
     throw std::runtime_error (std::string ("Cannot set update string"));
   if (! d.change)
     throw std::runtime_error (std::string ("Cannot set update string"));
@@ -338,7 +338,7 @@ void glGrib::String::setShared (bool p)
 
 void glGrib::String::setChange (bool u)
 {
-  if (ready && u)
+  if (d.ready && u)
     throw std::runtime_error (std::string ("Cannot set attribute change"));
   d.change = u;
 }

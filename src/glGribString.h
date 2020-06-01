@@ -123,12 +123,13 @@ private:
   } d;
   OpenGLVertexArray<String> VAID;
   friend class String2D;
+  friend class String3D;
 };
 
 class String2D : public Object2D
 {
 public:
-  void render (const glm::mat4 &) const;
+  void render (const glm::mat4 &) const override;
   void setup (const_FontPtr, const std::string &, float, 
               float, float = 1.0f, String::align_t = String::SW);
   void setup (const_FontPtr, const std::vector<std::string> &, 
@@ -141,10 +142,12 @@ public:
               float, const std::vector<String::align_t> &, const std::vector<float> &);
   void setup (const_FontPtr, const std::vector<std::string> &, float, 
               float, float = 1.0f, String::align_t = String::SW);
+
   void setForegroundColor (const OptionColor & color)
   {
     str.setForegroundColor (color);
   }
+
   void setBackgroundColor (const OptionColor & color)
   {
     str.setBackgroundColor (color);
@@ -160,7 +163,52 @@ public:
     this->str.update (str);
   }
 
-  void setupVertexAttributes () const;
+  void setShared (bool p)
+  {
+    str.setShared (p);
+  }
+
+  void setChange (bool u)
+  {
+    str.setChange (u);
+  }
+
+  void reSize (const View &) override {}
+
+private:
+  String str;
+};
+
+class String3D : public Object3D
+{
+public:
+
+  void render (const View &, const OptionsLight &) const;
+
+  void setup (const_FontPtr, const std::vector<std::string> &, 
+	      const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
+	      const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
+	      float = 1.0f, String::align_t = String::SW);
+
+  void setForegroundColor (const OptionColor & color)
+  {
+    str.setForegroundColor (color);
+  }
+
+  void setBackgroundColor (const OptionColor & color)
+  {
+    str.setBackgroundColor (color);
+  }
+
+  void update (const std::vector<std::string> & str)
+  {
+    this->str.update (str);
+  }
+
+  void update (const std::string & str)
+  {
+    this->str.update (str);
+  }
 
   void setShared (bool p)
   {
@@ -172,7 +220,17 @@ public:
     str.setChange (u);
   }
 
-  virtual void reSize (const View &) {}
+  float getScale () const override
+  {
+    return str.d.scaleXYZ;
+  }
+
+  void reSize (const View &) override {}
+
+  void setScale (float s) 
+  {
+    str.setScaleXYZ (s);
+  }
 
 private:
   String str;

@@ -121,7 +121,7 @@ public:
     opts.palette = palette.getOptions ();
     return opts; 
   }
-  void setScale (float s) { opts.scale = s; hilo.setScaleXYZ (s); }
+  void setScale (float s) { opts.scale = s; hilo.setScale (s); }
   float getScale () const override { return opts.scale; }
   const Palette & getPalette () const
   {
@@ -186,7 +186,7 @@ public:
   mutable OptionsField opts;
   std::vector<FieldMetadata> meta;
   std::vector<FieldFloatBufferPtr> values;
-  String hilo;
+  String3D hilo;
   frame_t frame;
 };
 

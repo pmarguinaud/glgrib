@@ -8,8 +8,9 @@ glGrib::Colorbar & glGrib::Colorbar::operator= (const glGrib::Colorbar & colorba
   if (this != &colorbar)
     {
       clear (d);
+      glGrib::Object2D::operator= (colorbar);
       VAID.clear ();
-      if (colorbar.d.ready)
+      if (colorbar.isReady ())
         setup (colorbar.d.opts);
     }
   return *this;
@@ -35,7 +36,7 @@ void glGrib::Colorbar::setup (const glGrib::OptionsColorbar & o)
 
   delete [] ind;
 
-  d.ready = true;
+  setReady ();
 }
 
 void glGrib::Colorbar::setupVertexAttributes () const
@@ -130,7 +131,7 @@ void glGrib::Colorbar::updateLinear (const float min, const float max,
 void glGrib::Colorbar::update (const glGrib::Palette & p) 
 {
 
-  if (! d.ready)
+  if (! isReady ())
     return;
 
   if (p == d.palette)
@@ -154,7 +155,7 @@ void glGrib::Colorbar::update (const glGrib::Palette & p)
   else
     updateLinear (min, max, x, y, str);
   
-  d.label.setup2D (font, str, x, y, d.opts.font.scale, glGrib::String::SE);
+  d.label.setup (font, str, x, y, d.opts.font.scale, glGrib::String::SE);
   d.label.setForegroundColor (d.opts.font.color.foreground);
   d.label.setBackgroundColor (d.opts.font.color.background);
   
@@ -164,7 +165,7 @@ void glGrib::Colorbar::update (const glGrib::Palette & p)
 
 void glGrib::Colorbar::render (const glm::mat4 & MVP) const
 {
-  if (! d.ready)
+  if (! isReady ())
     return;
 
   d.label.render (MVP);

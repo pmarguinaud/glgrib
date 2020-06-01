@@ -53,7 +53,7 @@ void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
 	  push (lon, lat, str);
 	}
 
-      d.labels.setup3D (font, L, X, Y, Z, A, d.opts.labels.font.scale, glGrib::String::C);
+      d.labels.setup (font, L, X, Y, Z, A, d.opts.labels.font.scale, glGrib::String::C);
       d.labels.setForegroundColor (d.opts.labels.font.color.foreground);
       d.labels.setBackgroundColor (d.opts.labels.font.color.background);
     }
@@ -92,7 +92,7 @@ void glGrib::Grid::render (const glGrib::View & view, const glGrib::OptionsLight
 
   view.delMVP (program);
 
-  d.labels.render (view);
+  d.labels.render (view, glGrib::OptionsLight ());
 
 }
 

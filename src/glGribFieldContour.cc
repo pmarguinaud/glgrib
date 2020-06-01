@@ -100,12 +100,12 @@ void glGrib::FieldContour::isoline_t::setupLabels (const glGrib::OptionsField & 
       L[i] = label; 
     }
 
-  d.labels.setup3D (font, L, X, Y, Z, A, opts.contour.labels.font.scale, 
-                       glGrib::String::C);
+  d.labels.setup (font, L, X, Y, Z, A, opts.contour.labels.font.scale, 
+                  glGrib::String::C);
   d.labels.setForegroundColor (opts.contour.labels.font.color.foreground);
   d.labels.setBackgroundColor (opts.contour.labels.font.color.background);
 
-  d.labels.setScaleXYZ (opts.scale * 1.001);
+  d.labels.setScale (opts.scale * 1.001);
 
 }
 
@@ -447,7 +447,7 @@ void glGrib::FieldContour::render (const glGrib::View & view, const glGrib::Opti
 
   if (opts.contour.labels.on)
     for (const auto & is : iso)
-      is.d.labels.render (view);
+      is.d.labels.render (view, glGrib::OptionsLight ());
 
 }
 

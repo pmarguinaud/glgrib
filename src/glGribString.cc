@@ -391,5 +391,50 @@ void glGrib::String2D::setup (glGrib::const_FontPtr ff, const std::string & str,
   setReady ();
 }
 
+void glGrib::String3D::setup (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
+	                      const std::vector<float> & _X, const std::vector<float> & _Y,
+	                      const std::vector<float> & _Z, const std::vector<float> & _A,
+	                      float s, String::align_t _align)
+{
+  std::vector<float> _x, _y;
+  for (size_t i = 0; i < str.size (); i++)
+    {
+      _x.push_back (0.0f);
+      _y.push_back (0.0f);
+    }
+  this->str.setup (ff, str, _x, _y, s, std::vector<String::align_t>{_align}, _X, _Y, _Z, _A);
+  setReady ();
+}
+
+
+void glGrib::String3D::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+{
+  if (! isReady ())
+    return;
+
+  str.d.font->select ();
+
+  glGrib::Program * program = str.d.font->getProgram ();
+
+  view.setMVP (program);
+
+  float length = view.pixelToDistAtNadir (10);
+
+  program->set ("scale", str.d.scale);
+  program->set ("texture", 0);
+  program->set ("l3d", 1);
+  program->set ("ratio", view.getRatio ());
+  program->set ("color0", str.d.color0);
+  program->set ("color1", str.d.color1);
+  program->set ("length10", length);
+  program->set ("scaleXYZ", str.d.scaleXYZ);
+
+  str.VAID.bind ();
+  unsigned int ind[6] = {0, 1, 2, 2, 3, 0};
+  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, str.d.len);
+  str.VAID.unbind ();
+
+  view.delMVP (program);
+}
 
 

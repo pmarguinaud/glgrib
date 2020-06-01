@@ -57,8 +57,8 @@ void glGrib::Cities::setup (const glGrib::OptionsCities & o)
 
   glGrib::FontPtr font = getGlGribFontPtr (opts.labels.font);
 
-  d.labels.setup3D (font, Str, X, Y, Z, A,
-                   opts.labels.font.scale, glGrib::String::C);
+  d.labels.setup (font, Str, X, Y, Z, A,
+                  opts.labels.font.scale, glGrib::String::C);
   d.labels.setForegroundColor (opts.labels.font.color.foreground);
   d.labels.setBackgroundColor (opts.labels.font.color.background);
 
@@ -68,5 +68,5 @@ void glGrib::Cities::setup (const glGrib::OptionsCities & o)
 void glGrib::Cities::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
   glGrib::Points::render (view, light);
-  d.labels.render (view);
+  d.labels.render (view, glGrib::OptionsLight ());
 }

@@ -127,10 +127,10 @@ void glGrib::Field::setupHilo (glGrib::FieldFloatBufferPtr data)
 
   hilo.setShared (false);
   hilo.setChange (true);
-  hilo.setup3D (font, lhilo.L, lhilo.X, lhilo.Y, lhilo.Z, lhilo.A, 
-                opts.hilo.font.scale, glGrib::String::C);
+  hilo.setup (font, lhilo.L, lhilo.X, lhilo.Y, lhilo.Z, lhilo.A, 
+              opts.hilo.font.scale, glGrib::String::C);
   hilo.setForegroundColor (opts.hilo.font.color.foreground);
-  hilo.setScaleXYZ (opts.scale);
+  hilo.setScale (opts.scale);
 
 }
 
@@ -315,7 +315,7 @@ void glGrib::FieldPacked<N>::bindHeight (int attr) const
 void glGrib::Field::renderHilo (const glGrib::View & view) const
 {
   if (opts.hilo.on)
-    hilo.render (view);
+    hilo.render (view, glGrib::OptionsLight ());
 }
 
 template <int N>

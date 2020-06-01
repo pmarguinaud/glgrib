@@ -72,7 +72,7 @@ void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandsca
       if ((sizemax < w) || (sizemax < h))
         throw std::runtime_error (std::string ("Image is too large to be used as a texture :") + d.opts.path);
      
-      d.texture = newGlgribOpenGLTexturePtr (w, h, rgb);
+      d.texture = glGrib::OpenGLTexturePtr (w, h, rgb);
       delete [] rgb;
     }
 

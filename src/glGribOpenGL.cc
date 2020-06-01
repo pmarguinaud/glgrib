@@ -36,11 +36,6 @@ glGrib::OpenGLTexture::~OpenGLTexture ()
   allocated_ = false;
 }
 
-glGrib::OpenGLTexturePtr glGrib::newGlgribOpenGLTexturePtr (int width, int height, const void * data)
-{
-  return std::make_shared<glGrib::OpenGLTexture>(width, height, data);
-}
-
 namespace glGrib
 {
 template <> GLenum getOpenGLType<unsigned char > () { return GL_UNSIGNED_BYTE ; }

@@ -118,11 +118,15 @@ private:
   GLuint id_;
 };
 
-typedef std::shared_ptr<OpenGLTexture> OpenGLTexturePtr;
-OpenGLTexturePtr newGlgribOpenGLTexturePtr (const OpenGLTexturePtr &);
-OpenGLTexturePtr newGlgribOpenGLTexturePtr (int, int, const void *);
-
-
+class OpenGLTexturePtr : public std::shared_ptr<OpenGLTexture>
+{
+public:
+  OpenGLTexturePtr () = default;
+  OpenGLTexturePtr (int width, int height, const void * data)
+    : std::shared_ptr<OpenGLTexture> (new OpenGLTexture (width, height, data))
+  {
+  }
+};
 
 template <typename T>
 class OpenGLVertexArray

@@ -22,7 +22,7 @@ clear template
 
 hidden = option
 
-subclass shared_ptr for textures, fonts
+subclass shared_ptr for fonts
 
 glGribPalette.cc:362 rgba_buffer->bind (GL_SHADER_STORAGE_BUFFER, 33);
 

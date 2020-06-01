@@ -36,7 +36,7 @@ glGrib::Scene::~Scene ()
       delete f;
 }
 
-void glGrib::Scene::renderObject (const glGrib::Object * obj) const
+void glGrib::Scene::renderObject3D (const glGrib::Object3D * obj) const
 {
   if (obj == nullptr)
     return;
@@ -54,7 +54,7 @@ void glGrib::Scene::render () const
   d.test.render (d.view, d.opts.scene.light);
   
 
-  std::vector<const glGrib::Object*> obj_list;
+  std::vector<const glGrib::Object3D*> obj_list;
 
   obj_list.push_back (&d.landscape);
 
@@ -73,12 +73,13 @@ void glGrib::Scene::render () const
 
 
   std::sort (obj_list.begin (), obj_list.end (), 
-             [] (const glGrib::Object * a, const glGrib::Object * b) 
+             [] (const glGrib::Object3D * a, 
+                 const glGrib::Object3D * b) 
              { return a->getScale () < b->getScale (); });
 
 
   for (auto obj : obj_list)
-    renderObject (obj);
+    renderObject3D (obj);
 
   d.image.render (d.MVP_L);
 
@@ -284,7 +285,7 @@ void glGrib::Scene::updateTitle ()
         {
           clear (d.strtitle);
           glGrib::FontPtr font = getGlGribFontPtr (d.opts.scene.title.font);
-          d.strtitle.setup2D (font, title, d.opts.scene.title.x, 
+          d.strtitle.setup (font, title, d.opts.scene.title.x, 
                               d.opts.scene.title.y, d.opts.scene.title.font.scale, 
                               glGrib::String::str2align (d.opts.scene.title.a));
           d.strtitle.setForegroundColor (d.opts.scene.title.font.color.foreground);

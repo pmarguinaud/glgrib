@@ -20,10 +20,9 @@ public:
   void setupVertexAttributes () const;
   Colorbar & operator= (const Colorbar &);
   void render (const glm::mat4 &) const;
-  void toggleHidden () { d.hidden = ! d.hidden; }
-  bool getHidden () const { return d.hidden; }
   const OptionsColorbar & getOptions () const { return d.opts; }
   void update (const Palette &);
+  bool isReady () const { return d.ready; }
 private:
   void createLabels (std::vector<float> &, std::vector<float> &, 
                      std::vector<std::string> &, const std::vector<float> &, const bool);
@@ -36,7 +35,6 @@ private:
     OptionsColorbar opts;
     OpenGLBufferPtr<unsigned int> elementbuffer;
     bool ready = false;
-    bool hidden = false;
     int nt;
     std::vector<int> rank2rgba;
     String label;

@@ -14,7 +14,7 @@
 namespace glGrib
 {
 
-class Points : public Object
+class Points : public Object3D
 {
 public:
 

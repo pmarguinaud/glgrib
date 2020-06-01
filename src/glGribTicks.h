@@ -8,7 +8,7 @@
 namespace glGrib
 {
 
-class Ticks 
+class Ticks : public Object2D
 {
 public:
   Ticks () : ticks (this), frame (this) {}

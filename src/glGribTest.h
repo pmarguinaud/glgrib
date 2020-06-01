@@ -7,7 +7,7 @@
 namespace glGrib
 {
 
-class Test : public Object
+class Test : public Object3D
 {
 public:
   Test () : VAID (this) {}

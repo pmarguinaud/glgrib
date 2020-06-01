@@ -40,7 +40,7 @@ public:
   virtual ~Scene ();
   void setup (const Options &);
   void render () const;
-  void renderObject (const Object *) const;
+  void renderObject3D (const Object3D *) const;
 
   int getCurrentFieldRank () const
   {
@@ -85,7 +85,7 @@ public:
   const glGrib::Field * getFieldColorbar () const
   {
     const glGrib::Field * fld = getCurrentField ();
-    if ((fld != nullptr) && (! d.colorbar.getHidden ()))
+    if ((fld != nullptr) && (d.colorbar.isReady ()))
       if (fld->useColorBar ())
         return fld;
     return nullptr;
@@ -122,7 +122,7 @@ public:
       Mapscale mapscale;
       String strmess;
       String strdate;
-      String strtitle;
+      String2D strtitle;
       std::vector<String> str;
       int nupdate = 0;
       int currentFieldRank = 0;
@@ -131,11 +131,6 @@ public:
   };
   std::string strdate = "";
   std::string strtitle = "";
-
-  void toggleColorBar ()
-  {
-    d.colorbar.toggleHidden ();
-  }
 
   _data d;
 

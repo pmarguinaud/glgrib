@@ -7,7 +7,7 @@
 namespace glGrib
 {
 
-class Polygon : public Object
+class Polygon : public Object3D
 {
 public:
   Polygon () : VAID (this) {}

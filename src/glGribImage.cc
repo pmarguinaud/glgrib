@@ -19,12 +19,12 @@ void glGrib::Image::setup (const glGrib::OptionsImage & o)
 
   setupVertexAttributes ();
 
-  ready = true;
+  setReady ();
 }
 
 void glGrib::Image::render (const glm::mat4 & MVP) const
 {
-  if (! ready)
+  if (! isReady ())
     return;
 
   glGrib::Program * program = glGrib::Program::load ("IMAGE");

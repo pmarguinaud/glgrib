@@ -13,7 +13,7 @@
 namespace glGrib
 {
 
-class Image 
+class Image : public Object2D
 {
 public:
   static const int CX = 0x01;
@@ -50,9 +50,12 @@ public:
   void setup (const OptionsImage &);
   void render (const glm::mat4 &) const;
   const OptionsImage & getOptions () const { return opts; }
+
+  void reSize (const View &) override
+  {
+  }
 private:
   OptionsImage opts;
-  bool ready = false;
   OpenGLTexturePtr texture;
   OpenGLVertexArray<Image> VAID;
 };

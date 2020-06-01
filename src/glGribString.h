@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "glGribObject.h"
 #include "glGribFont.h"
 #include "glGribView.h"
 #include <glm/glm.hpp>
@@ -56,6 +57,8 @@ public:
   void setup2D (const_FontPtr, const std::vector<std::string> &, 
                 const std::vector<float> &, const std::vector<float> &, 
                 float, const std::vector<align_t> &, const std::vector<float> &);
+  void setup2D (const_FontPtr, const std::vector<std::string> &, float, 
+               float, float = 1.0f, align_t = SW);
   void setup3D (const_FontPtr, const std::vector<std::string> &, 
 	       const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
 	       const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
@@ -65,10 +68,9 @@ public:
 	     float = 1.0f, const std::vector<align_t> & = std::vector<align_t>{SW},
 	     const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
 	     const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{});
-  void setup2D (const_FontPtr, const std::vector<std::string> &, float, 
-               float, float = 1.0f, align_t = SW);
   void render (const glm::mat4 &) const;
   void render (const View &) const;
+
   void setForegroundColor (const OptionColor & color)
   {
     d.color0 = color;
@@ -82,8 +84,18 @@ public:
 
   void setupVertexAttributes () const;
 
-  void setShared (bool);
-  void setChange (bool);
+  void setShared (bool p)
+  {
+    d.shared = p;
+  }
+
+  void setChange (bool u)
+  {
+    if (d.ready && u)
+      throw std::runtime_error (std::string ("Cannot set attribute change"));
+    d.change = u;
+  }
+
   bool isReady () const { return d.ready; }
 
   void setScaleXYZ (float s)
@@ -110,6 +122,60 @@ private:
     const_FontPtr font = nullptr; 
   } d;
   OpenGLVertexArray<String> VAID;
+  friend class String2D;
+};
+
+class String2D : public Object2D
+{
+public:
+  void render (const glm::mat4 &) const;
+  void setup (const_FontPtr, const std::string &, float, 
+              float, float = 1.0f, String::align_t = String::SW);
+  void setup (const_FontPtr, const std::vector<std::string> &, 
+	      const std::vector<float> & = std::vector<float>{}, 
+	      const std::vector<float> & = std::vector<float>{}, 
+	      float = 1.0f, String::align_t = String::SW,  
+              const std::vector<float> & = std::vector<float>{});
+  void setup (const_FontPtr, const std::vector<std::string> &, 
+              const std::vector<float> &, const std::vector<float> &, 
+              float, const std::vector<String::align_t> &, const std::vector<float> &);
+  void setup (const_FontPtr, const std::vector<std::string> &, float, 
+              float, float = 1.0f, String::align_t = String::SW);
+  void setForegroundColor (const OptionColor & color)
+  {
+    str.setForegroundColor (color);
+  }
+  void setBackgroundColor (const OptionColor & color)
+  {
+    str.setBackgroundColor (color);
+  }
+
+  void update (const std::vector<std::string> & str)
+  {
+    this->str.update (str);
+  }
+
+  void update (const std::string & str)
+  {
+    this->str.update (str);
+  }
+
+  void setupVertexAttributes () const;
+
+  void setShared (bool p)
+  {
+    str.setShared (p);
+  }
+
+  void setChange (bool u)
+  {
+    str.setChange (u);
+  }
+
+  virtual void reSize (const View &) {}
+
+private:
+  String str;
 };
 
 }

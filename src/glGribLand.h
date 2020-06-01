@@ -10,7 +10,7 @@
 namespace glGrib
 {
 
-class Land : public Object
+class Land : public Object3D
 {
 public:
   void render (const View &, const OptionsLight &) const override;

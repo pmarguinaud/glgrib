@@ -19,15 +19,12 @@ public:
   void setup (const OptionsMapscale &);
   void setupVertexAttributes () const;
   void render (const glm::mat4 &, const View &) const;
-  void toggleHidden () { hidden = ! hidden; }
-  bool getHidden () const { return hidden; }
   const OptionsMapscale & getOptions () const { return opts; }
 private:
   OptionsMapscale opts;
   OpenGLVertexArray<Mapscale> VAID;
   OpenGLBufferPtr<unsigned int> elementbuffer;
   bool ready = false;
-  bool hidden = false;
   int nt;
   mutable String label;
   mutable std::string label_str;

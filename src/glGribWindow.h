@@ -166,7 +166,6 @@ public:
   void setMaster () { master = true; }
   void unsetMaster () { master = false; }
   void toggleMaster () { master = ! master; }
-  void toggleColorBar ();
   void setOptions (const OptionsWindow &);
   OptionsWindow getOptions () { return opts; }
   void startShell ()

@@ -8,7 +8,7 @@
 namespace glGrib
 {
 
-class World : public Object
+class World : public Object3D
 {
 public:
   virtual ~World () { }

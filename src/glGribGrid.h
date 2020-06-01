@@ -7,7 +7,7 @@
 namespace glGrib
 {
 
-class Grid : public Object
+class Grid : public Object3D
 {
 public:
   Grid () : VAID (this) {}

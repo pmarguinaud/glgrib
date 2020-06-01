@@ -231,7 +231,6 @@ else if ((key == GLFW_KEY_##k) && (Window::mm == mods)) \
       }
 
       glGribWindowIfKey (CONTROL, C     ,  Clone current window                                 , duplicate                ());
-      glGribWindowIfKey (ALT,     C     ,  Show/hide colorbar                                   , toggleColorBar           ());
       glGribWindowIfKey (CONTROL, P     ,  Try next projection                                  , nextProjection          ());
       glGribWindowIfKey (SHIFT,   P     ,  Try next transformation                              , toggleTransformType    ());
       glGribWindowIfKey (CONTROL, S     ,  Save current palette                                 , saveCurrentPalette     ());
@@ -280,11 +279,6 @@ void glGrib::Window::fixLandscape (float dy, float dx, float sy, float sx)
     o.lon2 -= 360.0f;
 
   scene.d.landscape.setPositionOptions (o);
-}
-
-void glGrib::Window::toggleColorBar ()
-{
-  scene.toggleColorBar ();
 }
 
 void glGrib::Window::showHelp () 

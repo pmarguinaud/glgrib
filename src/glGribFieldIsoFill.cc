@@ -361,7 +361,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
 
   {
-    unsigned char * color = new unsigned char[size];
+    T * color = new T[size];
 
 #pragma omp parallel for
     for (int i = 0; i < size; i++)
@@ -380,7 +380,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
               }
       }
 
-    d.colorbuffer  = glGrib::OpenGLBufferPtr<unsigned char> (size, color);
+    d.colorbuffer  = glGrib::OpenGLBufferPtr<T> (size, color);
     
     delete [] color;
   }

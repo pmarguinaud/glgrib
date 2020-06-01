@@ -29,8 +29,8 @@ void glGrib::FieldVector::scalar_t::setupVertexAttributes () const
 
   auto vattr = program->getAttributeLocation ("vertexVal");
   glEnableVertexAttribArray (vattr); 
-  glVertexAttribPointer (vattr, 1, GL_UNSIGNED_BYTE, GL_TRUE, 
-                         sizeof (unsigned char), nullptr); 
+  glVertexAttribPointer (vattr, 1, getOpenGLType<T> (), GL_TRUE, 
+                         sizeof (T), nullptr); 
 
   field->geometry->bindTriangles ();
 
@@ -54,8 +54,8 @@ void glGrib::FieldVector::vector_t::setupVertexAttributes () const
   field->d.buffer_n->bind (GL_ARRAY_BUFFER);
   auto nattr = program->getAttributeLocation ("vertexVal_n");
   glEnableVertexAttribArray (nattr); 
-  glVertexAttribPointer (nattr, 1, GL_UNSIGNED_BYTE, GL_TRUE, 
-                         sizeof (unsigned char), nullptr); 
+  glVertexAttribPointer (nattr, 1, getOpenGLType<T> (), GL_TRUE, 
+                         sizeof (T), nullptr); 
   glVertexAttribDivisor (nattr, 1);  
 
 
@@ -63,8 +63,8 @@ void glGrib::FieldVector::vector_t::setupVertexAttributes () const
   field->d.buffer_d->bind (GL_ARRAY_BUFFER);
   auto dattr = program->getAttributeLocation ("vertexVal_d");
   glEnableVertexAttribArray (dattr); 
-  glVertexAttribPointer (dattr, 1, GL_UNSIGNED_BYTE, GL_TRUE, 
-                         sizeof (unsigned char), nullptr); 
+  glVertexAttribPointer (dattr, 1, getOpenGLType<T> (), GL_TRUE, 
+                         sizeof (T), nullptr); 
   glVertexAttribDivisor (dattr, 1);  
 
   auto hattr = program->getAttributeLocation ("vertexHeight");
@@ -91,7 +91,7 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   glGrib::Loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
-  d.buffer_n = glGrib::OpenGLBufferPtr<unsigned char> (geometry->getNumberOfPoints ());
+  d.buffer_n = glGrib::OpenGLBufferPtr<T> (geometry->getNumberOfPoints ());
 
   {
     auto col_n = d.buffer_n->map ();
@@ -103,7 +103,7 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   loadHeight (d.buffer_n, ld);
 
-  d.buffer_d = glGrib::OpenGLBufferPtr<unsigned char> (geometry->getNumberOfPoints ());
+  d.buffer_d = glGrib::OpenGLBufferPtr<T> (geometry->getNumberOfPoints ());
 
   const int npts = opts.vector.density;
 

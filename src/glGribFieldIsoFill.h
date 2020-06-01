@@ -56,7 +56,7 @@ private:
     _d (FieldIsoFill * f) : VAID (f) {}
     // Triangles with a single color
     OpenGLVertexArray<FieldIsoFill> VAID;
-    OpenGLBufferPtr<unsigned char> colorbuffer;
+    OpenGLBufferPtr<T> colorbuffer;
 
     // Isoband
     std::vector<isoband_t> isoband;

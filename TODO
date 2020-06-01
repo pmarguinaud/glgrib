@@ -12,4 +12,6 @@ Valeurs admissibles pour une option
 
 hidden = option
 
+Build a list of 3D objects and a list of 2D Objects and iterate (glGribScene.cc);
+
 

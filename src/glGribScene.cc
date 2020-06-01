@@ -537,7 +537,10 @@ void glGrib::Scene::setMapScaleOptions (const glGrib::OptionsMapscale & o)
   clear (d.mapscale);
 
   if (d.opts.mapscale.on)
-    d.mapscale.setup (d.opts.mapscale);
+    {
+      d.mapscale.setup (d.opts.mapscale);
+      d.mapscale.reSize (d.view);
+    }
 
 }
 

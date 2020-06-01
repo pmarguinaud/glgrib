@@ -35,13 +35,6 @@ void glGrib::Mapscale::setupVertexAttributes () const
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 }
 
-void glGrib::Mapscale::clear ()
-{
-  if (ready)
-    VAID.clear ();
-  ready = false;
-}
-
 void glGrib::Mapscale::render (const glm::mat4 & MVP, const glGrib::View & view) const
 {
   if (! ready)

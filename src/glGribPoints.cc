@@ -7,15 +7,6 @@
 #include <stdlib.h>
 
 
-void glGrib::Points::clear ()
-{
-  if (isReady ())
-    {
-      VAID.clear ();
-      glGrib::Object::clear ();
-    }
-}
-
 void glGrib::Points::setupVertexAttributes () const
 {
   glGrib::Program * program = glGrib::Program::load ("POINTS");

@@ -58,10 +58,6 @@ private:
         VAID = s.VAID;
       return *this;
     }   
-    void clear ()
-    {   
-      VAID.clear (); 
-    }   
     void setupVertexAttributes () const;
     void render (const glGrib::View &, const glGrib::OptionsLight &) const;
     FieldVector * field;
@@ -78,8 +74,6 @@ private:
   } d;
   scalar_t scalar;
   vector_t vector;
-protected:
-  void clear () override;
 };
 
 

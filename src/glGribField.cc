@@ -134,15 +134,6 @@ void glGrib::Field::setupHilo (glGrib::FieldFloatBufferPtr data)
 
 }
 
-void glGrib::Field::clear ()
-{
-  values.clear ();
-  meta.clear ();
-  hilo.clear ();
-  frame.clear ();
-  glGrib::World::clear ();
-}
-
 void glGrib::Field::getUserPref (glGrib::OptionsField * opts, glGrib::Loader * ld, int slot)
 {
   glGrib::OptionsField opts_sql = *opts;
@@ -236,7 +227,6 @@ glGrib::Field * glGrib::Field::create (const glGrib::OptionsField & opts, float 
 
       if (fld != nullptr)
         {
-          fld->clear ();
           delete fld;
 	  fld = nullptr;
 	}

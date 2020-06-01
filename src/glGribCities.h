@@ -15,7 +15,6 @@ class Cities : public Points
 {
 public:
   void render (const View &, const OptionsLight &) const;
-  void clear ();
   void setup (const OptionsCities &);
   const OptionsCities & getOptions () const { return opts; }
   float getScale () const override { return opts.points.scale; }

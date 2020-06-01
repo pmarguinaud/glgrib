@@ -1,6 +1,7 @@
 #include "glGribScene.h"
 #include "glGribTrigonometry.h"
 #include "glGribOpenGL.h"
+#include "glGribClear.h"
 
 #include <stdio.h>
 #include <sys/time.h>
@@ -281,7 +282,7 @@ void glGrib::Scene::updateTitle ()
 	}
       if (strtitle != title)
         {
-          d.strtitle.clear ();
+          clear (d.strtitle);
           glGrib::FontPtr font = getGlGribFontPtr (d.opts.scene.title.font);
           d.strtitle.setup2D (font, title, d.opts.scene.title.x, 
                               d.opts.scene.title.y, d.opts.scene.title.font.scale, 
@@ -448,56 +449,56 @@ void glGrib::Scene::setViewOptions (const glGrib::OptionsView & o)
 
 void glGrib::Scene::setLandscapeOptions (const glGrib::OptionsLandscape & o)
 {
-  d.landscape.clear ();
+  clear (d.landscape);
   if (o.on)
     d.landscape.setup (&ld, o);
 }
 
 void glGrib::Scene::setLandOptions (const glGrib::OptionsLand & o)
 {
-  d.land.clear ();
+  clear (d.land);
   if (o.on)
     d.land.setup (o);
 }
 
 void glGrib::Scene::setGridOptions (const glGrib::OptionsGrid & o)
 {
-  d.grid.clear ();
+  clear (d.grid);
   if (o.on)
     d.grid.setup (o);
 }
 
 void glGrib::Scene::setTicksOptions (const glGrib::OptionsTicks & o)
 {
-  d.ticks.clear ();
+  clear (d.ticks);
   d.ticks.setup (o);
   d.ticks.reSize (d.view);
 }
 
 void glGrib::Scene::setCoastOptions (const glGrib::OptionsCoast & o)
 {
-  d.coast.clear ();
+  clear (d.coast);
   if (o.on)
     d.coast.setup (o);
 }
 
 void glGrib::Scene::setBorderOptions (const glGrib::OptionsBorder & o)
 {
-  d.border.clear ();
+  clear (d.border);
   if (o.on)
     d.border.setup (o);
 }
 
 void glGrib::Scene::setRiversOptions (const glGrib::OptionsRivers & o)
 {
-  d.rivers.clear ();
+  clear (d.rivers);
   if (o.on)
     d.rivers.setup (o);
 }
 
 void glGrib::Scene::setDepartementsOptions (const glGrib::OptionsDepartements & o)
 {
-  d.departements.clear ();
+  clear (d.departements);
   if (o.on)
     d.departements.setup (o);
 }
@@ -513,8 +514,8 @@ void glGrib::Scene::setFieldOptions (int j, const glGrib::OptionsField & o, floa
 void glGrib::Scene::setColorBarOptions (const glGrib::OptionsColorbar & o)
 {
   d.opts.colorbar = o;
-  d.strmess.clear ();
-  d.colorbar.clear ();
+  clear (d.strmess);
+  clear (d.colorbar);
 
   if (d.opts.colorbar.on)
     {
@@ -530,7 +531,7 @@ void glGrib::Scene::setColorBarOptions (const glGrib::OptionsColorbar & o)
 void glGrib::Scene::setMapScaleOptions (const glGrib::OptionsMapscale & o)
 {
   d.opts.mapscale = o;
-  d.mapscale.clear ();
+  clear (d.mapscale);
 
   if (d.opts.mapscale.on)
     d.mapscale.setup (d.opts.mapscale);
@@ -540,7 +541,7 @@ void glGrib::Scene::setMapScaleOptions (const glGrib::OptionsMapscale & o)
 void glGrib::Scene::setImageOptions (const glGrib::OptionsImage & o)
 {
   d.opts.scene.image = o;
-  d.image.clear ();
+  clear (d.image);
   if (d.opts.scene.image.on)
     d.image.setup (d.opts.scene.image);
 }
@@ -548,7 +549,7 @@ void glGrib::Scene::setImageOptions (const glGrib::OptionsImage & o)
 void glGrib::Scene::setTextOptions (const glGrib::OptionsText & o)
 {
   d.opts.scene.text = o;
-  d.str.clear ();
+  clear (d.str);
   if (d.opts.scene.text.on)
     {
       glGrib::FontPtr font = getGlGribFontPtr (d.opts.scene.text.font);
@@ -576,7 +577,7 @@ void glGrib::Scene::setTextOptions (const glGrib::OptionsText & o)
 void glGrib::Scene::setCitiesOptions (const glGrib::OptionsCities & o)
 {
   d.opts.cities = o;
-  d.cities.clear ();
+  clear (d.cities);
   if (d.opts.cities.on)
     d.cities.setup (o);
 }
@@ -584,7 +585,7 @@ void glGrib::Scene::setCitiesOptions (const glGrib::OptionsCities & o)
 void glGrib::Scene::setGeoPointsOptions (const glGrib::OptionsGeoPoints & o)
 {
   d.opts.geopoints = o;
-  d.geopoints.clear ();
+  clear (d.geopoints);
   if (d.opts.geopoints.on)
     d.geopoints.setup (o);
 }
@@ -611,7 +612,7 @@ void glGrib::Scene::setDateOptions (const glGrib::OptionsDate & o)
 {
   strdate = "";
   d.opts.scene.date = o;
-  d.strdate.clear ();
+  clear (d.strdate);
   if (d.opts.scene.date.on)
     {
       glGrib::FontPtr font = getGlGribFontPtr (d.opts.scene.date.font);
@@ -626,7 +627,7 @@ void glGrib::Scene::setTitleOptions (const glGrib::OptionsTitle & o)
 {
   strtitle = "";
   d.opts.scene.title = o;
-  d.strtitle.clear ();
+  clear (d.strtitle);
   if (d.opts.scene.title.on)
     {
     }

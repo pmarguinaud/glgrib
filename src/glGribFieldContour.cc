@@ -228,14 +228,6 @@ glGrib::FieldContour * glGrib::FieldContour::clone () const
   return fld;
 }
 
-void glGrib::FieldContour::clear ()
-{
-  if (isReady ()) 
-    for (auto & is : iso)
-      is.clear ();
-  glGrib::Field::clear ();
-}
-
 void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
   opts = o;

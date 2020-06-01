@@ -1,5 +1,6 @@
 #include "glGribString.h"
 #include "glGribTrigonometry.h"
+#include "glGribClear.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -8,7 +9,8 @@ glGrib::String & glGrib::String::operator= (const glGrib::String & str)
 {
   if (this != &str)
     {
-      clear ();
+      clear (this->d);
+      this->VAID.clear ();
       if (str.ready)
         {
           if (str.d.shared)
@@ -33,20 +35,6 @@ glGrib::String & glGrib::String::operator= (const glGrib::String & str)
         }
     }
   return *this;
-}
-
-
-
-void glGrib::String::clear ()
-{
-  if (ready)
-    VAID.clear ();
-  ready = false;
-}
-
-glGrib::String::~String ()
-{
-  clear ();
 }
 
 void glGrib::String::setup3D (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 

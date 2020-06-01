@@ -9,15 +9,6 @@
 #include <algorithm>
 
 template <int N>
-void glGrib::FieldScalar<N>::clear ()
-{
-  scalar.clear ();
-  points.clear ();
-  glGrib::Field::clear ();
-}
-
-
-template <int N>
 glGrib::FieldScalar<N> * glGrib::FieldScalar<N>::clone () const
 {
   glGrib::FieldScalar<N> * fld = new glGrib::FieldScalar<N> ();

@@ -316,16 +316,6 @@ const
     scalar.VAID.render (view, light);
 }
 
-void glGrib::FieldVector::clear ()
-{
-  if (isReady ())
-    {
-      vector.clear ();
-      scalar.clear ();
-    }
-  glGrib::Field::clear ();
-}
-
 void glGrib::FieldVector::reSample (const glGrib::View & view)
 {
   auto col_d = d.buffer_d->map ();

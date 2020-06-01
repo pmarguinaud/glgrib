@@ -13,7 +13,6 @@ public:
   Test () : VAID (this) {}
   void render (const View &, const OptionsLight &) const override;
   void setupVertexAttributes () const;
-  virtual void clear ();
   virtual void setup ();
   void reSize (const View &) override {}
   float getScale () const override { return 1; }

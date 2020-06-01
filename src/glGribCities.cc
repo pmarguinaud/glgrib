@@ -65,12 +65,6 @@ void glGrib::Cities::setup (const glGrib::OptionsCities & o)
 
 }
 
-void glGrib::Cities::clear ()
-{
-  glGrib::Points::clear ();
-  d.labels.clear ();
-}
-
 void glGrib::Cities::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
   glGrib::Points::render (view, light);

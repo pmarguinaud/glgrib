@@ -16,11 +16,6 @@ class Landscape : public World
 public:
   Landscape () : VAID (this) {}
   virtual void setup (Loader *, const OptionsLandscape &);
-  virtual void clear ()
-  {
-    VAID.clear ();
-    glGrib::World::clear ();
-  }
   void render (const View &, const OptionsLight &) const override;
   void setFlat (bool f) { d.opts.flat.on = f; }
   void toggleFlat () { d.opts.flat.on = ! d.opts.flat.on; }

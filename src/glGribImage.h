@@ -47,8 +47,6 @@ public:
   {
   }
 
-  void clear ();
-
   void setup (const OptionsImage &);
   void render (const glm::mat4 &) const;
   const OptionsImage & getOptions () const { return opts; }

@@ -111,7 +111,6 @@ public:
       n += val[i] * val[i];
     return sqrt (n);
   }
-  void clear () override;
   void reSize (const View &) override {}
   const std::vector<FieldMetadata> & getMeta () const
   {

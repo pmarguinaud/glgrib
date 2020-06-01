@@ -31,16 +31,6 @@ glGrib::FieldStream * glGrib::FieldStream::clone () const
   return fld;
 }
 
-void glGrib::FieldStream::clear ()
-{
-  if (isReady ()) 
-    {
-      for (auto & s : d.stream)
-        s.clear ();
-    }
-  glGrib::Field::clear ();
-}
-
 void glGrib::FieldStream::streamline_t::setupVertexAttributes () const
 {
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);

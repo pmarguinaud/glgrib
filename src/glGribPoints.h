@@ -20,7 +20,6 @@ public:
 
   Points () : VAID (this) { }
   void setupVertexAttributes () const;
-  virtual void clear ();
 
   void setup (const OptionsPoints &, const std::vector<float> &, const std::vector<float> &, const std::vector<float> &);
   void render (const View &, const OptionsLight &) const override;

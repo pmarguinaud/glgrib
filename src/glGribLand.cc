@@ -38,15 +38,6 @@ void glGrib::Land::render (const glGrib::View & view, const glGrib::OptionsLight
 
 }
 
-void glGrib::Land::clear ()
-{
-  if (isReady ())
-    for (auto l : layers)
-      l.clear ();
-  layers.clear ();
-  glGrib::Object::clear ();
-}
-
 void glGrib::Land::layer_t::triangulate 
     (std::vector<int> * _pos_offset, 
      std::vector<int> * _pos_length,

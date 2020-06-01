@@ -18,7 +18,6 @@ public:
   Colorbar () : VAID (this) {}
   void setup (const OptionsColorbar &);
   void setupVertexAttributes () const;
-  void clear ();
   Colorbar & operator= (const Colorbar &);
   void render (const glm::mat4 &) const;
   void toggleHidden () { hidden = ! hidden; }

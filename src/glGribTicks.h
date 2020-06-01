@@ -17,7 +17,6 @@ public:
   void render (const glm::mat4 &) const;
   void reSize (const View &);
   const OptionsTicks & getOptions () const { return opts; }
-  void clear ();
   void setReady ()
   {
     ready = true;
@@ -58,10 +57,6 @@ private:
       if (this != &it)
         VAID = it.VAID;
       return *this;
-    }
-    void clear ()
-    {
-      VAID.clear ();
     }
     void render (const glm::mat4 &) const;
     void setupVertexAttributes () const;

@@ -11,9 +11,8 @@ namespace glGrib
 class World : public Object
 {
 public:
-  virtual ~World () { clear (); }
+  virtual ~World () { }
   const_GeometryPtr getGeometry () const { return geometry; }
-  virtual void clear ();
 protected:
   const_GeometryPtr geometry;
 };

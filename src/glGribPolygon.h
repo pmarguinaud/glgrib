@@ -13,7 +13,6 @@ public:
   Polygon () : VAID (this) {}
   void setupVertexAttributes () const;
   void render (const View &, const OptionsLight &) const override;
-  virtual void clear ();
 protected:
   OpenGLBufferPtr<float> vertexbuffer;
   OpenGLBufferPtr<unsigned int> elementbuffer;

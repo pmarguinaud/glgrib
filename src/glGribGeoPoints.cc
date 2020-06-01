@@ -57,11 +57,6 @@ void glGrib::GeoPoints::setup (const glGrib::OptionsGeoPoints & o)
   glGrib::Points::setup (opts.points, lon, lat, val);
 }
 
-void glGrib::GeoPoints::clear ()
-{
-  glGrib::Points::clear ();
-}
-
 void glGrib::GeoPoints::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
   if (opts.time.on)

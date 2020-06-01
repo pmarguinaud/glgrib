@@ -14,7 +14,6 @@ class Land : public Object
 {
 public:
   void render (const View &, const OptionsLight &) const override;
-  virtual void clear ();
   virtual void setup (const OptionsLand &);
   void reSize (const View &) override {}
   float getScale () const override { return opts.layers[0].scale; }
@@ -27,10 +26,6 @@ private:
     layer_t (const layer_t & layer) : VAID (this)
     {
       d = layer.d;
-    }
-    void clear ()
-    {
-      VAID.clear ();
     }
     void triangulate (std::vector<int> *, std::vector<int> *,
                       std::vector<int> *, std::vector<int> *,

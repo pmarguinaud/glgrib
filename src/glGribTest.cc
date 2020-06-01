@@ -35,13 +35,6 @@ void glGrib::Test::setupVertexAttributes () const
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 }
 
-void glGrib::Test::clear ()
-{
-  if (isReady ())
-    VAID.clear ();
-  glGrib::Object::clear ();
-}
-
 void glGrib::Test::setup ()
 {
   return;

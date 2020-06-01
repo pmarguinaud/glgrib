@@ -61,14 +61,6 @@ void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
   setReady ();
 }
 
-void glGrib::Grid::clear ()
-{
-  if (isReady ()) 
-    VAID.clear ();
-  glGrib::Object::clear (); 
-  d.labels.clear ();
-}
-
 void glGrib::Grid::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
 {
   glGrib::Program * program = glGrib::Program::load ("GRID");

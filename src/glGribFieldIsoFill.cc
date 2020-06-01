@@ -19,17 +19,6 @@ glGrib::FieldIsoFill * glGrib::FieldIsoFill::clone () const
   return fld;
 }
 
-void glGrib::FieldIsoFill::clear ()
-{
-  if (isReady ()) 
-    {
-      d.VAID.clear ();
-      for (auto & ib : d.isoband)
-        ib.clear ();
-    }
-  glGrib::Field::clear ();
-}
-
 void glGrib::FieldIsoFill::isoband_t::setupVertexAttributes () const
 {
   glGrib::Program * program = glGrib::Program::load ("ISOFILL2");

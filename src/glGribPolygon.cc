@@ -21,9 +21,3 @@ void glGrib::Polygon::render (const glGrib::View & view, const glGrib::OptionsLi
   VAID.unbind ();
 }
 
-void glGrib::Polygon::clear ()
-{
-  if (isReady ())
-    VAID.clear ();
-  glGrib::Object::clear ();
-}

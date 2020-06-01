@@ -77,10 +77,8 @@ public:
   {
     d.color1 = color;
   }
-  ~String ();
   void update (const std::vector<std::string> &);
   void update (const std::string &);
-  void clear ();
   bool ready = false;
 
   void setupVertexAttributes () const;

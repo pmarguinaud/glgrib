@@ -25,7 +25,6 @@ public:
   }
 private:
   void setupMpiView (Loader *, const OptionsField &, float = 0);
-  void clear () override;
 
   class field_t
   {
@@ -36,10 +35,6 @@ private:
       if (this != &s)
         VAID = s.VAID;
       return *this;
-    }
-    void clear ()
-    {
-      VAID.clear ();
     }
     virtual void setupVertexAttributes () const = 0;
     virtual void render (const glGrib::View & view) const = 0;

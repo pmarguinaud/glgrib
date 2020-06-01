@@ -15,7 +15,6 @@ class GeoPoints : public Points
 {
 public:
   void render (const View &, const OptionsLight &) const;
-  void clear ();
   void setup (const OptionsGeoPoints &);
   void update ();
   const OptionsGeoPoints & getOptions () const { return opts; }

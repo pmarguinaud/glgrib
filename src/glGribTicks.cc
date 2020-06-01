@@ -1,6 +1,7 @@
 #include "glGribTicks.h"
 #include "glGribTrigonometry.h"
 #include "glGribProgram.h"
+#include "glGribClear.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -12,7 +13,7 @@ glGrib::Ticks & glGrib::Ticks::operator= (const glGrib::Ticks & other)
 {
   if ((this != &other) && other.isReady ())
     {
-      clear ();
+      clear (*this);
       opts = other.opts;
       ticks = other.ticks;
       frame = other.frame;
@@ -25,19 +26,6 @@ void glGrib::Ticks::setup (const glGrib::OptionsTicks & o)
 {
   opts = o;
   setReady ();
-}
-
-void glGrib::Ticks::clear ()
-{
-  labels.clear ();
-  if (isReady ())
-    {
-      ticks.clear ();
-      frame.clear ();
-    }
-  width = 0;
-  height = 0;
-  ready = false;
 }
 
 template <>
@@ -332,7 +320,7 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
 
   if (opts.labels.on)
     {
-      labels.clear ();
+      clear (labels);
       labels.setShared (false);
       labels.setChange (false);
 
@@ -346,7 +334,7 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
 
   if (opts.lines.on)
     {
-      ticks.clear ();
+      clear (*this);
 
       // Coordinates of ticks
       std::vector<glm::vec3> XYa (S.size ());

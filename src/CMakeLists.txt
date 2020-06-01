@@ -59,7 +59,6 @@ set (SRC
   glGribWindowDiffSet.cc
   glGribWindowOffscreen.cc
   glGribWindowSet.cc
-  glGribWorld.cc
   glGribGeoPoints.cc
 )
 

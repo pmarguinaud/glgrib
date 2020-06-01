@@ -24,7 +24,6 @@ public:
   {
     d.opts.scale = s;
   }
-  void clear ();
   float getScale () const override { return d.opts.scale; }
 
   void setupVertexAttributes () const 

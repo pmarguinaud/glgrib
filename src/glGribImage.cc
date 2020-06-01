@@ -5,12 +5,6 @@
 #include <stdlib.h>
 
 
-void glGrib::Image::clear ()
-{
-  if (ready)
-    VAID.clear ();
-}
-
 void glGrib::Image::setup (const glGrib::OptionsImage & o)
 {
   unsigned char * rgb;

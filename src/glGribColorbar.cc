@@ -1,12 +1,23 @@
 #include "glGribColorbar.h"
 #include "glGribShader.h"
+#include "glGribClear.h"
 
 
 glGrib::Colorbar & glGrib::Colorbar::operator= (const glGrib::Colorbar & colorbar)
 {
   if (this != &colorbar)
     {
-      clear ();
+// TODO :: arrange this
+      clear (opts);
+      clear (elementbuffer);
+      ready = false;
+      hidden = false;
+      nt = 0;
+      clear (rank2rgba);
+      clear (label);
+      clear (palette);
+      VAID.clear ();
+      
       if (colorbar.ready)
         setup (colorbar.opts);
     }
@@ -39,17 +50,6 @@ void glGrib::Colorbar::setup (const glGrib::OptionsColorbar & o)
 void glGrib::Colorbar::setupVertexAttributes () const
 {
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
-}
-
-void glGrib::Colorbar::clear ()
-{
-  if (ready)
-    {
-      VAID.clear ();
-      label.clear ();
-    }
-  palette = glGrib::Palette ();
-  ready = false;
 }
 
 void glGrib::Colorbar::createLabels (std::vector<float> & x, std::vector<float> & y, 
@@ -149,7 +149,7 @@ void glGrib::Colorbar::update (const glGrib::Palette & p)
 
   rank2rgba.resize (256);
 
-  label.clear ();
+  clear (label);
   
   const float min = palette.getMin (), max = palette.getMax ();
   

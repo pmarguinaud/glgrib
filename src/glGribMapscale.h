@@ -8,26 +8,28 @@
 #include "glGribOptions.h"
 #include "glGribProgram.h"
 #include "glGribView.h"
+#include "glGribObject.h"
 
 namespace glGrib
 {
 
-class Mapscale
+class Mapscale : public Object2D
 {
 public:
   Mapscale () : VAID (this) {}
   void setup (const OptionsMapscale &);
   void setupVertexAttributes () const;
-  void render (const glm::mat4 &, const View &) const;
+  void render (const glm::mat4 &) const override;
   const OptionsMapscale & getOptions () const { return opts; }
+  void reSize (const View &) override;
 private:
   OptionsMapscale opts;
   OpenGLVertexArray<Mapscale> VAID;
   OpenGLBufferPtr<unsigned int> elementbuffer;
-  bool ready = false;
   int nt;
-  mutable String2D label;
-  mutable std::string label_str;
+  String2D label;
+  std::string label_str;
+  double frac1;
 };
 
 

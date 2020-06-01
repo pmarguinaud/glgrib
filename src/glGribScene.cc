@@ -88,7 +88,7 @@ void glGrib::Scene::render () const
   else if (d.geopoints.isReady ())
     d.colorbar.render (d.MVP_L);
 
-  d.mapscale.render (d.MVP_L, d.view);
+  d.mapscale.render (d.MVP_L);
 
   d.strmess.render (d.MVP_R);
 
@@ -218,6 +218,7 @@ void glGrib::Scene::updateView ()
   d.view.setOptions (o);
 
   d.ticks.reSize (d.view);
+  d.mapscale.reSize (d.view);
 }
 
 void glGrib::Scene::updateInterpolation ()
@@ -415,6 +416,7 @@ void glGrib::Scene::reSize ()
   d.departements.reSize (d.view);
   d.grid.reSize (d.view);
   d.ticks.reSize (d.view);
+  d.mapscale.reSize (d.view);
   for (auto f : fieldlist)
     if (f)
       f->reSize (d.view);

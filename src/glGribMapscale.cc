@@ -23,11 +23,12 @@ void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
 
   glGrib::FontPtr font = getGlGribFontPtr (opts.font);
 
+  label.setChange (true);
   label.setup (font, std::string (15, ' '), opts.position.xmin, opts.position.ymax + 0.01, opts.font.scale, glGrib::String::SW);
   label.setForegroundColor (opts.font.color.foreground);
   label.setBackgroundColor (opts.font.color.background);
 
-  ready = true;
+  setReady ();
 }
 
 void glGrib::Mapscale::setupVertexAttributes () const
@@ -35,9 +36,9 @@ void glGrib::Mapscale::setupVertexAttributes () const
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 }
 
-void glGrib::Mapscale::render (const glm::mat4 & MVP, const glGrib::View & view) const
+void glGrib::Mapscale::reSize (const glGrib::View & view) 
 {
-  if (! ready)
+  if (! isReady ())
     return;
 
   const double a = 6371229.0;
@@ -45,7 +46,8 @@ void glGrib::Mapscale::render (const glm::mat4 & MVP, const glGrib::View & view)
   const double frac0 = 0.25;
   float dist0 = a * view.fracToDistAtNadir (frac0);
 
-  double frac1 = opts.position.xmax - opts.position.xmin;
+  frac1 = opts.position.xmax - opts.position.xmin;
+
   float dist1 = dist0 * frac1 / frac0;
 
   int ndigits = 0;
@@ -75,6 +77,13 @@ void glGrib::Mapscale::render (const glm::mat4 & MVP, const glGrib::View & view)
       label.update (str);
       label_str = str;
     }
+
+}
+
+void glGrib::Mapscale::render (const glm::mat4 & MVP) const
+{
+  if (! isReady ())
+    return;
 
   label.render (MVP);
 

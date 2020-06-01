@@ -1,10 +1,6 @@
 Try intel gpu tools
 Make a view below field and above ground, with XYZ movement
 Accessors for scene
-Better container than fieldlist
-Optimisations : 
-- use compressed lat/lon
-- reduce CPU usage
 
 Make ALL actions (window bindings) go through options.
 
@@ -14,11 +10,6 @@ Use glNamedBufferStorage instead of glBufferData
 
 Valeurs admissibles pour une option
 
-clear template
-
 hidden = option
 
-glGribPalette.cc:362 rgba_buffer->bind (GL_SHADER_STORAGE_BUFFER, 33);
 
-
-Arrange glGrib::Colorbar::operator=

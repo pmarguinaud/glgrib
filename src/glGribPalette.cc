@@ -357,9 +357,10 @@ void glGrib::Palette::computergba_255 ()
 
 void glGrib::Palette::set (glGrib::Program * program) const
 {
+#include "shaders/include/palette/buffer_index.h"
   program->set ("rgba_fixed", opts.fixed.on);
   program->set ("rgba_size", opts.ncolors);
-  rgba_buffer->bind (GL_SHADER_STORAGE_BUFFER, 33);
+  rgba_buffer->bind (GL_SHADER_STORAGE_BUFFER, palette_buffer_idx);
 }
 
 namespace glGrib

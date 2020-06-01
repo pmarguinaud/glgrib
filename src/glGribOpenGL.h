@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <memory>
 #include <iostream>
+#include <vector>
 
 
 namespace glGrib
@@ -46,6 +47,7 @@ private:
   };
 
 public:
+
   OpenGLBuffer (size_t size, const T * data = nullptr)
   {
     glGenBuffers (1, &id_);
@@ -96,6 +98,10 @@ public:
   OpenGLBufferPtr () = default;
   OpenGLBufferPtr (size_t size, const T * data = nullptr)
   : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(size, data))
+  {
+  }
+  OpenGLBufferPtr (const std::vector<T> & v)
+  : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(v.size (), v.data ()))
   {
   }
 };

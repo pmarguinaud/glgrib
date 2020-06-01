@@ -115,14 +115,10 @@ void glGrib::FieldContour::isoline_t::setup (const glGrib::OptionsField & opts,
 {
   d.level = _level;
 
-  d.vertexbuffer   = glGrib::OpenGLBufferPtr<float> 
-                     (data.lonlat.size (), data.lonlat.data ());
+  d.vertexbuffer   = glGrib::OpenGLBufferPtr<float> (data.lonlat);
   if (opts.geometry.height.on)
-    d.heightbuffer   = glGrib::OpenGLBufferPtr<float>
-                       (data.height.size (), data.height.data ());
-  
-  d.distancebuffer = glGrib::OpenGLBufferPtr<float>
-                     (data.length.size (), data.length.data ());
+    d.heightbuffer   = glGrib::OpenGLBufferPtr<float> (data.height);
+  d.distancebuffer = glGrib::OpenGLBufferPtr<float> (data.length);
   d.size = data.size () - 1;
   
   if (rank < opts.contour.widths.size ())

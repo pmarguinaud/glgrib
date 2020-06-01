@@ -380,8 +380,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
               }
       }
 
-    d.colorbuffer  = glGrib::OpenGLBufferPtr<unsigned char> 
-                     (size, color);
+    d.colorbuffer  = glGrib::OpenGLBufferPtr<unsigned char> (size, color);
     
     delete [] color;
   }
@@ -410,8 +409,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
 
       // Element buffer
-      d.isoband[i].d.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int>
-                                    (length_indice);
+      d.isoband[i].d.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (length_indice);
 
       {
         auto indice = d.isoband[i].d.elementbuffer->map ();
@@ -428,8 +426,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
 
       // Coordinate buffer
-      d.isoband[i].d.vertexbuffer  = glGrib::OpenGLBufferPtr<float>
-                                    (length_lonlat);
+      d.isoband[i].d.vertexbuffer  = glGrib::OpenGLBufferPtr<float> (length_lonlat);
 
       {
         auto lonlat = d.isoband[i].d.vertexbuffer->map ();

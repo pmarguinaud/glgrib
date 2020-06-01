@@ -932,7 +932,7 @@ void glGrib::GeometryGaussian::setupSSBO ()
 
   // jglooff
 
-  ssbo_jglo = glGrib::OpenGLBufferPtr<int> (jglooff.size (), jglooff.data ());
+  ssbo_jglo = glGrib::OpenGLBufferPtr<int> (jglooff);
 
   // Gaussian latitudes
  

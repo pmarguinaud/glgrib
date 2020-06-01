@@ -16,23 +16,15 @@ Use GLSL mix : x = (1-t) * a + t * b
 
 Use glNamedBufferStorage instead of glBufferData
 
-Make typed buffers ?
-
 Valeurs admissibles pour une option
 
 clear template
-make FieldScalar a template class ?
 
 hidden = option
 
-
-
-
-subclass shared_ptr for textures
+subclass shared_ptr for textures, fonts
 
 glGribPalette.cc:362 rgba_buffer->bind (GL_SHADER_STORAGE_BUFFER, 33);
-
-OpenGLBufferPtr constructor from vector
 
 unsigned char = byte, etc..
 

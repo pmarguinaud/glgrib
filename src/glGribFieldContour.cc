@@ -48,7 +48,7 @@ float getLabelAngle (const std::vector<float> & lonlat, const std::vector<float>
 void glGrib::FieldContour::isoline_t::setupLabels (const glGrib::OptionsField & opts, 
                                                    const isoline_data_t & iso_data)
 {
-  glGrib::FontPtr font = newGlgribFontPtr (opts.contour.labels.font);
+  glGrib::FontPtr font = getGlGribFontPtr (opts.contour.labels.font);
   char tmp[256];
 
   sprintf (tmp, opts.contour.labels.format.c_str (), d.level);
@@ -309,7 +309,7 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
     iso[i].setup (opts, levels[i], i, palette, iso_data[i]);
 
   if (opts.no_value_pointer.on)
-    values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
+    values.push_back (newGlgribFieldFloatBufferPtr (0));
   else
     values.push_back (data);
 

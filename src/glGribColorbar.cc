@@ -153,7 +153,7 @@ void glGrib::Colorbar::update (const glGrib::Palette & p)
   
   const float min = palette.getMin (), max = palette.getMax ();
   
-  glGrib::FontPtr font = newGlgribFontPtr (opts.font);
+  glGrib::FontPtr font = getGlGribFontPtr (opts.font);
   
   std::vector<std::string> str;
   std::vector<float> x, y;

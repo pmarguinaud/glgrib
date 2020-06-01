@@ -122,8 +122,8 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   if (opts.no_value_pointer.on)
     {
-      values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
-      values.push_back (newGlgribFieldFloatBufferPtr ((float*)nullptr));
+      values.push_back (newGlgribFieldFloatBufferPtr (0));
+      values.push_back (newGlgribFieldFloatBufferPtr (0));
     }
   else
     {

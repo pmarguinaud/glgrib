@@ -15,12 +15,12 @@ public:
   float & operator[] (int i) { return data_[i]; }
 private:
   float * data_ = nullptr;
+  size_t size_ = 0;
 };
 
 typedef std::shared_ptr<FieldFloatBuffer> FieldFloatBufferPtr;
 
 extern FieldFloatBufferPtr newGlgribFieldFloatBufferPtr (size_t);
-extern FieldFloatBufferPtr newGlgribFieldFloatBufferPtr (float *);
 
 
 }

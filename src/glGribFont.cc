@@ -15,7 +15,7 @@ cache_t cache;
 };
 
 
-glGrib::FontPtr glGrib::newGlgribFontPtr (const glGrib::OptionsFont & opts)
+glGrib::FontPtr glGrib::getGlGribFontPtr (const glGrib::OptionsFont & opts)
 {
   auto it = cache.find (opts.bitmap);
   glGrib::FontPtr font;

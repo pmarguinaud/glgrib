@@ -3,12 +3,9 @@
 
 glGrib::FieldFloatBuffer::FieldFloatBuffer (size_t size)
 {
-  data_ = new float[size];
-}
-
-glGrib::FieldFloatBuffer::FieldFloatBuffer (float * data)
-{
-  data_ = data;
+  if (size > 0)
+    data_ = new float[size];
+  size_ = size;
 }
 
 glGrib::FieldFloatBuffer::~FieldFloatBuffer ()
@@ -16,6 +13,7 @@ glGrib::FieldFloatBuffer::~FieldFloatBuffer ()
   if (data_)
     delete [] data_;
   data_ = nullptr;
+  size_ = 0;
 }
 
 glGrib::FieldFloatBufferPtr glGrib::newGlgribFieldFloatBufferPtr (size_t size)
@@ -23,7 +21,3 @@ glGrib::FieldFloatBufferPtr glGrib::newGlgribFieldFloatBufferPtr (size_t size)
   return std::make_shared<glGrib::FieldFloatBuffer>(size);
 }
 
-glGrib::FieldFloatBufferPtr glGrib::newGlgribFieldFloatBufferPtr (float * data)
-{
-  return std::make_shared<glGrib::FieldFloatBuffer>(data);
-}

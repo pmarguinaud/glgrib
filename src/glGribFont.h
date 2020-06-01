@@ -43,7 +43,7 @@ private:
 typedef std::shared_ptr<Font> FontPtr;
 typedef std::shared_ptr<const Font> const_FontPtr;
 
-FontPtr newGlgribFontPtr (const OptionsFont &);
+FontPtr getGlGribFontPtr (const OptionsFont &);
 
 
 }

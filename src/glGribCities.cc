@@ -55,7 +55,7 @@ void glGrib::Cities::setup (const glGrib::OptionsCities & o)
   d.labels.setShared (true);
   d.labels.setChange (false);
 
-  glGrib::FontPtr font = newGlgribFontPtr (opts.labels.font);
+  glGrib::FontPtr font = getGlGribFontPtr (opts.labels.font);
 
   d.labels.setup3D (font, Str, X, Y, Z, A,
                    opts.labels.font.scale, glGrib::String::C);

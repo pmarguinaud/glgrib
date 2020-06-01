@@ -14,7 +14,7 @@ void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
 
   if (d.opts.labels.on)
     {
-      glGrib::FontPtr font = newGlgribFontPtr (d.opts.labels.font);
+      glGrib::FontPtr font = getGlGribFontPtr (d.opts.labels.font);
       d.labels.setShared (true);
       d.labels.setChange (false);
 

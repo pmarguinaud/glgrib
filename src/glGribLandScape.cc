@@ -96,7 +96,7 @@ void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandsca
 
 #pragma omp parallel for
       for (int jglo = 0; jglo < size; jglo++)
-        height[jglo] = (*data)[jglo] == meta.valmis ? 0.0f : d.opts.geometry.height.scale * ((*data)[jglo]-meta.valmin) / (meta.valmax - meta.valmin);
+        height[jglo] = data[jglo] == meta.valmis ? 0.0f : d.opts.geometry.height.scale * ((*data)[jglo]-meta.valmin) / (meta.valmax - meta.valmin);
 
     }
 

@@ -424,7 +424,7 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --scene.title.on 
 ```
 ## Test travelling option                                            -- travelling
-![](share/test/travelling/TEST_0000.png)
+![](share/test/travelling/TEST.gif)
 
 ```
     --scene.travelling.on --scene.travelling.pos1.lon 0 
@@ -432,7 +432,8 @@ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, c
     --scene.travelling.pos2.lon 90 --scene.travelling.pos2.lat 45 
     --scene.travelling.pos2.fov 10 --landscape.on 
     --landscape.geometry_path share/data/t1198c2.2/Z.grb --field[0].path 
-    share/data/t1198c2.2/N.grb --field[0].scale 1.03 
+    share/data/t1198c2.2/N.grb --field[0].scale 1.03 --window.offscreen.on 
+    --window.offscreen.frames 72 
 ```
 ## Display vector norm & arrow, Lambert geometry                     -- vector
 ![](share/test/vector/TEST_0000.png)

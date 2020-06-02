@@ -20,7 +20,7 @@ void glGrib::WindowSet::handleMasterWindow ()
       }
   if (wl != nullptr)
     for (auto w : *this)
-      w->scene.setViewOptions (wl->scene.getViewOptions ());
+      w->getScene ().setViewOptions (wl->getScene ().getViewOptions ());
 }
 
 void glGrib::WindowSet::runShell (glGrib::Shell ** _shell)
@@ -31,7 +31,7 @@ void glGrib::WindowSet::runShell (glGrib::Shell ** _shell)
       if ((! shell) && (w->getStartShell ()))
         {
           shell = &glGrib::ShellRegular::getInstance ();
-          shell->setup (w->scene.getOptions ().shell);
+          shell->setup (w->getScene ().getOptions ().shell);
           shell->start (this);
         }
   
@@ -59,7 +59,7 @@ void glGrib::WindowSet::updateWindows ()
 {
   for (auto w : *this)
     {
-      glGrib::Field * f = w->scene.getCurrentField ();
+      glGrib::Field * f = w->getScene ().getCurrentField ();
 
       if (f == nullptr)
         continue;
@@ -76,12 +76,12 @@ void glGrib::WindowSet::updateWindows ()
       if (d == 0)
         continue;
 
-      int rank = w->scene.getCurrentFieldRank ();
+      int rank = w->getScene ().getCurrentFieldRank ();
       auto fopts = opts.field[rank];
 
       float slot = std::max (0.0f, std::min (float (f->getSlotMax ()-1), f->getSlot ()+d));
 
-      w->scene.setFieldOptions (rank, fopts, slot);
+      w->getScene ().setFieldOptions (rank, fopts, slot);
 
     }
 }

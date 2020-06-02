@@ -60,7 +60,7 @@ void glGrib::WindowReviewSet::updateWindows ()
   fopts.path[0] = cont->getFile () + "%" + ext;
 
   gwindow->makeCurrent ();
-  gwindow->scene.setFieldOptions (0, fopts);
+  gwindow->getScene ().setFieldOptions (0, fopts);
   
 }
 

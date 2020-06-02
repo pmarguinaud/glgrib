@@ -73,7 +73,7 @@ glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
 
   gwindow2->setOptions (opts2.window);
 
-  gwindow2->scene.setup (opts2);
+  gwindow2->setup (opts2);
 
   gwindow1->setMaster ();
 
@@ -139,10 +139,10 @@ void glGrib::WindowDiffSet::updateWindows ()
   
   // First window
   gwindow1->makeCurrent ();
-  gwindow1->scene.setFieldOptions (0, fopts1);
+  gwindow1->getScene ().setFieldOptions (0, fopts1);
   
   // Second window
   gwindow2->makeCurrent ();
-  gwindow2->scene.setFieldOptions (0, fopts2);
+  gwindow2->getScene ().setFieldOptions (0, fopts2);
 }
 

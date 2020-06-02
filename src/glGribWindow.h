@@ -37,10 +37,21 @@ public:
   virtual void run (class Shell * = nullptr);
   void makeCurrent () { glfwMakeContextCurrent (window); }
   void debug (unsigned int, unsigned int, GLuint, unsigned int, int, const char *);
-  int snapshot_cnt = 0;
-  Scene scene;
-  bool cursorpos = false;
-  GLFWwindow * window = nullptr;
+
+  void setup (const glGrib::Options & o)
+  {
+    scene.setup (o);
+  }
+  
+  Scene & getScene ()
+  {
+    return scene;
+  }
+
+  const Scene & getScene () const
+  {
+    return scene;
+  }
 
   void toggleCursorposDisplay ();
   void framebuffer              (const std::string & = "snapshot_%N.png");
@@ -198,7 +209,13 @@ public:
   void moveTo (int, int);
   void zoom (double, double);
   void zoomSchmidt (double, double);
+
 protected:
+  int snapshot_cnt = 0;
+  Scene scene;
+  bool cursorpos = false;
+  GLFWwindow * window = nullptr;
+
   void showHelpItem (const char *, const char *, const char *, const char *);
   void createGFLWwindow (GLFWwindow * = nullptr);
   bool closed = false;

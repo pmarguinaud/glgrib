@@ -39,6 +39,9 @@ std::vector<float> readNC (const netCDF::NcFile & nc, const std::string & name)
 
 void glGrib::GeoPoints::setup (const glGrib::OptionsGeoPoints & o)
 {
+  if (! o.on)
+    return;
+
   opts = o;
 
   netCDF::NcFile nc (opts.path, netCDF::NcFile::read);

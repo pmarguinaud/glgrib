@@ -24,6 +24,19 @@ glGrib::Ticks & glGrib::Ticks::operator= (const glGrib::Ticks & other)
 
 void glGrib::Ticks::setup (const glGrib::OptionsTicks & o)
 {
+  if (o.lines.on)
+    goto on;
+
+  if (o.frame.on)
+    goto on;
+
+  if (o.labels.on)
+    goto on;
+
+  return;
+
+on:
+
   opts = o;
   setReady ();
 }
@@ -91,7 +104,7 @@ void glGrib::Ticks::frame_t::render (const glm::mat4 & MVP) const
 
 void glGrib::Ticks::render (const glm::mat4 & MVP) const
 {
-  if (! ready)
+  if (! isReady ())
     return;
 
   if (opts.lines.on)
@@ -296,7 +309,7 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
   if ((! opts.labels.on) && (! opts.lines.on) && (! opts.frame.on))
     return;
 
-  if (! ready)
+  if (! isReady ())
     return;
 
   if ((vopts == view.getOptions ()) && 

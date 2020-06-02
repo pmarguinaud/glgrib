@@ -7,6 +7,9 @@
 
 void glGrib::Image::setup (const glGrib::OptionsImage & o)
 {
+  if (! o.on)
+    return;
+
   unsigned char * rgb;
   int w, h;
 

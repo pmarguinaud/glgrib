@@ -10,6 +10,9 @@
 
 void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
 {
+  if (! o.on)
+    return;
+
   d.opts = o;
 
   if (d.opts.labels.on)

@@ -18,6 +18,9 @@ glGrib::Colorbar & glGrib::Colorbar::operator= (const glGrib::Colorbar & colorba
 
 void glGrib::Colorbar::setup (const glGrib::OptionsColorbar & o)
 {
+  if (! o.on)
+    return;
+
   d.opts = o;
 
   d.nt = 2 * 256;

@@ -87,7 +87,6 @@ void glGrib::FieldStream::streamline_t::setup
 
 void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
-
   opts = o;
 
   d.time0 = getTime ();

@@ -2,6 +2,9 @@
 
 void glGrib::Border::setup (const glGrib::OptionsBorder & o)
 {
+  if (! o.on)
+    return;
+
   opts = o;
   std::vector<unsigned int> mask, code;
 

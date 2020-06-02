@@ -49,6 +49,9 @@ bool endsWith (const std::string & str, const std::string & end)
 
 void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandscape & o)
 {
+  if (! o.on)
+    return;
+
   d.opts = o;
 
   geometry = glGrib::Geometry::load (ld, d.opts.geometry_path, d.opts.geometry, 

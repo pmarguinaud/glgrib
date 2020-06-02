@@ -4,6 +4,9 @@
 
 void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
 {
+  if (! o.on)
+    return;
+
   opts = o;
 
   nt = 2 * 4;

@@ -10,6 +10,9 @@
 
 void glGrib::Cities::setup (const glGrib::OptionsCities & o)
 {
+  if (! o.on)
+    return;
+
   opts = o;
 
   std::vector<float> lon, lat, siz;

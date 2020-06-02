@@ -17,14 +17,6 @@ public:
   void render (const glm::mat4 &) const;
   void reSize (const View &) override;
   const OptionsTicks & getOptions () const { return opts; }
-  void setReady ()
-  {
-    ready = true;
-  }
-  bool isReady () const
-  {
-    return ready;
-  }
   Object2D::side_t getSide () const override { return Object2D::LEFT; }
 private:
   void createStr 
@@ -40,7 +32,6 @@ private:
   OptionsTicks opts;
   int width = 0, height = 0;
   OptionsView vopts;
-  bool ready = false;
 
   enum
   {

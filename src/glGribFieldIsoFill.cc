@@ -287,6 +287,7 @@ void processTriangle1 (std::vector<isoband_maker_t> * isomake,
 
 void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
+
   opts = o;
 
   glGrib::FieldMetadata meta1;

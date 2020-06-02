@@ -281,6 +281,9 @@ void glGrib::Land::layer_t::setup (const glGrib::OptionsLandLayer & opts)
 
 void glGrib::Land::setup (const glGrib::OptionsLand & o)
 {
+  if (! o.on)
+    return;
+
   opts = o;
 
   layers.resize (opts.layers.size ());

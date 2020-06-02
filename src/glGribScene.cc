@@ -81,6 +81,7 @@ void glGrib::Scene::render () const
   obj_list.push_back (&d.land);
 
 
+  // Sort 3D objects : render farther first
   std::sort (obj_list.begin (), obj_list.end (), 
              [] (const glGrib::Object3D * a, 
                  const glGrib::Object3D * b) 

@@ -14,7 +14,6 @@ void glGrib::Lines::setup (const glGrib::OptionsLines & o,
                           const std::vector<unsigned int> & mask, 
                           const std::vector<unsigned int> & code)
 {
-
   opts = o;
 
   std::vector <float> lonlat;

@@ -24,6 +24,7 @@
 #include "glGribTest.h"
 #include "glGribLand.h"
 #include "glGribLoader.h"
+#include "glGribClear.h"
 
 #include <set>
 
@@ -137,28 +138,71 @@ public:
 
   Loader ld;
 
+  template <typename T, typename O>
+  void setObjectOptions (T & object, const O & o)
+  {
+    clear (object);
+    object.setup (o);
+    object.reSize (d.view);
+  }
+
   void setViewOptions (const OptionsView &);
   void setLandscapeOptions (const OptionsLandscape &);
-  void setGridOptions (const OptionsGrid &);
-  void setTicksOptions (const OptionsTicks &);
-  void setLandOptions (const OptionsLand &);
-  void setGridColorOptions (const OptionColor &);
-  void setGridScaleOptions (float);
-  void setCoastOptions (const OptionsCoast &);
-  void setBorderOptions (const OptionsBorder &);
-  void setRiversOptions (const OptionsRivers &);
-  void setDepartementsOptions (const OptionsDepartements &);
+
+  void setGridOptions (const OptionsGrid & o)
+  {
+    setObjectOptions (d.grid, o);
+  }
+  void setTicksOptions (const OptionsTicks & o)
+  {
+    setObjectOptions (d.ticks, o);
+  }
+  void setLandOptions (const OptionsLand & o)
+  {
+    setObjectOptions (d.land, o);
+  }
+  void setCoastOptions (const OptionsCoast & o)
+  {
+    setObjectOptions (d.coast, o);
+  }
+  void setBorderOptions (const OptionsBorder & o)
+  {
+    setObjectOptions (d.border, o);
+  }
+  void setRiversOptions (const OptionsRivers & o)
+  {
+    setObjectOptions (d.rivers, o);
+  }
+  void setDepartementsOptions (const OptionsDepartements & o)
+  {
+    setObjectOptions (d.departements, o);
+  }
+  void setMapScaleOptions (const OptionsMapscale & o)
+  {
+    setObjectOptions (d.mapscale, o);
+  }
+  void setImageOptions (const OptionsImage & o)
+  {
+    setObjectOptions (d.image, o);
+  }
+  void setCitiesOptions (const OptionsCities & o)
+  {
+    setObjectOptions (d.cities, o);
+  }
+  void setGeoPointsOptions (const OptionsGeoPoints & o)
+  {
+    setObjectOptions (d.geopoints, o);
+  }
+
   void setFieldOptions (int, const OptionsField &, float = 0);
   void setFieldPaletteOptions (int, const OptionsPalette &);
+  void setGridColorOptions (const OptionColor &);
+  void setGridScaleOptions (float);
   void setColorBarOptions (const OptionsColorbar &);
-  void setMapScaleOptions (const OptionsMapscale &);
-  void setImageOptions (const OptionsImage &);
   void setTextOptions (const OptionsText &);
   void setDateOptions (const OptionsDate &);
   void setLightOptions (const OptionsLight &);
   void setSceneOptions (const OptionsScene &);
-  void setCitiesOptions (const OptionsCities &);
-  void setGeoPointsOptions (const OptionsGeoPoints &);
   void setTitleOptions (const OptionsTitle &);
 
   Options getOptions () const;

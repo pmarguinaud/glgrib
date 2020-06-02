@@ -340,7 +340,8 @@ void glGrib::Scene::setup (const glGrib::Options & o)
   setViewport (d.opts.window.width, d.opts.window.height);
   setViewOptions (d.opts.view);
   setLightOptions (d.opts.scene.light);
-  setImageOptions (d.opts.scene.image);
+
+  setObjectOptions (d.image, d.opts.scene.image);
 
   if (d.opts.scene.interpolation.on)
     {
@@ -383,8 +384,8 @@ void glGrib::Scene::setup (const glGrib::Options & o)
   setTextOptions (d.opts.scene.text);
   setCitiesOptions (d.opts.cities);
   setGeoPointsOptions (d.opts.geopoints);
-  setColorBarOptions (d.opts.colorbar);
   setMapScaleOptions (d.opts.mapscale);
+  setColorBarOptions (d.opts.colorbar);
 
   d.currentFieldRank = d.opts.scene.select.field;
 
@@ -458,63 +459,10 @@ void glGrib::Scene::setViewOptions (const glGrib::OptionsView & o)
   d.view.setup (o);
 }
 
-#ifdef UNDEF
-template <typename T>
-void glGrib::Scene::setObjectOptions (T & object, const glGrib::OptionsMapscale & o)
-{
-  clear (d.mapscale);
-  d.mapscale.setup (d.opts.mapscale);
-  d.mapscale.reSize (d.view);
-}
-#endif
-
 void glGrib::Scene::setLandscapeOptions (const glGrib::OptionsLandscape & o)
 {
   clear (d.landscape);
   d.landscape.setup (&ld, o);
-}
-
-void glGrib::Scene::setLandOptions (const glGrib::OptionsLand & o)
-{
-  clear (d.land);
-  d.land.setup (o);
-}
-
-void glGrib::Scene::setGridOptions (const glGrib::OptionsGrid & o)
-{
-  clear (d.grid);
-  d.grid.setup (o);
-}
-
-void glGrib::Scene::setTicksOptions (const glGrib::OptionsTicks & o)
-{
-  clear (d.ticks);
-  d.ticks.setup (o);
-  d.ticks.reSize (d.view);
-}
-
-void glGrib::Scene::setCoastOptions (const glGrib::OptionsCoast & o)
-{
-  clear (d.coast);
-  d.coast.setup (o);
-}
-
-void glGrib::Scene::setBorderOptions (const glGrib::OptionsBorder & o)
-{
-  clear (d.border);
-  d.border.setup (o);
-}
-
-void glGrib::Scene::setRiversOptions (const glGrib::OptionsRivers & o)
-{
-  clear (d.rivers);
-  d.rivers.setup (o);
-}
-
-void glGrib::Scene::setDepartementsOptions (const glGrib::OptionsDepartements & o)
-{
-  clear (d.departements);
-  d.departements.setup (o);
 }
 
 void glGrib::Scene::setFieldOptions (int j, const glGrib::OptionsField & o, float slot)
@@ -523,35 +471,6 @@ void glGrib::Scene::setFieldOptions (int j, const glGrib::OptionsField & o, floa
     delete fieldlist[j];
 
   fieldlist[j] = glGrib::Field::create (o, slot, &ld);
-}
-
-void glGrib::Scene::setMapScaleOptions (const glGrib::OptionsMapscale & o)
-{
-  d.opts.mapscale = o;
-  clear (d.mapscale);
-  d.mapscale.setup (d.opts.mapscale);
-  d.mapscale.reSize (d.view);
-}
-
-void glGrib::Scene::setImageOptions (const glGrib::OptionsImage & o)
-{
-  d.opts.scene.image = o;
-  clear (d.image);
-  d.image.setup (d.opts.scene.image);
-}
-
-void glGrib::Scene::setCitiesOptions (const glGrib::OptionsCities & o)
-{
-  d.opts.cities = o;
-  clear (d.cities);
-  d.cities.setup (o);
-}
-
-void glGrib::Scene::setGeoPointsOptions (const glGrib::OptionsGeoPoints & o)
-{
-  d.opts.geopoints = o;
-  clear (d.geopoints);
-  d.geopoints.setup (o);
 }
 
 void glGrib::Scene::setColorBarOptions (const glGrib::OptionsColorbar & o)

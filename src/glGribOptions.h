@@ -757,6 +757,7 @@ class OptionsField : public OptionsBase
 public:
   DEFINE
   {
+    DESC (visible.on,          Field is visible);
     DESC (type,                Field type : SCALAR VECTOR STREAM CONTOUR);
     DESC (user_pref.on,        Lookup field settings in database);
     DESC (path,                List of GRIB files);                    
@@ -777,6 +778,11 @@ public:
     DESC (fatal.on,        Fatal error if field fails to be created);
   }
   std::set<std::string> seen;
+
+  struct
+  {
+    bool on = true;
+  } visible;
 
   struct 
   {
@@ -841,6 +847,7 @@ class OptionsTicks : public OptionsBase
 public:
   DEFINE
   {
+    DESC (visible.on,              Ticks are visible);
     DESC (lines.on,                Display ticks);
     DESC (lines.color,             Tick color);
     DESC (lines.length,            Tick length);
@@ -857,6 +864,11 @@ public:
     INCLUDE (W);
     INCLUDE (E);
   }
+  struct
+  {
+    bool on = true;
+  } visible;
+
   struct 
   {
     bool on = false;
@@ -885,6 +897,7 @@ class OptionsGrid : public OptionsBase
 public:
   DEFINE
   {
+    DESC (visible.on,        Grid is visible);
     DESC (on,                Display grid);
     DESC (resolution,        Grid resolution);
     DESC (interval,          Interval between non dashed lines);
@@ -898,6 +911,11 @@ public:
     DESC (labels.angle,      Angle of labels);
     INCLUDE (labels.font);
   }
+
+  struct
+  {
+    bool on = true;
+  } visible;
   int resolution = 9;
   int points = 200;
   int interval = 2;
@@ -951,14 +969,20 @@ class OptionsLand : public OptionsBase
 public:
   DEFINE
   {
+    DESC (on, Enable land);
+    DESC (visible.on,  Land is visible);
     INCLUDE   (layers[0]);
     INCLUDE_H (layers[1]);
     INCLUDE_H (layers[2]);
     INCLUDE_H (layers[3]);
-    DESC (on, Enable land);
   }
   
   bool on = false;
+
+  struct
+  {
+    bool on = true;
+  } visible;
 
   std::vector<OptionsLandLayer> layers = 
   {
@@ -989,6 +1013,7 @@ public:
   DEFINE
   {
     DESC (on,                  Enable landscape);
+    DESC (visible.on,          Landscape is visible);
     DESC (projection,          Projection : LONLAT or WEBMERCATOR);
     DESC (flat.on,             Make Earth flat);
     DESC (path,                Path to landscape image in BMP format);
@@ -1000,6 +1025,11 @@ public:
     INCLUDE (lonlat.position);
     INCLUDE (geometry);
   }
+
+  struct
+  {
+    bool on = true;
+  } visible;
   string projection = "LONLAT";
   string path  = "landscape/Whole_world_-_land_and_oceans_08000.bmp";
   float  orography  = 0.05;
@@ -1030,6 +1060,7 @@ public:
   OptionsLines (const std::string & p, const string & f) : path (p), format (f) {}
   DEFINE
   {
+    DESC (visible.on,         Lines are visible);
     DESC (path,               Path to lines file);
     DESC (color,              Coastlines color);
     DESC (scale,              Coastlines scale);
@@ -1040,6 +1071,10 @@ public:
     DESC (lonmin,             Minimum longitude);
     DESC (lonmax,             Maximum longitude);
   }
+  struct
+  {
+    bool on = true;
+  } visible;
   std::string selector;
   string path;
   string format = "gshhg";
@@ -1468,12 +1503,17 @@ class OptionsPoints : public OptionsBase
 public:
   DEFINE 
   {
+    DESC (visible.on,  Points are visible);
     DESC (scale, Scale);
     DESC (size.variable.on, Enable variable point size);
     DESC (size.value, Point size);
     INCLUDE (palette);
     DESC (color, Point color);
   }
+  struct
+  {
+    bool on = true;
+  } visible;
   OptionsPalette palette = OptionsPalette ("none");
   OptionColor color;
   float scale = 1.0f;

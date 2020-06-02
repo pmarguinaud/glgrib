@@ -31,6 +31,10 @@ public:
   }
 
 private:
+  const bool & getVisibleRef () const override
+  {
+    return d.opts.visible.on;
+  }
   struct
   {
     String3D labels;

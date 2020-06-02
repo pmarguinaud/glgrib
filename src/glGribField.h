@@ -158,6 +158,13 @@ public:
 
   static void getUserPref (OptionsField *, Loader *, int);
 
+private:
+
+  const bool & getVisibleRef () const override
+  {  
+    return opts.visible.on;
+  }
+
   class frame_t
   {
   public:
@@ -181,13 +188,15 @@ public:
     OpenGLVertexArray<frame_t> VAID;
   };
 
+  String3D hilo;
+  frame_t frame;
+
+protected:
   float slot = 0.0f;
   Palette palette;
   mutable OptionsField opts;
   std::vector<FieldMetadata> meta;
   std::vector<FieldFloatBufferPtr> values;
-  String3D hilo;
-  frame_t frame;
 };
 
 template <int N>

@@ -16,7 +16,12 @@ public:
   virtual void setup ();
   void reSize (const View &) override {}
   float getScale () const override { return 1; }
-protected:
+private:
+  bool _visible = true;
+  const bool & getVisibleRef () const override
+  {
+    return _visible;
+  }
   OpenGLBufferPtr<float> vertexbuffer;
   OpenGLBufferPtr<unsigned int> elementbuffer;
   int numberOfPoints;

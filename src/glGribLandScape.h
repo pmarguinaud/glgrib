@@ -26,6 +26,10 @@ public:
   void setPositionOptions (const OptionsLandscapePosition & o) { d.opts.lonlat.position = o; }
   float getScale () const override { return d.opts.scale; }
 private:
+  const bool & getVisibleRef () const override
+  {
+    return d.opts.visible.on;
+  }
   struct
   {
     OptionsLandscape opts;

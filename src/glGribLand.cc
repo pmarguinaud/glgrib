@@ -39,21 +39,21 @@ void glGrib::Land::render (const glGrib::View & view, const glGrib::OptionsLight
 }
 
 void glGrib::Land::layer_t::triangulate 
-    (std::vector<int> * _pos_offset, 
-     std::vector<int> * _pos_length,
-     std::vector<int> * _ind_offset,
-     std::vector<int> * _ind_length,
+    (int_v * _pos_offset, 
+     int_v * _pos_length,
+     int_v * _ind_offset,
+     int_v * _ind_length,
      const std::vector<unsigned int> & indl,
      std::vector<float> * _lonlat,
-     std::vector<int> * _ord,
+     int_v * _ord,
      std::vector<unsigned int> * _ind)
 {
-  std::vector<int>   & pos_offset = *_pos_offset;
-  std::vector<int>   & pos_length = *_pos_length;
-  std::vector<int>   & ind_offset = *_ind_offset;
-  std::vector<int>   & ind_length = *_ind_length;
+  int_v   & pos_offset = *_pos_offset;
+  int_v   & pos_length = *_pos_length;
+  int_v   & ind_offset = *_ind_offset;
+  int_v   & ind_length = *_ind_length;
   std::vector<float> & lonlat     = *_lonlat    ;
-  std::vector<int>   & ord        = *_ord       ;
+  int_v   & ord        = *_ord       ;
   std::vector<unsigned int> & ind = *_ind       ;
 
   // Offset/length of each ring
@@ -133,10 +133,10 @@ void glGrib::Land::layer_t::triangulate
 }
 
 void glGrib::Land::layer_t::subdivide 
-   (const std::vector<int> & ind_offset,
-    const std::vector<int> & ind_length,
-    const std::vector<int> & pos_offset,
-    const std::vector<int> & pos_length,
+   (const int_v & ind_offset,
+    const int_v & ind_length,
+    const int_v & pos_offset,
+    const int_v & pos_length,
     std::vector<unsigned int> * _ind,
     std::vector<float> * _lonlat,
     const float angmax)
@@ -144,10 +144,10 @@ void glGrib::Land::layer_t::subdivide
   std::vector<unsigned int> & ind    = *_ind;
   std::vector<float>        & lonlat = *_lonlat;
 
-  std::vector<int> ind_offset_sub;
-  std::vector<int> ind_length_sub;
-  std::vector<int> pos_offset_sub;
-  std::vector<int> pos_length_sub;
+  int_v ind_offset_sub;
+  int_v ind_length_sub;
+  int_v pos_offset_sub;
+  int_v pos_length_sub;
 
   if (0)
     {
@@ -218,8 +218,8 @@ void glGrib::Land::layer_t::subdivide
     }
 
   // Count the number of triangles & plan merging
-  std::vector<int> pts_offset (n);
-  std::vector<int> tri_offset (n);
+  int_v pts_offset (n);
+  int_v tri_offset (n);
 
   pts_offset[0] = lonlat.size () / 2;
   tri_offset[0] = ind.size ();
@@ -253,10 +253,10 @@ void glGrib::Land::layer_t::setup (const glGrib::OptionsLandLayer & opts)
   glGrib::ShapeLib::read (lopts, &numberOfPoints, &numberOfLines, &lonlat, 
                          &indl, lopts.selector);
   
-  std::vector<int> pos_offset, pos_length;
-  std::vector<int> ord;
-  std::vector<int> ind_offset;
-  std::vector<int> ind_length;
+  int_v pos_offset, pos_length;
+  int_v ord;
+  int_v ind_offset;
+  int_v ind_length;
   std::vector<unsigned int> ind;
   
   triangulate (&pos_offset, &pos_length, &ind_offset, &ind_length,

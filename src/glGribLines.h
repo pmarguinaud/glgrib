@@ -17,6 +17,10 @@ public:
   void reSize (const View &) override {}
   const OptionsLines & getOptions () const { return opts; }
 private:
+  const bool & getVisibleRef () const override
+  {
+    return opts.visible.on;
+  }
   OptionsLines opts;
 };
 

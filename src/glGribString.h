@@ -90,6 +90,14 @@ private:
   }
 
 private:
+
+
+  bool _visible = true;
+  const bool & getVisibleRef () const 
+  {  
+    return _visible;
+  }
+
   struct 
   {
     bool shared = false;
@@ -162,6 +170,7 @@ public:
   void reSize (const View &) override {}
 
 private:
+
   String str;
 };
 
@@ -218,7 +227,16 @@ public:
     str.setScaleXYZ (s);
   }
 
+  void show () override {}
+  void hide () override {}
+
 private:
+
+  const bool & getVisibleRef () const override
+  {  
+    return str.getVisibleRef ();
+  }
+
   String str;
 };
 

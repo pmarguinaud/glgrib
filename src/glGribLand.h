@@ -13,11 +13,16 @@ namespace glGrib
 class Land : public Object3D
 {
 public:
+  using int_v = std::vector<int>;
   void render (const View &, const OptionsLight &) const override;
   virtual void setup (const OptionsLand &);
   void reSize (const View &) override {}
   float getScale () const override { return opts.layers[0].scale; }
 private:
+  const bool & getVisibleRef () const override
+  {
+    return opts.visible.on;
+  }
   OptionsLand opts;
   class layer_t
   {
@@ -27,13 +32,13 @@ private:
     {
       d = layer.d;
     }
-    void triangulate (std::vector<int> *, std::vector<int> *,
-                      std::vector<int> *, std::vector<int> *,
+    void triangulate (int_v *, int_v *,
+                      int_v *, int_v *,
                       const std::vector<unsigned int> &,
-                      std::vector<float> *, std::vector<int> *,
+                      std::vector<float> *, int_v *,
                       std::vector<unsigned int> *);
-    void subdivide (const std::vector<int> &, const std::vector<int> &,
-                    const std::vector<int> &, const std::vector<int> &,
+    void subdivide (const int_v &, const int_v &,
+                    const int_v &, const int_v &,
                     std::vector<unsigned int> *, std::vector<float> *,
                     const float);
     void setupVertexAttributes () const;

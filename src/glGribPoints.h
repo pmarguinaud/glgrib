@@ -33,6 +33,10 @@ public:
   }
 
 private:
+  const bool & getVisibleRef () const override
+  {
+    return d.opts.visible.on;
+  }
   struct
   {
     float min, max;

@@ -47,16 +47,16 @@ public:
   void snapshot                 (const std::string & = "snapshot_%N.png");
   void toggleFlat ()
   {
-    scene.d.landscape.toggleFlat ();
+    const auto & opts = scene.getLandscapeOptions ();
+    scene.setLandscapeFlatOption (! opts.flat.on);
   }
   void resetView ()
   {
     OptionsView o0;
-    const OptionsView & o = scene.d.view.getOptions ();
+    const OptionsView & o = scene.getViewOptions ();
     o0.projection     = o.projection;
     o0.transformation = o.transformation;
-    scene.d.view.setOptions (o0);
-    scene.reSize ();
+    scene.setViewOptions (o0);
   }
   void toggleRotate       () 
   { 
@@ -72,51 +72,51 @@ public:
   }
   void widen_fov           () 
   { 
-    OptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.getViewOptions ();
     o.fov += 1.; 
-    scene.d.view.setOptions (o);
+    scene.setViewOptions (o);
   }
   void shrinkFov          () 
   { 
-    OptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.getViewOptions ();
     o.fov -= 1.; 
-    scene.d.view.setOptions (o);
+    scene.setViewOptions (o);
   }
   void increaseRadius     () 
   { 
-    OptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.getViewOptions ();
     o.distance += 0.1; 
-    scene.d.view.setOptions (o);
+    scene.setViewOptions (o);
   }
   void decreaseRadius     () 
   { 
-    OptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.getViewOptions ();
     o.distance -= 0.1; 
-    scene.d.view.setOptions (o);
+    scene.setViewOptions (o);
   }
   void rotateNorth        () 
   { 
-    OptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.getViewOptions ();
     o.lat = o.lat + 5.; 
-    scene.d.view.setOptions (o);
+    scene.setViewOptions (o);
   }
   void rotateSouth        () 
   { 
-    OptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.getViewOptions ();
     o.lat = o.lat - 5.; 
-    scene.d.view.setOptions (o);
+    scene.setViewOptions (o);
   }
   void rotateWest         () 
   { 
-    OptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.getViewOptions ();
     o.lon = o.lon - 5.; 
-    scene.d.view.setOptions (o);
+    scene.setViewOptions (o);
   }
   void rotateEast         () 
   { 
-    OptionsView o = scene.d.view.getOptions ();
+    OptionsView o = scene.getViewOptions ();
     o.lon = o.lon + 5.; 
-    scene.d.view.setOptions (o);
+    scene.setViewOptions (o);
   }
   void toggleWireframe ();
 

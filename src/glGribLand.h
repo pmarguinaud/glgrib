@@ -18,6 +18,10 @@ public:
   virtual void setup (const OptionsLand &);
   void reSize (const View &) override {}
   float getScale () const override { return opts.layers[0].scale; }
+  const OptionsLand & getOptions () const
+  {
+    return opts;
+  }
 private:
   const bool & getVisibleRef () const override
   {

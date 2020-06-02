@@ -99,45 +99,6 @@ public:
   void reSize ();
   const OptionDate * getDate ();
 
-  std::vector<Field*> fieldlist;
-
-
-  class _data
-  {
-    public:
-      Options opts;
-      View view;
-      Landscape landscape;
-      Coast coast;
-      Border border;
-      Rivers rivers;
-      Grid grid;
-      Ticks ticks;
-      Departements departements;
-      Cities cities;
-      GeoPoints geopoints;
-      Test test;
-      Land land;
-    private:
-      Image image;
-      Colorbar colorbar;
-      Mapscale mapscale;
-      String2D strmess;
-      String2D strdate;
-      String2D strtitle;
-      std::vector<String2D> str;
-      int nupdate = 0;
-      int currentFieldRank = 0;
-      glm::mat4 MVP_R, MVP_L;
-      friend class Scene;
-  };
-  std::string strdate = "";
-  std::string strtitle = "";
-
-  _data d;
-
-  Loader ld;
-
   template <typename T, typename O>
   void setObjectOptions (T & object, const O & o)
   {
@@ -146,9 +107,44 @@ public:
     object.reSize (d.view);
   }
 
+  void hideAllFields ()
+  {
+    for (auto f : fieldlist)
+      if (f != nullptr)
+        f->hide ();
+  }
+  
+  void showAllFields ()
+  {
+    for (auto f : fieldlist)
+      if (f != nullptr)
+        f->show ();
+  }
+
+  const View & getView () const
+  {
+    return d.view;
+  }
+
+  View & getView () 
+  {
+    return d.view;
+  }
+
   void setViewOptions (const OptionsView &);
   void setLandscapeOptions (const OptionsLandscape &);
-
+  void setLandscapeWireFrameOption (bool wireframe)
+  {
+    d.landscape.setWireFrameOption (wireframe);
+  }
+  void setLandscapeFlatOption (bool flat)
+  {
+    d.landscape.setFlatOption (flat);
+  }
+  void setLandscapePositionOptions (const glGrib::OptionsLandscapePosition &o)
+  {
+    d.landscape.setPositionOptions (o);
+  }
   void setGridOptions (const OptionsGrid & o)
   {
     setObjectOptions (d.grid, o);
@@ -206,7 +202,110 @@ public:
   void setTitleOptions (const OptionsTitle &);
 
   Options getOptions () const;
-  const OptionsScene & getSceneOptions () const { return d.opts.scene; }
+
+  const OptionsScene & getSceneOptions () const 
+  { 
+    return d.opts.scene; 
+  }
+  const OptionsView & getViewOptions () const
+  {
+    return d.view.getOptions ();
+  }
+  const OptionsLandscape & getLandscapeOptions () const
+  {
+    return d.landscape.getOptions ();
+  }
+  const OptionsGrid & getGridOptions () const
+  {
+    return d.grid.getOptions ();
+  }
+  const OptionsTicks & getTicksOptions () const
+  {
+    return d.ticks.getOptions ();
+  }
+  const OptionsLand & getLandOptions () const
+  {
+    return d.land.getOptions ();
+  }
+  const OptionsCoast & getCoastOptions () const
+  {
+    return d.coast.getOptions ();
+  }
+  const OptionsBorder & getBorderOptions () const
+  {
+    return d.border.getOptions ();
+  }
+  const OptionsRivers & getRiversOptions () const
+  {
+    return d.rivers.getOptions ();
+  }
+  const OptionsDepartements & getDepartementsOptions () const
+  {
+    return d.departements.getOptions ();
+  }
+  const OptionsMapscale & getMapScaleOptions () const
+  {
+    return d.mapscale.getOptions ();
+  }
+  const OptionsImage & getImageOptions () const
+  {
+    return d.image.getOptions ();
+  }
+  const OptionsCities & getCitiesOptions () const
+  {
+    return d.cities.getOptions ();
+  }
+  const OptionsGeoPoints & getGeoPointsOptions () const
+  {
+    return d.geopoints.getOptions ();
+  }
+
+  const OptionColor & getGridColorOptions () const;
+  const OptionsColorbar & getColorBarOptions () const;
+  const OptionsText & getTextOptions () const;
+  const OptionsDate & getDateOptions () const;
+  const OptionsLight & getLightOptions () const;
+  const OptionsTitle & getTitleOptions () const;
+
+
+private:
+  std::vector<Field*> fieldlist;
+
+  class _data
+  {
+    public:
+      Options opts;
+      View view;
+      Landscape landscape;
+      Coast coast;
+      Border border;
+      Rivers rivers;
+      Grid grid;
+      Ticks ticks;
+      Departements departements;
+      Cities cities;
+      GeoPoints geopoints;
+      Test test;
+      Land land;
+    private:
+      Image image;
+      Colorbar colorbar;
+      Mapscale mapscale;
+      String2D strmess;
+      String2D strdate;
+      String2D strtitle;
+      std::vector<String2D> str;
+      int nupdate = 0;
+      int currentFieldRank = 0;
+      glm::mat4 MVP_R, MVP_L;
+      friend class Scene;
+  };
+  std::string strdate = "";
+  std::string strtitle = "";
+
+  _data d;
+
+  Loader ld;
 
 };
 

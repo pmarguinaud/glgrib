@@ -17,13 +17,21 @@ public:
   Landscape () : VAID (this) {}
   virtual void setup (Loader *, const OptionsLandscape &);
   void render (const View &, const OptionsLight &) const override;
-  void setFlat (bool f) { d.opts.flat.on = f; }
-  void toggleFlat () { d.opts.flat.on = ! d.opts.flat.on; }
   void setupVertexAttributes () const;
   void reSize (const View &) override {}
-  void toggleWireframe () { d.opts.wireframe.on = ! d.opts.wireframe.on; }
+  void setWireFrameOption (bool wireframe) 
+  { 
+    d.opts.wireframe.on = wireframe; 
+  }
   const OptionsLandscape & getOptions () const { return d.opts; }
-  void setPositionOptions (const OptionsLandscapePosition & o) { d.opts.lonlat.position = o; }
+  void setPositionOptions (const OptionsLandscapePosition & o) 
+  { 
+    d.opts.lonlat.position = o; 
+  }
+  void setFlatOption (bool flat) 
+  {
+    d.opts.flat.on = flat; 
+  }
   float getScale () const override { return d.opts.scale; }
 private:
   const bool & getVisibleRef () const override

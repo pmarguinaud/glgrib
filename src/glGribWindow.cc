@@ -251,7 +251,8 @@ void glGrib::Window::toggleWireframe ()
 
   if (f == nullptr)
     {
-      scene.d.landscape.toggleWireframe (); 
+      const auto & opts = scene.getLandscapeOptions ();
+      scene.setLandscapeWireFrameOption (! opts.wireframe.on); 
       return;
     }
 
@@ -261,7 +262,7 @@ void glGrib::Window::toggleWireframe ()
 
 void glGrib::Window::fixLandscape (float dy, float dx, float sy, float sx)
 {
-  glGrib::OptionsLandscapePosition o = scene.d.landscape.getOptions ().lonlat.position;
+  glGrib::OptionsLandscapePosition o = scene.getLandscapeOptions ().lonlat.position;
 
   o.lat1 += dy * 0.01;
   o.lat2 += dy * 0.01;
@@ -278,7 +279,7 @@ void glGrib::Window::fixLandscape (float dy, float dx, float sy, float sx)
   if (o.lon2 > 180.0f)
     o.lon2 -= 360.0f;
 
-  scene.d.landscape.setPositionOptions (o);
+  scene.setLandscapePositionOptions (o);
 }
 
 void glGrib::Window::showHelp () 
@@ -348,7 +349,7 @@ void glGrib::Window::resampleCurrentField ()
   if (v == nullptr)
     return;
 
-  v->reSample (scene.d.view);
+  v->reSample (scene.getView ());
 
 }
 
@@ -362,12 +363,12 @@ void glGrib::Window::saveCurrentPalette ()
 
 void glGrib::Window::toggleTransformType ()
 {
-  scene.d.view.toggleTransformType ();
+  scene.getView ().toggleTransformType ();
 }
 
 void glGrib::Window::nextProjection ()
 {
-  scene.d.view.nextProjection ();
+  scene.getView ().nextProjection ();
 }
 
 void glGrib::Window::duplicate ()
@@ -453,16 +454,12 @@ void glGrib::Window::toggleHideField ()
 
 void glGrib::Window::hideAllFields ()
 {
-  for (auto f : scene.fieldlist)
-    if (f != nullptr)
-      f->hide ();
+  scene.hideAllFields ();
 }
 
 void glGrib::Window::showAllFields ()
 {
-  for (auto f : scene.fieldlist)
-    if (f != nullptr)
-      f->show ();
+  scene.showAllFields ();
 }
 
 int glGrib::Window::getLatLonFromCursor (float * lat, float * lon)
@@ -472,7 +469,7 @@ int glGrib::Window::getLatLonFromCursor (float * lat, float * lon)
   glfwGetCursorPos (window, &xpos, &ypos);
   ypos = opts.height - ypos;
   
-  return scene.d.view.getLatLonFromScreenCoords (xpos, ypos, lat, lon);
+  return scene.getView ().getLatLonFromScreenCoords (xpos, ypos, lat, lon);
 }
 
 void glGrib::Window::snapshot (const std::string & format)
@@ -753,12 +750,12 @@ void glGrib::Window::centerLightAtCursorPos ()
 
 void glGrib::Window::centerViewAtCursorPos ()
 {
-  glGrib::OptionsView o = scene.d.view.getOptions ();
+  glGrib::OptionsView o = scene.getViewOptions ();
   if (getLatLonFromCursor (&o.lat, &o.lon))
     {
-      scene.d.view.setOptions (o);
+      scene.setViewOptions (o);
       float xpos, ypos;
-      scene.d.view.getScreenCoordsFromLatLon (&xpos, &ypos, o.lat, o.lon);
+      scene.getView ().getScreenCoordsFromLatLon (&xpos, &ypos, o.lat, o.lon);
       glfwSetCursorPos (window, xpos, ypos);
     }
 }
@@ -778,7 +775,7 @@ void glGrib::Window::zoom (double xoffset, double yoffset)
 {
   makeCurrent ();
 
-  glGrib::OptionsView o = scene.d.view.getOptions ();
+  glGrib::OptionsView o = scene.getViewOptions ();
 
   if (yoffset > 0)
     {
@@ -797,16 +794,14 @@ void glGrib::Window::zoom (double xoffset, double yoffset)
         o.fov = 0.1f;
     }
 
-  scene.d.view.setOptions (o);
-  scene.reSize ();
-
+  scene.setViewOptions (o);
 }
 
 void glGrib::Window::zoomSchmidt (double xoffset, double yoffset)
 {
   makeCurrent ();
 
-  glGrib::OptionsView o = scene.d.view.getOptions ();
+  glGrib::OptionsView o = scene.getViewOptions ();
 
   if (! o.zoom.on)
     {
@@ -822,9 +817,7 @@ void glGrib::Window::zoomSchmidt (double xoffset, double yoffset)
   else 
     o.zoom.stretch *= 0.99;
 
-  scene.d.view.setOptions (o);
-  scene.reSize ();
-
+  scene.setViewOptions (o);
 }
 
 void glGrib::Window::scroll (double xoffset, double yoffset)

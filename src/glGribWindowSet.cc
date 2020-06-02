@@ -20,7 +20,7 @@ void glGrib::WindowSet::handleMasterWindow ()
       }
   if (wl != nullptr)
     for (auto w : *this)
-      w->scene.d.view.setOptions (wl->scene.d.view.getOptions ());
+      w->scene.setViewOptions (wl->scene.getViewOptions ());
 }
 
 void glGrib::WindowSet::runShell (glGrib::Shell ** _shell)

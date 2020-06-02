@@ -446,6 +446,7 @@ glGrib::Options glGrib::Scene::getOptions () const
   o.cities         = d.cities.getOptions ();
   o.geopoints      = d.geopoints.getOptions ();
   o.mapscale       = d.mapscale.getOptions ();
+  o.land           = d.land.getOptions ();
 
   for (size_t i = 0; i < fieldlist.size (); i++)
     if (fieldlist[i] != nullptr)
@@ -457,6 +458,7 @@ glGrib::Options glGrib::Scene::getOptions () const
 void glGrib::Scene::setViewOptions (const glGrib::OptionsView & o)
 {
   d.view.setup (o);
+  reSize ();
 }
 
 void glGrib::Scene::setLandscapeOptions (const glGrib::OptionsLandscape & o)

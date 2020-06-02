@@ -22,6 +22,7 @@ public:
   void render (const glm::mat4 &) const override;
   const OptionsMapscale & getOptions () const { return opts; }
   void reSize (const View &) override;
+  Object2D::side_t getSide () const override { return Object2D::LEFT; }
 private:
   OptionsMapscale opts;
   OpenGLVertexArray<Mapscale> VAID;

@@ -23,6 +23,7 @@ public:
   const OptionsColorbar & getOptions () const { return d.opts; }
   void update (const Palette &);
   void reSize (const View &) override {}
+  Object2D::side_t getSide () const override { return Object2D::LEFT; }
 private:
   void createLabels (std::vector<float> &, std::vector<float> &, 
                      std::vector<std::string> &, const std::vector<float> &, const bool);

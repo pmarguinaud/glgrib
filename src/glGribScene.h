@@ -40,7 +40,8 @@ public:
   virtual ~Scene ();
   void setup (const Options &);
   void render () const;
-  void renderObject3D (const Object3D *) const;
+  void render (const Object3D *) const;
+  void render (const Object2D *) const;
 
   int getCurrentFieldRank () const
   {

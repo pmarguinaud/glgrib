@@ -37,11 +37,11 @@ glGrib::String & glGrib::String::operator= (const glGrib::String & str)
   return *this;
 }
 
-void glGrib::String::setup (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
-                            const std::vector<float> & _x, const std::vector<float> & _y, 
-                            float s, const std::vector<align_t> & _align,
-                            const std::vector<float> & _X, const std::vector<float> & _Y,
-                            const std::vector<float> & _Z, const std::vector<float> & _A)
+void glGrib::String::setup (glGrib::const_FontPtr ff, const string_v & str, 
+                            const float_v & _x, const float_v & _y, 
+                            float s, const align_v & _align,
+                            const float_v & _X, const float_v & _Y,
+                            const float_v & _Z, const float_v & _A)
 {
   d.data = str;
   d.x = _x;
@@ -54,7 +54,7 @@ void glGrib::String::setup (glGrib::const_FontPtr ff, const std::vector<std::str
   for (size_t i = 0; i < d.data.size (); i++)
     d.len += d.data[i].size ();
 
-  std::vector<float> xy, let, xyz;
+  float_v xy, let, xyz;
   xy.reserve (4 * d.len);
   let.reserve (d.len);
   xyz.reserve (4 * d.len);
@@ -195,10 +195,10 @@ void glGrib::String::setupVertexAttributes () const
 
 void glGrib::String::update (const std::string & str)
 {
-  update (std::vector<std::string>{str});
+  update (string_v{str});
 }
 
-void glGrib::String::update (const std::vector<std::string> & str)
+void glGrib::String::update (const string_v & str)
 {
   if (! d.ready)
     throw std::runtime_error (std::string ("Cannot set update string"));
@@ -255,55 +255,55 @@ void glGrib::String2D::render (const glm::mat4 & MVP) const
   str.VAID.unbind ();
 }
 
-void glGrib::String2D::setup (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
+void glGrib::String2D::setup (glGrib::const_FontPtr ff, const string_v & str, 
                               float x, float y, float s, String::align_t align)
 {
-  this->str.setup (ff, str, std::vector<float>{x}, std::vector<float>{y}, s, std::vector<String::align_t>{align});
+  this->str.setup (ff, str, float_v{x}, float_v{y}, s, align_v{align});
   setReady ();
 }
 
-void glGrib::String2D::setup (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
-                              const std::vector<float> & x, const std::vector<float> & y, 
+void glGrib::String2D::setup (glGrib::const_FontPtr ff, const string_v & str, 
+                              const float_v & x, const float_v & y, 
                               float s, String::align_t align,
-                              const std::vector<float> & a)
+                              const float_v & a)
 {
-  this->str.setup (ff, str, x, y, s, std::vector<String::align_t>{align},
-         std::vector<float>{}, std::vector<float>{}, std::vector<float>{}, a);
+  this->str.setup (ff, str, x, y, s, align_v{align},
+         float_v{}, float_v{}, float_v{}, a);
   setReady ();
 }
 
-void glGrib::String2D::setup (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
-                              const std::vector<float> & x, const std::vector<float> & y, 
-                              float s, const std::vector<String::align_t> & align,
-                              const std::vector<float> & a)
+void glGrib::String2D::setup (glGrib::const_FontPtr ff, const string_v & str, 
+                              const float_v & x, const float_v & y, 
+                              float s, const align_v & align,
+                              const float_v & a)
 {
   this->str.setup (ff, str, x, y, s, align, 
-         std::vector<float>{}, std::vector<float>{}, std::vector<float>{}, a);
+         float_v{}, float_v{}, float_v{}, a);
   setReady ();
 }
 
 void glGrib::String2D::setup (glGrib::const_FontPtr ff, const std::string & str, 
                               float x, float y, float s, String::align_t align)
 {
-  std::vector<std::string> _str = {str};
-  std::vector<float>       _x   = {x};
-  std::vector<float>       _y   = {y};
-  this->str.setup (ff, _str, _x, _y, s, std::vector<String::align_t>{align});
+  string_v _str = {str};
+  float_v       _x   = {x};
+  float_v       _y   = {y};
+  this->str.setup (ff, _str, _x, _y, s, align_v{align});
   setReady ();
 }
 
-void glGrib::String3D::setup (glGrib::const_FontPtr ff, const std::vector<std::string> & str, 
-	                      const std::vector<float> & _X, const std::vector<float> & _Y,
-	                      const std::vector<float> & _Z, const std::vector<float> & _A,
+void glGrib::String3D::setup (glGrib::const_FontPtr ff, const string_v & str, 
+	                      const float_v & _X, const float_v & _Y,
+	                      const float_v & _Z, const float_v & _A,
 	                      float s, String::align_t _align)
 {
-  std::vector<float> _x, _y;
+  float_v _x, _y;
   for (size_t i = 0; i < str.size (); i++)
     {
       _x.push_back (0.0f);
       _y.push_back (0.0f);
     }
-  this->str.setup (ff, str, _x, _y, s, std::vector<String::align_t>{_align}, _X, _Y, _Z, _A);
+  this->str.setup (ff, str, _x, _y, s, align_v{_align}, _X, _Y, _Z, _A);
   setReady ();
 }
 

@@ -54,6 +54,8 @@ public:
   void reSize (const View &) override
   {
   }
+
+  Object2D::side_t getSide () const override { return Object2D::LEFT; }
 private:
   OptionsImage opts;
   OpenGLTexturePtr texture;

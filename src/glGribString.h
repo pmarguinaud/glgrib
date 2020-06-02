@@ -17,12 +17,17 @@ namespace glGrib
 class String 
 {
 public:
+
+  using float_v  = std::vector<float>;
+  using string_v = std::vector<std::string>;
+
   static const int CX = 0x01;
   static const int WX = 0x00;
   static const int EX = 0x02;
   static const int CY = 0x01 << 8;
   static const int NY = 0x02 << 8;
   static const int SY = 0x00 << 8;
+
   typedef enum
     {
       C   = CY | CX, N   = NY | CX, S   = SY | CX, 
@@ -30,6 +35,8 @@ public:
       SE  = SY | EX, NW  = NY | WX, SW  = SY | WX,
     }
   align_t;
+
+  using align_v  = std::vector<align_t>;
 
   static align_t str2align (const std::string & str)
   {
@@ -51,11 +58,11 @@ private:
     *this = str;
   }
 
-  void setup (const_FontPtr, const std::vector<std::string> &, 
-              const std::vector<float> &, const std::vector<float> &, 
-              float = 1.0f, const std::vector<align_t> & = std::vector<align_t>{SW},
-              const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
-              const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{});
+  void setup (const_FontPtr, const string_v &, 
+              const float_v &, const float_v &, 
+              float = 1.0f, const align_v & = align_v{SW},
+              const float_v & = float_v{}, const float_v & = float_v{},
+              const float_v & = float_v{}, const float_v & = float_v{});
 
 
   void setForegroundColor (const OptionColor & color)
@@ -66,7 +73,7 @@ private:
   {
     d.color1 = color;
   }
-  void update (const std::vector<std::string> &);
+  void update (const string_v &);
   void update (const std::string &);
 
 
@@ -103,10 +110,10 @@ private:
     bool shared = false;
     bool change = true;
     bool ready = false;
-    std::vector<std::string> data;
-    std::vector<float> x, y;       // Position of letters vertices
-    std::vector<float> X, Y, Z, A; // Position & angle of each letter on the sphere
-    std::vector<align_t> align;
+    string_v data;
+    float_v x, y;       // Position of letters vertices
+    float_v X, Y, Z, A; // Position & angle of each letter on the sphere
+    align_v align;
     OptionColor color0 = OptionColor (255, 255, 255, 255);
     OptionColor color1 = OptionColor (  0,   0,   0,   0);
     float scale;
@@ -123,18 +130,22 @@ private:
 class String2D : public Object2D
 {
 public:
+  using float_v  = String::float_v;
+  using string_v = String::string_v;
+  using align_v  = String::align_v;
+
   void render (const glm::mat4 &) const override;
   void setup (const_FontPtr, const std::string &, float, 
               float, float = 1.0f, String::align_t = String::SW);
-  void setup (const_FontPtr, const std::vector<std::string> &, 
-	      const std::vector<float> & = std::vector<float>{}, 
-	      const std::vector<float> & = std::vector<float>{}, 
+  void setup (const_FontPtr, const string_v &, 
+	      const float_v & = float_v{}, 
+	      const float_v & = float_v{}, 
 	      float = 1.0f, String::align_t = String::SW,  
-              const std::vector<float> & = std::vector<float>{});
-  void setup (const_FontPtr, const std::vector<std::string> &, 
-              const std::vector<float> &, const std::vector<float> &, 
-              float, const std::vector<String::align_t> &, const std::vector<float> &);
-  void setup (const_FontPtr, const std::vector<std::string> &, float, 
+              const float_v & = float_v{});
+  void setup (const_FontPtr, const string_v &, 
+              const float_v &, const float_v &, 
+              float, const align_v &, const float_v &);
+  void setup (const_FontPtr, const string_v &, float, 
               float, float = 1.0f, String::align_t = String::SW);
 
   void setForegroundColor (const OptionColor & color)
@@ -147,7 +158,7 @@ public:
     str.setBackgroundColor (color);
   }
 
-  void update (const std::vector<std::string> & str)
+  void update (const string_v & str)
   {
     this->str.update (str);
   }
@@ -169,20 +180,26 @@ public:
 
   void reSize (const View &) override {}
 
-private:
+  Object2D::side_t getSide () const override { return side; }
+  void setSide (Object2D::side_t s) { side = s; }
 
+private:
+  Object2D::side_t side = Object2D::LEFT;
   String str;
 };
 
 class String3D : public Object3D
 {
 public:
+  using float_v  = String::float_v;
+  using string_v = String::string_v;
+  using align_v  = String::align_v;
 
   void render (const View &, const OptionsLight &) const;
 
-  void setup (const_FontPtr, const std::vector<std::string> &, 
-	      const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
-	      const std::vector<float> & = std::vector<float>{}, const std::vector<float> & = std::vector<float>{},
+  void setup (const_FontPtr, const string_v &, 
+	      const float_v & = float_v{}, const float_v & = float_v{},
+	      const float_v & = float_v{}, const float_v & = float_v{},
 	      float = 1.0f, String::align_t = String::SW);
 
   void setForegroundColor (const OptionColor & color)
@@ -195,7 +212,7 @@ public:
     str.setBackgroundColor (color);
   }
 
-  void update (const std::vector<std::string> & str)
+  void update (const string_v & str)
   {
     this->str.update (str);
   }

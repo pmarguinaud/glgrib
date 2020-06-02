@@ -36,7 +36,7 @@ glGrib::Scene::~Scene ()
       delete f;
 }
 
-void glGrib::Scene::renderObject3D (const glGrib::Object3D * obj) const
+void glGrib::Scene::render (const glGrib::Object3D * obj) const
 {
   if (obj == nullptr)
     return;
@@ -45,6 +45,15 @@ void glGrib::Scene::renderObject3D (const glGrib::Object3D * obj) const
   if (! obj->visible ())
     return;
   obj->render (d.view, d.opts.scene.light);
+}
+
+void glGrib::Scene::render (const glGrib::Object2D * obj) const
+{
+  if (obj == nullptr)
+    return;
+  if (! obj->isReady ())
+    return;
+  obj->render (obj->getSide () == Object2D::LEFT ? d.MVP_L : d.MVP_R);
 }
 
 void glGrib::Scene::render () const
@@ -79,29 +88,27 @@ void glGrib::Scene::render () const
 
 
   for (auto obj : obj_list)
-    renderObject3D (obj);
+    render (obj);
 
-  d.image.render (d.MVP_L);
+  render (&d.image);
 
   if (getFieldColorbar ())
-    d.colorbar.render (d.MVP_L);
+    render (&d.colorbar);
   else if (d.geopoints.isReady ())
-    d.colorbar.render (d.MVP_L);
+    render (&d.colorbar);
 
-  d.mapscale.render (d.MVP_L);
+  render (&d.mapscale);
 
-  d.strmess.render (d.MVP_R);
+  render (&d.strmess);
 
-  if (d.opts.scene.date.on)
-    d.strdate.render (d.MVP_R);
+  render (&d.strdate);
 
-  if (d.opts.scene.title.on)
-    d.strtitle.render (d.MVP_L);
+  render (&d.strtitle);
 
-  d.ticks.render (d.MVP_L);
+  render (&d.ticks);
 
-  for (auto str : d.str)
-    str.render (d.MVP_R);
+  for (auto & str : d.str)
+    render (&str);
 
 }
 
@@ -526,6 +533,7 @@ void glGrib::Scene::setColorBarOptions (const glGrib::OptionsColorbar & o)
       d.strmess.setup (font, std::string (30, ' '), 1.0f, 1.0f, 
                        d.opts.colorbar.font.scale, glGrib::String::NE);
       d.strmess.setForegroundColor (d.opts.colorbar.font.color.foreground);
+      d.strmess.setSide (Object2D::RIGHT);
       d.colorbar.setup (d.opts.colorbar);
       updateColorbar ();
     }
@@ -576,6 +584,7 @@ void glGrib::Scene::setTextOptions (const glGrib::OptionsText & o)
                           d.opts.scene.text.y[i], d.opts.scene.text.font.scale, a);
           d.str[i].setForegroundColor (d.opts.scene.text.font.color.foreground);
           d.str[i].setBackgroundColor (d.opts.scene.text.font.color.background);
+          d.str[i].setSide (Object2D::RIGHT);
         }
     }
 }
@@ -624,6 +633,7 @@ void glGrib::Scene::setDateOptions (const glGrib::OptionsDate & o)
       glGrib::FontPtr font = getGlGribFontPtr (d.opts.scene.date.font);
       d.strdate.setup (font, std::string (20, ' '), 1.0f, 0.0f, 
                        d.opts.scene.date.font.scale, glGrib::String::SE);
+      d.strdate.setSide (Object2D::RIGHT);
       d.strdate.setForegroundColor (d.opts.scene.date.font.color.foreground);
       d.strdate.setBackgroundColor (d.opts.scene.date.font.color.background);
     }

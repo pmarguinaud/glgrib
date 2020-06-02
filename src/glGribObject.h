@@ -21,7 +21,13 @@ private:
 class Object2D : public Object
 {
 public:
+  typedef enum
+  {
+    LEFT=0,
+    RIGHT=1
+  } side_t;
   virtual void render (const glm::mat4 &) const = 0;
+  virtual side_t getSide () const = 0;
 };
 
 class Object3D : public Object

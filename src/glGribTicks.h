@@ -25,6 +25,7 @@ public:
   {
     return ready;
   }
+  Object2D::side_t getSide () const override { return Object2D::LEFT; }
 private:
   void createStr 
     (const OptionsTicksSide &,

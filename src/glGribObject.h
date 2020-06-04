@@ -14,6 +14,7 @@ public:
   bool isReady () const { return ready_; }
   void setReady () { ready_ = true; }
   virtual void reSize (const View &) = 0;
+  virtual ~Object () {}
 private:
   bool ready_ = false;
 };

@@ -14,7 +14,8 @@ void glGrib::glInit ()
   glEnable (GL_MULTISAMPLE);
 }
   
-glGrib::OpenGLTexture::OpenGLTexture (int width, int height, const void * data)
+glGrib::OpenGLTexture::OpenGLTexture 
+    (int width, int height, const void * data, GLint internalformat)
 {
   glGenTextures (1, &id_);
   glBindTexture (GL_TEXTURE_2D, id_);
@@ -24,7 +25,8 @@ glGrib::OpenGLTexture::OpenGLTexture (int width, int height, const void * data)
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   float borderColor[] = {0.0f, 0.0f, 0.0f, 0.0f};
   glTexParameterfv (GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor); 
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data); 
+  glTexImage2D (GL_TEXTURE_2D, 0, internalformat, width, height, 
+                0, GL_RGB, GL_UNSIGNED_BYTE, data); 
   glBindTexture (GL_TEXTURE_2D, 0); 
   allocated_ = true;
 }

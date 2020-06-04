@@ -113,7 +113,7 @@ public:
 class OpenGLTexture
 {
 public:
-  OpenGLTexture (int, int, const void *);
+  OpenGLTexture (int, int, const void *, GLint = GL_RGB);
   ~OpenGLTexture ();
   GLuint id () { return id_; }
   bool allocated () { return allocated_; }
@@ -126,8 +126,10 @@ class OpenGLTexturePtr : public std::shared_ptr<OpenGLTexture>
 {
 public:
   OpenGLTexturePtr () = default;
-  OpenGLTexturePtr (int width, int height, const void * data)
-    : std::shared_ptr<OpenGLTexture> (new OpenGLTexture (width, height, data))
+  OpenGLTexturePtr (int width, int height, const void * data, 
+                    GLint internalformat = GL_RGB)
+    : std::shared_ptr<OpenGLTexture> (new OpenGLTexture (width, height, 
+                                      data, internalformat))
   {
   }
 };

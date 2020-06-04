@@ -42,15 +42,9 @@ void glGrib::Font::select () const
   program->set ("ny", ny);
   program->set ("aspect", aspect);
   glActiveTexture (GL_TEXTURE0); 
-  glBindTexture (GL_TEXTURE_2D, texture);
+  glBindTexture (GL_TEXTURE_2D, texture->id ());
   program->set ("texture", 0);
 
-}
-
-glGrib::Font::~Font ()
-{
-  if (ready)
-    glDeleteTextures (1, &texture);
 }
 
 void glGrib::Font::setup (const glGrib::OptionsFont & o)
@@ -127,15 +121,7 @@ found_u:
   
   aspect = (static_cast<float> (w) / static_cast<float> (nx)) / (static_cast<float> (h) / static_cast<float> (ny));
 
-  glGenTextures (1, &texture);
-  glBindTexture (GL_TEXTURE_2D, texture); 
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  // The third argument has to be GL_RED, but I do not understand why
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, rgb);
+  texture = glGrib::OpenGLTexturePtr (w, h, rgb, GL_RED);
 
   delete [] rgb;
   ready = true;

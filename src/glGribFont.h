@@ -14,7 +14,6 @@ class Font
 {
 public:
   void setup (const OptionsFont &);
-  ~Font ();
   int map (char c) const
   { 
     if (c <= 32) 
@@ -34,7 +33,7 @@ private:
   std::vector<float> xoff, yoff;
   int nx, ny;  // Array of letters dimension
   bool ready = false;
-  unsigned int texture;
+  OpenGLTexturePtr texture;
   float aspect;
   float posu;  // Size above line
   float posb;  // Size below line

@@ -135,12 +135,16 @@ public:
     return glGetAttribLocation (programID, name.c_str ());
   }
 
+  GLuint getId () 
+  {
+    return programID;
+  }
+
 private:
   std::string FragmentShaderCode;
   std::string VertexShaderCode;
   std::string GeometryShaderCode;
   GLuint programID;
-  GLuint matrixID;
   bool loaded = false;
   mutable bool active = false;
 

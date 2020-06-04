@@ -603,29 +603,24 @@ std::string glGrib::OptionsParser::asOption (glGrib::OptionsParser & p2)
   return str;
 }
 
-void glGrib::OptionsParser::getValue (std::vector<std::string> * list, const std::string & prefix, bool show_hidden)
+void glGrib::OptionsParser::getValue 
+   (std::vector<std::string> * list, const std::string & prefix, 
+    bool show_hidden, glGrib::OptionsParser * p1)
 {
-  int len = prefix.size ();
+  for (auto & it : filterOptions (prefix, show_hidden, p1))
+    {
+      glGrib::OptionsParserDetail::optionBase * opt = it->second;
+      if (opt->hasArg ())
+        {
+          list->push_back (it->first);
+          list->push_back (opt->asString ());
+        }
+      else
+        {
+          list->push_back (opt->asOption ());
+        }
+    }
 
-  for (name2option_t::iterator it = name2option.begin (); 
-       it != name2option.end (); it++)
-    if (it->first.substr (0, len) == prefix)
-      {   
-	glGrib::OptionsParserDetail::optionBase * opt = it->second;
-        if ((! show_hidden) && (opt->hidden))
-          continue;
-
-        if (opt->hasArg ())
-          {
-            list->push_back (it->first);
-            list->push_back (opt->asString ());
-          }
-        else
-          {
-            list->push_back (opt->asOption ());
-          }
-      }   
- 
 }
 
 std::string glGrib::OptionsParser::getHelp (const std::string & prefix, bool show_hidden)
@@ -664,13 +659,17 @@ std::string glGrib::OptionsParser::getHelp (const std::string & prefix, bool sho
   return help;
 }
 
-std::string glGrib::OptionsParser::getJSON 
+
+
+
+std::vector<glGrib::OptionsParser::name2option_t::iterator>
+glGrib::OptionsParser::filterOptions
    (const std::string & prefix, bool show_hidden, 
     glGrib::OptionsParser * p1)
 {
-  glGrib::OptionsParser * p0 = this;
+  std::vector<name2option_t::iterator> listOpts;
 
-  std::string json = "[";
+  glGrib::OptionsParser * p0 = this;
 
   int len = prefix.size ();
 
@@ -683,66 +682,54 @@ std::string glGrib::OptionsParser::getJSON
         if ((! show_hidden) && (opt0->hidden))
           continue;
 
-        const std::string json_opt0 = opt0->asJSON ();
-
         if (p1 != nullptr)
           {
             auto it1 = p1->name2option.find (it0->first);
             glGrib::OptionsParserDetail::optionBase * opt1 = it1->second;
-            const std::string json_opt1 = opt1->asJSON ();
-            if (json_opt0 == json_opt1)
+            if (opt0->isEqual (opt1))
               continue;
           }
 
-        if (json.length () > 1)
-          json += ",";
-
-        json += std::string ("[\"") + it0->first + "\",\"" + opt0->type () + "\",\"" + opt0->desc + "\"";
- 
-        if (json_opt0.length () > 0)
-          json += std::string (",") + json_opt0;
- 
-        json += "]";
+        listOpts.push_back (it0);
       }   
+
+  return listOpts;
+}
+
+std::string glGrib::OptionsParser::getJSON 
+   (const std::string & prefix, bool show_hidden, 
+    glGrib::OptionsParser * p1)
+{
+  std::string json = "[";
+
+  for (auto & it : filterOptions (prefix, show_hidden, p1))
+    {
+      glGrib::OptionsParserDetail::optionBase * opt = it->second;
+      const std::string json_opt = opt->asJSON ();
+
+      if (json.length () > 1)
+        json += ",";
+
+      json += std::string ("[\"") + it->first + "\",\"" 
+                + opt->type () + "\",\"" + opt->desc + "\"";
+ 
+      if (json_opt.length () > 0)
+        json += std::string (",") + json_opt;
+ 
+      json += "]";
+    }
 
   json += "]";
 
   return json;
 }
 
-void glGrib::OptionsParser::print (glGrib::Options & opts1)
+std::string glGrib::OptionsBase::asOption (glGrib::OptionsBase & opt2) 
 {
+  auto & opt1 = *this;
   glGrib::OptionsParser p1, p2;
-  glGrib::Options opts2;
-
-  opts1.traverse ("", &p1);
-  opts2.traverse ("", &p2);
-
-  std::vector<std::string> options_list;
-  p1.getOptions (&options_list);
-
-
-  for (size_t i = 0; i < options_list.size (); i++)
-    {
-      const std::string & name = options_list[i];
-      const glGrib::OptionsParserDetail::optionBase * o1 = p1.getOption (name);
-      const glGrib::OptionsParserDetail::optionBase * o2 = p2.getOption (name);
-      if (o1->isEqual (o2))
-        continue;
-      std::cout << "  " << name;
-      if (o1->hasArg ())
-        std::cout << " " << o1->asString ();
-      std::cout << std::endl;
-    }
-
-
-}
-
-std::string glGrib::OptionsBase::asOption (glGrib::OptionsBase & ref) 
-{
-  glGrib::OptionsParser p1, p2;
-  traverse ("", &p1);
-  ref.traverse ("", &p2);
+  opt1.traverse ("", &p1);
+  opt2.traverse ("", &p2);
   return p1.asOption (p2);
 }
 

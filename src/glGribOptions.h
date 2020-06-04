@@ -283,14 +283,14 @@ class OptionsParser : public OptionsCallback
 {
 public:
   virtual std::string asOption (OptionsParser &);
-  static void print (class Options &);
   bool parse (int, const char * [], const std::set<std::string> * = nullptr);
   void showHelp ();
   void showJSON ();
   std::string getHelp (const std::string &, bool = false);
   std::string getJSON (const std::string &, bool = false, 
                        glGrib::OptionsParser * = nullptr);
-  void getValue (std::vector<std::string> *, const std::string &, bool = false);
+  void getValue (std::vector<std::string> *, const std::string &, 
+                 bool = false, OptionsParser * = nullptr);
   ~OptionsParser ()
   {
     for (name2option_t::iterator it = name2option.begin (); 
@@ -341,6 +341,9 @@ private:
   };
 
   name2option_t name2option;
+
+  std::vector<name2option_t::iterator> filterOptions
+     (const std::string &, bool = false, glGrib::OptionsParser * = nullptr);
 
   std::string getOptName (const std::string & path, const std::string & name)
   {

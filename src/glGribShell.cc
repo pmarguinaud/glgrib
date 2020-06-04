@@ -232,13 +232,19 @@ void glGrib::Shell::do_help (const std::vector<std::string> & args, glGrib::Wind
 }
 
 
-void glGrib::Shell::do_json (const std::vector<std::string> & args, glGrib::Window * gwindow)
+namespace
+{
+template <typename F>
+void getopts 
+  (const std::vector<std::string> & args, 
+   std::vector<std::string> & listStr,
+   glGrib::Window * gwindow, F f)
 {
   glGrib::Options opts0 = gwindow->getScene ().getOptions ();
   glGrib::OptionsParser p0;
   opts0.traverse ("", &p0);
 
-  if ((args.size () > 1) && (args[1] == "--diff"))
+  if ((args.size () > 1) && (args[1] == "+diff"))
     {
       std::vector<std::string> a;
       a.push_back (args[0]);
@@ -248,31 +254,46 @@ void glGrib::Shell::do_json (const std::vector<std::string> & args, glGrib::Wind
       glGrib::OptionsParser p1;
       opts1.traverse ("", &p1);
       for (size_t i = 1; i < a.size (); i++)
-        listStr.push_back (p0.getJSON (a[i], true, &p1));
+        f (listStr, &p0, &p1, a[i]);
     }
-  else if ((args.size () > 1) && (args[1] == "--base"))
+  else if ((args.size () > 1) && (args[1] == "+base"))
     {
       glGrib::Options opts1;
       glGrib::OptionsParser p1;
       opts1.traverse ("", &p1);
       for (size_t i = 2; i < args.size (); i++)
-        listStr.push_back (p1.getJSON (args[i], true));
+        f (listStr, &p1, nullptr, args[i]);
     }
   else
     {
       for (size_t i = 1; i < args.size (); i++)
-        listStr.push_back (p0.getJSON (args[i], true));
+        f (listStr, &p0, nullptr, args[i]);
     }
+}
+};
+
+void glGrib::Shell::do_json (const std::vector<std::string> & args, glGrib::Window * gwindow)
+{
+  getopts (args, listStr, gwindow, 
+  [] (std::vector<std::string> & listStr, 
+      glGrib::OptionsParser * pA, 
+      glGrib::OptionsParser * pB, 
+      const std::string a)
+  {
+    listStr.push_back (pA->getJSON (a, true, pB));
+  });
 }
 
 void glGrib::Shell::do_get (const std::vector<std::string> & args, glGrib::Window * gwindow)
 {
-  glGrib::Options opts = gwindow->getScene ().getOptions ();
-  glGrib::OptionsParser p;
-  opts.traverse ("", &p);
-
-  for (size_t i = 1; i < args.size (); i++)
-    p.getValue (&listStr, args[i], true);
+  getopts (args, listStr, gwindow, 
+  [] (std::vector<std::string> & listStr, 
+      glGrib::OptionsParser * pA, 
+      glGrib::OptionsParser * pB, 
+      const std::string a)
+  {
+    pA->getValue (&listStr, a, true, pB);
+  });
 }
 
 void glGrib::Shell::do_window_list (const std::vector<std::string> & args, glGrib::Window * gwindow)

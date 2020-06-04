@@ -999,6 +999,13 @@ void glGrib::Window::createGFLWwindow (GLFWwindow * context)
   
   if (opts.debug.on)
    {
+#define pp(x) \
+     printf ("%-40s : %s\n", #x, glGetString (x));
+     pp (GL_VENDOR);
+     pp (GL_RENDERER);
+     pp (GL_VERSION); 
+     pp (GL_SHADING_LANGUAGE_VERSION);
+#undef pp
      GLint flags; 
      glGetIntegerv (GL_CONTEXT_FLAGS, &flags);
      if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)

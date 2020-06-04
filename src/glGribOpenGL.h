@@ -52,12 +52,16 @@ public:
   {
     glGenBuffers (1, &id_);
     
-//glNamedBufferData (id_, size, data, GL_STATIC_DRAW); does not work
-//glNamedBufferStorage (id_, size, data, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT); does not work
-
+if (0) {
+    // Need to bind the buffer to activate it
+    glBindBuffer (GL_ARRAY_BUFFER, id_);
+    glBindBuffer (GL_ARRAY_BUFFER, 0);
+    glNamedBufferData (id_, size, data, GL_STATIC_DRAW); 
+}else{
     glBindBuffer (GL_ARRAY_BUFFER, id_);
     glBufferData (GL_ARRAY_BUFFER, sizeof (T) * size, data, GL_STATIC_DRAW);
     glBindBuffer (GL_ARRAY_BUFFER, 0);
+}
 
     allocated_ = true;
     size_ = size;

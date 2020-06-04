@@ -117,6 +117,13 @@ public:
   ~OpenGLTexture ();
   GLuint id () { return id_; }
   bool allocated () { return allocated_; }
+  void bind (GLuint target)
+  {
+    if (target != 0)
+      throw std::runtime_error ("Unexpected texture target");
+    glActiveTexture (GL_TEXTURE0); 
+    glBindTexture (GL_TEXTURE_2D, id_);
+  }
 private:
   bool allocated_ = false;
   GLuint id_;

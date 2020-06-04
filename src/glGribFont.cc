@@ -41,8 +41,7 @@ void glGrib::Font::select () const
   program->set ("nx", nx);
   program->set ("ny", ny);
   program->set ("aspect", aspect);
-  glActiveTexture (GL_TEXTURE0); 
-  glBindTexture (GL_TEXTURE_2D, texture->id ());
+  texture->bind (0);
   program->set ("texture", 0);
 
 }

@@ -11,4 +11,6 @@ Valeurs admissibles pour une option
 
 Build a list of 3D objects and a list of 2D Objects and iterate (glGribScene.cc);
 
+Cache uniform ids into program object.
 
+Consider using uniform blocks 

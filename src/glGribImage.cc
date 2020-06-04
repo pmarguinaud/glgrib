@@ -41,8 +41,7 @@ void glGrib::Image::render (const glm::mat4 & MVP) const
 
   VAID.bind ();
 
-  glActiveTexture (GL_TEXTURE0); 
-  glBindTexture (GL_TEXTURE_2D, texture->id ());
+  texture->bind (0);
   program->set ("texture", 0); 
 
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0};

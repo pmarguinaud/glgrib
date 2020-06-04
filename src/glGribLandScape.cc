@@ -119,8 +119,7 @@ void glGrib::Landscape::render (const glGrib::View & view, const glGrib::Options
   if (d.opts.color == glGrib::OptionColor ("#00000000"))
     {
       // the texture selection process is a bit obscure
-      glActiveTexture (GL_TEXTURE0); 
-      glBindTexture (GL_TEXTURE_2D, d.texture->id ());
+      d.texture->bind (0);
       program->set ("texture", 0);
       program->set ("colored", 0);
     }

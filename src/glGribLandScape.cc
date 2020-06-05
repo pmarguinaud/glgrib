@@ -59,14 +59,13 @@ void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandsca
 
   if (d.opts.color == glGrib::OptionColor ("#00000000"))
     {
-      unsigned char * rgb;
+      BufferPtr<unsigned char> rgb;
       int w, h;
      
-     
       if (endsWith (d.opts.path, ".png"))
-        glGrib::ReadPng (glGrib::Resolve (d.opts.path), &w, &h, &rgb);
+        glGrib::ReadPng (glGrib::Resolve (d.opts.path), &w, &h, rgb);
       else if (endsWith (d.opts.path, ".bmp"))
-        glGrib::Bitmap (glGrib::Resolve (d.opts.path), &rgb, &w, &h);
+        glGrib::Bitmap (glGrib::Resolve (d.opts.path), rgb, &w, &h);
       else
         throw std::runtime_error (std::string ("Unknown image format :") + d.opts.path);
      
@@ -76,7 +75,6 @@ void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandsca
         throw std::runtime_error (std::string ("Image is too large to be used as a texture :") + d.opts.path);
      
       d.texture = glGrib::OpenGLTexturePtr (w, h, rgb);
-      delete [] rgb;
     }
 
   if (d.opts.geometry.height.on)

@@ -9,13 +9,13 @@
 
 #include "glGribPng.h"
 
-void glGrib::ReadPng (const std::string & filename, int * pwidth, int * pheight, unsigned char ** ppixels)
+void glGrib::ReadPng (const std::string & filename, int * pwidth, int * pheight, 
+                      glGrib::BufferPtr<unsigned char> & pixels)
 {
   FILE *fp = fopen (filename.c_str (), "r");
   int width, height;
   png_byte color_type;
   png_byte bit_depth;
-  png_bytep * png_rows = nullptr;
 
   if (fp == nullptr)
     throw std::runtime_error (std::string ("Cannot open file :") + filename);
@@ -70,17 +70,17 @@ void glGrib::ReadPng (const std::string & filename, int * pwidth, int * pheight,
   png_read_update_info (png, info);
 
   size_t rowsize = png_get_rowbytes (png, info);
-  png_rows = new png_bytep[height];
-  png_byte * png_bytes = new png_byte[rowsize * height];
+  Buffer<png_bytep> png_rows (height);
+  Buffer<png_byte> png_bytes (rowsize * height);
 
   for(int j = 0; j < height; j++) 
-    png_rows[j] = png_bytes + j * rowsize;
+    png_rows[j] = &png_bytes[0] + j * rowsize;
 
-  png_read_image (png, png_rows);
+  png_read_image (png, &png_rows[0]);
 
   fclose (fp);
 
-  unsigned char * pixels = new unsigned char[width * height * 3];
+  pixels = BufferPtr<unsigned char>(width * height * 3);
 
   for (int j = 0; j < height; j++)
     for (int i = 0; i < width; i++)
@@ -92,25 +92,19 @@ void glGrib::ReadPng (const std::string & filename, int * pwidth, int * pheight,
 
   png_destroy_read_struct (&png, &info, nullptr);
 
-  delete [] png_bytes;
-  delete [] png_rows;
-
   *pwidth = width;
   *pheight = height;
-  *ppixels = pixels;
-
 }
 
-void glGrib::WritePng (const std::string & filename, int width, int height, unsigned char * pixels) 
+void glGrib::WritePng (const std::string & filename, int width, int height, 
+                       const glGrib::BufferPtr<unsigned char> & pixels) 
 {
-  png_byte * png_bytes = nullptr;
-  png_byte ** png_rows = nullptr;
   const size_t format_nchannels = 3;
   size_t nvals = format_nchannels * width * height;
   FILE * fp = fopen (filename.c_str (), "w");
 
-  png_bytes = new png_byte[nvals];
-  png_rows = new png_bytep[height];
+  Buffer<png_byte> png_bytes (nvals);
+  Buffer<png_bytep> png_rows (height);
 
   for (size_t i = 0; i < nvals; i++)
     png_bytes[i] = pixels[i];
@@ -118,7 +112,9 @@ void glGrib::WritePng (const std::string & filename, int width, int height, unsi
   for (int i = 0; i < height; i++)
      png_rows[height-i-1] = &png_bytes[i*width*format_nchannels];
 
-  png_structp png = png_create_write_struct (PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+  png_structp png = png_create_write_struct 
+                      (PNG_LIBPNG_VER_STRING, 
+                       nullptr, nullptr, nullptr);
 
   if (! png)  
     abort ();
@@ -137,13 +133,10 @@ void glGrib::WritePng (const std::string & filename, int width, int height, unsi
                 PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
   png_write_info (png, info);
-  png_write_image (png, png_rows);
+  png_write_image (png, &png_rows[0]);
   png_write_end (png, nullptr);
   png_destroy_write_struct (&png, &info);
 
   fclose (fp);
-
-  delete [] png_bytes;
-  delete [] png_rows;
 }
 

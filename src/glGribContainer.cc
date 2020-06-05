@@ -1,8 +1,10 @@
 #include "glGribContainer.h"
+#include "glGribBuffer.h"
 #include <eccodes.h>
 #include <stdlib.h>
 #include <algorithm>
 #include <stdexcept>
+#include <iostream>
 #include <map>
 
 
@@ -543,10 +545,9 @@ codes_handle * containerFA::getHandleByExt (const std::string & ext)
   character_len CLNOMA_len = ext.length ();
 
   integer64 IREP = 0, ILONG = 0, IPOSEX = 0;
-  integer64 * ITAB = nullptr;
+
 
   this->open ();
-
 
   lfinfo_mt64_ (LFI, &IREP, &INUMER, CLNOMA, &ILONG, &IPOSEX, CLNOMA_len);
 
@@ -554,8 +555,9 @@ codes_handle * containerFA::getHandleByExt (const std::string & ext)
     throw std::runtime_error (std::string ("File ") + getFile () + 
 		              std::string (" does not contains ") + ext);
 
-  ITAB = new integer64[ILONG];
-  lfilec_mt64_ (LFI, &IREP, &INUMER, CLNOMA, ITAB, &ILONG, CLNOMA_len);
+  glGrib::Buffer<integer64> ITAB (ILONG);
+
+  lfilec_mt64_ (LFI, &IREP, &INUMER, CLNOMA, &ITAB[0], &ILONG, CLNOMA_len);
 
   if (IREP != 0)
     throw std::runtime_error (std::string ("Reading ") + ext + 
@@ -567,7 +569,6 @@ codes_handle * containerFA::getHandleByExt (const std::string & ext)
     throw std::runtime_error (std::string ("Closing ") + getFile () + std::string (" failed"));
 
   h = codes_handle_new_from_message_copy (0, &ITAB[3], 8 * (ILONG - 3));
-  delete [] ITAB;
 
   if (h == nullptr)
     throw std::runtime_error (std::string ("Article ") + ext + std::string (" of file ") + getFile () +

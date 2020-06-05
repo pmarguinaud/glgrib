@@ -12,6 +12,7 @@
 #include "glGribPng.h"
 #include "glGribFieldScalar.h"
 #include "glGribFieldVector.h"
+#include "glGribBuffer.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -474,12 +475,12 @@ int glGrib::Window::getLatLonFromCursor (float * lat, float * lon)
 
 void glGrib::Window::snapshot (const std::string & format)
 {
-  unsigned char * rgb = new unsigned char[opts.width * opts.height * 4];
+  BufferPtr<unsigned char> rgb (opts.width * opts.height * 4);
 
   // glReadPixels does not seem to work well with all combinations of width/height
   // when GL_RGB is used; GL_RGBA on the other hand seems to work well
   // So we get it in RGBA mode and throw away the alpha channel
-  glReadPixels (0, 0, opts.width, opts.height, GL_RGBA, GL_UNSIGNED_BYTE, rgb);
+  glReadPixels (0, 0, opts.width, opts.height, GL_RGBA, GL_UNSIGNED_BYTE, &rgb[0]);
 
   for (int i = 0; i < opts.width * opts.height; i++)
     for (int j = 0; j < 3; j++)
@@ -547,8 +548,6 @@ void glGrib::Window::snapshot (const std::string & format)
     }
 
   glGrib::WritePng (filename, opts.width, opts.height, rgb);
-
-  delete [] rgb;
 }
 
 void glGrib::Window::framebuffer (const std::string & format)

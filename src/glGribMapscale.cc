@@ -1,5 +1,6 @@
 #include "glGribMapscale.h"
 #include "glGribShader.h"
+#include "glGribBuffer.h"
 
 
 void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
@@ -11,7 +12,7 @@ void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
 
   nt = 2 * 4;
 
-  unsigned int * ind = new unsigned int[3*nt];
+  Buffer<unsigned int> ind (3 * nt);
 
   for (int i = 0, ii = 0, jj = 0; i < 4; i++)
     {
@@ -20,10 +21,8 @@ void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
       jj += 4;
     }
 
-  elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * nt, ind);
+  elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind);
   
-  delete [] ind;
-
   glGrib::FontPtr font = getGlGribFontPtr (opts.font);
 
   label.setChange (true);

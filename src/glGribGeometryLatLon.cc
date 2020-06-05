@@ -439,7 +439,7 @@ bool glGrib::GeometryLatLon::triangleIsEdge (int it) const
   return false;
 }
 
-void glGrib::GeometryLatLon::sampleTriangle (unsigned char * s, const unsigned char s0, const int level) const
+void glGrib::GeometryLatLon::sampleTriangle (glGrib::BufferPtr<unsigned char> & s, const unsigned char s0, const int level) const
 {
   float Dlat = deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees);
   float Dlon = deg2rad * (longitudeOfLastGridPointInDegrees - longitudeOfFirstGridPointInDegrees);

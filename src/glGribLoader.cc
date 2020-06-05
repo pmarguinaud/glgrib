@@ -175,7 +175,8 @@ void glGrib::Loader::load (glGrib::BufferPtr<float> * ptr, const std::vector<std
 }
 
 void glGrib::Loader::load (glGrib::BufferPtr<float> * ptr, const std::string & file, 
-		          const glGrib::OptionsGeometry & opts_geom, glGrib::FieldMetadata * meta)
+		           const glGrib::OptionsGeometry & opts_geom,  
+                           glGrib::FieldMetadata * meta)
 {
   glGrib::HandlePtr ghp = handleFromFile (file);
   codes_handle * h = ghp == nullptr ? nullptr : ghp->getCodesHandle ();
@@ -190,15 +191,15 @@ void glGrib::Loader::load (glGrib::BufferPtr<float> * ptr, const std::string & f
 
   if (ptr != nullptr)
     {
-      double * v = new double[v_len];
-      codes_get_double_array (h, "values", v, &v_len);
+      glGrib::Buffer<double> v (v_len);
+
+      codes_get_double_array (h, "values", &v[0], &v_len);
 
       glGrib::BufferPtr<float> val = glGrib::BufferPtr<float> (v_len);
 
       for (size_t i = 0; i < v_len; i++)
         val[i] = v[i];
 
-      delete [] v;
       *ptr = val;
     }
 

@@ -2,6 +2,7 @@
 #include "glGribShader.h"
 #include "glGribBitmap.h"
 #include "glGribResolve.h"
+#include "glGribBuffer.h"
 
 #include <map>
 
@@ -49,11 +50,11 @@ void glGrib::Font::select () const
 void glGrib::Font::setup (const glGrib::OptionsFont & o)
 {
   opts = o;
-  unsigned char * rgb = nullptr;
+  BufferPtr<unsigned char> rgb;
   int w, h;
   std::vector<int> ioff, joff;
 
-  glGrib::Bitmap (glGrib::Resolve (opts.bitmap), &rgb, &w, &h);
+  glGrib::Bitmap (glGrib::Resolve (opts.bitmap), rgb, &w, &h);
 
   for (int i = 0, p = w * (h - 2); i < w; i++, p += 1)
     if ((rgb[3*p+0] == 255) && (rgb[3*p+1] == 0) && (rgb[3*p+2] == 0))
@@ -122,7 +123,6 @@ found_u:
 
   texture = glGrib::OpenGLTexturePtr (w, h, rgb, GL_RED);
 
-  delete [] rgb;
   ready = true;
 }
 

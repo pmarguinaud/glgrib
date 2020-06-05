@@ -349,7 +349,8 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
 
   {
-    T * color = new T[size];
+    d.colorbuffer  = glGrib::OpenGLBufferPtr<T> (size);
+    auto color = d.colorbuffer->map ();
 
 #pragma omp parallel for
     for (int i = 0; i < size; i++)
@@ -367,10 +368,6 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
                 break;
               }
       }
-
-    d.colorbuffer  = glGrib::OpenGLBufferPtr<T> (size, color);
-    
-    delete [] color;
   }
 
   for (size_t i = 0; i < d.isoband.size (); i++)

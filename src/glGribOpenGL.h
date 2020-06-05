@@ -6,6 +6,7 @@
 #include <memory>
 #include <iostream>
 #include <vector>
+#include <assert.h>
 
 #include "glGribBuffer.h"
 
@@ -149,7 +150,17 @@ public:
 class OpenGLTexture
 {
 public:
-  OpenGLTexture (int, int, const void *, GLint = GL_RGB);
+  OpenGLTexture (int width, int height, const BufferPtr<unsigned char> & data, 
+                 GLint internalformat = GL_RGB)
+  {
+    assert ((width * height * 3) == static_cast<int> (data->size ()));
+    init (width, height, &data[0], internalformat);
+  }
+  OpenGLTexture (int width, int height, const void * data, 
+                 GLint internalformat = GL_RGB)
+  {
+    init (width, height, data, internalformat);
+  }
   ~OpenGLTexture ();
   GLuint id () { return id_; }
   bool allocated () { return allocated_; }
@@ -161,6 +172,7 @@ public:
     glBindTexture (GL_TEXTURE_2D, id_);
   }
 private:
+  void init (int, int, const void *, GLint);
   bool allocated_ = false;
   GLuint id_;
 };
@@ -169,6 +181,12 @@ class OpenGLTexturePtr : public std::shared_ptr<OpenGLTexture>
 {
 public:
   OpenGLTexturePtr () = default;
+  OpenGLTexturePtr (int width, int height, const BufferPtr<unsigned char> & data,
+                    GLint internalformat = GL_RGB)
+    : std::shared_ptr<OpenGLTexture> (new OpenGLTexture (width, height, 
+                                      data, internalformat))
+  {
+  }
   OpenGLTexturePtr (int width, int height, const void * data, 
                     GLint internalformat = GL_RGB)
     : std::shared_ptr<OpenGLTexture> (new OpenGLTexture (width, height, 

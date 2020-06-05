@@ -50,6 +50,8 @@ public:
   {
     return size_;
   }
+  Buffer & operator= (const Buffer &) = delete;
+  Buffer (const Buffer &) = delete;
 private:
   T * data_ = nullptr;
   size_t size_ = 0;

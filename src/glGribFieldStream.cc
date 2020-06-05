@@ -117,20 +117,21 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   int nt = geometry->getNumberOfTriangles ();
 
-  unsigned char * sample = new unsigned char[nt];
-  for (int i = 0; i < nt; i++)
-    sample[i] = 0;
-
   int np = static_cast<int> (sqrt (geometry->getNumberOfPoints ()));
   int level = static_cast<int> (opts.stream.density * np / 40.0f);
 
-  geometry->sampleTriangle (sample, 1, level);
+  {
+    BufferPtr<unsigned char> sample (nt);
+    for (int i = 0; i < nt; i++)
+      sample[i] = 0;
 
-  for (int i = 0; i < nt; i++)
-    if (sample[i])
-      it.push_back (i);
+    geometry->sampleTriangle (sample, 1, level);
 
-  delete [] sample;
+    for (int i = 0; i < nt; i++)
+      if (sample[i])
+        it.push_back (i);
+  }
+
 
 #pragma omp parallel for
   for (int j = 0; j < N; j++)

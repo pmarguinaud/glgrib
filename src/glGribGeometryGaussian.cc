@@ -1568,7 +1568,7 @@ void glGrib::GeometryGaussian::applyNormScale (glGrib::BufferPtr<float> & data) 
     }
 }
 
-void glGrib::GeometryGaussian::sampleTriangle (unsigned char * s, const unsigned char s0, const int level) const
+void glGrib::GeometryGaussian::sampleTriangle (glGrib::BufferPtr<unsigned char> & s, const unsigned char s0, const int level) const
 {
   int lev = std::max (1, level);
   int itrioff = 0;

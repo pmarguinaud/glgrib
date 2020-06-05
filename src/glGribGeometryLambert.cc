@@ -472,7 +472,7 @@ bool glGrib::GeometryLambert::triangleIsEdge (int it) const
   return false;
 }
 
-void glGrib::GeometryLambert::sampleTriangle (unsigned char * s, const unsigned char s0, const int level) const
+void glGrib::GeometryLambert::sampleTriangle (glGrib::BufferPtr<unsigned char> & s, const unsigned char s0, const int level) const
 {
   xy_t pt_sw ((-Nux / 2) * DxInMetres, (-Nuy / 2) * DyInMetres);
   xy_t pt_ne ((+Nux / 2) * DxInMetres, (+Nuy / 2) * DyInMetres);

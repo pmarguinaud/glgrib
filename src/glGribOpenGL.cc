@@ -14,7 +14,7 @@ void glGrib::glInit ()
   glEnable (GL_MULTISAMPLE);
 }
   
-glGrib::OpenGLTexture::OpenGLTexture 
+void glGrib::OpenGLTexture::init
     (int width, int height, const void * data, GLint internalformat)
 {
   glGenTextures (1, &id_);

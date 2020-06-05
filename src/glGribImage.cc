@@ -1,5 +1,6 @@
 #include "glGribImage.h"
 #include "glGribBitmap.h"
+#include "glGribBuffer.h"
 
 #include <iostream>
 #include <stdlib.h>
@@ -10,15 +11,14 @@ void glGrib::Image::setup (const glGrib::OptionsImage & o)
   if (! o.on)
     return;
 
-  unsigned char * rgb;
+  BufferPtr<unsigned char> rgb;
   int w, h;
 
   opts = o;
 
-  glGrib::Bitmap (opts.path, &rgb, &w, &h);
+  glGrib::Bitmap (opts.path, rgb, &w, &h);
 
   texture = glGrib::OpenGLTexturePtr (w, h, rgb);
-  delete [] rgb;
 
   setupVertexAttributes ();
 

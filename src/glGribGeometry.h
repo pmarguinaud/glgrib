@@ -40,7 +40,7 @@ public:
   virtual std::string md5 () const = 0;
   virtual void applyUVangle (glGrib::BufferPtr<float> &) const = 0;
   virtual void applyNormScale (glGrib::BufferPtr<float> &) const = 0;
-  virtual void sample (unsigned char *, const unsigned char, const int) const = 0;
+  virtual void sample (OpenGLBufferPtr<unsigned char> &, const unsigned char, const int) const = 0;
   virtual void sampleTriangle (unsigned char *, const unsigned char, const int) const = 0;
   virtual float resolution (int = 0) const = 0;
   virtual void getTriangleVertices (int, int [3]) const = 0;

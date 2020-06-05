@@ -210,9 +210,9 @@ public:
 
 protected:
   void unpack (BufferPtr<float> &, const int, const float, 
-               const float, const float, const T *);
+               const float, const float, const OpenGLBufferPtr<T> &);
   void pack (const BufferPtr<float> &, const int, const float, 
-             const float, const float, T *);
+             const float, const float, OpenGLBufferPtr<T> &);
   void packUnpack (const BufferPtr<float> &, BufferPtr<float> &, const int, 
 		   const float, const float, const float);
   void loadHeight (OpenGLBufferPtr<T>, Loader *);

@@ -285,10 +285,8 @@ void glGrib::FieldPacked<N>::loadHeight (glGrib::OpenGLBufferPtr<T> buf, glGrib:
 
           heightbuffer = glGrib::OpenGLBufferPtr<T> (size);
 
-          auto height = heightbuffer->map ();
-
 	  pack (data, size, meta.valmin, meta.valmax, 
-                meta.valmis, height.address ());
+                meta.valmis, heightbuffer);
 
         }
     }
@@ -318,10 +316,12 @@ void glGrib::Field::renderHilo (const glGrib::View & view) const
 }
 
 template <int N>
-void glGrib::FieldPacked<N>::pack (const glGrib::BufferPtr<float> & f, const int n, const float valmin, 
-		         const float valmax, const float valmis, T * b)
+void glGrib::FieldPacked<N>::pack 
+  (const glGrib::BufferPtr<float> & f, const int n, const float valmin, 
+   const float valmax, const float valmis, glGrib::OpenGLBufferPtr<T> & bp)
 {
   const T nmax = std::numeric_limits<T>::max () - 1;
+  auto b = bp->map ();
 #pragma omp parallel for
   for (int i = 0; i < n; i++)
     if (f[i] == valmis)
@@ -331,10 +331,12 @@ void glGrib::FieldPacked<N>::pack (const glGrib::BufferPtr<float> & f, const int
 }
 
 template <int N>
-void glGrib::FieldPacked<N>::unpack (glGrib::BufferPtr<float> & f, const int n, const float valmin, 
-		           const float valmax, const float valmis, const T * b)
+void glGrib::FieldPacked<N>::unpack 
+  (glGrib::BufferPtr<float> & f, const int n, const float valmin, 
+   const float valmax, const float valmis, const glGrib::OpenGLBufferPtr<T> & bp)
 {
   const T nmax = std::numeric_limits<T>::max () - 1;
+  auto b = bp->map ();
 #pragma omp parallel for
   for (int i = 0; i < n; i++)
     if (b[i] == 0)
@@ -344,7 +346,9 @@ void glGrib::FieldPacked<N>::unpack (glGrib::BufferPtr<float> & f, const int n, 
 }
 
 template <int N>
-void glGrib::FieldPacked<N>::packUnpack (const glGrib::BufferPtr<float> & g, glGrib::BufferPtr<float> & f, const int n, const float valmin, const float valmax, const float valmis)
+void glGrib::FieldPacked<N>::packUnpack 
+  (const glGrib::BufferPtr<float> & g, glGrib::BufferPtr<float> & f, 
+   const int n, const float valmin, const float valmax, const float valmis)
 {
   const T nmax = std::numeric_limits<T>::max () - 1;
 #pragma omp parallel for
@@ -395,10 +399,10 @@ void glGrib::Field::frame_t::render (const glGrib::View & view) const
 #define DEF(N) \
 template void glGrib::FieldPacked<N>::unpack  \
             (glGrib::BufferPtr<float> &, const int, const float,   \
-             const float, const float, const T *);  \
+             const float, const float, const glGrib::OpenGLBufferPtr<T> &);  \
 template void glGrib::FieldPacked<N>::pack \
           (const glGrib::BufferPtr<float> &, const int, const float,   \
-             const float, const float, T *);  \
+             const float, const float, glGrib::OpenGLBufferPtr<T> &);  \
 template void glGrib::FieldPacked<N>::packUnpack   \
           (const glGrib::BufferPtr<float> &, glGrib::BufferPtr<float> &, const int,   \
            const float, const float, const float); \

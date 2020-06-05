@@ -28,3 +28,5 @@ Do not use new but auto_ptr/shared_ptr
 Create a buffer class to hold temporary allocated data, instead of new float[], etc.
 
 Do not use address method of glGribOpenGLBuffer and data of glGribBuffer.
+
+Do not use protected

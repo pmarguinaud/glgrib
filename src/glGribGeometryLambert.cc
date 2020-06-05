@@ -269,8 +269,9 @@ bool glGrib::GeometryLambert::isEqual (const glGrib::Geometry & geom) const
     }
 }
 
-void glGrib::GeometryLambert::sample (unsigned char * p, const unsigned char p0, const int level) const
+void glGrib::GeometryLambert::sample (OpenGLBufferPtr<unsigned char> & pp, const unsigned char p0, const int level) const
 {
+  auto p = pp->map ();
   xy_t pt_sw ((-Nux / 2) * DxInMetres, (-Nuy / 2) * DyInMetres);
   xy_t pt_ne ((+Nux / 2) * DxInMetres, (+Nuy / 2) * DyInMetres);
   pt_sw = pt_sw + center_xy;

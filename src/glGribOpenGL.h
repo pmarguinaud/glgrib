@@ -14,16 +14,16 @@ namespace glGrib
 template <typename T>
 class OpenGLBuffer
 {
-private:
+public:
 
-  class OpenGLBufferMapping
+  class Mapping
   {
   public:
-    OpenGLBufferMapping (OpenGLBuffer * b) : buffer (b) 
+    Mapping (OpenGLBuffer * b) : buffer (b) 
     {
       ptr = (T *)glMapNamedBuffer (buffer->id (), GL_READ_WRITE);
     }
-    ~OpenGLBufferMapping ()
+    ~Mapping ()
     {
       clear ();
     }
@@ -36,21 +36,17 @@ private:
 #endif
       return ptr[i];
     }
+  private:
     void clear ()
     {
       glUnmapNamedBuffer (buffer->id ());
       ptr = nullptr;
-    }
-    T * address ()
-    {
-      return ptr;
     }
   private:
     OpenGLBuffer * buffer;
     T * ptr = nullptr;
   };
 
-public:
 
   OpenGLBuffer (size_t size, const T * data = nullptr)
   {
@@ -89,9 +85,9 @@ if (0) {
 
   size_t size () const { return size_; }
 
-  OpenGLBufferMapping map ()
+  Mapping map ()
   {
-    return OpenGLBufferMapping (this);
+    return Mapping (this);
   }
 
 private:

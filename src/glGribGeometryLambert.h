@@ -197,7 +197,7 @@ public:
   virtual ~GeometryLambert ();
   void applyNormScale (glGrib::BufferPtr<float> &) const override {}
   void applyUVangle (glGrib::BufferPtr<float> &) const override;
-  void sample (unsigned char *, const unsigned char, const int) const override;
+  void sample (OpenGLBufferPtr<unsigned char> &, const unsigned char, const int) const override;
   void sampleTriangle (unsigned char *, const unsigned char, const int) const override;
   float resolution (int = 0) const override;
   void getTriangleVertices (int, int [3]) const override;

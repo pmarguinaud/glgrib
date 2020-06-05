@@ -28,7 +28,7 @@ public:
   virtual ~GeometryGaussian ();
   void applyNormScale (glGrib::BufferPtr<float> &) const override;
   void applyUVangle (glGrib::BufferPtr<float> &) const override;
-  void sample (unsigned char *, const unsigned char, const int) const override;
+  void sample (OpenGLBufferPtr<unsigned char> &, const unsigned char, const int) const override;
   void sampleTriangle (unsigned char *, const unsigned char, const int) const override;
   float resolution (int level = 0) const override { if (level == 0) level = Nj; return M_PI / level; }
   void getTriangleNeighbours (int, int [3], int [3], glm::vec3 xyz[3]) const override;

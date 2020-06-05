@@ -104,10 +104,10 @@ void glGrib::FieldScalar<N>::setup (glGrib::Loader * ld, const glGrib::OptionsFi
 
   colorbuffer = glGrib::OpenGLBufferPtr<T> (geometry->getNumberOfPoints ());
 
-  auto col = colorbuffer->map ();
 
   if (palette.fixed ())
     {
+      auto col = colorbuffer->map ();
       const int n = geometry->getNumberOfPoints ();
       for (int i = 0; i < n; i++)
         {
@@ -120,7 +120,7 @@ void glGrib::FieldScalar<N>::setup (glGrib::Loader * ld, const glGrib::OptionsFi
   else
     {
       this->pack (data, geometry->getNumberOfPoints (), meta1.valmin, 
-                  meta1.valmax, meta1.valmis, col.address ());
+                  meta1.valmax, meta1.valmis, colorbuffer);
     }
 
   this->loadHeight (colorbuffer, ld);

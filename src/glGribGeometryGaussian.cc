@@ -1192,7 +1192,7 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
       elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind_strip_size);
       auto ind_strip = elementbuffer->map ();
 
-      computeTrigaussStrip (Nj, pl, ind_strip.address (), 
+      computeTrigaussStrip (Nj, pl, &ind_strip[0], // TODO : CHANGE THAT
                             ind_stripcnt_per_lat, ind_stripoff_per_lat); 
 
       delete [] ind_stripcnt_per_lat;
@@ -1405,8 +1405,9 @@ void glGrib::GeometryGaussian::applyUVangle (glGrib::BufferPtr<float> & angle) c
   return;
 }
 
-void glGrib::GeometryGaussian::sample (unsigned char * p, const unsigned char p0, const int level) const
+void glGrib::GeometryGaussian::sample (OpenGLBufferPtr<unsigned char> & pp, const unsigned char p0, const int level) const
 {
+  auto p = pp->map ();
   int lat_stride = static_cast<float> (Nj) / static_cast<float> (level);
   if (lat_stride == 0)
     lat_stride = 1;

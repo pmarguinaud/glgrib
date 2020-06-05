@@ -274,8 +274,10 @@ bool glGrib::GeometryLatLon::isEqual (const glGrib::Geometry & geom) const
     }
 }
 
-void glGrib::GeometryLatLon::sample (unsigned char * p, const unsigned char p0, const int level) const
+void glGrib::GeometryLatLon::sample (OpenGLBufferPtr<unsigned char> & pp, const unsigned char p0, const int level) const
 {
+  auto p = pp->map ();
+
   float Dlat = deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees);
   float Dlon = deg2rad * (longitudeOfLastGridPointInDegrees - longitudeOfFirstGridPointInDegrees);
   float dlat = Dlat / (Nj - 1);

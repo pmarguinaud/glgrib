@@ -93,13 +93,9 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   d.buffer_n = glGrib::OpenGLBufferPtr<T> (geometry->getNumberOfPoints ());
 
-  {
-    auto col_n = d.buffer_n->map ();
-
-    pack (data_n, geometry->getNumberOfPoints (), 
-          meta_n.valmin, meta_n.valmax, meta_n.valmis, 
-          col_n.address ());
-  }
+  pack (data_n, geometry->getNumberOfPoints (), 
+        meta_n.valmin, meta_n.valmax, meta_n.valmis, 
+        d.buffer_n);
 
   loadHeight (d.buffer_n, ld);
 
@@ -107,15 +103,11 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   const int npts = opts.vector.density;
 
-  {
-    auto col_d = d.buffer_d->map ();
+  pack (data_d, geometry->getNumberOfPoints (), 
+        meta_d.valmin, meta_d.valmax, meta_d.valmis, 
+        d.buffer_d);
 
-    pack (data_d, geometry->getNumberOfPoints (), 
-          meta_d.valmin, meta_d.valmax, meta_d.valmis, 
-          col_d.address ());
-
-    geometry->sample (col_d.address (), 0, npts);
-  }
+  geometry->sample (d.buffer_d, 0, npts);
 
   meta.push_back (meta_n);
   meta.push_back (meta_d);
@@ -318,8 +310,6 @@ const
 
 void glGrib::FieldVector::reSample (const glGrib::View & view)
 {
-  auto col_d = d.buffer_d->map ();
-
   if (! values[1].allocated ())
     return; 
 
@@ -333,9 +323,9 @@ void glGrib::FieldVector::reSample (const glGrib::View & view)
 
   pack (values[1], geometry->getNumberOfPoints (), 
         meta_d.valmin, meta_d.valmax, meta_d.valmis, 
-        col_d.address ());
+        d.buffer_d);
 
-  geometry->sample (col_d.address (), 0, npts);
+  geometry->sample (d.buffer_d, 0, npts);
 
   d.vscale = opts.vector.scale * (pi / npts) / (meta_n.valmax || 1.0f);
 }

@@ -81,6 +81,8 @@ public:
   bool allocated () const
   {
     const Buffer<T> * b = this->get ();
+    if (b == nullptr)
+      return false;
     return b->allocated ();
   }
 };

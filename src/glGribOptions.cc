@@ -2,6 +2,7 @@
 #include "glGribResolve.h"
 #include "glGribPalette.h"
 #include "glGribSQLite.h"
+#include "glGribGrok.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -535,8 +536,55 @@ bool glGrib::OptionsBase::parse (const char * args,
 }
 
 bool glGrib::Options::parse (int argc, const char * argv[], 
-		            const std::set<std::string> * skip)
+		             const std::set<std::string> * skip)
 {
+  auto & opts = *this;
+
+  if ((argc == 2) && strncmp (argv[1], "--", 2))
+    {
+      bool simple = false;
+      switch (glGrib::Grok (argv[1]))
+        {
+          case glGrib::grok_t::UNKNOWN:
+            opts.shell.on = true;
+            opts.shell.script = std::string (argv[1]);
+            break;
+          case glGrib::grok_t::LFI:
+            opts.review.on = true;
+            opts.review.path = std::string (argv[1]);
+            opts.scene.title.on = true;
+            simple = true;
+            break;
+          case glGrib::grok_t::LFI_EXT:
+          case glGrib::grok_t::GRIB:
+          case glGrib::grok_t::GRIB_EXT:
+            opts.field[0].path.push_back (std::string (argv[1]));
+            simple = true;
+            break;
+        }
+      if (simple)
+        {
+          opts.colorbar.on = true;
+          opts.grid.on = true;
+          opts.coast.on = true;
+          opts.window.width = opts.window.height * 1.4;
+          opts.scene.center.on = true;
+        }
+      return true;
+    }
+  else if ((argc == 4) && (strcmp (argv[1], "--diff") == 0))
+    {
+      opts.diff.on = true;
+      opts.colorbar.on = true;
+      opts.grid.on = true;
+      opts.coast.on = true;
+      opts.scene.title.on = true;
+      opts.diff.path.push_back (std::string (argv[2]));
+      opts.diff.path.push_back (std::string (argv[3]));
+      return true;
+    }
+
+
   glGrib::OptionsParser p;
   traverse ("", &p);
   if (! p.parse (argc, argv, skip))
@@ -563,7 +611,8 @@ bool glGrib::Options::parse (int argc, const char * argv[],
 
 bool glGrib::OptionsParser::seenOption (const std::string & name) const
 {
-  for (std::set<std::string>::const_iterator it = seen.begin (); it != seen.end (); it++)
+  for (std::set<std::string>::const_iterator it = seen.begin (); 
+       it != seen.end (); it++)
     {
       const std::string & n = *it;
       if (n.substr (0, name.length ()) == name)

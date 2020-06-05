@@ -16,12 +16,7 @@ int main (int argc, const char * argv[])
 {
   glGrib::Options opts;
 
-  if ((argc == 2) && strncmp (argv[1], "--", 2))
-    {
-      opts.shell.on = true;
-      opts.shell.script = std::string (argv[1]);
-    }
-  else if (! opts.parse (argc, argv))
+  if (! opts.parse (argc, argv))
     return 1;
 
   glGrib::glfwStart ();

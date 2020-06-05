@@ -46,6 +46,10 @@ public:
   {
     return data_ != nullptr;
   }
+  size_t size () const
+  {
+    return size_;
+  }
 private:
   T * data_ = nullptr;
   size_t size_ = 0;

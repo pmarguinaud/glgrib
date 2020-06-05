@@ -25,7 +25,6 @@ public:
   GeometryGaussian (int);
   void setup (HandlePtr, const OptionsGeometry &) override;
   int size () const override;
-  virtual ~GeometryGaussian ();
   void applyNormScale (glGrib::BufferPtr<float> &) const override;
   void applyUVangle (glGrib::BufferPtr<float> &) const override;
   void sample (OpenGLBufferPtr<unsigned char> &, const unsigned char, const int) const override;
@@ -141,8 +140,9 @@ private:
   float opc2 = 2.0f;
   glm::mat3 rot = glm::mat3 (1.0f);
   bool rotated = false;
-  // Keep the following as pointers for performance
-  unsigned int * ind = nullptr;
+
+  
+  BufferPtr<unsigned int> ind;
 
   BufferPtr<int> indcnt_per_lat;
   BufferPtr<int> indoff_per_lat;

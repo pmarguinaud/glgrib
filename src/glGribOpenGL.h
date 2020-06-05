@@ -7,6 +7,8 @@
 #include <iostream>
 #include <vector>
 
+#include "glGribBuffer.h"
+
 
 namespace glGrib
 {
@@ -47,6 +49,18 @@ public:
     T * ptr = nullptr;
   };
 
+
+  OpenGLBuffer (const BufferPtr<T> & b)
+  {
+    glGenBuffers (1, &id_);
+    
+    glBindBuffer (GL_ARRAY_BUFFER, id_);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (T) * b->size (), &b[0], GL_STATIC_DRAW);
+    glBindBuffer (GL_ARRAY_BUFFER, 0);
+
+    allocated_ = true;
+    size_ = b->size ();
+  }
 
   OpenGLBuffer (size_t size, const T * data = nullptr)
   {
@@ -107,6 +121,10 @@ public:
   }
   OpenGLBufferPtr (const std::vector<T> & v)
   : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(v.size (), v.data ()))
+  {
+  }
+  OpenGLBufferPtr (const BufferPtr<T> & b)
+  : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(b))
   {
   }
 };

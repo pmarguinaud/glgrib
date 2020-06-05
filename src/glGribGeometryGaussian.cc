@@ -362,7 +362,7 @@ void computeTrigaussStrip (const long int Nj, const std::vector<long int> & pl,
 
 
 void computeTrigauss (const long int Nj, const std::vector<long int> & pl, 
-                      unsigned int * ind, 
+                      glGrib::BufferPtr<unsigned int> & ind, 
                       const glGrib::BufferPtr<int> & indoff, 
                       const glGrib::BufferPtr<int> & indcnt, 
                       glGrib::BufferPtr<int> & triu, 
@@ -1162,12 +1162,12 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
 
   if (! opts.triangle_strip.on)
     {
-      ind  = new unsigned int[3 * numberOfTriangles]; 
+      ind  = BufferPtr<unsigned int> (3 * numberOfTriangles); 
       triu = BufferPtr<int> (numberOfPoints); 
       trid = BufferPtr<int> (numberOfPoints); 
       // Generation of triangles
       computeTrigauss (Nj, pl, ind, indoff_per_lat, indcnt_per_lat, triu, trid);
-      elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * numberOfTriangles, ind);
+      elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind);
     }
   else
     {
@@ -1221,13 +1221,6 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
 
   if (opts.gaussian.fit.on)
     setupFitLatitudes ();
-}
-
-glGrib::GeometryGaussian::~GeometryGaussian ()
-{
-  if (ind)
-    delete [] ind;
-  ind = nullptr;
 }
 
 void glGrib::GeometryGaussian::latlon2coordxy (float lat, float lon, 

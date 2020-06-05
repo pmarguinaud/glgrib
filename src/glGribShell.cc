@@ -346,12 +346,3 @@ void glGrib::Shell::execute (const std::vector<std::string> & args)
   
 }
 
-void glGrib::Shell::lock () 
-{ 
-  pthread_mutex_lock (&mutex); 
-}
-
-void glGrib::Shell::unlock () 
-{ 
-  pthread_mutex_unlock (&mutex); 
-}

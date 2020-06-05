@@ -149,7 +149,7 @@ void * _run (void * data)
 void glGrib::ShellRegular::start (glGrib::WindowSet * ws)
 {
   wset = ws;
-  pthread_create (&thread, nullptr, _run, this);
+  thread = std::thread ([this] () { this->run (); });
 }
 
 

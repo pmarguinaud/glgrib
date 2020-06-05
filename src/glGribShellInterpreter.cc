@@ -61,7 +61,13 @@ void glGrib::ShellInterpreter::start (glGrib::WindowSet * ws)
     }
   else
     {
-      pthread_create (&thread, nullptr, _run, this);
+      thread = std::thread ([this] () 
+      { 
+        this->runWset ();
+        this->lock ();
+        this->setClosed ();
+        this->unlock ();
+      });
       while (! hasstarted);
     }
 }

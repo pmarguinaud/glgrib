@@ -42,7 +42,7 @@ sub debug
   print &Dumper (['glGrib'->window ()]);
 }
 
-#'glGrib'->start ('--grid.on', '--landscape.on');
+'glGrib'->start ('--grid.on', '--landscape.on');
 
 my $top = 'MainWindow'->new ();
 $top->geometry ('+0+0');
@@ -65,5 +65,5 @@ $top->Button (-relief => 'raised', -text => 'Move', -command => sub { &move (); 
 
 &MainLoop ();
 
-#'glGrib'->stop ();
+'glGrib'->stop ();
 

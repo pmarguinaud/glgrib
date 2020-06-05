@@ -3,7 +3,6 @@
 #include "glGribShell.h"
 #include "glGribOptions.h"
 
-#include <pthread.h>
 #include <string>
 #include <vector>
 #include <map>

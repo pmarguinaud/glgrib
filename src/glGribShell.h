@@ -2,12 +2,13 @@
 
 #include "glGribOptions.h"
 
-#include <pthread.h>
 #include <string>
 #include <vector>
 #include <map>
 #include <list>
 #include <functional>
+#include <thread>
+#include <mutex>
 
 namespace glGrib
 {
@@ -23,10 +24,16 @@ public:
   virtual void execute (const std::vector<std::string> &);
   bool closed () { return close; }
   void setClosed () { close = true; }
-  void lock ();
-  void unlock ();
+  void lock () 
+  { 
+    mutex.lock ();
+  }
+  void unlock () 
+  { 
+    mutex.unlock ();
+  }
   const OptionsShell & getOptions () const { return opts; }
-  void wait () { if (wset) pthread_join (thread, nullptr); }
+  void wait () { if (wset) thread.join (); }
   bool started () { return wset != nullptr; }
 
 protected:
@@ -59,8 +66,9 @@ protected:
 
   OptionsShell opts;
   WindowSet * wset = nullptr;
-  pthread_t thread;
-  pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+
+  std::thread thread;
+  std::mutex mutex;
 
   std::vector<std::string> listStr;
 

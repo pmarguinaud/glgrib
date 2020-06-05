@@ -18,7 +18,7 @@
 namespace
 {
 
-void computeLatgauss (int kn, double * latgauss)
+void computeLatgauss (int kn, glGrib::BufferPtr<double> & latgauss)
 {
   const double pi = M_PI;
   const int itemax = 20;
@@ -1199,7 +1199,7 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
     }
 
 
-  latgauss = new double[Nj]; 
+  latgauss = BufferPtr<double> (Nj);
   // Compute Gaussian latitudes
   computeLatgauss (Nj, latgauss);
       
@@ -1227,10 +1227,7 @@ glGrib::GeometryGaussian::~GeometryGaussian ()
 {
   if (ind)
     delete [] ind;
-  if (latgauss)
-    delete [] latgauss;
   ind = nullptr;
-  latgauss = nullptr;
 }
 
 void glGrib::GeometryGaussian::latlon2coordxy (float lat, float lon, 

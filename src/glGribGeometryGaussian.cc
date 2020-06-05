@@ -245,8 +245,7 @@ void processLat (int jlat, int iloen1, int iloen2,
             }
           else
             {
-              if (inds_strip)
-                *(inds_strip++) = icc-1;
+              *(inds_strip++) = icc-1;
             }
         }
       else
@@ -268,8 +267,7 @@ void processLat (int jlat, int iloen1, int iloen2,
                 }
               else
                 {
-                  if (inds_strip)
-                    *(inds_strip++) = icc-1;
+                  *(inds_strip++) = icc-1;
                 }
 
             }
@@ -300,12 +298,15 @@ void processLat (int jlat, int iloen1, int iloen2,
   *p_inds_strip = inds_strip;
 }
   
-void computeTrigaussStrip (const long int Nj, const std::vector<long int> & pl, 
-                           unsigned int * ind_strip,
-	                   glGrib::BufferPtr<int> & ind_stripcnt_per_lat, 
-	                   glGrib::BufferPtr<int> & ind_stripoff_per_lat)
+void computeTrigaussStrip 
+  (const long int Nj, const std::vector<long int> & pl, 
+   glGrib::OpenGLBuffer<unsigned int>::Mapping & ind_stripm,
+   glGrib::BufferPtr<int> & ind_stripcnt_per_lat, 
+   glGrib::BufferPtr<int> & ind_stripoff_per_lat)
 {
   int iglooff[Nj];
+
+  unsigned int * ind_strip = &ind_stripm[0];
   
 
   iglooff[0] = 0;
@@ -330,18 +331,20 @@ void computeTrigaussStrip (const long int Nj, const std::vector<long int> & pl,
               int jlon2 = jlon1;
               int icc = jglooff2 + JNEXT (jlon2, iloen2); // C
               int icd = jglooff1 + JNEXT (jlon1, iloen1); // D
-              *(inds_strip++) = icc-1;
-              *(inds_strip++) = icd-1;
+              *(inds_strip++) = icc-1; 
+              *(inds_strip++) = icd-1; 
             }
           *(inds_strip++) = jglooff2 + 1; 
         }
       else if (iloen1 > iloen2)
         {
-          processLat (jlat, iloen1, iloen2, jglooff1, jglooff2, &inds_strip, +1);
+          processLat (jlat, iloen1, iloen2, jglooff1, jglooff2, 
+                      &inds_strip, +1);
         }
       else if (iloen1 < iloen2)
         {
-          processLat (jlat, iloen2, iloen1, jglooff2, jglooff1, &inds_strip, -1);
+          processLat (jlat, iloen2, iloen1, jglooff2, jglooff1, 
+                      &inds_strip, -1);
         }
   
       unsigned int * inds_strip_last = ind_strip 
@@ -1193,8 +1196,8 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
       elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind_strip_size);
       auto ind_strip = elementbuffer->map ();
 
-      computeTrigaussStrip (Nj, pl, &ind_strip[0], // TODO : CHANGE THAT
-                            ind_stripcnt_per_lat, ind_stripoff_per_lat); 
+      computeTrigaussStrip 
+        (Nj, pl, ind_strip, ind_stripcnt_per_lat, ind_stripoff_per_lat); 
 
     }
 

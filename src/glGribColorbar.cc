@@ -25,7 +25,7 @@ void glGrib::Colorbar::setup (const glGrib::OptionsColorbar & o)
 
   d.nt = 2 * 256;
 
-  unsigned int * ind = new unsigned int[3*d.nt];
+  Buffer<unsigned int> ind (3 * d.nt);
 
   for (int i = 0, ii = 0, jj = 0; i < 256; i++)
     {
@@ -34,10 +34,7 @@ void glGrib::Colorbar::setup (const glGrib::OptionsColorbar & o)
       jj += 4;
     }
 
-
-  d.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * d.nt, ind);
-
-  delete [] ind;
+  d.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind);
 
   setReady ();
 }

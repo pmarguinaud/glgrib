@@ -474,7 +474,7 @@ codes_handle * containerPlain::getHandleByExt (const std::string & ext)
 void containerFA::open () 
 {
   LFI = &lficomm;
-  strncpy (lficomm.cmagic, "LFI_FORT", 8);
+  memcpy (lficomm.cmagic, "LFI_FORT", 8);
   lficomm.lfihl = nullptr;
 
   integer64 IREP, INUMER = 77, INIMES = 0, INBARP = 0, INBARI = 0;
@@ -566,7 +566,7 @@ codes_handle * containerFA::getHandleByExt (const std::string & ext)
   if (IREP != 0)
     throw std::runtime_error (std::string ("Closing ") + getFile () + std::string (" failed"));
 
-  h = codes_handle_new_from_message_copy (0, ITAB + 3, 8 * (ILONG - 3));
+  h = codes_handle_new_from_message_copy (0, &ITAB[3], 8 * (ILONG - 3));
   delete [] ITAB;
 
   if (h == nullptr)

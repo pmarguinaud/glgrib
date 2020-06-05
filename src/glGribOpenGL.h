@@ -38,6 +38,7 @@ public:
 #endif
       return ptr[i];
     }
+
   private:
     void clear ()
     {
@@ -49,6 +50,18 @@ public:
     T * ptr = nullptr;
   };
 
+
+  OpenGLBuffer (const Buffer<T> & b)
+  {
+    glGenBuffers (1, &id_);
+    
+    glBindBuffer (GL_ARRAY_BUFFER, id_);
+    glBufferData (GL_ARRAY_BUFFER, sizeof (T) * b.size (), &b[0], GL_STATIC_DRAW);
+    glBindBuffer (GL_ARRAY_BUFFER, 0);
+
+    allocated_ = true;
+    size_ = b.size ();
+  }
 
   OpenGLBuffer (const BufferPtr<T> & b)
   {
@@ -124,6 +137,10 @@ public:
   {
   }
   OpenGLBufferPtr (const BufferPtr<T> & b)
+  : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(b))
+  {
+  }
+  OpenGLBufferPtr (const Buffer<T> & b)
   : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(b))
   {
   }

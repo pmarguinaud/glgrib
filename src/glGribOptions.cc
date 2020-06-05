@@ -442,7 +442,13 @@ bool glGrib::OptionsParser::parse (int _argc, const char * _argv[],
 
                   if (arg == "--help")
                     {
-                      showHelp ();
+                      showHelpShort ();
+                      return false;
+                    }
+
+                  if (arg == "--help-long")
+                    {
+                      showHelpLong ();
                       return false;
                     }
 
@@ -626,9 +632,34 @@ void glGrib::OptionsParser::showJSON ()
   std::cout << getJSON ("--", true);
 }
 
-void glGrib::OptionsParser::showHelp ()
+void glGrib::OptionsParser::showHelpShort ()
 {
-  std::cout << "Usage:" << std::endl;
+  std::cout << R"HELP(
+Simple interface:
+  
+  Review (use PageUp/PageDown) : 
+
+  $ glgrib share/data/diff/ICMSHFCST+0001
+
+  Single field :
+
+  $ glgrib share/data/diff/ICMSHFCST+0001%PROFTEMPERATURE
+  $ glgrib share/data/ecmwf/ecmf_0_1_0_ml_137_q.grib2
+
+  Diff :
+
+  $ glgrib --diff  share/data/diff/ICMSHFCST+0001 share/data/diff/ICMSHFCST+0002
+
+  
+Use option --help-long to see the full interface with all options.
+
+)HELP";
+}
+  
+void glGrib::OptionsParser::showHelpLong ()
+{
+  showHelpShort ();
+  std::cout << "All options:" << std::endl << std::endl;
   std::cout << getHelp ("--");
 }
 

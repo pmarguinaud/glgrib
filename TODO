@@ -15,4 +15,6 @@ Cache uniform ids into program object.
 
 Consider using uniform blocks 
 
-Use mix & clamp in shaders
+Use mix, fma & clamp in shaders
+
+Use explicit constructors

@@ -284,7 +284,8 @@ class OptionsParser : public OptionsCallback
 public:
   virtual std::string asOption (OptionsParser &);
   bool parse (int, const char * [], const std::set<std::string> * = nullptr);
-  void showHelp ();
+  void showHelpShort ();
+  void showHelpLong ();
   void showJSON ();
   std::string getHelp (const std::string &, bool = false);
   std::string getJSON (const std::string &, bool = false, 

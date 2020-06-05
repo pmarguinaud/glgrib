@@ -272,23 +272,26 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 #pragma omp parallel for
   for (size_t i = 0; i < levels.size (); i++)
     {
-      bool * seen = new bool[geometry->getNumberOfTriangles () + 1];
+      const int nt = geometry->getNumberOfTriangles ();
 
-      for (int i = 0; i < geometry->getNumberOfTriangles () + 1; i++)
+      Buffer<bool> seen (nt + 1);
+
+      for (int i = 0; i < nt + 1; i++)
         seen[i] = false;
       seen[0] = true;
 
       // First visit edge triangles
-      for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
+      for (int it = 0; it < nt; it++)
         if (geometry->triangleIsEdge (it))
           processTriangle (it, data, levels[i], height, meta_height.valmin, 
-          		   meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
+          		   meta_height.valmax, meta_height.valmis, 
+                           &seen[1], &iso_data[i]);
   
-      for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
+      for (int it = 0; it < nt; it++)
         processTriangle (it, data, levels[i], height, meta_height.valmin, 
-                         meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
+                         meta_height.valmax, meta_height.valmis, 
+                         &seen[1], &iso_data[i]);
 
-      delete [] seen;
     }
 
   iso.resize (levels.size ());

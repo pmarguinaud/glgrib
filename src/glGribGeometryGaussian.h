@@ -5,6 +5,7 @@
 #include "glGribOptions.h"
 #include "glGribHandle.h"
 #include "glGribOpenGL.h"
+#include "glGribBuffer.h"
 
 #include <glm/glm.hpp>
 #include <vector>
@@ -25,8 +26,8 @@ public:
   void setup (HandlePtr, const OptionsGeometry &) override;
   int size () const override;
   virtual ~GeometryGaussian ();
-  void applyNormScale (float *) const override;
-  void applyUVangle (float *) const override;
+  void applyNormScale (glGrib::BufferPtr<float> &) const override;
+  void applyUVangle (glGrib::BufferPtr<float> &) const override;
   void sample (unsigned char *, const unsigned char, const int) const override;
   void sampleTriangle (unsigned char *, const unsigned char, const int) const override;
   float resolution (int level = 0) const override { if (level == 0) level = Nj; return M_PI / level; }

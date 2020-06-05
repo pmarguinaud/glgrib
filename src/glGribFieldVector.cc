@@ -96,7 +96,7 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
   {
     auto col_n = d.buffer_n->map ();
 
-    pack (data_n->data (), geometry->getNumberOfPoints (), 
+    pack (data_n, geometry->getNumberOfPoints (), 
           meta_n.valmin, meta_n.valmax, meta_n.valmis, 
           col_n.address ());
   }
@@ -110,7 +110,7 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
   {
     auto col_d = d.buffer_d->map ();
 
-    pack (data_d->data (), geometry->getNumberOfPoints (), 
+    pack (data_d, geometry->getNumberOfPoints (), 
           meta_d.valmin, meta_d.valmax, meta_d.valmis, 
           col_d.address ());
 
@@ -320,9 +320,7 @@ void glGrib::FieldVector::reSample (const glGrib::View & view)
 {
   auto col_d = d.buffer_d->map ();
 
-  float * data_d = values[1]->data ();
-
-  if (data_d == nullptr)
+  if (! values[1].allocated ())
     return; 
 
   const glGrib::FieldMetadata & meta_n = meta[0];
@@ -333,7 +331,7 @@ void glGrib::FieldVector::reSample (const glGrib::View & view)
 
   const int npts = 2 * opts.vector.density / w;
 
-  pack (data_d, geometry->getNumberOfPoints (), 
+  pack (values[1], geometry->getNumberOfPoints (), 
         meta_d.valmin, meta_d.valmax, meta_d.valmis, 
         col_d.address ());
 

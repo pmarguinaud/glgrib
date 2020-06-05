@@ -24,7 +24,6 @@ namespace
 int hiloCount (glGrib::const_GeometryPtr geometry, glGrib::BufferPtr<float> data,
                 int jglo0, int radius, bool lo)
 {
-  const float * val = data->data ();
   std::vector<int> neigh;
   std::set<int> seen;
   
@@ -52,12 +51,12 @@ int hiloCount (glGrib::const_GeometryPtr geometry, glGrib::BufferPtr<float> data
                 continue;
               if (lo)
                 {
-                  if (val[jglo2] < val[jglo0])
+                  if (data[jglo2] < data[jglo0])
                     return j-1;
                 }
               else
                 {
-                  if (val[jglo2] > val[jglo0])
+                  if (data[jglo2] > data[jglo0])
                     return j-1;
                 }
               s2->insert (jglo2);
@@ -288,7 +287,7 @@ void glGrib::FieldPacked<N>::loadHeight (glGrib::OpenGLBufferPtr<T> buf, glGrib:
 
           auto height = heightbuffer->map ();
 
-	  pack (data->data (), size, meta.valmin, meta.valmax, 
+	  pack (data, size, meta.valmin, meta.valmax, 
                 meta.valmis, height.address ());
 
         }
@@ -319,7 +318,7 @@ void glGrib::Field::renderHilo (const glGrib::View & view) const
 }
 
 template <int N>
-void glGrib::FieldPacked<N>::pack (const float * f, const int n, const float valmin, 
+void glGrib::FieldPacked<N>::pack (const glGrib::BufferPtr<float> & f, const int n, const float valmin, 
 		         const float valmax, const float valmis, T * b)
 {
   const T nmax = std::numeric_limits<T>::max () - 1;
@@ -332,7 +331,7 @@ void glGrib::FieldPacked<N>::pack (const float * f, const int n, const float val
 }
 
 template <int N>
-void glGrib::FieldPacked<N>::unpack (float * f, const int n, const float valmin, 
+void glGrib::FieldPacked<N>::unpack (glGrib::BufferPtr<float> & f, const int n, const float valmin, 
 		           const float valmax, const float valmis, const T * b)
 {
   const T nmax = std::numeric_limits<T>::max () - 1;
@@ -345,7 +344,7 @@ void glGrib::FieldPacked<N>::unpack (float * f, const int n, const float valmin,
 }
 
 template <int N>
-void glGrib::FieldPacked<N>::packUnpack (const float * g, float * f, const int n, const float valmin, const float valmax, const float valmis)
+void glGrib::FieldPacked<N>::packUnpack (const glGrib::BufferPtr<float> & g, glGrib::BufferPtr<float> & f, const int n, const float valmin, const float valmax, const float valmis)
 {
   const T nmax = std::numeric_limits<T>::max () - 1;
 #pragma omp parallel for
@@ -395,13 +394,13 @@ void glGrib::Field::frame_t::render (const glGrib::View & view) const
 
 #define DEF(N) \
 template void glGrib::FieldPacked<N>::unpack  \
-            (float *, const int, const float,   \
+            (glGrib::BufferPtr<float> &, const int, const float,   \
              const float, const float, const T *);  \
 template void glGrib::FieldPacked<N>::pack \
-          (const float *, const int, const float,   \
+          (const glGrib::BufferPtr<float> &, const int, const float,   \
              const float, const float, T *);  \
 template void glGrib::FieldPacked<N>::packUnpack   \
-          (const float *, float *, const int,   \
+          (const glGrib::BufferPtr<float> &, glGrib::BufferPtr<float> &, const int,   \
            const float, const float, const float); \
 template void glGrib::FieldPacked<N>::loadHeight (glGrib::OpenGLBufferPtr<T>, glGrib::Loader *); \
 template void glGrib::FieldPacked<N>::bindHeight (int) const;

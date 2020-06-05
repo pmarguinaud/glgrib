@@ -339,7 +339,7 @@ void glGrib::Loader::uv2nd (glGrib::const_GeometryPtr geometry,
     else
       throw std::runtime_error ("Inconsistent domain definition for U/V");
 
-  geometry->applyNormScale (data_n->data ());
+  geometry->applyNormScale (data_n);
 
   for (int i = 0; i < geometry->getNumberOfPoints (); i++)
     if (data_u[i] != meta_u.valmis)
@@ -354,7 +354,7 @@ void glGrib::Loader::uv2nd (glGrib::const_GeometryPtr geometry,
         data_n[i] = meta_u.valmis;
       }
 
-  geometry->applyUVangle (data_d->data ());
+  geometry->applyUVangle (data_d);
 
 }
 

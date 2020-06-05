@@ -195,8 +195,8 @@ public:
   void setup (HandlePtr, const OptionsGeometry &) override;
   int size () const override;
   virtual ~GeometryLambert ();
-  void applyNormScale (float *) const override {}
-  void applyUVangle (float *) const override;
+  void applyNormScale (glGrib::BufferPtr<float> &) const override {}
+  void applyUVangle (glGrib::BufferPtr<float> &) const override;
   void sample (unsigned char *, const unsigned char, const int) const override;
   void sampleTriangle (unsigned char *, const unsigned char, const int) const override;
   float resolution (int = 0) const override;

@@ -114,7 +114,9 @@ private:
 
   std::vector<isoline_t> iso;
 
-  void processTriangle (int, float *, float, float *, float, float, float, bool *, isoline_data_t *);
+  void processTriangle (int, const BufferPtr<float> &, float, 
+                        const BufferPtr<float> &, float, float, float, 
+                        bool *, isoline_data_t *);
 };
 
 

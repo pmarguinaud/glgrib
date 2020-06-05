@@ -1360,7 +1360,7 @@ bool glGrib::GeometryGaussian::isEqual (const glGrib::Geometry & other) const
     }
 }
 
-void glGrib::GeometryGaussian::applyUVangle (float * angle) const 
+void glGrib::GeometryGaussian::applyUVangle (glGrib::BufferPtr<float> & angle) const 
 {
   if (rotated)
     {
@@ -1567,7 +1567,7 @@ bool glGrib::GeometryGaussian::triangleIsEdge (int it) const
 }
 
 
-void glGrib::GeometryGaussian::applyNormScale (float * data) const 
+void glGrib::GeometryGaussian::applyNormScale (glGrib::BufferPtr<float> & data) const 
 {
   if (! opts.gaussian.apply_norm_scale.on)
     return;

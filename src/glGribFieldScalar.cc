@@ -108,19 +108,18 @@ void glGrib::FieldScalar<N>::setup (glGrib::Loader * ld, const glGrib::OptionsFi
 
   if (palette.fixed ())
     {
-      const float * v = data->data ();
       const int n = geometry->getNumberOfPoints ();
       for (int i = 0; i < n; i++)
         {
-          if (v[i] == meta1.valmis)
+          if (data[i] == meta1.valmis)
             col[i] = 0.0;
           else
-            col[i] = static_cast<float> (palette.getColorIndex (v[i]));
+            col[i] = static_cast<float> (palette.getColorIndex (data[i]));
         }
     }
   else
     {
-      this->pack (data->data (), geometry->getNumberOfPoints (), meta1.valmin, 
+      this->pack (data, geometry->getNumberOfPoints (), meta1.valmin, 
                   meta1.valmax, meta1.valmis, col.address ());
     }
 
@@ -149,9 +148,7 @@ void glGrib::FieldScalar<N>::setupMpiView (glGrib::Loader * ld, const glGrib::Op
 
   ld->load (&mpiview, opts.mpiview.path, opts.geometry, slot, &mpiview_meta, 1, 0);
 
-  float * data = mpiview->data ();
-
-  float pmax = *std::max_element (data, data + size);
+  float pmax = mpiview_meta.valmax;
 
   int max = static_cast<int> (pmax);
 

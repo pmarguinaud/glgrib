@@ -138,7 +138,7 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
       int i0 = ((j + 0) * it.size ()) / N;
       int i1 = ((j + 1) * it.size ()) / N;
       for (int i = i0; i < i1; i++)
-        computeStreamLine (it[i], data_u->data (), data_v->data (), &stream_data[j]);
+        computeStreamLine (it[i], data_u, data_v, &stream_data[j]);
     }
 
   glGrib::Program * program = glGrib::Program::load ("STREAM");
@@ -197,7 +197,7 @@ float lineLineIntersect (const glm::vec2 & P1, const glm::vec2 & V1,
 }
 
 
-void glGrib::FieldStream::getFirstPoint (int it, const float * ru, const float * rv, 
+void glGrib::FieldStream::getFirstPoint (int it, const glGrib::BufferPtr<float> & ru, const glGrib::BufferPtr<float> & rv, 
 					 glm::vec2 & M, glm::vec2 & Vp, glm::vec2 & Vm,
 		                         std::valarray<float> & wp, std::valarray<float> & wm, 
 					 int & itp, int & itm)
@@ -276,7 +276,7 @@ void glGrib::FieldStream::getFirstPoint (int it, const float * ru, const float *
 
 }
 
-void glGrib::FieldStream::computeStreamLineDir (int it, const float * ru, const float * rv, 
+void glGrib::FieldStream::computeStreamLineDir (int it, const glGrib::BufferPtr<float> & ru, const glGrib::BufferPtr<float> & rv, 
 		                                const glm::vec2 & M0, const glm::vec2 & V0,
                                                 stream_seen_t & seen, float sign, std::valarray<float> w,
 					        std::vector<glm::vec3> & list)
@@ -385,7 +385,7 @@ last:
 }
 
 
-void glGrib::FieldStream::computeStreamLine (int it0, const float * ru, const float * rv, 
+void glGrib::FieldStream::computeStreamLine (int it0, const glGrib::BufferPtr<float> & ru, const glGrib::BufferPtr<float> & rv, 
                                              streamline_data_t * stream)
 {
   std::vector<glm::vec3> listf, listb;

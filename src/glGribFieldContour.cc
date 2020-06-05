@@ -269,8 +269,6 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
   isoline_data_t iso_data[levels.size ()];
 
 
-  float * val = data->data ();
-
 #pragma omp parallel for
   for (size_t i = 0; i < levels.size (); i++)
     {
@@ -283,17 +281,15 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
       // First visit edge triangles
       for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
         if (geometry->triangleIsEdge (it))
-          processTriangle (it, val, levels[i], height->data (), meta_height.valmin, 
+          processTriangle (it, data, levels[i], height, meta_height.valmin, 
           		   meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
   
       for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
-        processTriangle (it, val, levels[i], height->data (), meta_height.valmin, 
+        processTriangle (it, data, levels[i], height, meta_height.valmin, 
                          meta_height.valmax, meta_height.valmis, seen+1, &iso_data[i]);
 
       delete [] seen;
     }
-
-  val = nullptr;
 
   iso.resize (levels.size ());
 
@@ -307,8 +303,10 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
   setReady ();
 }
 
-void glGrib::FieldContour::processTriangle (int it0, float * r, float r0, float * h, float hmin, float hmax, 
-                                            float hmis, bool * seen, isoline_data_t * iso)
+void glGrib::FieldContour::processTriangle 
+  (int it0, const glGrib::BufferPtr<float> & r, float r0, 
+   const glGrib::BufferPtr<float> & h, float hmin, float hmax, 
+   float hmis, bool * seen, isoline_data_t * iso)
 {
   int count = 0;
   bool cont = true;

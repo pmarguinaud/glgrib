@@ -209,11 +209,11 @@ public:
   FieldPacked () : Field () {}
 
 protected:
-  void unpack (float *, const int, const float, 
+  void unpack (BufferPtr<float> &, const int, const float, 
                const float, const float, const T *);
-  void pack (const float *, const int, const float, 
+  void pack (const BufferPtr<float> &, const int, const float, 
              const float, const float, T *);
-  void packUnpack (const float *, float *, const int, 
+  void packUnpack (const BufferPtr<float> &, BufferPtr<float> &, const int, 
 		   const float, const float, const float);
   void loadHeight (OpenGLBufferPtr<T>, Loader *);
   void bindHeight (int) const;

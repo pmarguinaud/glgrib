@@ -311,7 +311,7 @@ float glGrib::GeometryLambert::resolution (int level) const
   return Dlat / level;
 }
 
-void glGrib::GeometryLambert::applyUVangle (float * angle) const 
+void glGrib::GeometryLambert::applyUVangle (glGrib::BufferPtr<float> & angle) const 
 {
 
   // Generation of coordinates

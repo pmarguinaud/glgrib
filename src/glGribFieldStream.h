@@ -132,12 +132,12 @@ private:
     }
   };
 
-  void getFirstPoint (int, const float *, const float *, 
+  void getFirstPoint (int, const BufferPtr<float> &, const BufferPtr<float> &, 
 		      glm::vec2 &, glm::vec2 &, glm::vec2 &,
 		      std::valarray<float> &, std::valarray<float> &, 
 		      int &, int &);
-  void computeStreamLine (int, const float *, const float *, streamline_data_t *);
-  void computeStreamLineDir (int, const float *, const float *, 
+  void computeStreamLine (int, const BufferPtr<float> &, const BufferPtr<float> &, streamline_data_t *);
+  void computeStreamLineDir (int, const BufferPtr<float> &, const BufferPtr<float> &, 
                              const glm::vec2 &, const glm::vec2 &,
                              stream_seen_t &, float, std::valarray<float>,
                              std::vector<glm::vec3> &);

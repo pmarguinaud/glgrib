@@ -248,7 +248,7 @@ void processTriangle2 (std::vector<isoband_maker_t> * isomake,
 
 void processTriangle1 (std::vector<isoband_maker_t> * isomake, 
                        glGrib::const_GeometryPtr geometry,
-                       const float * val, int it, 
+                       const glGrib::BufferPtr<float> & val, int it, 
                        const std::vector<float> & levels)
 {
   int jglo[3];
@@ -340,13 +340,11 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
     }
 
 
-  float * val = data->data ();
-
 #pragma omp parallel for
   for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
     {
       int ith = omp_get_thread_num ();
-      processTriangle1 (&isomake[ith], geometry, val, it, levels);
+      processTriangle1 (&isomake[ith], geometry, data, it, levels);
     }
 
 
@@ -356,7 +354,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 #pragma omp parallel for
     for (int i = 0; i < size; i++)
       {
-        float v = val[i];
+        float v = data[i];
         if (v < levels.front ())
           color[i] = colorIndex.front ();
         else if (v > levels.back ())
@@ -374,8 +372,6 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
     
     delete [] color;
   }
-
-  val = nullptr;
 
   for (size_t i = 0; i < d.isoband.size (); i++)
     {

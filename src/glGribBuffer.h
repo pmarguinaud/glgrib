@@ -10,7 +10,6 @@ template <typename T>
 class Buffer
 {
 public:
-//T * data () { return data_; }
   template <typename I>
   const T & operator[] (I i) const
   { 

@@ -1,0 +1,83 @@
+#pragma once
+
+#include <memory>
+#include <stdexcept>
+
+namespace glGrib
+{
+
+template <typename T>
+class Buffer
+{
+public:
+//T * data () { return data_; }
+  template <typename I>
+  const T & operator[] (I i) const
+  { 
+#ifdef GLGRIB_CHECK_BOUNDS
+      if (i >= size_) 
+        throw std::runtime_error ("Out of bounds access");
+#endif
+    return data_[i]; 
+  }
+  template <typename I>
+  T & operator[] (I i) 
+  { 
+#ifdef GLGRIB_CHECK_BOUNDS
+      if (i >= size_) 
+        throw std::runtime_error ("Out of bounds access");
+#endif
+    return data_[i]; 
+  }
+  Buffer () = default;
+  Buffer (size_t size)
+  {
+    if (size > 0)
+      data_ = new T[size];
+    size_ = size;
+  }
+  ~Buffer ()
+  {
+    if (data_)
+      delete [] data_;
+    data_ = nullptr;
+    size_ = 0;
+  }
+  bool allocated () const
+  {
+    return data_ != nullptr;
+  }
+private:
+  T * data_ = nullptr;
+  size_t size_ = 0;
+};
+
+template <typename T>
+class BufferPtr : public std::shared_ptr<Buffer<T>>
+{
+public:
+  BufferPtr () = default;
+  BufferPtr (size_t size)
+    : std::shared_ptr<Buffer<T>> (new Buffer<T> (size))
+  {
+  }
+  template <typename I>
+  T & operator[] (I i) 
+  { 
+    Buffer<T> * b = this->get ();
+    return (*b)[i]; 
+  }
+  template <typename I>
+  const T & operator[] (I i) const 
+  { 
+    const Buffer<T> * b = this->get ();
+    return (*b)[i];
+  }
+  bool allocated () const
+  {
+    const Buffer<T> * b = this->get ();
+    return b->allocated ();
+  }
+};
+
+}

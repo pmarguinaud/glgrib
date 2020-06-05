@@ -233,7 +233,7 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
   opts = o;
 
   glGrib::FieldMetadata meta1;
-  glGrib::FieldFloatBufferPtr data;
+  glGrib::BufferPtr<float> data;
   ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
 
@@ -244,7 +244,7 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
   if (opts.hilo.on)
     setupHilo (data);
 
-  glGrib::FieldFloatBufferPtr height = data;
+  glGrib::BufferPtr<float> height = data;
   glGrib::FieldMetadata meta_height = meta1;
   if ((opts.geometry.height.on) && (opts.geometry.height.path != ""))
     {
@@ -301,7 +301,7 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
     iso[i].setup (opts, levels[i], i, palette, iso_data[i]);
 
   if (opts.no_value_pointer.on)
-    data = glGrib::FieldFloatBufferPtr (0);
+    data = glGrib::BufferPtr<float> (0);
   values.push_back (data);
 
   setReady ();

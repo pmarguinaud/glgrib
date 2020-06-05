@@ -5,7 +5,7 @@
 #include "glGribGeometry.h"
 #include "glGribPalette.h"
 #include "glGribFieldMetadata.h"
-#include "glGribFieldFloatBuffer.h"
+#include "glGribBuffer.h"
 #include "glGribLoader.h"
 #include "glGribString.h"
 
@@ -65,7 +65,7 @@ public:
   {
     palette = glGrib::Palette (o, getNormedMinValue (), getNormedMaxValue ());
   }
-  void setupHilo (FieldFloatBufferPtr);
+  void setupHilo (BufferPtr<float>);
   void renderHilo (const View &) const;
   void renderFrame (const View & view) const 
   {
@@ -75,8 +75,8 @@ public:
   { 
     std::vector<float> val;
     for (size_t i = 0; i < values.size (); i++)
-      if (values[i]->data () != nullptr)
-        val.push_back (values[i]->data ()[index]);
+      if (values[i].allocated ())
+        val.push_back (values[i][index]);
     return val;
   }
   virtual std::vector<float> getMaxValue () const 
@@ -196,7 +196,7 @@ protected:
   Palette palette;
   mutable OptionsField opts;
   std::vector<FieldMetadata> meta;
-  std::vector<FieldFloatBufferPtr> values;
+  std::vector<BufferPtr<float>> values;
 };
 
 template <int N>

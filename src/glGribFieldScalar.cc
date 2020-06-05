@@ -89,7 +89,7 @@ void glGrib::FieldScalar<N>::setup (glGrib::Loader * ld, const glGrib::OptionsFi
 
   glGrib::FieldMetadata meta1;
 
-  glGrib::FieldFloatBufferPtr data;
+  glGrib::BufferPtr<float> data;
   ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
   this->meta.push_back (meta1);
 
@@ -130,7 +130,7 @@ void glGrib::FieldScalar<N>::setup (glGrib::Loader * ld, const glGrib::OptionsFi
     setupMpiView (ld, o, slot);
 
   if (opts.no_value_pointer.on)
-    data = glGrib::FieldFloatBufferPtr (0);
+    data = glGrib::BufferPtr<float> (0);
 
   this->values.push_back (data);
 
@@ -145,7 +145,7 @@ void glGrib::FieldScalar<N>::setupMpiView (glGrib::Loader * ld, const glGrib::Op
   int size = geometry->getNumberOfPoints ();
 
   glGrib::FieldMetadata mpiview_meta;
-  glGrib::FieldFloatBufferPtr mpiview;
+  glGrib::BufferPtr<float> mpiview;
 
   ld->load (&mpiview, opts.mpiview.path, opts.geometry, slot, &mpiview_meta, 1, 0);
 

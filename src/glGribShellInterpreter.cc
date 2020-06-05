@@ -36,21 +36,6 @@ void glGrib::ShellInterpreter::runWset ()
   glGrib::glfwStop ();
 }
 
-namespace
-{
-
-void * _run (void * data)
-{
-  glGrib::ShellInterpreter * shell = static_cast<glGrib::ShellInterpreter *>(data);
-  shell->runWset ();
-  shell->lock ();
-  shell->setClosed ();
-  shell->unlock ();
-  return nullptr;
-}
-
-}
-
 void glGrib::ShellInterpreter::start (glGrib::WindowSet * ws)
 {
   if (gopts.window.offscreen.on)

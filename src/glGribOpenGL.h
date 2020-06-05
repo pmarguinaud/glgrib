@@ -30,6 +30,10 @@ private:
     template <typename I>
     T & operator [] (I i) 
     {
+#ifdef GLGRIB_CHECK_BOUNDS
+      if (i >= buffer->size ())
+        throw std::runtime_error ("Out of bounds access");
+#endif
       return ptr[i];
     }
     void clear ()
@@ -82,7 +86,8 @@ if (0) {
     else
       glBindBufferBase (target, index, id_);
   }
-  size_t buffersize () const { return size_; }
+
+  size_t size () const { return size_; }
 
   OpenGLBufferMapping map ()
   {

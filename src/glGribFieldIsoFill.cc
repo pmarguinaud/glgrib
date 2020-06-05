@@ -291,7 +291,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
   opts = o;
 
   glGrib::FieldMetadata meta1;
-  glGrib::FieldFloatBufferPtr data;
+  glGrib::BufferPtr<float> data;
   ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
 
@@ -436,7 +436,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
     }
 
   if (opts.no_value_pointer.on)
-    data = glGrib::FieldFloatBufferPtr (0);
+    data = glGrib::BufferPtr<float> (0);
 
   values.push_back (data);
 

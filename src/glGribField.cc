@@ -21,7 +21,7 @@
 namespace
 {
 
-int hiloCount (glGrib::const_GeometryPtr geometry, glGrib::FieldFloatBufferPtr data,
+int hiloCount (glGrib::const_GeometryPtr geometry, glGrib::BufferPtr<float> data,
                 int jglo0, int radius, bool lo)
 {
   const float * val = data->data ();
@@ -76,7 +76,7 @@ int hiloCount (glGrib::const_GeometryPtr geometry, glGrib::FieldFloatBufferPtr d
 
 }
 
-void glGrib::Field::setupHilo (glGrib::FieldFloatBufferPtr data)
+void glGrib::Field::setupHilo (glGrib::BufferPtr<float> data)
 {
   class hilo_t
   {
@@ -279,7 +279,7 @@ void glGrib::FieldPacked<N>::loadHeight (glGrib::OpenGLBufferPtr<T> buf, glGrib:
 
           int size = geometry->getNumberOfPoints ();
 
-          glGrib::FieldFloatBufferPtr data;
+          glGrib::BufferPtr<float> data;
           glGrib::FieldMetadata meta;
 
           ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);

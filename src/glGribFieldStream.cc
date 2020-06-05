@@ -94,13 +94,13 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
   glGrib::FieldMetadata meta_u, meta_v;
   glGrib::FieldMetadata meta_n, meta_d;
 
-  glGrib::FieldFloatBufferPtr data_u, data_v;
+  glGrib::BufferPtr<float> data_u, data_v;
   ld->load (&data_u, opts.path, opts.geometry, slot, &meta_u, 2, 0);
   ld->load (&data_v, opts.path, opts.geometry, slot, &meta_v, 2, 1);
 
   geometry = glGrib::Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry);
 
-  glGrib::FieldFloatBufferPtr data_n, data_d;
+  glGrib::BufferPtr<float> data_n, data_d;
 
   glGrib::Loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
@@ -165,8 +165,8 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   if (opts.no_value_pointer.on)
     {
-      data_n = glGrib::FieldFloatBufferPtr (0);
-      data_d = glGrib::FieldFloatBufferPtr (0);
+      data_n = glGrib::BufferPtr<float> (0);
+      data_d = glGrib::BufferPtr<float> (0);
     }
 
   values.push_back (data_n);

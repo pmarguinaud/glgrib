@@ -134,24 +134,11 @@ std::vector<std::string> glGrib::ShellRegular::tokenize (const std::string & _li
   return args;
 }
 
-namespace
-{
-
-void * _run (void * data)
-{
-  glGrib::ShellRegular * shell = static_cast<glGrib::ShellRegular *>(data);
-  shell->run ();
-  return nullptr;
-}
-
-}
-
 void glGrib::ShellRegular::start (glGrib::WindowSet * ws)
 {
   wset = ws;
   thread = std::thread ([this] () { this->run (); });
 }
-
 
 void glGrib::ShellRegular::runInt ()
 {

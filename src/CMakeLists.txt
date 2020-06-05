@@ -15,7 +15,6 @@ set (SRC
   glGribEarCut.cc
   glGribField.cc
   glGribFieldContour.cc
-  glGribFieldFloatBuffer.cc
   glGribFieldIsoFill.cc
   glGribFieldScalar.cc
   glGribFieldStream.cc

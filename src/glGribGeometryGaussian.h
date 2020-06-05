@@ -144,11 +144,11 @@ private:
   // Keep the following as pointers for performance
   unsigned int * ind = nullptr;
 
-  int * indcnt_per_lat = nullptr;
-  int * indoff_per_lat = nullptr;
+  BufferPtr<int> indcnt_per_lat;
+  BufferPtr<int> indoff_per_lat;
 
-  int * triu = nullptr;          // Rank of triangle above
-  int * trid = nullptr;          // Rank of triangle below
+  BufferPtr<int> triu; // Rank of triangle above
+  BufferPtr<int> trid; // Rank of triangle below
   double * latgauss = nullptr;
   OpenGLBufferPtr<int> ssbo_jglo, ssbo_jlat;
   OpenGLBufferPtr<float> ssbo_glat;

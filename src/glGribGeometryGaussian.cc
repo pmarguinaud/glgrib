@@ -24,9 +24,9 @@ void computeLatgauss (int kn, double * latgauss)
   const int itemax = 20;
   const double zeps = std::numeric_limits <double>::epsilon ();
   
-  double * zfn    = new double[(kn+1)*(kn+1)]; 
-  double * zfnlat = new double[kn/2+2]; 
-  double * zmod   = new double[kn]; 
+  glGrib::Buffer<double> zfn ((kn+1)*(kn+1));
+  glGrib::Buffer<double> zfnlat (kn/2+2);
+  glGrib::Buffer<double> zmod (kn);
 
   //     ------------------------------------------------------------------
   //        1. initialization.
@@ -120,9 +120,6 @@ void computeLatgauss (int kn, double * latgauss)
         }
     }
   
-  delete [] zmod;
-  delete [] zfnlat;
-  delete [] zfn;
 }
 
 int MODULO (int x, int y)
@@ -305,8 +302,8 @@ void processLat (int jlat, int iloen1, int iloen2,
   
 void computeTrigaussStrip (const long int Nj, const std::vector<long int> & pl, 
                            unsigned int * ind_strip,
-	                   int ind_stripcnt_per_lat[], 
-	                   int ind_stripoff_per_lat[])
+	                   glGrib::BufferPtr<int> & ind_stripcnt_per_lat, 
+	                   glGrib::BufferPtr<int> & ind_stripoff_per_lat)
 {
   int iglooff[Nj];
   
@@ -364,8 +361,12 @@ void computeTrigaussStrip (const long int Nj, const std::vector<long int> & pl,
 
 
 
-void computeTrigauss (const long int Nj, const std::vector<long int> & pl, unsigned int * ind, 
-                       const int indoff[], const int indcnt[], int triu[], int trid[])
+void computeTrigauss (const long int Nj, const std::vector<long int> & pl, 
+                      unsigned int * ind, 
+                      const glGrib::BufferPtr<int> & indoff, 
+                      const glGrib::BufferPtr<int> & indcnt, 
+                      glGrib::BufferPtr<int> & triu, 
+                      glGrib::BufferPtr<int> & trid)
 {
   int iglooff[Nj];
 
@@ -374,12 +375,12 @@ void computeTrigauss (const long int Nj, const std::vector<long int> & pl, unsig
     iglooff[jlat-1] = iglooff[jlat-2] + pl[jlat-2];
 
   // No triangles above
-  if (triu)
+  if (triu.allocated ())
     for (int jlon = 1; jlon <= pl[0]; jlon++)
       triu[iglooff[0]+jlon-1] = -1;
 
   // No triangles below
-  if (trid)
+  if (trid.allocated ())
     for (int jlon = 1; jlon <= pl[Nj-1]; jlon++)
       trid[iglooff[Nj-1]+jlon-1] = -1;
   
@@ -412,10 +413,10 @@ void computeTrigauss (const long int Nj, const std::vector<long int> & pl, unsig
               int icb = jglooff2 + jlon2;
               int icc = jglooff2 + JNEXT (jlon2, iloen2);
               int icd = jglooff1 + JNEXT (jlon1, iloen1);
-              if (triu)
+              if (triu.allocated ())
                 triu[icb-1] = ik / 3;
               PRINT (ica, icb, icc);
-              if (trid) 
+              if (trid.allocated ()) 
                 trid[ica-1] = ik / 3;
               PRINT (ica, icc, icd);
             }
@@ -435,7 +436,7 @@ void computeTrigauss (const long int Nj, const std::vector<long int> & pl, unsig
               auto AV1 = [&] ()
               {
                 ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff1 + jlon1n;  
-                if (trid) trid[ica-1] = ik / 3;                                           
+                if (trid.allocated ()) trid[ica-1] = ik / 3;                                           
                 jlon1 = jlon1n;                                                           
                 turn = turn || jlon1 == 1;                                                
               };
@@ -443,7 +444,7 @@ void computeTrigauss (const long int Nj, const std::vector<long int> & pl, unsig
               auto AV2 = [&] ()
               {
                 ica = jglooff1 + jlon1; icb = jglooff2 + jlon2; icc = jglooff2 + jlon2n;  
-                if (triu) triu[icb-1] = ik / 3;                                           
+                if (triu.allocated ()) triu[icb-1] = ik / 3;                                           
                 jlon2 = jlon2n;                                                           
                 turn = turn || jlon2 == 1;                                                
               };
@@ -1146,8 +1147,8 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
   for (int jlat = 1; jlat < Nj; jlat++)
     numberOfTriangles += pl[jlat-1] + pl[jlat];
   
-  indcnt_per_lat = new int[Nj];
-  indoff_per_lat = new int[Nj];
+  indcnt_per_lat = BufferPtr<int> (Nj);
+  indoff_per_lat = BufferPtr<int> (Nj);
   // Compute number of triangles per latitude
   indoff_per_lat[0] = 0;
   for (int jlat = 1; jlat <= Nj; jlat++)
@@ -1162,16 +1163,16 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
   if (! opts.triangle_strip.on)
     {
       ind  = new unsigned int[3 * numberOfTriangles]; 
-      triu = new int[numberOfPoints]; 
-      trid = new int[numberOfPoints]; 
+      triu = BufferPtr<int> (numberOfPoints); 
+      trid = BufferPtr<int> (numberOfPoints); 
       // Generation of triangles
       computeTrigauss (Nj, pl, ind, indoff_per_lat, indcnt_per_lat, triu, trid);
       elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * numberOfTriangles, ind);
     }
   else
     {
-      int * ind_stripcnt_per_lat  = new int[Nj+1];
-      int * ind_stripoff_per_lat  = new int[Nj+1];
+      BufferPtr<int> ind_stripcnt_per_lat (Nj+1);
+      BufferPtr<int> ind_stripoff_per_lat (Nj+1);
 
       ind_stripoff_per_lat[0] = 0;
       for (int jlat = 1; jlat <= Nj+1; jlat++)
@@ -1194,9 +1195,6 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
 
       computeTrigaussStrip (Nj, pl, &ind_strip[0], // TODO : CHANGE THAT
                             ind_stripcnt_per_lat, ind_stripoff_per_lat); 
-
-      delete [] ind_stripcnt_per_lat;
-      delete [] ind_stripoff_per_lat;
 
     }
 
@@ -1229,23 +1227,10 @@ glGrib::GeometryGaussian::~GeometryGaussian ()
 {
   if (ind)
     delete [] ind;
-  if (triu)
-    delete [] triu;
-  if (trid)
-    delete [] trid;
   if (latgauss)
     delete [] latgauss;
-  if (indoff_per_lat)
-    delete [] indoff_per_lat;
-  if (indcnt_per_lat)
-    delete [] indcnt_per_lat;
   ind = nullptr;
-  triu = nullptr;
-  trid = nullptr;
   latgauss = nullptr;
-  indoff_per_lat = nullptr;
-  indcnt_per_lat = nullptr;
-
 }
 
 void glGrib::GeometryGaussian::latlon2coordxy (float lat, float lon, 
@@ -1498,7 +1483,7 @@ void glGrib::GeometryGaussian::getTriangleNeighbours (int it, int jglo[3], int i
 
 int glGrib::GeometryGaussian::getUpperTriangle (int jglo, const jlonlat_t & jlonlat) const
 {
-  if (triu)
+  if (triu.allocated ())
     return triu[jglo];
   else
     return computeUpperTriangle (jlonlat.jlat, jlonlat.jlon);
@@ -1506,7 +1491,7 @@ int glGrib::GeometryGaussian::getUpperTriangle (int jglo, const jlonlat_t & jlon
 
 int glGrib::GeometryGaussian::getLowerTriangle (int jglo, const jlonlat_t & jlonlat) const
 {
-  if (trid)
+  if (trid.allocated ())
     return trid[jglo];
   else
     return computeLowerTriangle (jlonlat.jlat, jlonlat.jlon);

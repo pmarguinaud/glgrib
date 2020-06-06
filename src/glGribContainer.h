@@ -29,6 +29,7 @@ protected:
     virtual const std::string & str () = 0;
     virtual bool isEqual (const _iterator *) const = 0;
     virtual ~_iterator () {}
+    virtual bool last () const = 0;
   };
 public:
   class iterator
@@ -55,6 +56,18 @@ public:
     }    
     bool operator== (const iterator & rhs) const
     {    
+      // Both at end
+      if ((it == nullptr) && (rhs.it == nullptr))
+        return true;
+
+      // At end or not
+      if (rhs.it == nullptr)
+        return it->last ();
+
+      // At end ?
+      if (it == nullptr)
+        return rhs.it->last ();
+
       return it->isEqual (rhs.it);
     }    
   private:

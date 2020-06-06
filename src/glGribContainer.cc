@@ -101,21 +101,13 @@ private:
     {
       return cont->index[rank].ext;
     }
+    bool last () const override
+    {
+      return static_cast<size_t> (rank) == cont->index.size ();
+    }
     bool isEqual (const _iterator * _other) const override
     {
-      // Both at end
-      if ((this == nullptr) && (_other == nullptr))
-        return true;
-
-      // At end or not
-      if (_other == nullptr)
-        return static_cast<size_t> (rank) == cont->index.size ();
-
       const _iteratorPlain * other = dynamic_cast<const _iteratorPlain *>(_other);
-
-      // At end ?
-      if (this == nullptr)
-        return static_cast<size_t> (other->rank) == other->cont->index.size ();
 
       // Do we operate on same container
       if (cont != other->cont)
@@ -203,21 +195,13 @@ private:
     {
       return cont->names[rank];
     }
+    bool last () const override
+    {
+      return static_cast<size_t> (rank) == cont->names.size (); 
+    }
     bool isEqual (const _iterator * _other) const override
     {
-      // Both at end
-      if ((this == nullptr) && (_other == nullptr))
-        return true;
-
-      // At end or not
-      if (_other == nullptr)
-        return static_cast<size_t> (rank) == cont->names.size ();
-
       const _iteratorFA * other = dynamic_cast<const _iteratorFA *>(_other);
-     
-      // At end ?
-      if (this == nullptr)
-        return static_cast<size_t> (other->rank) == other->cont->names.size (); 
 
       // Do we operate on same container
       if (cont != other->cont)

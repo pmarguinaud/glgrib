@@ -22,6 +22,15 @@ public:
   class Mapping
   {
   public:
+    // Avoid copies
+    Mapping & operator= (Mapping &) = delete;
+    Mapping (const Mapping &) = delete;
+    // constructor elision, but the move constructor is required anyway
+    Mapping (Mapping && other)
+    {
+      std::swap (ptr, other.ptr);
+      std::swap (buffer, other.buffer);
+    }
     Mapping (OpenGLBuffer * b) : buffer (b) 
     {
       ptr = (T *)glMapNamedBuffer (buffer->id (), GL_READ_WRITE);
@@ -43,8 +52,11 @@ public:
   private:
     void clear ()
     {
-      glUnmapNamedBuffer (buffer->id ());
-      ptr = nullptr;
+      if (ptr)
+        {
+          glUnmapNamedBuffer (buffer->id ());
+          ptr = nullptr;
+        }
     }
   private:
     OpenGLBuffer * buffer;

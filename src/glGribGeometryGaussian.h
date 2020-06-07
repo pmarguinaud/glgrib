@@ -16,14 +16,13 @@ namespace glGrib
 class GeometryGaussian : public Geometry
 {
 public:
-  bool isEqual (const Geometry &) const override;
-  void getPointNeighbours (int, std::vector<int> *) const override;
-  std::string md5 () const override;
-  int latlon2index (float, float) const override;
-  void index2latlon (int, float *, float *) const override;
   GeometryGaussian (HandlePtr);
   GeometryGaussian (int);
-  void setup (HandlePtr, const OptionsGeometry &) override;
+
+  bool isEqual (const Geometry &) const override;
+  void getPointNeighbours (int, std::vector<int> *) const override;
+  int latlon2index (float, float) const override;
+  void index2latlon (int, float *, float *) const override;
   int size () const override;
   void applyNormScale (glGrib::BufferPtr<float> &) const override;
   void applyUVangle (glGrib::BufferPtr<float> &) const override;
@@ -43,6 +42,8 @@ public:
   void setProgramParameters (Program *) const override;
 
 private:
+  void setup (HandlePtr, const OptionsGeometry &) override;
+  std::string md5 () const override;
 
   class jlonlat_t
   {

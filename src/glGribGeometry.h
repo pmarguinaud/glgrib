@@ -25,6 +25,7 @@ class Geometry
 {
 public:
   static GeometryPtr load (class Loader *, const std::string &, const OptionsGeometry & opts, const int  = 0);
+  virtual void setup (HandlePtr, const OptionsGeometry &) = 0;
   virtual void getPointNeighbours (int, std::vector<int> *) const = 0;
   virtual float getLocalMeshSize (int) const = 0;
   virtual bool isEqual (const Geometry &) const = 0;
@@ -32,12 +33,10 @@ public:
   {
     return isEqual (geom);
   }
-  virtual void setup (HandlePtr, const OptionsGeometry &) = 0;
   virtual int size () const = 0;
   virtual int latlon2index (float, float) const = 0;
   virtual void index2latlon (int, float *, float *) const = 0;
   virtual ~Geometry ();
-  virtual std::string md5 () const = 0;
   virtual void applyUVangle (glGrib::BufferPtr<float> &) const = 0;
   virtual void applyNormScale (glGrib::BufferPtr<float> &) const = 0;
   virtual void sample (OpenGLBufferPtr<unsigned char> &, const unsigned char, const int) const = 0;
@@ -69,6 +68,7 @@ public:
   {
     elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
   }
+
   virtual void getView (View *) const = 0;
 
   void bindCoordinates (int) const;
@@ -115,7 +115,8 @@ public:
     return elementbuffer;
   }
 
-protected:
+private:
+  virtual std::string md5 () const = 0;
   unsigned int ind_strip_size;
   OptionsGeometry opts;
   int numberOfPoints = 0;
@@ -125,6 +126,9 @@ protected:
   int numberOfPoints_frame = 0;
   OpenGLBufferPtr<float> vertexbuffer_frame;
   std::string md5string (const unsigned char []) const;
+  friend class GeometryLatLon;
+  friend class GeometryLambert;
+  friend class GeometryGaussian;
 };
 
 

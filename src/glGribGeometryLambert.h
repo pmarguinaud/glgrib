@@ -11,8 +11,11 @@ namespace glGrib
 class GeometryLambert : public Geometry
 {
 public:
+  GeometryLambert (HandlePtr);
+  void setup (HandlePtr, const OptionsGeometry &) override;
   static const double a;
   
+private:
   class latlon_t
   {
   public:
@@ -186,13 +189,11 @@ public:
   
   };
 
+public:
   bool isEqual (const Geometry &) const override;
   void getPointNeighbours (int, std::vector<int> *) const override;
-  std::string md5 () const override;
   int latlon2index (float, float) const override;
   void index2latlon (int, float *, float *) const override;
-  GeometryLambert (HandlePtr);
-  void setup (HandlePtr, const OptionsGeometry &) override;
   int size () const override;
   virtual ~GeometryLambert ();
   void applyNormScale (glGrib::BufferPtr<float> &) const override {}
@@ -212,8 +213,9 @@ public:
   float getLocalMeshSize (int) const override;
   void getView (View *) const override;
   void setProgramParameters (Program *) const override;
-  void setupFrame ();
 private:
+  void setupFrame ();
+  std::string md5 () const override;
   void getTriangleNeighboursXY (int, int [3], int [3], xy_t [4]) const;
   void setupCoordinates ();
   long int Nx, Ny, Nux, Nuy, projectionCentreFlag;

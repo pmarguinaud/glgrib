@@ -224,12 +224,12 @@ void glGrib::FieldContour::isoline_t::render (const glGrib::View & view, const g
 
 glGrib::FieldContour * glGrib::FieldContour::clone () const
 {
-  glGrib::FieldContour * fld = new glGrib::FieldContour ();
+  glGrib::FieldContour * fld = new glGrib::FieldContour (Field::Privatizer ());
   *fld = *this;
   return fld;
 }
 
-void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
+void glGrib::FieldContour::setup (const Field::Privatizer, glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
   opts = o;
 

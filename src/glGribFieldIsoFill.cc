@@ -15,7 +15,7 @@
 
 glGrib::FieldIsoFill * glGrib::FieldIsoFill::clone () const
 {
-  glGrib::FieldIsoFill * fld = new glGrib::FieldIsoFill ();
+  glGrib::FieldIsoFill * fld = new glGrib::FieldIsoFill (Field::Privatizer ());
   *fld = *this;
   return fld;
 }
@@ -286,7 +286,7 @@ void processTriangle1 (std::vector<isoband_maker_t> * isomake,
 
 }
 
-void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
+void glGrib::FieldIsoFill::setup (const Field::Privatizer, glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
 
   opts = o;

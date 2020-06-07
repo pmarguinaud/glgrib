@@ -10,7 +10,7 @@
 
 glGrib::FieldVector * glGrib::FieldVector::clone () const
 {
-  glGrib::FieldVector * fld = new glGrib::FieldVector ();
+  glGrib::FieldVector * fld = new glGrib::FieldVector (Field::Privatizer ());
   *fld = *this;
   return fld;
 }
@@ -74,7 +74,7 @@ void glGrib::FieldVector::vector_t::setupVertexAttributes () const
 
 }
 
-void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
+void glGrib::FieldVector::setup (const Field::Privatizer, glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
   opts = o;
 

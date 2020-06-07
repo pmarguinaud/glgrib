@@ -190,30 +190,32 @@ glGrib::Field * glGrib::Field::create (const glGrib::OptionsField & opts, float 
      
       std::transform (type.begin (), type.end (), type.begin (), ::toupper);
      
+      const Field::Privatizer priv;
+
       if (type == "VECTOR")
-        fld = new glGrib::FieldVector ();
+        fld = new glGrib::FieldVector (priv);
       else if (type == "STREAM")
-        fld = new glGrib::FieldStream ();
+        fld = new glGrib::FieldStream (priv);
       else if (type == "CONTOUR")
-        fld = new glGrib::FieldContour ();
+        fld = new glGrib::FieldContour (priv);
       else if (type == "SCALAR")
         {
           switch (opts1.scalar.pack.bits)
             {
-              case  8: fld = new glGrib::FieldScalar< 8> (); break;
-              case 16: fld = new glGrib::FieldScalar<16> (); break;
-              case 32: fld = new glGrib::FieldScalar<32> (); break;
+              case  8: fld = new glGrib::FieldScalar< 8> (priv); break;
+              case 16: fld = new glGrib::FieldScalar<16> (priv); break;
+              case 32: fld = new glGrib::FieldScalar<32> (priv); break;
               default:
                 throw std::runtime_error (std::string ("Wrong number of bits for packing field: ") +
                                           std::to_string (opts1.scalar.pack.bits));
             }
         }
       else if (type == "ISOFILL")
-        fld = new glGrib::FieldIsoFill ();
+        fld = new glGrib::FieldIsoFill (priv);
       else
         throw std::runtime_error (std::string ("Unknown field type : ") + type);
      
-      fld->setup (ld, opts1, slot);
+      fld->setup (priv, ld, opts1, slot);
       fld->slot = slot;
     }
   catch (const std::runtime_error & e)
@@ -396,23 +398,9 @@ void glGrib::Field::frame_t::render (const glGrib::View & view) const
 }
 
 
-#define DEF(N) \
-template void glGrib::FieldPacked<N>::unpack  \
-            (glGrib::BufferPtr<float> &, const int, const float,   \
-             const float, const float, const glGrib::OpenGLBufferPtr<T> &);  \
-template void glGrib::FieldPacked<N>::pack \
-          (const glGrib::BufferPtr<float> &, const int, const float,   \
-             const float, const float, glGrib::OpenGLBufferPtr<T> &);  \
-template void glGrib::FieldPacked<N>::packUnpack   \
-          (const glGrib::BufferPtr<float> &, glGrib::BufferPtr<float> &, const int,   \
-           const float, const float, const float); \
-template void glGrib::FieldPacked<N>::loadHeight (glGrib::OpenGLBufferPtr<T>, glGrib::Loader *); \
-template void glGrib::FieldPacked<N>::bindHeight (int) const;
-
-DEF ( 8);
-DEF (16);
-DEF (32);
-
+template class glGrib::FieldPacked< 8>;
+template class glGrib::FieldPacked<16>;
+template class glGrib::FieldPacked<32>;
 
 
 

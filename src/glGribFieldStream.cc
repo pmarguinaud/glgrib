@@ -27,7 +27,7 @@ double getTime ()
 
 glGrib::FieldStream * glGrib::FieldStream::clone () const
 {
-  glGrib::FieldStream * fld = new glGrib::FieldStream ();
+  glGrib::FieldStream * fld = new glGrib::FieldStream (Field::Privatizer ());
   *fld = *this;
   return fld;
 }
@@ -86,7 +86,7 @@ void glGrib::FieldStream::streamline_t::setup
   d.size = stream_data.size () - 1;
 }
 
-void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
+void glGrib::FieldStream::setup (const Field::Privatizer, glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
   opts = o;
 

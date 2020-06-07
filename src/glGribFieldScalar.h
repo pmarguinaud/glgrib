@@ -9,14 +9,17 @@ template <int N>
 class FieldScalar : public FieldPacked<N>
 {
 public:
+  FieldScalar (const Field::Privatizer) : scalar (this), points (this) { }
+  void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
+  FieldScalar (const FieldScalar &) = delete;
+
   using T = typename FieldPackingType<N>::type;
+
   Field::kind getKind () const 
   {
     return Field::SCALAR;
   }
   FieldScalar * clone () const;
-  FieldScalar () : scalar (this), points (this) { }
-  void setup (Loader *, const OptionsField &, float = 0) override;
   void render (const View &, const OptionsLight &) const override;
   bool useColorBar () const override { return true; }
   int getSlotMax () const override
@@ -24,6 +27,7 @@ public:
     return (int)this->opts.path.size ();
   }
 private:
+
   void setupMpiView (Loader *, const OptionsField &, float = 0);
 
   class field_t

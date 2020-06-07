@@ -11,13 +11,12 @@ namespace glGrib
 class GeometryLatLon : public Geometry
 {
 public:
-  bool isEqual (const Geometry &) const override;
-  void getPointNeighbours (int, std::vector<int> *) const override;
-  std::string md5 () const override;
-  int latlon2index (float, float) const override;
-  void index2latlon (int, float *, float *) const override;
   GeometryLatLon (HandlePtr);
   void setup (HandlePtr, const OptionsGeometry &) override;
+  bool isEqual (const Geometry &) const override;
+  void getPointNeighbours (int, std::vector<int> *) const override;
+  int latlon2index (float, float) const override;
+  void index2latlon (int, float *, float *) const override;
   int size () const override;
   virtual ~GeometryLatLon ();
   void applyNormScale (glGrib::BufferPtr<float> &) const override {}
@@ -43,6 +42,7 @@ public:
   void getView (View *) const override;
   void setProgramParameters (Program *) const override;
 private:
+  std::string md5 () const override;
   void setupCoordinates ();
   void setupFrame ();
   void getTriangleNeighboursLatLon (int, int [3], int [3], float &, float &, float &, float &) const;

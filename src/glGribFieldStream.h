@@ -9,13 +9,14 @@ namespace glGrib
 class FieldStream : public Field
 {
 public:
+  FieldStream (const Field::Privatizer) { }
+  void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
+  FieldStream (const FieldStream &) = delete;
   Field::kind getKind () const 
   {
     return Field::STREAM;
   }
   FieldStream * clone () const;
-  FieldStream () { }
-  void setup (Loader *, const OptionsField &, float = 0) override;
   void render (const View &, const OptionsLight &) const override;
   bool useColorBar () const override { return true; }
   int getSlotMax () const override

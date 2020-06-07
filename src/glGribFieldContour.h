@@ -9,21 +9,21 @@ namespace glGrib
 class FieldContour : public Field
 {
 public:
+  FieldContour (const Field::Privatizer) { }
+  void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
   Field::kind getKind () const 
   {
     return Field::CONTOUR;
   }
   FieldContour * clone () const;
-  FieldContour () { }
-  void setup (Loader *, const OptionsField &, float = 0) override;
   void render (const View &, const OptionsLight &) const override;
   bool useColorBar () const override { return true; }
   int getSlotMax () const override
   {
     return (int)opts.path.size ();
   }
+  FieldContour (const FieldContour &) = delete;
 private:
-  FieldContour (const FieldContour &);
   class isoline_data_t
   {
   public:

@@ -39,11 +39,18 @@ template <> struct FieldPackingType<32>
 };
 
 
+template <int N>
+class FieldPacked;
+
+template <int N>
+class FieldScalar;
+
 class Field : public World
 {
 public:
 
   static Field * create (const OptionsField &, float, Loader *);
+  Field (const Field &) = delete;
 
   typedef enum
   {
@@ -54,22 +61,14 @@ public:
     ISOFILL=4,
   } kind;
 
-  Field () : frame (this) {}
 
   virtual kind getKind () const = 0;
   virtual bool useColorBar () const  = 0;
 
   virtual Field * clone () const  = 0;
-  virtual void setup (Loader *, const OptionsField &, float = 0) = 0;
   void setPaletteOptions (const OptionsPalette & o)
   {
     palette = glGrib::Palette (o, getNormedMinValue (), getNormedMaxValue ());
-  }
-  void setupHilo (BufferPtr<float>);
-  void renderHilo (const View &) const;
-  void renderFrame (const View & view) const 
-  {
-    frame.VAID.render (view);
   }
   virtual std::vector<float> getValue (int index) const 
   { 
@@ -147,7 +146,6 @@ public:
  
   }
 
-  void saveOptions () const;
 
   virtual int getSlotMax () const  = 0;
  
@@ -156,9 +154,25 @@ public:
     return slot;
   }
 
-  static void getUserPref (OptionsField *, Loader *, int);
+  void saveOptions () const;
 
 private:
+
+  class Privatizer
+  {
+  };
+
+  static void getUserPref (OptionsField *, Loader *, int);
+
+  virtual void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) = 0;
+  void setupHilo (BufferPtr<float>);
+  void renderHilo (const View &) const;
+  void renderFrame (const View & view) const 
+  {
+    frame.VAID.render (view);
+  }
+
+  Field () : frame (this) {}
 
   const bool & getVisibleRef () const override
   {  
@@ -191,12 +205,23 @@ private:
   String3D hilo;
   frame_t frame;
 
-protected:
+private:
   float slot = 0.0f;
   Palette palette;
   mutable OptionsField opts;
   std::vector<FieldMetadata> meta;
   std::vector<BufferPtr<float>> values;
+  friend class FieldPacked< 8>;
+  friend class FieldPacked<16>;
+  friend class FieldPacked<32>;
+  friend class FieldVector;
+  friend class FieldScalar< 8>;
+  friend class FieldScalar<16>;
+  friend class FieldScalar<16>;
+  friend class FieldScalar<32>;
+  friend class FieldIsoFill;
+  friend class FieldStream;
+  friend class FieldContour;
 };
 
 template <int N>
@@ -205,10 +230,10 @@ class FieldPacked : public Field
 public:
 
   using T = typename FieldPackingType<N>::type;
-
   FieldPacked () : Field () {}
+  FieldPacked (const FieldPacked &) = delete;
 
-protected:
+private:
   void unpack (BufferPtr<float> &, const int, const float, 
                const float, const float, const OpenGLBufferPtr<T> &);
   void pack (const BufferPtr<float> &, const int, const float, 
@@ -218,6 +243,14 @@ protected:
   void loadHeight (OpenGLBufferPtr<T>, Loader *);
   void bindHeight (int) const;
   OpenGLBufferPtr<T> heightbuffer;
+  friend class FieldVector;
+  friend class FieldScalar< 8>;
+  friend class FieldScalar<16>;
+  friend class FieldScalar<16>;
+  friend class FieldScalar<32>;
+  friend class FieldIsoFill;
+  friend class FieldStream;
+  friend class FieldContour;
 };
 
 

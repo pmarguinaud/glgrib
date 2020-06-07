@@ -8,13 +8,13 @@ namespace glGrib
 class FieldIsoFill : public FieldPacked<8>
 {
 public:
+  FieldIsoFill (const Field::Privatizer) : d (this) { }
+  void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
   Field::kind getKind () const 
   {
     return Field::ISOFILL;
   }
   FieldIsoFill * clone () const;
-  FieldIsoFill () : d (this) { }
-  void setup (Loader *, const OptionsField &, float = 0) override;
   void render (const View &, const OptionsLight &) const override;
   void setupVertexAttributes () const;
   bool useColorBar () const override { return true; }

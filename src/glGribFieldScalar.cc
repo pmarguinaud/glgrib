@@ -12,7 +12,7 @@
 template <int N>
 glGrib::FieldScalar<N> * glGrib::FieldScalar<N>::clone () const
 {
-  glGrib::FieldScalar<N> * fld = new glGrib::FieldScalar<N> ();
+  glGrib::FieldScalar<N> * fld = new glGrib::FieldScalar<N> (Field::Privatizer ());
   *fld = *this;
   return fld;
 }
@@ -80,7 +80,7 @@ void glGrib::FieldScalar<N>::points_t::setupVertexAttributes () const
 }
 
 template <int N>
-void glGrib::FieldScalar<N>::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
+void glGrib::FieldScalar<N>::setup (const Field::Privatizer, glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
   auto & opts = this->opts;
   auto & palette = this->palette;
@@ -281,16 +281,8 @@ void glGrib::FieldScalar<N>::render (const glGrib::View & view, const glGrib::Op
 }
 
 
-#define DEF(N) \
-void load_##N ()  \
-{  \
-  glGrib::View view; glGrib::OptionsLight light; \
-  (new glGrib::FieldScalar<N> ())->render (view, light); \
-}
-
-DEF ( 8);
-DEF (16);
-DEF (32);
-
+template class glGrib::FieldScalar< 8>;
+template class glGrib::FieldScalar<16>;
+template class glGrib::FieldScalar<32>;
 
 

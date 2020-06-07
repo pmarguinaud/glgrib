@@ -9,6 +9,10 @@ namespace glGrib
 class FieldVector : public FieldPacked<8>
 {
 public:
+  FieldVector (const Field::Privatizer) : scalar (this), vector (this) { }
+  void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
+  FieldVector (const FieldVector &) = delete;
+
   using T = typename FieldPackingType<8>::type;
   
   Field::kind getKind () const 
@@ -16,8 +20,6 @@ public:
     return Field::VECTOR;
   }
   FieldVector * clone () const;
-  FieldVector () : scalar (this), vector (this) { }
-  void setup (Loader *, const OptionsField &, float = 0) override;
   void renderArrow (const View &, const OptionsLight &) const;
   void renderNorms (const View &, const OptionsLight &) const;
   void render (const View &, const OptionsLight &) const override;

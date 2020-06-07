@@ -93,21 +93,11 @@ public:
     return numberOfPoints_frame;
   }
 
-  void setFrameNumberOfPoints (int np)
-  {
-    numberOfPoints_frame = np;
-  }
-
   virtual void setProgramParameters (Program * program) const;
 
   const OpenGLBufferPtr<float> & getVertexBuffer () const
   {
     return vertexbuffer;
-  }
-
-  void setVertexBuffer (const OpenGLBufferPtr<float> & v)
-  {
-    vertexbuffer = v;
   }
 
   void setOptions (const OptionsGeometry & o)
@@ -120,29 +110,9 @@ public:
     return opts;
   }
 
-  void setNumberOfTriangles (int nt)
-  {
-    numberOfTriangles = nt;
-  }
-
-  void setNumberOfPoints (int np)
-  {
-    numberOfPoints = np;
-  }
-
-  void setElementBuffer (const OpenGLBufferPtr<unsigned int> & e)
-  {
-    elementbuffer = e;
-  }
-
   const OpenGLBufferPtr<unsigned int> & getElementBuffer () const
   {
     return elementbuffer;
-  }
-
-  void setFrameVertexBuffer (const OpenGLBufferPtr<float> & v)
-  {
-    vertexbuffer_frame = v;
   }
 
 protected:

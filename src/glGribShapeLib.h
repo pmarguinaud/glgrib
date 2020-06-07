@@ -11,7 +11,7 @@ namespace glGrib
 
 namespace ShapeLib
 {
-extern void read (const OptionsLines &, int *, unsigned int *, 
+extern void read (const OptionsLines &, 
                   std::vector<float> *, std::vector<unsigned int> *,
                   const std::string &);
 };

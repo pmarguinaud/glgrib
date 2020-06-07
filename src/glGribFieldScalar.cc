@@ -2,6 +2,7 @@
 #include "glGribTrigonometry.h"
 #include "glGribProgram.h"
 #include "glGribPalette.h"
+#include "glGribClear.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -130,7 +131,7 @@ void glGrib::FieldScalar<N>::setup (glGrib::Loader * ld, const glGrib::OptionsFi
     setupMpiView (ld, o, slot);
 
   if (opts.no_value_pointer.on)
-    data = glGrib::BufferPtr<float> (0);
+    clear (data);
 
   this->values.push_back (data);
 

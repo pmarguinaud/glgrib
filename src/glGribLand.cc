@@ -243,15 +243,12 @@ void glGrib::Land::layer_t::subdivide
 
 void glGrib::Land::layer_t::setup (const glGrib::OptionsLandLayer & opts)
 {
-  int numberOfPoints;
   glGrib::OptionsLines lopts;
-  unsigned int numberOfLines; 
   std::vector<float> lonlat;
   std::vector<unsigned int> indl;
   
   lopts.path = opts.path; lopts.selector = opts.selector;
-  glGrib::ShapeLib::read (lopts, &numberOfPoints, &numberOfLines, &lonlat, 
-                         &indl, lopts.selector);
+  glGrib::ShapeLib::read (lopts, &lonlat, &indl, lopts.selector);
   
   int_v pos_offset, pos_length;
   int_v ord;

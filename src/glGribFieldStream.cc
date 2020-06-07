@@ -1,6 +1,7 @@
 #include "glGribFieldStream.h"
 #include "glGribProgram.h"
 #include "glGribPalette.h"
+#include "glGribClear.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -166,8 +167,8 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   if (opts.no_value_pointer.on)
     {
-      data_n = glGrib::BufferPtr<float> (0);
-      data_d = glGrib::BufferPtr<float> (0);
+      clear (data_n);
+      clear (data_d);
     }
 
   values.push_back (data_n);

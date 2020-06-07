@@ -16,7 +16,7 @@ void glGrib::Polygon::render (const glGrib::View & view, const glGrib::OptionsLi
   VAID.bind ();
   glEnable (GL_PRIMITIVE_RESTART);
   glPrimitiveRestartIndex (0xffffffff);
-  glDrawElements (GL_LINE_STRIP, numberOfLines, GL_UNSIGNED_INT, nullptr);
+  glDrawElements (GL_LINE_STRIP, getNumberOfLines (), GL_UNSIGNED_INT, nullptr);
   glDisable (GL_PRIMITIVE_RESTART);
   VAID.unbind ();
 }

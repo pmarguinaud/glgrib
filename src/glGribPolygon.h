@@ -13,11 +13,22 @@ public:
   Polygon () : VAID (this) {}
   void setupVertexAttributes () const;
   void render (const View &, const OptionsLight &) const override;
-protected:
+  int getNumberOfPoints () const
+  {
+    return vertexbuffer->size () / 2;
+  }
+  int getNumberOfLines () const
+  {
+    return elementbuffer->size ();
+  }
+  void setup (const std::vector <float> & lonlat, const std::vector <unsigned int> & ind)
+  {
+    vertexbuffer = glGrib::OpenGLBufferPtr<float> (lonlat);
+    elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind);
+  }
+private:
   OpenGLBufferPtr<float> vertexbuffer;
   OpenGLBufferPtr<unsigned int> elementbuffer;
-  unsigned int numberOfLines;
-  int numberOfPoints;
   OpenGLVertexArray<Polygon> VAID;
 };
 

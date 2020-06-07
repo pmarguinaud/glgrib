@@ -2,6 +2,7 @@
 #include "glGribTrigonometry.h"
 #include "glGribProgram.h"
 #include "glGribPalette.h"
+#include "glGribClear.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -429,7 +430,7 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
     }
 
   if (opts.no_value_pointer.on)
-    data = glGrib::BufferPtr<float> (0);
+    clear (data);
 
   values.push_back (data);
 

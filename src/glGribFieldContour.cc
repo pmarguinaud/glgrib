@@ -2,6 +2,7 @@
 #include "glGribProgram.h"
 #include "glGribPalette.h"
 #include "glGribTrigonometry.h"
+#include "glGribClear.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -300,7 +301,7 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
     iso[i].setup (opts, levels[i], i, palette, iso_data[i]);
 
   if (opts.no_value_pointer.on)
-    data = glGrib::BufferPtr<float> (0);
+    clear (data);
   values.push_back (data);
 
   setReady ();

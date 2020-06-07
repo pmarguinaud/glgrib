@@ -86,8 +86,8 @@ int read_GSHHG_POINT_list (std::vector<GSHHG_POINT_t> * gpl, int n, FILE * fp)
 
 }
 
-void glGrib::GSHHG::read (const glGrib::OptionsLines & opts, int * numberOfPoints, 
-		         unsigned int * numberOfLines, std::vector<float> * lonlat,
+void glGrib::GSHHG::read (const glGrib::OptionsLines & opts, 
+		         std::vector<float> * lonlat,
 			 std::vector<unsigned int> * ind, 
                          const std::vector<unsigned int> & mask, 
                          const std::vector<unsigned int> & code)
@@ -176,9 +176,6 @@ void glGrib::GSHHG::read (const glGrib::OptionsLines & opts, int * numberOfPoint
         break;
 
     }   
-
-  *numberOfPoints = lonlat->size () / 2;
-  *numberOfLines = ind->size ();
 
   fclose (fp);
   fp = nullptr;

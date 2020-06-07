@@ -15,8 +15,8 @@
 #include <iostream>
 
 
-void glGrib::ShapeLib::read (const glGrib::OptionsLines & opts, int * numberOfPoints, 
-                            unsigned int * numberOfLines, std::vector<float> * lonlat,
+void glGrib::ShapeLib::read (const glGrib::OptionsLines & opts, 
+                            std::vector<float> * lonlat,
                             std::vector<unsigned int> * ind, 
                             const std::string & selector)
 {
@@ -144,10 +144,6 @@ void glGrib::ShapeLib::read (const glGrib::OptionsLines & opts, int * numberOfPo
     }
 
   SHPClose (fp);
-
-  *numberOfPoints = lonlat->size () / 2;
-  *numberOfLines  = ind->size ();
-
 
 }
 

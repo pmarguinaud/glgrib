@@ -11,8 +11,8 @@
 #include <stdexcept>
 
 void glGrib::Lines::setup (const glGrib::OptionsLines & o, 
-                          const std::vector<unsigned int> & mask, 
-                          const std::vector<unsigned int> & code)
+                           const std::vector<unsigned int> & mask, 
+                           const std::vector<unsigned int> & code)
 {
   opts = o;
 
@@ -20,12 +20,11 @@ void glGrib::Lines::setup (const glGrib::OptionsLines & o,
   std::vector <unsigned int> ind;
 
   if (opts.format == "gshhg")
-     glGrib::GSHHG::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &ind, mask, code);
+     glGrib::GSHHG::read (opts, &lonlat, &ind, mask, code);
   else
-     glGrib::ShapeLib::read (opts, &numberOfPoints, &numberOfLines, &lonlat, &ind, opts.selector);
+     glGrib::ShapeLib::read (opts, &lonlat, &ind, opts.selector);
 
-  vertexbuffer = glGrib::OpenGLBufferPtr<float> (lonlat);
-  elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind);
+  glGrib::Polygon::setup (lonlat, ind);
 
   setReady ();
 }

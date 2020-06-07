@@ -27,8 +27,6 @@ void glGrib::Lines::setup (const glGrib::OptionsLines & o,
   vertexbuffer = glGrib::OpenGLBufferPtr<float> (lonlat);
   elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind);
 
-  setupVertexAttributes ();
-
   setReady ();
 }
 

@@ -145,7 +145,8 @@ public:
     vertexbuffer_frame = v;
   }
 
-private:
+protected:
+  unsigned int ind_strip_size;
   OptionsGeometry opts;
   int numberOfPoints = 0;
   unsigned int numberOfTriangles = 0;

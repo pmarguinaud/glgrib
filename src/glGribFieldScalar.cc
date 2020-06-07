@@ -83,7 +83,6 @@ void glGrib::FieldScalar<N>::setup (glGrib::Loader * ld, const glGrib::OptionsFi
 {
   auto & opts = this->opts;
   auto & palette = this->palette;
-  const auto & geometry = this->getGeometry ();
 
   opts = o;
 
@@ -101,6 +100,8 @@ void glGrib::FieldScalar<N>::setup (glGrib::Loader * ld, const glGrib::OptionsFi
 
   if (opts.hilo.on)
     this->setupHilo (data);
+
+  const auto & geometry = this->getGeometry ();
 
   colorbuffer = glGrib::OpenGLBufferPtr<T> (geometry->getNumberOfPoints ());
 

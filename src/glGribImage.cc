@@ -20,8 +20,6 @@ void glGrib::Image::setup (const glGrib::OptionsImage & o)
 
   texture = glGrib::OpenGLTexturePtr (w, h, rgb);
 
-  setupVertexAttributes ();
-
   setReady ();
 }
 

@@ -133,7 +133,7 @@ public:
         throw std::runtime_error (std::string ("Column out of bounds"));
       SQLiteDetail::iset (db, req, rank, t);
     }
-protected:
+  private:
     sqlite3_stmt_ptr req;
     sqlite3_ptr db;
     friend class SQLite;

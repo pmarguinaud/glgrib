@@ -48,7 +48,7 @@ public:
   {
     return getVisibleRef ();
   }
-protected:
+private:
   virtual const bool & getVisibleRef () const = 0;
   bool & getVisibleRef () 
   {

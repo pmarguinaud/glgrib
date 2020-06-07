@@ -75,22 +75,27 @@ void glGrib::FieldVector::vector_t::setupVertexAttributes () const
 
 void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
-  const int numberOfPoints = getGeometry ()->getNumberOfPoints ();
   opts = o;
 
   glGrib::FieldMetadata meta_u, meta_v;
   glGrib::FieldMetadata meta_n, meta_d;
 
   glGrib::BufferPtr<float> data_u, data_v;
+
   ld->load (&data_u, opts.path, opts.geometry, slot, &meta_u, 2, 0);
   ld->load (&data_v, opts.path, opts.geometry, slot, &meta_v, 2, 1);
 
   setGeometry (glGrib::Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry));
 
+  loadHeight (d.buffer_n, ld);
+
+  const int numberOfPoints = getGeometry ()->getNumberOfPoints ();
 
   glGrib::BufferPtr<float> data_n, data_d;
 
-  glGrib::Loader::uv2nd (getGeometry (), data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
+  glGrib::Loader::uv2nd 
+    (getGeometry (), data_u, data_v, data_n, data_d, 
+     meta_u, meta_v, meta_n, meta_d);
 
   d.buffer_n = glGrib::OpenGLBufferPtr<T> (numberOfPoints);
 
@@ -98,15 +103,14 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
         meta_n.valmin, meta_n.valmax, meta_n.valmis, 
         d.buffer_n);
 
-  loadHeight (d.buffer_n, ld);
-
   d.buffer_d = glGrib::OpenGLBufferPtr<T> (numberOfPoints);
 
-  const int npts = opts.vector.density;
 
   pack (data_d, numberOfPoints,
         meta_d.valmin, meta_d.valmax, meta_d.valmis, 
         d.buffer_d);
+
+  const int npts = opts.vector.density;
 
   getGeometry ()->sample (d.buffer_d, 0, npts);
 

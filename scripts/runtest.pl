@@ -268,7 +268,7 @@ for my $name (@name)
         
 	my @img = <TEST*.png>;
 
-	if (scalar (@img) > 1)
+	if ((scalar (@img) > 1) && (! $ENV{NOMOVIE}))
 	  {
             system ('convert', -delay => 20, -loop => 0, @img, 'TEST.gif');
 	    rename ('TEST.gif', "test.run/$name/TEST.gif");

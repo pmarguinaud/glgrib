@@ -7,6 +7,7 @@
 glGrib::WindowReviewSet::WindowReviewSet (const glGrib::Options & o)
   : glGrib::WindowSet (o, false)
 {
+  const auto & opts = getOptions ();
   glGrib::Options opts_ = opts;
 
   if (opts.review.path.size () == 0)
@@ -54,7 +55,7 @@ void glGrib::WindowReviewSet::updateWindows ()
 
   ext = e;
   
-  auto fopts = opts.field[0];
+  auto fopts = getOptions ().field[0];
   
   fopts.path.resize (1);
   fopts.path[0] = cont->getFile () + "%" + ext;

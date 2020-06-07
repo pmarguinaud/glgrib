@@ -28,7 +28,15 @@ public:
   void runShell (Shell **);
   void handleMasterWindow ();
   static WindowSet * create (const glGrib::Options &);
-protected:
+  Options & getOptions ()
+  {
+    return opts;
+  }
+  const Options & getOptions () const
+  {
+    return opts;
+  }
+private:
   Options opts;
 };
 

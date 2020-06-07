@@ -881,7 +881,7 @@ void glGrib::Window::run (glGrib::Shell * shell)
   
   if ((glfwGetKey (window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
    || (glfwWindowShouldClose (window) != 0) || (shell && shell->closed ()))
-    closed = true;
+    close ();
 
 }
 

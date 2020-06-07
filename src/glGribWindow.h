@@ -210,7 +210,17 @@ public:
   void zoom (double, double);
   void zoomSchmidt (double, double);
 
-protected:
+  void update ()
+  {
+    scene.update ();
+  }
+
+  void close ()
+  {
+    closed = true;
+  }
+  
+private:
   int snapshot_cnt = 0;
   Scene scene;
   bool cursorpos = false;
@@ -222,7 +232,6 @@ protected:
   bool cloned = false;
   bool master = false;
   OptionsWindow opts;
-private:
   bool next = false; // Next field
   bool prev = false; // Prev field
   bool start_shell = false; // Start shell

@@ -25,9 +25,9 @@ void setDiffOptions (glGrib::OptionsField & opts1, glGrib::OptionsField & opts2,
 glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
   : glGrib::WindowSet (o, false)
 {
-  glGrib::Options opts1 = opts, opts2 = opts;
+  glGrib::Options opts1 = getOptions (), opts2 = getOptions ();
 
-  if (opts.diff.path.size () != 2)
+  if (getOptions ().diff.path.size () != 2)
     throw std::runtime_error (std::string ("Option --diff.path requires two arguments"));
 
 
@@ -55,8 +55,8 @@ glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
   opts2.window.width = maxWidth / 2;
   opts2.window.height = maxWidth / 2;
 
-  cont1 = glGrib::Container::create (opts.diff.path[0], true);
-  cont2 = glGrib::Container::create (opts.diff.path[1], true);
+  cont1 = glGrib::Container::create (getOptions ().diff.path[0], true);
+  cont2 = glGrib::Container::create (getOptions ().diff.path[1], true);
 
 
   cont1->buildIndex ();
@@ -65,8 +65,8 @@ glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
   ext = getNextExt ();
 
   setDiffOptions (opts1.field[0], opts2.field[0], 
-                  opts.diff.path[0] + "%" + ext, 
-                  opts.diff.path[1] + "%" + ext);
+                  getOptions ().diff.path[0] + "%" + ext, 
+                  getOptions ().diff.path[1] + "%" + ext);
 
   glGrib::Window * gwindow1 = createWindow (opts1);
   glGrib::Window * gwindow2 = gwindow1->clone ();
@@ -132,8 +132,8 @@ void glGrib::WindowDiffSet::updateWindows ()
 
   ext = e;
   
-  auto fopts1 = opts.field[0];
-  auto fopts2 = opts.field[0];
+  auto fopts1 = getOptions ().field[0];
+  auto fopts2 = getOptions ().field[0];
   
   setDiffOptions (fopts1, fopts2, cont1->getFile () + "%" + ext, cont2->getFile () + "%" + ext);
   

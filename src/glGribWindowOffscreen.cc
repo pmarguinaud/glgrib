@@ -4,10 +4,10 @@
 
 glGrib::WindowOffscreen::WindowOffscreen (const Options & _opts) 
 {
-  frames = _opts.window.offscreen.frames;
   create (_opts);
-  scene.setup (_opts);
-  reSize (opts.width, opts.height);
+  getScene ().setup (_opts);
+  reSize (getOptions ().width, getOptions ().height);
+  frames = _opts.window.offscreen.frames;
 }
 
 void glGrib::WindowOffscreen::setHints ()
@@ -18,10 +18,11 @@ void glGrib::WindowOffscreen::setHints ()
 
 void glGrib::WindowOffscreen::run (class glGrib::Shell * shell)
 {
+  const auto & opts = getOptions ();
   for (int i = 0; i < frames; i++)
     {
-      scene.update ();
+      update ();
       framebuffer (opts.offscreen.format);
     }
-  closed = true;
+  close ();
 }

@@ -54,10 +54,12 @@ public:
   virtual void checkTriangles () const;
   virtual void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const = 0;
   virtual void renderTriangles () const;
+
   int getNumberOfPoints () const
   {
     return numberOfPoints;
   }
+
   int getNumberOfTriangles () const
   {
     return numberOfTriangles;
@@ -85,16 +87,66 @@ public:
           }
       }
   }
-  virtual int getFrameNumberOfPoints () const
+
+  int getFrameNumberOfPoints () const
   {
     return numberOfPoints_frame;
   }
 
+  void setFrameNumberOfPoints (int np)
+  {
+    numberOfPoints_frame = np;
+  }
+
   virtual void setProgramParameters (Program * program) const;
 
-protected:
+  const OpenGLBufferPtr<float> & getVertexBuffer () const
+  {
+    return vertexbuffer;
+  }
+
+  void setVertexBuffer (const OpenGLBufferPtr<float> & v)
+  {
+    vertexbuffer = v;
+  }
+
+  void setOptions (const OptionsGeometry & o)
+  {
+    opts = o;
+  }
+
+  const OptionsGeometry & getOptions () const
+  {
+    return opts;
+  }
+
+  void setNumberOfTriangles (int nt)
+  {
+    numberOfTriangles = nt;
+  }
+
+  void setNumberOfPoints (int np)
+  {
+    numberOfPoints = np;
+  }
+
+  void setElementBuffer (const OpenGLBufferPtr<unsigned int> & e)
+  {
+    elementbuffer = e;
+  }
+
+  const OpenGLBufferPtr<unsigned int> & getElementBuffer () const
+  {
+    return elementbuffer;
+  }
+
+  void setFrameVertexBuffer (const OpenGLBufferPtr<float> & v)
+  {
+    vertexbuffer_frame = v;
+  }
+
+private:
   OptionsGeometry opts;
-  unsigned int ind_strip_size = 0;
   int numberOfPoints = 0;
   unsigned int numberOfTriangles = 0;
   OpenGLBufferPtr<float> vertexbuffer;

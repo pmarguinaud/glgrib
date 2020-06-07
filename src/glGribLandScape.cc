@@ -17,7 +17,7 @@ void glGrib::Landscape::setupVertexAttributes () const
 {
   glGrib::Program * program = glGrib::Program::load ("LANDSCAPE");
 
-  geometry->bindCoordinates (program->getAttributeLocation ("vertexLonLat"));
+  getGeometry ()->bindCoordinates (program->getAttributeLocation ("vertexLonLat"));
  
   auto attr = program->getAttributeLocation ("vertexHeight");
   if (d.heightbuffer)
@@ -32,7 +32,7 @@ void glGrib::Landscape::setupVertexAttributes () const
       glVertexAttrib1f (attr, 0.0f);
     }   
  
-  geometry->bindTriangles ();
+  getGeometry ()->bindTriangles ();
 }
 
 namespace
@@ -54,8 +54,8 @@ void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandsca
 
   d.opts = o;
 
-  geometry = glGrib::Geometry::load (ld, d.opts.geometry_path, d.opts.geometry, 
-                                     d.opts.number_of_latitudes);
+  setGeometry (glGrib::Geometry::load (ld, d.opts.geometry_path, d.opts.geometry,
+                                       d.opts.number_of_latitudes));
 
   if (d.opts.color == glGrib::OptionColor ("#00000000"))
     {
@@ -81,10 +81,10 @@ void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandsca
     {
       glGrib::GeometryPtr geometry_height = glGrib::Geometry::load (ld, d.opts.geometry.height.path, d.opts.geometry);
 
-      if (! geometry_height->isEqual (*geometry))
+      if (! geometry_height->isEqual (*getGeometry ()))
         throw std::runtime_error (std::string ("Landscape and height have different geometries"));
 
-      int size = geometry->getNumberOfPoints ();
+      int size = getGeometry ()->getNumberOfPoints ();
 
       glGrib::BufferPtr<float> data;
       glGrib::FieldMetadata meta;
@@ -168,7 +168,7 @@ void glGrib::Landscape::render (const glGrib::View & view, const glGrib::Options
   if (d.opts.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 
-  geometry->renderTriangles ();
+  getGeometry ()->renderTriangles ();
 
   if (d.opts.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);

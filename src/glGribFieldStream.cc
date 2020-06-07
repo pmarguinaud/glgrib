@@ -98,11 +98,11 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
   ld->load (&data_u, opts.path, opts.geometry, slot, &meta_u, 2, 0);
   ld->load (&data_v, opts.path, opts.geometry, slot, &meta_v, 2, 1);
 
-  geometry = glGrib::Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry);
+  setGeometry (glGrib::Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry));
 
   glGrib::BufferPtr<float> data_n, data_d;
 
-  glGrib::Loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
+  glGrib::Loader::uv2nd (getGeometry (), data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
   palette = glGrib::Palette (opts.palette, 0.0f, meta_n.valmax);
 
@@ -115,9 +115,9 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
 
   std::vector<int> it;
 
-  int nt = geometry->getNumberOfTriangles ();
+  int nt = getGeometry ()->getNumberOfTriangles ();
 
-  int np = static_cast<int> (sqrt (geometry->getNumberOfPoints ()));
+  int np = static_cast<int> (sqrt (getGeometry ()->getNumberOfPoints ()));
   int level = static_cast<int> (opts.stream.density * np / 40.0f);
 
   {
@@ -125,7 +125,7 @@ void glGrib::FieldStream::setup (glGrib::Loader * ld, const glGrib::OptionsField
     for (int i = 0; i < nt; i++)
       sample[i] = 0;
 
-    geometry->sampleTriangle (sample, 1, level);
+    getGeometry ()->sampleTriangle (sample, 1, level);
 
     for (int i = 0; i < nt; i++)
       if (sample[i])
@@ -211,7 +211,7 @@ void glGrib::FieldStream::getFirstPoint (int it, const glGrib::BufferPtr<float> 
 
   w[0] = w[1] = w[2] = 0.0f;
 
-  geometry->getTriangleNeighbours (it, jglo, itri, P);
+  getGeometry ()->getTriangleNeighbours (it, jglo, itri, P);
 
   // Find best edge to start with
   int i0 = std::numeric_limits<int>::max ();
@@ -253,7 +253,7 @@ void glGrib::FieldStream::getFirstPoint (int it, const glGrib::BufferPtr<float> 
     {
       int jglom[3], itrim[3];
       glm::vec3 xyzm[3];
-      geometry->getTriangleNeighbours (itm, jglom, itrim, xyzm);
+      getGeometry ()->getTriangleNeighbours (itm, jglom, itrim, xyzm);
 
       wm[0] = wm[1] = wm[2] = 0.0f;
 
@@ -296,9 +296,9 @@ void glGrib::FieldStream::computeStreamLineDir (int it, const glGrib::BufferPtr<
       int jglo[3], itri[3];
 
       glm::vec2 P[3];
-      geometry->getTriangleNeighbours (it, jglo, itri, P);
+      getGeometry ()->getTriangleNeighbours (it, jglo, itri, P);
 
-      geometry->fixPeriodicity (M, P, 3);
+      getGeometry ()->fixPeriodicity (M, P, 3);
 
       // Try all edges : intersection of vector line with triangle edges
       for (int i = 0; i < 3; i++)
@@ -357,7 +357,7 @@ void glGrib::FieldStream::computeStreamLineDir (int it, const glGrib::BufferPtr<
 	  else
             {
               glm::vec3 xyzn[3]; int itrin[3];
-              geometry->getTriangleNeighbours (itn, jglon, itrin, xyzn);
+              getGeometry ()->getTriangleNeighbours (itn, jglon, itrin, xyzn);
 
               w[0] = w[1] = w[2] = 0.0f;
 
@@ -411,9 +411,9 @@ void glGrib::FieldStream::computeStreamLine (int it0, const glGrib::BufferPtr<fl
 
   // Add points to stream
   for (int i = listb.size () - 1; i >= 0; i--)
-    stream->push (geometry->conformal2xyz (glm::vec2 (listb[i].x, listb[i].y)), listb[i].z);
+    stream->push (getGeometry ()->conformal2xyz (glm::vec2 (listb[i].x, listb[i].y)), listb[i].z);
   for (size_t i = 0; i < listf.size (); i++)
-    stream->push (geometry->conformal2xyz (glm::vec2 (listf[i].x, listf[i].y)), listf[i].z);
+    stream->push (getGeometry ()->conformal2xyz (glm::vec2 (listf[i].x, listf[i].y)), listf[i].z);
 
   if (listb.size () + listf.size () > 0)
     stream->push (0.0f, 0.0f, 0.0f, 0.0f);

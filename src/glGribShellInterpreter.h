@@ -8,6 +8,8 @@
 #include <map>
 #include <list>
 #include <functional>
+#include <thread>
+#include <mutex>
 
 namespace glGrib
 {
@@ -34,10 +36,9 @@ public:
   void start (const std::vector<std::string> &);
   void execute (const std::vector<std::string> &) override;
 
-  const std::vector<std::string> & getList ()
-  {
-    return listStr;
-  }
+  void lock () override { mutex.lock (); }
+  void unlock () override { mutex.unlock (); }
+  void wait () override { if (getWindowSet ()) thread.join (); }
 
 private:
   ShellInterpreter ();
@@ -48,6 +49,8 @@ private:
 
   glGrib::Options gopts;
   volatile bool hasstarted = false;
+  std::thread thread;
+  std::mutex mutex;
 };
 
 }

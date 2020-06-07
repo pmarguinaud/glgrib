@@ -21,7 +21,6 @@ public:
   virtual void buildIndex () = 0;
   virtual const std::string & getNextExt (const std::string &) = 0;
   virtual const std::string & getPrevExt (const std::string &) = 0;
-protected:
   class _iterator 
   {
   public:

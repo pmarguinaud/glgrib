@@ -8,6 +8,8 @@
 #include <map>
 #include <list>
 #include <functional>
+#include <thread>
+#include <mutex>
 
 namespace glGrib
 {
@@ -25,6 +27,11 @@ public:
   {
     return shellregular;
   }
+
+  void lock () override { mutex.lock (); }
+  void unlock () override { mutex.unlock (); }
+  void wait () override { if (getWindowSet ()) thread.join (); }
+
 private:
   ShellRegular ();
   ~ShellRegular () {}
@@ -47,6 +54,8 @@ private:
   {
     int list_index, text_len;
   } og;
+  std::thread thread;
+  std::mutex mutex;
 };
 
 }

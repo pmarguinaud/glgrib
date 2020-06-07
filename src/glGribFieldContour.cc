@@ -239,7 +239,7 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
   palette = glGrib::Palette (opts.palette, getNormedMinValue (), getNormedMaxValue ());
 
-  geometry = glGrib::Geometry::load (ld, opts.path[0], opts.geometry);
+  setGeometry (glGrib::Geometry::load (ld, opts.path[0], opts.geometry));
 
   if (opts.hilo.on)
     setupHilo (data);
@@ -250,7 +250,7 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
     {
       glGrib::GeometryPtr geometry_height = glGrib::Geometry::load (ld, opts.geometry.height.path, opts.geometry);
 
-      if (! geometry_height->isEqual (*geometry))
+      if (! geometry_height->isEqual (*getGeometry ()))
         throw std::runtime_error (std::string ("Field and height have different geometries"));
 
       ld->load (&height, opts.geometry.height.path, opts.geometry, &meta_height);
@@ -272,7 +272,7 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 #pragma omp parallel for
   for (size_t i = 0; i < levels.size (); i++)
     {
-      const int nt = geometry->getNumberOfTriangles ();
+      const int nt = getGeometry ()->getNumberOfTriangles ();
 
       Buffer<bool> seen (nt + 1);
 
@@ -282,7 +282,7 @@ void glGrib::FieldContour::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
       // First visit edge triangles
       for (int it = 0; it < nt; it++)
-        if (geometry->triangleIsEdge (it))
+        if (getGeometry ()->triangleIsEdge (it))
           processTriangle (it, data, levels[i], height, meta_height.valmin, 
           		   meta_height.valmax, meta_height.valmis, 
                            &seen[1], &iso_data[i]);
@@ -331,7 +331,7 @@ void glGrib::FieldContour::processTriangle
       int jglo[3], itri[3];
       glm::vec3 xyz[3];
 
-      geometry->getTriangleVertices (it, jglo);
+      getGeometry ()->getTriangleVertices (it, jglo);
 
       int n = 0;
       for (int i = 0; i < 3; i++)
@@ -341,7 +341,7 @@ void glGrib::FieldContour::processTriangle
       if ((n == 0) || (n == 3)) // 3 vertices have the same color
         break;
 
-      geometry->getTriangleNeighbours (it, jglo, itri, xyz);
+      getGeometry ()->getTriangleNeighbours (it, jglo, itri, xyz);
 
       if (count == 0) // First triangle; see if it is at the edge of the domain
         {
@@ -356,7 +356,7 @@ void glGrib::FieldContour::processTriangle
                 c++;
             }
           edge = c != 2;
-          if ((! edge) && geometry->triangleIsEdge (it))
+          if ((! edge) && getGeometry ()->triangleIsEdge (it))
             {
               seen[it] = false;
               return;

@@ -12,7 +12,8 @@ class World : public Object3D
 {
 public:
   const_GeometryPtr getGeometry () const { return geometry; }
-protected:
+  void setGeometry (const GeometryPtr & g) { geometry = g; }
+private:
   const_GeometryPtr geometry;
 };
 

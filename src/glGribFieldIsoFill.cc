@@ -39,11 +39,11 @@ void glGrib::FieldIsoFill::setupVertexAttributes () const
 
   // Triangles from original geometry
 
-  geometry->bindTriangles ();
+  getGeometry ()->bindTriangles ();
 
   // Coordinates
   auto pattr = program->getAttributeLocation ("vertexLonLat");
-  geometry->bindCoordinates (pattr);
+  getGeometry ()->bindCoordinates (pattr);
 
   // Values
   auto vattr = program->getAttributeLocation ("vertexColInd");
@@ -297,9 +297,9 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
   palette = glGrib::Palette (opts.palette, getNormedMinValue (), getNormedMaxValue ());
 
-  geometry = glGrib::Geometry::load (ld, opts.path[int (slot)], opts.geometry);
+  setGeometry (glGrib::Geometry::load (ld, opts.path[int (slot)], opts.geometry));
 
-  int size = geometry->size ();
+  int size = getGeometry ()->size ();
 
   std::vector<float> levels = opts.isofill.levels;
 
@@ -341,10 +341,10 @@ void glGrib::FieldIsoFill::setup (glGrib::Loader * ld, const glGrib::OptionsFiel
 
 
 #pragma omp parallel for
-  for (int it = 0; it < geometry->getNumberOfTriangles (); it++)
+  for (int it = 0; it < getGeometry ()->getNumberOfTriangles (); it++)
     {
       int ith = omp_get_thread_num ();
-      processTriangle1 (&isomake[ith], geometry, data, it, levels);
+      processTriangle1 (&isomake[ith], getGeometry (), data, it, levels);
     }
 
 
@@ -460,7 +460,7 @@ const
   palette.set (program);
 
   d.VAID.bind ();
-  geometry->renderTriangles ();
+  getGeometry ()->renderTriangles ();
   d.VAID.unbind ();
 
   view.delMVP (program);

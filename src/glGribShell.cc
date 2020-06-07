@@ -346,3 +346,31 @@ void glGrib::Shell::execute (const std::vector<std::string> & args)
   
 }
 
+void glGrib::Shell::setWindowSet (glGrib::WindowSet * _wset)
+{
+  if (wset != nullptr)
+    throw std::runtime_error (std::string ("wset already set"));
+  wset = _wset;
+}
+
+glGrib::WindowSet * glGrib::Shell::getWindowSet ()
+{
+  return wset;
+}
+
+void glGrib::Shell::clearWindowSet ()
+{
+  delete wset;
+  wset = nullptr;
+}
+
+glGrib::Window * glGrib::Shell::getWindow ()
+{
+  return wset->getWindowById (windowid);
+}
+
+glGrib::Window * glGrib::Shell::getFirstWindow ()
+{
+  return wset->getFirstWindow ();
+}
+

@@ -69,31 +69,31 @@ glGrib::ShellRegular::ShellRegular ()
 
 void glGrib::ShellRegular::process_help (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-  for (const auto & h : listStr)
+  for (const auto & h : getList ())
     std::cout << h;
 }
 
 void glGrib::ShellRegular::process_get (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-  for (const auto & o : listStr)
+  for (const auto & o : getList ())
      std::cout << o << " ";
   std::cout << std::endl;
 }
 
 void glGrib::ShellRegular::process_json (const std::vector<std::string> & args, glGrib::Window * gwindow)
 {
-  for (const auto & o : listStr)
+  for (const auto & o : getList ())
      std::cout << o << " ";
   std::cout << std::endl;
 }
 
 void glGrib::ShellRegular::process_window (const std::vector<std::string> & args, glGrib::Window * gwindow) 
 {
-  if (listStr.size () > 0)
+  if (getList ().size () > 0)
     {
       std::cout << "Window list:" << std::endl;
-      for (const auto id : listStr)
-        std::cout << (std::to_string (windowid) == id ? " > " : "   ") << id << std::endl;
+      for (const auto id : getList ())
+        std::cout << (std::to_string (getWindowId ()) == id ? " > " : "   ") << id << std::endl;
     }
 }
 
@@ -136,7 +136,7 @@ std::vector<std::string> glGrib::ShellRegular::tokenize (const std::string & _li
 
 void glGrib::ShellRegular::start (glGrib::WindowSet * ws)
 {
-  wset = ws;
+  setWindowSet (ws);
   thread = std::thread ([this] () { this->run (); });
 }
 
@@ -144,14 +144,14 @@ void glGrib::ShellRegular::runInt ()
 {
   if (read_history (".glGribHistory") != 0)
     write_history (".glGribHistory");
-  while (wset->size () > 0)
+  while (getWindowSet ()->size () > 0)
     {
       char * line = readline ("glGrib> ");
 
       if (line == nullptr)
         {
           lock ();
-          wset->close ();
+          getWindowSet ()->close ();
           unlock ();
           break;
         }
@@ -161,11 +161,11 @@ void glGrib::ShellRegular::runInt ()
  
       lock ();
       {
-        if (wset->size ())
+        if (getWindowSet ()->size ())
           {
-            glGrib::Window * gwindow = wset->getWindowById (windowid);
+            glGrib::Window * gwindow = getWindow ();
 	    if (gwindow == nullptr)
-              gwindow = wset->getFirstWindow ();
+              gwindow = getFirstWindow ();
             if (gwindow != nullptr)
               execute (tokenize (line));
 	  }
@@ -184,6 +184,8 @@ void glGrib::ShellRegular::runInt ()
 
 void glGrib::ShellRegular::runOff ()
 {
+  const auto & opts = getOptions ();
+
   std::ifstream fp (opts.script);
 
   if (fp)
@@ -191,12 +193,12 @@ void glGrib::ShellRegular::runOff ()
       std::string line; 
       while (std::getline (fp, line)) 
         {
-          if (wset->size () == 0)
+          if (getWindowSet ()->size () == 0)
             break;
           lock ();
-          glGrib::Window * gwindow = wset->getWindowById (windowid);
+          glGrib::Window * gwindow = getWindow ();
           if (gwindow == nullptr)
-            gwindow = wset->getFirstWindow ();
+            gwindow = getFirstWindow ();
           if (gwindow != nullptr)
             execute (tokenize (line));
           unlock ();
@@ -208,7 +210,7 @@ void glGrib::ShellRegular::runOff ()
       else
         {
           lock ();
-          wset->close ();
+          getWindowSet ()->close ();
           unlock ();
         }
     }
@@ -220,6 +222,7 @@ void glGrib::ShellRegular::runOff ()
 
 void glGrib::ShellRegular::run ()
 {
+  const auto & opts = getOptions ();
   if (opts.script != "")
     runOff ();
   else
@@ -228,7 +231,7 @@ void glGrib::ShellRegular::run ()
 
 void glGrib::ShellRegular::setup (const glGrib::OptionsShell & o)
 { 
-  opts = o;
+  setOptions (o);
 }
 
 

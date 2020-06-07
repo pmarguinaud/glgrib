@@ -182,7 +182,7 @@ private:
     void render (const View &) const;
     void setupVertexAttributes () const
     {
-      field->geometry->bindFrame (0);
+      field->getGeometry ()->bindFrame (0);
     }
     Field * field = nullptr;
     OpenGLVertexArray<frame_t> VAID;

@@ -22,7 +22,7 @@ void glGrib::FieldVector::scalar_t::setupVertexAttributes () const
   // Norm/direction
 
   // Position
-  field->geometry->bindCoordinates (program->getAttributeLocation ("vertexLonLat"));
+  field->getGeometry ()->bindCoordinates (program->getAttributeLocation ("vertexLonLat"));
   
   // Norm
   field->d.buffer_n->bind (GL_ARRAY_BUFFER);
@@ -32,7 +32,7 @@ void glGrib::FieldVector::scalar_t::setupVertexAttributes () const
   glVertexAttribPointer (vattr, 1, getOpenGLType<T> (), GL_TRUE, 
                          sizeof (T), nullptr); 
 
-  field->geometry->bindTriangles ();
+  field->getGeometry ()->bindTriangles ();
 
   field->bindHeight (program->getAttributeLocation ("vertexHeight"));
 
@@ -47,7 +47,7 @@ void glGrib::FieldVector::vector_t::setupVertexAttributes () const
 
   // Position
   auto pattr = program->getAttributeLocation ("vertexLonLat");
-  field->geometry->bindCoordinates (pattr);
+  field->getGeometry ()->bindCoordinates (pattr);
   glVertexAttribDivisor (pattr, 1);  
   
   // Norm
@@ -75,6 +75,7 @@ void glGrib::FieldVector::vector_t::setupVertexAttributes () const
 
 void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
 {
+  const int numberOfPoints = getGeometry ()->getNumberOfPoints ();
   opts = o;
 
   glGrib::FieldMetadata meta_u, meta_v;
@@ -84,30 +85,30 @@ void glGrib::FieldVector::setup (glGrib::Loader * ld, const glGrib::OptionsField
   ld->load (&data_u, opts.path, opts.geometry, slot, &meta_u, 2, 0);
   ld->load (&data_v, opts.path, opts.geometry, slot, &meta_v, 2, 1);
 
-  geometry = glGrib::Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry);
+  setGeometry (glGrib::Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry));
 
 
   glGrib::BufferPtr<float> data_n, data_d;
 
-  glGrib::Loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
+  glGrib::Loader::uv2nd (getGeometry (), data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
-  d.buffer_n = glGrib::OpenGLBufferPtr<T> (geometry->getNumberOfPoints ());
+  d.buffer_n = glGrib::OpenGLBufferPtr<T> (numberOfPoints);
 
-  pack (data_n, geometry->getNumberOfPoints (), 
+  pack (data_n, numberOfPoints, 
         meta_n.valmin, meta_n.valmax, meta_n.valmis, 
         d.buffer_n);
 
   loadHeight (d.buffer_n, ld);
 
-  d.buffer_d = glGrib::OpenGLBufferPtr<T> (geometry->getNumberOfPoints ());
+  d.buffer_d = glGrib::OpenGLBufferPtr<T> (numberOfPoints);
 
   const int npts = opts.vector.density;
 
-  pack (data_d, geometry->getNumberOfPoints (), 
+  pack (data_d, numberOfPoints,
         meta_d.valmin, meta_d.valmax, meta_d.valmis, 
         d.buffer_d);
 
-  geometry->sample (d.buffer_d, 0, npts);
+  getGeometry ()->sample (d.buffer_d, 0, npts);
 
   meta.push_back (meta_n);
   meta.push_back (meta_d);
@@ -144,7 +145,7 @@ const
   glGrib::Program * program = glGrib::Program::load ("SCALAR");
   program->use ();
 
-  field->geometry->setProgramParameters (program);
+  field->getGeometry ()->setProgramParameters (program);
 
   view.setMVP (program);
   program->set (light);
@@ -162,7 +163,7 @@ const
   program->set ("discrete", false);
   program->set ("mpiview_scale", 0.0f);
 
-  field->geometry->renderTriangles ();
+  field->getGeometry ()->renderTriangles ();
 
   view.delMVP (program);
 }
@@ -216,7 +217,7 @@ const
   glGrib::Program * program = glGrib::Program::load ("VECTOR");
   program->use ();
 
-  field->geometry->setProgramParameters (program);
+  field->getGeometry ()->setProgramParameters (program);
 
   view.setMVP (program);
   program->set (light);
@@ -291,7 +292,8 @@ const
 
     }
 
-  int numberOfPoints = field->geometry->getNumberOfPoints ();
+  const int numberOfPoints = field->getGeometry ()->getNumberOfPoints ();
+
   arrow->render (numberOfPoints, opts.vector.arrow.fill.on);
 
   view.delMVP (program);
@@ -321,11 +323,11 @@ void glGrib::FieldVector::reSample (const glGrib::View & view)
 
   const int npts = 2 * opts.vector.density / w;
 
-  pack (values[1], geometry->getNumberOfPoints (), 
+  pack (values[1], getGeometry ()->getNumberOfPoints (), 
         meta_d.valmin, meta_d.valmax, meta_d.valmis, 
         d.buffer_d);
 
-  geometry->sample (d.buffer_d, 0, npts);
+  getGeometry ()->sample (d.buffer_d, 0, npts);
 
   d.vscale = opts.vector.scale * (pi / npts) / (meta_n.valmax || 1.0f);
 }

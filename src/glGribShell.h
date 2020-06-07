@@ -7,8 +7,7 @@
 #include <map>
 #include <list>
 #include <functional>
-#include <thread>
-#include <mutex>
+#include <stdexcept>
 
 namespace glGrib
 {
@@ -24,21 +23,14 @@ public:
   virtual void execute (const std::vector<std::string> &);
   bool closed () { return close; }
   void setClosed () { close = true; }
-  void lock () 
-  { 
-    mutex.lock ();
-  }
-  void unlock () 
-  { 
-    mutex.unlock ();
-  }
-  const OptionsShell & getOptions () const { return opts; }
-  void wait () { if (wset) thread.join (); }
-  bool started () { return wset != nullptr; }
 
-protected:
-  int close = 0;
-  int windowid = 0;
+  virtual void lock ()  = 0;
+  virtual void unlock ()  = 0;
+  virtual void wait () = 0;
+
+  const OptionsShell & getOptions () const { return opts; }
+  void setOptions (const OptionsShell & o) { opts = o; }
+  bool started () { return wset != nullptr; }
 
   // Run command and store result in listStr
   void do_help          (const std::vector<std::string> &, glGrib::Window *);
@@ -64,11 +56,33 @@ protected:
   virtual void process_set           (const std::vector<std::string> &, glGrib::Window *) {}
   virtual void process_window        (const std::vector<std::string> &, glGrib::Window *) {}
 
+  const std::vector<std::string> & getList ()
+  {
+    return listStr;
+  }
+
+  void setWindowSet (WindowSet *);
+
+  WindowSet * getWindowSet ();
+
+  void clearWindowSet ();
+
+  int getWindowId () const
+  {
+    return windowid;
+  }
+
+  Window * getWindow ();
+
+  Window * getFirstWindow ();
+
+private:
+
+  int close = 0;
+  int windowid = 0;
+
   OptionsShell opts;
   WindowSet * wset = nullptr;
-
-  std::thread thread;
-  std::mutex mutex;
 
   std::vector<std::string> listStr;
 

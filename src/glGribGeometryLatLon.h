@@ -11,7 +11,7 @@ namespace glGrib
 class GeometryLatLon : public Geometry
 {
 public:
-  GeometryLatLon (HandlePtr);
+  explicit GeometryLatLon (HandlePtr);
   void setup (HandlePtr, const OptionsGeometry &) override;
   bool isEqual (const Geometry &) const override;
   void getPointNeighbours (int, std::vector<int> *) const override;

@@ -10,7 +10,7 @@ namespace glGrib
 class WindowDiffSet : public WindowSet
 {
 public:
-  WindowDiffSet (const Options &);
+  explicit WindowDiffSet (const Options &);
   const std::string getNextExt () const;
   const std::string getPrevExt () const;
   void updateWindows () override;

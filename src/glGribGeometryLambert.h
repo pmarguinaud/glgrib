@@ -11,7 +11,7 @@ namespace glGrib
 class GeometryLambert : public Geometry
 {
 public:
-  GeometryLambert (HandlePtr);
+  explicit GeometryLambert (HandlePtr);
   void setup (HandlePtr, const OptionsGeometry &) override;
   static const double a;
   
@@ -20,7 +20,7 @@ private:
   {
   public:
     latlon_t () {}
-    latlon_t (double _lon, double _lat) : lon (_lon), lat (_lat) {}
+    explicit latlon_t (double _lon, double _lat) : lon (_lon), lat (_lat) {}
     double lon = 0.0, lat = 0.0;
   };
   class latlon_j_t
@@ -34,7 +34,7 @@ private:
   {
   public:
     xy_t () {}
-    xy_t (double _x, double _y) : x (_x), y (_y) {}
+    explicit xy_t (double _x, double _y) : x (_x), y (_y) {}
     double x = 0.0, y = 0.0;
     xy_t operator+ (const xy_t & p)
     {
@@ -48,20 +48,20 @@ private:
   class xy_j_t
   {
   public:
-    xy_j_t (const xy_t & _V, const xy_t & _A, const xy_t & _B) 
+    explicit xy_j_t (const xy_t & _V, const xy_t & _A, const xy_t & _B) 
       : V (_V), A (_A), B (_B) {}
     xy_t V, A, B;
   };
   class rtheta_t
   {
   public:
-    rtheta_t (double _r, double _theta) : r (_r), theta (_theta) {}
+    explicit rtheta_t (double _r, double _theta) : r (_r), theta (_theta) {}
     double r, theta;
   };
   class rtheta_j_t
   {
   public:
-    rtheta_j_t (const rtheta_t & _V, const rtheta_t & _A, const rtheta_t & _B)
+    explicit rtheta_j_t (const rtheta_t & _V, const rtheta_t & _A, const rtheta_t & _B)
       : V (_V), A (_A), B (_B) {}
     rtheta_t V, A, B;
   };
@@ -82,7 +82,7 @@ private:
   {
   public:
     proj_t () {}
-    proj_t (double lon, double lat, double _pole) : ref_pt (lon, lat), pole (_pole)
+    explicit proj_t (double lon, double lat, double _pole) : ref_pt (lon, lat), pole (_pole)
     {
       kl = pole * sin (ref_pt.lat);
       r_equateur = a * pow (cos (ref_pt.lat), 1.0 - kl) * pow (1.0 + kl, kl) / kl;

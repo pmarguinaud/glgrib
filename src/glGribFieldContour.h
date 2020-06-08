@@ -9,7 +9,7 @@ namespace glGrib
 class FieldContour : public Field
 {
 public:
-  FieldContour (const Field::Privatizer) { }
+  explicit FieldContour (const Field::Privatizer) { }
   void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
   Field::kind getKind () const 
   {

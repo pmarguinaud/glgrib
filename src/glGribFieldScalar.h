@@ -9,7 +9,7 @@ template <int N>
 class FieldScalar : public FieldPacked<N>
 {
 public:
-  FieldScalar (const Field::Privatizer) : scalar (this), points (this) { }
+  explicit FieldScalar (const Field::Privatizer) : scalar (this), points (this) { }
   void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
   FieldScalar (const FieldScalar &) = delete;
 
@@ -33,7 +33,7 @@ private:
   class field_t
   {
   public:
-    field_t (FieldScalar * f) : field (f), VAID (this) {}
+    explicit field_t (FieldScalar * f) : field (f), VAID (this) {}
     field_t & operator= (const field_t & s)
     {
       if (this != &s)
@@ -54,7 +54,7 @@ private:
   class scalar_t : public field_t
   {
   public:
-    scalar_t (FieldScalar * f) : field_t (f) {}
+    explicit scalar_t (FieldScalar * f) : field_t (f) {}
     void setupVertexAttributes () const override;
     void render (const glGrib::View & view) const override;
     std::string getProgramName () const override
@@ -66,7 +66,7 @@ private:
   class points_t : public field_t
   {
   public:
-    points_t (FieldScalar * f) : field_t (f) {}
+    explicit points_t (FieldScalar * f) : field_t (f) {}
     void setupVertexAttributes () const override;
     void render (const glGrib::View & view) const override;
     std::string getProgramName () const override

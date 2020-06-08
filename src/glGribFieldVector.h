@@ -9,7 +9,7 @@ namespace glGrib
 class FieldVector : public FieldPacked<8>
 {
 public:
-  FieldVector (const Field::Privatizer) : scalar (this), vector (this) { }
+  explicit FieldVector (const Field::Privatizer) : scalar (this), vector (this) { }
   void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
   FieldVector (const FieldVector &) = delete;
 
@@ -53,7 +53,7 @@ private:
   class field_t
   {
   public:
-    field_t (FieldVector * f) : field (f), VAID (this) {}
+    explicit field_t (FieldVector * f) : field (f), VAID (this) {}
     field_t & operator= (const field_t & s)
     {   
       if (this != &s) 

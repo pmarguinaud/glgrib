@@ -23,8 +23,8 @@ public:
   static float defaultMin () { return std::numeric_limits<float>::max (); }
   static float defaultMax () { return std::numeric_limits<float>::min (); }
 
-  Palette (const OptionsPalette &,  
-           const float = defaultMin (), const float = defaultMax ());
+  explicit Palette (const OptionsPalette &,  
+                    const float = defaultMin (), const float = defaultMax ());
 
   const std::string & getName () const { return opts.name; }
 

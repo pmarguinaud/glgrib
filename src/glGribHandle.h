@@ -12,7 +12,7 @@ public:
   Handle () 
   {
   }
-  Handle (codes_handle * _h)
+  explicit Handle (codes_handle * _h)
   {
     h = _h;
   }

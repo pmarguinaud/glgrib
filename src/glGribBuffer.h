@@ -29,7 +29,7 @@ public:
     return data_[i]; 
   }
   Buffer () = default;
-  Buffer (size_t size)
+  explicit Buffer (size_t size)
   {
     if (size > 0)
       data_ = new T[size];
@@ -62,7 +62,7 @@ class BufferPtr : public std::shared_ptr<Buffer<T>>
 {
 public:
   BufferPtr () = default;
-  BufferPtr (size_t size)
+  explicit BufferPtr (size_t size)
     : std::shared_ptr<Buffer<T>> (new Buffer<T> (size))
   {
   }

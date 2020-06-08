@@ -83,7 +83,7 @@ public:
   typedef SQLiteDetail::sqlite3_ptr sqlite3_ptr;
   typedef SQLiteDetail::sqlite3_stmt_ptr sqlite3_stmt_ptr;
 
-  SQLite (const std::string & file)
+  explicit SQLite (const std::string & file)
   {
     db = std::make_shared<SQLiteDetail::_sqlite3>();
     if (sqlite3_open (file.c_str (), &db->data) != SQLITE_OK)

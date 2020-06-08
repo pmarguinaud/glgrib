@@ -17,7 +17,6 @@ namespace glGrib
 class Loader 
 {
 public:
-
   static void uv2nd (const_GeometryPtr,
                      const BufferPtr<float>, 
                      const BufferPtr<float>,
@@ -29,7 +28,8 @@ public:
                      FieldMetadata &);
 
   HandlePtr handleFromFile (const std::string &);
-  void load (BufferPtr<float> *, const std::vector<std::string> &, const OptionsGeometry &, float, FieldMetadata *, int = 1, int = 0, bool diff = false);
+  void load (BufferPtr<float> *, const std::vector<std::string> &, const OptionsGeometry &, 
+            float, FieldMetadata *, int = 1, int = 0, bool diff = false);
   void load (BufferPtr<float> *, const std::string &, const OptionsGeometry &, FieldMetadata *);
   void setSize (size_t _size) { size = _size; }
 private:

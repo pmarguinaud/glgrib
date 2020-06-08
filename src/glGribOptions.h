@@ -31,8 +31,8 @@ public:
   static void parse (OptionColor *, const std::string &);
 
   OptionColor () {}
-  OptionColor (int _r, int _g, int _b, int _a = 255) : r (_r), g (_g), b (_b), a (_a) {}
-  OptionColor (const std::string &);
+  explicit OptionColor (int _r, int _g, int _b, int _a = 255) : r (_r), g (_g), b (_b), a (_a) {}
+  explicit OptionColor (const std::string &);
 
   int r = 255, g = 255, b = 255, a = 255;
   std::string asString () const 
@@ -65,7 +65,7 @@ class OptionDate
 public:
   static void parse (OptionDate *, const std::string &);
   OptionDate () {}
-  OptionDate (int _year, int _month, int _day, int _hour, int _minute, int _second) : 
+  explicit OptionDate (int _year, int _month, int _day, int _hour, int _minute, int _second) : 
     year (_year), month (_month), day (_day), hour (_hour), minute (_minute), second (_second) {}
   long int year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0;
   static OptionDate interpolate (const OptionDate &, const OptionDate &, const float);

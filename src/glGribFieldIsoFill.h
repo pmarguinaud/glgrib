@@ -8,7 +8,7 @@ namespace glGrib
 class FieldIsoFill : public FieldPacked<8>
 {
 public:
-  FieldIsoFill (const Field::Privatizer) : d (this) { }
+  explicit FieldIsoFill (const Field::Privatizer) : d (this) { }
   void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
   Field::kind getKind () const 
   {
@@ -29,7 +29,7 @@ private:
   {
   public:
     isoband_t () : VAID (this) {}
-    isoband_t (const isoband_t & iso) : VAID (this)
+    explicit isoband_t (const isoband_t & iso) : VAID (this)
     {
       d = iso.d;
     }

@@ -10,7 +10,7 @@ namespace glGrib
 class WindowSet : public std::set<Window*> 
 {
 public:
-  WindowSet (const Options &, bool = true);
+  explicit WindowSet (const Options &, bool = true);
   virtual ~WindowSet () {}
   virtual void run (Shell * = nullptr);
   virtual void updateWindows ();

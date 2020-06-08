@@ -43,7 +43,7 @@ private:
   class item_t
   {
   public:
-    item_t (Ticks * t) : ticks (t), VAID (this) {}
+    explicit item_t (Ticks * t) : ticks (t), VAID (this) {}
     item_t & operator= (const item_t & it)
     {
       if (this != &it)

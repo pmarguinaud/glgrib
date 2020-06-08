@@ -30,7 +30,7 @@ public:
   };
 
   Window ();
-  Window (const Options &);
+  explicit Window (const Options &);
   virtual void setHints ();
   virtual ~Window ();
   virtual void renderFrame (glGrib::Shell *);

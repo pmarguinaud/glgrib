@@ -10,7 +10,7 @@ namespace glGrib
 class WindowReviewSet : public WindowSet
 {
 public:
-  WindowReviewSet (const Options &);
+  explicit WindowReviewSet (const Options &);
   const std::string getNextExt () const;
   const std::string getPrevExt () const;
   void updateWindows () override;

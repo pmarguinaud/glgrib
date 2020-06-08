@@ -31,7 +31,7 @@ public:
       std::swap (ptr, other.ptr);
       std::swap (buffer, other.buffer);
     }
-    Mapping (OpenGLBuffer * b) : buffer (b) 
+    explicit Mapping (OpenGLBuffer * b) : buffer (b) 
     {
       ptr = (T *)glMapNamedBuffer (buffer->id (), GL_READ_WRITE);
     }
@@ -64,7 +64,7 @@ public:
   };
 
 
-  OpenGLBuffer (const Buffer<T> & b)
+  explicit OpenGLBuffer (const Buffer<T> & b)
   {
     glGenBuffers (1, &id_);
     
@@ -76,7 +76,7 @@ public:
     size_ = b.size ();
   }
 
-  OpenGLBuffer (const BufferPtr<T> & b)
+  explicit OpenGLBuffer (const BufferPtr<T> & b)
   {
     glGenBuffers (1, &id_);
     
@@ -88,7 +88,7 @@ public:
     size_ = b->size ();
   }
 
-  OpenGLBuffer (size_t size, const T * data = nullptr)
+  explicit OpenGLBuffer (size_t size, const T * data = nullptr)
   {
     glGenBuffers (1, &id_);
     
@@ -141,35 +141,27 @@ class OpenGLBufferPtr : public std::shared_ptr<OpenGLBuffer<T>>
 {
 public:
   OpenGLBufferPtr () = default;
-  OpenGLBufferPtr (size_t size, const T * data = nullptr)
-  : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(size, data))
-  {
-  }
-  OpenGLBufferPtr (const std::vector<T> & v)
-  : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(v.size (), v.data ()))
-  {
-  }
-  OpenGLBufferPtr (const BufferPtr<T> & b)
-  : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(b))
-  {
-  }
-  OpenGLBufferPtr (const Buffer<T> & b)
-  : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(b))
-  {
-  }
+  explicit OpenGLBufferPtr (size_t size, const T * data = nullptr)
+  : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(size, data)) { }
+  explicit OpenGLBufferPtr (const std::vector<T> & v)
+  : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(v.size (), v.data ())) { }
+  explicit OpenGLBufferPtr (const BufferPtr<T> & b)
+  : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(b)) { }
+  explicit OpenGLBufferPtr (const Buffer<T> & b)
+  : std::shared_ptr<OpenGLBuffer<T>> (new OpenGLBuffer<T>(b)) { }
 };
 
 class OpenGLTexture
 {
 public:
-  OpenGLTexture (int width, int height, const BufferPtr<unsigned char> & data, 
-                 GLint internalformat = GL_RGB)
+  explicit OpenGLTexture (int width, int height, const BufferPtr<unsigned char> & data, 
+                          GLint internalformat = GL_RGB)
   {
     assert ((width * height * 3) == static_cast<int> (data->size ()));
     init (width, height, &data[0], internalformat);
   }
-  OpenGLTexture (int width, int height, const void * data, 
-                 GLint internalformat = GL_RGB)
+  explicit OpenGLTexture (int width, int height, const void * data, 
+                          GLint internalformat = GL_RGB)
   {
     init (width, height, data, internalformat);
   }
@@ -193,18 +185,14 @@ class OpenGLTexturePtr : public std::shared_ptr<OpenGLTexture>
 {
 public:
   OpenGLTexturePtr () = default;
-  OpenGLTexturePtr (int width, int height, const BufferPtr<unsigned char> & data,
-                    GLint internalformat = GL_RGB)
+  explicit OpenGLTexturePtr (int width, int height, const BufferPtr<unsigned char> & data,
+                             GLint internalformat = GL_RGB)
     : std::shared_ptr<OpenGLTexture> (new OpenGLTexture (width, height, 
-                                      data, internalformat))
-  {
-  }
-  OpenGLTexturePtr (int width, int height, const void * data, 
-                    GLint internalformat = GL_RGB)
+                                      data, internalformat)) { }
+  explicit OpenGLTexturePtr (int width, int height, const void * data, 
+                             GLint internalformat = GL_RGB)
     : std::shared_ptr<OpenGLTexture> (new OpenGLTexture (width, height, 
-                                      data, internalformat))
-  {
-  }
+                                      data, internalformat)) { }
 };
 
 template <typename T>
@@ -219,7 +207,7 @@ private:
 
 public:
 
-  OpenGLVertexArray (T * _object) : object (_object) {}
+  explicit OpenGLVertexArray (T * _object) : object (_object) {}
 
   OpenGLVertexArray & operator= (const OpenGLVertexArray & other)
   {

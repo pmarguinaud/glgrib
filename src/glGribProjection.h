@@ -89,8 +89,11 @@ public:
   }
   ProjectionSet & operator= (const ProjectionSet & ps)
   {
-    setup ();
-    current_ = ps.current_;
+    if (this != &ps)
+      {
+       setup ();
+       current_ = ps.current_;  
+      }
     return *this;
   }
   Projection * current () const

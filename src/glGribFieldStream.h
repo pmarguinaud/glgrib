@@ -9,7 +9,7 @@ namespace glGrib
 class FieldStream : public Field
 {
 public:
-  FieldStream (const Field::Privatizer) { }
+  explicit FieldStream (const Field::Privatizer) { }
   void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
   FieldStream (const FieldStream &) = delete;
   Field::kind getKind () const 
@@ -90,7 +90,7 @@ private:
   {
   public:
     streamline_t () : VAID (this) {}
-    streamline_t (const streamline_t & stream) : VAID (this)
+    explicit streamline_t (const streamline_t & stream) : VAID (this)
     {
       d = stream.d;
     }

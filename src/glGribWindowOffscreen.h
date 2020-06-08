@@ -8,7 +8,7 @@ namespace glGrib
 class WindowOffscreen : public Window
 {
 public:
-  WindowOffscreen (const Options & opts);
+  explicit WindowOffscreen (const Options & opts);
   void run (class Shell * shell = nullptr) override;
   void setHints () override;
 private:

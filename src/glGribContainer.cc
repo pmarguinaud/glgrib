@@ -45,7 +45,7 @@ public:
     it->cont = this;
     this->buildIndex ();
     it->rank = 0;
-    return it;
+    return iterator (it);
   }
   iterator end () override
   {

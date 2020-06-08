@@ -13,7 +13,7 @@ public:
   static Container * create (const std::string &, bool = false);
   static void remove (Container *);
   static void clear ();
-  Container (const std::string & _file) : file (_file) {}
+  explicit Container (const std::string & _file) : file (_file) {}
   virtual ~Container () {}
   virtual codes_handle * getHandleByExt (const std::string &) = 0;
   virtual bool hasExt (const std::string &) const = 0;
@@ -35,7 +35,7 @@ public:
   {
   public:
     iterator () {}
-    iterator (_iterator * _it) : it (_it) {}
+    explicit iterator (_iterator * _it) : it (_it) {}
     iterator & operator++ ()
     {
       it->incr ();

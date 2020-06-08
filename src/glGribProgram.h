@@ -12,6 +12,7 @@ class Program
 {
 public:
 
+
   static Program * load (const std::string &);
 
   void set (const std::string & key, bool b)
@@ -121,11 +122,6 @@ public:
 
   void compile ();
 
-  Program () {}
-  Program (const std::string & fsc, const std::string & vsc, const std::string & gsc)
-     : FragmentShaderCode (fsc), VertexShaderCode (vsc), GeometryShaderCode (gsc) { }
-  Program (const std::string & fsc, const std::string & vsc)
-     : FragmentShaderCode (fsc), VertexShaderCode (vsc), GeometryShaderCode ("") { }
   virtual ~Program ();
   void use () const;
   void read (const std::string &);
@@ -140,7 +136,13 @@ public:
     return programID;
   }
 
+  Program () {}
+
 private:
+  explicit Program (const std::string & fsc, const std::string & vsc, const std::string & gsc)
+                  : FragmentShaderCode (fsc), VertexShaderCode (vsc), GeometryShaderCode (gsc) { }
+  explicit Program (const std::string & fsc, const std::string & vsc)
+                  : FragmentShaderCode (fsc), VertexShaderCode (vsc), GeometryShaderCode ("") { }
   std::string FragmentShaderCode;
   std::string VertexShaderCode;
   std::string GeometryShaderCode;

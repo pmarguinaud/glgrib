@@ -16,8 +16,8 @@ namespace glGrib
 class GeometryGaussian : public Geometry
 {
 public:
-  GeometryGaussian (HandlePtr);
-  GeometryGaussian (int);
+  explicit GeometryGaussian (HandlePtr);
+  explicit GeometryGaussian (int);
 
   bool isEqual (const Geometry &) const override;
   void getPointNeighbours (int, std::vector<int> *) const override;
@@ -49,7 +49,7 @@ private:
   {
   public:
     jlonlat_t () : jlon (0), jlat (0) {}
-    jlonlat_t (int _jlon, int _jlat) : jlon (_jlon), jlat (_jlat) {}
+    explicit jlonlat_t (int _jlon, int _jlat) : jlon (_jlon), jlat (_jlat) {}
     int jlon = 0;
     int jlat = 0;
   };

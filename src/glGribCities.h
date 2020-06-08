@@ -2,7 +2,8 @@
 
 #include "glGribPoints.h"
 #include "glGribView.h"
-#include "glGribOptions.h"
+#include "glGribOptionsCities.h"
+#include "glGribOptionsLight.h"
 #include "glGribString.h"
 #include <string>
 #include <vector>

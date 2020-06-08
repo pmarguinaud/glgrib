@@ -2,7 +2,6 @@
 #include "glGribTrigonometry.h"
 #include "glGribOpenGL.h"
 #include "glGribShapeLib.h"
-#include "glGribOptions.h"
 #include "glGribEarCut.h"
 #include "glGribSubdivide.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "glGribOptions.h"
+#include "glGribOptionsBorder.h"
 #include "glGribLines.h"
 
 namespace glGrib

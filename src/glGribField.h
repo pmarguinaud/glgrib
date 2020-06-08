@@ -1,7 +1,8 @@
 #pragma once
 
 #include "glGribWorld.h"
-#include "glGribOptions.h"
+#include "glGribOptionsField.h"
+#include "glGribOptionsPalette.h"
 #include "glGribGeometry.h"
 #include "glGribPalette.h"
 #include "glGribFieldMetadata.h"

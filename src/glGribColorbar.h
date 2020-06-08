@@ -6,7 +6,7 @@
 #include "glGribOpenGL.h"
 #include "glGribFont.h"
 #include "glGribString.h"
-#include "glGribOptions.h"
+#include "glGribOptionsColorbar.h"
 #include "glGribProgram.h"
 
 namespace glGrib

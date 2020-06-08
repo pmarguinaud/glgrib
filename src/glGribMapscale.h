@@ -5,7 +5,7 @@
 #include "glGribOpenGL.h"
 #include "glGribFont.h"
 #include "glGribString.h"
-#include "glGribOptions.h"
+#include "glGribOptionsMapscale.h"
 #include "glGribProgram.h"
 #include "glGribView.h"
 #include "glGribObject.h"

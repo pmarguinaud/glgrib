@@ -3,7 +3,7 @@
 #include <vector>
 #include <memory>
 #include "glGribOpenGL.h"
-#include "glGribOptions.h"
+#include "glGribOptionsFont.h"
 #include "glGribProgram.h"
 
 

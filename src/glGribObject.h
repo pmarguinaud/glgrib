@@ -2,7 +2,7 @@
 
 #include "glGribOpenGL.h"
 #include "glGribView.h"
-#include "glGribOptions.h"
+#include "glGribOptionsLight.h"
 #include "glGribProgram.h"
 
 namespace glGrib

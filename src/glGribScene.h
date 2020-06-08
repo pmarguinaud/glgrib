@@ -25,6 +25,7 @@
 #include "glGribLand.h"
 #include "glGribLoader.h"
 #include "glGribClear.h"
+#include "glGribOptions.h"
 
 #include <set>
 

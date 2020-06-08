@@ -2,7 +2,8 @@
 
 #include "glGribView.h"
 #include "glGribOpenGL.h"
-#include "glGribOptions.h"
+#include "glGribOptionsPoints.h"
+#include "glGribOptionsLight.h"
 #include "glGribPalette.h"
 #include "glGribView.h"
 #include "glGribObject.h"

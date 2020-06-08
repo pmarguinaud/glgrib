@@ -1,7 +1,8 @@
 #pragma once
 
 #include "glGribWorld.h"
-#include "glGribOptions.h"
+#include "glGribOptionsLandscape.h"
+#include "glGribOptionsLight.h"
 #include "glGribOpenGL.h"
 #include "glGribGeometry.h"
 #include "glGribLoader.h"

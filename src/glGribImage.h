@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "glGribOpenGL.h"
-#include "glGribOptions.h"
+#include "glGribOptionsImage.h"
 #include "glGribObject.h"
 #include <string>
 #include <vector>

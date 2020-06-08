@@ -1,6 +1,6 @@
 #pragma once
 
-#include "glGribOptions.h"
+#include "glGribOptionsShell.h"
 
 #include <string>
 #include <vector>

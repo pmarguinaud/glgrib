@@ -4,7 +4,7 @@
 
 #include "glGribOpenGL.h"
 #include "glGribProgram.h"
-#include "glGribOptions.h"
+#include "glGribOptionsPalette.h"
 #include "glGribFieldMetadata.h"
 
 #include <vector>

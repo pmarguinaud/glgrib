@@ -1,7 +1,8 @@
 #pragma once
 
 #include "glGribObject.h"
-#include "glGribOptions.h"
+#include "glGribOptionsGrid.h"
+#include "glGribOptionsLight.h"
 #include "glGribString.h"
 
 namespace glGrib

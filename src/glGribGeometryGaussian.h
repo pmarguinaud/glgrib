@@ -2,7 +2,7 @@
 
 #include "glGribGeometry.h"
 #include "glGribTrigonometry.h"
-#include "glGribOptions.h"
+#include "glGribOptionsGeometry.h"
 #include "glGribHandle.h"
 #include "glGribOpenGL.h"
 #include "glGribBuffer.h"

@@ -3,7 +3,8 @@
 #include "glGribObject.h"
 #include "glGribOpenGL.h"
 #include "glGribView.h"
-#include "glGribOptions.h"
+#include "glGribOptionsLand.h"
+#include "glGribOptionsLight.h"
 
 #include <vector>
 

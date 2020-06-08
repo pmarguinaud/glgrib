@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include "glGribOptions.h"
+#include "glGribOptionsLines.h"
 
 #include <vector>
 #include <string>

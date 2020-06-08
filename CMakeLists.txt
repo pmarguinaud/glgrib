@@ -42,6 +42,4 @@ add_custom_command (TARGET data POST_BUILD
                             ${CMAKE_CURRENT_BINARY_DIR}/share)
 
 
-                    
-
-
+                   

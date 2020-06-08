@@ -62,6 +62,9 @@ set (SRC
   glGribGeoPoints.cc
 )
 
+
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+
 add_subdirectory (lfi)
 add_library (glGrib SHARED ${SRC})
 
@@ -73,7 +76,7 @@ target_link_libraries (glgrib
                        PUBLIC eccodes PUBLIC glfw PUBLIC GLEW PUBLIC GL PUBLIC sqlite3
                        PUBLIC readline PUBLIC png PUBLIC shp PUBLIC ${OPENSSL_SSL_LIBRARY} 
                        PUBLIC ${OPENSSL_CRYPTO_LIBRARY} PUBLIC OpenMP::OpenMP_CXX PUBLIC LFI
-                       PUBLIC ${NETCDF_CXX_LIBRARIES} PUBLIC ${CURL_LIBRARIES})
+                       PUBLIC ${CURL_LIBRARIES} PUBLIC netcdf_c++4 netcdf)
 
 set_target_properties (glgrib PROPERTIES 
                        INSTALL_RPATH ${CMAKE_INSTALL_PREFIX}/lib)

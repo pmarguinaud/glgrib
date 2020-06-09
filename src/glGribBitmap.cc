@@ -1,6 +1,5 @@
 #include "glGribBitmap.h"
 
-#include <stdio.h>
 #include <stdexcept>
 #include <fstream>
 #include <iostream>

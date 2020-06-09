@@ -3,7 +3,6 @@
 #include "glGribOpenGL.h"
 #include "glGribClear.h"
 
-#include <stdio.h>
 #include <sys/time.h>
 
 

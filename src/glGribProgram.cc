@@ -7,7 +7,6 @@
 #include <string>
 #include <math.h>
 #include <glm/glm.hpp>
-#include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>

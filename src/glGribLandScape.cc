@@ -5,8 +5,6 @@
 #include "glGribPng.h"
 #include "glGribResolve.h"
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <iostream>
 #include <algorithm>
 #include <exception>

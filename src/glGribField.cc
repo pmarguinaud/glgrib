@@ -12,8 +12,6 @@
 #include "glGribResolve.h"
 #include "glGribSQLite.h"
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <iostream>
 #include <string>
 #include <algorithm>

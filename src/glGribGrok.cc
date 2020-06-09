@@ -5,9 +5,7 @@ extern "C"
 #include "lfi_grok.h"
 }
 
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstring>
 #include <fstream>
 
 glGrib::grok_t glGrib::Grok (const std::string & f)

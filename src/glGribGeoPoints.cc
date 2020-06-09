@@ -7,7 +7,6 @@
 #include <stdexcept>
 #include <algorithm>
 #include <vector>
-#include <stdlib.h>
 
 #include <netcdf>
 

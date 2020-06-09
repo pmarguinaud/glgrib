@@ -4,8 +4,6 @@
 #include "glGribTrigonometry.h"
 #include "glGribClear.h"
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <iostream>
 #include <algorithm>
 #include <iterator>

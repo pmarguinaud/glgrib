@@ -4,10 +4,7 @@
 #include "glGribResolve.h"
 #include "glGribSQLite.h"
 
-#include <stdio.h>
 #include <math.h>
-#include <string.h>
-#include <stdlib.h>
 #include <shapefil.h>
 
 

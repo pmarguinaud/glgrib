@@ -4,8 +4,6 @@
 #include "glGribPalette.h"
 #include "glGribClear.h"
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <iostream>
 
 glGrib::FieldVector * glGrib::FieldVector::clone () const

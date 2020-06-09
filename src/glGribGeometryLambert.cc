@@ -1,7 +1,5 @@
 #include "glGribGeometryLambert.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
 
 #include <openssl/md5.h>

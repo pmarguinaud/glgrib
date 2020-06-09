@@ -2,10 +2,8 @@
 #include "glGribTrigonometry.h"
 #include "glGribResolve.h"
 
-#include <stdio.h>
 #include <math.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
 
 #include <stdexcept>
 #include <fstream>

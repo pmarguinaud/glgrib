@@ -4,8 +4,6 @@
 #include "glGribPalette.h"
 #include "glGribContainer.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <eccodes.h>
 #include <iostream>
 #include <stdexcept>

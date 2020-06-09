@@ -6,8 +6,6 @@
 #include "glGribEarCut.h"
 #include "glGribSubdivide.h"
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <iostream>
 #include <omp.h>
 

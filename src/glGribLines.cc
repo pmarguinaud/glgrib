@@ -5,8 +5,6 @@
 #include "glGribShapeLib.h"
 
 #include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <iostream>
 #include <stdexcept>
 

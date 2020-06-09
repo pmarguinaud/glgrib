@@ -5,7 +5,6 @@
 #include "glGribGeometryLambert.h"
 #include "glGribLoader.h"
 
-#include <stdio.h>
 #include <iostream>
 #include <openssl/md5.h>
 

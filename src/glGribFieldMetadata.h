@@ -2,7 +2,6 @@
 
 #include "glGribOptions.h"
 #include <string>
-#include <stdio.h>
 
 namespace glGrib
 {

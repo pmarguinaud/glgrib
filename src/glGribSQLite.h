@@ -4,7 +4,6 @@
 #include <string>
 #include <iostream>
 #include <list>
-#include <string.h>
 #include <exception>
 #include <memory>
 

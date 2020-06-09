@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <vector>
-#include <stdlib.h>
 
 
 void glGrib::Cities::setup (const glGrib::OptionsCities & o)

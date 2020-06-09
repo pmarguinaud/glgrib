@@ -1,7 +1,6 @@
 #include "glGribContainer.h"
 #include "glGribBuffer.h"
 #include <eccodes.h>
-#include <stdlib.h>
 #include <algorithm>
 #include <stdexcept>
 #include <iostream>

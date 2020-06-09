@@ -1,8 +1,6 @@
 #include "glGribEarCut.h"
 #include "glGribTrigonometry.h"
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <iostream>
 #include <omp.h>
 

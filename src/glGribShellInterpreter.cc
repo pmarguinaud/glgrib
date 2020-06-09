@@ -9,8 +9,6 @@
 #include <vector>
 #include <set>
 
-#include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 
 glGrib::ShellInterpreter glGrib::ShellInterpreter::shellinterp = glGrib::ShellInterpreter ();

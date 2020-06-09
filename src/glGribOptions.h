@@ -9,9 +9,7 @@
 #include <stdexcept>
 #include <limits>
 #include <algorithm>
-#include <string.h>
 #include <time.h>
-#include <string.h>
 
 
 namespace glGrib

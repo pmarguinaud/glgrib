@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <algorithm>
-#include <stdlib.h>
 
 
 void glGrib::Points::setupVertexAttributes () const

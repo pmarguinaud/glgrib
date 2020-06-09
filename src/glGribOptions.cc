@@ -4,8 +4,7 @@
 #include "glGribSQLite.h"
 #include "glGribGrok.h"
 
-#include <string.h>
-#include <stdio.h>
+#include <cstring>
 #include <time.h>
 #include <math.h>
 #include <map>

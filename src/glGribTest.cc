@@ -2,8 +2,6 @@
 #include "glGribTrigonometry.h"
 #include "glGribOpenGL.h"
 
-#include <stdlib.h>
-#include <stdio.h>
 
 
 

@@ -3,7 +3,6 @@
 #include "glGribBuffer.h"
 
 #include <iostream>
-#include <stdlib.h>
 
 
 void glGrib::Image::setup (const glGrib::OptionsImage & o)

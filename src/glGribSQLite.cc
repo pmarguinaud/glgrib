@@ -1,4 +1,5 @@
 #include "glGribSQLite.h"
+#include <cstring>
 
 void glGrib::SQLiteDetail::ok (sqlite3_ptr db, int rc)
 {

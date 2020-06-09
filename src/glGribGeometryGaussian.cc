@@ -2,8 +2,6 @@
 #include "glGribTrigonometry.h"
 #include "glGribFitPolynomial.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
 
 #include <glm/gtc/matrix_transform.hpp>

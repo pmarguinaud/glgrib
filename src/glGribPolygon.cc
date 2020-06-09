@@ -1,7 +1,6 @@
 #include "glGribPolygon.h"
 #include "glGribOpenGL.h"
 
-#include <stdio.h>
 
 void glGrib::Polygon::setupVertexAttributes () const
 {

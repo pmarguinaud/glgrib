@@ -20,7 +20,7 @@ void glGrib::Bitmap (const std::string & file,
                      int * width, int * height)
 {
   unsigned char h[54];
-  std::ifstream fh (file, std::ifstream::binary);
+  std::ifstream fh (file, std::ios::in | std::ifstream::binary);
 
   if (! fh)
     throw std::runtime_error (std::string ("Cannot open BMP file : ") + file);

@@ -8,6 +8,8 @@
 #include <stdlib.h>
 
 #include <stdexcept>
+#include <fstream>
+#include <iostream>
 
 
 namespace
@@ -56,12 +58,14 @@ public:
   int container;  /* Id of container polygon that encloses this polygon (-1 if none) */
   int ancestor;   /* Id of ancestor polygon in the full resolution set that was the source of this polygon (-1 if none) */
 
-  int read (FILE * fp)
+  int read (std::ifstream & fh)
   {
-    int ret = fread (this, sizeof (*this), 1, fp) == 1;
-    if (ret)
-      iswap (this, this, sizeof (int), sizeof (*this)/sizeof (int), 1);
-    return ret;
+    if (fh.read (reinterpret_cast<char*> (this), sizeof (*this)))
+      {
+        iswap (this, this, sizeof (int), sizeof (*this)/sizeof (int), 1);
+        return 1;
+      }
+    return 0;
   }
 
 };
@@ -73,15 +77,17 @@ public:
   int32_t y;
 };
 
-int read_GSHHG_POINT_list (std::vector<GSHHG_POINT_t> * gpl, int n, FILE * fp)
+int read_GSHHG_POINT_list (std::vector<GSHHG_POINT_t> * gpl, int n, std::ifstream & fh)
 {
   gpl->resize (n);
   void * ptr = &(*gpl)[0];
   memset (ptr, 0, sizeof (GSHHG_POINT_t) * n);
-  int ret = fread (ptr, sizeof (GSHHG_POINT_t), n, fp) == static_cast<size_t> (n);
-  if (ret)
-    iswap (ptr, ptr, sizeof (int32_t), 2 * n, 1);
-  return ret;
+  if (fh.read (reinterpret_cast<char*> (ptr), n * sizeof (GSHHG_POINT_t)))
+    {
+      iswap (ptr, ptr, sizeof (int32_t), 2 * n, 1);
+      return n;
+    }
+  return 0;
 }
 
 }
@@ -105,9 +111,9 @@ void glGrib::GSHHG::read (const glGrib::OptionsLines & opts,
 
   const float microdeg2rad = pi / (1000000. * 180.);
 
-  FILE * fp = fopen (path.c_str (), "r");
+  std::ifstream fh (path, std::ios::in | std::ifstream::binary);
 
-  if (fp == nullptr)
+  if (! fh)
     throw std::runtime_error (std::string ("Cannot open GSHHG data"));
   
   auto restart = [ind] 
@@ -119,10 +125,10 @@ void glGrib::GSHHG::read (const glGrib::OptionsLines & opts,
 
   while (1) 
     {   
-      if (! h.read (fp))
+      if (! h.read (fh))
         break;
 
-      if (! read_GSHHG_POINT_list (&gpl, h.n, fp))
+      if (! read_GSHHG_POINT_list (&gpl, h.n, fh))
         break;
 
       bool ok = false;
@@ -172,13 +178,11 @@ void glGrib::GSHHG::read (const glGrib::OptionsLines & opts,
           ind->push_back (0xffffffff);
         }
 
-      if (feof (fp))
+      if (fh.eof ())
         break;
 
     }   
 
-  fclose (fp);
-  fp = nullptr;
       
 }
 

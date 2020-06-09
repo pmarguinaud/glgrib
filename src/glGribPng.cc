@@ -12,13 +12,9 @@
 void glGrib::ReadPng (const std::string & filename, int * pwidth, int * pheight, 
                       glGrib::BufferPtr<unsigned char> & pixels)
 {
-  FILE *fp = fopen (filename.c_str (), "r");
   int width, height;
   png_byte color_type;
   png_byte bit_depth;
-
-  if (fp == nullptr)
-    throw std::runtime_error (std::string ("Cannot open file :") + filename);
 
   png_structp png = png_create_read_struct (PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 
@@ -31,6 +27,11 @@ void glGrib::ReadPng (const std::string & filename, int * pwidth, int * pheight,
 
   if (setjmp (png_jmpbuf (png))) 
     abort();
+
+  FILE * fp = fopen (filename.c_str (), "r");
+
+  if (fp == nullptr)
+    throw std::runtime_error (std::string ("Cannot open file :") + filename);
 
   png_init_io (png, fp);
 
@@ -101,7 +102,6 @@ void glGrib::WritePng (const std::string & filename, int width, int height,
 {
   const size_t format_nchannels = 3;
   size_t nvals = format_nchannels * width * height;
-  FILE * fp = fopen (filename.c_str (), "w");
 
   Buffer<png_byte> png_bytes (nvals);
   Buffer<png_bytep> png_rows (height);
@@ -126,6 +126,11 @@ void glGrib::WritePng (const std::string & filename, int width, int height,
 
   if (setjmp (png_jmpbuf (png))) 
     abort ();
+
+  FILE * fp = fopen (filename.c_str (), "w");
+  if (fp == nullptr)
+    throw std::runtime_error (std::string ("Cannot open file :") + filename);
+
 
   png_init_io (png, fp);
 

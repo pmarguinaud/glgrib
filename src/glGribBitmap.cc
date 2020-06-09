@@ -1,8 +1,9 @@
 #include "glGribBitmap.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdexcept>
+#include <fstream>
+#include <iostream>
 
 namespace
 {
@@ -19,24 +20,25 @@ void glGrib::Bitmap (const std::string & file,
                      int * width, int * height)
 {
   unsigned char h[54];
-  FILE * fp = fopen (file.c_str (), "r");
+  std::ifstream fh (file, std::ifstream::binary);
 
-  if (fp == nullptr)
-    std::runtime_error (std::string ("Cannot open BMP file : ") + file);
+  if (! fh)
+    throw std::runtime_error (std::string ("Cannot open BMP file : ") + file);
 
-  if (fread (h, sizeof (h), 1, fp) != 1)
+  if (! fh.read (reinterpret_cast<char*> (&h[0]), sizeof (h)))
     std::runtime_error (std::string ("Cannot read BMP file : ") + file);
-  
+
   int ioff = S4 (&h[10]); 
   int ncol = S4 (&h[18]);
   int nrow = S4 (&h[22]);
 
   rgb = glGrib::BufferPtr<unsigned char> (3 * ncol * nrow);
   
-  fseek (fp, ioff, SEEK_SET);
+  if (! fh.seekg (ioff))
+    throw std::runtime_error (std::string ("Cannot seek BMP file : ") + file);
 
-  if (fread (&rgb[0], 3 * ncol * nrow, 1, fp) != 1)
-    std::runtime_error (std::string ("Cannot read BMP file : ") + file);
+  if (! fh.read (reinterpret_cast<char*> (&rgb[0]), 3 * ncol * nrow))
+    throw std::runtime_error (std::string ("Cannot read BMP file : ") + file);
 
   for (int i = 0; i < ncol * nrow; i++)
     {
@@ -48,8 +50,6 @@ void glGrib::Bitmap (const std::string & file,
       rgb[3*i+2] = b;
     }
   
-  fclose (fp);
-
   *width = ncol;
   *height = nrow;
 }

@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <map>
 #include <stdexcept>
+#include <fstream>
 
 
 namespace
@@ -22,20 +23,21 @@ name2prog_t name2prog;
 
 std::string slurp (const std::string & file, bool fatal = true)
 {
-  struct stat st;
-  if (stat (file.c_str (), &st) == 0)
+
+  std::ifstream fh (file, std::ios::in | std::ios::binary | std::ios::ate);
+
+  if (fh.is_open ())
     {
-      std::string code;
-      code.resize (st.st_size + 1);
-      FILE * fp = fopen (file.c_str (), "r");
-      if (fread (&code[0], st.st_size, 1, fp) != 1)
-        throw std::runtime_error (std::string ("Cannot read ") + file);
-      fclose (fp);
-      code[st.st_size] = 0;
+      size_t size = fh.tellg ();
+      std::string code (size + 1, '\0');
+      fh.seekg (0, std::ios::beg);
+      fh.read (&code[0], size);
+      fh.close ();
       return code;
     }
-  if (fatal)
+  else if (fatal)
     throw std::runtime_error (std::string ("Cannot open ") + file);
+
   return "";
 }
 

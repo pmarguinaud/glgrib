@@ -6,6 +6,6 @@ namespace glGrib
 {
 
 std::string Resolve (const std::string &);
-std::string glGribPrefix;
+extern std::string glGribPrefix;
 
 }

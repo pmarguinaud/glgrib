@@ -3,7 +3,7 @@
 #include <map>
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <stdexcept>
@@ -13,14 +13,15 @@ namespace glGrib
 
 class DBase
 {
-public:
-
-  static void _read (void * ptr, int n, FILE * fp)
+private:
+  static void _read (void * ptr, int n, std::ifstream & fh)
   {
-    if (fread (ptr, n, 1, fp) != 1)
+    if (! fh.read (reinterpret_cast<char*> (ptr), n))
       throw std::runtime_error (std::string ("Cannot read data from dbase file"));
   }
 
+public:
+  
   class header_t
   { 
   public:
@@ -32,14 +33,14 @@ public:
      uint16_t  record_length;  
      uint8_t   padding[20];
   
-     void read (FILE * fp)
+     void read (std::ifstream & fh)
      {
-       _read (&version,         1, fp);
-       _read (l_update,         3, fp);
-       _read (&count,           4, fp);
-       _read (&length,          2, fp);
-       _read (&record_length,   2, fp);
-       _read (padding,         20, fp);
+       _read (&version,         1, fh);
+       _read (l_update,         3, fh);
+       _read (&count,           4, fh);
+       _read (&length,          2, fh);
+       _read (&record_length,   2, fh);
+       _read (padding,         20, fh);
      }
   };
   
@@ -53,14 +54,14 @@ public:
      uint8_t   dec_point;                                
      uint8_t   padding[14];
     
-     void read (FILE * fp)
+     void read (std::ifstream & fh)
      {
-       _read (name,       11, fp);
-       _read (&type,       1, fp);
-       _read (&data_ptr,   4, fp);
-       _read (&length,     1, fp);
-       _read (&dec_point,  1, fp);
-       _read (padding,    14, fp);
+       _read (name,       11, fh);
+       _read (&type,       1, fh);
+       _read (&data_ptr,   4, fh);
+       _read (&length,     1, fh);
+       _read (&dec_point,  1, fh);
+       _read (padding,    14, fh);
      }
   };
 
@@ -93,15 +94,13 @@ public:
 
   ~DBase ()
   {
-    close ();
   }
 
   void close ()
   {
-    if (fp != nullptr)
-      fclose (fp);
+    if (fh)
+      fh.close ();
     count = 0;
-    fp = nullptr;
   }
 
   header_t header;
@@ -109,12 +108,12 @@ public:
 
   bool opened () const 
   {
-    return fp != nullptr;
+    return fh.is_open ();
   }
 
 private:
   map_t map;
-  FILE * fp = nullptr;
+  std::ifstream fh;
   int count = 0;
 };
  

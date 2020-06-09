@@ -30,7 +30,10 @@ class containerPlain : public glGrib::Container
 {
 public:
   containerPlain (const std::string & file) : glGrib::Container (file) {}
-  virtual ~containerPlain () {}
+  virtual ~containerPlain () 
+  {
+    close ();
+  }
   codes_handle * getHandleByExt (const std::string &) override;
   const std::string & getNextExt (const std::string &) override;
   const std::string & getPrevExt (const std::string &) override;
@@ -60,7 +63,8 @@ public:
   }
   void close ()
   {
-    fclose (fp);
+    if (fp != nullptr)
+      fclose (fp);
     fp = nullptr;
   }
   void buildIndex () override;
@@ -214,8 +218,8 @@ private:
   };
   friend class _iteratorFA;
   std::vector<std::string> names;
-  integer64 INUMER = 77;
-  void * LFI;
+  integer64 INUMER = 0;
+  void * LFI= nullptr;
   lficom_t lficomm;
   void open ();
   void close ();
@@ -463,10 +467,11 @@ void containerFA::open ()
   memcpy (lficomm.cmagic, "LFI_FORT", 8);
   lficomm.lfihl = nullptr;
 
-  integer64 IREP, INUMER = 77, INIMES = 0, INBARP = 0, INBARI = 0;
+  integer64 IREP, INIMES = 0, INBARP = 0, INBARI = 0;
   logical LLNOMM = fort_TRUE, LLERFA = fort_TRUE, LLIMST = fort_FALSE;
   character * CLNOMF = (character*)getFile ().c_str (), * CLSTTO = (character*)"OLD";
   character_len CLNOMF_len = getFile ().length (), CLSTTO_len = 3;
+  INUMER = 77;
   lfiouv_mt64_ (LFI, &IREP, &INUMER, &LLNOMM, CLNOMF, CLSTTO, &LLERFA, &LLIMST, 
       	  &INIMES, &INBARP, &INBARI, CLNOMF_len, CLSTTO_len);
   if (IREP != 0)
@@ -475,10 +480,14 @@ void containerFA::open ()
 }
 void containerFA::close ()
 {
+  if (INUMER == 0)
+    return;
   integer64 IREP;
   character * CLSTTC = (character*)"KEEP"; 
   character_len CLSTTC_len = 4;
   lfifer_mt64_ (LFI, &IREP, &INUMER, CLSTTC, CLSTTC_len);
+  LFI = nullptr;
+  INUMER = 0;
 }
 
 void containerFA::buildIndex ()

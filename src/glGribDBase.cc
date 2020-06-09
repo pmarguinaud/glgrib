@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include <iostream>
+#include <fstream>
 
 
 namespace
@@ -29,22 +30,22 @@ std::string trim (const std::string & str)
 
 bool glGrib::DBase::open (const std::string & path)
 {
-  fp = fopen ((path + ".dbf").c_str (), "r");
-  if (fp == nullptr)
+  fh = std::ifstream (path + ".dbf", std::ios::in | std::ifstream::binary);
+  if (! fh)
     return false;
-  header.read (fp);
+  header.read (fh);
   int n = (header.length - 1)/32 - 1;
 
   fields.resize (n);
 
   for (int i = 0; i < n; i++)
     {
-      fields[i].read (fp);
+      fields[i].read (fh);
       std::string name = std::string ((char *)fields[i].name);
       map.add (trim (name), i);
     }
 
-  fseek (fp, header.length, SEEK_SET);
+  fh.seekg (header.length);
 
   return true;
 }
@@ -53,14 +54,15 @@ bool glGrib::DBase::read (record_t * record)
 {
   record->clear ();
 
-  if (fp == nullptr)
+  if (! fh.is_open ())
     return false;
 
   count++;
+
   record->map = &map;
 
   char tmp[header.record_length], * ptr = &tmp[0];
-  _read (tmp, header.record_length, fp);
+  _read (tmp, header.record_length, fh);
   for (size_t i = 0; i < fields.size (); i++)
     {
       std::string str (ptr, fields[i].length);
@@ -70,8 +72,7 @@ bool glGrib::DBase::read (record_t * record)
   
   if (static_cast<uint32_t> (count) == header.count)
     {
-      fclose (fp);
-      fp = nullptr;
+      fh.close ();
       count = 0;
     }
 

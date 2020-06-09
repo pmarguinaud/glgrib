@@ -5,7 +5,7 @@
 #include "glGribResolve.h"
 
 #include <string>
-#include <math.h>
+#include <cmath>
 #include <glm/glm.hpp>
 #include <sys/types.h>
 #include <sys/stat.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <math.h>
+#include <cmath>
 #include <glm/glm.hpp>
 
 namespace glGrib
@@ -16,8 +16,8 @@ static const float halfpi = M_PI / 2.0f;
 static inline
 void lonlat2xyz (float lon, float lat, float * x, float * y, float * z)
 {
-  float coslon = cos (lon), sinlon = sin (lon);
-  float coslat = cos (lat), sinlat = sin (lat);
+  float coslon = std::cos (lon), sinlon = std::sin (lon);
+  float coslat = std::cos (lat), sinlat = std::sin (lat);
   *x = coslon * coslat; 
   *y = sinlon * coslat; 
   *z = sinlat;
@@ -27,7 +27,7 @@ static inline
 void xyz2lonlat (float x, float y, float z, float * lon, float * lat)
 {
   *lon = atan2 (y, x);
-  *lat = asin (z);
+  *lat = std::asin (z);
 }
 
 static inline

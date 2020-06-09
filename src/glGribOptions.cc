@@ -6,7 +6,7 @@
 
 #include <cstring>
 #include <time.h>
-#include <math.h>
+#include <cmath>
 #include <map>
 #include <list>
 

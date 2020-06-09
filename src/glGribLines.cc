@@ -4,7 +4,7 @@
 #include "glGribGSHHG.h"
 #include "glGribShapeLib.h"
 
-#include <math.h>
+#include <cmath>
 #include <iostream>
 #include <stdexcept>
 

@@ -170,8 +170,8 @@ float glGrib::View::pixelToDistAtNadir (float pixels) const
 {
   float lon = deg2rad * opts.lon, lat = deg2rad * opts.lat;
 
-  float coslon0 = cos (lon), sinlon0 = sin (lon);
-  float coslat0 = cos (lat), sinlat0 = sin (lat);
+  float coslon0 = std::cos (lon), sinlon0 = std::sin (lon);
+  float coslat0 = std::cos (lat), sinlat0 = std::sin (lat);
 
   glm::vec3 pos0 = glm::vec3 (coslon0 * coslat0, sinlon0 * coslat0, sinlat0);
 

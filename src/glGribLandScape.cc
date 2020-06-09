@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <exception>
 
-#include <math.h>
+#include <cmath>
 
 void glGrib::Landscape::setupVertexAttributes () const
 {

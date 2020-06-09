@@ -43,7 +43,7 @@ private:
       if (d > 0)
         {
           int sz = size ();
-	  lat = asin (z);
+	  lat = std::asin (z);
 	  lon = atan2 (y, x);
           if (sz > 0)
             {

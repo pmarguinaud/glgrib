@@ -61,19 +61,19 @@ private:
     int jlon = jlonlat.jlon;
     float coordy = latgauss[jlat-1];
     float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
-    return glm::vec2 (coordx, log (tan (M_PI / 4.0f + coordy / 2.0f)));
+    return glm::vec2 (coordx, std::log (std::tan (M_PI / 4.0f + coordy / 2.0f)));
   }
   glm::vec3 jlonlat2xyz (const jlonlat_t & jlonlat) const
   {
     int jlat = jlonlat.jlat;
     int jlon = jlonlat.jlon;
     float coordy = latgauss[jlat-1];
-    float sincoordy = sin (coordy);
-    float lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
-    float coslat = cos (lat); float sinlat = sin (lat);
+    float sincoordy = std::sin (coordy);
+    float lat = std::asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
+    float coslat = std::cos (lat); float sinlat = std::sin (lat);
     float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
     float lon = coordx;
-    float coslon = cos (lon); float sinlon = sin (lon);
+    float coslon = std::cos (lon); float sinlon = std::sin (lon);
 
     float X = coslon * coslat;
     float Y = sinlon * coslat;
@@ -95,7 +95,7 @@ private:
       }
     glm::vec3 xyz = jlonlat2xyz (jlonlat);
     float lon = atan2 (xyz.y, xyz.x);
-    float lat = asin (xyz.z);
+    float lat = std::asin (xyz.z);
     return glm::vec2 (lon, lat);
   }
 

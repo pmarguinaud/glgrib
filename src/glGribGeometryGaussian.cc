@@ -2,7 +2,7 @@
 #include "glGribTrigonometry.h"
 #include "glGribFitPolynomial.h"
 
-#include <math.h>
+#include <cmath>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <openssl/md5.h>
@@ -66,7 +66,7 @@ void computeLatgauss (int kn, glGrib::BufferPtr<double> & latgauss)
       // find first approximation of the roots of the
       // legendre polynomial of degree kn. 
       double z = (4 * jgl - 1) * pi / (4 * kn + 2);
-      double zdlx = z + 1.0 / (tan (z) * 8 * (kn * kn));
+      double zdlx = z + 1.0 / (std::tan (z) * 8 * (kn * kn));
       double zxn;
       int iflag = 0;
   
@@ -87,9 +87,9 @@ void computeLatgauss (int kn, glGrib::BufferPtr<double> & latgauss)
               for (int jn = 2 - iodd; jn <= kn; jn += 2)
                 {
                   // normalised ordinary legendre polynomial == \overbar{p_n}^0 
-                  zdlk = zdlk + zfnlat[ik] * cos (jn * zdlx);
+                  zdlk = zdlk + zfnlat[ik] * std::cos (jn * zdlx);
                   // normalised derivative == d/d\theta(\overbar{p_n}^0) 
-                  zdlldn = zdlldn - zfnlat[ik] * jn * sin (jn * zdlx);
+                  zdlldn = zdlldn - zfnlat[ik] * jn * std::sin (jn * zdlx);
                   ik = ik + 1;
                 }
               // newton method
@@ -109,7 +109,7 @@ void computeLatgauss (int kn, glGrib::BufferPtr<double> & latgauss)
         }
   
       // convert to latitude (radians)
-      latgauss[jgl-1] = asin (cos (zxn));
+      latgauss[jgl-1] = std::asin (std::cos (zxn));
 
       if (jgl <= kn/2)
         {
@@ -744,7 +744,7 @@ glGrib::GeometryGaussian::GeometryGaussian (int _Nj)
   for (int jlat = 1; jlat <= Nj; jlat++)
     {   
       float lat = pi * (0.5 - static_cast<float> (jlat) / static_cast<float> (Nj + 1));
-      float coslat = cos (lat);
+      float coslat = std::cos (lat);
       pl[jlat-1] = (2. * Nj * coslat);
     }   
 
@@ -967,8 +967,8 @@ void glGrib::GeometryGaussian::setupCoordinates ()
   
       if (rotated)
         {
-          float sincoordy = sin (coordy);
-          lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
+          float sincoordy = std::sin (coordy);
+          lat = std::asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
         }
       else
         {
@@ -979,8 +979,8 @@ void glGrib::GeometryGaussian::setupCoordinates ()
   
       if (rotated)
         {
-          coslat = cos (lat); 
-          sinlat = sin (lat);
+          coslat = std::cos (lat); 
+          sinlat = std::sin (lat);
         }
   
       int jglo = iglooff[jlat-1];
@@ -998,7 +998,7 @@ void glGrib::GeometryGaussian::setupCoordinates ()
             }
           else
             {
-              float coslon = cos (lon); float sinlon = sin (lon);
+              float coslon = std::cos (lon); float sinlon = std::sin (lon);
   
               float X = coslon * coslat;
               float Y = sinlon * coslat;
@@ -1007,7 +1007,7 @@ void glGrib::GeometryGaussian::setupCoordinates ()
               glm::vec3 XYZ = rot * glm::vec3 (X, Y, Z);
   
               lonlat[2*jglo+0] = atan2 (XYZ.y, XYZ.x);
-              lonlat[2*jglo+1] = asin (XYZ.z);
+              lonlat[2*jglo+1] = std::asin (XYZ.z);
   
             }
   
@@ -1237,11 +1237,11 @@ void glGrib::GeometryGaussian::latlon2coordxy (float lat, float lon,
   glm::vec3 XYZ = glm::inverse (rot) * glm::vec3 (x, y, z);
 
   lon = atan2 (XYZ.y, XYZ.x); 
-  lat = asin (XYZ.z);
+  lat = std::asin (XYZ.z);
 
   coordx = lon;
-  float sinlat = sin (lat);
-  coordy = asin ((-omc2 + sinlat * opc2) / (opc2 - sinlat * omc2));
+  float sinlat = std::sin (lat);
+  coordy = std::asin ((-omc2 + sinlat * opc2) / (opc2 - sinlat * omc2));
 }
 
 int glGrib::GeometryGaussian::latlon2jlatjlon (float lat, float lon, int & jlat, int & jlon) const
@@ -1340,26 +1340,26 @@ void glGrib::GeometryGaussian::applyUVangle (glGrib::BufferPtr<float> & angle) c
 {
   if (rotated)
     {
-      float coslon0 = cos (deg2rad * longitudeOfStretchingPoleInDegrees);
-      float sinlon0 = sin (deg2rad * longitudeOfStretchingPoleInDegrees);
-      float coslat0 = cos (deg2rad * latitudeOfStretchingPoleInDegrees);
-      float sinlat0 = sin (deg2rad * latitudeOfStretchingPoleInDegrees);
+      float coslon0 = std::cos (deg2rad * longitudeOfStretchingPoleInDegrees);
+      float sinlon0 = std::sin (deg2rad * longitudeOfStretchingPoleInDegrees);
+      float coslat0 = std::cos (deg2rad * latitudeOfStretchingPoleInDegrees);
+      float sinlat0 = std::sin (deg2rad * latitudeOfStretchingPoleInDegrees);
       glm::vec3 XYZ0 = glm::vec3 (coslon0 * coslat0, sinlon0 * coslat0, sinlat0);
    
 #pragma omp parallel for 
       for (int jlat = 0; jlat < Nj; jlat++)
         {
           float coordy = latgauss[jlat];
-          float sincoordy = sin (coordy);
-          float lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
-          float coslat = cos (lat); float sinlat = sin (lat);
+          float sincoordy = std::sin (coordy);
+          float lat = std::asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
+          float coslat = std::cos (lat); float sinlat = std::sin (lat);
           for (int jlon = 0; jlon < pl[jlat]; jlon++)
             {
               int jglo = jglooff[jlat] + jlon;
 
               float coordx = twopi * static_cast<float> (jlon) / static_cast<float> (pl[jlat]);
               float lon = coordx;
-              float coslon = cos (lon); float sinlon = sin (lon);
+              float coslon = std::cos (lon); float sinlon = std::sin (lon);
   
               glm::vec3 XYZ = rot * glm::vec3 (coslon * coslat, sinlon * coslat, sinlat);
   
@@ -1391,7 +1391,7 @@ void glGrib::GeometryGaussian::sample (OpenGLBufferPtr<unsigned char> & pp, cons
   for (int jlat = 0; jlat < Nj; jlat++)
     {
       float lat = pi * (0.5 - static_cast<float> (jlat+1) / static_cast<float> (Nj + 1));
-      int lon_stride = lat_stride / cos (lat);
+      int lon_stride = lat_stride / std::cos (lat);
       if (lon_stride == 0)
         lon_stride = 1;
       for (int jlon = 0; jlon < pl[jlat]; jlon++)
@@ -1554,7 +1554,7 @@ void glGrib::GeometryGaussian::applyNormScale (glGrib::BufferPtr<float> & data) 
   for (int jlat = 0; jlat < Nj; jlat++)
     {
       float coordy = latgauss[jlat];
-      float sincoordy = sin (coordy);
+      float sincoordy = std::sin (coordy);
       float N = 1.0f / sqrt ((opc2 + sincoordy * omc2) * (opc2 + sincoordy * omc2) 
                            / (opc2 * opc2 - omc2 * omc2));
       N = 1.0f / N;
@@ -1647,17 +1647,17 @@ int glGrib::GeometryGaussian::getTriangle (float lon, float lat) const
 glm::vec2 glGrib::GeometryGaussian::xyz2conformal (const glm::vec3 & xyz) const
 {
   float lon = atan2 (xyz.y, xyz.x);
-  float lat = asin (xyz.z);
-  return glm::vec2 (lon, log (tan (pi / 4.0f + lat / 2.0f)));
+  float lat = std::asin (xyz.z);
+  return glm::vec2 (lon, std::log (std::tan (pi / 4.0f + lat / 2.0f)));
 }
 
 glm::vec3 glGrib::GeometryGaussian::conformal2xyz (const glm::vec2 & merc) const
 {
   float coordx = merc.x;
-  float coordy = 2.0f * atan (exp (merc.y)) - halfpi;
-  float sincoordy = sin (coordy);
+  float coordy = 2.0f * std::atan (std::exp (merc.y)) - halfpi;
+  float sincoordy = std::sin (coordy);
 
-  float lat = asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
+  float lat = std::asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
   float lon = coordx;
 
   float X, Y, Z;
@@ -1673,7 +1673,7 @@ glm::vec3 glGrib::GeometryGaussian::conformal2xyz (const glm::vec2 & merc) const
 glm::vec2 glGrib::GeometryGaussian::conformal2latlon (const glm::vec2 & merc) const
 {
   float lon = merc.x;
-  float lat = 2.0f * atan (exp (merc.y)) - halfpi;
+  float lat = 2.0f * std::atan (std::exp (merc.y)) - halfpi;
   return glm::vec2 (glm::degrees (lon), glm::degrees (lat));
 }
 
@@ -1766,7 +1766,7 @@ float glGrib::GeometryGaussian::getLocalMeshSize (int jglo) const
   int jlat = jlonlat.jlat-1;
 
   float coordy = latgauss[jlat];
-  float sincoordy = sin (coordy);
+  float sincoordy = std::sin (coordy);
   float N = 1.0f / sqrt ((opc2 + sincoordy * omc2) * (opc2 + sincoordy * omc2) 
                        / (opc2 * opc2 - omc2 * omc2));
   return mesh / N;

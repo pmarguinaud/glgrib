@@ -2,7 +2,7 @@
 #include "glGribTrigonometry.h"
 #include "glGribProgram.h"
 
-#include <math.h>
+#include <cmath>
 #include <iostream>
 #include <vector>
 

@@ -1,7 +1,7 @@
 #include "glGribSubdivide.h"
 #include "glGribTrigonometry.h"
 
-#include <math.h>
+#include <cmath>
 #include <iostream>
 #include <map>
 #include <algorithm>
@@ -38,7 +38,7 @@ public:
       {
         int rank = rankb + k;
         float a = ang * (k + 1) / (count + 1);
-        xyz[rank] = cos (a) * u + sin (a) * v;
+        xyz[rank] = std::cos (a) * u + std::sin (a) * v;
       }
   }
   void getEdgeSubdivisions (int i, int j, int * r)

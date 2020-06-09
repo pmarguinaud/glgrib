@@ -266,8 +266,8 @@ const
       program->set ("arrow_fixed", true);
       program->set ("color0", opts.vector.barb.color);
 
-      program->set ("barbxleng", opts.vector.barb.length * cos (opts.vector.barb.angle * deg2rad));
-      program->set ("barbyleng", opts.vector.barb.length * sin (opts.vector.barb.angle * deg2rad));
+      program->set ("barbxleng", opts.vector.barb.length * std::cos (opts.vector.barb.angle * deg2rad));
+      program->set ("barbyleng", opts.vector.barb.length * std::sin (opts.vector.barb.angle * deg2rad));
       program->set ("barbdleng", opts.vector.barb.dleng);
       program->set ("circthres", opts.vector.barb.circle.level);
       program->set ("barbthresmax", opts.vector.barb.levels.size ()-1);

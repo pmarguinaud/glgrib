@@ -372,18 +372,18 @@ void getLatRange (const glm::vec2 & lonlat1, const glm::vec2 & lonlat2,
 
   if ((0 <= theta_op1) && (theta_op1 <= theta_max))
     {
-      float z = p1.z * cos (theta_op1) + q1.z * sin (theta_op1);
+      float z = p1.z * std::cos (theta_op1) + q1.z * std::sin (theta_op1);
       zmin = std::min (zmin, z); zmax = std::max (zmax, z);
     }
 
   if ((0 <= theta_op2) && (theta_op2 <= theta_max))
     {
-      float z = p1.z * cos (theta_op2) + q1.z * sin (theta_op2);
+      float z = p1.z * std::cos (theta_op2) + q1.z * std::sin (theta_op2);
       zmin = std::min (zmin, z); zmax = std::max (zmax, z);
     }
 
-  *latmin = asin (zmin);
-  *latmax = asin (zmax);
+  *latmin = std::asin (zmin);
+  *latmax = std::asin (zmax);
 }
 
 // Latitude extent of set of nodes
@@ -966,7 +966,7 @@ void glGrib::EarCut::processRing (const std::vector<float> & lonlat1,
     {
       xyz2[i] = R * xyz1[i];
       lonlat2[2*i+0] = atan2 (xyz2[i].y, xyz2[i].x); 
-      lonlat2[2*i+1] = asin (xyz2[i].z);
+      lonlat2[2*i+1] = std::asin (xyz2[i].z);
     }
 
   std::vector<glm::vec3> & xyz = xyz2;

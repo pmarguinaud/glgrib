@@ -1,7 +1,7 @@
 #include "glGribGeometryLatLon.h"
 #include "glGribTrigonometry.h"
 
-#include <math.h>
+#include <cmath>
 
 #include <openssl/md5.h>
 
@@ -287,7 +287,7 @@ void glGrib::GeometryLatLon::sample (OpenGLBufferPtr<unsigned char> & pp, const 
   for (int jlat = 0; jlat < Nj; jlat++)
     {
       float lat = lat0 - dlat * static_cast<float> (jlat);
-      float coslat = cos (lat);
+      float coslat = std::cos (lat);
       int lon_stride = abs (2 * (lat_stride * Dlat) / (Dlon * coslat));
       lon_stride = std::max (1, lon_stride);
       for (int jlon = 0; jlon < Ni; jlon++)
@@ -395,8 +395,8 @@ void glGrib::GeometryLatLon::getTriangleNeighbours (int it, int jglo[3], int itr
   if (fabsf (xlat1 + pi / 2.0f) < 1e-06)
     xlat1 = xlat1 + fabsf (dlat) / 2.0f;
 
-  float mlat0 = log (tan (pi / 4.0f + xlat0 / 2.0f));
-  float mlat1 = log (tan (pi / 4.0f + xlat1 / 2.0f));
+  float mlat0 = std::log (std::tan (pi / 4.0f + xlat0 / 2.0f));
+  float mlat1 = std::log (std::tan (pi / 4.0f + xlat1 / 2.0f));
 
   if (t021)
     {
@@ -457,7 +457,7 @@ void glGrib::GeometryLatLon::sampleTriangle (glGrib::BufferPtr<unsigned char> & 
       if (fabsf (lat + pi / 2.0f) < 1e-6)
         continue;
 
-      float coslat = cos (lat);
+      float coslat = std::cos (lat);
 
       int lon_stride = 2.0f * (level * 2.0f * Dlat) / (Dlon * coslat);
 
@@ -504,7 +504,7 @@ int glGrib::GeometryLatLon::getTriangle (float lon, float lat) const
   
   const float rad2deg = 180.0f / pi;
   float xlon = rad2deg * atan2 (xyz[0].y, xyz[0].x);
-  float xlat = rad2deg * asin (xyz[0].z);
+  float xlat = rad2deg * std::asin (xyz[0].z);
 
   printf (" lat = %12.5f lon = %12.5f\n", xlat, xlon);
 
@@ -527,14 +527,14 @@ int glGrib::GeometryLatLon::getTriangle (float lon, float lat) const
 glm::vec2 glGrib::GeometryLatLon::xyz2conformal (const glm::vec3 & xyz) const
 {
   float lon = atan2 (xyz.y, xyz.x);
-  float lat = asin (xyz.z);
-  return glm::vec2 (lon, log (tan (pi / 4.0f + lat / 2.0f)));
+  float lat = std::asin (xyz.z);
+  return glm::vec2 (lon, std::log (std::tan (pi / 4.0f + lat / 2.0f)));
 }
 
 glm::vec3 glGrib::GeometryLatLon::conformal2xyz (const glm::vec2 & merc) const
 {
   float lon = merc.x;
-  float lat = 2.0f * atan (exp (merc.y)) - pi / 2.0f;
+  float lat = 2.0f * std::atan (std::exp (merc.y)) - pi / 2.0f;
 
   return lonlat2xyz (lon, lat);
 }
@@ -542,7 +542,7 @@ glm::vec3 glGrib::GeometryLatLon::conformal2xyz (const glm::vec2 & merc) const
 glm::vec2 glGrib::GeometryLatLon::conformal2latlon (const glm::vec2 & merc) const
 {
   float lon = merc.x;
-  float lat = 2.0f * atan (exp (merc.y)) - pi / 2.0f;
+  float lat = 2.0f * std::atan (std::exp (merc.y)) - pi / 2.0f;
   return glm::vec2 (glm::degrees (lon), glm::degrees (lat));
 }
 
@@ -608,7 +608,7 @@ void glGrib::GeometryLatLon::getView (glGrib::View * view) const
   glm::vec3 xyz0 = (xyz[0][0] + xyz[0][1] + xyz[1][0] + xyz[1][1]) / 4.0f;
 
   float lon0 = atan2 (xyz0.y, xyz0.x);
-  float lat0 = asin (xyz0.z);
+  float lat0 = std::asin (xyz0.z);
 
   view_opts.lon = lon0 * rad2deg;
   view_opts.lat = lat0 * rad2deg;

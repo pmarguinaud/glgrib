@@ -1,6 +1,6 @@
 #include "glGribGeometryLambert.h"
 
-#include <math.h>
+#include <cmath>
 
 #include <openssl/md5.h>
 
@@ -287,7 +287,7 @@ void glGrib::GeometryLambert::sample (OpenGLBufferPtr<unsigned char> & pp, const
 
   for (int jlat = 0; jlat < Ny; jlat++)
     {
-      int lon_stride = (lat_stride * Dlat) / (Dlon * cos (lat));
+      int lon_stride = (lat_stride * Dlat) / (Dlon * std::cos (lat));
       if (lon_stride == 0)
         lon_stride = 1;
       for (int jlon = 0; jlon < Nx; jlon++)
@@ -324,7 +324,7 @@ void glGrib::GeometryLambert::applyUVangle (glGrib::BufferPtr<float> & angle) co
         latlon_j_t latlon = p_pj.xy_to_latlon (pt_xy);
 
         int p = j * Nx + i;
-        float coslat = cos (latlon.V.lat);
+        float coslat = std::cos (latlon.V.lat);
 
         glm::vec2 U (a * coslat * latlon.A.lon, a * latlon.A.lat);
 //      glm::vec2 V (a * coslat * latlon.B.lon, a * latlon.B.lat);
@@ -403,9 +403,9 @@ void glGrib::GeometryLambert::getTriangleNeighbours (int it, int jglo[3], int it
   for (int p = 0; p < 4; p++)
     {
       latlon_t latlon = p_pj.xy_to_latlon (xy[p]);
-      pos[p] = glm::vec3 (cos (latlon.lon) * cos (latlon.lat),
-                          sin (latlon.lon) * cos (latlon.lat),
-                                             sin (latlon.lat));
+      pos[p] = glm::vec3 (std::cos (latlon.lon) * std::cos (latlon.lat),
+                          std::sin (latlon.lon) * std::cos (latlon.lat),
+                                             std::sin (latlon.lat));
     }
 
   if (t021)
@@ -485,7 +485,7 @@ void glGrib::GeometryLambert::sampleTriangle (glGrib::BufferPtr<unsigned char> &
   
   int lat_stride = abs (level * pi / Dlat);
   lat_stride = std::max (1, lat_stride);
-  int lon_stride = 2.0f * (level * 2.0f * Dlat) / (Dlon * cos (lat));
+  int lon_stride = 2.0f * (level * 2.0f * Dlat) / (Dlon * std::cos (lat));
   lon_stride = std::max (1, lon_stride);
 
   int ntpr = 2 * (Nx - 1);

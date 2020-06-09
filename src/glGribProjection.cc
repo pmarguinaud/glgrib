@@ -99,7 +99,7 @@ glm::vec3 glGrib::ProjectionMercator::project (const glm::vec3 & xyz) const
   xyz2lonlat (compNormedPos (xyz), &lon, &lat);
   lon = glm::mod (lon, 2.0f * pi);
   float X = (glm::mod (lon - lon0 * pi / 180.0f, 2.0f * pi) - pi) / pi;
-  float Y = log (glm::tan (pi / 4.0f + lat / 2.0f)) / pi;
+  float Y = glm::log (glm::tan (pi / 4.0f + lat / 2.0f)) / pi;
   return glm::vec3 (0.0f, X, Y);
 }
 

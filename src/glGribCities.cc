@@ -38,7 +38,7 @@ void glGrib::Cities::setup (const glGrib::OptionsCities & o)
     {
       lon.push_back (lon_);
       lat.push_back (lat_);
-      siz.push_back (log (siz_) / log (10.0));
+      siz.push_back (std::log (siz_) / std::log (10.0));
       if ((siz_ > 1000000) && (opts.labels.on))
         {
           Str.push_back (std::string (name));

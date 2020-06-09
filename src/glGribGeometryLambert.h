@@ -84,8 +84,8 @@ private:
     proj_t () {}
     explicit proj_t (double lon, double lat, double _pole) : ref_pt (lon, lat), pole (_pole)
     {
-      kl = pole * sin (ref_pt.lat);
-      r_equateur = a * pow (cos (ref_pt.lat), 1.0 - kl) * pow (1.0 + kl, kl) / kl;
+      kl = pole * std::sin (ref_pt.lat);
+      r_equateur = a * std::pow (std::cos (ref_pt.lat), 1.0 - kl) * std::pow (1.0 + kl, kl) / kl;
     }
     latlon_t ref_pt;
     double pole;
@@ -99,26 +99,26 @@ private:
                  latlon_t 
                    (
                      ref_pt.lon + pt_rtheta.V.theta / kl,
-                     pole * ((pi / 2.0) - 2.0 * atan (pow (pt_rtheta.V.r / r_equateur, 1.0 / kl)))
+                     pole * ((pi / 2.0) - 2.0 * std::atan (std::pow (pt_rtheta.V.r / r_equateur, 1.0 / kl)))
                    ), 
                  latlon_t 
                    (
                      pt_rtheta.A.theta / kl,
-                     pole * (-2.0 * pow (pt_rtheta.V.r, 1.0 / kl - 1.0) * pt_rtheta.A.r) /
-                     (kl * pow (r_equateur, 1.0 / kl) * (1.0 + pow (pt_rtheta.V.r / r_equateur, 2.0 / kl)))
+                     pole * (-2.0 * std::pow (pt_rtheta.V.r, 1.0 / kl - 1.0) * pt_rtheta.A.r) /
+                     (kl * std::pow (r_equateur, 1.0 / kl) * (1.0 + std::pow (pt_rtheta.V.r / r_equateur, 2.0 / kl)))
                    ), 
                  latlon_t 
                    (
                      pt_rtheta.B.theta / kl,
-                     pole * (-2.0 * pow (pt_rtheta.V.r, 1.0 / kl - 1.0) * pt_rtheta.B.r) /
-                     (kl * pow (r_equateur, 1.0 / kl) * (1.0 + pow (pt_rtheta.V.r / r_equateur, 2.0 / kl)))
+                     pole * (-2.0 * std::pow (pt_rtheta.V.r, 1.0 / kl - 1.0) * pt_rtheta.B.r) /
+                     (kl * std::pow (r_equateur, 1.0 / kl) * (1.0 + std::pow (pt_rtheta.V.r / r_equateur, 2.0 / kl)))
                    )
                );
     }
     latlon_t rthetaToLatLon (const rtheta_t & pt_rtheta) const 
     {
       return latlon_t (ref_pt.lon + pt_rtheta.theta / kl,
-                       pole * ((pi / 2.0) - 2.0 * atan(pow (pt_rtheta.r / r_equateur, 1.0 / kl))));
+                       pole * ((pi / 2.0) - 2.0 * std::atan(std::pow (pt_rtheta.r / r_equateur, 1.0 / kl))));
     }
     rtheta_j_t xy_to_rtheta (const xy_j_t & pt_xy) const
     {
@@ -133,7 +133,7 @@ private:
       if (pt_xy.V.y == 0.0)
         tatng = (pt_xy.V.x == 0.0) ? pi : sign (pi / 2.0, -pole * pt_xy.V.x);
       else
-        tatng = atan (-pole * (pt_xy.V.x / pt_xy.V.y));
+        tatng = std::atan (-pole * (pt_xy.V.x / pt_xy.V.y));
 
       theta = pi * sign (1.0, pt_xy.V.x) * (sign (0.5, pole * pt_xy.V.y) + 0.5) + tatng;
 
@@ -159,7 +159,7 @@ private:
       if (pt_xy.y == 0.0) 
         tatng = (pt_xy.x == 0.0) ? pi : sign (pi / 2.0, -pole * pt_xy.x);
       else
-        tatng = atan (-pole * (pt_xy.x / pt_xy.y));
+        tatng = std::atan (-pole * (pt_xy.x / pt_xy.y));
       theta = pi * sign (1.0, pt_xy.x) * (sign (0.5, pole * pt_xy.y) + 0.5) + tatng;
     
       return rtheta_t (r, theta);
@@ -175,12 +175,12 @@ private:
     rtheta_t latlonToRtheta (const latlon_t & pt_coord) const 
     {
       return rtheta_t 
-    	  (r_equateur * pow (tan ((pi / 4.0) - ((pole * pt_coord.lat) / 2.0)), kl),
+    	  (r_equateur * std::pow (std::tan ((pi / 4.0) - ((pole * pt_coord.lat) / 2.0)), kl),
                kl * dist2ref (pt_coord, ref_pt));
     }
     xy_t rthetaToXy (const rtheta_t & pt_rtheta) const 
     {
-      return xy_t (pt_rtheta.r * sin (pt_rtheta.theta), -pole * pt_rtheta.r * cos (pt_rtheta.theta));
+      return xy_t (pt_rtheta.r * std::sin (pt_rtheta.theta), -pole * pt_rtheta.r * std::cos (pt_rtheta.theta));
     }
     xy_t latlonToXy (const latlon_t & pt_coord) const 
     {

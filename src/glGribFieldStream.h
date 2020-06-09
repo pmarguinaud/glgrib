@@ -46,7 +46,7 @@ private:
       float lon = 0.0f, lat = 2 * M_PI;
       if (d > 0)
         {
-          lat = asin (z);
+          lat = std::asin (z);
 	  lon = atan2 (y, x);
           int sz = size (), ilast = sz - 1;
           if (sz > 0)

@@ -2,7 +2,7 @@
 #include "glGribTrigonometry.h"
 #include "glGribResolve.h"
 
-#include <math.h>
+#include <cmath>
 #include <cstring>
 
 #include <stdexcept>

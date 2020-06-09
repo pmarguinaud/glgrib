@@ -3,7 +3,7 @@
 #include "glGribProgram.h"
 #include "glGribClear.h"
 
-#include <math.h>
+#include <cmath>
 #include <iostream>
 #include <vector>
 

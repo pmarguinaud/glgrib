@@ -8,6 +8,7 @@ extern "C"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <fstream>
 
 glGrib::grok_t glGrib::Grok (const std::string & f)
 {
@@ -34,23 +35,19 @@ glGrib::grok_t glGrib::Grok (const std::string & f)
 
   char head[4] = {0, 0, 0, 0};
 
-  FILE * fp = fopen (file.c_str (), "r");
+  std::ifstream fh (file, std::ios::in | std::ios::binary);
   
-  if (fp == nullptr)
+  if (! fh.is_open ())
     goto unknown;
 
-  if (fread (&head[0], 4, 1, fp) != 1)
+  if (! fh.read (&head[0], 4))
     goto unknown;
 
   if (strncmp (head, "GRIB", 4))
     goto unknown;
 
-  fclose (fp);
-
   return ext.length () > 0 ? grok_t::GRIB_EXT : grok_t::GRIB;
     
 unknown:
-  if (fp != nullptr)
-    fclose (fp);
   return grok_t::UNKNOWN;
 }

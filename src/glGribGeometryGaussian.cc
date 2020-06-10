@@ -1225,7 +1225,7 @@ void glGrib::GeometryGaussian::setup
   opts = o;
 
 
-  if (false){
+  if (true){
   triangulate (opts.triangle_strip.on, Nj, numberOfPoints, pl, 
                indcnt_per_lat, indoff_per_lat, ind_strip_size, ind,
                triu, trid, numberOfTriangles, elementbuffer);
@@ -1235,48 +1235,55 @@ void glGrib::GeometryGaussian::setup
   std::vector<long int> pl1;
   int numberOfPoints1 = 0;
 
-  auto traverse = [this] 
-     (std::function<void(int,int)> np,
-      std::function<void(int,int)> nl)
+  std::vector<int> i2ip0 (Nj);
+  std::vector<int> i2ip1 (Nj);
+  Buffer<unsigned int> l2h;
+
+  auto traverse = 
+  [this,&i2ip0,&i2ip1,&numberOfPoints1,&pl1,&Nj1,&l2h] 
+    (bool do_point, bool do_lines)
   {
-    int k = 0, l = 0, m = 0;
-    for (int i = 0; i < this->Nj / 2; i++)
-      if (i % 2 == 1)
-        {
-          nl (i, m++);
-          for (int j = 0; j < this->pl[i]; j++, k++)
-            if (j % 2 == 0)
-              np (k, l++);
-        }
-      else
-        k += this->pl[i];
-    for (int i = this->Nj / 2; i < this->Nj; i++)
-      if (i % 2 == 0)
-        {
-          nl (i, m++);
-          for (int j = 0; j < this->pl[i]; j++, k++)
-            if (j % 2 == 0)
-              np (k, l++);
-        }
-      else
-        k += this->pl[i];
+    const auto & pl0 = this->pl;
+    const auto & Nj0 = this->Nj;
+
+    int ip0 = 0;
+#pragma omp parallel for if (do_point)
+    for (int i = 0; i < Nj0; i++)
+      {
+        int r = i < Nj0 / 2 ? 1 : 0;
+        if (i % 2 == r)
+          {
+            if (do_lines)
+              {
+                i2ip0[i] = ip0;
+		i2ip1[i] = numberOfPoints1;
+		pl1.push_back (pl0[i]/2); 
+		Nj1++; 
+		numberOfPoints1 += pl1.back ();
+	      }
+            if (do_point)
+              {
+                int ip0 = i2ip0[i], ip1 = i2ip1[i];
+                for (int j = 0; j < pl0[i]; j++, ip0++)
+                  if (j % 2 == 0)
+                    l2h[ip1++] = ip0;
+	        continue;
+              }
+          }
+        ip0 += pl0[i];
+      }
   };
 
 
-  traverse 
-   ([&Nj1,&pl1,&numberOfPoints1] (int k0, int k1) { numberOfPoints1++; pl1[Nj1-1]++; },
-    [&Nj1,&pl1,&numberOfPoints1] (int l0, int l1) { pl1.push_back (0); Nj1++; });
+  traverse (false, true);
 
   triangulate (opts.triangle_strip.on, Nj1, numberOfPoints1, pl1, 
                indcnt_per_lat, indoff_per_lat, ind_strip_size, ind,
                triu, trid, numberOfTriangles, elementbuffer);
 
+  l2h.allocate (numberOfPoints1);
 
-  Buffer<unsigned int> l2h (numberOfPoints1);
-
-  traverse 
-   ([&l2h] (int k0, int k1) { l2h[k1] = k0; },
-    [] (int l0, int l1) { });
+  traverse (true, false);
 
 
   auto bb = elementbuffer->map ();

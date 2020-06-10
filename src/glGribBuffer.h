@@ -52,6 +52,14 @@ public:
   }
   Buffer & operator= (const Buffer &) = delete;
   Buffer (const Buffer &) = delete;
+  void allocate (size_t size)
+  {
+    if (data_)
+      delete [] data_;
+    if (size > 0)
+      data_ = new T[size];
+    size_ = size;
+  }
 private:
   T * data_ = nullptr;
   size_t size_ = 0;

@@ -2,15 +2,15 @@
 #include "glGribTrigonometry.h"
 #include "glGribFitPolynomial.h"
 
-#include <cmath>
-
 #include <glm/gtc/matrix_transform.hpp>
 #include <openssl/md5.h>
 
+#include <cmath>
 #include <iostream>
 #include <limits>
 #include <algorithm>
 #include <exception>
+#include <functional>
 
 
 namespace
@@ -1231,16 +1231,41 @@ void glGrib::GeometryGaussian::setup
                triu, trid, numberOfTriangles, elementbuffer);
 
   }else{
-  long int Nj1;
+  long int Nj1 = 0;
   std::vector<long int> pl1;
   int numberOfPoints1 = 0;
 
-  Nj1 = Nj / 2;
-  for (int i = 0; i < Nj / 2; i++)
-    {
-      pl1.push_back (pl[2*i] / 2);  
-      numberOfPoints1 += pl1.back ();
-    }
+  auto traverse = [this] 
+     (std::function<void(int,int)> np,
+      std::function<void(int,int)> nl)
+  {
+    int k = 0, l = 0, m = 0;
+    for (int i = 0; i < this->Nj / 2; i++)
+      if (i % 2 == 1)
+        {
+          nl (i, m++);
+          for (int j = 0; j < this->pl[i]; j++, k++)
+            if (j % 2 == 0)
+              np (k, l++);
+        }
+      else
+        k += this->pl[i];
+    for (int i = this->Nj / 2; i < this->Nj; i++)
+      if (i % 2 == 0)
+        {
+          nl (i, m++);
+          for (int j = 0; j < this->pl[i]; j++, k++)
+            if (j % 2 == 0)
+              np (k, l++);
+        }
+      else
+        k += this->pl[i];
+  };
+
+
+  traverse 
+   ([&Nj1,&pl1,&numberOfPoints1] (int k0, int k1) { numberOfPoints1++; pl1[Nj1-1]++; },
+    [&Nj1,&pl1,&numberOfPoints1] (int l0, int l1) { pl1.push_back (0); Nj1++; });
 
   triangulate (opts.triangle_strip.on, Nj1, numberOfPoints1, pl1, 
                indcnt_per_lat, indoff_per_lat, ind_strip_size, ind,
@@ -1249,19 +1274,10 @@ void glGrib::GeometryGaussian::setup
 
   Buffer<unsigned int> l2h (numberOfPoints1);
 
-  for (int i = 0, k = 0, l = 0; i < Nj; i++)
-    {
-      if (i % 2 == 0)
-        {
-          for (int j = 0; j < pl[i]; j++, k++)
-            if (j % 2 == 0)
-              l2h[l++] = k;
-        }
-      else
-        {
-          k += pl[i];
-        }
-    }
+  traverse 
+   ([&l2h] (int k0, int k1) { l2h[k1] = k0; },
+    [] (int l0, int l1) { });
+
 
   auto bb = elementbuffer->map ();
 

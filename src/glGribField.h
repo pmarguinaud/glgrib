@@ -98,7 +98,7 @@ public:
     float n = 0.0f;
     for (size_t i = 0; i < val.size (); i++)
       n += val[i] * val[i];
-    return sqrt (n);
+    return std::sqrt (n);
   }
   virtual float getNormedMaxValue () const 
   {
@@ -108,7 +108,7 @@ public:
     float n = 0.0f;
     for (size_t i = 0; i < val.size (); i++)
       n += val[i] * val[i];
-    return sqrt (n);
+    return std::sqrt (n);
   }
   void reSize (const View &) override {}
   const std::vector<FieldMetadata> & getMeta () const

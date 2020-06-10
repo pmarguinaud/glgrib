@@ -332,7 +332,7 @@ void glGrib::Loader::uv2nd (glGrib::const_GeometryPtr geometry,
       }
     else if (data_v[i] != meta_u.valmis)
       {
-        data_n[i] = sqrt (data_u[i] * data_u[i] + data_v[i] * data_v[i]);
+        data_n[i] = std::sqrt (data_u[i] * data_u[i] + data_v[i] * data_v[i]);
         data_d[i] = rad2deg * atan2 (data_v[i], data_u[i]);
       }
     else

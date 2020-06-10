@@ -116,7 +116,7 @@ void glGrib::FieldStream::setup (const Field::Privatizer, glGrib::Loader * ld, c
 
   int nt = getGeometry ()->getNumberOfTriangles ();
 
-  int np = static_cast<int> (sqrt (getGeometry ()->getNumberOfPoints ()));
+  int np = static_cast<int> (std::sqrt (getGeometry ()->getNumberOfPoints ()));
   int level = static_cast<int> (opts.stream.density * np / 40.0f);
 
   {

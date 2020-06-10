@@ -31,7 +31,7 @@ float getAngle (const glm::vec3 & xyz1, const glm::vec3 & xyz2)
 void Diag (const glm::dmat2 & A, glm::dmat2 * Q, glm::dvec2 * w)
 {
   double a = A[0][0], b = A[1][1], c = A[0][1];
-  double D = sqrt ((a - b) * (a - b) + 4 * c * c);
+  double D = std::sqrt ((a - b) * (a - b) + 4 * c * c);
 
   (*w)[0] = 0.5 * (a + b - D);
   (*w)[1] = 0.5 * (a + b + D);

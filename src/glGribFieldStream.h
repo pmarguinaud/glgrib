@@ -56,7 +56,7 @@ private:
                   float dx = x - last.x;
                   float dy = y - last.y;
                   float dz = z - last.z;
-                  D = length[ilast] + sqrt (dx * dx + dy * dy + dz * dz) / d;
+                  D = length[ilast] + std::sqrt (dx * dx + dy * dy + dz * dz) / d;
                 }
             }
         }

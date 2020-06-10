@@ -383,7 +383,7 @@ void glGrib::FieldContour::processTriangle
               float Y = (1 - a) * xyz[iA].y + a * xyz[iB].y;
               float Z = (1 - a) * xyz[iA].z + a * xyz[iB].z;
               // Normalize
-              float R = sqrt (X * X + Y * Y + Z * Z);
+              float R = std::sqrt (X * X + Y * Y + Z * Z);
               X /= R; Y /= R; Z /= R;
 
 	      float V = 0.0f;

@@ -33,7 +33,7 @@ glm::vec3 intersectSphere (const glm::vec3 & xa, const glm::vec3 & xb,
   if (Delta < 0)
     return c;
 
-  float lambda = (-B + sqrt (Delta)) / (2. * A);
+  float lambda = (-B + std::sqrt (Delta)) / (2. * A);
 
   return xa + lambda * u;
 }
@@ -43,7 +43,7 @@ glm::vec3 compNormedPos (const glm::vec3 & xyz)
   float x = xyz.x;
   float y = xyz.y;
   float z = xyz.z;
-  float r = 1.0f / sqrt (x * x + y * y + z * z); 
+  float r = 1.0f / std::sqrt (x * x + y * y + z * z); 
   return glm::vec3 (x * r, y * r, z * r);
 }
 

@@ -50,7 +50,7 @@ private:
               float dx = x - last.x;
               float dy = y - last.y;
               float dz = z - last.z;
-              D = dis_last + sqrt (dx * dx + dy * dy + dz * dz);
+              D = dis_last + std::sqrt (dx * dx + dy * dy + dz * dz);
             }
         }
       last.x = x;

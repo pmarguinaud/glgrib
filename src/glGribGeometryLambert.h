@@ -123,7 +123,7 @@ private:
     rtheta_j_t xy_to_rtheta (const xy_j_t & pt_xy) const
     {
       double r2 = pt_xy.V.x * pt_xy.V.x + pt_xy.V.y * pt_xy.V.y;
-      double r = sqrt (r2);
+      double r = std::sqrt (r2);
       double dr_dA = (pt_xy.V.x * pt_xy.A.x + pt_xy.V.y * pt_xy.A.y) / r;
       double dr_dB = (pt_xy.V.x * pt_xy.B.x + pt_xy.V.y * pt_xy.B.y) / r;
       double tatng;
@@ -152,7 +152,7 @@ private:
     }
     rtheta_t xy_to_rtheta (const xy_t & pt_xy) const 
     {
-      double r = sqrt(pt_xy.x * pt_xy.x + pt_xy.y * pt_xy.y);
+      double r = std::sqrt(pt_xy.x * pt_xy.x + pt_xy.y * pt_xy.y);
       double tatng;
       double theta;
     

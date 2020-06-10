@@ -1,4 +1,5 @@
 Try intel gpu tools
+
 Make a view below field and above ground, with XYZ movement
 
 Make ALL actions (window bindings) go through options.
@@ -17,12 +18,9 @@ Consider using uniform blocks
 
 Use mix, fma & clamp in shaders
 
-Use explicit constructors
-
 functions should return const
 
 Draw subgrids of geometry to make it faster
 
 Do not use new but auto_ptr/shared_ptr
 
-Do not use protected

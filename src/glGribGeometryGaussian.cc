@@ -33,7 +33,7 @@ void computeLatgauss (int kn, glGrib::BufferPtr<double> & latgauss)
   //        1.1 calculation of zfnlat.
   //            (fourier coefficients of series expansion for
   //            the ordinary legendre polynomials).
-  // belousov, swarztrauber use zfn(0,0)=sqrt(2._jprb)
+  // belousov, swarztrauber use zfn(0,0)=std::sqrt(2._jprb)
   // ifs normalisation chosen to be 0.5*integral(pnm**2) = 1 
 
   zfn[0] = 2.;
@@ -42,7 +42,7 @@ void computeLatgauss (int kn, glGrib::BufferPtr<double> & latgauss)
     {
       double zfnn = zfn[0];
       for (int jgl = 1; jgl <= jn; jgl++)
-        zfnn = zfnn * sqrt (1. - 0.25 / (jgl * jgl));
+        zfnn = zfnn * std::sqrt (1. - 0.25 / (jgl * jgl));
       int iodd = jn % 2;
       zfn[jn*(kn+1)+jn] = zfnn;
       for (int jgl = 2; jgl <= jn-iodd; jgl += 2)
@@ -1555,7 +1555,7 @@ void glGrib::GeometryGaussian::applyNormScale (glGrib::BufferPtr<float> & data) 
     {
       float coordy = latgauss[jlat];
       float sincoordy = std::sin (coordy);
-      float N = 1.0f / sqrt ((opc2 + sincoordy * omc2) * (opc2 + sincoordy * omc2) 
+      float N = 1.0f / std::sqrt ((opc2 + sincoordy * omc2) * (opc2 + sincoordy * omc2) 
                            / (opc2 * opc2 - omc2 * omc2));
       N = 1.0f / N;
       for (int jlon = 0; jlon < pl[jlat]; jlon++)
@@ -1767,7 +1767,7 @@ float glGrib::GeometryGaussian::getLocalMeshSize (int jglo) const
 
   float coordy = latgauss[jlat];
   float sincoordy = std::sin (coordy);
-  float N = 1.0f / sqrt ((opc2 + sincoordy * omc2) * (opc2 + sincoordy * omc2) 
+  float N = 1.0f / std::sqrt ((opc2 + sincoordy * omc2) * (opc2 + sincoordy * omc2) 
                        / (opc2 * opc2 - omc2 * omc2));
   return mesh / N;
 }

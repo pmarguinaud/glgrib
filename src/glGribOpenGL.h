@@ -49,6 +49,11 @@ public:
       return ptr[i];
     }
 
+    size_t size () const 
+    {
+      return buffer->size ();
+    }
+
   private:
     void clear ()
     {

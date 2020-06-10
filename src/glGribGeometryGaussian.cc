@@ -1139,9 +1139,25 @@ void glGrib::GeometryGaussian::tryFitLatitudes (int _kind, latfit_t * latfit)
 
 }
 
-void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::OptionsGeometry & o)
+namespace
 {
-  opts = o;
+
+void triangulate 
+(
+  const bool strip,
+  const long int Nj,
+  const int numberOfPoints,
+  const std::vector<long int> & pl,
+  glGrib::BufferPtr<int> & indcnt_per_lat,
+  glGrib::BufferPtr<int> & indoff_per_lat,
+  unsigned int & ind_strip_size,
+  glGrib::BufferPtr<unsigned int> & ind,
+  BufferPtr<int> & triu,
+  BufferPtr<int> & trid,
+  unsigned int & numberOfTriangles,
+  OpenGLBufferPtr<unsigned int> & elementbuffer
+)
+{
 
   // Compute number of triangles
   numberOfTriangles = 0;
@@ -1161,7 +1177,7 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
     }
 
 
-  if (! opts.triangle_strip.on)
+  if (! strip)
     {
       ind  = BufferPtr<unsigned int> (3 * numberOfTriangles); 
       triu = BufferPtr<int> (numberOfPoints); 
@@ -1199,8 +1215,64 @@ void glGrib::GeometryGaussian::setup (glGrib::HandlePtr ghp, const glGrib::Optio
 
     }
 
+}
+
+};
+
+void glGrib::GeometryGaussian::setup 
+  (glGrib::HandlePtr ghp, const glGrib::OptionsGeometry & o)
+{
+  opts = o;
+
+
+  if (false){
+  triangulate (opts.triangle_strip.on, Nj, numberOfPoints, pl, 
+               indcnt_per_lat, indoff_per_lat, ind_strip_size, ind,
+               triu, trid, numberOfTriangles, elementbuffer);
+
+  }else{
+  long int Nj1;
+  std::vector<long int> pl1;
+  int numberOfPoints1 = 0;
+
+  Nj1 = Nj / 2;
+  for (int i = 0; i < Nj / 2; i++)
+    {
+      pl1.push_back (pl[2*i] / 2);  
+      numberOfPoints1 += pl1.back ();
+    }
+
+  triangulate (opts.triangle_strip.on, Nj1, numberOfPoints1, pl1, 
+               indcnt_per_lat, indoff_per_lat, ind_strip_size, ind,
+               triu, trid, numberOfTriangles, elementbuffer);
+
+
+  Buffer<unsigned int> l2h (numberOfPoints1);
+
+  for (int i = 0, k = 0, l = 0; i < Nj; i++)
+    {
+      if (i % 2 == 0)
+        {
+          for (int j = 0; j < pl[i]; j++, k++)
+            if (j % 2 == 0)
+              l2h[l++] = k;
+        }
+      else
+        {
+          k += pl[i];
+        }
+    }
+
+  auto bb = elementbuffer->map ();
+
+  for (size_t i = 0; i < bb.size (); i++)
+    if (bb[i] != 0xffffffff)
+      bb[i] = l2h[bb[i]];
+  }
+
 
   latgauss = BufferPtr<double> (Nj);
+
   // Compute Gaussian latitudes
   computeLatgauss (Nj, latgauss);
       

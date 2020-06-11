@@ -31,7 +31,7 @@ public:
   float resolution (int level = 0) const override 
   { 
     if (level == 0) 
-    level = g.Nj; 
+    level = grid_gaussian.Nj; 
     return M_PI / level; 
   }
   void getTriangleNeighbours (int, int [3], int [3], glm::vec3 xyz[3]) const override;
@@ -64,19 +64,19 @@ private:
   {
     int jlat = jlonlat.jlat;
     int jlon = jlonlat.jlon;
-    float coordy = d.latgauss[jlat-1];
-    float coordx = 2. * M_PI * (float)(jlon-1) / (float)g.pl[jlat-1];
+    float coordy = misc_gaussian.latgauss[jlat-1];
+    float coordx = 2. * M_PI * (float)(jlon-1) / (float)grid_gaussian.pl[jlat-1];
     return glm::vec2 (coordx, std::log (std::tan (M_PI / 4.0f + coordy / 2.0f)));
   }
   glm::vec3 jlonlat2xyz (const jlonlat_t & jlonlat) const
   {
     int jlat = jlonlat.jlat;
     int jlon = jlonlat.jlon;
-    float coordy = d.latgauss[jlat-1];
+    float coordy = misc_gaussian.latgauss[jlat-1];
     float sincoordy = std::sin (coordy);
-    float lat = std::asin ((d.omc2 + sincoordy * d.opc2) / (d.opc2 + sincoordy * d.omc2));
+    float lat = std::asin ((misc_gaussian.omc2 + sincoordy * misc_gaussian.opc2) / (misc_gaussian.opc2 + sincoordy * misc_gaussian.omc2));
     float coslat = std::cos (lat); float sinlat = std::sin (lat);
-    float coordx = 2. * M_PI * (float)(jlon-1) / (float)g.pl[jlat-1];
+    float coordx = 2. * M_PI * (float)(jlon-1) / (float)grid_gaussian.pl[jlat-1];
     float lon = coordx;
     float coslon = std::cos (lon); float sinlon = std::sin (lon);
 
@@ -84,18 +84,18 @@ private:
     float Y = sinlon * coslat;
     float Z =          sinlat;
 
-    if (! d.rotated)
+    if (! misc_gaussian.rotated)
       return glm::vec3 (X, Y, Z);
    
-    return d.rot * glm::vec3 (X, Y, Z);
+    return misc_gaussian.rot * glm::vec3 (X, Y, Z);
   }
   glm::vec2 jlonlat2lonlat (const jlonlat_t & jlonlat) const
   {
-    if ((d.stretchingFactor == 1.0f) && (! d.rotated))
+    if ((misc_gaussian.stretchingFactor == 1.0f) && (! misc_gaussian.rotated))
       {
         int jlat = jlonlat.jlat, jlon = jlonlat.jlon;
-        float lat = d.latgauss[jlat-1];
-        float lon = 2. * M_PI * (float)(jlon-1) / (float)g.pl[jlat-1];
+        float lat = misc_gaussian.latgauss[jlat-1];
+        float lon = 2. * M_PI * (float)(jlon-1) / (float)grid_gaussian.pl[jlat-1];
         return glm::vec2 (lon, lat);
       }
     glm::vec3 xyz = jlonlat2xyz (jlonlat);
@@ -151,7 +151,7 @@ private:
     BufferPtr<int> indoff_per_lat;
     BufferPtr<int> triu; // Rank of triangle above
     BufferPtr<int> trid; // Rank of triangle below
-  } g;
+  } grid_gaussian;
 
   // Coordinates
   struct
@@ -168,7 +168,7 @@ private:
     BufferPtr<double> latgauss;
     OpenGLBufferPtr<int> ssbo_jglo, ssbo_jlat;
     OpenGLBufferPtr<float> ssbo_glat;
-  } d;
+  } misc_gaussian;
 };
 
 

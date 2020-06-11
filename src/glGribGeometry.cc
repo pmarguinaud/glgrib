@@ -114,7 +114,7 @@ std::string glGrib::Geometry::md5string (const unsigned char md5[]) const
 
 void glGrib::Geometry::checkTriangles () const
 {
-  int nt = numberOfTriangles;
+  int nt = grid.numberOfTriangles;
 #pragma omp parallel for
   for (int it0 = 0; it0 < nt; it0++)
     {
@@ -154,16 +154,16 @@ void glGrib::Geometry::checkTriangles () const
 
 void glGrib::Geometry::renderTriangles () const
 {
-  if (ind_strip_size)
+  if (grid.ind_strip_size)
     {
       glEnable (GL_PRIMITIVE_RESTART);
       glPrimitiveRestartIndex (0xffffffff);
-      glDrawElements (GL_TRIANGLE_STRIP, ind_strip_size, GL_UNSIGNED_INT, nullptr);
+      glDrawElements (GL_TRIANGLE_STRIP, grid.ind_strip_size, GL_UNSIGNED_INT, nullptr);
       glDisable (GL_PRIMITIVE_RESTART);
     }
   else
     {
-      glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, nullptr);
+      glDrawElements (GL_TRIANGLES, 3 * grid.numberOfTriangles, GL_UNSIGNED_INT, nullptr);
     }
 }
 
@@ -178,9 +178,9 @@ void glGrib::Geometry::setProgramParameters (glGrib::Program * program) const
 
 void glGrib::Geometry::bindCoordinates (int attr) const
 {
-  if (vertexbuffer != nullptr)
+  if (crds.vertexbuffer != nullptr)
     {
-      vertexbuffer->bind (GL_ARRAY_BUFFER);
+      crds.vertexbuffer->bind (GL_ARRAY_BUFFER);
       if (attr >= 0)
         {
           glEnableVertexAttribArray (attr);

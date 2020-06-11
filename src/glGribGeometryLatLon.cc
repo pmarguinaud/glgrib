@@ -14,7 +14,7 @@ void glGrib::GeometryLatLon::setProgramParameters (glGrib::Program * program) co
 
   (void)dumm_type;
 
-  if (vertexbuffer != nullptr)
+  if (crds.vertexbuffer != nullptr)
     {
       program->set ("geometry_type", geometry_none);
     }
@@ -49,9 +49,9 @@ glGrib::GeometryLatLon::GeometryLatLon (glGrib::HandlePtr ghp)
 
 void glGrib::GeometryLatLon::setupCoordinates ()
 {
-  vertexbuffer = glGrib::OpenGLBufferPtr<float> (2 * numberOfPoints);
+  crds.vertexbuffer = glGrib::OpenGLBufferPtr<float> (2 * grid.numberOfPoints);
 
-  auto lonlat = vertexbuffer->map ();
+  auto lonlat = crds.vertexbuffer->map ();
 
   // Generation of coordinates
 #pragma omp parallel for
@@ -93,16 +93,16 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
   // Compute number of triangles
   
   if (periodic)
-    numberOfTriangles = 2 * Ni * (Nj - 1);
+    grid.numberOfTriangles = 2 * Ni * (Nj - 1);
   else
-    numberOfTriangles = 2 * (Ni - 1) * (Nj - 1);
+    grid.numberOfTriangles = 2 * (Ni - 1) * (Nj - 1);
   
   // Generation of triangles
   if (! opts.triangle_strip.on)
     {
-      elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * numberOfTriangles);
+      grid.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * grid.numberOfTriangles);
 
-      auto ind = elementbuffer->map ();
+      auto ind = grid.elementbuffer->map ();
 
       for (int j = 0, t = 0; j < Nj-1; j++)
         {
@@ -125,13 +125,13 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
   else
     {
       if (periodic)
-        ind_strip_size = (2 * (Ni + 1) + 1) * (Nj - 1);
+        grid.ind_strip_size = (2 * (Ni + 1) + 1) * (Nj - 1);
       else
-        ind_strip_size = (2 * Ni + 1) * (Nj - 1);
+        grid.ind_strip_size = (2 * Ni + 1) * (Nj - 1);
 
-      elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * ind_strip_size);
+      grid.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * grid.ind_strip_size);
 
-      auto ind_strip = elementbuffer->map ();
+      auto ind_strip = grid.elementbuffer->map ();
 
       for (int j = 0, t = 0; j < Nj-1; j++)
         {
@@ -153,7 +153,7 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
 
 
 
-  numberOfPoints  = Ni * Nj;
+  grid.numberOfPoints  = Ni * Nj;
 
   if (! opts.gencoords.on)
     setupCoordinates ();
@@ -300,7 +300,7 @@ void glGrib::GeometryLatLon::getTriangleVertices (int it, int jglo[3]) const
 { 
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;
-  int nti = numberOfTriangles / (Nj - 1); // Number of triangles in a row
+  int nti = grid.numberOfTriangles / (Nj - 1); // Number of triangles in a row
   int i = (it % nti) / 2;
   int j = (it / nti);
   int ind0 = (j + 0) * Ni + (i + 0), ind1 = periodic && (i == Ni-1) ? (j + 0) * Ni : (j + 0) * Ni + (i + 1); 
@@ -324,7 +324,7 @@ const
 {
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;                // it is now the rank of the triangle 012
-  int nti = numberOfTriangles / (Nj - 1); // Number of triangles in a row
+  int nti = grid.numberOfTriangles / (Nj - 1); // Number of triangles in a row
   int i = (it % nti) / 2;
   int j = (it / nti);
   int ind0 = (j + 0) * Ni + (i + 0), ind1 = periodic && (i == Ni-1) ? (j + 0) * Ni : (j + 0) * Ni + (i + 1); 
@@ -417,7 +417,7 @@ bool glGrib::GeometryLatLon::triangleIsEdge (int it) const
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;
   it = it / 2;
-  int nti = numberOfTriangles / (2 * (Nj - 1)); // Number of squares in a row
+  int nti = grid.numberOfTriangles / (2 * (Nj - 1)); // Number of squares in a row
   int i = it % nti;
   int j = it / nti;
 
@@ -562,7 +562,7 @@ void glGrib::GeometryLatLon::getPointNeighbours (int jglo, std::vector<int> * ne
 {
   neigh->resize (0);
 
-  if ((jglo < 0) || (numberOfPoints <= jglo))
+  if ((jglo < 0) || (grid.numberOfPoints <= jglo))
     return;
 
   int i = jglo % Ni;

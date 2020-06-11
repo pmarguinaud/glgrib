@@ -711,7 +711,7 @@ void glGrib::GeometryGaussian::setProgramParameters (glGrib::Program * program) 
 
   (void)dumm_type;
 
-  if (vertexbuffer != nullptr)
+  if (crds.vertexbuffer != nullptr)
     {
       program->set ("geometry_type", geometry_none);
     }
@@ -729,7 +729,7 @@ void glGrib::GeometryGaussian::setProgramParameters (glGrib::Program * program) 
       program->set ("geometry_gaussian_rot", d.rot);             
       program->set ("geometry_gaussian_latfit_coeff", d.latfitcoeff);
       program->set ("geometry_gaussian_latfit_degre", d.latfitcoeff.size ()-1);
-      program->set ("geometry_gaussian_numberOfPoints", numberOfPoints);
+      program->set ("geometry_gaussian_grid.numberOfPoints", grid.numberOfPoints);
       program->set ("geometry_gaussian_fitlat", opts.gaussian.fit.on);
       program->set ("geometry_gaussian_kind", d.kind);
    }
@@ -748,9 +748,9 @@ glGrib::GeometryGaussian::GeometryGaussian (int _Nj)
       g.pl[jlat-1] = (2. * g.Nj * coslat);
     }   
 
-  numberOfPoints  = 0;
+  grid.numberOfPoints  = 0;
   for (int i = 0; i < g.Nj; i++)
-    numberOfPoints += g.pl[i];
+    grid.numberOfPoints += g.pl[i];
 
 }
 
@@ -806,9 +806,9 @@ glGrib::GeometryGaussian::GeometryGaussian (glGrib::HandlePtr ghp)
   g.pl.resize (pl_len);
   codes_get_long_array (h, "pl", g.pl.data (), &pl_len);
 
-  numberOfPoints  = 0;
+  grid.numberOfPoints  = 0;
   for (int i = 0; i < g.Nj; i++)
-    numberOfPoints += g.pl[i];
+    grid.numberOfPoints += g.pl[i];
 
 }
 
@@ -892,7 +892,7 @@ void glGrib::GeometryGaussian::checkTriangleComputation () const
 
   printf ("-----IND-----\n");
 
-  for (int it = 0; it < static_cast<int> (numberOfTriangles); it++)
+  for (int it = 0; it < static_cast<int> (grid.numberOfTriangles); it++)
     {
       int jglo0[3];
       int jglo1[3];
@@ -922,7 +922,7 @@ void glGrib::GeometryGaussian::setupSSBO ()
 
   if (! opts.gaussian.fit.on)
     {
-      d.ssbo_jlat = glGrib::OpenGLBufferPtr<int> (numberOfPoints);
+      d.ssbo_jlat = glGrib::OpenGLBufferPtr<int> (grid.numberOfPoints);
       auto jlat = d.ssbo_jlat->map ();
 
 #pragma omp parallel for
@@ -948,8 +948,8 @@ void glGrib::GeometryGaussian::setupSSBO ()
 
 void glGrib::GeometryGaussian::setupCoordinates ()
 {
-  vertexbuffer = glGrib::OpenGLBufferPtr<float> (2 * numberOfPoints);
-  auto lonlat = vertexbuffer->map ();
+  crds.vertexbuffer = glGrib::OpenGLBufferPtr<float> (2 * grid.numberOfPoints);
+  auto lonlat = crds.vertexbuffer->map ();
   
   int iglooff[g.Nj];
   iglooff[0] = 0;
@@ -1089,11 +1089,11 @@ void glGrib::GeometryGaussian::tryFitLatitudes (int _kind, latfit_t * latfit)
 
   latfit->kind  = _kind;
 
-  guessJlat                                gj;
-  gj.geometry_gaussian_Nj                = g.Nj;
-  gj.geometry_gaussian_numberOfPoints    = numberOfPoints;
-  gj.geometry_gaussian_kind              = _kind;
-  gj.geometry_gaussian_jglooff           = g.jglooff;
+  guessJlat                           gj;
+  gj.geometry_gaussian_Nj             = g.Nj;
+  gj.geometry_gaussian_numberOfPoints = grid.numberOfPoints;
+  gj.geometry_gaussian_kind           = _kind;
+  gj.geometry_gaussian_jglooff        = g.jglooff;
 
 
   // Prepare data for fitting residual
@@ -1143,9 +1143,9 @@ void glGrib::GeometryGaussian::triangulate ()
 {
 
   // Compute number of triangles
-  numberOfTriangles = 0;
+  grid.numberOfTriangles = 0;
   for (int jlat = 1; jlat < g.Nj; jlat++)
-    numberOfTriangles += g.pl[jlat-1] + g.pl[jlat];
+    grid.numberOfTriangles += g.pl[jlat-1] + g.pl[jlat];
   
   g.indcnt_per_lat = BufferPtr<int> (g.Nj);
   g.indoff_per_lat = BufferPtr<int> (g.Nj);
@@ -1162,12 +1162,12 @@ void glGrib::GeometryGaussian::triangulate ()
 
   if (! opts.triangle_strip.on)
     {
-      g.ind  = BufferPtr<unsigned int> (3 * numberOfTriangles); 
-      g.triu = BufferPtr<int> (numberOfPoints); 
-      g.trid = BufferPtr<int> (numberOfPoints); 
+      g.ind  = BufferPtr<unsigned int> (3 * grid.numberOfTriangles); 
+      g.triu = BufferPtr<int> (grid.numberOfPoints); 
+      g.trid = BufferPtr<int> (grid.numberOfPoints); 
       // Generation of triangles
       computeTrigauss (g.Nj, g.pl, g.ind, g.indoff_per_lat, g.indcnt_per_lat, g.triu, g.trid);
-      elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (g.ind);
+      grid.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (g.ind);
     }
   else
     {
@@ -1186,12 +1186,12 @@ void glGrib::GeometryGaussian::triangulate ()
         }
 
   
-      ind_strip_size = 0;
+      grid.ind_strip_size = 0;
       for (int jlat = 1; jlat < g.Nj; jlat++)
-        ind_strip_size += ind_stripcnt_per_lat[jlat-1];
+        grid.ind_strip_size += ind_stripcnt_per_lat[jlat-1];
 
-      elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind_strip_size);
-      auto ind_strip = elementbuffer->map ();
+      grid.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (grid.ind_strip_size);
+      auto ind_strip = grid.elementbuffer->map ();
 
       computeTrigaussStrip 
         (g.Nj, g.pl, ind_strip, ind_stripcnt_per_lat, ind_stripoff_per_lat); 
@@ -1226,10 +1226,10 @@ void glGrib::GeometryGaussian::setupSubGrid ()
             if (do_lines)
               {
                 i2ip0[i] = ip0;
-        	i2ip1[i] = subgrid->numberOfPoints;
+        	i2ip1[i] = subgrid->grid.numberOfPoints;
         	subgrid->g.pl.push_back (pl0[i]/2); 
         	subgrid->g.Nj++; 
-        	subgrid->numberOfPoints += subgrid->g.pl.back ();
+        	subgrid->grid.numberOfPoints += subgrid->g.pl.back ();
               }
             if (do_point)
               {
@@ -1248,11 +1248,11 @@ void glGrib::GeometryGaussian::setupSubGrid ()
 
   subgrid->triangulate ();
 
-  l2h.allocate (subgrid->numberOfPoints);
+  l2h.allocate (subgrid->grid.numberOfPoints);
 
   traverse (true, false);
 
-  auto bb = subgrid->elementbuffer->map ();
+  auto bb = subgrid->grid.elementbuffer->map ();
 
   for (size_t i = 0; i < bb.size (); i++)
     if (bb[i] != 0xffffffff)
@@ -1262,6 +1262,8 @@ void glGrib::GeometryGaussian::setupSubGrid ()
   subgrid->d           = d;
   subgrid->g.triu      = BufferPtr<int> (0);
   subgrid->g.trid      = BufferPtr<int> (0);
+  subgrid->crds        = crds;
+
 }
 
 
@@ -1280,7 +1282,6 @@ void glGrib::GeometryGaussian::setup
   if (! opts.gencoords.on)
     setupCoordinates ();
 
-  subgrid->vertexbuffer = vertexbuffer;
 
   g.jglooff.resize (g.Nj + 1);
 
@@ -1771,7 +1772,7 @@ void glGrib::GeometryGaussian::getPointNeighbours (int jglo, std::vector<int> * 
 {
   neigh->resize (0);
  
-  if ((jglo < 0) || (numberOfPoints <= jglo))
+  if ((jglo < 0) || (grid.numberOfPoints <= jglo))
     return;
 
   jlonlat_t jlonlat = this->jlonlat (jglo);

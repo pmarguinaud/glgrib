@@ -11,9 +11,9 @@ const double glGrib::GeometryLambert::a = 6371229.0;
 
 void glGrib::GeometryLambert::setupCoordinates ()
 {
-  vertexbuffer = glGrib::OpenGLBufferPtr<float> (2 * numberOfPoints);
+  crds.vertexbuffer = glGrib::OpenGLBufferPtr<float> (2 * grid.numberOfPoints);
 
-  auto lonlat = vertexbuffer->map ();
+  auto lonlat = crds.vertexbuffer->map ();
 
   // Generation of coordinates
 #pragma omp parallel for
@@ -37,7 +37,7 @@ void glGrib::GeometryLambert::setProgramParameters (glGrib::Program * program) c
  
   (void)dumm_type;
 
-  if (vertexbuffer != nullptr)
+  if (crds.vertexbuffer != nullptr)
     {
       program->set ("geometry_type", geometry_none);
     }
@@ -126,15 +126,15 @@ void glGrib::GeometryLambert::setup (glGrib::HandlePtr ghp, const glGrib::Option
 
   // Compute number of triangles
   
-  numberOfTriangles = 2 * (Nx - 1) * (Ny - 1);
-  numberOfPoints  = Nx * Ny;
+  grid.numberOfTriangles = 2 * (Nx - 1) * (Ny - 1);
+  grid.numberOfPoints  = Nx * Ny;
   
   // Generation of triangles
   
   if (! opts.triangle_strip.on)
     {
-      elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * numberOfTriangles);
-      auto ind = elementbuffer->map ();
+      grid.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (3 * grid.numberOfTriangles);
+      auto ind = grid.elementbuffer->map ();
 
       for (int j = 0, t = 0; j < Ny-1; j++)
         for (int i = 0; i < Nx-1; i++)
@@ -147,10 +147,10 @@ void glGrib::GeometryLambert::setup (glGrib::HandlePtr ghp, const glGrib::Option
     }
   else
     {
-      ind_strip_size = (2 * Nx + 5) * (Ny - 1);
-      elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind_strip_size);
+      grid.ind_strip_size = (2 * Nx + 5) * (Ny - 1);
+      grid.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (grid.ind_strip_size);
   
-      auto ind_strip = elementbuffer->map ();
+      auto ind_strip = grid.elementbuffer->map ();
 
       auto ind0 = [=] (int i, int j) { return (j + 0) * Nx + (i + 0); };
       auto ind2 = [=] (int i, int j) { return (j + 1) * Nx + (i + 0); };
@@ -173,10 +173,10 @@ void glGrib::GeometryLambert::setup (glGrib::HandlePtr ghp, const glGrib::Option
 	  ind_strip[t++] = 0xffffffff;
 	}
 
-      if (t >= static_cast<int> (ind_strip_size))
+      if (t >= static_cast<int> (grid.ind_strip_size))
         abort ();
 
-      for (; t < static_cast<int> (ind_strip_size); t++)
+      for (; t < static_cast<int> (grid.ind_strip_size); t++)
 	ind_strip[t] = 0xffffffff;
       
     }
@@ -340,7 +340,7 @@ void glGrib::GeometryLambert::getTriangleVertices (int it, int jglo[3]) const
 { 
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;
-  int nti = numberOfTriangles / (Ny - 1); // Number of triangles in a row
+  int nti = grid.numberOfTriangles / (Ny - 1); // Number of triangles in a row
   int i = (it % nti) / 2;
   int j = (it / nti);
   int ind0 = (j + 0) * Nx + (i + 0), ind1 = (j + 0) * Nx + (i + 1); 
@@ -360,7 +360,7 @@ void glGrib::GeometryLambert::getTriangleNeighboursXY (int it, int jglo[3], int 
 { 
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;                // it is now the rank of the triangle 012
-  int nti = numberOfTriangles / (Ny - 1); // Number of triangles in a row
+  int nti = grid.numberOfTriangles / (Ny - 1); // Number of triangles in a row
   int i = (it % nti) / 2;
   int j = (it / nti);
   int ind0 = (j + 0) * Nx + (i + 0), ind1 = (j + 0) * Nx + (i + 1); 
@@ -453,7 +453,7 @@ bool glGrib::GeometryLambert::triangleIsEdge (int it) const
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;
   it = it / 2;
-  int nti = numberOfTriangles / (2 * (Ny - 1)); // Number of squares in a row
+  int nti = grid.numberOfTriangles / (2 * (Ny - 1)); // Number of squares in a row
   int i = it % nti;
   int j = it / nti;
 
@@ -557,7 +557,7 @@ void glGrib::GeometryLambert::getPointNeighbours (int jglo, std::vector<int> * n
 {
   neigh->resize (0);
 
-  if ((jglo < 0) || (numberOfPoints <= jglo))
+  if ((jglo < 0) || (grid.numberOfPoints <= jglo))
     return;
 
   int i = jglo % Nx;

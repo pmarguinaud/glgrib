@@ -56,17 +56,17 @@ public:
 
   int getNumberOfPoints () const
   {
-    return numberOfPoints;
+    return grid.numberOfPoints;
   }
 
   int getNumberOfTriangles () const
   {
-    return numberOfTriangles;
+    return grid.numberOfTriangles;
   }
 
   void bindTriangles () const
   {
-    elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+    grid.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
   }
 
   virtual void getView (View *) const = 0;
@@ -97,7 +97,7 @@ public:
 
   const OpenGLBufferPtr<float> & getVertexBuffer () const
   {
-    return vertexbuffer;
+    return crds.vertexbuffer;
   }
 
   void setOptions (const OptionsGeometry & o)
@@ -112,7 +112,7 @@ public:
 
   const OpenGLBufferPtr<unsigned int> & getElementBuffer () const
   {
-    return elementbuffer;
+    return grid.elementbuffer;
   }
 
 private:
@@ -122,13 +122,19 @@ private:
   OptionsGeometry opts;
 
   // Grid
-  unsigned int numberOfTriangles = 0;
-  int numberOfPoints = 0;
-  OpenGLBufferPtr<unsigned int> elementbuffer;
-  unsigned int ind_strip_size;
+  struct
+  {
+    unsigned int numberOfTriangles = 0;
+    int numberOfPoints = 0;
+    OpenGLBufferPtr<unsigned int> elementbuffer;
+    unsigned int ind_strip_size;
+  } grid;
 
   // Coordinates
-  OpenGLBufferPtr<float> vertexbuffer;
+  struct
+  {
+    OpenGLBufferPtr<float> vertexbuffer;
+  } crds;
 
   // Frame
   int numberOfPoints_frame = 0;

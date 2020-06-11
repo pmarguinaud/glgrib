@@ -26,8 +26,9 @@ public:
   float resolution (int level = 0) const override 
   { 
     if (level == 0)
-      level = Nj;
-    return deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees) / level;
+      level = grid_latlon.Nj;
+    return deg2rad * (misc_latlon.latitudeOfFirstGridPointInDegrees 
+                    - misc_latlon.latitudeOfLastGridPointInDegrees) / level;
   }
   void getTriangleVertices (int, int [3]) const override;
   void getTriangleNeighbours (int, int [3], int [3], glm::vec3 [3]) const override;
@@ -46,13 +47,24 @@ private:
   void setupCoordinates ();
   void setupFrame ();
   void getTriangleNeighboursLatLon (int, int [3], int [3], float &, float &, float &, float &) const;
-  long int Ni, Nj;
-  double latitudeOfFirstGridPointInDegrees;
-  double longitudeOfFirstGridPointInDegrees;
-  double latitudeOfLastGridPointInDegrees;
-  double longitudeOfLastGridPointInDegrees;
-  double dlat, dlon, lat0, lon0;
-  bool periodic = false;
+private:
+
+  // Grid
+  struct
+  {
+    long int Ni = 0, Nj = 0;
+  } grid_latlon;
+
+  // Coordinates
+  struct
+  {
+    double latitudeOfFirstGridPointInDegrees;
+    double longitudeOfFirstGridPointInDegrees;
+    double latitudeOfLastGridPointInDegrees;
+    double longitudeOfLastGridPointInDegrees;
+    double dlat, dlon, lat0, lon0;
+    bool periodic = false;
+  } misc_latlon;
 };
 
 

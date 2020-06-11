@@ -93,6 +93,8 @@ again:
 
 glGrib::Geometry::~Geometry ()
 {
+  if (subgrid)
+    delete subgrid;
 }
 
 std::string glGrib::Geometry::md5string (const unsigned char md5[]) const

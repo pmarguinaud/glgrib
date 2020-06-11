@@ -21,34 +21,41 @@ void glGrib::GeometryLatLon::setProgramParameters (glGrib::Program * program) co
   else
     {
       program->set ("geometry_type", geometry_latlon);
-      program->set ("geometry_latlon_lat0", lat0);
-      program->set ("geometry_latlon_lon0", lon0);
-      program->set ("geometry_latlon_dlat", dlat);
-      program->set ("geometry_latlon_dlon", dlon);
-      program->set ("geometry_latlon_Ni",   Ni);
-      program->set ("geometry_latlon_Nj",   Nj);
+      program->set ("geometry_latlon_lat0", misc_latlon.lat0);
+      program->set ("geometry_latlon_lon0", misc_latlon.lon0);
+      program->set ("geometry_latlon_dlat", misc_latlon.dlat);
+      program->set ("geometry_latlon_dlon", misc_latlon.dlon);
+      program->set ("geometry_latlon_Ni",   grid_latlon.Ni);
+      program->set ("geometry_latlon_Nj",   grid_latlon.Nj);
     }
 }
 
 int glGrib::GeometryLatLon::size () const
 {
-  return Ni * Nj;
+  return grid_latlon.Ni * grid_latlon.Nj;
 }
 
 glGrib::GeometryLatLon::GeometryLatLon (glGrib::HandlePtr ghp)
 {
   codes_handle * h = ghp == nullptr ? nullptr : ghp->getCodesHandle ();
-  codes_get_long (h, "Ni", &Ni);
-  codes_get_long (h, "Nj", &Nj);
-  codes_get_double (h, "latitudeOfFirstGridPointInDegrees"   , &latitudeOfFirstGridPointInDegrees  );
-  codes_get_double (h, "longitudeOfFirstGridPointInDegrees"  , &longitudeOfFirstGridPointInDegrees );
-  codes_get_double (h, "latitudeOfLastGridPointInDegrees"    , &latitudeOfLastGridPointInDegrees   );
-  codes_get_double (h, "longitudeOfLastGridPointInDegrees"   , &longitudeOfLastGridPointInDegrees  );
+  codes_get_long (h, "Ni", &grid_latlon.Ni);
+  codes_get_long (h, "Nj", &grid_latlon.Nj);
+  codes_get_double (h, "latitudeOfFirstGridPointInDegrees"   , 
+                    &misc_latlon.latitudeOfFirstGridPointInDegrees  );
+  codes_get_double (h, "longitudeOfFirstGridPointInDegrees"  , 
+                    &misc_latlon.longitudeOfFirstGridPointInDegrees );
+  codes_get_double (h, "latitudeOfLastGridPointInDegrees"    , 
+                    &misc_latlon.latitudeOfLastGridPointInDegrees   );
+  codes_get_double (h, "longitudeOfLastGridPointInDegrees"   , 
+                    &misc_latlon.longitudeOfLastGridPointInDegrees  );
   
 }
 
 void glGrib::GeometryLatLon::setupCoordinates ()
 {
+  auto Ni = grid_latlon.Ni;
+  auto Nj = grid_latlon.Nj;
+
   crds.vertexbuffer = glGrib::OpenGLBufferPtr<float> (2 * grid.numberOfPoints);
 
   auto lonlat = crds.vertexbuffer->map ();
@@ -57,10 +64,10 @@ void glGrib::GeometryLatLon::setupCoordinates ()
 #pragma omp parallel for
   for (int j = 0; j < Nj; j++)
     {
-      float lat = lat0 - dlat * static_cast<float> (j);
+      float lat = misc_latlon.lat0 - misc_latlon.dlat * static_cast<float> (j);
       for (int i = 0; i < Ni; i++)
         {
-          float lon = lon0 + dlon * static_cast<float> (i);
+          float lon = misc_latlon.lon0 + misc_latlon.dlon * static_cast<float> (i);
           int p = j * Ni + i;
 	  lonlat[2*p+0] = lon;
 	  lonlat[2*p+1] = lat;
@@ -73,26 +80,31 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
 {
   opts = o;
 
-  periodic = false;
+  auto Ni = grid_latlon.Ni;
+  auto Nj = grid_latlon.Nj;
 
-  dlat = deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees) / (Nj - 1);
-  dlon = longitudeOfLastGridPointInDegrees - longitudeOfFirstGridPointInDegrees;
-  while (dlon < 0.)
-    dlon += 360.;
-  while (dlon >= 360.)
-    dlon -= 360.;
-  dlon /= (Ni - 1);
-  dlon *= deg2rad;
-  lat0 = deg2rad * latitudeOfFirstGridPointInDegrees;
-  lon0 = deg2rad * longitudeOfFirstGridPointInDegrees;
+  misc_latlon.periodic = false;
 
-  double ddlon = Ni * dlon - 2 * pi;
+  misc_latlon.dlat = deg2rad * (misc_latlon.latitudeOfFirstGridPointInDegrees 
+                              - misc_latlon.latitudeOfLastGridPointInDegrees) / (Nj - 1);
+  misc_latlon.dlon = misc_latlon.longitudeOfLastGridPointInDegrees 
+                   - misc_latlon.longitudeOfFirstGridPointInDegrees;
+  while (misc_latlon.dlon < 0.)
+    misc_latlon.dlon += 360.;
+  while (misc_latlon.dlon >= 360.)
+    misc_latlon.dlon -= 360.;
+  misc_latlon.dlon /= (Ni - 1);
+  misc_latlon.dlon *= deg2rad;
+  misc_latlon.lat0 = deg2rad * misc_latlon.latitudeOfFirstGridPointInDegrees;
+  misc_latlon.lon0 = deg2rad * misc_latlon.longitudeOfFirstGridPointInDegrees;
+
+  double ddlon = Ni * misc_latlon.dlon - 2 * pi;
     
-  periodic = std::abs (ddlon) < 1E-2 * dlon;
+  misc_latlon.periodic = std::abs (ddlon) < 1E-2 * misc_latlon.dlon;
 
   // Compute number of triangles
   
-  if (periodic)
+  if (misc_latlon.periodic)
     grid.numberOfTriangles = 2 * Ni * (Nj - 1);
   else
     grid.numberOfTriangles = 2 * (Ni - 1) * (Nj - 1);
@@ -113,7 +125,7 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
               ind[3*t+0] = ind0; ind[3*t+1] = ind2; ind[3*t+2] = ind1; t++;
               ind[3*t+0] = ind1; ind[3*t+1] = ind2; ind[3*t+2] = ind3; t++;
             }
-          if (periodic)
+          if (misc_latlon.periodic)
             {
               int ind0 = (j + 0) * Ni + Ni-1; int ind1 = (j + 0) * Ni + 0; 
               int ind2 = (j + 1) * Ni + Ni-1; int ind3 = (j + 1) * Ni + 0; 
@@ -124,7 +136,7 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
     }
   else
     {
-      if (periodic)
+      if (misc_latlon.periodic)
         grid.ind_strip_size = (2 * (Ni + 1) + 1) * (Nj - 1);
       else
         grid.ind_strip_size = (2 * Ni + 1) * (Nj - 1);
@@ -141,7 +153,7 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
               int ind2 = (j + 1) * Ni + (i + 0); 
 	      ind_strip[t++] = ind0; ind_strip[t++] = ind2;
             }
-          if (periodic)
+          if (misc_latlon.periodic)
             {
               int ind1 = (j + 0) * Ni + 0; 
               int ind3 = (j + 1) * Ni + 0; 
@@ -158,12 +170,15 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
   if (! opts.gencoords.on)
     setupCoordinates ();
 
-  if (opts.frame.on && (! periodic))
+  if (opts.frame.on && (! misc_latlon.periodic))
     setupFrame ();
 }
 
 void glGrib::GeometryLatLon::setupFrame ()
 {
+  auto Ni = grid_latlon.Ni;
+  auto Nj = grid_latlon.Nj;
+
   frame.numberOfPoints = 2 * (Ni + Nj - 2);
   frame.vertexbuffer = glGrib::OpenGLBufferPtr<float> (3 * (frame.numberOfPoints + 2));
 
@@ -173,8 +188,8 @@ void glGrib::GeometryLatLon::setupFrame ()
 
   auto push = [&lonlat, &p, this] (int i, int j, int latcst)
   {
-    float lat = lat0 - dlat * static_cast<float> (j);
-    float lon = lon0 + dlon * static_cast<float> (i);
+    float lat = misc_latlon.lat0 - misc_latlon.dlat * static_cast<float> (j);
+    float lon = misc_latlon.lon0 + misc_latlon.dlon * static_cast<float> (i);
     lonlat[3*p+0] = lon;
     lonlat[3*p+1] = lat;
     lonlat[3*p+2] = latcst == 0 ? 1.0f : 0.0f;
@@ -204,19 +219,22 @@ glGrib::GeometryLatLon::~GeometryLatLon ()
 
 int glGrib::GeometryLatLon::latlon2index (float lat, float lon) const
 {
+  auto Ni = grid_latlon.Ni;
+  auto Nj = grid_latlon.Nj;
+
   lat = lat * deg2rad;
   lon = lon * deg2rad;
 
-  float dl = lon - lon0;
+  float dl = lon - misc_latlon.lon0;
   while (dl < 0.)
     dl += 2 * pi;
   while (dl >= 2 * pi)
     dl -= 2 * pi;
 
-  int i = static_cast<int>(0.5 + dl / dlon);
-  int j = static_cast<int>(0.5 + (lat0 - lat) / dlat);
+  int i = static_cast<int>(0.5 + dl / misc_latlon.dlon);
+  int j = static_cast<int>(0.5 + (misc_latlon.lat0 - lat) / misc_latlon.dlat);
 
-  if ((periodic) && (i >= Ni))
+  if ((misc_latlon.periodic) && (i >= Ni))
     i = 0;
 
   if ((i < 0) || (i >= Ni))
@@ -229,11 +247,13 @@ int glGrib::GeometryLatLon::latlon2index (float lat, float lon) const
 
 void glGrib::GeometryLatLon::index2latlon (int jglo, float * lat, float * lon) const
 {
+  auto Ni = grid_latlon.Ni;
+
   int i = jglo % Ni;
   int j = jglo / Ni;
 
-  *lat = lat0 - dlat * static_cast<float> (j);
-  *lon = lon0 + dlon * static_cast<float> (i);
+  *lat = misc_latlon.lat0 - misc_latlon.dlat * static_cast<float> (j);
+  *lon = misc_latlon.lon0 + misc_latlon.dlon * static_cast<float> (i);
 }
 
 std::string glGrib::GeometryLatLon::md5 () const
@@ -242,12 +262,16 @@ std::string glGrib::GeometryLatLon::md5 () const
   MD5_CTX c;
   MD5_Init (&c);
 
-  MD5_Update (&c, &Ni, sizeof (Ni));
-  MD5_Update (&c, &Nj, sizeof (Nj));
-  MD5_Update (&c, &latitudeOfFirstGridPointInDegrees  , sizeof (latitudeOfFirstGridPointInDegrees ));
-  MD5_Update (&c, &longitudeOfFirstGridPointInDegrees , sizeof (longitudeOfFirstGridPointInDegrees));
-  MD5_Update (&c, &latitudeOfLastGridPointInDegrees   , sizeof (latitudeOfLastGridPointInDegrees  ));
-  MD5_Update (&c, &longitudeOfLastGridPointInDegrees  , sizeof (longitudeOfLastGridPointInDegrees ));
+  MD5_Update (&c, &grid_latlon.Ni, sizeof (grid_latlon.Ni));
+  MD5_Update (&c, &grid_latlon.Nj, sizeof (grid_latlon.Nj));
+  MD5_Update (&c, &misc_latlon.latitudeOfFirstGridPointInDegrees  , 
+              sizeof (misc_latlon.latitudeOfFirstGridPointInDegrees ));
+  MD5_Update (&c, &misc_latlon.longitudeOfFirstGridPointInDegrees , 
+              sizeof (misc_latlon.longitudeOfFirstGridPointInDegrees));
+  MD5_Update (&c, &misc_latlon.latitudeOfLastGridPointInDegrees   , 
+              sizeof (misc_latlon.latitudeOfLastGridPointInDegrees  ));
+  MD5_Update (&c, &misc_latlon.longitudeOfLastGridPointInDegrees  , 
+              sizeof (misc_latlon.longitudeOfLastGridPointInDegrees ));
   MD5_Final (out, &c);
 
 
@@ -259,12 +283,16 @@ bool glGrib::GeometryLatLon::isEqual (const glGrib::Geometry & geom) const
   try
     {
       const glGrib::GeometryLatLon & g = dynamic_cast<const glGrib::GeometryLatLon &>(geom);
-      return (Ni                                 == g.Ni)
-          && (Nj                                 == g.Nj)
-          && (latitudeOfFirstGridPointInDegrees  == g.latitudeOfFirstGridPointInDegrees)
-          && (longitudeOfFirstGridPointInDegrees == g.longitudeOfFirstGridPointInDegrees)
-          && (latitudeOfLastGridPointInDegrees   == g.latitudeOfLastGridPointInDegrees)
-          && (longitudeOfLastGridPointInDegrees  == g.longitudeOfLastGridPointInDegrees);
+      return (grid_latlon.Ni == g.grid_latlon.Ni)
+          && (grid_latlon.Nj == g.grid_latlon.Nj)
+          && (misc_latlon.latitudeOfFirstGridPointInDegrees  
+         == g.misc_latlon.latitudeOfFirstGridPointInDegrees)
+          && (misc_latlon.longitudeOfFirstGridPointInDegrees 
+         == g.misc_latlon.longitudeOfFirstGridPointInDegrees)
+          && (misc_latlon.latitudeOfLastGridPointInDegrees   
+         == g.misc_latlon.latitudeOfLastGridPointInDegrees)
+          && (misc_latlon.longitudeOfLastGridPointInDegrees  
+         == g.misc_latlon.longitudeOfLastGridPointInDegrees);
     }
   catch (const std::bad_cast & e)
     {
@@ -274,12 +302,17 @@ bool glGrib::GeometryLatLon::isEqual (const glGrib::Geometry & geom) const
 
 void glGrib::GeometryLatLon::sample (OpenGLBufferPtr<unsigned char> & pp, const unsigned char p0, const int level) const
 {
+  auto Ni = grid_latlon.Ni;
+  auto Nj = grid_latlon.Nj;
+
   auto p = pp->map ();
 
-  float Dlat = deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees);
-  float Dlon = deg2rad * (longitudeOfLastGridPointInDegrees - longitudeOfFirstGridPointInDegrees);
+  float Dlat = deg2rad * (misc_latlon.latitudeOfFirstGridPointInDegrees 
+                        - misc_latlon.latitudeOfLastGridPointInDegrees);
+  float Dlon = deg2rad * (misc_latlon.longitudeOfLastGridPointInDegrees 
+                        - misc_latlon.longitudeOfFirstGridPointInDegrees);
   float dlat = Dlat / (Nj - 1);
-  float lat0 = deg2rad * latitudeOfFirstGridPointInDegrees;
+  float lat0 = deg2rad * misc_latlon.latitudeOfFirstGridPointInDegrees;
 
   int lat_stride = (Nj * pi) / (level * Dlat);
   lat_stride = std::max (1, lat_stride);
@@ -298,6 +331,10 @@ void glGrib::GeometryLatLon::sample (OpenGLBufferPtr<unsigned char> & pp, const 
 
 void glGrib::GeometryLatLon::getTriangleVertices (int it, int jglo[3]) const
 { 
+  auto Ni = grid_latlon.Ni;
+  auto Nj = grid_latlon.Nj;
+  auto periodic = misc_latlon.periodic;
+
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;
   int nti = grid.numberOfTriangles / (Nj - 1); // Number of triangles in a row
@@ -317,11 +354,16 @@ void glGrib::GeometryLatLon::getTriangleVertices (int it, int jglo[3]) const
 }
 
 
-void glGrib::GeometryLatLon::getTriangleNeighboursLatLon (int it, int jglo[3], int itri[3], 
-		                                          float & xlon0, float & xlat0, 
-		                                          float & xlon1, float & xlat1)
+void glGrib::GeometryLatLon::getTriangleNeighboursLatLon 
+  (int it, int jglo[3], int itri[3], 
+   float & xlon0, float & xlat0, 
+   float & xlon1, float & xlat1)
 const
 {
+  auto Ni = grid_latlon.Ni;
+  auto Nj = grid_latlon.Nj;
+  auto periodic = misc_latlon.periodic;
+
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;                // it is now the rank of the triangle 012
   int nti = grid.numberOfTriangles / (Nj - 1); // Number of triangles in a row
@@ -330,10 +372,10 @@ const
   int ind0 = (j + 0) * Ni + (i + 0), ind1 = periodic && (i == Ni-1) ? (j + 0) * Ni : (j + 0) * Ni + (i + 1); 
   int ind2 = (j + 1) * Ni + (i + 0), ind3 = periodic && (i == Ni-1) ? (j + 1) * Ni : (j + 1) * Ni + (i + 1); 
 
-  xlon0 = lon0 + dlon * static_cast<float> (i + 0);
-  xlon1 = lon0 + dlon * static_cast<float> (i + 1);
-  xlat0 = lat0 - dlat * static_cast<float> (j + 0);
-  xlat1 = lat0 - dlat * static_cast<float> (j + 1);
+  xlon0 = misc_latlon.lon0 + misc_latlon.dlon * static_cast<float> (i + 0);
+  xlon1 = misc_latlon.lon0 + misc_latlon.dlon * static_cast<float> (i + 1);
+  xlat0 = misc_latlon.lat0 - misc_latlon.dlat * static_cast<float> (j + 0);
+  xlat1 = misc_latlon.lat0 - misc_latlon.dlat * static_cast<float> (j + 1);
 
   if (t021)
     {
@@ -376,7 +418,9 @@ void glGrib::GeometryLatLon::getTriangleNeighbours (int it, int jglo[3], int itr
     }
 }
 
-void glGrib::GeometryLatLon::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec2 merc[3]) const
+void glGrib::GeometryLatLon::getTriangleNeighbours 
+  (int it, int jglo[3], int itri[3], glm::vec2 merc[3]) 
+const
 {
   bool t021 = (it % 2) == 0;
   float xlon0, xlat0, xlat1, xlon1;
@@ -387,13 +431,13 @@ void glGrib::GeometryLatLon::getTriangleNeighbours (int it, int jglo[3], int itr
   float mlon1 = xlon1;
 
   if (std::abs (xlat0 - pi / 2.0f) < 1e-06)
-    xlat0 = xlat0 - std::abs (dlat) / 2.0f;
+    xlat0 = xlat0 - std::abs (misc_latlon.dlat) / 2.0f;
   if (std::abs (xlat0 + pi / 2.0f) < 1e-06)
-    xlat0 = xlat0 + std::abs (dlat) / 2.0f;
+    xlat0 = xlat0 + std::abs (misc_latlon.dlat) / 2.0f;
   if (std::abs (xlat1 - pi / 2.0f) < 1e-06)
-    xlat1 = xlat1 - std::abs (dlat) / 2.0f;
+    xlat1 = xlat1 - std::abs (misc_latlon.dlat) / 2.0f;
   if (std::abs (xlat1 + pi / 2.0f) < 1e-06)
-    xlat1 = xlat1 + std::abs (dlat) / 2.0f;
+    xlat1 = xlat1 + std::abs (misc_latlon.dlat) / 2.0f;
 
   float mlat0 = std::log (std::tan (pi / 4.0f + xlat0 / 2.0f));
   float mlat1 = std::log (std::tan (pi / 4.0f + xlat1 / 2.0f));
@@ -414,6 +458,9 @@ void glGrib::GeometryLatLon::getTriangleNeighbours (int it, int jglo[3], int itr
 
 bool glGrib::GeometryLatLon::triangleIsEdge (int it) const
 { 
+  auto Ni = grid_latlon.Ni;
+  auto Nj = grid_latlon.Nj;
+
   bool t021 = (it % 2) == 0;
   it = t021 ? it : it - 1;
   it = it / 2;
@@ -426,7 +473,7 @@ bool glGrib::GeometryLatLon::triangleIsEdge (int it) const
   if ((j == Nj-2) && (! t021))
     return true;
     
-  if (! periodic)
+  if (! misc_latlon.periodic)
     {
       if ((i == 0) && t021)
         return true;
@@ -437,16 +484,23 @@ bool glGrib::GeometryLatLon::triangleIsEdge (int it) const
   return false;
 }
 
-void glGrib::GeometryLatLon::sampleTriangle (glGrib::BufferPtr<unsigned char> & s, const unsigned char s0, const int level) const
+void glGrib::GeometryLatLon::sampleTriangle 
+  (glGrib::BufferPtr<unsigned char> & s, const unsigned char s0, const int level) 
+const
 {
-  float Dlat = deg2rad * (latitudeOfFirstGridPointInDegrees - latitudeOfLastGridPointInDegrees);
-  float Dlon = deg2rad * (longitudeOfLastGridPointInDegrees - longitudeOfFirstGridPointInDegrees);
+  auto Ni = grid_latlon.Ni;
+  auto Nj = grid_latlon.Nj;
+
+  float Dlat = deg2rad * (misc_latlon.latitudeOfFirstGridPointInDegrees 
+                        - misc_latlon.latitudeOfLastGridPointInDegrees);
+  float Dlon = deg2rad * (misc_latlon.longitudeOfLastGridPointInDegrees 
+                        - misc_latlon.longitudeOfFirstGridPointInDegrees);
   float dlat = Dlat / (Nj - 1);
-  float lat0 = deg2rad * latitudeOfFirstGridPointInDegrees;
+  float lat0 = deg2rad * misc_latlon.latitudeOfFirstGridPointInDegrees;
 
   int lat_stride = abs (level * pi / Dlat);
 
-  int ntpr = periodic ? 2 * Ni : 2 * (Ni - 1);
+  int ntpr = misc_latlon.periodic ? 2 * Ni : 2 * (Ni - 1);
 
   for (int jlat = 0; jlat < Nj-1; jlat++)
     {
@@ -470,17 +524,20 @@ void glGrib::GeometryLatLon::sampleTriangle (glGrib::BufferPtr<unsigned char> & 
 
 int glGrib::GeometryLatLon::getTriangle (float lon, float lat) const
 {
+  auto Ni = grid_latlon.Ni;
+  auto Nj = grid_latlon.Nj;
+
   lat = lat * deg2rad;
   lon = lon * deg2rad;
 
-  float dl = lon - lon0;
+  float dl = lon - misc_latlon.lon0;
   while (dl < 0.)
     dl += 2 * pi;
   while (dl >= 2 * pi)
     dl -= 2 * pi;
 
-  int i = static_cast<int>(dl / dlon);
-  int j = static_cast<int>((lat0 - lat) / dlat);
+  int i = static_cast<int>(dl / misc_latlon.dlon);
+  int j = static_cast<int>((misc_latlon.lat0 - lat) / misc_latlon.dlat);
 
   std::cout << " Ni, Nj = " << Ni << ", " << Nj << std::endl;
   std::cout << " i, j = " << i << ", " << j << std::endl;
@@ -490,7 +547,7 @@ int glGrib::GeometryLatLon::getTriangle (float lon, float lat) const
   if ((j < 0) || (j >= Nj))
     return -1;
 
-  int ntpr = periodic ? 2 * Ni : 2 * (Ni - 1);
+  int ntpr = misc_latlon.periodic ? 2 * Ni : 2 * (Ni - 1);
 
 
   int it = j * ntpr + i * 2;
@@ -546,7 +603,9 @@ glm::vec2 glGrib::GeometryLatLon::conformal2latlon (const glm::vec2 & merc) cons
   return glm::vec2 (glm::degrees (lon), glm::degrees (lat));
 }
 
-void glGrib::GeometryLatLon::fixPeriodicity (const glm::vec2 & M, glm::vec2 * P, int n) const
+void glGrib::GeometryLatLon::fixPeriodicity 
+  (const glm::vec2 & M, glm::vec2 * P, int n) 
+const
 {
   // Fix periodicity issue
   for (int i = 0; i < n; i++)
@@ -558,8 +617,13 @@ void glGrib::GeometryLatLon::fixPeriodicity (const glm::vec2 & M, glm::vec2 * P,
     }
 }
 
-void glGrib::GeometryLatLon::getPointNeighbours (int jglo, std::vector<int> * neigh) const
+void glGrib::GeometryLatLon::getPointNeighbours 
+  (int jglo, std::vector<int> * neigh) 
+const
 {
+  auto Ni = grid_latlon.Ni;
+  auto Nj = grid_latlon.Nj;
+
   neigh->resize (0);
 
   if ((jglo < 0) || (grid.numberOfPoints <= jglo))
@@ -577,7 +641,7 @@ void glGrib::GeometryLatLon::getPointNeighbours (int jglo, std::vector<int> * ne
       int j_ = j + iijj[2*k+1];
       if ((j_ < 0) || (j_ >= Nj))
         continue;
-      if (! periodic)
+      if (! misc_latlon.periodic)
         if ((i_ < 0) || (i_ >= Ni))
           continue;
       neigh->push_back (j_ * Ni + i_);
@@ -587,23 +651,27 @@ void glGrib::GeometryLatLon::getPointNeighbours (int jglo, std::vector<int> * ne
 
 float glGrib::GeometryLatLon::getLocalMeshSize (int) const
 {
-  return dlat;
+  return misc_latlon.dlat;
 }
 
 
 void glGrib::GeometryLatLon::getView (glGrib::View * view) const
 {
-  if (periodic)
+  if (misc_latlon.periodic)
     return;
 
   glGrib::OptionsView view_opts = view->getOptions (); 
 
   glm::vec3 xyz[2][2];
 
-  xyz[0][0] = lonlat2xyz (deg2rad * longitudeOfFirstGridPointInDegrees, deg2rad * latitudeOfFirstGridPointInDegrees);
-  xyz[0][1] = lonlat2xyz (deg2rad * longitudeOfFirstGridPointInDegrees, deg2rad * latitudeOfLastGridPointInDegrees );
-  xyz[1][0] = lonlat2xyz (deg2rad * longitudeOfLastGridPointInDegrees , deg2rad * latitudeOfFirstGridPointInDegrees);
-  xyz[1][1] = lonlat2xyz (deg2rad * longitudeOfLastGridPointInDegrees , deg2rad * latitudeOfLastGridPointInDegrees );
+  xyz[0][0] = lonlat2xyz (deg2rad * misc_latlon.longitudeOfFirstGridPointInDegrees, 
+                          deg2rad * misc_latlon.latitudeOfFirstGridPointInDegrees);
+  xyz[0][1] = lonlat2xyz (deg2rad * misc_latlon.longitudeOfFirstGridPointInDegrees, 
+                          deg2rad * misc_latlon.latitudeOfLastGridPointInDegrees );
+  xyz[1][0] = lonlat2xyz (deg2rad * misc_latlon.longitudeOfLastGridPointInDegrees , 
+                          deg2rad * misc_latlon.latitudeOfFirstGridPointInDegrees);
+  xyz[1][1] = lonlat2xyz (deg2rad * misc_latlon.longitudeOfLastGridPointInDegrees , 
+                          deg2rad * misc_latlon.latitudeOfLastGridPointInDegrees );
 
   glm::vec3 xyz0 = (xyz[0][0] + xyz[0][1] + xyz[1][0] + xyz[1][1]) / 4.0f;
 

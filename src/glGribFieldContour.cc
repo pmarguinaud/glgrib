@@ -36,7 +36,7 @@ float getLabelAngle (const std::vector<float> & lonlat, const std::vector<float>
 
   float angle = glGrib::rad2deg * atan2 (y, x);
 
-  if (fabs (angle - 180.0f) < fabs (angle))
+  if (std::abs (angle - 180.0f) < std::abs (angle))
     angle = angle - 180.0f;
 
   return angle;

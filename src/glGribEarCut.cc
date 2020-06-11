@@ -208,7 +208,7 @@ void xint (float & x1, float & x2)
   x1 = in02pi (x1);
   x2 = in02pi (x2);
 
-  if (fabs (x1 - x2) > glGrib::pi)
+  if (std::abs (x1 - x2) > glGrib::pi)
     {
       if (x1 < x2)
         std::swap (x1, x2);
@@ -901,7 +901,7 @@ glm::mat3 getRotMat (glGrib::Diag_t diag, const std::vector<glm::vec3> & xyz, bo
   for (size_t k = 0; k < XY.size (); k++)
     A[i][j] += w[k] * XY[k][i] * XY[k][j];
 
-  if (fabs (glm::determinant (A)) < 1e-8)
+  if (std::abs (glm::determinant (A)) < 1e-8)
     return glm::mat3 (1.0f);
 
   glm::dvec2 e;

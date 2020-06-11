@@ -148,7 +148,7 @@ void glGrib::Loader::load (glGrib::BufferPtr<float> * ptr, const std::vector<std
     
       if (diff)
         {
-          float valm = std::max (fabs (valmin), fabs (valmax));
+          float valm = std::max (std::abs (valmin), std::abs (valmax));
 
 
           meta->valmin = - valm;

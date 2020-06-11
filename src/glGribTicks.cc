@@ -224,7 +224,7 @@ void glGrib::Ticks::createStr
 			if (NSWE)
                           {
                             std::string L = lat >= 0 ? "N" : "S";
-                	    sprintf (tmp, opts.labels.format.c_str (), fabs (lat));
+                	    sprintf (tmp, opts.labels.format.c_str (), std::abs (lat));
 			    s = std::string (tmp) + L;
 			  }
 			else
@@ -277,7 +277,7 @@ void glGrib::Ticks::createStr
 			if (NSWE)
                           {
                             std::string L = lon >= 0 ? "E" : "W";
-                	    sprintf (tmp, opts.labels.format.c_str (), fabs (lon));
+                	    sprintf (tmp, opts.labels.format.c_str (), std::abs (lon));
 			    s = std::string (tmp) + L;
 			  }
 			else

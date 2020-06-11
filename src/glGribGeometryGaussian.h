@@ -28,7 +28,12 @@ public:
   void applyUVangle (glGrib::BufferPtr<float> &) const override;
   void sample (OpenGLBufferPtr<unsigned char> &, const unsigned char, const int) const override;
   void sampleTriangle (BufferPtr<unsigned char> &, const unsigned char, const int) const override;
-  float resolution (int level = 0) const override { if (level == 0) level = Nj; return M_PI / level; }
+  float resolution (int level = 0) const override 
+  { 
+    if (level == 0) 
+    level = g.Nj; 
+    return M_PI / level; 
+  }
   void getTriangleNeighbours (int, int [3], int [3], glm::vec3 xyz[3]) const override;
   void getTriangleNeighbours (int, int [3], int [3], glm::vec2 [3]) const override;
   bool triangleIsEdge (int) const override;
@@ -59,19 +64,19 @@ private:
   {
     int jlat = jlonlat.jlat;
     int jlon = jlonlat.jlon;
-    float coordy = latgauss[jlat-1];
-    float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
+    float coordy = d.latgauss[jlat-1];
+    float coordx = 2. * M_PI * (float)(jlon-1) / (float)g.pl[jlat-1];
     return glm::vec2 (coordx, std::log (std::tan (M_PI / 4.0f + coordy / 2.0f)));
   }
   glm::vec3 jlonlat2xyz (const jlonlat_t & jlonlat) const
   {
     int jlat = jlonlat.jlat;
     int jlon = jlonlat.jlon;
-    float coordy = latgauss[jlat-1];
+    float coordy = d.latgauss[jlat-1];
     float sincoordy = std::sin (coordy);
-    float lat = std::asin ((omc2 + sincoordy * opc2) / (opc2 + sincoordy * omc2));
+    float lat = std::asin ((d.omc2 + sincoordy * d.opc2) / (d.opc2 + sincoordy * d.omc2));
     float coslat = std::cos (lat); float sinlat = std::sin (lat);
-    float coordx = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
+    float coordx = 2. * M_PI * (float)(jlon-1) / (float)g.pl[jlat-1];
     float lon = coordx;
     float coslon = std::cos (lon); float sinlon = std::sin (lon);
 
@@ -79,18 +84,18 @@ private:
     float Y = sinlon * coslat;
     float Z =          sinlat;
 
-    if (! rotated)
+    if (! d.rotated)
       return glm::vec3 (X, Y, Z);
    
-    return rot * glm::vec3 (X, Y, Z);
+    return d.rot * glm::vec3 (X, Y, Z);
   }
   glm::vec2 jlonlat2lonlat (const jlonlat_t & jlonlat) const
   {
-    if ((stretchingFactor == 1.0f) && (! rotated))
+    if ((d.stretchingFactor == 1.0f) && (! d.rotated))
       {
         int jlat = jlonlat.jlat, jlon = jlonlat.jlon;
-        float lat = latgauss[jlat-1];
-        float lon = 2. * M_PI * (float)(jlon-1) / (float)pl[jlat-1];
+        float lat = d.latgauss[jlat-1];
+        float lon = 2. * M_PI * (float)(jlon-1) / (float)g.pl[jlat-1];
         return glm::vec2 (lon, lat);
       }
     glm::vec3 xyz = jlonlat2xyz (jlonlat);
@@ -127,32 +132,43 @@ private:
 
   void tryFitLatitudes (int, latfit_t *);
 
+  GeometryGaussian () {}
+  void triangulate ();
+
+  void setupSubGrid ();
+
 private:
+  class GeometryGaussian * subgrid = nullptr;
 
-  int kind = 0;
-  std::vector<float> latfitcoeff;
-  std::vector<long int> pl;
-  long int Nj;
-  std::vector<int> jglooff;
-  double stretchingFactor = 1.0f;
-  double latitudeOfStretchingPoleInDegrees = 90.0f;
-  double longitudeOfStretchingPoleInDegrees = 0.0f;
-  float omc2 = 0.0f;
-  float opc2 = 2.0f;
-  glm::mat3 rot = glm::mat3 (1.0f);
-  bool rotated = false;
+  // Grid
+  struct
+  {
+    std::vector<long int> pl;
+    long int Nj = 0;
+    std::vector<int> jglooff;
+    BufferPtr<unsigned int> ind;
+    BufferPtr<int> indcnt_per_lat;
+    BufferPtr<int> indoff_per_lat;
+    BufferPtr<int> triu; // Rank of triangle above
+    BufferPtr<int> trid; // Rank of triangle below
+  } g;
 
-  
-  BufferPtr<unsigned int> ind;
-
-  BufferPtr<int> indcnt_per_lat;
-  BufferPtr<int> indoff_per_lat;
-
-  BufferPtr<int> triu; // Rank of triangle above
-  BufferPtr<int> trid; // Rank of triangle below
-  BufferPtr<double> latgauss;
-  OpenGLBufferPtr<int> ssbo_jglo, ssbo_jlat;
-  OpenGLBufferPtr<float> ssbo_glat;
+  // Coordinates
+  struct
+  {
+    int kind = 0; // 1=linear, 2=octahedral
+    std::vector<float> latfitcoeff;
+    double stretchingFactor = 1.0f;
+    double latitudeOfStretchingPoleInDegrees = 90.0f;
+    double longitudeOfStretchingPoleInDegrees = 0.0f;
+    float omc2 = 0.0f;
+    float opc2 = 2.0f;
+    glm::mat3 rot = glm::mat3 (1.0f);
+    bool rotated = false;
+    BufferPtr<double> latgauss;
+    OpenGLBufferPtr<int> ssbo_jglo, ssbo_jlat;
+    OpenGLBufferPtr<float> ssbo_glat;
+  } d;
 };
 
 

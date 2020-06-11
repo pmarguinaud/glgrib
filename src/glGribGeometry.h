@@ -116,16 +116,25 @@ public:
   }
 
 private:
+  std::string md5string (const unsigned char []) const;
   virtual std::string md5 () const = 0;
-  unsigned int ind_strip_size;
+private:
   OptionsGeometry opts;
-  int numberOfPoints = 0;
+
+  // Grid
   unsigned int numberOfTriangles = 0;
-  OpenGLBufferPtr<float> vertexbuffer;
+  int numberOfPoints = 0;
   OpenGLBufferPtr<unsigned int> elementbuffer;
+  unsigned int ind_strip_size;
+
+  // Coordinates
+  OpenGLBufferPtr<float> vertexbuffer;
+
+  // Frame
   int numberOfPoints_frame = 0;
   OpenGLBufferPtr<float> vertexbuffer_frame;
-  std::string md5string (const unsigned char []) const;
+
+private:
   friend class GeometryLatLon;
   friend class GeometryLambert;
   friend class GeometryGaussian;

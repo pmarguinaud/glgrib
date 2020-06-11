@@ -68,13 +68,13 @@ private:
 
   static inline double sign (const double & a, const double & b)
   {
-    return b > 0 ? +fabs (a) : -fabs (a);
+    return b > 0 ? +std::abs (a) : -std::abs (a);
   }
   
   static inline double dist2ref (const latlon_t & pt_coord, const latlon_t & ref_coord)
   {
     double z = pt_coord.lon - ref_coord.lon;
-    z = z - sign (pi, z) * (1.0 + sign (1.0, fabs (z) - pi));
+    z = z - sign (pi, z) * (1.0 + sign (1.0, std::abs (z) - pi));
     return -z * sign (1.0, z - pi);
   }
   

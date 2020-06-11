@@ -38,7 +38,7 @@ private:
     void push (const float x, const float y, const float z, const float h) 
     {
       double D = 0.0f;
-      float d = fabs (x) + fabs (y) + fabs (z);
+      float d = std::abs (x) + std::abs (y) + std::abs (z);
       float lon = 0.0f, lat = 2 * M_PI;
       if (d > 0)
         {

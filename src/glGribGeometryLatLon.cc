@@ -88,7 +88,7 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
 
   double ddlon = Ni * dlon - 2 * pi;
     
-  periodic = fabs (ddlon) < 1E-2 * dlon;
+  periodic = std::abs (ddlon) < 1E-2 * dlon;
 
   // Compute number of triangles
   
@@ -386,14 +386,14 @@ void glGrib::GeometryLatLon::getTriangleNeighbours (int it, int jglo[3], int itr
   float mlon0 = xlon0;
   float mlon1 = xlon1;
 
-  if (fabsf (xlat0 - pi / 2.0f) < 1e-06)
-    xlat0 = xlat0 - fabsf (dlat) / 2.0f;
-  if (fabsf (xlat0 + pi / 2.0f) < 1e-06)
-    xlat0 = xlat0 + fabsf (dlat) / 2.0f;
-  if (fabsf (xlat1 - pi / 2.0f) < 1e-06)
-    xlat1 = xlat1 - fabsf (dlat) / 2.0f;
-  if (fabsf (xlat1 + pi / 2.0f) < 1e-06)
-    xlat1 = xlat1 + fabsf (dlat) / 2.0f;
+  if (std::abs (xlat0 - pi / 2.0f) < 1e-06)
+    xlat0 = xlat0 - std::abs (dlat) / 2.0f;
+  if (std::abs (xlat0 + pi / 2.0f) < 1e-06)
+    xlat0 = xlat0 + std::abs (dlat) / 2.0f;
+  if (std::abs (xlat1 - pi / 2.0f) < 1e-06)
+    xlat1 = xlat1 - std::abs (dlat) / 2.0f;
+  if (std::abs (xlat1 + pi / 2.0f) < 1e-06)
+    xlat1 = xlat1 + std::abs (dlat) / 2.0f;
 
   float mlat0 = std::log (std::tan (pi / 4.0f + xlat0 / 2.0f));
   float mlat1 = std::log (std::tan (pi / 4.0f + xlat1 / 2.0f));
@@ -452,9 +452,9 @@ void glGrib::GeometryLatLon::sampleTriangle (glGrib::BufferPtr<unsigned char> & 
     {
       float lat = lat0 - dlat * static_cast<float> (jlat);
 
-      if (fabsf (lat - pi / 2.0f) < 1e-6)
+      if (std::abs (lat - pi / 2.0f) < 1e-6)
         continue;
-      if (fabsf (lat + pi / 2.0f) < 1e-6)
+      if (std::abs (lat + pi / 2.0f) < 1e-6)
         continue;
 
       float coslat = std::cos (lat);

@@ -183,7 +183,7 @@ float lineLineIntersect (const glm::vec2 & P1, const glm::vec2 & V1,
   float b = V1.x * (P.y - Q.y ) - V1.y * (P.x - Q.x ); 
   float a = V1.y * (Q.x - P1.x) - V1.x * (Q.y - P1.y);
 
-  if (fabsf (b) < 1e-6)
+  if (std::abs (b) < 1e-6)
     return inf;
 
   float lambda = a / b;
@@ -225,7 +225,7 @@ void glGrib::FieldStream::getFirstPoint (int it, const glGrib::BufferPtr<float> 
       V = glm::normalize (V);
       glm::vec2 U = glm::normalize (P[j] - P[i]);
       float s = glm::dot (U, V);
-      if (fabsf (s) < fabsf (s0))
+      if (std::abs (s) < std::abs (s0))
         {
           s0 = s;
           i0 = i;

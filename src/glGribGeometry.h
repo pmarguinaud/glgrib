@@ -73,9 +73,14 @@ public:
 
   void bindCoordinates (int) const;
 
+  bool hasFrame () const
+  {
+    return frame.vertexbuffer->size () > 0;
+  }
+
   void bindFrame (int attr = -1) const
   {
-    vertexbuffer_frame->bind (GL_ARRAY_BUFFER);
+    frame.vertexbuffer->bind (GL_ARRAY_BUFFER);
     if (attr >= 0)
       {
         for (int j = 0; j < 3; j++)
@@ -90,7 +95,7 @@ public:
 
   int getFrameNumberOfPoints () const
   {
-    return numberOfPoints_frame;
+    return frame.numberOfPoints;
   }
 
   virtual void setProgramParameters (Program * program) const;
@@ -137,8 +142,11 @@ private:
   } crds;
 
   // Frame
-  int numberOfPoints_frame = 0;
-  OpenGLBufferPtr<float> vertexbuffer_frame;
+  struct
+  {
+    int numberOfPoints = 0;
+    OpenGLBufferPtr<float> vertexbuffer;
+  } frame;
 
 private:
   friend class GeometryLatLon;

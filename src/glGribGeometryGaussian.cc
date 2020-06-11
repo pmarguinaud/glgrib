@@ -197,7 +197,7 @@ void processLat (int jlat, int iloen1, int iloen2,
       
       auto RS2 = [&] ()
       {
-        *(inds_strip++) = 0xffffffff;   
+        *(inds_strip++) = glGrib::OpenGL::restart;   
         *(inds_strip++) = ica-1;        
         *(inds_strip++) = icb-1;        
         *(inds_strip++) = icc-1;        
@@ -205,7 +205,7 @@ void processLat (int jlat, int iloen1, int iloen2,
 
       auto ST1 = [&] () 
       {
-        *(inds_strip++) = 0xffffffff;  
+        *(inds_strip++) = glGrib::OpenGL::restart;  
         *(inds_strip++) = ica-1+iloen1-1;
         *(inds_strip++) = ica-1;
         *(inds_strip++) = icb-1;
@@ -215,7 +215,7 @@ void processLat (int jlat, int iloen1, int iloen2,
       auto RS1 = [&] ()
       {
         *(inds_strip++) = icc-1;
-        *(inds_strip++) = 0xffffffff;  
+        *(inds_strip++) = glGrib::OpenGL::restart;  
         *(inds_strip++) = icb-1;
         *(inds_strip++) = icc-1;
       };
@@ -353,7 +353,7 @@ void computeTrigaussStrip
         abort ();
   
       for (; inds_strip < inds_strip_last; inds_strip++)
-        *inds_strip = 0xffffffff;
+        *inds_strip = glGrib::OpenGL::restart;
   
     }
 
@@ -1217,17 +1217,19 @@ void glGrib::GeometryGaussian::setupSubGrid ()
     const auto & Nj0 = this->grid_gaussian.Nj;
   
     int ip0 = 0;
-  #pragma omp parallel for if (do_point)
+#pragma omp parallel for if (do_point)
     for (int i = 0; i < Nj0; i++)
       {
         int r = i < Nj0 / 2 ? 1 : 0;
         if (i % 2 == r)
           {
+            long int rl1 = pl0[i] % 2;
+            long int pl1 = (pl0[i] / 2) + rl1;
             if (do_lines)
               {
                 i2ip0[i] = ip0;
         	i2ip1[i] = subgrid->grid.numberOfPoints;
-        	subgrid->grid_gaussian.pl.push_back (pl0[i]/2); 
+        	subgrid->grid_gaussian.pl.push_back (pl1);
         	subgrid->grid_gaussian.Nj++; 
         	subgrid->grid.numberOfPoints += subgrid->grid_gaussian.pl.back ();
               }
@@ -1255,7 +1257,7 @@ void glGrib::GeometryGaussian::setupSubGrid ()
   auto bb = subgrid->grid.elementbuffer->map ();
 
   for (size_t i = 0; i < bb.size (); i++)
-    if (bb[i] != 0xffffffff)
+    if (bb[i] != OpenGL::restart)
       bb[i] = l2h[bb[i]];
 
   subgrid->opts               = opts;

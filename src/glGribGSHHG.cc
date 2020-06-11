@@ -1,6 +1,7 @@
 #include "glGribGSHHG.h"
 #include "glGribTrigonometry.h"
 #include "glGribResolve.h"
+#include "glGribOpenGL.h"
 
 #include <cmath>
 #include <cstring>
@@ -117,8 +118,8 @@ void glGrib::GSHHG::read (const glGrib::OptionsLines & opts,
   auto restart = [ind] 
   { 
     int n = ind->size (); 
-    if ((n > 0) && ((*ind)[n-1] != 0xffffffff))
-      ind->push_back (0xffffffff);
+    if ((n > 0) && ((*ind)[n-1] != OpenGL::restart))
+      ind->push_back (OpenGL::restart);
   };
 
   while (1) 
@@ -173,7 +174,7 @@ void glGrib::GSHHG::read (const glGrib::OptionsLines & opts,
                 }
 
             }
-          ind->push_back (0xffffffff);
+          ind->push_back (OpenGL::restart);
         }
 
       if (fh.eof ())

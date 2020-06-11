@@ -157,7 +157,7 @@ void glGrib::Geometry::renderTriangles () const
   if (grid.ind_strip_size)
     {
       glEnable (GL_PRIMITIVE_RESTART);
-      glPrimitiveRestartIndex (0xffffffff);
+      glPrimitiveRestartIndex (OpenGL::restart);
       glDrawElements (GL_TRIANGLE_STRIP, grid.ind_strip_size, GL_UNSIGNED_INT, nullptr);
       glDisable (GL_PRIMITIVE_RESTART);
     }

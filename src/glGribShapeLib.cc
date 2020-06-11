@@ -3,6 +3,7 @@
 #include "glGribDBase.h"
 #include "glGribResolve.h"
 #include "glGribSQLite.h"
+#include "glGribOpenGL.h"
 
 #include <cmath>
 #include <shapefil.h>
@@ -61,8 +62,8 @@ void glGrib::ShapeLib::read (const glGrib::OptionsLines & opts,
   auto restart = [ind] 
   { 
     int n = ind->size (); 
-    if ((n > 0) && ((*ind)[n-1] != 0xffffffff))
-      ind->push_back (0xffffffff);
+    if ((n > 0) && ((*ind)[n-1] != OpenGL::restart))
+      ind->push_back (OpenGL::restart);
   };
 
   int ip = 0;

@@ -14,7 +14,7 @@ public:
   const T & operator[] (I i) const
   { 
 #ifdef GLGRIB_CHECK_BOUNDS
-      if (i >= size_) 
+      if (((i >= 0) && (static_cast<size_t>(i) >= size_)) || (i < 0))
         throw std::runtime_error ("Out of bounds access");
 #endif
     return data_[i]; 
@@ -23,7 +23,7 @@ public:
   T & operator[] (I i) 
   { 
 #ifdef GLGRIB_CHECK_BOUNDS
-      if (i >= size_) 
+      if (((i >= 0) && (static_cast<size_t>(i) >= size_)) || (i < 0))
         throw std::runtime_error ("Out of bounds access");
 #endif
     return data_[i]; 

@@ -60,7 +60,7 @@ void glGrib::Land::layer_t::triangulate
 
   for (size_t i = 0; i < indl.size (); i++)
     {
-      if (indl[i] == 0xffffffff)
+      if (indl[i] == OpenGL::restart)
         {
           if (i < indl.size ()-1)
             {

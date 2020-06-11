@@ -43,7 +43,7 @@ public:
     T & operator [] (I i) 
     {
 #ifdef GLGRIB_CHECK_BOUNDS
-      if (i >= buffer->size ())
+      if (((i > 0) && (static_cast<size_t> (i) >= buffer->size ())) || (i < 0))
         throw std::runtime_error ("Out of bounds access");
 #endif
       return ptr[i];
@@ -318,6 +318,11 @@ template <> GLenum getOpenGLType<unsigned char > ();
 template <> GLenum getOpenGLType<unsigned short> ();
 template <> GLenum getOpenGLType<unsigned int  > ();
 template <> GLenum getOpenGLType<float         > ();
+
+namespace OpenGL
+{
+  const unsigned long int restart = 0xffffffff;
+};
 
 
 }

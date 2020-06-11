@@ -273,7 +273,7 @@ void glGrib::FieldScalar<N>::render (const glGrib::View & view, const glGrib::Op
 
   this->renderHilo (view);
   
-  if (opts.geometry.frame.on)
+  if (opts.geometry.frame.on && this->getGeometry ()->hasFrame ())
     this->renderFrame (view);
 
 }

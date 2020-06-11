@@ -147,7 +147,7 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
               int ind3 = (j + 1) * Ni + 0; 
 	      ind_strip[t++] = ind1; ind_strip[t++] = ind3;
             }
-	  ind_strip[t++] = 0xffffffff;
+	  ind_strip[t++] = OpenGL::restart;
         }
     }
 
@@ -164,10 +164,10 @@ void glGrib::GeometryLatLon::setup (glGrib::HandlePtr ghp, const glGrib::Options
 
 void glGrib::GeometryLatLon::setupFrame ()
 {
-  numberOfPoints_frame = 2 * (Ni + Nj - 2);
-  vertexbuffer_frame = glGrib::OpenGLBufferPtr<float> (3 * (numberOfPoints_frame + 2));
+  frame.numberOfPoints = 2 * (Ni + Nj - 2);
+  frame.vertexbuffer = glGrib::OpenGLBufferPtr<float> (3 * (frame.numberOfPoints + 2));
 
-  auto lonlat = vertexbuffer_frame->map ();
+  auto lonlat = frame.vertexbuffer->map ();
 
   int p = 0;
 

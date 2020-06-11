@@ -82,10 +82,10 @@ glGrib::GeometryLambert::GeometryLambert (glGrib::HandlePtr ghp)
 
 void glGrib::GeometryLambert::setupFrame ()
 {
-  numberOfPoints_frame = 2 * (Nx + Ny - 2);
-  vertexbuffer_frame = glGrib::OpenGLBufferPtr<float> (3 * (numberOfPoints_frame + 2));
+  frame.numberOfPoints = 2 * (Nx + Ny - 2);
+  frame.vertexbuffer = glGrib::OpenGLBufferPtr<float> (3 * (frame.numberOfPoints + 2));
   
-  auto lonlat = vertexbuffer_frame->map ();
+  auto lonlat = frame.vertexbuffer->map ();
   
   int p = 0;
   
@@ -162,7 +162,7 @@ void glGrib::GeometryLambert::setup (glGrib::HandlePtr ghp, const glGrib::Option
           ind_strip[t++] = ind2 (0, j); 
           ind_strip[t++] = ind0 (0, j);
           ind_strip[t++] = ind0 (1, j);
-          ind_strip[t++] = 0xffffffff;
+          ind_strip[t++] = OpenGL::restart;
           // Following triangles
           for (int i = 0; i < Nx-1; i++)
             {
@@ -170,14 +170,14 @@ void glGrib::GeometryLambert::setup (glGrib::HandlePtr ghp, const glGrib::Option
             }
           // Last triangle
           ind_strip[t++] = ind2 (Nx-1, j);
-	  ind_strip[t++] = 0xffffffff;
+	  ind_strip[t++] = OpenGL::restart;
 	}
 
       if (t >= static_cast<int> (grid.ind_strip_size))
         abort ();
 
       for (; t < static_cast<int> (grid.ind_strip_size); t++)
-	ind_strip[t] = 0xffffffff;
+	ind_strip[t] = OpenGL::restart;
       
     }
 

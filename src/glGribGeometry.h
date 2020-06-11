@@ -52,7 +52,7 @@ public:
   virtual glm::vec2 conformal2latlon (const glm::vec2 &) const = 0;
   virtual void checkTriangles () const;
   virtual void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const = 0;
-  virtual void renderTriangles () const;
+  virtual void renderTriangles (int level = 0) const;
 
   int getNumberOfPoints () const
   {
@@ -64,10 +64,7 @@ public:
     return grid.numberOfTriangles;
   }
 
-  void bindTriangles () const
-  {
-    grid.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
-  }
+  void bindTriangles (int level = 0) const;
 
   virtual void getView (View *) const = 0;
 
@@ -125,6 +122,8 @@ private:
   virtual std::string md5 () const = 0;
 private:
   OptionsGeometry opts;
+
+  class Geometry * subgrid = nullptr;
 
   // Grid
   struct

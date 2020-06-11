@@ -152,18 +152,27 @@ void glGrib::Geometry::checkTriangles () const
   printf ("checkTriangles OK\n");
 }
 
-void glGrib::Geometry::renderTriangles () const
+void glGrib::Geometry::bindTriangles (int level) const
 {
-  if (grid.ind_strip_size)
+  const Geometry * geom = (level && subgrid) ? subgrid : this;
+  geom->grid.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+}
+
+void glGrib::Geometry::renderTriangles (int level) const
+{
+  const Geometry * geom = (level && subgrid) ? subgrid : this;
+  if (geom->grid.ind_strip_size)
     {
       glEnable (GL_PRIMITIVE_RESTART);
       glPrimitiveRestartIndex (OpenGL::restart);
-      glDrawElements (GL_TRIANGLE_STRIP, grid.ind_strip_size, GL_UNSIGNED_INT, nullptr);
+      glDrawElements (GL_TRIANGLE_STRIP, geom->grid.ind_strip_size, 
+                      GL_UNSIGNED_INT, nullptr);
       glDisable (GL_PRIMITIVE_RESTART);
     }
   else
     {
-      glDrawElements (GL_TRIANGLES, 3 * grid.numberOfTriangles, GL_UNSIGNED_INT, nullptr);
+      glDrawElements (GL_TRIANGLES, 3 * geom->grid.numberOfTriangles, 
+                      GL_UNSIGNED_INT, nullptr);
     }
 }
 

@@ -138,8 +138,6 @@ private:
   void setupSubGrid ();
 
 private:
-  class GeometryGaussian * subgrid = nullptr;
-
   // Grid
   struct
   {

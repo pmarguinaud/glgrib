@@ -7,6 +7,8 @@
 #include <iostream>
 #include <algorithm>
 
+static int geomlevel = 1;
+
 template <int N>
 glGrib::FieldScalar<N> * glGrib::FieldScalar<N>::clone () const
 {
@@ -49,7 +51,7 @@ void glGrib::FieldScalar<N>::scalar_t::setupVertexAttributes () const
     }
 
   // Triangles
-  field->getGeometry ()->bindTriangles ();
+  field->getGeometry ()->bindTriangles (geomlevel);
 }
 
 template <int N>
@@ -201,7 +203,7 @@ void glGrib::FieldScalar<N>::scalar_t::render (const glGrib::View & view) const
   if (field->opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
   
-  field->getGeometry ()->renderTriangles ();
+  field->getGeometry ()->renderTriangles (geomlevel);
   
   if (field->opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);

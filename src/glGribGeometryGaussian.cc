@@ -1202,17 +1202,17 @@ void glGrib::GeometryGaussian::triangulate ()
 
 void glGrib::GeometryGaussian::setupSubGrid ()
 {
-  subgrid = new GeometryGaussian ();
-  
+  GeometryGaussian * subgridGauss = new GeometryGaussian ();
+  subgrid = subgridGauss;
+
   std::vector<int> i2ip0 (grid_gaussian.Nj);
   std::vector<int> i2ip1 (grid_gaussian.Nj);
   Buffer<unsigned int> l2h;
   
   auto traverse = 
-  [this,&i2ip0,&i2ip1,&l2h] 
+  [this,subgridGauss,&i2ip0,&i2ip1,&l2h] 
     (bool do_point, bool do_lines)
   {
-    auto * subgrid = this->subgrid;
     const auto & pl0 = this->grid_gaussian.pl;
     const auto & Nj0 = this->grid_gaussian.Nj;
   
@@ -1228,10 +1228,10 @@ void glGrib::GeometryGaussian::setupSubGrid ()
             if (do_lines)
               {
                 i2ip0[i] = ip0;
-        	i2ip1[i] = subgrid->grid.numberOfPoints;
-        	subgrid->grid_gaussian.pl.push_back (pl1);
-        	subgrid->grid_gaussian.Nj++; 
-        	subgrid->grid.numberOfPoints += subgrid->grid_gaussian.pl.back ();
+        	i2ip1[i] = subgridGauss->grid.numberOfPoints;
+        	subgridGauss->grid_gaussian.pl.push_back (pl1);
+        	subgridGauss->grid_gaussian.Nj++; 
+        	subgridGauss->grid.numberOfPoints += subgridGauss->grid_gaussian.pl.back ();
               }
             if (do_point)
               {
@@ -1248,23 +1248,23 @@ void glGrib::GeometryGaussian::setupSubGrid ()
 
   traverse (false, true);
 
-  subgrid->triangulate ();
+  subgridGauss->triangulate ();
 
-  l2h.allocate (subgrid->grid.numberOfPoints);
+  l2h.allocate (subgridGauss->grid.numberOfPoints);
 
   traverse (true, false);
 
-  auto bb = subgrid->grid.elementbuffer->map ();
+  auto bb = subgridGauss->grid.elementbuffer->map ();
 
   for (size_t i = 0; i < bb.size (); i++)
     if (bb[i] != OpenGL::restart)
       bb[i] = l2h[bb[i]];
 
-  subgrid->opts               = opts;
-  subgrid->misc_gaussian      = misc_gaussian;
-  subgrid->grid_gaussian.triu = BufferPtr<int> (0);
-  subgrid->grid_gaussian.trid = BufferPtr<int> (0);
-  subgrid->crds               = crds;
+  subgridGauss->opts               = opts;
+  subgridGauss->misc_gaussian      = misc_gaussian;
+  subgridGauss->grid_gaussian.triu = BufferPtr<int> (0);
+  subgridGauss->grid_gaussian.trid = BufferPtr<int> (0);
+  subgridGauss->crds               = crds;
 
 }
 

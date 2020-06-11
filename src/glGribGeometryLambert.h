@@ -218,10 +218,22 @@ private:
   std::string md5 () const override;
   void getTriangleNeighboursXY (int, int [3], int [3], xy_t [4]) const;
   void setupCoordinates ();
-  long int Nx, Ny, Nux, Nuy, projectionCentreFlag;
-  double LaDInDegrees, LoVInDegrees, DxInMetres, DyInMetres;
-  proj_t p_pj;
-  xy_t center_xy;
+private:
+  
+  // Grid
+  struct
+  {
+    long int Nx = 0, Ny = 0;
+  } grid_lambert;
+  
+  // Other
+  struct
+  {
+    long int Nux, Nuy, projectionCentreFlag;
+    double LaDInDegrees, LoVInDegrees, DxInMetres, DyInMetres;
+    proj_t p_pj;
+    xy_t center_xy;
+  } misc_lambert;
 };
 
 

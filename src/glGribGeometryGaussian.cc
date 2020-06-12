@@ -1284,7 +1284,6 @@ void glGrib::GeometryGaussian::setup
   if (! opts.gencoords.on)
     setupCoordinates ();
 
-
   grid_gaussian.jglooff.resize (grid_gaussian.Nj + 1);
 
   grid_gaussian.jglooff[0] = 0;
@@ -1300,7 +1299,8 @@ void glGrib::GeometryGaussian::setup
   if (opts.gaussian.fit.on)
     setupFitLatitudes ();
 
-  setupSubGrid ();
+  if (opts.subgrid.on)
+    setupSubGrid ();
 }
 
 void glGrib::GeometryGaussian::latlon2coordxy 

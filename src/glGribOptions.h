@@ -417,6 +417,7 @@ class OptionsGeometry : public OptionsBase
 public:
   DEFINE
   {
+    DESC (subgrid.on,         Create subgrid);
     DESC (triangle_strip.on,  Enable use of triangle strip);
     DESC (check.on,           Check geometry);
     DESC (height.on,          Enable height);
@@ -432,6 +433,10 @@ public:
     DESC (gaussian.fit.on,    Fit Gaussian latitude retrieval);
     DESC (gaussian.apply_norm_scale.on, Apply norm scaling);
   }
+  struct
+  {
+    bool on = false;
+  } subgrid;
   struct
   {
     bool on = false;

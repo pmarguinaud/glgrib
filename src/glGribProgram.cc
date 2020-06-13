@@ -92,7 +92,7 @@ void glGrib::Program::use () const
 
 void glGrib::Program::set (const glGrib::OptionsLight & light)
 {
-  int lightid = glGetUniformLocation (programID, "light");
+  int lightid = getUniformLocation ("light");
 
   if (lightid != -1)
     {
@@ -100,8 +100,8 @@ void glGrib::Program::set (const glGrib::OptionsLight & light)
       if (light.on)
         {
           glm::vec3 lightDir = lonlat2xyz (deg2rad * light.lon, deg2rad * light.lat);
-          glUniform3fv (glGetUniformLocation (programID, "lightDir"), 1, &lightDir[0]);
-          glUniform1f (glGetUniformLocation (programID, "frac"), light.night);
+          glUniform3fv (getUniformLocation ("lightDir"), 1, &lightDir[0]);
+          glUniform1f (getUniformLocation ("frac"), light.night);
         }
     }
 }

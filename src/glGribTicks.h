@@ -21,14 +21,14 @@ public:
 private:
   void createStr 
     (const OptionsTicksSide &,
-     String::align_t, const View &, 
+     StringTypes::align_t, const View &, 
      std::vector<std::string> &, std::vector<float> &, 
      std::vector<float> &, std::vector<float> &,
-     std::vector<String::align_t> &);
+     std::vector<StringTypes::align_t> &);
 
   // No need to copy these
 
-  String2D labels;
+  String2D<false,false> labels;
   OptionsTicks opts;
   int width = 0, height = 0;
   OptionsView vopts;

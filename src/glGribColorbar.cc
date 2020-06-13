@@ -155,7 +155,7 @@ void glGrib::Colorbar::update (const glGrib::Palette & p)
   else
     updateLinear (min, max, x, y, str);
   
-  d.label.setup (font, str, x, y, d.opts.font.scale, glGrib::String::SE);
+  d.label.setup (font, str, x, y, d.opts.font.scale, glGrib::StringTypes::SE);
   d.label.setForegroundColor (d.opts.font.color.foreground);
   d.label.setBackgroundColor (d.opts.font.color.background);
   

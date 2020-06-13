@@ -100,7 +100,7 @@ void glGrib::FieldContour::isoline_t::setupLabels (const glGrib::OptionsField & 
     }
 
   d.labels.setup (font, L, X, Y, Z, A, opts.contour.labels.font.scale, 
-                  glGrib::String::C);
+                  glGrib::StringTypes::C);
   d.labels.setForegroundColor (opts.contour.labels.font.color.foreground);
   d.labels.setBackgroundColor (opts.contour.labels.font.color.background);
 

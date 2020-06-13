@@ -28,7 +28,7 @@ private:
   OpenGLVertexArray<Mapscale> VAID;
   OpenGLBufferPtr<unsigned int> elementbuffer;
   int nt;
-  String2D label;
+  String2D<false,true> label;
   std::string label_str;
   double frac1;
 };

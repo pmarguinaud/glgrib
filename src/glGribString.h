@@ -14,12 +14,16 @@
 namespace glGrib
 {
 
-class String 
-{
-public:
+template <bool SHARED, bool CHANGE>
+class String2D;
 
-  using float_v  = std::vector<float>;
-  using string_v = std::vector<std::string>;
+template <bool SHARED, bool CHANGE>
+class String3D;
+
+namespace StringTypes
+{
+  typedef std::vector<float> float_v;
+  typedef std::vector<std::string> string_v;
 
   static const int CX = 0x01;
   static const int WX = 0x00;
@@ -36,22 +40,36 @@ public:
     }
   align_t;
 
-  using align_v  = std::vector<align_t>;
+  typedef std::vector<align_t> align_v;
 
-  static align_t str2align (const std::string & str)
-  {
-#define S2A(x) do { if (str == #x) return x; } while (0)
-    S2A (C);  S2A (N);  S2A (S); 
-    S2A (W);  S2A (E);  S2A (NE); 
-    S2A (SE); S2A (NW); S2A (SW);
-#undef S2A
-    return C;
-  }
+  align_t str2align (const std::string &);
+
+};
+
+
+#define ENABLE_IF_CHANGE \
+template <bool OK = CHANGE> \
+typename std::enable_if<OK,void>::type
+
+
+template <bool SHARED, bool CHANGE>
+class String 
+{
+public:
+  typedef StringTypes::float_v  float_v;
+  typedef StringTypes::string_v string_v;
+  typedef StringTypes::align_t  align_t;
+  typedef StringTypes::align_v  align_v;
+  
 
   void setupVertexAttributes () const;
 
 private:
-  String & operator= (const String &);
+
+  template <bool OK = SHARED || CHANGE> 
+  typename std::enable_if<OK,String &>::type
+  operator= (const String &);
+
   String () : VAID (this) {}
   String (const String & str) : VAID (this)
   {
@@ -60,7 +78,7 @@ private:
 
   void setup (const_FontPtr, const string_v &, 
               const float_v &, const float_v &, 
-              float = 1.0f, const align_v & = align_v{SW},
+              float = 1.0f, const align_v & = align_v{StringTypes::SW},
               const float_v & = float_v{}, const float_v & = float_v{},
               const float_v & = float_v{}, const float_v & = float_v{});
 
@@ -73,20 +91,17 @@ private:
   {
     d.color1 = color;
   }
-  void update (const string_v &);
-  void update (const std::string &);
 
-
-  void setShared (bool p)
+  ENABLE_IF_CHANGE
+  update (const string_v & str)
   {
-    d.shared = p;
+    do_update (str);
   }
 
-  void setChange (bool u)
+  ENABLE_IF_CHANGE
+  update (const std::string & str)
   {
-    if (d.ready && u)
-      throw std::runtime_error (std::string ("Cannot set attribute change"));
-    d.change = u;
+    update (string_v{str});
   }
 
   bool isReady () const { return d.ready; }
@@ -97,7 +112,8 @@ private:
   }
 
 private:
-
+  ENABLE_IF_CHANGE
+  do_update (const string_v &);
 
   bool _visible = true;
   const bool & getVisibleRef () const 
@@ -107,8 +123,8 @@ private:
 
   struct 
   {
-    bool shared = false;
-    bool change = true;
+    bool shared = SHARED;
+    bool change = CHANGE;
     bool ready = false;
     string_v data;
     float_v x, y;       // Position of letters vertices
@@ -123,30 +139,58 @@ private:
     const_FontPtr font = nullptr; 
   } d;
   OpenGLVertexArray<String> VAID;
-  friend class String2D;
-  friend class String3D;
+  friend class String2D<SHARED,CHANGE>;
+  friend class String3D<SHARED,CHANGE>;
 };
 
+
+template <bool SHARED = false, bool CHANGE = true>
 class String2D : public Object2D
 {
 public:
-  using float_v  = String::float_v;
-  using string_v = String::string_v;
-  using align_v  = String::align_v;
+  typedef StringTypes::float_v  float_v;
+  typedef StringTypes::string_v string_v;
+  typedef StringTypes::align_t  align_t;
+  typedef StringTypes::align_v  align_v;
 
   void render (const glm::mat4 &) const override;
-  void setup (const_FontPtr, const std::string &, float, 
-              float, float = 1.0f, String::align_t = String::SW);
-  void setup (const_FontPtr, const string_v &, 
-	      const float_v & = float_v{}, 
-	      const float_v & = float_v{}, 
-	      float = 1.0f, String::align_t = String::SW,  
-              const float_v & = float_v{});
-  void setup (const_FontPtr, const string_v &, 
-              const float_v &, const float_v &, 
-              float, const align_v &, const float_v &);
-  void setup (const_FontPtr, const string_v &, float, 
-              float, float = 1.0f, String::align_t = String::SW);
+
+  void setup (glGrib::const_FontPtr ff, const string_v & str, 
+              float x, float y, float s = 1.0f, align_t align = StringTypes::SW)
+  {
+    this->str.setup (ff, str, float_v{x}, float_v{y}, s, align_v{align});
+    setReady ();
+  }
+  
+  void setup (glGrib::const_FontPtr ff, const string_v & str, 
+              const float_v & x = float_v{}, const float_v & y = float_v{}, 
+              float s = 1.0f, align_t align = StringTypes::SW, 
+              const float_v & a = float_v{})
+  {
+    this->str.setup (ff, str, x, y, s, align_v{align},
+           float_v{}, float_v{}, float_v{}, a);
+    setReady ();
+  }
+  
+  void setup (glGrib::const_FontPtr ff, const string_v & str, 
+              const float_v & x, const float_v & y, 
+              float s, const align_v & align,
+              const float_v & a)
+  {
+    this->str.setup (ff, str, x, y, s, align, 
+           float_v{}, float_v{}, float_v{}, a);
+    setReady ();
+  }
+  
+  void setup (glGrib::const_FontPtr ff, const std::string & str, 
+              float x, float y, float s = 1.0f, align_t align = StringTypes::SW)
+  {
+    string_v _str = {str};
+    float_v       _x   = {x};
+    float_v       _y   = {y};
+    this->str.setup (ff, _str, _x, _y, s, align_v{align});
+    setReady ();
+  }
 
   void setForegroundColor (const OptionColor & color)
   {
@@ -158,24 +202,16 @@ public:
     str.setBackgroundColor (color);
   }
 
-  void update (const string_v & str)
+  ENABLE_IF_CHANGE
+  update (const string_v & str)
   {
     this->str.update (str);
   }
 
-  void update (const std::string & str)
+  ENABLE_IF_CHANGE
+  update (const std::string & str)
   {
     this->str.update (str);
-  }
-
-  void setShared (bool p)
-  {
-    str.setShared (p);
-  }
-
-  void setChange (bool u)
-  {
-    str.setChange (u);
   }
 
   void reSize (const View &) override {}
@@ -185,22 +221,34 @@ public:
 
 private:
   Object2D::side_t side = Object2D::LEFT;
-  String str;
+  String<SHARED,CHANGE> str;
 };
 
+template <bool SHARED = false, bool CHANGE = true>
 class String3D : public Object3D
 {
 public:
-  using float_v  = String::float_v;
-  using string_v = String::string_v;
-  using align_v  = String::align_v;
+  typedef StringTypes::float_v  float_v;
+  typedef StringTypes::string_v string_v;
+  typedef StringTypes::align_t  align_t;
+  typedef StringTypes::align_v  align_v;
 
   void render (const View &, const OptionsLight &) const;
 
-  void setup (const_FontPtr, const string_v &, 
-	      const float_v & = float_v{}, const float_v & = float_v{},
-	      const float_v & = float_v{}, const float_v & = float_v{},
-	      float = 1.0f, String::align_t = String::SW);
+  void setup (glGrib::const_FontPtr ff, const string_v & str, 
+              const float_v & _X = float_v{}, const float_v & _Y = float_v{},
+              const float_v & _Z = float_v{}, const float_v & _A = float_v{},
+              float s = 1.0f, align_t _align = StringTypes::SW)
+  {
+    float_v _x, _y;
+    for (size_t i = 0; i < str.size (); i++)
+      {
+        _x.push_back (0.0f);
+        _y.push_back (0.0f);
+      }
+    this->str.setup (ff, str, _x, _y, s, align_v{_align}, _X, _Y, _Z, _A);
+    setReady ();
+  }
 
   void setForegroundColor (const OptionColor & color)
   {
@@ -212,24 +260,16 @@ public:
     str.setBackgroundColor (color);
   }
 
-  void update (const string_v & str)
+  ENABLE_IF_CHANGE
+  update (const string_v & str)
   {
     this->str.update (str);
   }
 
-  void update (const std::string & str)
+  ENABLE_IF_CHANGE
+  update (const std::string & str)
   {
     this->str.update (str);
-  }
-
-  void setShared (bool p)
-  {
-    str.setShared (p);
-  }
-
-  void setChange (bool u)
-  {
-    str.setChange (u);
   }
 
   float getScale () const override
@@ -254,7 +294,7 @@ private:
     return str.getVisibleRef ();
   }
 
-  String str;
+  String<SHARED,CHANGE> str;
 };
 
 }

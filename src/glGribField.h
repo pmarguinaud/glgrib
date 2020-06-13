@@ -202,7 +202,7 @@ private:
     OpenGLVertexArray<frame_t> VAID;
   };
 
-  String3D hilo;
+  String3D<false,true> hilo;
   frame_t frame;
 
 private:

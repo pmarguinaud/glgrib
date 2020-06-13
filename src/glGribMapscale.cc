@@ -25,8 +25,7 @@ void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
   
   glGrib::FontPtr font = getGlGribFontPtr (opts.font);
 
-  label.setChange (true);
-  label.setup (font, std::string (15, ' '), opts.position.xmin, opts.position.ymax + 0.01, opts.font.scale, glGrib::String::SW);
+  label.setup (font, std::string (15, ' '), opts.position.xmin, opts.position.ymax + 0.01, opts.font.scale, glGrib::StringTypes::SW);
   label.setForegroundColor (opts.font.color.foreground);
   label.setBackgroundColor (opts.font.color.background);
 

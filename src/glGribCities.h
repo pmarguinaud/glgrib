@@ -22,7 +22,7 @@ private:
   OptionsCities opts;
   struct
   {
-    String3D labels;
+    String3D<true,false> labels;
   } d;
 };
 

@@ -48,10 +48,10 @@ void glGrib::Ticks::ticks_t::render (const glm::mat4 & MVP) const
   int kind = std::min (1, std::max (0, ticks->opts.lines.kind));
   
   program->set ("MVP", MVP);
-  program->set ("N", float (glGrib::String::N));
-  program->set ("S", float (glGrib::String::S));
-  program->set ("W", float (glGrib::String::W));
-  program->set ("E", float (glGrib::String::E));
+  program->set ("N", float (glGrib::StringTypes::N));
+  program->set ("S", float (glGrib::StringTypes::S));
+  program->set ("W", float (glGrib::StringTypes::W));
+  program->set ("E", float (glGrib::StringTypes::E));
   program->set ("color0", ticks->opts.lines.color);
   program->set ("length", ticks->opts.lines.length);
   program->set ("width", ticks->opts.lines.width);
@@ -119,10 +119,10 @@ void glGrib::Ticks::render (const glm::mat4 & MVP) const
 
 void glGrib::Ticks::createStr 
 (const glGrib::OptionsTicksSide & sopts,
- glGrib::String::align_t _align, const glGrib::View & view, 
+ glGrib::StringTypes::align_t _align, const glGrib::View & view, 
  std::vector<std::string> & S, std::vector<float> & X, 
  std::vector<float> & Y, std::vector<float> & A,
- std::vector<glGrib::String::align_t> & align)
+ std::vector<glGrib::StringTypes::align_t> & align)
 {
   float ratio = float (width) / float (height);
 
@@ -148,10 +148,10 @@ void glGrib::Ticks::createStr
 
   switch (_align)
     {
-      case glGrib::String::E: nxy = ny; break;
-      case glGrib::String::W: nxy = ny; break;
-      case glGrib::String::N: nxy = nx; break;
-      case glGrib::String::S: nxy = nx; break;
+      case glGrib::StringTypes::E: nxy = ny; break;
+      case glGrib::StringTypes::W: nxy = ny; break;
+      case glGrib::StringTypes::N: nxy = nx; break;
+      case glGrib::StringTypes::S: nxy = nx; break;
       default: 
         throw std::runtime_error (std::string ("Unexpected alignment"));
         break;
@@ -176,16 +176,16 @@ void glGrib::Ticks::createStr
 
       switch (_align)
         {
-          case glGrib::String::E: 
+          case glGrib::StringTypes::E: 
             x = width * vopts.clip.xmax; y = cy ();                               
 	    break;
-          case glGrib::String::W: 
+          case glGrib::StringTypes::W: 
 	    x = width * vopts.clip.xmin; y = cy ();                               
 	    break;
-          case glGrib::String::N: 
+          case glGrib::StringTypes::N: 
 	    x = cx ();                   y = height * (vopts.clip.ymax - dymaxf); 
 	    break;
-          case glGrib::String::S: 
+          case glGrib::StringTypes::S: 
 	    x = cx ();                   y = height * (vopts.clip.ymin + dyminf); 
 	    break;
           default:
@@ -206,8 +206,8 @@ void glGrib::Ticks::createStr
       {
         switch (_align)
           {
-            case glGrib::String::E:
-            case glGrib::String::W:
+            case glGrib::StringTypes::E:
+            case glGrib::StringTypes::W:
               {
                 float y0 = xyllv[i-1].y, y1 = xyllv[i+0].y, x = xyllv[i-1].x;
                 float lat0 = xyllv[i-1].lat, lat1 = xyllv[i+0].lat;
@@ -243,8 +243,8 @@ void glGrib::Ticks::createStr
                   }
 	      }
 	    break;
-            case glGrib::String::N:
-            case glGrib::String::S:
+            case glGrib::StringTypes::N:
+            case glGrib::StringTypes::S:
               {
                 float x0 = xyllv[i-1].x, x1 = xyllv[i+0].x, y = xyllv[i-1].y;
                 float lon0 = xyllv[i-1].lon, lon1 = xyllv[i+0].lon;
@@ -322,18 +322,16 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
   // Create ticks labels
   std::vector<std::string> S; 
   std::vector<float> X, Y, A;
-  std::vector<glGrib::String::align_t> align;
+  std::vector<glGrib::StringTypes::align_t> align;
 
-  createStr (opts.E, glGrib::String::E, view, S, X, Y, A, align);
-  createStr (opts.W, glGrib::String::W, view, S, X, Y, A, align);
-  createStr (opts.N, glGrib::String::N, view, S, X, Y, A, align);
-  createStr (opts.S, glGrib::String::S, view, S, X, Y, A, align);
+  createStr (opts.E, glGrib::StringTypes::E, view, S, X, Y, A, align);
+  createStr (opts.W, glGrib::StringTypes::W, view, S, X, Y, A, align);
+  createStr (opts.N, glGrib::StringTypes::N, view, S, X, Y, A, align);
+  createStr (opts.S, glGrib::StringTypes::S, view, S, X, Y, A, align);
 
   if (opts.labels.on)
     {
       clear (labels);
-      labels.setShared (false);
-      labels.setChange (false);
 
       glGrib::FontPtr font = getGlGribFontPtr (opts.labels.font); 
 

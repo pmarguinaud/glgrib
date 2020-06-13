@@ -54,13 +54,10 @@ void glGrib::Cities::setup (const glGrib::OptionsCities & o)
 
   glGrib::Points::setup (opts.points, lon, lat, siz);
 
-  d.labels.setShared (true);
-  d.labels.setChange (false);
-
   glGrib::FontPtr font = getGlGribFontPtr (opts.labels.font);
 
   d.labels.setup (font, Str, X, Y, Z, A,
-                  opts.labels.font.scale, glGrib::String::C);
+                  opts.labels.font.scale, glGrib::StringTypes::C);
   d.labels.setForegroundColor (opts.labels.font.color.foreground);
   d.labels.setBackgroundColor (opts.labels.font.color.background);
 

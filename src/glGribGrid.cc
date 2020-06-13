@@ -16,8 +16,6 @@ void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
   if (d.opts.labels.on)
     {
       glGrib::FontPtr font = getGlGribFontPtr (d.opts.labels.font);
-      d.labels.setShared (true);
-      d.labels.setChange (false);
 
       std::vector<std::string> L;
       std::vector<float> X, Y, Z, A;
@@ -54,7 +52,7 @@ void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
 	  push (lon, lat, str);
 	}
 
-      d.labels.setup (font, L, X, Y, Z, A, d.opts.labels.font.scale, glGrib::String::C);
+      d.labels.setup (font, L, X, Y, Z, A, d.opts.labels.font.scale, glGrib::StringTypes::C);
       d.labels.setForegroundColor (d.opts.labels.font.color.foreground);
       d.labels.setBackgroundColor (d.opts.labels.font.color.background);
     }

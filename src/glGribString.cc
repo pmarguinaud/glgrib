@@ -5,7 +5,22 @@
 #include <iostream>
 #include <stdexcept>
 
-glGrib::String & glGrib::String::operator= (const glGrib::String & str)
+glGrib::StringTypes::align_t glGrib::StringTypes::str2align 
+  (const std::string & str)
+{
+#define S2A(x) do { if (str == #x) return x; } while (0)
+    S2A (C);  S2A (N);  S2A (S); 
+    S2A (W);  S2A (E);  S2A (NE); 
+    S2A (SE); S2A (NW); S2A (SW);
+#undef S2A
+  return C;
+}
+
+template <bool SHARED, bool CHANGE>
+template <bool OK>
+typename std::enable_if<OK,glGrib::String<SHARED,CHANGE> &>::type
+glGrib::String<SHARED,CHANGE>::operator=
+   (const glGrib::String<SHARED,CHANGE> & str)
 {
   if (this != &str)
     {
@@ -37,12 +52,15 @@ glGrib::String & glGrib::String::operator= (const glGrib::String & str)
   return *this;
 }
 
-void glGrib::String::setup (glGrib::const_FontPtr ff, const string_v & str, 
-                            const float_v & _x, const float_v & _y, 
-                            float s, const align_v & _align,
-                            const float_v & _X, const float_v & _Y,
-                            const float_v & _Z, const float_v & _A)
+template <bool SHARED, bool CHANGE>
+void glGrib::String<SHARED,CHANGE>::setup
+  (glGrib::const_FontPtr ff, const string_v & str, 
+   const float_v & _x, const float_v & _y, 
+   float s, const align_v & _align,
+   const float_v & _X, const float_v & _Y,
+   const float_v & _Z, const float_v & _A)
 {
+  using namespace StringTypes;
   d.data = str;
   d.x = _x;
   d.y = _y;
@@ -168,7 +186,8 @@ void glGrib::String::setup (glGrib::const_FontPtr ff, const string_v & str,
     }
 }
 
-void glGrib::String::setupVertexAttributes () const
+template <bool SHARED, bool CHANGE>
+void glGrib::String<SHARED,CHANGE>::setupVertexAttributes () const
 {
   glGrib::Program * program = d.font->getProgram ();
 
@@ -192,19 +211,11 @@ void glGrib::String::setupVertexAttributes () const
   glVertexAttribDivisor (xattr, 1);
 }
 
-
-void glGrib::String::update (const std::string & str)
+template <bool SHARED, bool CHANGE>
+template <bool OK>
+typename std::enable_if<OK,void>::type
+glGrib::String<SHARED,CHANGE>::do_update (const string_v & str)
 {
-  update (string_v{str});
-}
-
-void glGrib::String::update (const string_v & str)
-{
-  if (! d.ready)
-    throw std::runtime_error (std::string ("Cannot set update string"));
-  if (! d.change)
-    throw std::runtime_error (std::string ("Cannot set update string"));
-
   if (str.size () > d.data.size ())
     return;
   for (size_t i = 0; i < str.size (); i++)
@@ -232,8 +243,12 @@ void glGrib::String::update (const string_v & str)
       }
 }
 
+template void glGrib::String<true,true>::do_update (const string_v &);
+template void glGrib::String<false,true>::do_update (const string_v &);
 
-void glGrib::String2D::render (const glm::mat4 & MVP) const
+
+template <bool SHARED, bool CHANGE>
+void glGrib::String2D<SHARED,CHANGE>::render (const glm::mat4 & MVP) const
 {
   if (! isReady ())
     return;
@@ -255,60 +270,10 @@ void glGrib::String2D::render (const glm::mat4 & MVP) const
   str.VAID.unbind ();
 }
 
-void glGrib::String2D::setup (glGrib::const_FontPtr ff, const string_v & str, 
-                              float x, float y, float s, String::align_t align)
-{
-  this->str.setup (ff, str, float_v{x}, float_v{y}, s, align_v{align});
-  setReady ();
-}
-
-void glGrib::String2D::setup (glGrib::const_FontPtr ff, const string_v & str, 
-                              const float_v & x, const float_v & y, 
-                              float s, String::align_t align,
-                              const float_v & a)
-{
-  this->str.setup (ff, str, x, y, s, align_v{align},
-         float_v{}, float_v{}, float_v{}, a);
-  setReady ();
-}
-
-void glGrib::String2D::setup (glGrib::const_FontPtr ff, const string_v & str, 
-                              const float_v & x, const float_v & y, 
-                              float s, const align_v & align,
-                              const float_v & a)
-{
-  this->str.setup (ff, str, x, y, s, align, 
-         float_v{}, float_v{}, float_v{}, a);
-  setReady ();
-}
-
-void glGrib::String2D::setup (glGrib::const_FontPtr ff, const std::string & str, 
-                              float x, float y, float s, String::align_t align)
-{
-  string_v _str = {str};
-  float_v       _x   = {x};
-  float_v       _y   = {y};
-  this->str.setup (ff, _str, _x, _y, s, align_v{align});
-  setReady ();
-}
-
-void glGrib::String3D::setup (glGrib::const_FontPtr ff, const string_v & str, 
-	                      const float_v & _X, const float_v & _Y,
-	                      const float_v & _Z, const float_v & _A,
-	                      float s, String::align_t _align)
-{
-  float_v _x, _y;
-  for (size_t i = 0; i < str.size (); i++)
-    {
-      _x.push_back (0.0f);
-      _y.push_back (0.0f);
-    }
-  this->str.setup (ff, str, _x, _y, s, align_v{_align}, _X, _Y, _Z, _A);
-  setReady ();
-}
-
-
-void glGrib::String3D::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+template <bool SHARED, bool CHANGE>
+void glGrib::String3D<SHARED,CHANGE>::render
+  (const glGrib::View & view, const glGrib::OptionsLight & light) 
+const
 {
   if (! isReady ())
     return;
@@ -337,5 +302,16 @@ void glGrib::String3D::render (const glGrib::View & view, const glGrib::OptionsL
 
   view.delMVP (program);
 }
+
+
+#define DEF(SHARED,CHANGE) \
+template class glGrib::String<SHARED,CHANGE>; \
+template class glGrib::String2D<SHARED,CHANGE>; \
+template class glGrib::String3D<SHARED,CHANGE>
+
+DEF (true, false);
+DEF (false, true);
+DEF (true, true);
+DEF (false, false);
 
 

@@ -37,7 +37,7 @@ private:
   }
   struct
   {
-    String3D<true,false> labels;
+    String3D<1,0> labels;
     OptionsGrid opts;
   } d;
   OpenGLVertexArray<Grid> VAID;

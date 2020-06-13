@@ -501,7 +501,7 @@ void glGrib::Scene::setTextOptions (const glGrib::OptionsText & o)
       glGrib::FontPtr font = getGlGribFontPtr (d.opts.scene.text.font);
       for (size_t i = 0; i < d.opts.scene.text.s.size (); i++)
         {
-          glGrib::String2D<false,true> str;
+          glGrib::String2D<0,1> str;
           d.str.push_back (str);
 
           if (i >= d.opts.scene.text.x.size ())

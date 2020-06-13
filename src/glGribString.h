@@ -70,6 +70,8 @@ private:
   typename std::enable_if<OK,String &>::type
   operator= (const String &);
 
+  void do_copy (const String &);
+
   String () : VAID (this) {}
   String (const String & str) : VAID (this)
   {
@@ -144,7 +146,7 @@ private:
 };
 
 
-template <bool SHARED = false, bool CHANGE = true>
+template <bool SHARED, bool CHANGE>
 class String2D : public Object2D
 {
 public:
@@ -224,7 +226,7 @@ private:
   String<SHARED,CHANGE> str;
 };
 
-template <bool SHARED = false, bool CHANGE = true>
+template <bool SHARED, bool CHANGE>
 class String3D : public Object3D
 {
 public:

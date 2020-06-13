@@ -27,29 +27,34 @@ glGrib::String<SHARED,CHANGE>::operator=
       clear (this->d);
       this->VAID.clear ();
       if (str.d.ready)
-        {
-          if (str.d.shared)
-            {
-              d = str.d;   
-              VAID = str.VAID;
-              d.ready = true;
-	    }
-	  else if (str.d.change)
-            {
-              setup (str.d.font, str.d.data, str.d.x, str.d.y, str.d.scale, 
-                     str.d.align, str.d.X, str.d.Y, str.d.Z, str.d.A);
-              d.color0 = str.d.color0;
-              d.color1 = str.d.color1;
-	      d.shared = str.d.shared;
-	      d.change = str.d.change;
-	    }
-	  else
-	    {
-              throw std::runtime_error (std::string ("Cannot copy string"));
-	    }
-        }
+        do_copy (str);
     }
   return *this;
+}
+
+template <>
+void glGrib::String<1,0>::do_copy (const String & str)
+{
+  d = str.d;   
+  VAID = str.VAID;
+}
+
+template <>
+void glGrib::String<1,1>::do_copy (const String & str)
+{
+  d = str.d;   
+  VAID = str.VAID;
+}
+
+template <>
+void glGrib::String<0,1>::do_copy (const String & str)
+{
+  setup (str.d.font, str.d.data, str.d.x, str.d.y, str.d.scale, 
+         str.d.align, str.d.X, str.d.Y, str.d.Z, str.d.A);
+  d.color0 = str.d.color0;
+  d.color1 = str.d.color1;
+  d.shared = str.d.shared;
+  d.change = str.d.change;
 }
 
 template <bool SHARED, bool CHANGE>
@@ -243,8 +248,8 @@ glGrib::String<SHARED,CHANGE>::do_update (const string_v & str)
       }
 }
 
-template void glGrib::String<true,true>::do_update (const string_v &);
-template void glGrib::String<false,true>::do_update (const string_v &);
+template void glGrib::String<1,1>::do_update (const string_v &);
+template void glGrib::String<0,1>::do_update (const string_v &);
 
 
 template <bool SHARED, bool CHANGE>
@@ -309,9 +314,9 @@ template class glGrib::String<SHARED,CHANGE>; \
 template class glGrib::String2D<SHARED,CHANGE>; \
 template class glGrib::String3D<SHARED,CHANGE>
 
-DEF (true, false);
-DEF (false, true);
-DEF (true, true);
-DEF (false, false);
+DEF (1, 0);
+DEF (0, 1);
+DEF (1, 1);
+DEF (0, 0);
 
 

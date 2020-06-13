@@ -37,7 +37,7 @@ private:
     OpenGLBufferPtr<unsigned int> elementbuffer;
     int nt;
     std::vector<int> rank2rgba;
-    String2D<false,true> label;
+    String2D<0,1> label;
     Palette palette;
   } d;
   OpenGLVertexArray<Colorbar> VAID;

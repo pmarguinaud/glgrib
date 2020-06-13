@@ -98,7 +98,7 @@ private:
     void render (const glGrib::View & view, const glGrib::OptionsLight & light) const;
     struct
     {
-      String3D<false,true> labels;
+      String3D<0,1> labels;
       float level;
       bool wide = false;
       float width = 0.0f;

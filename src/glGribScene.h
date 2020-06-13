@@ -291,10 +291,10 @@ private:
       Image image;
       Colorbar colorbar;
       Mapscale mapscale;
-      String2D<false,true> strmess;
-      String2D<false,true> strdate;
-      String2D<false,true> strtitle;
-      std::vector<String2D<false,true>> str;
+      String2D<0,1> strmess;
+      String2D<0,1> strdate;
+      String2D<0,1> strtitle;
+      std::vector<String2D<0,1>> str;
       int nupdate = 0;
       int currentFieldRank = 0;
       glm::mat4 MVP_R, MVP_L;

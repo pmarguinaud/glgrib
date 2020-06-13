@@ -28,7 +28,7 @@ private:
 
   // No need to copy these
 
-  String2D<false,false> labels;
+  String2D<0,0> labels;
   OptionsTicks opts;
   int width = 0, height = 0;
   OptionsView vopts;

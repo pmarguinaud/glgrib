@@ -91,18 +91,20 @@ void glGrib::Field::setupHilo (glGrib::BufferPtr<float> data)
   hilo_t lhilo;
 
   std::vector<int> neigh;
-  int np = getGeometry ()->getNumberOfPoints ();
+
+  const auto & geometry = getGeometry ();
+  const int np = geometry->getNumberOfPoints ();
 
   const float radius = deg2rad * opts.hilo.radius;
 
 #pragma omp parallel for
   for (int jglo = 0; jglo < np; jglo++)
     {
-      float mesh = getGeometry ()->getLocalMeshSize (jglo);
+      float mesh = geometry->getLocalMeshSize (jglo);
 
       int r = static_cast<int> (radius / mesh);
-      int chi = hiloCount (getGeometry (), data, jglo, r, false);
-      int clo = hiloCount (getGeometry (), data, jglo, r, true);
+      int chi = hiloCount (geometry, data, jglo, r, false);
+      int clo = hiloCount (geometry, data, jglo, r, true);
 
       bool lhi = chi >= r;
       bool llo = clo >= r;
@@ -110,7 +112,7 @@ void glGrib::Field::setupHilo (glGrib::BufferPtr<float> data)
       if (lhi || llo)
         {
           float lon, lat;
-          getGeometry ()->index2latlon (jglo, &lat, &lon);
+          geometry->index2latlon (jglo, &lat, &lon);
 	  float x, y, z;
           lonlat2xyz (lon, lat, &x, &y, &z);
 #pragma omp critical
@@ -269,12 +271,14 @@ void glGrib::FieldPacked<N>::loadHeight (glGrib::OpenGLBufferPtr<T> buf, glGrib:
         }
       else
         {
+          const auto & geometry = getGeometry ();
+ 
           glGrib::GeometryPtr geometry_height = glGrib::Geometry::load (ld, opts.geometry.height.path, opts.geometry);
 
-          if (! geometry_height->isEqual (*getGeometry ()))
+          if (! geometry_height->isEqual (*geometry))
             throw std::runtime_error (std::string ("Field and height have different geometries"));
 
-          int size = getGeometry ()->getNumberOfPoints ();
+          const int size = geometry->getNumberOfPoints ();
 
           glGrib::BufferPtr<float> data;
           glGrib::FieldMetadata meta;

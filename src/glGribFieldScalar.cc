@@ -21,8 +21,10 @@ void glGrib::FieldScalar<N>::scalar_t::setupVertexAttributes () const
   auto program = this->getProgram ();
   const auto & field = this->field;
 
+  const auto & geometry = field->getGeometry ();
+
   // Coordinates
-  field->getGeometry ()->bindCoordinates (program->getAttributeLocation ("vertexLonLat"));
+  geometry->bindCoordinates (program->getAttributeLocation ("vertexLonLat"));
 
   // Values
   auto vattr = program->getAttributeLocation ("vertexVal");
@@ -49,7 +51,7 @@ void glGrib::FieldScalar<N>::scalar_t::setupVertexAttributes () const
     }
 
   // Triangles
-  field->getGeometry ()->bindTriangles (field->opts.geometry.subgrid.on ? 1 : 0);
+  geometry->bindTriangles (field->opts.geometry.subgrid.on ? 1 : 0);
 }
 
 template <int N>
@@ -57,10 +59,11 @@ void glGrib::FieldScalar<N>::points_t::setupVertexAttributes () const
 {
   auto program = this->getProgram ();
   const auto & field = this->field;
+  const auto & geometry = field->getGeometry ();
 
   // Coordinates
   auto pattr = program->getAttributeLocation ("vertexLonLat");
-  field->getGeometry ()->bindCoordinates (pattr);
+  geometry->bindCoordinates (pattr);
   glVertexAttribDivisor (pattr, 1);
   
   // Values
@@ -141,7 +144,7 @@ void glGrib::FieldScalar<N>::setupMpiView (glGrib::Loader * ld, const glGrib::Op
 {
   auto & opts = this->opts;
   const auto & geometry = this->getGeometry ();
-  int size = geometry->getNumberOfPoints ();
+  const int size = geometry->getNumberOfPoints ();
 
   glGrib::FieldMetadata mpiview_meta;
   glGrib::BufferPtr<float> mpiview;
@@ -195,13 +198,14 @@ void glGrib::FieldScalar<N>::scalar_t::render (const glGrib::View & view) const
 {
   glGrib::Program * program = this->getProgram ();
   const auto & field = this->field;
+  const auto & geometry = field->getGeometry ();
 
   program->set ("smoothed", field->opts.scalar.smooth.on);
   
   if (field->opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
   
-  field->getGeometry ()->renderTriangles (field->opts.geometry.subgrid.on ? 1 : 0);
+  geometry->renderTriangles (field->opts.geometry.subgrid.on ? 1 : 0);
   
   if (field->opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
@@ -212,6 +216,7 @@ void glGrib::FieldScalar<N>::points_t::render (const glGrib::View & view) const
 {
   glGrib::Program * program = this->getProgram ();
   const auto & field = this->field;
+  const auto & geometry = field->getGeometry ();
 
   float length = view.pixelToDistAtNadir (10);
   
@@ -220,7 +225,7 @@ void glGrib::FieldScalar<N>::points_t::render (const glGrib::View & view) const
   program->set ("lpointZoo", field->opts.scalar.points.size.variable.on);
   program->set ("factor", field->opts.scalar.points.size.factor.on);
   
-  int numberOfPoints = field->getGeometry ()->getNumberOfPoints ();
+  const int numberOfPoints = geometry->getNumberOfPoints ();
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0}; 
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, numberOfPoints);
 }
@@ -273,7 +278,7 @@ void glGrib::FieldScalar<N>::render (const glGrib::View & view, const glGrib::Op
 
   this->renderHilo (view);
   
-  if (opts.geometry.frame.on && this->getGeometry ()->hasFrame ())
+  if (opts.geometry.frame.on && geometry->hasFrame ())
     this->renderFrame (view);
 
 }

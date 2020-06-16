@@ -101,7 +101,9 @@ void glGrib::FieldStream::setup (const Field::Privatizer, glGrib::Loader * ld, c
 
   glGrib::BufferPtr<float> data_n, data_d;
 
-  glGrib::Loader::uv2nd (getGeometry (), data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
+  const auto & geometry = getGeometry ();
+
+  glGrib::Loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
   palette = glGrib::Palette (opts.palette, 0.0f, meta_n.valmax);
 
@@ -114,9 +116,9 @@ void glGrib::FieldStream::setup (const Field::Privatizer, glGrib::Loader * ld, c
 
   std::vector<int> it;
 
-  int nt = getGeometry ()->getNumberOfTriangles ();
+  const int nt = geometry->getNumberOfTriangles ();
 
-  int np = static_cast<int> (std::sqrt (getGeometry ()->getNumberOfPoints ()));
+  const int np = static_cast<int> (std::sqrt (geometry->getNumberOfPoints ()));
   int level = static_cast<int> (opts.stream.density * np / 40.0f);
 
   {
@@ -124,7 +126,7 @@ void glGrib::FieldStream::setup (const Field::Privatizer, glGrib::Loader * ld, c
     for (int i = 0; i < nt; i++)
       sample[i] = 0;
 
-    getGeometry ()->sampleTriangle (sample, 1, level);
+    geometry->sampleTriangle (sample, 1, level);
 
     for (int i = 0; i < nt; i++)
       if (sample[i])
@@ -138,7 +140,7 @@ void glGrib::FieldStream::setup (const Field::Privatizer, glGrib::Loader * ld, c
       int i0 = ((j + 0) * it.size ()) / N;
       int i1 = ((j + 1) * it.size ()) / N;
       for (int i = i0; i < i1; i++)
-        computeStreamLine (it[i], data_u, data_v, &stream_data[j]);
+        computeStreamLine (it[i], data_u, data_v, &stream_data[j], geometry);
     }
 
   glGrib::Program * program = glGrib::Program::load ("STREAM");
@@ -197,10 +199,11 @@ float lineLineIntersect (const glm::vec2 & P1, const glm::vec2 & V1,
 }
 
 
-void glGrib::FieldStream::getFirstPoint (int it, const glGrib::BufferPtr<float> & ru, const glGrib::BufferPtr<float> & rv, 
-					 glm::vec2 & M, glm::vec2 & Vp, glm::vec2 & Vm,
-		                         std::valarray<float> & wp, std::valarray<float> & wm, 
-					 int & itp, int & itm)
+void glGrib::FieldStream::getFirstPoint 
+  (int it, const glGrib::BufferPtr<float> & ru, const glGrib::BufferPtr<float> & rv, 
+   glm::vec2 & M, glm::vec2 & Vp, glm::vec2 & Vm,
+   std::valarray<float> & wp, std::valarray<float> & wm, 
+   int & itp, int & itm, const const_GeometryPtr & geometry)
 {
   // First point of the list; see which segment to start with, initialize weights, V and M
   int jglo[3], itri[3];
@@ -210,7 +213,7 @@ void glGrib::FieldStream::getFirstPoint (int it, const glGrib::BufferPtr<float> 
 
   w[0] = w[1] = w[2] = 0.0f;
 
-  getGeometry ()->getTriangleNeighbours (it, jglo, itri, P);
+  geometry->getTriangleNeighbours (it, jglo, itri, P);
 
   // Find best edge to start with
   int i0 = std::numeric_limits<int>::max ();
@@ -252,7 +255,7 @@ void glGrib::FieldStream::getFirstPoint (int it, const glGrib::BufferPtr<float> 
     {
       int jglom[3], itrim[3];
       glm::vec3 xyzm[3];
-      getGeometry ()->getTriangleNeighbours (itm, jglom, itrim, xyzm);
+      geometry->getTriangleNeighbours (itm, jglom, itrim, xyzm);
 
       wm[0] = wm[1] = wm[2] = 0.0f;
 
@@ -276,10 +279,11 @@ void glGrib::FieldStream::getFirstPoint (int it, const glGrib::BufferPtr<float> 
 
 }
 
-void glGrib::FieldStream::computeStreamLineDir (int it, const glGrib::BufferPtr<float> & ru, const glGrib::BufferPtr<float> & rv, 
-		                                const glm::vec2 & M0, const glm::vec2 & V0,
-                                                stream_seen_t & seen, float sign, std::valarray<float> w,
-					        std::vector<glm::vec3> & list)
+void glGrib::FieldStream::computeStreamLineDir 
+  (int it, const glGrib::BufferPtr<float> & ru, const glGrib::BufferPtr<float> & rv, 
+   const glm::vec2 & M0, const glm::vec2 & V0,
+   stream_seen_t & seen, float sign, std::valarray<float> w,
+   std::vector<glm::vec3> & list, const const_GeometryPtr & geometry)
 {
   glm::vec2 V = V0, M = M0;
   bool again_flag = false;
@@ -295,9 +299,9 @@ void glGrib::FieldStream::computeStreamLineDir (int it, const glGrib::BufferPtr<
       int jglo[3], itri[3];
 
       glm::vec2 P[3];
-      getGeometry ()->getTriangleNeighbours (it, jglo, itri, P);
+      geometry->getTriangleNeighbours (it, jglo, itri, P);
 
-      getGeometry ()->fixPeriodicity (M, P, 3);
+      geometry->fixPeriodicity (M, P, 3);
 
       // Try all edges : intersection of vector line with triangle edges
       for (int i = 0; i < 3; i++)
@@ -356,7 +360,7 @@ void glGrib::FieldStream::computeStreamLineDir (int it, const glGrib::BufferPtr<
 	  else
             {
               glm::vec3 xyzn[3]; int itrin[3];
-              getGeometry ()->getTriangleNeighbours (itn, jglon, itrin, xyzn);
+              geometry->getTriangleNeighbours (itn, jglon, itrin, xyzn);
 
               w[0] = w[1] = w[2] = 0.0f;
 
@@ -385,8 +389,9 @@ last:
 }
 
 
-void glGrib::FieldStream::computeStreamLine (int it0, const glGrib::BufferPtr<float> & ru, const glGrib::BufferPtr<float> & rv, 
-                                             streamline_data_t * stream)
+void glGrib::FieldStream::computeStreamLine 
+  (int it0, const glGrib::BufferPtr<float> & ru, const glGrib::BufferPtr<float> & rv, 
+   streamline_data_t * stream, const const_GeometryPtr & geometry)
 {
   std::vector<glm::vec3> listf, listb;
 
@@ -395,24 +400,25 @@ void glGrib::FieldStream::computeStreamLine (int it0, const glGrib::BufferPtr<fl
   int itp, itm;
   std::valarray<float> wp (3), wm (3);
   glm::vec2 Vp, Vm, M;
-  getFirstPoint (it0, ru, rv, M, Vp, Vm, wp, wm, itp, itm);
+
+  getFirstPoint (it0, ru, rv, M, Vp, Vm, wp, wm, itp, itm, geometry);
 
   // Forward 
   listf.push_back (glm::vec3 (M.x, M.y, glm::length (Vp)));
 
   if (itp >= 0)
-    computeStreamLineDir (itp, ru, rv, M, Vp, seen, +1.0f, wp, listf);
+    computeStreamLineDir (itp, ru, rv, M, Vp, seen, +1.0f, wp, listf, geometry);
 
   // Backward
   
   if (itm >= 0)
-    computeStreamLineDir (itm, ru, rv, M, Vm, seen, -1.0f, wm, listb);
+    computeStreamLineDir (itm, ru, rv, M, Vm, seen, -1.0f, wm, listb, geometry);
 
   // Add points to stream
   for (int i = listb.size () - 1; i >= 0; i--)
-    stream->push (getGeometry ()->conformal2xyz (glm::vec2 (listb[i].x, listb[i].y)), listb[i].z);
+    stream->push (geometry->conformal2xyz (glm::vec2 (listb[i].x, listb[i].y)), listb[i].z);
   for (size_t i = 0; i < listf.size (); i++)
-    stream->push (getGeometry ()->conformal2xyz (glm::vec2 (listf[i].x, listf[i].y)), listf[i].z);
+    stream->push (geometry->conformal2xyz (glm::vec2 (listf[i].x, listf[i].y)), listf[i].z);
 
   if (listb.size () + listf.size () > 0)
     stream->push (0.0f, 0.0f, 0.0f, 0.0f);

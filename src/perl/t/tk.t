@@ -1,44 +1,564 @@
-
-package glGrib::Tk;
+package TkglGrib;
 
 use strict;
+use JSON;
 
-sub grid
+sub json2tree
+{
+  my $list = shift;
+
+  my $v = [];
+
+  for (@$list)  
+    {
+      my ($name, $type, $desc, $vals) = @$_;
+
+      $name =~ s/^--//o;
+      my @name = split (m/\./o, $name);
+      
+      if (ref ($vals) =~ m/Boolean/o)
+        {
+          $vals = $vals ? 1 : 0;
+        } 
+
+      my $c = \$v;
+      for my $n (@name)
+        {
+          unless ((scalar (@{${$c}}) > 0) && (${$c}->[-2] eq $n))
+            {
+              push @{${$c}}, ($n, []);
+            }
+          $c = \${$c}->[-1];
+        }
+
+      $$c = ["--$name", $type, $desc, $vals];
+
+    }
+
+  return $v;
+}
+
+sub base
+{
+  my $json = do { my $fh = 'FileHandle'->new ('<glgrib.json'); local $/ = undef; <$fh> };
+  return &json2tree (&decode_json ($json));
+# return &json2tree (&decode_json ('glGrib'->json ('+base', $_[0])));
+}
+
+sub exists 
 {
   my $class = shift;
-  my ($main, $opts) = @_;
+  no strict 'refs';
+  return scalar (@{"$class\::ISA"});
+}
+
+sub isMainWindow
+{
+  my $class = shift;
+  return $class->isa ('Tk::MainWindow');
+}
+
+sub create
+{
+  my ($win, $name, $opts, $default) = @_;
+
+
+  my $class = 'glGrib' . ucfirst ($name);
+  $class =~ s/[^a-z]+$//io;
+  $class =~ s{_(\w)}{uc ($1)}egoms;
+
+  if ((ref ($opts) eq 'ARRAY') && (scalar (@$opts) > 0)  
+   && (! $default) && (ref ($opts->[1]) ne 'ARRAY'))
+    {
+      my $type = $opts->[1];
+      $type =~ s/[^A-Z]//go;
+      $default = "glGrib$type" if (&exists ("Tk::glGrib$type"));
+    }
+
+  $class = $default 
+    unless (&exists ("Tk::$class"));
+
+  $class ||= 'glGrib_Frame';
+
+  if ($class)
+    {
+      return &isMainWindow ("Tk::$class")
+           ? "Tk::$class"->new (glGrib => {name => $name, opts => $opts}, 
+                                -title => ucfirst ($name))
+           : $win->$class (glGrib => {name => $name, opts => $opts});
+    }
+
   
-  $main->Label (-text => "grid");
+
+  my $w = $win->Frame (-label => $name);
+
+  
+
+
+  return $w;
+}
+
+package Tk::glGribContour;
+
+use Tk;
+
+use base qw (Tk::Frame);
+use strict;
+
+Construct Tk::Widget 'glGribContour';
+
+sub ClassInit 
+{
+  my ($class, $mw) = @_;
+  $class->SUPER::ClassInit ($mw);
+}
+
+sub Populate 
+{
+  my ($self, $args) = @_;
+  
+  $self->{glGrib} = delete $args->{glGrib};
+  
+  my $opts = $self->{glGrib}{opts};
+
+  $self->SUPER::Populate ($args);
+  
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+
+  $frame->Label (-text => 'CONTOUR')->pack ();
 
 }
 
+1;
 
-sub Create
+
+package Tk::glGrib_Frame;
+
+use Tk;
+
+use base qw (Tk::Frame);
+use strict;
+
+Construct Tk::Widget 'glGrib_Frame';
+
+sub ClassInit 
 {
-  my $class = shift;
-  my ($main, $opts) = @_;
+  my ($class, $mw) = @_;
+  $class->SUPER::ClassInit ($mw);
+}
 
-  for my $name (sort keys %$opts) 
+sub Populate 
+{
+  my ($self, $args) = @_;
+  
+  $self->{glGrib} = delete $args->{glGrib};
+  
+  my $opts = $self->{glGrib}{opts};
+  my $name = $self->{glGrib}{name};
+
+  $self->SUPER::Populate ($args);
+  
+  if (scalar (@$opts) == 1)
     {
-      if ('glGrib::Tk'->can ($name))
+      my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+      $frame->Label (-text => $name)->pack (-side => 'top');
+    }
+
+  my @opts = @$opts;
+
+  while (my ($key, $opt) = splice (@opts, 0, 2))
+    {
+      my $w = &TkglGrib::create ($self, $key, $opt);
+      $w->pack (-side => 'top', -fill => 'both', -side => 'top')
+        unless ($w->isa ('Tk::MainWindow'));
+    }
+}
+
+1;
+
+package Tk::glGrib_Entry;
+
+use Tk;
+
+use base qw (Tk::Frame);
+use strict;
+
+Construct Tk::Widget 'glGrib_Entry';
+
+sub ClassInit 
+{
+  my ($class, $mw) = @_;
+  $class->SUPER::ClassInit ($mw);
+}
+
+sub Populate 
+{
+  my ($self, $args) = @_;
+  
+  $self->{glGrib} = delete $args->{glGrib};
+  
+  my $opts = $self->{glGrib}{opts};
+  my $name = $self->{glGrib}{name};
+
+  $self->SUPER::Populate ($args);
+  
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+
+  $frame->Label (-text => $opts->[2])->pack (-side => 'left');
+  $frame->Entry ()->pack (-side => 'right');
+
+}
+
+1;
+
+package Tk::glGribINTEGER;
+
+use Tk;
+
+use base qw (Tk::glGrib_Entry);
+use strict;
+
+Construct Tk::Widget 'glGribINTEGER';
+
+package Tk::glGribSTRING;
+
+use Tk;
+
+use base qw (Tk::glGrib_Entry);
+use strict;
+
+Construct Tk::Widget 'glGribSTRING';
+
+package Tk::glGribLISTOFSTRINGS;
+
+use Tk;
+
+use base qw (Tk::glGrib_Entry);
+use strict;
+
+Construct Tk::Widget 'glGribLISTOFSTRINGS';
+
+package Tk::glGribLISTOFCOLORS;
+
+use Tk;
+
+use base qw (Tk::glGrib_Entry);
+use strict;
+
+Construct Tk::Widget 'glGribLISTOFCOLORS';
+
+package Tk::glGribLISTOFFLOATS;
+
+use Tk;
+
+use base qw (Tk::glGrib_Entry);
+use strict;
+
+Construct Tk::Widget 'glGribLISTOFFLOATS';
+
+package Tk::glGribFLOAT;
+
+use Tk;
+
+use base qw (Tk::glGrib_Entry);
+use strict;
+
+Construct Tk::Widget 'glGribFLOAT';
+
+package Tk::glGribCOLOR;
+
+use Tk;
+
+use base qw (Tk::glGrib_Entry);
+use strict;
+
+Construct Tk::Widget 'glGribCOLOR';
+
+package Tk::glGribBOOLEAN;
+
+use Tk;
+
+use base qw (Tk::Frame);
+use strict;
+
+Construct Tk::Widget 'glGribBOOLEAN';
+
+sub ClassInit 
+{
+  my ($class, $mw) = @_;
+  $class->SUPER::ClassInit ($mw);
+}
+
+sub Populate 
+{
+  my ($self, $args) = @_;
+  
+  $self->{glGrib} = delete $args->{glGrib};
+  
+  my $opts = $self->{glGrib}{opts};
+  my $name = $self->{glGrib}{name};
+
+  $self->SUPER::Populate ($args);
+  
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+
+  $frame->Label (-text => $opts->[2])->pack (-side => 'left');
+
+  $self->{glGrib}{button} = 
+  $frame->Checkbutton ()->pack (-side => 'right');
+
+}
+
+sub setCommand
+{
+  my ($self, $command) = @_;
+  $self->{glGrib}{button}
+    ->configure (-command => $command);
+}
+
+sub setVariable
+{
+  my ($self, $ref) = @_;
+  $self->{glGrib}{button}
+    ->configure (-variable => $ref);
+}
+
+1;
+
+
+
+package Tk::glGrib_Panel;
+
+use Tk;
+
+use base qw (Tk::MainWindow);
+use strict;
+
+Construct Tk::Widget 'glGrib_Panel';
+
+sub ClassInit 
+{
+  my ($class, $mw) = @_;
+  $class->SUPER::ClassInit ($mw);
+}
+
+sub Populate 
+{
+  my ($self, $args) = @_;
+  
+  $self->{glGrib} = delete $args->{glGrib};
+  
+  my $opts = $self->{glGrib}{opts};
+
+  $self->SUPER::Populate ($args);
+  
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+
+  $self->{glGrib}{frame} = $frame;
+
+  if (@$opts && ($opts->[0] eq 'on'))
+    {
+      $self->drawDisabled ();
+    }
+  else
+    {
+      $self->drawEnabled ();
+    }
+  
+  $self->Button (-relief => 'raised', -text => 'Apply', 
+                 -command => sub { })
+  ->pack (-side => 'left', -fill => 'both');
+  $self->Button (-relief => 'raised', -text => 'Close', 
+                 -command => sub { $self->destroy (); })
+  ->pack (-side => 'right', -fill => 'both');
+}
+
+sub drawEnabled
+{
+  my $self = shift;
+  $self->clear ();
+
+  $self->drawOptions ($self->{glGrib}{opts});
+
+}
+
+sub drawDisabled
+{
+  my $self = shift;
+  $self->clear ();
+
+  $self->drawOptions ($self->{glGrib}{opts});
+}
+
+sub clear
+{
+  my $self = shift;
+
+  my $frame = $self->{glGrib}{frame};
+  for my $w ($frame->packSlaves ())
+    {
+      $w->destroy ();
+    }
+}
+
+sub drawOptions
+{
+  my ($self, $opts) = @_;
+
+  my $frame = $self->{glGrib}{frame};
+
+  if (@$opts && ($opts->[0] eq 'on'))
+    {
+      my $w = &TkglGrib::create ($frame, 'on', $opts->[1]);
+      $w->setVariable (\$self->{glGrib}{on});
+      $w->setCommand (sub { $self->{glGrib}{on} 
+                          ? $self->drawEnabled () 
+                          : $self->drawDisabled (); });
+      $w->pack (-side => 'top', -fill => 'both', -side => 'top')
+        unless ($w->isa ('Tk::MainWindow'));
+
+      return unless ($self->{glGrib}{on});
+    }
+
+
+  my @opts = @$opts;
+
+  while (my ($key, $opt) = splice (@opts, 0, 2))
+    {
+      next if ($key eq 'on');
+      my $w = &TkglGrib::create ($frame, $key, $opt);
+      $w->pack (-side => 'top', -fill => 'both', -side => 'top')
+        unless ($w->isa ('Tk::MainWindow'));
+    }
+
+}
+
+1;
+
+package Tk::glGribGrid;
+
+use base qw (Tk::glGrib_Panel);
+
+package Tk::glGribField;
+
+use base qw (Tk::glGrib_Panel);
+use strict;
+
+Construct Tk::Widget 'glGribField';
+
+sub ClassInit 
+{
+  my ($class, $mw) = @_;
+  $class->SUPER::ClassInit ($mw);
+}
+
+sub Populate 
+{
+  my ($self, $args) = @_;
+  
+  $self->{glGrib} = $args->{glGrib};
+
+  my $opts = $self->{glGrib}{opts};
+  
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+
+  $frame->Label (-text => 'FIELD')->pack ();
+
+  $self->SUPER::Populate ($args);
+}
+
+1;
+
+package Tk::glGribMainWindow;
+
+use Tk;
+use base qw (Tk::MainWindow);
+use strict;
+
+Construct Tk::Widget 'glGribMainWindow';
+
+sub ClassInit 
+{
+  my ($class, $mw) = @_;
+  $class->SUPER::ClassInit ($mw);
+}
+
+sub Populate 
+{
+  my ($self, $args) = @_;
+  
+  $self->SUPER::Populate ($args);
+  
+  $self->{glGrib}{base} = my $base = &TkglGrib::base ('--');
+
+  $self->{glGrib}{panels} = {};
+  
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+  
+  my @b;
+  
+  my @base = @$base;
+  while (my ($name, $opts) = splice (@base, 0, 2))
+    {
+      push @b,
+      $frame->Button 
+       (-text => ucfirst ($name), 
+        -command => sub { $self->createPanel ($name); })
+        ->pack (-expand => 1, -fill => 'both', -side => 'top');
+    }
+  
+  push @b,
+  $frame->Button (-relief => 'raised', -text => 'Quit', 
+                  -command => sub { $self->quit (); })
+  ->pack (-side => 'top', -fill => 'x');
+
+
+#   $self->Advertise  ( 'optionmenu' =>  $o  );
+#   $self->ConfigSpecs( 'DEFAULT'    => [$b] );
+#   $self->Delegates  ( 'DEFAULT'    =>  $b  );
+
+}
+
+sub createPanel
+{
+  my ($self, $name) = @_;
+  my $p = $self->{glGrib}{panels}{$name};
+  
+  return if ($p && &Exists ($p));
+
+  my $opts;
+
+  for (my $i = 0; $i < scalar (@{ $self->{glGrib}{base} }); $i += 2)
+    {
+      if ($self->{glGrib}{base}[$i] eq $name)
         {
-          my $w = 'glGrib::Tk'->$name ($main, $opts->{$name});
-          $w->pack (-side => 'top', -fill => 'x', -expand => 1);
-        }
-      elsif (ref ($opts->{$name}) eq 'HASH')
-        {
-          my $w = $main->Frame (-label => $name, -borderwidth => 2, -relief => 'groove');
-          $w->pack (-side => 'top', -fill => 'x', -expand => 1);
-          $class->Create ($w, $opts->{$name});
-        }
-      elsif (ref ($opts->{$name}) eq 'ARRAY')
-        {
-          
+          $opts = $self->{glGrib}{base}[$i+1];
+          last;
         }
     }
 
-  return $main;
+  my $w = &TkglGrib::create ($self, $name, $opts, 'glGrib_Panel');
+
+  die unless ($w->isa ('Tk::glGrib_Panel'));
+
+  $self->{glGrib}{panels}{$name} = $w;
 }
+
+sub quit
+{
+  my $self = shift;
+
+  for my $p (values (%{ $self->{glGrib}{panels} }))
+    {
+      next unless (&Exists ($p));
+      $p->destroy ();
+    }
+
+  $self->destroy ();
+}
+
+1;
+
 
 package main;
 
@@ -91,87 +611,16 @@ sub debug
   print &Dumper (['glGrib'->window ()]);
 }
 
-sub tree
-{
-  my $list = shift;
+#'glGrib'->start ('--grid.on', '--landscape.on');
 
-  my $h = {};
-  for (@$list)  
-    {
-      my ($name, $type, $desc, $vals) = @$_;
-
-      $name =~ s/^--//o;
-      my @name = split (m/\./o, $name);
-      
-      my $x = \$h;
-      while (my $n = shift (@name))
-        {
-          ${$x} ||= {};
-          $x = \${$x}->{$n};
-        }
- 
-      ${$x} = ["--$name", $type, $desc, $vals];
-
-    }
-
-  return $h;
-}
-
-'glGrib'->start ('--grid.on', '--landscape.on');
-
-
-$base = &tree (&decode_json ('glGrib'->json ('+base', '--')));
-
-my $main = 'MainWindow'->new ();
+my $main = 'Tk::glGribMainWindow'->new ();
 
 $main->geometry ('+0+0');
 
 $main->bind ('<Leave>' => \&leave);
 $main->bind ('<Enter>' => \&enter);
 
-my $frame = $main->Frame ()->pack (-expand => 1, -fill => 'both');
-
-
-my $nb;
-
-$nb = $frame->NoteBook ()->pack (-expand => 1, -fill => 'both', -side => 'top');
-
-for my $name (sort keys (%$base))
-  {
-    next if ($name =~ m/^field/o);
-    my $tab = $nb->add ($name, -label => $name);
-    my $pan = $tab->Scrolled (qw/Pane -scrollbars osw/)->pack (-expand => 1, -fill => 'both', -side => 'top');
-    'glGrib::Tk'->Create ($pan, $base->{$name});
-  }
-
-$nb = $frame->NoteBook ()->pack (-expand => 1, -fill => 'both', -side => 'top');
-for my $name (sort keys (%$base))
-  {
-    next unless ($name =~ m/^field/o);
-    my $tab = $nb->add ($name, -label => $name);
-    my $pan = $tab->Scrolled (qw/Pane -scrollbars osw/)->pack (-expand => 1, -fill => 'both', -side => 'top');
-    'glGrib::Tk'->Create ($pan, $base->{$name});
-  }
-
-
-$frame->Button (-relief => 'raised', -text => 'Quit', -command => sub { $main->destroy (); })
-    ->pack (-side => 'top', -fill => 'x');
-
-
-=pod
-
-$frame->Button (-relief => 'raised', -text => 'Rotate', -command => sub { &rotate (); })
-    ->pack (-side => 'top', -fill => 'x');
-
-$frame->Button (-relief => 'raised', -text => 'Debug', -command => sub { &debug (); })
-    ->pack (-side => 'top', -fill => 'x');
-
-$frame->Button (-relief => 'raised', -text => 'Move', -command => sub { &move (); })
-    ->pack (-side => 'top', -fill => 'x');
-
-=cut
-
 &MainLoop ();
 
-'glGrib'->stop ();
+#'glGrib'->stop ();
 

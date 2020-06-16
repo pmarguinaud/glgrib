@@ -1,0 +1,24 @@
+use 5.024000;
+use ExtUtils::MakeMaker;
+
+my $prefix = "/home/phi001/3d/glgrib";
+
+my @lib = ("$prefix/lib");
+
+&WriteMakefile
+(
+  LD                => 'g++ -std=c++11',
+  CC                => 'g++ -std=c++11',
+  NAME              => 'glGrib',
+  VERSION_FROM      => 'lib/glGrib.pm', 
+  PREREQ_PM         => {}, 
+  ABSTRACT_FROM     => 'lib/glGrib.pm', 
+  AUTHOR            => 'Philippe Marguinaud <pmarguinaud@hotmail.com>',
+  DEFINE            => "-DGLGRIB_PREFIX='\"$prefix\"'", 
+  INC               => '-I. -I..', 
+  OBJECT            => 'glGrib.o',
+  LIBS              => join (' ', map { "-L$_ -Wl,-rpath,$_" } @lib) .
+                       ' -lglGrib -lLFI -lGLEW -lGL -lglfw -lpng -lreadline -lncurses ' .
+                       '-ltinfo -lssl -lcrypto -lpthread -lsqlite3 -lcurl ' .
+                       '-lshp -leccodes -lnetcdf_c++4',
+);

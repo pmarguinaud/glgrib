@@ -684,9 +684,9 @@ std::string glGrib::OptionsParser::asOption (glGrib::OptionsParser & p2)
 
 void glGrib::OptionsParser::getValue 
    (std::vector<std::string> * list, const std::string & prefix, 
-    bool show_hidden, glGrib::OptionsParser * p1)
+    bool show_hidden, bool sort, glGrib::OptionsParser * p1)
 {
-  for (auto & it : filterOptions (prefix, show_hidden, p1))
+  for (auto & it : filterOptions (prefix, show_hidden, sort, p1))
     {
       glGrib::OptionsParserDetail::optionBase * opt = it->second;
       if (opt->hasArg ())
@@ -702,7 +702,8 @@ void glGrib::OptionsParser::getValue
 
 }
 
-std::string glGrib::OptionsParser::getHelp (const std::string & prefix, bool show_hidden)
+std::string glGrib::OptionsParser::getHelp 
+  (const std::string & prefix, bool show_hidden, bool sort)
 {
   std::string help;
 
@@ -716,6 +717,7 @@ std::string glGrib::OptionsParser::getHelp (const std::string & prefix, bool sho
         name_size = std::max (it->first.length (), name_size);
         type_size = std::max (it->second->type ().length (), type_size);
       }   
+
   char format[64];
   sprintf (format, 
            " %%-%lds : %%-%lds :"
@@ -723,15 +725,30 @@ std::string glGrib::OptionsParser::getHelp (const std::string & prefix, bool sho
 	   "      %%s\n"
 	   "\n",
 	   name_size, type_size);
-  for (name2option_t::iterator it = name2option.begin (); 
-       it != name2option.end (); it++)
-    if (it->first.substr (0, len) == prefix)
+
+  std::vector<std::string> list;
+
+  if (sort)
+    {
+      for (name2option_t::iterator it = name2option.begin (); 
+           it != name2option.end (); it++)
+        list.push_back (it->first);
+    }
+  else
+    {
+      list = listoptions;
+    }
+
+  for (const auto & opt_name : list)
+    if (opt_name.substr (0, len) == prefix)
       {   
+        auto it = name2option.find (opt_name);
 	glGrib::OptionsParserDetail::optionBase * opt = it->second;
         if ((! show_hidden) && (opt->hidden))
           continue;
 	char str[256];
-        sprintf (&str[0], format, it->first.c_str (), opt->type ().c_str (), opt->asString ().c_str (), opt->desc.c_str ());
+        sprintf (&str[0], format, it->first.c_str (), opt->type ().c_str (), 
+                 opt->asString ().c_str (), opt->desc.c_str ());
 	help += std::string (str);
       }   
 
@@ -743,7 +760,7 @@ std::string glGrib::OptionsParser::getHelp (const std::string & prefix, bool sho
 
 std::vector<glGrib::OptionsParser::name2option_t::iterator>
 glGrib::OptionsParser::filterOptions
-   (const std::string & prefix, bool show_hidden, 
+   (const std::string & prefix, bool show_hidden, bool sort,
     glGrib::OptionsParser * p1)
 {
   std::vector<name2option_t::iterator> listOpts;
@@ -752,10 +769,23 @@ glGrib::OptionsParser::filterOptions
 
   int len = prefix.size ();
 
-  for (name2option_t::iterator it0 = p0->name2option.begin (); 
-       it0 != p0->name2option.end (); it0++)
-    if (it0->first.substr (0, len) == prefix)
+  std::vector<std::string> list;
+
+  if (sort)
+    {
+      for (name2option_t::iterator it0 = p0->name2option.begin (); 
+           it0 != p0->name2option.end (); it0++)
+        list.push_back (it0->first);
+    }
+  else
+    {
+      list = p0->listoptions;
+    }
+
+  for (const auto & opt_name : list)
+    if (opt_name.substr (0, len) == prefix)
       {   
+        auto it0 = p0->name2option.find (opt_name);
 	glGrib::OptionsParserDetail::optionBase * opt0 = it0->second;
 
         if ((! show_hidden) && (opt0->hidden))
@@ -776,12 +806,12 @@ glGrib::OptionsParser::filterOptions
 }
 
 std::string glGrib::OptionsParser::getJSON 
-   (const std::string & prefix, bool show_hidden, 
+   (const std::string & prefix, bool show_hidden, bool sort,
     glGrib::OptionsParser * p1)
 {
   std::string json = "[";
 
-  for (auto & it : filterOptions (prefix, show_hidden, p1))
+  for (auto & it : filterOptions (prefix, show_hidden, sort, p1))
     {
       glGrib::OptionsParserDetail::optionBase * opt = it->second;
       const std::string json_opt = opt->asJSON ();

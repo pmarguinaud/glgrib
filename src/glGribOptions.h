@@ -285,11 +285,11 @@ public:
   void showHelpShort ();
   void showHelpLong ();
   void showJSON ();
-  std::string getHelp (const std::string &, bool = false);
-  std::string getJSON (const std::string &, bool = false, 
+  std::string getHelp (const std::string &, bool = false, bool = false);
+  std::string getJSON (const std::string &, bool = false, bool = false,
                        glGrib::OptionsParser * = nullptr);
   void getValue (std::vector<std::string> *, const std::string &, 
-                 bool = false, OptionsParser * = nullptr);
+                 bool = false, bool = false, OptionsParser * = nullptr);
   ~OptionsParser ()
   {
     for (name2option_t::iterator it = name2option.begin (); 
@@ -340,9 +340,11 @@ private:
   };
 
   name2option_t name2option;
+  std::vector<std::string> listoptions;
 
   std::vector<name2option_t::iterator> filterOptions
-     (const std::string &, bool = false, glGrib::OptionsParser * = nullptr);
+     (const std::string &, bool = false, bool = false, 
+      glGrib::OptionsParser * = nullptr);
 
   std::string getOptName (const std::string & path, const std::string & name)
   {
@@ -357,6 +359,7 @@ private:
     if (o != nullptr)
       option->hidden = o->hidden;
     name2option.insert (opt_name, option);
+    listoptions.push_back (opt_name);
   }
 
 #define DEF_APPLY(T,C) \
@@ -904,8 +907,8 @@ class OptionsGrid : public OptionsBase
 public:
   DEFINE
   {
-    DESC (visible.on,        Grid is visible);
     DESC (on,                Display grid);
+    DESC (visible.on,        Grid is visible);
     DESC (resolution,        Grid resolution);
     DESC (interval,          Interval between non dashed lines);
     DESC (dash_length,       Dash length in degrees);
@@ -946,11 +949,11 @@ public:
                            :  path (_path), scale (_scale), color (_color) {}
   DEFINE
   {
+    DESC (on,                 Enable);
     DESC (selector,           Shape selection);
     DESC (path,               Path to coastlines);
     DESC (subdivision.angle,  Angle max for subdivision);
     DESC (subdivision.on,     Enable subdivision);
-    DESC (on,                 Enable);
     DESC (scale,              Scale);
     DESC (color,              Land color);
     DESC_H (debug.on,         Debug);
@@ -1177,8 +1180,8 @@ class OptionsLight : public OptionsBase
 public:
   DEFINE
   {
-    DESC (date_from_grib.on, Calculate light position from GRIB date);
     DESC (on,                Enable light);
+    DESC (date_from_grib.on, Calculate light position from GRIB date);
     DESC (lon,               Light longitude);
     DESC (lat,               Light latitude);
     DESC (rotate.on,         Make sunlight move);

@@ -28,14 +28,14 @@ template <> std::string optionTmplList<std::string>         ::type () { return s
 template <> std::string optionTmplList<std::string>         ::asString () const 
 { 
   std::string str; 
-  for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); it++)
+  for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); ++it)
     str = str + " " + *it;
   return str;
 }
 template <> std::string optionTmplList<std::string>         ::asJSON () const 
 { 
   std::string json; 
-  for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); it++)
+  for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); ++it)
     {
       if (it != value->begin ())
         json += ",";
@@ -46,7 +46,7 @@ template <> std::string optionTmplList<std::string>         ::asJSON () const
 template <> std::string optionTmplList<std::string>        ::asOption () const 
 { 
   std::string str = name + " ";
-  for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); it++)
+  for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); ++it)
     str = str + " " + glGrib::OptionsUtil::escape (*it);
   return str;
 }
@@ -601,7 +601,7 @@ bool glGrib::Options::parse (int argc, const char * argv[],
   for (size_t i = 0; i < field.size (); i++)
     {
       std::string prefix = "--field[" +  std::to_string (i) + "]";
-      for (std::set<std::string>::iterator it = seen.begin (); it != seen.end (); it++)
+      for (std::set<std::string>::iterator it = seen.begin (); it != seen.end (); ++it)
         if (it->substr (0, prefix.length ()) == prefix)
           {
             std::string str = *it;
@@ -617,7 +617,7 @@ bool glGrib::Options::parse (int argc, const char * argv[],
 bool glGrib::OptionsParser::seenOption (const std::string & name) const
 {
   for (std::set<std::string>::const_iterator it = seen.begin (); 
-       it != seen.end (); it++)
+       it != seen.end (); ++it)
     {
       const std::string & n = *it;
       if (n.substr (0, name.length ()) == name)
@@ -667,7 +667,7 @@ std::string glGrib::OptionsParser::asOption (glGrib::OptionsParser & p2)
   std::string str;
 
   for (name2option_t::const_iterator it = name2option.begin (); 
-       it != name2option.end (); it++)
+       it != name2option.end (); ++it)
     {
 	glGrib::OptionsParserDetail::optionBase * opt1 = it->second;
 	glGrib::OptionsParserDetail::optionBase * opt2 = p2.name2option[it->first];
@@ -711,7 +711,7 @@ std::string glGrib::OptionsParser::getHelp
   int len = prefix.size ();
 
   for (name2option_t::iterator it = name2option.begin (); 
-       it != name2option.end (); it++)
+       it != name2option.end (); ++it)
     if (it->first.substr (0, len) == prefix)
       {   
         name_size = std::max (it->first.length (), name_size);
@@ -731,7 +731,7 @@ std::string glGrib::OptionsParser::getHelp
   if (sort)
     {
       for (name2option_t::iterator it = name2option.begin (); 
-           it != name2option.end (); it++)
+           it != name2option.end (); ++it)
         list.push_back (it->first);
     }
   else
@@ -774,7 +774,7 @@ glGrib::OptionsParser::filterOptions
   if (sort)
     {
       for (name2option_t::iterator it0 = p0->name2option.begin (); 
-           it0 != p0->name2option.end (); it0++)
+           it0 != p0->name2option.end (); ++it0)
         list.push_back (it0->first);
     }
   else

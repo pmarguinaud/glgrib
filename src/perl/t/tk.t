@@ -211,6 +211,60 @@ sub Populate
 
 1;
 
+package Tk::glGribPath;
+
+use Tk;
+use Tk::FileSelect;
+
+use base qw (Tk::glGrib_Entry);
+use strict;
+
+Construct Tk::Widget 'glGribPath';
+
+sub ClassInit 
+{
+  my ($class, $mw) = @_;
+  $class->SUPER::ClassInit ($mw);
+}
+
+sub Populate 
+{
+  my ($self, $args) = @_;
+  
+  $self->{glGrib} = delete $args->{glGrib};
+  
+  my $opts = $self->{glGrib}{opts};
+  my $name = $self->{glGrib}{name};
+
+  $self->SUPER::Populate ($args);
+  
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+
+  $frame->Label (-text => $opts->[2])->pack (-side => 'left');
+
+  $self->{glGrib}{entry} = 
+  $frame->Entry (-textvariable => \$self->{glGrib}{path})
+    ->pack (-side => 'right');
+
+  $frame->Button (-text => 'Browse', 
+                  -command => sub { $self->selectPath (); })
+    ->pack (-side => 'right');
+
+
+}
+
+sub selectPath
+{
+  my $self = shift;
+
+  my $select = $self->FileSelect (-directory => '.');
+
+  my $path = $select->Show ();
+
+  $self->{glGrib}{path} = $path;
+
+}
+
 package Tk::glGribINTEGER;
 
 use Tk;
@@ -441,7 +495,7 @@ use base qw (Tk::glGrib_Panel);
 
 package Tk::glGribField;
 
-use base qw (Tk::glGrib_Panel);
+use base qw (Tk::MainWindow);
 use strict;
 
 Construct Tk::Widget 'glGribField';
@@ -456,16 +510,74 @@ sub Populate
 {
   my ($self, $args) = @_;
   
-  $self->{glGrib} = $args->{glGrib};
+  $self->{glGrib} = delete $args->{glGrib};
+
+  $self->SUPER::Populate ($args);
 
   my $opts = $self->{glGrib}{opts};
   
-  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+  my $frame = $self->Frame ()->pack (-side => 'top');
 
-  $frame->Label (-text => 'FIELD')->pack ();
+  my @type = qw (scalar vector contour stream isofill);
+  $self->{glGrib}{type} = $type[0];
+  for (@type)
+    {
+      $frame->Radiobutton (-text => $_, -variable => \$self->{glGrib}{type}, -value => $_,
+                           -command => sub { $self->reDraw () })
+         ->pack (-side => 'left');
+    }
 
-  $self->SUPER::Populate ($args);
+  $frame = $self->Scrolled ('Frame')->pack (-fill => 'both', -expand => 1);
+  
+  my @opts = @$opts;
+
+  while (my ($key, $opt) = splice (@opts, 0, 2))
+    {
+      next if (grep { $_ eq $key } @type);
+      next if ($key eq 'type');
+      my $w = &TkglGrib::create ($frame, $key, $opt);
+      $w->pack (-side => 'top', -fill => 'both')
+        unless ($w->isa ('Tk::MainWindow'));
+    }
+
+  $self->{glGrib}{frame} = $frame->Frame ()->pack (-side => 'top', -fill => 'both', -expand => 1);
+
+  $self->reDraw ();
+
+  $self->Button (-relief => 'raised', -text => 'Apply', 
+                 -command => sub { })
+  ->pack (-side => 'left', -fill => 'both');
+  $self->Button (-relief => 'raised', -text => 'Close', 
+                 -command => sub { $self->destroy (); })
+  ->pack (-side => 'right', -fill => 'both');
+
 }
+
+sub reDraw
+{
+  my $self = shift;
+
+  my $opts = $self->{glGrib}{opts};
+  my $frame = $self->{glGrib}{frame};
+
+  for my $w ($frame->packSlaves ())
+    {
+      $w->destroy ();
+    }
+
+  my @opts = @$opts;
+
+  while (my ($key, $opt) = splice (@opts, 0, 2))
+    {
+      next if ($self->{glGrib}{type} ne $key);
+      my $w = &TkglGrib::create ($frame, $key, $opt);
+      $w->pack (-side => 'top', -fill => 'both')
+        unless ($w->isa ('Tk::MainWindow'));
+    }
+
+}
+
+
 
 1;
 
@@ -539,7 +651,7 @@ sub createPanel
 
   my $w = &TkglGrib::create ($self, $name, $opts, 'glGrib_Panel');
 
-  die unless ($w->isa ('Tk::glGrib_Panel'));
+# die unless ($w->isa ('Tk::glGrib_Panel'));
 
   $self->{glGrib}{panels}{$name} = $w;
 }

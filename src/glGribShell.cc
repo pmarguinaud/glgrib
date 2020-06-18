@@ -79,7 +79,7 @@ void glGrib::Shell::do_set (const std::vector<std::string> & args, glGrib::Windo
         {
           // Choose longest (most specialized) option available
           std::string specialized;
-          for (hof_t::const_iterator it = begin (); it != end (); it++) 
+          for (hof_t::const_iterator it = begin (); it != end (); ++it) 
             {
               const std::string & name = it->first;
               if ((name == opt_name.substr (0, name.size ())) && (name.size () > specialized.size ()))
@@ -102,8 +102,8 @@ void glGrib::Shell::do_set (const std::vector<std::string> & args, glGrib::Windo
   
               tt = 0;
   
-              for (opts_set_it it1 = opts_set.begin (); it1 != opts_set.end (); it1++)
-              for (opts_set_it it2 = opts_set.begin (); it2 != opts_set.end (); it2++)
+              for (opts_set_it it1 = opts_set.begin (); it1 != opts_set.end (); ++it1)
+              for (opts_set_it it2 = opts_set.begin (); it2 != opts_set.end (); ++it2)
                 {
                   const std::string & n1 = *it1, & n2 = *it2;
                   if (n1 == n2)
@@ -125,7 +125,7 @@ void glGrib::Shell::do_set (const std::vector<std::string> & args, glGrib::Windo
                 break;
             }
   
-          for (opts_set_it it = opts_set.begin (); it != opts_set.end (); it++)
+          for (opts_set_it it = opts_set.begin (); it != opts_set.end (); ++it)
             {
               hof_t::iterator it_hof = find (*it);
               const sof_t & sof = it_hof->second;
@@ -136,7 +136,7 @@ void glGrib::Shell::do_set (const std::vector<std::string> & args, glGrib::Windo
           if (opts_not.size () > 0)
             {
               std::cout << "Warning: the following options where not applied : " << std::endl;
-              for (opts_set_it it = opts_not.begin (); it != opts_not.end (); it++)
+              for (opts_set_it it = opts_not.begin (); it != opts_not.end (); ++it)
                 std::cout << "   " << *it << std::endl;
             }
   
@@ -187,7 +187,7 @@ do { \
           
       std::set<std::string> seen = p.getSeenOptions ();
     
-      for (std::set<std::string>::iterator it = seen.begin (); it != seen.end (); it++)
+      for (std::set<std::string>::iterator it = seen.begin (); it != seen.end (); ++it)
         hof.set (*it);
     
       hof.run ();

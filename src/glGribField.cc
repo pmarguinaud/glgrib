@@ -38,7 +38,7 @@ int hiloCount (glGrib::const_GeometryPtr geometry, glGrib::BufferPtr<float> data
 
       s2->clear ();
 
-      for (std::set<int>::iterator it = s1->begin (); it != s1->end (); it++)
+      for (std::set<int>::iterator it = s1->begin (); it != s1->end (); ++it)
         {
           int jglo1 = *it;
           geometry->getPointNeighbours (jglo1, &neigh);
@@ -62,7 +62,7 @@ int hiloCount (glGrib::const_GeometryPtr geometry, glGrib::BufferPtr<float> data
         }
 
 
-      for (std::set<int>::iterator it = s2->begin (); it != s2->end (); it++)
+      for (std::set<int>::iterator it = s2->begin (); it != s2->end (); ++it)
         seen.insert (*it);
 
       std::swap (s1, s2);

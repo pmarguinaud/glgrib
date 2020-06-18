@@ -161,7 +161,7 @@ namespace OptionsParserDetail
     std::string asOption () const 
     { 
       std::string str = name;
-      for (typename std::vector<T>::iterator it = value->begin(); it != value->end (); it++)
+      for (typename std::vector<T>::iterator it = value->begin(); it != value->end (); ++it)
         {
           std::ostringstream ss;
           ss << (*it) << " ";
@@ -172,14 +172,14 @@ namespace OptionsParserDetail
     std::string asString () const
     {
       std::ostringstream ss;
-      for (typename std::vector<T>::iterator it = value->begin(); it != value->end (); it++)
+      for (typename std::vector<T>::iterator it = value->begin(); it != value->end (); ++it)
         ss << (*it) << " ";
       return std::string (ss.str ());
     }
     std::string asJSON () const
     {
       std::string json;
-      for (typename std::vector<T>::iterator it = value->begin(); it != value->end (); it++)
+      for (typename std::vector<T>::iterator it = value->begin(); it != value->end (); ++it)
         {
           std::ostringstream ss;
           ss << (*it);
@@ -293,7 +293,7 @@ public:
   ~OptionsParser ()
   {
     for (name2option_t::iterator it = name2option.begin (); 
-         it != name2option.end (); it++)
+         it != name2option.end (); ++it)
       delete it->second;
   }
   
@@ -301,7 +301,7 @@ public:
   void getOptions (std::vector<std::string> * vs)
   {
     for (name2option_t::iterator it = name2option.begin (); 
-         it != name2option.end (); it++)
+         it != name2option.end (); ++it)
       vs->push_back (it->first);
   }
 

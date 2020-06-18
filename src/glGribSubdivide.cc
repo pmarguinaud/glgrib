@@ -282,7 +282,7 @@ void subdivideRing1 (std::vector<glm::vec3> & xyz,
 
   int ixyz = 0;
 
-  for (edge_idx_t::iterator it = eidx.begin (); it != eidx.end (); it++)
+  for (edge_idx_t::iterator it = eidx.begin (); it != eidx.end (); ++it)
     {
       edge_t & e = it->second;
       e.rankb = xyz.size () + ixyz;
@@ -293,7 +293,7 @@ void subdivideRing1 (std::vector<glm::vec3> & xyz,
   xyz.resize (xyz.size () + ixyz);
 
   // Compute coordinates of new points
-  for (edge_idx_t::iterator it = eidx.begin (); it != eidx.end (); it++)
+  for (edge_idx_t::iterator it = eidx.begin (); it != eidx.end (); ++it)
     {
       edge_t & e = it->second;
       int i = it->first.first, j = it->first.second;

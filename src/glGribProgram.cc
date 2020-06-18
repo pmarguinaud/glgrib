@@ -84,7 +84,7 @@ void glGrib::Program::use () const
     {
       glUseProgram (programID);
       active = true;
-      for (name2prog_t::iterator it = name2prog.begin (); it != name2prog.end (); it++)
+      for (name2prog_t::iterator it = name2prog.begin (); it != name2prog.end (); ++it)
         if (it->second.programID != programID)
           it->second.active = false;
     }

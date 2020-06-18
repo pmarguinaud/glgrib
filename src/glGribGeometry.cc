@@ -81,7 +81,7 @@ found:
 
   // Remove geometries with a single reference (they only belong to the cache)
 again:
-  for (it = cache.begin (); it != cache.end (); it++)
+  for (it = cache.begin (); it != cache.end (); ++it)
     if (it->second.use_count () == 1)
       {
         cache.erase (it->second->md5 ());

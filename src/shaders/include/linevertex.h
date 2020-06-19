@@ -53,7 +53,9 @@ void getLineVertex (vec2 vertexLonLat0, vec2 vertexLonLat1, vec2 vertexLonLat2,
 
   if (calpha)
     {
-      alpha = min (min (1.0f, length (vertexPos0)), min (1.0f, length (vertexPos1)));
+      const float threshold = 0.95;
+      alpha = min (min (threshold, length (vertexPos0)), 
+                   min (threshold, length (vertexPos1))) / threshold;
     }
 
   if (proj == XYZ)

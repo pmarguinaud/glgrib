@@ -114,13 +114,6 @@ void glGrib::FieldContour::isoline_t::setup (const glGrib::OptionsField & opts,
 {
   d.level = _level;
 
-  FILE * fp = fopen ("lonlat.txt", "w");
-  for (int i = 0; i < data.lonlat.size () / 2; i++)
-    fprintf (fp, " %12.2f %12.2f %12.2e\n", rad2deg * data.lonlat[2*i+0], rad2deg * data.lonlat[2*i+1], data.length[i]);
-  fclose (fp);
-  exit (0);
-    
-
   d.vertexbuffer   = glGrib::OpenGLBufferPtr<float> (data.lonlat);
   if (opts.geometry.height.on)
     d.heightbuffer   = glGrib::OpenGLBufferPtr<float> (data.height);

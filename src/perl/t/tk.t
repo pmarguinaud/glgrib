@@ -98,40 +98,6 @@ sub create
   return $w;
 }
 
-package Tk::glGribContour;
-
-use Tk;
-
-use base qw (Tk::Frame);
-use strict;
-
-Construct Tk::Widget 'glGribContour';
-
-sub ClassInit 
-{
-  my ($class, $mw) = @_;
-  $class->SUPER::ClassInit ($mw);
-}
-
-sub Populate 
-{
-  my ($self, $args) = @_;
-  
-  $self->{glGrib} = delete $args->{glGrib};
-  
-  my $opts = $self->{glGrib}{opts};
-
-  $self->SUPER::Populate ($args);
-  
-  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
-
-  $frame->Label (-text => 'CONTOUR')->pack ();
-
-}
-
-1;
-
-
 package Tk::glGrib_Frame;
 
 use Tk;
@@ -406,7 +372,10 @@ sub Populate
 
   $self->SUPER::Populate ($args);
   
-  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+  my $frame = $self->Scrolled ('Frame', -scrollbars => 'e', -sticky => 'nswe')->pack (-expand => 1, -fill => 'both');
+  $frame = $frame->Frame ()->pack (-expand => 1, -fill => 'both', -side => 'top');
+# my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+
 
   $self->{glGrib}{frame} = $frame;
 
@@ -514,70 +483,65 @@ sub Populate
 
   $self->SUPER::Populate ($args);
 
+  my @type = qw (scalar vector contour stream isofill);
+
   my $opts = $self->{glGrib}{opts};
   
-  my $frame = $self->Frame ()->pack (-side => 'top');
+  my $n = $self->{glGrib}{notebook} = $self->NoteBook ()->pack (-expand => 1, -fill => 'both', -side => 'top');
+  my $g = $self->{glGrib}{general} = $n->add ('general', -label => 'General');
+  $g = $g->Scrolled ('Frame', -scrollbars => 'e', -sticky => 'nswe')->pack (-side => 'top', -expand => 1, -fill => 'both');
 
-  my @type = qw (scalar vector contour stream isofill);
-  $self->{glGrib}{type} = $type[0];
-  for (@type)
-    {
-      $frame->Radiobutton (-text => $_, -variable => \$self->{glGrib}{type}, -value => $_,
-                           -command => sub { $self->reDraw () })
-         ->pack (-side => 'left');
-    }
-
-  $frame = $self->Scrolled ('Frame')->pack (-fill => 'both', -expand => 1);
-  
   my @opts = @$opts;
+
+  my @sep;
 
   while (my ($key, $opt) = splice (@opts, 0, 2))
     {
       next if (grep { $_ eq $key } @type);
       next if ($key eq 'type');
-      my $w = &TkglGrib::create ($frame, $key, $opt);
+      my $w = &TkglGrib::create ($g, $key, $opt);
       $w->pack (-side => 'top', -fill => 'both')
         unless ($w->isa ('Tk::MainWindow'));
+      push @sep,
+      $w->Separator ()->pack (-side => 'top', -fill => 'x');
     }
 
-  $self->{glGrib}{frame} = $frame->Frame ()->pack (-side => 'top', -fill => 'both', -expand => 1);
+  for my $type (@type)
+    {
+      $self->{glGrib}{$type} =
+      my $p = $n->add ($type, -label => ucfirst ($type));
+ 
+      my $opt;
+  
+      my @opts = @$opts;
 
-  $self->reDraw ();
+      while ((my $key, $opt) = splice (@opts, 0, 2))
+        {
+          last if ($key eq $type);
+        }
 
+      my $w = &TkglGrib::create ($p, $type, $opt);
+      $w->pack (-side => 'top', -fill => 'both')
+        unless ($w->isa ('Tk::MainWindow'));
+
+    }
+  
   $self->Button (-relief => 'raised', -text => 'Apply', 
-                 -command => sub { })
+                 -command => sub { $self->Apply () })
   ->pack (-side => 'left', -fill => 'both');
   $self->Button (-relief => 'raised', -text => 'Close', 
                  -command => sub { $self->destroy (); })
   ->pack (-side => 'right', -fill => 'both');
 
+  $self->ConfigSpecs (-background => [[@sep], qw/background Background black/]);
+
 }
 
-sub reDraw
+sub Apply
 {
   my $self = shift;
-
-  my $opts = $self->{glGrib}{opts};
-  my $frame = $self->{glGrib}{frame};
-
-  for my $w ($frame->packSlaves ())
-    {
-      $w->destroy ();
-    }
-
-  my @opts = @$opts;
-
-  while (my ($key, $opt) = splice (@opts, 0, 2))
-    {
-      next if ($self->{glGrib}{type} ne $key);
-      my $w = &TkglGrib::create ($frame, $key, $opt);
-      $w->pack (-side => 'top', -fill => 'both')
-        unless ($w->isa ('Tk::MainWindow'));
-    }
-
+  print $self->{glGrib}{notebook}->raised (), "\n";
 }
-
-
 
 1;
 
@@ -701,6 +665,13 @@ sub rotate
 sub move
 {
   'glGrib'->set (qw (--window.position.x 0 --window.position.y 0));
+}
+
+sub Tk::Separator
+{
+  my ($self, %args) = @_;
+  my $direction = delete $args{'-orient'} // 'horizontal';
+  $self->Frame (-bg => 'black', $direction eq 'vertical' ? '-width' : '-height' => 2, %args);
 }
 
 sub enter

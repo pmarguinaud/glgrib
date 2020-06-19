@@ -60,7 +60,7 @@ sub isMainWindow
 
 sub create
 {
-  my ($win, $name, $opts, $default) = @_;
+  my ($win, $name, $opts, $default, @args) = @_;
 
 
   my $class = 'glGrib' . ucfirst ($name);
@@ -84,8 +84,8 @@ sub create
     {
       return &isMainWindow ("Tk::$class")
            ? "Tk::$class"->new (glGrib => {name => $name, opts => $opts}, 
-                                -title => ucfirst ($name))
-           : $win->$class (glGrib => {name => $name, opts => $opts});
+                                -title => ucfirst ($name), @args)
+           : $win->$class (glGrib => {name => $name, opts => $opts}, @args);
     }
 
   
@@ -365,84 +365,33 @@ sub ClassInit
 sub Populate 
 {
   my ($self, $args) = @_;
-  
+
   $self->{glGrib} = delete $args->{glGrib};
   
   my $opts = $self->{glGrib}{opts};
 
   $self->SUPER::Populate ($args);
+
+  my $v = $self->Frame ()->pack (-side => 'left', -fill => 'y');
   
   my $frame = $self->Scrolled ('Frame', -scrollbars => 'e', -sticky => 'nswe')->pack (-expand => 1, -fill => 'both');
   $frame = $frame->Frame ()->pack (-expand => 1, -fill => 'both', -side => 'top');
-# my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
 
-
-  $self->{glGrib}{frame} = $frame;
-
+  my (@sep, $on);
   if (@$opts && ($opts->[0] eq 'on'))
     {
-      $self->drawDisabled ();
-    }
-  else
-    {
-      $self->drawEnabled ();
-    }
-  
-  $self->Button (-relief => 'raised', -text => 'Apply', 
-                 -command => sub { })
-  ->pack (-side => 'left', -fill => 'both');
-  $self->Button (-relief => 'raised', -text => 'Close', 
-                 -command => sub { $self->destroy (); })
-  ->pack (-side => 'right', -fill => 'both');
-}
-
-sub drawEnabled
-{
-  my $self = shift;
-  $self->clear ();
-
-  $self->drawOptions ($self->{glGrib}{opts});
-
-}
-
-sub drawDisabled
-{
-  my $self = shift;
-  $self->clear ();
-
-  $self->drawOptions ($self->{glGrib}{opts});
-}
-
-sub clear
-{
-  my $self = shift;
-
-  my $frame = $self->{glGrib}{frame};
-  for my $w ($frame->packSlaves ())
-    {
-      $w->destroy ();
-    }
-}
-
-sub drawOptions
-{
-  my ($self, $opts) = @_;
-
-  my $frame = $self->{glGrib}{frame};
-
-  if (@$opts && ($opts->[0] eq 'on'))
-    {
-      my $w = &TkglGrib::create ($frame, 'on', $opts->[1]);
+      $on = my $w = &TkglGrib::create ($frame, 'on', $opts->[1]);
       $w->setVariable (\$self->{glGrib}{on});
       $w->setCommand (sub { $self->{glGrib}{on} 
-                          ? $self->drawEnabled () 
-                          : $self->drawDisabled (); });
+                          ? $self->Enable () 
+                          : $self->Disable (); });
       $w->pack (-side => 'top', -fill => 'both', -side => 'top')
         unless ($w->isa ('Tk::MainWindow'));
-
-      return unless ($self->{glGrib}{on});
+      push @sep,
+      $w->Separator ()->pack (-side => 'top', -fill => 'x');
     }
 
+  $frame = $self->{glGrib}{frame} = $frame->Frame ();
 
   my @opts = @$opts;
 
@@ -452,8 +401,41 @@ sub drawOptions
       my $w = &TkglGrib::create ($frame, $key, $opt);
       $w->pack (-side => 'top', -fill => 'both', -side => 'top')
         unless ($w->isa ('Tk::MainWindow'));
+      push @sep,
+      $w->Separator ()->pack (-side => 'top', -fill => 'x');
     }
 
+  $self->Enable () if ($self->{glGrib}{on});
+
+  my $b = 
+  $self->Button (-relief => 'raised', -text => 'Apply', 
+                 -command => sub { })
+  ->pack (-side => 'left', -fill => 'both');
+  $self->Button (-relief => 'raised', -text => 'Close', 
+                 -command => sub { $self->destroy (); })
+  ->pack (-side => 'right', -fill => 'both');
+
+  my $h = $self->Frame ()->pack (-side => 'top', -fill => 'x');
+
+  $self->ConfigSpecs
+  (
+    -background => [[@sep], qw/background Background black/],
+    -width  => [[$h], qw//],
+    -height => [[$v], qw//],
+  );
+
+}
+
+sub Enable
+{
+  my $self = shift;
+  $self->{glGrib}{frame}->pack (-expand => 1, -fill => 'both', -side => 'top');
+}
+
+sub Disable
+{
+  my $self = shift;
+  $self->{glGrib}{frame}->packForget ();
 }
 
 1;
@@ -533,7 +515,10 @@ sub Populate
                  -command => sub { $self->destroy (); })
   ->pack (-side => 'right', -fill => 'both');
 
-  $self->ConfigSpecs (-background => [[@sep], qw/background Background black/]);
+  $self->ConfigSpecs 
+  (
+    -background => [[@sep], qw/background Background black/]
+  );
 
 }
 
@@ -589,9 +574,11 @@ sub Populate
   ->pack (-side => 'top', -fill => 'x');
 
 
-#   $self->Advertise  ( 'optionmenu' =>  $o  );
-#   $self->ConfigSpecs( 'DEFAULT'    => [$b] );
-#   $self->Delegates  ( 'DEFAULT'    =>  $b  );
+  $self->ConfigSpecs
+  (
+    -width => [[@b[-1]], qw//],
+  );
+
 
 }
 
@@ -613,7 +600,10 @@ sub createPanel
         }
     }
 
-  my $w = &TkglGrib::create ($self, $name, $opts, 'glGrib_Panel');
+  my $w = &TkglGrib::create 
+     ($self, $name, $opts, 
+     'glGrib_Panel', -width => 400, 
+     -height => 600);
 
 # die unless ($w->isa ('Tk::glGrib_Panel'));
 

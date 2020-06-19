@@ -15,6 +15,11 @@ uniform bool dash;
 
 void main ()
 {
+
+  color = vec4 (1.0, 1.0, 1.0, 1.0);
+
+  return;
+
   if (contour_vs.alpha < 1.)
     discard;
   if(! dash)

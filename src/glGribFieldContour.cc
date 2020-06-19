@@ -116,7 +116,7 @@ void glGrib::FieldContour::isoline_t::setup (const glGrib::OptionsField & opts,
 
   FILE * fp = fopen ("lonlat.txt", "w");
   for (int i = 0; i < data.lonlat.size () / 2; i++)
-    fprintf (fp, " %12.2f %12.2f\n", rad2deg * data.lonlat[2*i+0], rad2deg * data.lonlat[2*i+1]);
+    fprintf (fp, " %12.2f %12.2f %12.2e\n", rad2deg * data.lonlat[2*i+0], rad2deg * data.lonlat[2*i+1], data.length[i]);
   fclose (fp);
   exit (0);
     

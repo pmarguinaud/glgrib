@@ -581,11 +581,11 @@ class OptionsVector : public OptionsBase
 public:
   DEFINE
   {
-    DESC (arrow.on,        Show arrows);                
     DESC (norm.on,         Show norm field);            
     DESC (arrow.color,     Color for arrows);
     DESC (density,         Vector density);
     DESC (scale,           Vector scale);
+    DESC (arrow.on,        Show arrows);                
     DESC (arrow.head_size, Vector head size);
     DESC (arrow.kind,      Arrow kind);
     DESC (arrow.fill.on,   Fill arrow);
@@ -752,8 +752,8 @@ class OptionsMpiview : public OptionsBase
 public:
   DEFINE
   { 
-    DESC (path,  Path to MPI distribution field);
     DESC (on,    Enable MPI view);
+    DESC (path,  Path to MPI distribution field);
     DESC (scale, Displacement scale);
   }
 
@@ -1569,8 +1569,8 @@ public:
   {
     DESC (on, Display cities);
     INCLUDE (points);
-    INCLUDE (labels.font);
     DESC (labels.on, Enable city names display);
+    INCLUDE (labels.font);
   }
   bool on = false;
   OptionsPoints points;

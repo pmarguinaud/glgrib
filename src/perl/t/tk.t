@@ -1,3 +1,7 @@
+
+use FindBin qw ($Bin);
+use lib $Bin;
+
 package TkglGrib;
 
 use strict;
@@ -102,18 +106,10 @@ package Tk::glGrib_Frame;
 
 use Tk;
 
-use base qw (Tk::Frame);
+use tkbase qw (Tk::Frame);
 use strict;
 
-Construct Tk::Widget 'glGrib_Frame';
-
-sub ClassInit 
-{
-  my ($class, $mw) = @_;
-  $class->SUPER::ClassInit ($mw);
-}
-
-sub Populate 
+sub populate 
 {
   my ($self, $args) = @_;
   
@@ -124,20 +120,53 @@ sub Populate
 
   $self->SUPER::Populate ($args);
   
-  if (scalar (@$opts) == 1)
-    {
-      my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
-      $frame->Label (-text => $name)->pack (-side => 'top');
-    }
+
+  my ($on, $has_on);
 
   my @opts = @$opts;
 
-  while (my ($key, $opt) = splice (@opts, 0, 2))
+  if (@opts && ($opts[0] eq 'on'))
     {
-      my $w = &TkglGrib::create ($self, $key, $opt);
-      $w->pack (-side => 'top', -fill => 'both', -side => 'top')
-        unless ($w->isa ('Tk::MainWindow'));
+      $has_on = 1;
+      $on = my $w = &TkglGrib::create ($self, 'on', $opts[1]);
+      splice (@opts, 0, 2);
+      $w->setVariable (\$self->{glGrib}{on});
+
+      if (@opts)
+        {
+          $w->setCommand (sub { $self->{glGrib}{on} 
+                              ? $self->Enable () 
+                              : $self->Disable (); }); 
+        }
+      $w->pack (-side => 'top', -fill => 'both', -side => 'top');
     }
+
+  
+  if (@opts)
+    {
+      my $frame = $self->{glGrib}{frame} = $self->Frame ();
+     
+      while (my ($key, $opt) = splice (@opts, 0, 2))
+        {
+          next if ($key eq 'on');
+          my $w = &TkglGrib::create ($frame, $key, $opt);
+          $w->pack (-side => 'top', -fill => 'both', -side => 'top');
+        }
+     
+      $self->Enable () if ($self->{glGrib}{on} || (! $has_on));
+    }
+}
+
+sub Enable
+{
+  my $self = shift;
+  $self->{glGrib}{frame}->pack (-expand => 1, -fill => 'both', -side => 'top');
+}
+
+sub Disable
+{
+  my $self = shift;
+  $self->{glGrib}{frame}->packForget ();
 }
 
 1;
@@ -146,28 +175,19 @@ package Tk::glGrib_Entry;
 
 use Tk;
 
-use base qw (Tk::Frame);
+use tkbase qw (Tk::Frame);
 use strict;
 
-Construct Tk::Widget 'glGrib_Entry';
-
-sub ClassInit 
-{
-  my ($class, $mw) = @_;
-  $class->SUPER::ClassInit ($mw);
-}
-
-sub Populate 
+sub populate 
 {
   my ($self, $args) = @_;
   
   $self->{glGrib} = delete $args->{glGrib};
   
+
   my $opts = $self->{glGrib}{opts};
   my $name = $self->{glGrib}{name};
 
-  $self->SUPER::Populate ($args);
-  
   my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
 
   $frame->Label (-text => $opts->[2])->pack (-side => 'left');
@@ -182,18 +202,10 @@ package Tk::glGribPath;
 use Tk;
 use Tk::FileSelect;
 
-use base qw (Tk::glGrib_Entry);
+use tkbase qw (Tk::Frame);
 use strict;
 
-Construct Tk::Widget 'glGribPath';
-
-sub ClassInit 
-{
-  my ($class, $mw) = @_;
-  $class->SUPER::ClassInit ($mw);
-}
-
-sub Populate 
+sub populate 
 {
   my ($self, $args) = @_;
   
@@ -202,8 +214,6 @@ sub Populate
   my $opts = $self->{glGrib}{opts};
   my $name = $self->{glGrib}{name};
 
-  $self->SUPER::Populate ($args);
-  
   my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
 
   $frame->Label (-text => $opts->[2])->pack (-side => 'left');
@@ -233,83 +243,40 @@ sub selectPath
 
 package Tk::glGribINTEGER;
 
-use Tk;
-
-use base qw (Tk::glGrib_Entry);
-use strict;
-
-Construct Tk::Widget 'glGribINTEGER';
+use tkbase qw (Tk::glGrib_Entry);
 
 package Tk::glGribSTRING;
 
-use Tk;
-
-use base qw (Tk::glGrib_Entry);
-use strict;
-
-Construct Tk::Widget 'glGribSTRING';
+use tkbase qw (Tk::glGrib_Entry);
 
 package Tk::glGribLISTOFSTRINGS;
 
-use Tk;
-
-use base qw (Tk::glGrib_Entry);
-use strict;
-
-Construct Tk::Widget 'glGribLISTOFSTRINGS';
+use tkbase qw (Tk::glGrib_Entry);
 
 package Tk::glGribLISTOFCOLORS;
 
-use Tk;
-
-use base qw (Tk::glGrib_Entry);
-use strict;
-
-Construct Tk::Widget 'glGribLISTOFCOLORS';
+use tkbase qw (Tk::glGrib_Entry);
 
 package Tk::glGribLISTOFFLOATS;
 
-use Tk;
-
-use base qw (Tk::glGrib_Entry);
-use strict;
-
-Construct Tk::Widget 'glGribLISTOFFLOATS';
+use tkbase qw (Tk::glGrib_Entry);
 
 package Tk::glGribFLOAT;
 
-use Tk;
-
-use base qw (Tk::glGrib_Entry);
-use strict;
-
-Construct Tk::Widget 'glGribFLOAT';
+use tkbase qw (Tk::glGrib_Entry);
 
 package Tk::glGribCOLOR;
 
-use Tk;
-
-use base qw (Tk::glGrib_Entry);
-use strict;
-
-Construct Tk::Widget 'glGribCOLOR';
+use tkbase qw (Tk::glGrib_Entry);
 
 package Tk::glGribBOOLEAN;
 
 use Tk;
 
-use base qw (Tk::Frame);
+use tkbase qw (Tk::Frame);
 use strict;
 
-Construct Tk::Widget 'glGribBOOLEAN';
-
-sub ClassInit 
-{
-  my ($class, $mw) = @_;
-  $class->SUPER::ClassInit ($mw);
-}
-
-sub Populate 
+sub populate 
 {
   my ($self, $args) = @_;
   
@@ -318,8 +285,6 @@ sub Populate
   my $opts = $self->{glGrib}{opts};
   my $name = $self->{glGrib}{name};
 
-  $self->SUPER::Populate ($args);
-  
   my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
 
   $frame->Label (-text => $opts->[2])->pack (-side => 'left');
@@ -351,18 +316,10 @@ package Tk::glGrib_Panel;
 
 use Tk;
 
-use base qw (Tk::MainWindow);
+use tkbase qw (Tk::MainWindow);
 use strict;
 
-Construct Tk::Widget 'glGrib_Panel';
-
-sub ClassInit 
-{
-  my ($class, $mw) = @_;
-  $class->SUPER::ClassInit ($mw);
-}
-
-sub Populate 
+sub populate 
 {
   my ($self, $args) = @_;
 
@@ -370,24 +327,19 @@ sub Populate
   
   my $opts = $self->{glGrib}{opts};
 
-  $self->SUPER::Populate ($args);
-
-  my $v = $self->Frame ()->pack (-side => 'left', -fill => 'y');
-  
-  my $frame = $self->Scrolled ('Frame', -scrollbars => 'e', -sticky => 'nswe')->pack (-expand => 1, -fill => 'both');
+  my $frame = $self->Scrolled ('Frame', -width => 400, -height => 400, -scrollbars => 'e', -sticky => 'nswe')->pack (-expand => 1, -fill => 'both');
   $frame = $frame->Frame ()->pack (-expand => 1, -fill => 'both', -side => 'top');
 
-  my (@sep, $on);
+  my (@sep, $on, $has_on);
   if (@$opts && ($opts->[0] eq 'on'))
     {
+      $has_on = 1;
       $on = my $w = &TkglGrib::create ($frame, 'on', $opts->[1]);
       $w->setVariable (\$self->{glGrib}{on});
       $w->setCommand (sub { $self->{glGrib}{on} 
                           ? $self->Enable () 
                           : $self->Disable (); });
-      $w->pack (-side => 'top', -fill => 'both', -side => 'top')
-        unless ($w->isa ('Tk::MainWindow'));
-      push @sep,
+      $w->pack (-side => 'top', -fill => 'both', -side => 'top');
       $w->Separator ()->pack (-side => 'top', -fill => 'x');
     }
 
@@ -399,13 +351,11 @@ sub Populate
     {
       next if ($key eq 'on');
       my $w = &TkglGrib::create ($frame, $key, $opt);
-      $w->pack (-side => 'top', -fill => 'both', -side => 'top')
-        unless ($w->isa ('Tk::MainWindow'));
-      push @sep,
+      $w->pack (-side => 'top', -fill => 'both', -side => 'top');
       $w->Separator ()->pack (-side => 'top', -fill => 'x');
     }
 
-  $self->Enable () if ($self->{glGrib}{on});
+  $self->Enable () if ($self->{glGrib}{on} || (! $has_on));
 
   my $b = 
   $self->Button (-relief => 'raised', -text => 'Apply', 
@@ -414,15 +364,6 @@ sub Populate
   $self->Button (-relief => 'raised', -text => 'Close', 
                  -command => sub { $self->destroy (); })
   ->pack (-side => 'right', -fill => 'both');
-
-  my $h = $self->Frame ()->pack (-side => 'top', -fill => 'x');
-
-  $self->ConfigSpecs
-  (
-    -background => [[@sep], qw/background Background black/],
-    -width  => [[$h], qw//],
-    -height => [[$v], qw//],
-  );
 
 }
 
@@ -442,28 +383,18 @@ sub Disable
 
 package Tk::glGribGrid;
 
-use base qw (Tk::glGrib_Panel);
+use tkbase qw (Tk::glGrib_Panel);
 
 package Tk::glGribField;
 
-use base qw (Tk::MainWindow);
+use tkbase qw (Tk::MainWindow);
 use strict;
 
-Construct Tk::Widget 'glGribField';
-
-sub ClassInit 
-{
-  my ($class, $mw) = @_;
-  $class->SUPER::ClassInit ($mw);
-}
-
-sub Populate 
+sub populate 
 {
   my ($self, $args) = @_;
   
   $self->{glGrib} = delete $args->{glGrib};
-
-  $self->SUPER::Populate ($args);
 
   my @type = qw (scalar vector contour stream isofill);
 
@@ -515,11 +446,6 @@ sub Populate
                  -command => sub { $self->destroy (); })
   ->pack (-side => 'right', -fill => 'both');
 
-  $self->ConfigSpecs 
-  (
-    -background => [[@sep], qw/background Background black/]
-  );
-
 }
 
 sub Apply
@@ -533,23 +459,13 @@ sub Apply
 package Tk::glGribMainWindow;
 
 use Tk;
-use base qw (Tk::MainWindow);
+use tkbase qw (Tk::MainWindow);
 use strict;
 
-Construct Tk::Widget 'glGribMainWindow';
-
-sub ClassInit 
-{
-  my ($class, $mw) = @_;
-  $class->SUPER::ClassInit ($mw);
-}
-
-sub Populate 
+sub populate 
 {
   my ($self, $args) = @_;
-  
-  $self->SUPER::Populate ($args);
-  
+
   $self->{glGrib}{base} = my $base = &TkglGrib::base ('--');
 
   $self->{glGrib}{panels} = {};
@@ -602,8 +518,7 @@ sub createPanel
 
   my $w = &TkglGrib::create 
      ($self, $name, $opts, 
-     'glGrib_Panel', -width => 400, 
-     -height => 600);
+     'glGrib_Panel');
 
 # die unless ($w->isa ('Tk::glGrib_Panel'));
 

@@ -1,7 +1,6 @@
 package tkbase;
 
 use strict;
-use Data::Dumper;
 
 sub import
 {

@@ -84,22 +84,10 @@ sub create
 
   $class ||= 'glGrib_Frame';
 
-  if ($class)
-    {
-      return &isMainWindow ("Tk::$class")
-           ? "Tk::$class"->new (glGrib => {name => $name, opts => $opts}, 
-                                -title => ucfirst ($name), @args)
-           : $win->$class (glGrib => {name => $name, opts => $opts}, @args);
-    }
-
-  
-
-  my $w = $win->Frame (-label => $name);
-
-  
-
-
-  return $w;
+  return &isMainWindow ("Tk::$class")
+       ? "Tk::$class"->new (glGrib => {name => $name, opts => $opts}, 
+                            -title => ucfirst ($name), @args)
+       : $win->$class (glGrib => {name => $name, opts => $opts}, @args);
 }
 
 package Tk::glGrib_Frame;
@@ -114,12 +102,10 @@ sub populate
   my ($self, $args) = @_;
   
   $self->{glGrib} = delete $args->{glGrib};
+
   
   my $opts = $self->{glGrib}{opts};
   my $name = $self->{glGrib}{name};
-
-  $self->SUPER::Populate ($args);
-  
 
   my ($on, $has_on);
 
@@ -154,7 +140,9 @@ sub populate
         }
      
       $self->Enable () if ($self->{glGrib}{on} || (! $has_on));
+
     }
+
 }
 
 sub Enable
@@ -216,28 +204,80 @@ sub populate
 
   my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
 
-  $frame->Label (-text => $opts->[2])->pack (-side => 'left');
+  $frame->Label (-text => $opts->[2])->pack (-side => 'top');
 
-  $self->{glGrib}{entry} = 
-  $frame->Entry (-textvariable => \$self->{glGrib}{path})
-    ->pack (-side => 'right');
+  $self->{frame} = $frame->Frame ()
+    ->pack (-side => 'top', -expand => 1, -fill => 'both');
+
+  $self->append ();
+
+  if ($self->{glGrib}{opts}[1] eq 'STRING-LIST')
+    {
+      my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+      $frame->Button (-text => '+', -command => sub { $self->append () })
+        ->pack (-side => 'left', -expand => 1, -fill => 'x');
+      $frame->Button (-text => '-', -command => sub { $self->remove () })
+        ->pack (-side => 'right', -expand => 1, -fill => 'x');
+    }
+
+}
+
+sub append
+{
+  my $self = shift;
+
+  my @c = $self->{frame}->children ();
+  my $rank = scalar (@c);
+
+  my $frame = $self->{frame}->Frame ()
+    ->pack (-side => 'top', -expand => 1, -fill => 'both');
 
   $frame->Button (-text => 'Browse', 
-                  -command => sub { $self->selectPath (); })
-    ->pack (-side => 'right');
+                  -command => sub { $self->selectPath ($rank); })
+    ->pack (-side => 'left');
 
+  my $text = '';
+
+  $frame->Entry (-textvariable => \$text)
+    ->pack (-side => 'right', -expand => 1, -fill => 'x');
+
+}
+
+sub remove
+{
+  my $self = shift;
+  
+  my @c = $self->{frame}->children ();
+
+  return unless (@c);
+
+  my $c = pop (@c);
+
+  $c->packForget ();
+
+  $c->destroy ();
+
+
+  @c = $self->{frame}->children ();
 
 }
 
 sub selectPath
 {
-  my $self = shift;
+  my ($self, $rank) = @_;
 
   my $select = $self->FileSelect (-directory => '.');
 
   my $path = $select->Show ();
 
-  $self->{glGrib}{path} = $path;
+  my @c = $self->{frame}->children ();
+  my $c = $c[$rank];
+
+  my ($e) = ($c->children ())[1];
+
+  my $text = $e->cget ('-textvariable');
+
+  $$text = $path;
 
 }
 
@@ -249,15 +289,21 @@ package Tk::glGribSTRING;
 
 use tkbase qw (Tk::glGrib_Entry);
 
-package Tk::glGribLISTOFSTRINGS;
+package Tk::glGribSTRINGLIST;
 
 use tkbase qw (Tk::glGrib_Entry);
 
-package Tk::glGribLISTOFCOLORS;
+package Tk::glGribCOLORLIST;
 
-use tkbase qw (Tk::glGrib_Entry);
+use strict;
 
-package Tk::glGribLISTOFFLOATS;
+sub chooseRGB
+{
+  my $self = shift;
+  $self->{color} .= ' ' . $self->getRGB ();
+}
+
+package Tk::glGribFLOATLIST;
 
 use tkbase qw (Tk::glGrib_Entry);
 
@@ -267,7 +313,46 @@ use tkbase qw (Tk::glGrib_Entry);
 
 package Tk::glGribCOLOR;
 
-use tkbase qw (Tk::glGrib_Entry);
+use tkbase qw (Tk::Frame);
+use tkbaselist;
+use strict;
+
+use Tk::ColorPicker;
+
+sub populate 
+{
+  my ($self, $args) = @_;
+  
+  $self->{glGrib} = delete $args->{glGrib};
+  
+
+  my $opts = $self->{glGrib}{opts};
+  my $name = $self->{glGrib}{name};
+
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+
+  $frame->Label (-text => $opts->[2])->pack (-side => 'left');
+
+  $frame->Entry (-textvariable => \$self->{color})->pack (-side => 'right');
+  $frame->Button (-text => 'RGB', -command => sub { $self->chooseRGB (); })
+    ->pack (-side => 'right');
+}
+
+sub getRGB
+{
+  my $self = shift;
+  my $picker = 'Tk::ColorPicker'->new ();
+  my $color = $picker->Show ();
+  $picker->destroy ();
+  return $color;
+}
+
+sub chooseRGB
+{
+  my $self = shift;
+  $self->{color} = $self->getRGB ();
+}
+
 
 package Tk::glGribBOOLEAN;
 
@@ -331,28 +416,31 @@ sub populate
   $frame = $frame->Frame ()->pack (-expand => 1, -fill => 'both', -side => 'top');
 
   my (@sep, $on, $has_on);
-  if (@$opts && ($opts->[0] eq 'on'))
+  my @opts = @$opts;
+
+  if (@opts && ($opts[0] eq 'on'))
     {
       $has_on = 1;
-      $on = my $w = &TkglGrib::create ($frame, 'on', $opts->[1]);
+      $on = my $w = &TkglGrib::create ($frame, 'on', $opts[1]);
+      splice (@opts, 0, 2);
       $w->setVariable (\$self->{glGrib}{on});
       $w->setCommand (sub { $self->{glGrib}{on} 
                           ? $self->Enable () 
                           : $self->Disable (); });
       $w->pack (-side => 'top', -fill => 'both', -side => 'top');
-      $w->Separator ()->pack (-side => 'top', -fill => 'x');
+      $w->Separator (-width => 2)->pack (-side => 'top', -fill => 'x')
+        if (@opts);
     }
 
   $frame = $self->{glGrib}{frame} = $frame->Frame ();
 
-  my @opts = @$opts;
 
   while (my ($key, $opt) = splice (@opts, 0, 2))
     {
-      next if ($key eq 'on');
       my $w = &TkglGrib::create ($frame, $key, $opt);
       $w->pack (-side => 'top', -fill => 'both', -side => 'top');
-      $w->Separator ()->pack (-side => 'top', -fill => 'x');
+      $w->Separator (-width => 2)->pack (-side => 'top', -fill => 'x')
+        if (@opts);
     }
 
   $self->Enable () if ($self->{glGrib}{on} || (! $has_on));
@@ -416,7 +504,7 @@ sub populate
       $w->pack (-side => 'top', -fill => 'both')
         unless ($w->isa ('Tk::MainWindow'));
       push @sep,
-      $w->Separator ()->pack (-side => 'top', -fill => 'x');
+      $w->Separator (-width => 2)->pack (-side => 'top', -fill => 'x');
     }
 
   for my $type (@type)
@@ -576,7 +664,8 @@ sub Tk::Separator
 {
   my ($self, %args) = @_;
   my $direction = delete $args{'-orient'} // 'horizontal';
-  $self->Frame (-bg => 'black', $direction eq 'vertical' ? '-width' : '-height' => 2, %args);
+  my $width = delete $args{'-width'};
+  $self->Frame (-bg => 'black', $direction eq 'vertical' ? '-width' : '-height' => $width, %args);
 }
 
 sub enter

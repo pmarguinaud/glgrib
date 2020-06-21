@@ -15,16 +15,16 @@ namespace glGrib::OptionsParserDetail
 
 template <> std::string optionTmpl    <int>                 ::type () { return std::string ("INTEGER"); }
 template <> std::string optionTmpl    <float>               ::type () { return std::string ("FLOAT"); }
-template <> std::string optionTmplList<int>                 ::type () { return std::string ("LIST OF INTEGERS"); }
-template <> std::string optionTmplList<float>               ::type () { return std::string ("LIST OF FLOATS"); }
-template <> std::string optionTmpl     <glGrib::OptionDate> ::type () { return std::string ("YYYY/MM/DD_hh:mm:ss"); }
-template <> std::string optionTmpl     <glGrib::OptionColor>::type () { return std::string ("COLOR #rrggbb(aa)"); }
+template <> std::string optionTmplList<int>                 ::type () { return std::string ("INTEGER-LIST"); }
+template <> std::string optionTmplList<float>               ::type () { return std::string ("FLOAT-LIST"); }
+template <> std::string optionTmpl     <glGrib::OptionDate> ::type () { return std::string ("DATE"); }
+template <> std::string optionTmpl     <glGrib::OptionColor>::type () { return std::string ("COLOR"); }
 template <> std::string optionTmpl     <std::string>        ::type () { return std::string ("STRING"); }
 template <> std::string optionTmpl     <std::string>        ::asString () const { return *value; }
 template <> std::string optionTmpl     <std::string>        ::asJSON   () const { return glGrib::OptionsUtil::escape (*value); }
 template <> std::string optionTmpl     <std::string>        ::asOption () const { return name + " " + glGrib::OptionsUtil::escape (*value); }
-template <> std::string optionTmplList<glGrib::OptionColor> ::type () { return std::string ("LIST OF COLORS #rrggbb(aa)"); }
-template <> std::string optionTmplList<std::string>         ::type () { return std::string ("LIST OF STRINGS"); }
+template <> std::string optionTmplList<glGrib::OptionColor> ::type () { return std::string ("COLOR-LIST"); }
+template <> std::string optionTmplList<std::string>         ::type () { return std::string ("STRING-LIST"); }
 template <> std::string optionTmplList<std::string>         ::asString () const 
 { 
   std::string str; 

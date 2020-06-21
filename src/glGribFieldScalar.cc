@@ -149,7 +149,8 @@ void glGrib::FieldScalar<N>::setupMpiView (glGrib::Loader * ld, const glGrib::Op
   glGrib::FieldMetadata mpiview_meta;
   glGrib::BufferPtr<float> mpiview;
 
-  ld->load (&mpiview, opts.mpiview.path, opts.geometry, slot, &mpiview_meta, 1, 0);
+  ld->load (&mpiview, std::vector<std::string>{opts.mpiview.path}, 
+            opts.geometry, slot, &mpiview_meta, 1, 0);
 
   float pmax = mpiview_meta.valmax;
 

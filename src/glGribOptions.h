@@ -757,7 +757,7 @@ public:
     DESC (scale, Displacement scale);
   }
 
-  std::vector<std::string> path;
+  std::string path;
   bool on = false;
   float scale = 0.1f;
 };

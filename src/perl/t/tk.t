@@ -107,24 +107,22 @@ sub populate
   my $opts = $self->{glGrib}{opts};
   my $name = $self->{glGrib}{name};
 
-  my ($on, $has_on);
+  my ($on);
 
   my @opts = @$opts;
 
   if (@opts && ($opts[0] eq 'on'))
     {
-      $has_on = 1;
-      $on = my $w = &TkglGrib::create ($self, 'on', $opts[1]);
+      $on = &TkglGrib::create ($self, 'on', $opts[1]);
       splice (@opts, 0, 2);
-      $w->setVariable (\$self->{glGrib}{on});
 
       if (@opts)
         {
-          $w->setCommand (sub { $self->{glGrib}{on} 
-                              ? $self->Enable () 
-                              : $self->Disable (); }); 
+          $on->setCommand (sub { $on->getValue ()
+                          ? $self->Enable () 
+                          : $self->Disable (); }); 
         }
-      $w->pack (-side => 'top', -fill => 'both', -side => 'top');
+      $on->pack (-side => 'top', -fill => 'both', -side => 'top');
     }
 
   
@@ -139,7 +137,7 @@ sub populate
           $w->pack (-side => 'top', -fill => 'both', -side => 'top');
         }
      
-      $self->Enable () if ($self->{glGrib}{on} || (! $has_on));
+      $self->Enable () if ((! $on) || $on->getValue ());
 
     }
 
@@ -179,8 +177,29 @@ sub populate
   my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
 
   $frame->Label (-text => $opts->[2])->pack (-side => 'left');
-  $frame->Entry ()->pack (-side => 'right');
 
+  $self->{entry} =
+  $frame->Entry (-textvariable => $self->getVariable (), -validate => 'key',
+                 -validatecommand => sub { $self->validate (@_) })
+    ->pack (-side => 'right');
+
+  $self->Button (-text => 'Dump', 
+                 -command => sub { print &Data::Dumper::Dumper ($opts) })
+    ->pack (-side => 'right');
+
+  return $self;
+}
+
+sub getVariable
+{
+  my $self = shift;
+  return \$self->{glGrib}{opts}[3];
+}
+
+sub validate
+{
+  my $self = shift;
+  return 1;
 }
 
 1;
@@ -281,17 +300,31 @@ sub selectPath
 
 }
 
+package Tk::glGribDATE;
+
+use tkbase qw (Tk::glGrib_Entry);
+
+sub validate
+{
+  return 1;
+}
+
 package Tk::glGribINTEGER;
 
 use tkbase qw (Tk::glGrib_Entry);
+use tkbaselist;
+
+sub validate
+{
+  my $self = shift;
+  my ($value) = @_;
+  return $value =~ m/^\d+$/o;
+}
 
 package Tk::glGribSTRING;
 
 use tkbase qw (Tk::glGrib_Entry);
-
-package Tk::glGribSTRINGLIST;
-
-use tkbase qw (Tk::glGrib_Entry);
+use tkbaselist;
 
 package Tk::glGribCOLORLIST;
 
@@ -303,13 +336,10 @@ sub chooseRGB
   $self->{color} .= ' ' . $self->getRGB ();
 }
 
-package Tk::glGribFLOATLIST;
-
-use tkbase qw (Tk::glGrib_Entry);
-
 package Tk::glGribFLOAT;
 
 use tkbase qw (Tk::glGrib_Entry);
+use tkbaselist;
 
 package Tk::glGribCOLOR;
 
@@ -333,7 +363,10 @@ sub populate
 
   $frame->Label (-text => $opts->[2])->pack (-side => 'left');
 
-  $frame->Entry (-textvariable => \$self->{color})->pack (-side => 'right');
+  $self->{entry} =
+  $frame->Entry (-textvariable => \$opts->[3], -validate => 'key',
+                 -validatecommand => sub { $self->validate (@_); } )
+    ->pack (-side => 'right');
   $frame->Button (-text => 'RGB', -command => sub { $self->chooseRGB (); })
     ->pack (-side => 'right');
 }
@@ -350,7 +383,14 @@ sub getRGB
 sub chooseRGB
 {
   my $self = shift;
-  $self->{color} = $self->getRGB ();
+  ${ $self->{entry}->cget ('-textvariable') } = $self->getRGB ();
+}
+
+sub validate
+{
+  my $self = shift;
+  my ($value) = @_;
+  return $value =~ m/^(?:\w*|^#[0-9a-h]*)$/o;
 }
 
 
@@ -375,7 +415,8 @@ sub populate
   $frame->Label (-text => $opts->[2])->pack (-side => 'left');
 
   $self->{glGrib}{button} = 
-  $frame->Checkbutton ()->pack (-side => 'right');
+  $frame->Checkbutton (-variable => \$opts->[3])
+    ->pack (-side => 'right');
 
 }
 
@@ -386,11 +427,10 @@ sub setCommand
     ->configure (-command => $command);
 }
 
-sub setVariable
+sub getValue
 {
-  my ($self, $ref) = @_;
-  $self->{glGrib}{button}
-    ->configure (-variable => $ref);
+  my $self = shift;
+  ${ $self->{glGrib}{button}->cget ('-variable') }
 }
 
 1;
@@ -415,20 +455,19 @@ sub populate
   my $frame = $self->Scrolled ('Frame', -width => 400, -height => 400, -scrollbars => 'e', -sticky => 'nswe')->pack (-expand => 1, -fill => 'both');
   $frame = $frame->Frame ()->pack (-expand => 1, -fill => 'both', -side => 'top');
 
-  my (@sep, $on, $has_on);
+  my (@sep, $on);
   my @opts = @$opts;
 
   if (@opts && ($opts[0] eq 'on'))
     {
-      $has_on = 1;
-      $on = my $w = &TkglGrib::create ($frame, 'on', $opts[1]);
+      $on = &TkglGrib::create ($frame, 'on', $opts[1]);
       splice (@opts, 0, 2);
-      $w->setVariable (\$self->{glGrib}{on});
-      $w->setCommand (sub { $self->{glGrib}{on} 
-                          ? $self->Enable () 
-                          : $self->Disable (); });
-      $w->pack (-side => 'top', -fill => 'both', -side => 'top');
-      $w->Separator (-width => 2)->pack (-side => 'top', -fill => 'x')
+   
+      $on->setCommand (sub { $on->getValue ()
+                      ? $self->Enable () 
+                      : $self->Disable (); });
+      $on->pack (-side => 'top', -fill => 'both', -side => 'top');
+      $on->Separator (-width => 2)->pack (-side => 'top', -fill => 'x')
         if (@opts);
     }
 
@@ -443,7 +482,7 @@ sub populate
         if (@opts);
     }
 
-  $self->Enable () if ($self->{glGrib}{on} || (! $has_on));
+  $self->Enable () if ((! $on) || $on->getValue ());
 
   my $b = 
   $self->Button (-relief => 'raised', -text => 'Apply', 
@@ -468,10 +507,6 @@ sub Disable
 }
 
 1;
-
-package Tk::glGribGrid;
-
-use tkbase qw (Tk::glGrib_Panel);
 
 package Tk::glGribField;
 

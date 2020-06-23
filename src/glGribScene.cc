@@ -386,7 +386,7 @@ void glGrib::Scene::setup (const glGrib::Options & o)
   setMapScaleOptions (d.opts.mapscale);
   setColorBarOptions (d.opts.colorbar);
 
-  d.currentFieldRank = d.opts.scene.select.field;
+  d.currentFieldRank = d.opts.scene.select.field_rank;
 
 
   if (d.opts.scene.center.on)

@@ -54,8 +54,8 @@ void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandsca
 
   d.opts = o;
 
-  setGeometry (glGrib::Geometry::load (ld, d.opts.geometry_path, d.opts.geometry,
-                                       d.opts.number_of_latitudes));
+  setGeometry (glGrib::Geometry::load (ld, d.opts.grid.path, d.opts.geometry,
+                                       d.opts.grid.number_of_latitudes));
 
   if (d.opts.color == glGrib::OptionColor ("#00000000"))
     {

@@ -1027,8 +1027,8 @@ public:
     DESC (projection,          Projection : LONLAT or WEBMERCATOR);
     DESC (flat.on,             Make Earth flat);
     DESC (path,                Path to landscape image in BMP format);
-    DESC (geometry_path,       GRIB files to take geometry from);
-    DESC (number_of_latitudes, Number of latitudes used for creating a mesh for the landscape);
+    DESC (grid.path,           Take geometry from this file);
+    DESC (grid.number_of_latitudes, Number of latitudes);
     DESC (wireframe.on,        Draw landscape in wireframe mode);
     DESC (scale,               Scale);
     DESC (color,               Color);
@@ -1043,8 +1043,11 @@ public:
   string projection = "LONLAT";
   string path  = "landscape/Whole_world_-_land_and_oceans_08000.bmp";
   float  orography  = 0.05;
-  string geometry_path = "";
-  int number_of_latitudes  = 500;
+  struct
+  {
+    string path = "";
+    int number_of_latitudes  = 500;
+  } grid;
   struct
   {
     bool on = false;
@@ -1333,7 +1336,7 @@ public:
     INCLUDE (image);
     INCLUDE (date);
     INCLUDE (title);
-    DESC (select.field, Rank of field to select);
+    DESC (select.field_rank, Rank of field to select);
     DESC (center.on, Center on first field);
   }
   struct
@@ -1351,7 +1354,7 @@ public:
   OptionsTitle title;
   struct
   {
-    int field = 0;
+    int field_rank = 0;
   } select;
   struct
   {

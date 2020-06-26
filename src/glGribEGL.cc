@@ -22,12 +22,6 @@ int main (int argc, const char * argv[])
 
   glGrib::Batch batch (opts);
 
-  const int width = opts.window.width, height = opts.window.height;
-
-  glGrib::glInit ();
-
-  glViewport (0, 0, width, height);
-
   glGrib::framebuffer (batch, "toto.png");
 
   return 0;

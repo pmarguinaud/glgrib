@@ -122,6 +122,10 @@ glGrib::Batch::Batch (const glGrib::Options & o)
   scene.setup (opts);
   scene.setViewport (opts.window.width, opts.window.height);
 
+  glViewport (0, 0, opts.window.width, opts.window.height);
+
+  glGrib::glInit ();
+
 #endif
 
 

@@ -14,6 +14,7 @@
 namespace
 {
 
+#ifdef USE_EGL
 bool pre ()
 {
   const char * m = nullptr;
@@ -71,6 +72,7 @@ bool pre ()
   exit (1);
   return false;
 }
+#endif
 
 }
 
@@ -78,6 +80,7 @@ glGrib::Batch::Batch (const glGrib::Options & o)
 {
   opts = o;
 
+#ifdef USE_EGL
   int fd = open ("/dev/dri/renderD128", O_RDWR);
   assert (fd > 0);
 
@@ -118,6 +121,8 @@ glGrib::Batch::Batch (const glGrib::Options & o)
 
   scene.setup (opts);
   scene.setViewport (opts.window.width, opts.window.height);
+
+#endif
 
 
 }

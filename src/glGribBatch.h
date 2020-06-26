@@ -15,7 +15,9 @@ public:
 
   virtual ~Batch ()
   {
+#ifdef USE_EGL
     eglTerminate (display);
+#endif
   }
 
   int & getSnapshotCnt ()
@@ -39,7 +41,9 @@ private:
   OptionsWindow opts;
   int snapshot_cnt = 0;
   Scene scene;
+#ifdef USE_EGL
   EGLDisplay display = nullptr;
+#endif
 };
 
 

@@ -96,6 +96,7 @@ template <typename T>
 void glGrib::framebuffer (T & t, const std::string & format)
 {
   const auto & opts = t.getOptions ();
+
   if (opts.antialiasing.on)
     {
       unsigned int framebufferMMSA;
@@ -122,8 +123,6 @@ void glGrib::framebuffer (T & t, const std::string & format)
       glBindRenderbuffer (GL_RENDERBUFFER, 0);
       glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 
                                  GL_RENDERBUFFER, renderbufferMMSA);
-
-      glBindFramebuffer (GL_FRAMEBUFFER, 0);
 
       if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         throw std::runtime_error (std::string ("Framebuffer is not complete"));

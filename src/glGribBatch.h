@@ -30,11 +30,13 @@ public:
 
   const OptionsWindow & getOptions () const
   {
-    return opts.window;
+    return opts;
   }
 
+  void run ();
+
 private:
-  Options opts;
+  OptionsWindow opts;
   int snapshot_cnt = 0;
   Scene scene;
   EGLDisplay display = nullptr;

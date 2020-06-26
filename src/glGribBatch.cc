@@ -2,6 +2,7 @@
 #include "glGribOptions.h"
 #include "glGribOpenGL.h"
 #include "glGribScene.h"
+#include "glGribSnapshot.h"
 
 #include <iostream>
 
@@ -78,7 +79,7 @@ bool pre ()
 
 glGrib::Batch::Batch (const glGrib::Options & o)
 {
-  opts = o;
+  opts = o.window;
 
 #ifdef USE_EGL
   int fd = open ("/dev/dri/renderD128", O_RDWR);
@@ -119,10 +120,10 @@ glGrib::Batch::Batch (const glGrib::Options & o)
 
   eglMakeCurrent (display, nullptr, nullptr, context) || pre ();
 
-  scene.setup (opts);
-  scene.setViewport (opts.window.width, opts.window.height);
+  scene.setup (o);
+  scene.setViewport (opts.width, opts.height);
 
-  glViewport (0, 0, opts.window.width, opts.window.height);
+  glViewport (0, 0, opts.width, opts.height);
 
   glGrib::glInit ();
 
@@ -130,4 +131,18 @@ glGrib::Batch::Batch (const glGrib::Options & o)
 
 
 }
+
+void glGrib::Batch::run ()
+{
+  const auto & opts = getOptions ();
+  for (int i = 0; i < opts.offscreen.frames; i++)
+    {
+      scene.update ();
+      framebuffer (*this, opts.offscreen.format);
+    }
+}
+
+
+
+
 

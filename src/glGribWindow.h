@@ -220,6 +220,11 @@ public:
   {
     closed = true;
   }
+
+  int & getSnapshotCnt ()
+  {
+    return snapshot_cnt;
+  }
   
 private:
   int snapshot_cnt = 0;

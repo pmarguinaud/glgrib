@@ -1,4 +1,6 @@
 #include "glGribOpenGL.h"
+#include "glGribPng.h"
+
 #include <iostream>
 
 void glGrib::glInit ()
@@ -50,11 +52,13 @@ template <> GLenum getOpenGLType<float         > () { return GL_FLOAT         ; 
 namespace
 {
 
+#ifdef USE_GLFW
 void errorCallback (int c, const char * desc)
 {
   fprintf (stderr, "Error: %4d | %s\n", c, desc);
   abort ();
 }
+#endif
 
 }
 

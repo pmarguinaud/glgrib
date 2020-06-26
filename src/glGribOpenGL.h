@@ -11,20 +11,12 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 
-#define IF_EGL(code) code;
-
-#define IF_GLFW(code) 
-
 #endif
 
 #ifdef USE_GLFW
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
-#define IF_EGL(code)
-
-#define IF_GLFW(code) code;
 
 #endif
 

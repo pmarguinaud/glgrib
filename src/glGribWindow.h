@@ -1,7 +1,6 @@
 #pragma once
 
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include "glGribOpenGL.h"
 
 #include "glGribScene.h"
 #include "glGribView.h"
@@ -21,21 +20,18 @@ public:
 
   static void getScreenSize (int *, int *);
 
-  enum
-  {
-    NONE    = 0,
-    SHIFT   = GLFW_MOD_SHIFT,
-    CONTROL = GLFW_MOD_CONTROL,
-    ALT     = GLFW_MOD_ALT
-  };
-
   Window ();
   explicit Window (const Options &);
   virtual void setHints ();
   virtual ~Window ();
   virtual void renderFrame (glGrib::Shell *);
   virtual void run (class Shell * = nullptr);
-  void makeCurrent () { glfwMakeContextCurrent (window); }
+  void makeCurrent () 
+  { 
+#ifdef USE_GLFW
+    glfwMakeContextCurrent (window); 
+#endif
+  }
   void debug (unsigned int, unsigned int, GLuint, unsigned int, int, const char *);
 
   void setup (const glGrib::Options & o)
@@ -159,7 +155,12 @@ public:
   bool isClosed () { return closed; }
   bool isCloned () { return cloned; }
   void setCloned () { cloned = true; }
-  void shouldClose () { glfwSetWindowShouldClose (window, 1); }
+  void shouldClose () 
+  { 
+#ifdef USE_GLFW
+    glfwSetWindowShouldClose (window, 1); 
+#endif
+  }
   
   int id () const { return id_; }
 
@@ -224,10 +225,15 @@ private:
   int snapshot_cnt = 0;
   Scene scene;
   bool cursorpos = false;
+
+#ifdef USE_GLFW
   GLFWwindow * window = nullptr;
+#endif
 
   void showHelpItem (const char *, const char *, const char *, const char *);
+#ifdef USE_GLFW
   void createGFLWwindow (GLFWwindow * = nullptr);
+#endif
   bool closed = false;
   bool cloned = false;
   bool master = false;

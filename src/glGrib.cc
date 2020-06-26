@@ -2,9 +2,7 @@
 
 #include "glGribShellRegular.h"
 #include "glGribWindowSet.h"
-#include "glGribWindowDiffSet.h"
 #include "glGribOptions.h"
-#include "glGribOpenGL.h"
 
 #include <iostream>
 
@@ -16,7 +14,7 @@ int main (int argc, const char * argv[])
   if (! opts.parse (argc, argv))
     return 1;
 
-  glGrib::glfwStart ();
+  glGrib::glStart ();
 
   glGrib::WindowSet * wset = glGrib::WindowSet::create (opts);
   glGrib::Shell & shell = glGrib::ShellRegular::getInstance ();
@@ -36,7 +34,7 @@ int main (int argc, const char * argv[])
 
   delete wset;
 
-  glGrib::glfwStop ();
+  glGrib::glStop ();
 
   return 0;
 }

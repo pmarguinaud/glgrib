@@ -3,8 +3,6 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include "glGribWindow.h"
 #include "glGribPng.h"
 #include "glGribFieldScalar.h"
@@ -27,6 +25,7 @@ double currentTime ()
 }
 
 
+#ifdef USE_GLFW
 void APIENTRY debugCallback (unsigned int source, unsigned int type, GLuint id, unsigned int severity, 
                              int length, const char * message, const void * data)
 {
@@ -68,6 +67,7 @@ void keyCallback (GLFWwindow * window, int key, int scancode, int action, int mo
   glGrib::Window * gwindow = (glGrib::Window *)glfwGetWindowUserPointer (window);
   gwindow->onkey (key, scancode, action, mods);
 }
+#endif
 
 }
 
@@ -94,6 +94,7 @@ void glGrib::Window::showHelpItem (const char * mm, const char * k, const char *
 
 void glGrib::Window::getScreenSize (int * width, int * height)
 {
+#ifdef USE_GLFW
   int _width, _height;
   if (width == nullptr)
     width = &_width;
@@ -103,10 +104,12 @@ void glGrib::Window::getScreenSize (int * width, int * height)
   const GLFWvidmode * vmode = glfwGetVideoMode (monitor);
   *width = vmode->width;
   *height = vmode->height;
+#endif
 }
 
 void glGrib::Window::setFullScreen ()
 {
+#ifdef USE_GLFW
   if (! opts.fullscreen.on)
     {
       glfwSetWindowSize (window, fullscreen.w, fullscreen.h);
@@ -124,6 +127,7 @@ void glGrib::Window::setFullScreen ()
 
       moveTo (0, 0);
    }
+#endif
 }
 
 
@@ -135,6 +139,15 @@ void glGrib::Window::toggleFullScreen ()
 
 void glGrib::Window::onkey (int key, int scancode, int action, int mods, bool help)
 {
+#ifdef USE_GLFW
+
+  enum
+  {
+    NONE    = 0,
+    SHIFT   = GLFW_MOD_SHIFT,
+    CONTROL = GLFW_MOD_CONTROL,
+    ALT     = GLFW_MOD_ALT
+  };
 
 #define glGribWindowIfKey(mm, k, desc, action) \
 do { \
@@ -142,7 +155,7 @@ if (help)                                       \
   {                                             \
     showHelpItem (#mm, #k, #desc, #action);     \
   }                                             \
-else if ((key == GLFW_KEY_##k) && (Window::mm == mods)) \
+else if ((key == GLFW_KEY_##k) && (mm == mods)) \
   {                                             \
     action;                                     \
     return;                                     \
@@ -241,6 +254,7 @@ else if ((key == GLFW_KEY_##k) && (Window::mm == mods)) \
     }
 #undef glGribWindowIfKey
 
+#endif
 }
 
 void glGrib::Window::toggleWireframe () 
@@ -462,9 +476,11 @@ void glGrib::Window::showAllFields ()
 
 int glGrib::Window::getLatLonFromCursor (float * lat, float * lon)
 {
-  double xpos, ypos;
+  double xpos = 0, ypos = 0;
 
+#ifdef USE_GLFW
   glfwGetCursorPos (window, &xpos, &ypos);
+#endif
   ypos = opts.height - ypos;
   
   return scene.getView ().getLatLonFromScreenCoords (xpos, ypos, lat, lon);
@@ -662,6 +678,7 @@ void glGrib::Window::framebuffer (const std::string & format)
 
 void glGrib::Window::displayCursorPosition (double xpos, double ypos)
 {
+#ifdef USE_GLFW
   float lat, lon;
   if (getLatLonFromCursor (&lat, &lon))
     {
@@ -694,10 +711,12 @@ void glGrib::Window::displayCursorPosition (double xpos, double ypos)
       return;
     }
   glfwSetWindowTitle (window, title.c_str ());
+#endif
 }
 
 void glGrib::Window::toggleCursorposDisplay ()
 {
+#ifdef USE_GLFW
   if (cursorpos)
     glfwSetCursorPosCallback (window, nullptr);
   else
@@ -705,10 +724,12 @@ void glGrib::Window::toggleCursorposDisplay ()
   cursorpos = ! cursorpos;
   scene.setMessage (std::string (""));
   glfwSetWindowTitle (window, title.c_str ());
+#endif
 }
 
 void glGrib::Window::onclick (int button, int action, int mods)
 {
+#ifdef USE_GLFW
   enum
   {
     NONE    = 0,
@@ -734,7 +755,7 @@ if ((button == GLFW_MOUSE_BUTTON_##k) && (mm == mods)) \
     }
 
 #undef ifClick
-
+#endif
 }
 
 void glGrib::Window::centerLightAtCursorPos ()
@@ -746,6 +767,7 @@ void glGrib::Window::centerLightAtCursorPos ()
 
 void glGrib::Window::centerViewAtCursorPos ()
 {
+#ifdef USE_GLFW
   glGrib::OptionsView o = scene.getViewOptions ();
   if (getLatLonFromCursor (&o.lat, &o.lon))
     {
@@ -754,6 +776,7 @@ void glGrib::Window::centerViewAtCursorPos ()
       scene.getView ().getScreenCoordsFromLatLon (&xpos, &ypos, o.lat, o.lon);
       glfwSetCursorPos (window, xpos, ypos);
     }
+#endif
 }
 
 void glGrib::Window::debugTriangleNumber ()
@@ -818,6 +841,7 @@ void glGrib::Window::zoomSchmidt (double xoffset, double yoffset)
 
 void glGrib::Window::scroll (double xoffset, double yoffset)
 {
+#ifdef USE_GLFW
 
   enum
   {
@@ -848,10 +872,12 @@ if ((mm == NONE) || (glfwGetKey (window, mm) == GLFW_PRESS)) \
 
   glfwSetInputMode (window, GLFW_STICKY_KEYS, GL_TRUE);
 
+#endif
 }
 
 void glGrib::Window::renderFrame (glGrib::Shell * shell)
 {
+#ifdef USE_GLFW
 
   nframes++;
 
@@ -869,10 +895,12 @@ void glGrib::Window::renderFrame (glGrib::Shell * shell)
   if (shell && shell->started ())
     shell->unlock ();
 
+#endif
 }
 
 void glGrib::Window::run (glGrib::Shell * shell)
 {
+#ifdef USE_GLFW
   renderFrame (shell);
   glfwPollEvents ();
   
@@ -880,6 +908,7 @@ void glGrib::Window::run (glGrib::Shell * shell)
    || (glfwWindowShouldClose (window) != 0) || (shell && shell->closed ()))
     close ();
 
+#endif
 }
 
 
@@ -898,6 +927,7 @@ void glGrib::Window::reSize (int w, int h)
 
 void glGrib::Window::setHints ()
 {
+#ifdef USE_GLFW
   if (opts.antialiasing.on)
     glfwWindowHint (GLFW_SAMPLES, opts.antialiasing.samples);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, opts.version_major);
@@ -908,6 +938,7 @@ void glGrib::Window::setHints ()
   if (opts.debug.on)
     glfwWindowHint (GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
+#endif
 }
 
 namespace
@@ -930,6 +961,9 @@ glGrib::Window::Window (const glGrib::Options & _opts)
 
 void glGrib::Window::create (const glGrib::Options & o)
 {
+  t0 = currentTime ();
+
+#ifdef USE_GLFW
   id_ = idcount++;
   opts = o.window;
 
@@ -941,7 +975,6 @@ void glGrib::Window::create (const glGrib::Options & o)
 
   createGFLWwindow (nullptr);
 
-  t0 = currentTime ();
 
   if (opts.info.on)
     {
@@ -955,8 +988,10 @@ void glGrib::Window::create (const glGrib::Options & o)
 
   if ((opts.position.x != -1) && (opts.position.y != -1))
     glfwSetWindowPos (window, opts.position.x, opts.position.y);
+#endif
 }
 
+#ifdef USE_GLFW
 void glGrib::Window::createGFLWwindow (GLFWwindow * context)
 {
   setHints ();
@@ -1020,10 +1055,12 @@ void glGrib::Window::createGFLWwindow (GLFWwindow * context)
   glfwSetFramebufferSizeCallback (window, reSizeCallback);  
 
 }
+#endif
 
   
 glGrib::Window::~Window ()
 {
+#ifdef USE_GLFW
   if (window)
     glfwDestroyWindow (window);
   if (opts.statistics.on)
@@ -1031,11 +1068,15 @@ glGrib::Window::~Window ()
       double t1 = currentTime ();
       printf ("Window #%d rendered %f frames/sec\n", id_, nframes/(t1 - t0));
     }
+#endif
 }
 
 glGrib::Window * glGrib::Window::clone ()
 {
-  glGrib::Window * w = new glGrib::Window ();
+  glGrib::Window * w = nullptr;
+
+#ifdef USE_GLFW
+  w = new glGrib::Window ();
 
 #define COPY(x) do { w->x = x; } while (0)
   COPY (opts);
@@ -1054,6 +1095,8 @@ glGrib::Window * glGrib::Window::clone ()
 #undef COPY
 
   cloned = false;
+
+#endif
 
   return w;
 }
@@ -1113,6 +1156,7 @@ void glGrib::Window::debug (unsigned int source, unsigned int type, GLuint id,
 
 void glGrib::Window::setOptions (const glGrib::OptionsWindow & o)
 {
+#ifdef USE_GLFW
   if ((o.width != opts.width) || (o.height != opts.height))
     {
       glfwSetWindowSize (window, o.width, o.height);
@@ -1128,12 +1172,15 @@ void glGrib::Window::setOptions (const glGrib::OptionsWindow & o)
     moveTo (o.position.x, o.position.y);
   if (opts.fullscreen.on != o.fullscreen.on)
     toggleFullScreen ();
+#endif
 }
 
 void glGrib::Window::moveTo (int x, int y)
 {
+#ifdef USE_GLFW
   opts.position.x = x; opts.position.y = y;
   glfwSetWindowPos (window, opts.position.x, opts.position.y);
+#endif
 }
 
 

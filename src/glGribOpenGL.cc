@@ -58,8 +58,10 @@ void errorCallback (int c, const char * desc)
 
 }
 
-void glGrib::glfwStart ()
+
+void glGrib::glStart ()
 {
+#ifdef USE_GLFW
   glfwSetErrorCallback (errorCallback);
 
   if (! glfwInit ())
@@ -67,10 +69,14 @@ void glGrib::glfwStart ()
       fprintf (stderr, "Failed to initialize GLFW\n");
       exit (EXIT_FAILURE);
     }
+#endif
 }
 
-void glGrib::glfwStop ()
+void glGrib::glStop ()
 {
+#ifdef USE_GLFW
   glfwTerminate ();
+#endif
 }
+
 

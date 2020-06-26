@@ -1,7 +1,33 @@
 #pragma once
 
+
+#ifdef USE_EGL
+
+#define EGL_EGLEXT_PROTOTYPES
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+
+#define GL_GLEXT_PROTOTYPES
+#include <GL/gl.h>
+#include <GL/glext.h>
+
+#define IF_EGL(code) code;
+
+#define IF_GLFW(code) 
+
+#endif
+
+#ifdef USE_GLFW
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#define IF_EGL(code)
+
+#define IF_GLFW(code) code;
+
+#endif
+
 #include <stdexcept>
 #include <memory>
 #include <iostream>
@@ -261,13 +287,7 @@ public:
   void clear ()
   { 
     if (ready)
-{
-if (0){
-printf ("0x%llx ", (long long unsigned int)glfwGetCurrentContext ());
-std::cout << "glDeleteVertexArrays " << VertexArrayID << std::endl;
-}
       glDeleteVertexArrays (1, &VertexArrayID);
-}
     VertexArrayID = 0; 
     ready = false;
   }
@@ -287,10 +307,6 @@ std::cout << "glDeleteVertexArrays " << VertexArrayID << std::endl;
     if (! ready)
       {
         glGenVertexArrays (1, &VertexArrayID);
-if (0){
-printf ("0x%llx ", (long long unsigned int)glfwGetCurrentContext ());
-std::cout << " glGenVertexArrays " << VertexArrayID << std::endl;
-}
         ready = true;
         glBindVertexArray (VertexArrayID);
         object->setupVertexAttributes ();
@@ -310,8 +326,8 @@ private:
 
 void glInit ();
 
-void glfwStart ();
-void glfwStop ();
+void glStart ();
+void glStop ();
 
 template <typename T> GLenum getOpenGLType ();
 template <> GLenum getOpenGLType<unsigned char > ();

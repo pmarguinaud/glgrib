@@ -19,7 +19,7 @@ glGrib::ShellInterpreter::ShellInterpreter ()
 
 void glGrib::ShellInterpreter::runWset ()
 {
-  glGrib::glfwStart ();
+  glGrib::glStart ();
 
   setWindowSet (glGrib::WindowSet::create (gopts));
  
@@ -29,7 +29,7 @@ void glGrib::ShellInterpreter::runWset ()
 
   clearWindowSet ();
 
-  glGrib::glfwStop ();
+  glGrib::glStop ();
 }
 
 void glGrib::ShellInterpreter::start (glGrib::WindowSet * ws)
@@ -37,7 +37,7 @@ void glGrib::ShellInterpreter::start (glGrib::WindowSet * ws)
   if (gopts.window.offscreen.on)
     {
       hasstarted = true;
-      glGrib::glfwStart ();
+      glGrib::glStart ();
       setWindowSet (glGrib::WindowSet::create (gopts));
     }
   else
@@ -73,7 +73,7 @@ void glGrib::ShellInterpreter::stop (const std::vector <std::string> & args)
 
   if (gopts.window.offscreen.on)
     {
-      glGrib::glfwStop ();
+      glGrib::glStop ();
     }
   else
     {

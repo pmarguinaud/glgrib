@@ -110,8 +110,8 @@ glGrib::Batch::Batch (const glGrib::Options & o)
 
   const EGLint ctxAttr[] = 
   {
-    EGL_CONTEXT_MAJOR_VERSION, 4,
-    EGL_CONTEXT_MINOR_VERSION, 3,
+    EGL_CONTEXT_MAJOR_VERSION, opts.version_major,
+    EGL_CONTEXT_MINOR_VERSION, opts.version_minor,
     EGL_NONE
   };
 

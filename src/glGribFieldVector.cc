@@ -76,7 +76,9 @@ void glGrib::FieldVector::vector_t::setupVertexAttributes () const
 
 }
 
-void glGrib::FieldVector::setup (const Field::Privatizer, glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
+void glGrib::FieldVector::setup 
+  (const Field::Privatizer, glGrib::Loader * ld, 
+   const glGrib::OptionsField & o, float slot)
 {
   opts = o;
 
@@ -90,7 +92,6 @@ void glGrib::FieldVector::setup (const Field::Privatizer, glGrib::Loader * ld, c
 
   setGeometry (glGrib::Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry));
 
-  loadHeight (d.buffer_n, ld);
 
   const auto & geometry = getGeometry ();
   const int numberOfPoints = geometry->getNumberOfPoints ();
@@ -106,6 +107,8 @@ void glGrib::FieldVector::setup (const Field::Privatizer, glGrib::Loader * ld, c
   pack (data_n, numberOfPoints, 
         meta_n.valmin, meta_n.valmax, meta_n.valmis, 
         d.buffer_n);
+
+  loadHeight (d.buffer_n, ld);
 
   d.buffer_d = glGrib::OpenGLBufferPtr<T> (numberOfPoints);
 

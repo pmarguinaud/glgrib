@@ -25,7 +25,9 @@ public:
   char * optionGenerator (const char *, int);
   static ShellRegular & getInstance () 
   {
-    return shellregular;
+    if (shellregular == nullptr)
+      shellregular = new ShellRegular ();
+    return *shellregular;
   }
 
   void lock () override { mutex.lock (); }
@@ -35,10 +37,10 @@ public:
 private:
   ShellRegular ();
   ~ShellRegular () {}
-  ShellRegular & operator= (const ShellRegular &) { return *this; }
-  ShellRegular (const ShellRegular &) {}
+  ShellRegular & operator= (const ShellRegular &);
+  ShellRegular (const ShellRegular &);
 
-  static ShellRegular shellregular;
+  static ShellRegular * shellregular;
 
   std::vector<std::string> tokenize (const std::string &);
   void runInt ();

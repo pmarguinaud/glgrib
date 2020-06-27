@@ -51,6 +51,11 @@ public:
     }
     explicit Mapping (OpenGLBuffer * b) : buffer (b) 
     {
+#ifdef USE_EGL
+      static PFNGLMAPNAMEDBUFFERPROC glMapNamedBuffer = nullptr;
+      if (glMapNamedBuffer == nullptr)
+        glMapNamedBuffer = (PFNGLMAPNAMEDBUFFERPROC)eglGetProcAddress ("glMapNamedBuffer");
+#endif
       ptr = (T *)glMapNamedBuffer (buffer->id (), GL_READ_WRITE);
     }
     ~Mapping ()
@@ -77,6 +82,11 @@ public:
     {
       if (ptr)
         {
+#ifdef USE_EGL
+          static PFNGLUNMAPNAMEDBUFFERPROC glUnmapNamedBuffer = nullptr;
+          if (glUnmapNamedBuffer == nullptr)
+            glUnmapNamedBuffer = (PFNGLUNMAPNAMEDBUFFERPROC)eglGetProcAddress ("glUnmapNamedBuffer");
+#endif
           glUnmapNamedBuffer (buffer->id ());
           ptr = nullptr;
         }

@@ -12,10 +12,10 @@ LDFLAGS=-fopenmp -lglGrib -L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib \
         -L$(ECCODES_PREFIX)/lib -Wl,-rpath,$(ECCODES_PREFIX)/lib -leccodes \
         -L$(NETCDF_PREFIX)/lib -Wl,-rpath,$(NETCDF_PREFIX)/lib -lnetcdf_c++4 -lnetcdf
 
-CXXFLAGS=-fPIC -O0 -fopenmp -std=c++11 -Wall -g -I$(ECCODES_PREFIX)/include -I$(NETCDF_PREFIX)/include -DGLGRIB_CHECK_BOUNDS
 CXXFLAGS=-fPIC -O2 -fopenmp -std=c++11 -Wall -I$(ECCODES_PREFIX)/include -I$(NETCDF_PREFIX)/include
+CXXFLAGS=-fPIC -O0 -fopenmp -std=c++11 -Wall -g -I$(ECCODES_PREFIX)/include -I$(NETCDF_PREFIX)/include -DGLGRIB_CHECK_BOUNDS
 
-CXXFLAGS+=-DUSE_EGL
-LDFLAGS+=$(LDFLAGS_EGL)
+CXXFLAGS+=-DUSE_GLFW
+LDFLAGS+=$(LDFLAGS_GLFW)
 
 

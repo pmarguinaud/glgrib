@@ -25,7 +25,9 @@ public:
 
   static ShellInterpreter & getInstance () 
   {
-    return shellinterp;
+    if (shellinterp == nullptr)
+      shellinterp = new ShellInterpreter ();
+    return *shellinterp;
   }
 
   void runWset ();
@@ -45,7 +47,7 @@ private:
   ~ShellInterpreter () {}
   ShellInterpreter & operator= (const ShellInterpreter &) { return *this; }
   ShellInterpreter (const ShellInterpreter &) {}
-  static ShellInterpreter shellinterp;
+  static ShellInterpreter * shellinterp;
 
   glGrib::Options gopts;
   volatile bool hasstarted = false;

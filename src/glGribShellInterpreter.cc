@@ -11,7 +11,7 @@
 
 #include <unistd.h>
 
-glGrib::ShellInterpreter glGrib::ShellInterpreter::shellinterp = glGrib::ShellInterpreter ();
+glGrib::ShellInterpreter * glGrib::ShellInterpreter::shellinterp = nullptr;
 
 glGrib::ShellInterpreter::ShellInterpreter ()
 {

@@ -16,7 +16,7 @@
 
 
 
-glGrib::ShellRegular glGrib::ShellRegular::shellregular = glGrib::ShellRegular ();
+glGrib::ShellRegular * glGrib::ShellRegular::shellregular = nullptr;
 
 char * glGrib::ShellRegular::optionGenerator (const char * text, int state)
 {

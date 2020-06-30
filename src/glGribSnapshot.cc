@@ -211,7 +211,6 @@ void glGrib::framebuffer (T & t, const std::string & format)
 template void glGrib::snapshot<T> (T &, const std::string &); \
 template void glGrib::framebuffer<T> (T &, const std::string &);
 
-LOAD (glGrib::Window);
-LOAD (glGrib::Batch);
+LOAD (glGrib::Render);
 
 

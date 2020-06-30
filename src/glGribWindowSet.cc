@@ -1,14 +1,16 @@
 #include "glGribWindowSet.h"
 #include "glGribWindowDiffSet.h"
 #include "glGribWindowReviewSet.h"
+#include "glGribRender.h"
 #include "glGribWindow.h"
+#include "glGribBatch.h"
 #include "glGribWindowOffscreen.h"
 #include "glGribShellRegular.h"
 
 
 void glGrib::WindowSet::handleMasterWindow ()
 {
-  const glGrib::Window * wl = nullptr;
+  const glGrib::Render * wl = nullptr;
   
   for (auto w : *this)
     if (w->isMaster ())
@@ -46,7 +48,7 @@ void glGrib::WindowSet::runShell (glGrib::Shell ** _shell)
   
       if (w->isCloned ())
         {
-          glGrib::Window * w1 = w->clone ();
+          glGrib::Render * w1 = w->clone ();
           insert (w1);
           break;
 	}
@@ -96,7 +98,7 @@ void glGrib::WindowSet::run (glGrib::Shell * shell)
     }
 }
 
-glGrib::Window * glGrib::WindowSet::getWindowById (int id)
+glGrib::Render * glGrib::WindowSet::getWindowById (int id)
 {
   for (auto w : *this)
     if (w->id () == id)
@@ -111,13 +113,19 @@ void glGrib::WindowSet::close ()
 }
 
 
-glGrib::Window * glGrib::WindowSet::createWindow (const glGrib::Options & opts)
+glGrib::Render * glGrib::WindowSet::createWindow (const glGrib::Options & opts)
 {
-  glGrib::Window * gwindow = nullptr;
+  glGrib::Render * gwindow = nullptr;
+
+#ifdef USE_GLFW
   if (opts.window.offscreen.on)
     gwindow = new glGrib::WindowOffscreen (opts);
   else
     gwindow = new glGrib::Window (opts);
+#endif
+#ifdef USE_EGL
+  gwindow = new glGrib::Batch (opts);
+#endif
 
   insert (gwindow);
   

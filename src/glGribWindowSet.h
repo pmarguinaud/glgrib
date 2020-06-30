@@ -1,21 +1,21 @@
 #pragma once
 
-#include "glGribWindow.h"
+#include "glGribRender.h"
 #include "glGribShell.h"
 #include "glGribOptions.h"
 
 namespace glGrib
 {
 
-class WindowSet : public std::set<Window*> 
+class WindowSet : public std::set<Render*> 
 {
 public:
   explicit WindowSet (const Options &, bool = true);
   virtual ~WindowSet () {}
   virtual void run (Shell * = nullptr);
   virtual void updateWindows ();
-  Window * getWindowById (int);
-  Window * getFirstWindow () 
+  Render * getWindowById (int);
+  Render * getFirstWindow () 
     { 
       WindowSet::iterator it = begin ();
       if (it != end ())
@@ -24,7 +24,7 @@ public:
         return nullptr;
     }
   void close ();
-  virtual Window * createWindow (const Options &);
+  virtual Render * createWindow (const Options &);
   void runShell (Shell **);
   void handleMasterWindow ();
   static WindowSet * create (const glGrib::Options &);

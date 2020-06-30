@@ -14,7 +14,7 @@
 namespace glGrib
 {
 
-class Window;
+class Render;
 
 class ShellRegular : public Shell
 {
@@ -46,10 +46,10 @@ private:
   void runInt ();
   void runOff ();
 
-  void process_help          (const std::vector<std::string> &, glGrib::Window *) override;
-  void process_get           (const std::vector<std::string> &, glGrib::Window *) override;
-  void process_window        (const std::vector<std::string> &, glGrib::Window *) override;
-  void process_json          (const std::vector<std::string> &, glGrib::Window *) override;
+  void process_help          (const std::vector<std::string> &, glGrib::Render *) override;
+  void process_get           (const std::vector<std::string> &, glGrib::Render *) override;
+  void process_window        (const std::vector<std::string> &, glGrib::Render *) override;
+  void process_json          (const std::vector<std::string> &, glGrib::Render *) override;
 
   std::vector<std::string> getsetoptions;
   struct

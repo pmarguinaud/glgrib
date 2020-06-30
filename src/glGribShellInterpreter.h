@@ -14,8 +14,6 @@
 namespace glGrib
 {
 
-class Window;
-
 class ShellInterpreter : public Shell
 {
 public:

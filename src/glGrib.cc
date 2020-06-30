@@ -56,10 +56,12 @@ int main (int argc, const char * argv[])
   use_egl = true;
 #endif
  
-  if (use_glfw)
-    runWindow (opts);  
-  if (use_egl)
-    runBatch (opts);
+//if (use_glfw)
+//  runWindow (opts);  
+//if (use_egl)
+//  runBatch (opts);
+//
+  runWindow (opts);
 
   glGrib::glStop ();
 

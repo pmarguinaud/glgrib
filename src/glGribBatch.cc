@@ -77,7 +77,7 @@ bool pre ()
 
 }
 
-glGrib::Batch::Batch (const glGrib::Options & o)
+glGrib::Batch::Batch (const glGrib::Options & o) : glGrib::Render::Render (o)
 {
   opts = o.window;
 
@@ -129,16 +129,16 @@ glGrib::Batch::Batch (const glGrib::Options & o)
 
 #endif
 
-
+  std::cout << __FILE__ << ':' << __LINE__ << std::endl;
 }
 
-void glGrib::Batch::run ()
+void glGrib::Batch::run (glGrib::Shell * shell)
 {
   const auto & opts = getOptions ();
   for (int i = 0; i < opts.offscreen.frames; i++)
     {
       scene.update ();
-      framebuffer (*this, opts.offscreen.format);
+      framebuffer (opts.offscreen.format);
     }
 }
 

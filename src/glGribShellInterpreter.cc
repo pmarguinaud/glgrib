@@ -1,6 +1,5 @@
 #include "glGribShellInterpreter.h"
 #include "glGribWindowSet.h"
-#include "glGribWindow.h"
 
 #include <iostream>
 #include <exception>

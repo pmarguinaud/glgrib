@@ -2,6 +2,7 @@
 
 #include "glGribOpenGL.h"
 
+#include "glGribRender.h"
 #include "glGribScene.h"
 #include "glGribView.h"
 #include "glGribShell.h"
@@ -14,7 +15,7 @@ namespace glGrib
 
 class Shell;
 
-class Window
+class Window : public Render
 {
 public:
 
@@ -24,9 +25,9 @@ public:
   explicit Window (const Options &);
   virtual void setHints ();
   virtual ~Window ();
-  virtual void renderFrame (glGrib::Shell *);
-  virtual void run (class Shell * = nullptr);
-  void makeCurrent () 
+  void renderFrame (glGrib::Shell *);
+  void run (class Shell * = nullptr) override;
+  void makeCurrent () override
   { 
 #ifdef USE_GLFW
     glfwMakeContextCurrent (window); 
@@ -34,24 +35,7 @@ public:
   }
   void debug (unsigned int, unsigned int, GLuint, unsigned int, int, const char *);
 
-  void setup (const glGrib::Options & o)
-  {
-    scene.setup (o);
-  }
-  
-  Scene & getScene ()
-  {
-    return scene;
-  }
-
-  const Scene & getScene () const
-  {
-    return scene;
-  }
-
   void toggleCursorposDisplay ();
-  void framebuffer              (const std::string & = "snapshot_%N.png");
-  void snapshot                 (const std::string & = "snapshot_%N.png");
   void toggleFlat ()
   {
     const auto & opts = scene.getLandscapeOptions ();
@@ -65,7 +49,7 @@ public:
     o0.transformation = o.transformation;
     scene.setViewOptions (o0);
   }
-  void toggleRotate       () 
+  void toggleRotate      () 
   { 
     OptionsScene o = scene.getSceneOptions ();
     o.rotate_earth.on = ! o.rotate_earth.on; 
@@ -77,7 +61,7 @@ public:
     o.light.rotate.on = ! o.light.rotate.on; 
     scene.setSceneOptions (o);
   }
-  void widen_fov           () 
+  void widenFov          () 
   { 
     OptionsView o = scene.getViewOptions ();
     o.fov += 1.; 
@@ -151,19 +135,15 @@ public:
   void duplicate          ();
   void create (const Options &);
 
-  class Window * clone ();
-  bool isClosed () { return closed; }
-  bool isCloned () { return cloned; }
-  void setCloned () { cloned = true; }
-  void shouldClose () 
+  class Render * clone () override;
+  void shouldClose () override
   { 
 #ifdef USE_GLFW
     glfwSetWindowShouldClose (window, 1); 
 #endif
   }
   
-  int id () const { return id_; }
-
+  void setOptions (const OptionsWindow &) override;
   void nextProjection ();
   void toggleTransformType ();
   void saveCurrentPalette ();
@@ -174,61 +154,13 @@ public:
   void setFullScreen ();
   void showHelp ();
 
-  bool isMaster () const { return master; }
-  void setMaster () { master = true; }
-  void unsetMaster () { master = false; }
-  void toggleMaster () { master = ! master; }
-  void setOptions (const OptionsWindow &);
-  OptionsWindow getOptions () { return opts; }
-  void startShell ()
-  {
-    start_shell = true;
-  }
-  bool getStartShell ()
-  {
-    bool _start_shell = start_shell;
-    start_shell = false;
-    return _start_shell;
-  }
-
   void fixLandscape (float, float, float, float);
 
-  const OptionsWindow & getOptions () const { return opts; }
-
-  bool getNext ()
-  {
-    bool _next = next;
-    next = false;
-    return _next;
-  }
-  bool getPrev ()
-  {
-    bool _prev = prev;
-    prev = false;
-    return _prev;
-  }
   void moveTo (int, int);
   void zoom (double, double);
   void zoomSchmidt (double, double);
 
-  void update ()
-  {
-    scene.update ();
-  }
-
-  void close ()
-  {
-    closed = true;
-  }
-
-  int & getSnapshotCnt ()
-  {
-    return snapshot_cnt;
-  }
-  
 private:
-  int snapshot_cnt = 0;
-  Scene scene;
   bool cursorpos = false;
 
 #ifdef USE_GLFW
@@ -239,16 +171,7 @@ private:
 #ifdef USE_GLFW
   void createGFLWwindow (GLFWwindow * = nullptr);
 #endif
-  bool closed = false;
-  bool cloned = false;
-  bool master = false;
-  OptionsWindow opts;
-  bool next = false; // Next field
-  bool prev = false; // Prev field
-  bool start_shell = false; // Start shell
-  int id_ = 0;
   double t0;
-  int nframes = 0;
   std::string title = "";
   struct
   {

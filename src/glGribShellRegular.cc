@@ -1,6 +1,6 @@
 #include "glGribShellRegular.h"
 #include "glGribWindowSet.h"
-#include "glGribWindow.h"
+#include "glGribRender.h"
 
 #include <iostream>
 #include <exception>
@@ -65,27 +65,27 @@ glGrib::ShellRegular::ShellRegular ()
   rl_attempted_completion_function = shellCompletion;
 }
 
-void glGrib::ShellRegular::process_help (const std::vector<std::string> & args, glGrib::Window * gwindow) 
+void glGrib::ShellRegular::process_help (const std::vector<std::string> & args, glGrib::Render * gwindow) 
 {
   for (const auto & h : getList ())
     std::cout << h;
 }
 
-void glGrib::ShellRegular::process_get (const std::vector<std::string> & args, glGrib::Window * gwindow) 
+void glGrib::ShellRegular::process_get (const std::vector<std::string> & args, glGrib::Render * gwindow) 
 {
   for (const auto & o : getList ())
      std::cout << o << " ";
   std::cout << std::endl;
 }
 
-void glGrib::ShellRegular::process_json (const std::vector<std::string> & args, glGrib::Window * gwindow)
+void glGrib::ShellRegular::process_json (const std::vector<std::string> & args, glGrib::Render * gwindow)
 {
   for (const auto & o : getList ())
      std::cout << o << " ";
   std::cout << std::endl;
 }
 
-void glGrib::ShellRegular::process_window (const std::vector<std::string> & args, glGrib::Window * gwindow) 
+void glGrib::ShellRegular::process_window (const std::vector<std::string> & args, glGrib::Render * gwindow) 
 {
   if (getList ().size () > 0)
     {
@@ -161,7 +161,7 @@ void glGrib::ShellRegular::runInt ()
       {
         if (getWindowSet ()->size ())
           {
-            glGrib::Window * gwindow = getWindow ();
+            glGrib::Render * gwindow = getWindow ();
 	    if (gwindow == nullptr)
               gwindow = getFirstWindow ();
             if (gwindow != nullptr)
@@ -194,7 +194,7 @@ void glGrib::ShellRegular::runOff ()
           if (getWindowSet ()->size () == 0)
             break;
           lock ();
-          glGrib::Window * gwindow = getWindow ();
+          glGrib::Render * gwindow = getWindow ();
           if (gwindow == nullptr)
             gwindow = getFirstWindow ();
           if (gwindow != nullptr)

@@ -1,13 +1,17 @@
 #pragma once
 
+#include "glGribRender.h"
 #include "glGribScene.h"
 #include "glGribOpenGL.h"
 #include "glGribOptions.h"
+#include "glGribShell.h"
 
 namespace glGrib
 {
 
-class Batch
+class Shell;
+
+class Batch : public Render
 {
 public:
 
@@ -20,27 +24,26 @@ public:
 #endif
   }
 
-  int & getSnapshotCnt ()
+  void shouldClose () override
   {
-    return snapshot_cnt;
-  }
-  
-  Scene & getScene ()
-  {
-    return scene;
   }
 
-  const OptionsWindow & getOptions () const
+  void run (class Shell * = nullptr) override;
+
+  void makeCurrent () override
   {
-    return opts;
   }
 
-  void run ();
+  void setOptions (const OptionsWindow &) override
+  {
+  }
+
+  virtual class Render * clone () override
+  {
+    return nullptr;
+  }
 
 private:
-  OptionsWindow opts;
-  int snapshot_cnt = 0;
-  Scene scene;
 #ifdef USE_EGL
   EGLDisplay display = nullptr;
 #endif

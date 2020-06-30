@@ -68,8 +68,8 @@ glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
                   getOptions ().diff.path[0] + "%" + ext, 
                   getOptions ().diff.path[1] + "%" + ext);
 
-  glGrib::Window * gwindow1 = createWindow (opts1);
-  glGrib::Window * gwindow2 = gwindow1->clone ();
+  glGrib::Render * gwindow1 = createWindow (opts1);
+  glGrib::Render * gwindow2 = gwindow1->clone ();
 
   gwindow2->setOptions (opts2.window);
 
@@ -113,8 +113,8 @@ const std::string glGrib::WindowDiffSet::getPrevExt () const
 
 void glGrib::WindowDiffSet::updateWindows ()
 {
-  glGrib::Window * gwindow1 = getWindowById (0);
-  glGrib::Window * gwindow2 = getWindowById (1);
+  glGrib::Render * gwindow1 = getWindowById (0);
+  glGrib::Render * gwindow2 = getWindowById (1);
   if ((gwindow1 == nullptr) || (gwindow2 == nullptr))
     return;
 

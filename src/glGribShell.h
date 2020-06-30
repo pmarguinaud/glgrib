@@ -12,7 +12,7 @@
 namespace glGrib
 {
 
-class Window;
+class Render;
 
 class Shell
 {
@@ -33,28 +33,28 @@ public:
   bool started () { return wset != nullptr; }
 
   // Run command and store result in listStr
-  void do_help          (const std::vector<std::string> &, glGrib::Window *);
-  void do_get           (const std::vector<std::string> &, glGrib::Window *);
-  void do_json          (const std::vector<std::string> &, glGrib::Window *);
-  void do_close         (const std::vector<std::string> &, glGrib::Window *);
-  void do_snapshot      (const std::vector<std::string> &, glGrib::Window *);
-  void do_sleep         (const std::vector<std::string> &, glGrib::Window *);
-  void do_clone         (const std::vector<std::string> &, glGrib::Window *);
-  void do_set           (const std::vector<std::string> &, glGrib::Window *);
-  void do_window        (const std::vector<std::string> &, glGrib::Window *);
-  void do_window_select (const std::vector<std::string> &, glGrib::Window *);
-  void do_window_list   (const std::vector<std::string> &, glGrib::Window *);
+  void do_help          (const std::vector<std::string> &, glGrib::Render *);
+  void do_get           (const std::vector<std::string> &, glGrib::Render *);
+  void do_json          (const std::vector<std::string> &, glGrib::Render *);
+  void do_close         (const std::vector<std::string> &, glGrib::Render *);
+  void do_snapshot      (const std::vector<std::string> &, glGrib::Render *);
+  void do_sleep         (const std::vector<std::string> &, glGrib::Render *);
+  void do_clone         (const std::vector<std::string> &, glGrib::Render *);
+  void do_set           (const std::vector<std::string> &, glGrib::Render *);
+  void do_window        (const std::vector<std::string> &, glGrib::Render *);
+  void do_window_select (const std::vector<std::string> &, glGrib::Render *);
+  void do_window_list   (const std::vector<std::string> &, glGrib::Render *);
 
   // Process command output
-  virtual void process_help          (const std::vector<std::string> &, glGrib::Window *) {}
-  virtual void process_get           (const std::vector<std::string> &, glGrib::Window *) {}
-  virtual void process_json          (const std::vector<std::string> &, glGrib::Window *) {}
-  virtual void process_close         (const std::vector<std::string> &, glGrib::Window *) {}
-  virtual void process_snapshot      (const std::vector<std::string> &, glGrib::Window *) {}
-  virtual void process_sleep         (const std::vector<std::string> &, glGrib::Window *) {}
-  virtual void process_clone         (const std::vector<std::string> &, glGrib::Window *) {}
-  virtual void process_set           (const std::vector<std::string> &, glGrib::Window *) {}
-  virtual void process_window        (const std::vector<std::string> &, glGrib::Window *) {}
+  virtual void process_help          (const std::vector<std::string> &, glGrib::Render *) {}
+  virtual void process_get           (const std::vector<std::string> &, glGrib::Render *) {}
+  virtual void process_json          (const std::vector<std::string> &, glGrib::Render *) {}
+  virtual void process_close         (const std::vector<std::string> &, glGrib::Render *) {}
+  virtual void process_snapshot      (const std::vector<std::string> &, glGrib::Render *) {}
+  virtual void process_sleep         (const std::vector<std::string> &, glGrib::Render *) {}
+  virtual void process_clone         (const std::vector<std::string> &, glGrib::Render *) {}
+  virtual void process_set           (const std::vector<std::string> &, glGrib::Render *) {}
+  virtual void process_window        (const std::vector<std::string> &, glGrib::Render *) {}
 
   const std::vector<std::string> & getList ()
   {
@@ -72,9 +72,9 @@ public:
     return windowid;
   }
 
-  Window * getWindow ();
+  Render * getWindow ();
 
-  Window * getFirstWindow ();
+  Render * getFirstWindow ();
 
 private:
 

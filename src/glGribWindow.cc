@@ -8,7 +8,6 @@
 #include "glGribFieldScalar.h"
 #include "glGribFieldVector.h"
 #include "glGribBuffer.h"
-#include "glGribSnapshot.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -172,13 +171,13 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
       glGribWindowIfKey (CONTROL, F           ,  Toggle full screen mode, toggleFullScreen ());
       glGribWindowIfKey (NONE,    PAGE_UP     ,  One field forward,  next = true);
       glGribWindowIfKey (NONE,    PAGE_DOWN   ,  One field backward, prev = true);
-      glGribWindowIfKey (NONE,    T     ,  Hide/show location & field value at cursor position  , toggleCursorposDisplay ());
+      glGribWindowIfKey (NONE,    T     ,  Hide/show location & field value at cursor position  , toggleCursorposDisplay  ());
       glGribWindowIfKey (NONE,    TAB   ,  Enable/disable earth rotation                        , toggleRotate            ());
-      glGribWindowIfKey (CONTROL, TAB   ,  Enable/disable light rotation                        , toggleRotateLight      ());
+      glGribWindowIfKey (CONTROL, TAB   ,  Enable/disable light rotation                        , toggleRotateLight       ());
       glGribWindowIfKey (NONE,    Y     ,  Display landscape or current field as wireframe      , toggleWireframe         ());
-      glGribWindowIfKey (NONE,    D     ,  Use a framebuffer and generate a snapshot            , framebuffer              ());
-      glGribWindowIfKey (NONE,    W     ,  Increase field of view                               , widen_fov                ());
-      glGribWindowIfKey (NONE,    S     ,  Write a snapshot (PNG format)                        , snapshot                 ()); 
+      glGribWindowIfKey (NONE,    D     ,  Use a framebuffer and generate a snapshot            , framebuffer             ());
+      glGribWindowIfKey (NONE,    W     ,  Increase field of view                               , widenFov                ());
+      glGribWindowIfKey (NONE,    S     ,  Write a snapshot (PNG format)                        , snapshot                ()); 
       glGribWindowIfKey (NONE,    Q     ,  Decrease field of view                               , shrinkFov               ());
       glGribWindowIfKey (NONE,    P     ,  Make earth flat/show orography                       , toggleFlat              ());
       glGribWindowIfKey (NONE,    6     ,  Increase size of current field                       , increaseRadius          ());
@@ -215,13 +214,13 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
       glGribWindowIfKey (CONTROL, F11   ,  Show only field #11                                  , { hideAllFields (); selectField (10); toggleHideField (); });
       glGribWindowIfKey (CONTROL, F12   ,  Show only field #12                                  , { hideAllFields (); selectField (11); toggleHideField (); });
       glGribWindowIfKey (CONTROL, H     ,  Show all fields                                      , showAllFields          ());
-      glGribWindowIfKey (ALT,     H     ,  Show help                                            , showHelp                 ());
+      glGribWindowIfKey (ALT,     H     ,  Show help                                            , showHelp               ());
 
       glGribWindowIfKey (NONE,    H     ,  Show/hide selected field                             , toggleHideField        ());
       glGribWindowIfKey (NONE,    G     ,  Increase size of current field                       , scaleFieldUp           ());
       glGribWindowIfKey (CONTROL, G     ,  Decrease size of current field                       , scaleFieldDown         ());
-      glGribWindowIfKey (NONE,    L     ,  Turn on/off the light                                , toggleLight             ());
-      glGribWindowIfKey (CONTROL, L     ,  Make current window master window                    , toggleMaster             ());
+      glGribWindowIfKey (NONE,    L     ,  Turn on/off the light                                , toggleLight            ());
+      glGribWindowIfKey (CONTROL, L     ,  Make current window master window                    , toggleMaster           ());
 
       if (opts.fixlandscape.on)
       {
@@ -242,14 +241,14 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
       glGribWindowIfKey (CONTROL, RIGHT ,  Move light eastwards                                 , rotateLightEast        ());
       }
 
-      glGribWindowIfKey (CONTROL, C     ,  Clone current window                                 , duplicate                ());
-      glGribWindowIfKey (CONTROL, P     ,  Try next projection                                  , nextProjection          ());
+      glGribWindowIfKey (CONTROL, C     ,  Clone current window                                 , duplicate              ());
+      glGribWindowIfKey (CONTROL, P     ,  Try next projection                                  , nextProjection         ());
       glGribWindowIfKey (SHIFT,   P     ,  Try next transformation                              , toggleTransformType    ());
       glGribWindowIfKey (CONTROL, S     ,  Save current palette                                 , saveCurrentPalette     ());
       glGribWindowIfKey (ALT,     S     ,  Resample current field                               , resampleCurrentField   ());
       glGribWindowIfKey (NONE,    V     ,  Hide/show vector arrows                              , toggleShowVector       ());
       glGribWindowIfKey (CONTROL, V     ,  Hide/show vector norm                                , toggleShowNorm         ());
-      glGribWindowIfKey (NONE,    U     ,  Start shell                                          , startShell               ());
+      glGribWindowIfKey (NONE,    U     ,  Start shell                                          , startShell             ());
 
 
     }
@@ -485,16 +484,6 @@ int glGrib::Window::getLatLonFromCursor (float * lat, float * lon)
   ypos = opts.height - ypos;
   
   return scene.getView ().getLatLonFromScreenCoords (xpos, ypos, lat, lon);
-}
-
-void glGrib::Window::snapshot (const std::string & format)
-{
-  glGrib::snapshot (*this, format);
-}
-
-void glGrib::Window::framebuffer (const std::string & format)
-{
-  glGrib::framebuffer (*this, format);
 }
 
 void glGrib::Window::displayCursorPosition (double xpos, double ypos)
@@ -767,13 +756,13 @@ namespace
 int idcount = 0;
 }
 
-glGrib::Window::Window ()
+glGrib::Window::Window () 
 {
   id_ = idcount++;
 }
 
 
-glGrib::Window::Window (const glGrib::Options & _opts)
+glGrib::Window::Window (const glGrib::Options & _opts) : glGrib::Render::Render (_opts)
 {
   create (_opts);
   scene.setup (_opts);
@@ -892,7 +881,7 @@ glGrib::Window::~Window ()
 #endif
 }
 
-glGrib::Window * glGrib::Window::clone ()
+glGrib::Render * glGrib::Window::clone ()
 {
   glGrib::Window * w = nullptr;
 

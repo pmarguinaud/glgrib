@@ -38,7 +38,7 @@ const std::string glGrib::WindowReviewSet::getPrevExt () const
 
 void glGrib::WindowReviewSet::updateWindows ()
 {
-  glGrib::Window * gwindow = getWindowById (0);
+  glGrib::Render * gwindow = getWindowById (0);
   if (gwindow == nullptr)
     return;
 

@@ -33,12 +33,12 @@ public:
 
   void makeCurrent () override
   {
+#ifdef USE_EGL
     eglMakeCurrent (display, nullptr, nullptr, context);
+#endif
   }
 
-  void setOptions (const OptionsWindow &) override
-  {
-  }
+  void setOptions (const OptionsWindow &) override;
 
   virtual class Render * clone () override
   {

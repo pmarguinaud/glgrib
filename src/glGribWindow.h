@@ -111,7 +111,6 @@ public:
   }
   void toggleWireframe ();
 
-  void reSize (int, int);
   void scroll (double, double);
   void onclick (int, int, int);
   virtual void onkey (int, int, int, int, bool = false);

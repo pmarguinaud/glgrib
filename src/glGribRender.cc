@@ -16,3 +16,12 @@ void glGrib::Render::framebuffer (const std::string & format)
   glGrib::framebuffer (*this, format);
 }
 
+void glGrib::Render::reSize (int w, int h)
+{
+  opts.width = w;
+  opts.height = h;
+  makeCurrent ();
+  glViewport (0, 0, opts.width, opts.height);
+  scene.setViewport (opts.width, opts.height);
+}
+

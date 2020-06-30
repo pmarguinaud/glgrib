@@ -121,9 +121,8 @@ glGrib::Batch::Batch (const glGrib::Options & o) : glGrib::Render::Render (o)
   eglMakeCurrent (display, nullptr, nullptr, context) || pre ();
 
   scene.setup (o);
-  scene.setViewport (opts.width, opts.height);
 
-  glViewport (0, 0, opts.width, opts.height);
+  reSize (opts.width, opts.height);
 
   glGrib::glInit ();
 
@@ -141,6 +140,12 @@ void glGrib::Batch::run (glGrib::Shell * shell)
     }
 
   close ();
+}
+
+void glGrib::Batch::setOptions (const OptionsWindow & o) 
+{
+  if ((o.width != opts.width) || (o.height != opts.height))
+    reSize (o.width, o.height);
 }
 
 

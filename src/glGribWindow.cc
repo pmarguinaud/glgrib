@@ -721,20 +721,6 @@ void glGrib::Window::run (glGrib::Shell * shell)
 #endif
 }
 
-
-void glGrib::Window::reSize (int w, int h)
-{
-
-  opts.width = w;
-  opts.height = h;
-
-  makeCurrent ();
-
-  glViewport (0, 0, opts.width, opts.height);
-  scene.setViewport (opts.width, opts.height);
-
-}
-
 void glGrib::Window::setHints ()
 {
 #ifdef USE_GLFW

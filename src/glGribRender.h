@@ -39,6 +39,8 @@ public:
     return scene;
   }
 
+  void reSize (int, int);
+
   void framebuffer              (const std::string & = "snapshot_%N.png");
   void snapshot                 (const std::string & = "snapshot_%N.png");
   virtual class Render * clone () = 0;

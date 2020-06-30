@@ -761,7 +761,7 @@ void glGrib::Window::create (const glGrib::Options & o)
 
 #ifdef USE_GLFW
   id_ = idcount++;
-  opts = o.window;
+  opts = o.render;
 
   if (opts.title == "")
     title = std::string ("Window #") + std::to_string (id_);
@@ -950,7 +950,7 @@ void glGrib::Window::debug (unsigned int source, unsigned int type, GLuint id,
           debugSeverity (severity), debugType (type), id, message);
 }
 
-void glGrib::Window::setOptions (const glGrib::OptionsWindow & o)
+void glGrib::Window::setOptions (const glGrib::OptionsRender & o)
 {
 #ifdef USE_GLFW
   if ((o.width != opts.width) || (o.height != opts.height))

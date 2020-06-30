@@ -38,7 +38,7 @@ public:
 #endif
   }
 
-  void setOptions (const OptionsWindow &) override;
+  void setOptions (const OptionsRender &) override;
 
   virtual class Render * clone () override
   {

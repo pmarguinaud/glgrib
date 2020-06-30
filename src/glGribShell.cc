@@ -50,7 +50,7 @@ void glGrib::Shell::do_set (const std::vector<std::string> & args, glGrib::Rende
 
   glGrib::Options opts = scene.getOptions ();
 
-  opts.window = gwindow->getOptions ();
+  opts.render = gwindow->getOptions ();
   opts.shell = this->opts;
   
   glGrib::OptionsParser p;
@@ -148,10 +148,10 @@ void glGrib::Shell::do_set (const std::vector<std::string> & args, glGrib::Rende
   
       hof_t hof;
   
-      hof.add ("--window.height"             , [&opts,&scene,gwindow]() { gwindow->setOptions            (opts.window             );  });
-      hof.add ("--window.width"              , [&opts,&scene,gwindow]() { gwindow->setOptions            (opts.window             );  });
-      hof.add ("--window.title"              , [&opts,&scene,gwindow]() { gwindow->setOptions            (opts.window             );  });
-      hof.add ("--window.position"           , [&opts,&scene,gwindow]() { gwindow->setOptions            (opts.window             );  });
+      hof.add ("--render.height"             , [&opts,&scene,gwindow]() { gwindow->setOptions            (opts.render             );  });
+      hof.add ("--render.width"              , [&opts,&scene,gwindow]() { gwindow->setOptions            (opts.render             );  });
+      hof.add ("--render.title"              , [&opts,&scene,gwindow]() { gwindow->setOptions            (opts.render             );  });
+      hof.add ("--render.position"           , [&opts,&scene,gwindow]() { gwindow->setOptions            (opts.render             );  });
       hof.add ("--view"                      , [&opts,&scene,gwindow]() { scene.setViewOptions           (opts.view               );  });
       hof.add ("--landscape"                 , [&opts,&scene,gwindow]() { scene.setLandscapeOptions      (opts.landscape          );  });
       hof.add ("--grid"                      , [&opts,&scene,gwindow]() { scene.setGridOptions           (opts.grid               );  });

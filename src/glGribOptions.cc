@@ -572,7 +572,7 @@ bool glGrib::Options::parse (int argc, const char * argv[],
           opts.colorbar.on = true;
           opts.grid.on = true;
           opts.coast.on = true;
-          opts.window.width = opts.window.height * 1.4;
+          opts.render.width = opts.render.height * 1.4;
           opts.scene.center.on = true;
         }
       return true;

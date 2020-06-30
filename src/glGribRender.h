@@ -55,8 +55,8 @@ public:
   void setMaster () { master = true; }
   void unsetMaster () { master = false; }
   void toggleMaster () { master = ! master; }
-  virtual void setOptions (const OptionsWindow &) = 0;
-  OptionsWindow getOptions () { return opts; }
+  virtual void setOptions (const OptionsRender &) = 0;
+  OptionsRender getOptions () { return opts; }
   void startShell ()
   {
     start_shell = true;
@@ -68,7 +68,7 @@ public:
     return _start_shell;
   }
 
-  const OptionsWindow & getOptions () const { return opts; }
+  const OptionsRender & getOptions () const { return opts; }
 
   bool getNext ()
   {
@@ -105,7 +105,7 @@ private:
   bool closed = false;
   bool cloned = false;
   bool master = false;
-  OptionsWindow opts;
+  OptionsRender opts;
   bool next = false; // Next field
   bool prev = false; // Prev field
   bool start_shell = false; // Start shell

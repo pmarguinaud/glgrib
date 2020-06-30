@@ -45,15 +45,15 @@ glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
   int maxWidth, maxHeight;
   glGrib::Window::getScreenSize (&maxWidth, &maxHeight);
 
-  opts1.window.position.x = 0;
-  opts1.window.position.y = 0;
-  opts1.window.width = maxWidth / 2;
-  opts1.window.height = maxWidth / 2;
+  opts1.render.position.x = 0;
+  opts1.render.position.y = 0;
+  opts1.render.width = maxWidth / 2;
+  opts1.render.height = maxWidth / 2;
 
-  opts2.window.position.x = opts1.window.position.x + opts1.window.width;
-  opts2.window.position.y = 0;
-  opts2.window.width = maxWidth / 2;
-  opts2.window.height = maxWidth / 2;
+  opts2.render.position.x = opts1.render.position.x + opts1.render.width;
+  opts2.render.position.y = 0;
+  opts2.render.width = maxWidth / 2;
+  opts2.render.height = maxWidth / 2;
 
   cont1 = glGrib::Container::create (getOptions ().diff.path[0], true);
   cont2 = glGrib::Container::create (getOptions ().diff.path[1], true);
@@ -71,7 +71,7 @@ glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
   glGrib::Render * gwindow1 = createWindow (opts1);
   glGrib::Render * gwindow2 = gwindow1->clone ();
 
-  gwindow2->setOptions (opts2.window);
+  gwindow2->setOptions (opts2.render);
 
   gwindow2->setup (opts2);
 

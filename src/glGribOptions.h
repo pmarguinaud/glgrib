@@ -1110,7 +1110,7 @@ public:
   std::string format = "snapshot_%N.png";
 };
 
-class OptionsWindow : public OptionsBase
+class OptionsRender : public OptionsBase
 {
 public:
   DEFINE
@@ -1645,7 +1645,7 @@ public:
     INCLUDE (geopoints);
     INCLUDE (border);
     INCLUDE (rivers);
-    INCLUDE (window);
+    INCLUDE (render);
     INCLUDE (landscape);
     INCLUDE (grid);
     INCLUDE (ticks);
@@ -1685,7 +1685,7 @@ public:
   OptionsColorbar colorbar;
   OptionsMapscale mapscale;
   OptionsDepartements departements;
-  OptionsWindow window;
+  OptionsRender render;
   OptionsLandscape landscape;
   OptionsGrid grid;
   OptionsTicks ticks;

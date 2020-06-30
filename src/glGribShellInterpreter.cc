@@ -33,7 +33,7 @@ void glGrib::ShellInterpreter::runWset ()
 
 void glGrib::ShellInterpreter::start (glGrib::WindowSet * ws)
 {
-  if (gopts.window.offscreen.on)
+  if (gopts.render.offscreen.on)
     {
       hasstarted = true;
       glGrib::glStart ();
@@ -70,7 +70,7 @@ void glGrib::ShellInterpreter::stop (const std::vector <std::string> & args)
 
   getWindowSet ()->close ();
 
-  if (gopts.window.offscreen.on)
+  if (gopts.render.offscreen.on)
     {
       glGrib::glStop ();
     }

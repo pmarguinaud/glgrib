@@ -79,7 +79,7 @@ bool pre ()
 
 glGrib::Batch::Batch (const glGrib::Options & o) : glGrib::Render::Render (o)
 {
-  opts = o.window;
+  opts = o.render;
 
 #ifdef USE_EGL
   int fd = open ("/dev/dri/renderD128", O_RDWR);
@@ -142,7 +142,7 @@ void glGrib::Batch::run (glGrib::Shell * shell)
   close ();
 }
 
-void glGrib::Batch::setOptions (const OptionsWindow & o) 
+void glGrib::Batch::setOptions (const OptionsRender & o) 
 {
   if ((o.width != opts.width) || (o.height != opts.height))
     reSize (o.width, o.height);

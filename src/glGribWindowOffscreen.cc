@@ -7,7 +7,7 @@ glGrib::WindowOffscreen::WindowOffscreen (const Options & _opts)
   create (_opts);
   getScene ().setup (_opts);
   reSize (getOptions ().width, getOptions ().height);
-  frames = _opts.window.offscreen.frames;
+  frames = _opts.render.offscreen.frames;
 }
 
 void glGrib::WindowOffscreen::setHints ()

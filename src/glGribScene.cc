@@ -336,7 +336,7 @@ void glGrib::Scene::setup (const glGrib::Options & o)
 
   d.test.setup ();
 
-  setViewport (d.opts.window.width, d.opts.window.height);
+  setViewport (d.opts.render.width, d.opts.render.height);
   setViewOptions (d.opts.view);
   setLightOptions (d.opts.scene.light);
 

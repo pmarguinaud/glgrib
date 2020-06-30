@@ -118,7 +118,7 @@ glGrib::Render * glGrib::WindowSet::createWindow (const glGrib::Options & opts)
   glGrib::Render * gwindow = nullptr;
 
 #ifdef USE_GLFW
-  if (opts.window.offscreen.on)
+  if (opts.render.offscreen.on)
     gwindow = new glGrib::WindowOffscreen (opts);
   else
     gwindow = new glGrib::Window (opts);

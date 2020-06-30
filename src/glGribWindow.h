@@ -142,7 +142,7 @@ public:
 #endif
   }
   
-  void setOptions (const OptionsWindow &) override;
+  void setOptions (const OptionsRender &) override;
   void nextProjection ();
   void toggleTransformType ();
   void saveCurrentPalette ();

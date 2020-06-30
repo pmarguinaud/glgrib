@@ -115,7 +115,7 @@ glGrib::Batch::Batch (const glGrib::Options & o) : glGrib::Render::Render (o)
     EGL_NONE
   };
 
-  EGLContext context = eglCreateContext (display, config[0], EGL_NO_CONTEXT, ctxAttr); 
+  context = eglCreateContext (display, config[0], EGL_NO_CONTEXT, ctxAttr); 
   context || pre ();
 
   eglMakeCurrent (display, nullptr, nullptr, context) || pre ();
@@ -128,18 +128,19 @@ glGrib::Batch::Batch (const glGrib::Options & o) : glGrib::Render::Render (o)
   glGrib::glInit ();
 
 #endif
-
-  std::cout << __FILE__ << ':' << __LINE__ << std::endl;
 }
 
 void glGrib::Batch::run (glGrib::Shell * shell)
 {
   const auto & opts = getOptions ();
+
   for (int i = 0; i < opts.offscreen.frames; i++)
     {
       scene.update ();
       framebuffer (opts.offscreen.format);
     }
+
+  close ();
 }
 
 

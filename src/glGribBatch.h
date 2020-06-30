@@ -26,12 +26,14 @@ public:
 
   void shouldClose () override
   {
+    close ();
   }
 
   void run (class Shell * = nullptr) override;
 
   void makeCurrent () override
   {
+    eglMakeCurrent (display, nullptr, nullptr, context);
   }
 
   void setOptions (const OptionsWindow &) override
@@ -46,6 +48,7 @@ public:
 private:
 #ifdef USE_EGL
   EGLDisplay display = nullptr;
+  EGLContext context = nullptr;
 #endif
 };
 

@@ -5,12 +5,15 @@
 
 #include <iostream>
 
-
-namespace
+int main (int argc, const char * argv[])
 {
+  glGrib::Options opts;
 
-void runWindow (const glGrib::Options & opts)
-{
+  if (! opts.parse (argc, argv))
+    return 1;
+
+  glGrib::glStart ();
+
   glGrib::WindowSet * wset = glGrib::WindowSet::create (opts);
   glGrib::Shell & shell = glGrib::ShellRegular::getInstance ();
 
@@ -28,40 +31,6 @@ void runWindow (const glGrib::Options & opts)
   shell.wait ();
 
   delete wset;
-}
-
-void runBatch (const glGrib::Options & opts)
-{
-  glGrib::Batch batch (opts);
-  batch.run ();
-}
-
-}
-
-int main (int argc, const char * argv[])
-{
-  glGrib::Options opts;
-
-  if (! opts.parse (argc, argv))
-    return 1;
-
-  glGrib::glStart ();
-
-  bool use_glfw = false, use_egl = false;
-
-#ifdef USE_GLFW
-  use_glfw = true;
-#endif
-#ifdef USE_EGL
-  use_egl = true;
-#endif
- 
-//if (use_glfw)
-//  runWindow (opts);  
-//if (use_egl)
-//  runBatch (opts);
-//
-  runWindow (opts);
 
   glGrib::glStop ();
 

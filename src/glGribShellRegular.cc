@@ -135,7 +135,12 @@ std::vector<std::string> glGrib::ShellRegular::tokenize (const std::string & _li
 void glGrib::ShellRegular::start (glGrib::WindowSet * ws)
 {
   setWindowSet (ws);
+#ifdef USE_GLFW
   thread = std::thread ([this] () { this->run (); });
+#endif
+#ifdef USE_EGL
+  run ();
+#endif
 }
 
 void glGrib::ShellRegular::runInt ()

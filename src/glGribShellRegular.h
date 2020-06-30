@@ -32,7 +32,13 @@ public:
 
   void lock () override { mutex.lock (); }
   void unlock () override { mutex.unlock (); }
-  void wait () override { if (getWindowSet ()) thread.join (); }
+  void wait () override 
+  { 
+    if (! thread.joinable ()) 
+      return; 
+    if (getWindowSet ()) 
+      thread.join (); 
+  }
 
 private:
   ShellRegular ();

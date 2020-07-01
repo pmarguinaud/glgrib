@@ -5,15 +5,16 @@
 #include "glGribSnapshot.h"
 
 #include <iostream>
+#include <stdexcept>
 
-#include <assert.h>
 #include <fcntl.h>
-#include <gbm.h>
 #include <unistd.h>
 #include <string.h>
 
 namespace
 {
+
+int idcount = 0;
 
 #ifdef USE_EGL
 bool pre ()
@@ -82,11 +83,15 @@ glGrib::Batch::Batch (const glGrib::Options & o) : glGrib::Render::Render (o)
   opts = o.render;
 
 #ifdef USE_EGL
-  int fd = open (opts.device.path.c_str (), O_RDWR);
-  assert (fd > 0);
+  fd = open (opts.device.path.c_str (), O_RDWR);
 
-  struct gbm_device * gbm = gbm_create_device (fd);
-  assert (gbm != nullptr);
+  if (fd < 0)
+    throw std::runtime_error (std::string ("Cannot open ") + opts.device.path);
+
+  gbm = gbm_create_device (fd);
+
+  if (gbm == nullptr)
+    throw std::runtime_error (std::string ("Cannot create gbm object"));
 
   EGLDisplay display = eglGetPlatformDisplay (EGL_PLATFORM_GBM_MESA, gbm, nullptr);
   display || pre ();
@@ -129,6 +134,8 @@ glGrib::Batch::Batch (const glGrib::Options & o) : glGrib::Render::Render (o)
   glGrib::glInit ();
 
 #endif
+
+  id_ = idcount++;
 }
 
 void glGrib::Batch::run (glGrib::Shell * shell)
@@ -148,6 +155,15 @@ void glGrib::Batch::setOptions (const OptionsRender & o)
 {
   if ((o.width != opts.width) || (o.height != opts.height))
     reSize (o.width, o.height);
+}
+
+
+class glGrib::Render * glGrib::Batch::clone () 
+{
+  auto opts = getScene ().getOptions ();
+  opts.render = this->opts;
+  cloned = false;
+  return new glGrib::Batch (opts);
 }
 
 

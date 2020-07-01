@@ -11,6 +11,8 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 
+#include <gbm.h>
+
 #endif
 
 #ifdef USE_GLFW

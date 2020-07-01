@@ -64,6 +64,7 @@ private:
   } og;
   std::thread thread;
   std::mutex mutex;
+  bool synchronous = true;
 };
 
 }

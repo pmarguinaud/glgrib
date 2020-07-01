@@ -25,7 +25,13 @@ public:
     }
   void close ();
   virtual Render * createWindow (const Options &);
-  void runShell (Shell **);
+
+  void runShell (Shell * shell, bool render = true)
+  {
+    runShell (&shell, render);
+  }
+  void runShell (Shell **, bool = true);
+
   void handleMasterWindow ();
   static WindowSet * create (const glGrib::Options &);
   Options & getOptions ()

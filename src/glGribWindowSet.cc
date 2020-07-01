@@ -25,7 +25,7 @@ void glGrib::WindowSet::handleMasterWindow ()
       w->getScene ().setViewOptions (wl->getScene ().getViewOptions ());
 }
 
-void glGrib::WindowSet::runShell (glGrib::Shell ** _shell)
+void glGrib::WindowSet::runShell (glGrib::Shell ** _shell, bool render)
 {
   glGrib::Shell * shell = *_shell;
   for (auto w : *this)
@@ -37,7 +37,8 @@ void glGrib::WindowSet::runShell (glGrib::Shell ** _shell)
           shell->start (this);
         }
   
-      w->run (shell);
+      if (render)
+        w->run (shell);
   
       if (w->isClosed ())
         {

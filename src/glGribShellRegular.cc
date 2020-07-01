@@ -63,6 +63,12 @@ glGrib::ShellRegular::ShellRegular ()
   opts.traverse ("", &p);
   p.getOptions (&getsetoptions);
   rl_attempted_completion_function = shellCompletion;
+#ifdef USE_GLFW
+  synchronous = false;
+#endif
+#ifdef USE_EGL
+  synchronous = true;
+#endif
 }
 
 void glGrib::ShellRegular::process_help (const std::vector<std::string> & args, glGrib::Render * gwindow) 
@@ -135,12 +141,10 @@ std::vector<std::string> glGrib::ShellRegular::tokenize (const std::string & _li
 void glGrib::ShellRegular::start (glGrib::WindowSet * ws)
 {
   setWindowSet (ws);
-#ifdef USE_GLFW
-  thread = std::thread ([this] () { this->run (); });
-#endif
-#ifdef USE_EGL
-  run ();
-#endif
+  if (synchronous)
+    run ();
+  else
+    thread = std::thread ([this] () { this->run (); });
 }
 
 void glGrib::ShellRegular::runInt ()
@@ -164,6 +168,8 @@ void glGrib::ShellRegular::runInt ()
  
       lock ();
       {
+        if (synchronous)
+          getWindowSet ()->runShell (this, false);
         if (getWindowSet ()->size ())
           {
             glGrib::Render * gwindow = getWindow ();
@@ -198,6 +204,8 @@ void glGrib::ShellRegular::runOff ()
         {
           if (getWindowSet ()->size () == 0)
             break;
+          if (synchronous)
+            getWindowSet ()->runShell (this, false);
           lock ();
           glGrib::Render * gwindow = getWindow ();
           if (gwindow == nullptr)

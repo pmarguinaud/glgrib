@@ -1122,8 +1122,7 @@ public:
     DESC (antialiasing.samples,  Samples for antialiasing);
     DESC (title,                 Window title);
     DESC (debug.on,              Enable OpenGL debugging);
-    DESC (version_major,         GLFW_CONTEXT_VERSION_MAJOR);
-    DESC (version_minor,         GLFW_CONTEXT_VERSION_MINOR);
+    DESC (opengl.version,        OpenGL version);
     INCLUDE (offscreen);
     DESC (info.on,               Show hardware info);
     DESC_H (fixlandscape.on,     Fix landscape position);
@@ -1132,6 +1131,9 @@ public:
     DESC (fullscreen.on,         Window in fullscreen mode);
     DESC (fullscreen.x.on,       Window in fullscreen mode in X direction);
     DESC (fullscreen.y.on,       Window in fullscreen mode in Y direction);
+#ifdef USE_EGL
+    DESC (device.path,           Path to EGL/gbm device);
+#endif
   }
   int     width   = 800;
   int     height  = 800;
@@ -1153,8 +1155,10 @@ public:
   {
     bool on = false;
   } debug;
-  int     version_major = 4;
-  int     version_minor = 3;
+  struct
+  {
+    float version = 4.3;
+  } opengl;
   OptionsOffscreen offscreen;
   struct
   {
@@ -1176,6 +1180,10 @@ public:
       bool on = false;
     } y;
   } fullscreen;
+  struct
+  {
+    std::string path = "/dev/dri/renderD128";
+  } device;
 };
 
 class OptionsLight : public OptionsBase

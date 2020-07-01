@@ -82,13 +82,13 @@ glGrib::Batch::Batch (const glGrib::Options & o) : glGrib::Render::Render (o)
   opts = o.render;
 
 #ifdef USE_EGL
-  int fd = open ("/dev/dri/renderD128", O_RDWR);
+  int fd = open (opts.device.path.c_str (), O_RDWR);
   assert (fd > 0);
 
   struct gbm_device * gbm = gbm_create_device (fd);
   assert (gbm != nullptr);
 
-  EGLDisplay display = eglGetPlatformDisplay(EGL_PLATFORM_GBM_MESA, gbm, nullptr);
+  EGLDisplay display = eglGetPlatformDisplay (EGL_PLATFORM_GBM_MESA, gbm, nullptr);
   display || pre ();
 
   eglInitialize (display, nullptr, nullptr) || pre ();
@@ -108,10 +108,12 @@ glGrib::Batch::Batch (const glGrib::Options & o) : glGrib::Render::Render (o)
 
   eglBindAPI (EGL_OPENGL_API) || pre ();
 
+  auto version = getOpenGLVersion ();
+
   const EGLint ctxAttr[] = 
   {
-    EGL_CONTEXT_MAJOR_VERSION, opts.version_major,
-    EGL_CONTEXT_MINOR_VERSION, opts.version_minor,
+    EGL_CONTEXT_MAJOR_VERSION, version.major,
+    EGL_CONTEXT_MINOR_VERSION, version.minor,
     EGL_NONE
   };
 

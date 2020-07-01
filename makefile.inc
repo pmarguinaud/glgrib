@@ -15,7 +15,7 @@ LDFLAGS=-fopenmp -lglGrib -L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib \
 CXXFLAGS=-fPIC -O0 -fopenmp -std=c++11 -Wall -g -I$(ECCODES_PREFIX)/include -I$(NETCDF_PREFIX)/include -DGLGRIB_CHECK_BOUNDS
 CXXFLAGS=-fPIC -O2 -fopenmp -std=c++11 -Wall -I$(ECCODES_PREFIX)/include -I$(NETCDF_PREFIX)/include
 
-CXXFLAGS+=-DUSE_GLFW
-LDFLAGS+=$(LDFLAGS_GLFW)
+CXXFLAGS+=-DUSE_EGL
+LDFLAGS+=$(LDFLAGS_EGL)
 
 

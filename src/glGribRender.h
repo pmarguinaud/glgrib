@@ -8,6 +8,7 @@
 #include "glGribOptions.h"
 
 #include <string>
+#include <utility>
 
 namespace glGrib
 {
@@ -69,6 +70,14 @@ public:
   }
 
   const OptionsRender & getOptions () const { return opts; }
+
+  typedef struct
+  {
+    int minor;
+    int major;
+  } version_t;
+
+  const version_t getOpenGLVersion () const;
 
   bool getNext ()
   {

@@ -726,8 +726,11 @@ void glGrib::Window::setHints ()
 #ifdef USE_GLFW
   if (opts.antialiasing.on)
     glfwWindowHint (GLFW_SAMPLES, opts.antialiasing.samples);
-  glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, opts.version_major);
-  glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, opts.version_minor);
+
+  auto version = getOpenGLVersion ();
+
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, version.major);
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, version.minor);
   glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); 
   glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 

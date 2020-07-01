@@ -25,3 +25,19 @@ void glGrib::Render::reSize (int w, int h)
   scene.setViewport (opts.width, opts.height);
 }
 
+const glGrib::Render::version_t glGrib::Render::getOpenGLVersion () const
+{
+  version_t version;
+
+  version.major = static_cast<int> (opts.opengl.version);
+
+  int v = 1000.0f * (opts.opengl.version - static_cast<float> (version.major));
+
+  while (v && (v % 10 == 0))
+    v /= 10;
+
+  version.minor = static_cast<int> (v);  
+
+  return version;
+}
+

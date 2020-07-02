@@ -205,7 +205,7 @@ class glGrib::Render * glGrib::Batch::clone ()
 
   Batch * batch = new Batch ();
 
-//batch->egl = egl;
+  batch->egl = egl;
 
   batch->setup (opts);
   batch->scene = scene;

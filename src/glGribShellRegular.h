@@ -39,6 +39,11 @@ public:
       thread.join (); 
   }
 
+  bool isSynchronous ()
+  {
+    return synchronous;
+  }
+
   // Should be private
   char * optionGenerator (const char *, int);
 private:

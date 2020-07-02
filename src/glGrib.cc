@@ -15,13 +15,14 @@ int main (int argc, const char * argv[])
   glGrib::glStart ();
 
   glGrib::WindowSet * wset = glGrib::WindowSet::create (opts);
-  glGrib::Shell & shell = glGrib::ShellRegular::getInstance ();
+  glGrib::ShellRegular & shell = glGrib::ShellRegular::getInstance ();
 
   if (opts.shell.on)
     {
       shell.setup (opts.shell);
       shell.start (wset);
-      wset->run (&shell);
+      if (! shell.isSynchronous ())
+        wset->run (&shell);
     }
   else
     {

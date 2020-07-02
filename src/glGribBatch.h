@@ -19,17 +19,7 @@ public:
 
   explicit Batch (const Options &);
 
-  virtual ~Batch ()
-  {
-#ifdef USE_EGL
-    if (display)
-      eglTerminate (display);
-    if (gbm)
-      gbm_device_destroy (gbm);
-    if (fd >= 0)
-      ::close (fd);
-#endif
-  }
+  virtual ~Batch ();
 
   void shouldClose () override
   {
@@ -38,24 +28,32 @@ public:
 
   void run (class Shell * = nullptr) override;
 
-  void makeCurrent () override
-  {
-#ifdef USE_EGL
-    eglMakeCurrent (display, nullptr, nullptr, context);
-#endif
-  }
+  void makeCurrent () override;
 
   void setOptions (const OptionsRender &) override;
 
   virtual class Render * clone () override;
 
 private:
+
+  explicit Batch () {}
+  void setup (const Options &);
+
+  class eglDisplay
+  {
+  public:
+    eglDisplay (const std::string &, int, int);
+    ~eglDisplay ();
 #ifdef USE_EGL
-  EGLDisplay display = nullptr;
-  EGLContext context = nullptr;
-  int fd = -1;
-  struct gbm_device * gbm = nullptr;
+    EGLDisplay display = nullptr;
+    EGLContext context = nullptr;
+    int fd = -1;
+    struct gbm_device * gbm = nullptr;
 #endif
+  };
+
+  std::shared_ptr<eglDisplay> egl;
+
 };
 
 

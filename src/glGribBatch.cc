@@ -3,6 +3,7 @@
 #include "glGribOpenGL.h"
 #include "glGribScene.h"
 #include "glGribSnapshot.h"
+#include "glGribClear.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -78,22 +79,21 @@ bool pre ()
 
 }
 
-glGrib::Batch::Batch (const glGrib::Options & o) : glGrib::Render::Render (o)
+glGrib::Batch::eglDisplay::eglDisplay 
+  (const std::string & path, int version_major, int version_minor)
 {
-  opts = o.render;
-
 #ifdef USE_EGL
-  fd = open (opts.device.path.c_str (), O_RDWR);
+  fd = open (path.c_str (), O_RDWR);
 
   if (fd < 0)
-    throw std::runtime_error (std::string ("Cannot open ") + opts.device.path);
+    throw std::runtime_error (std::string ("Cannot open ") + path);
 
   gbm = gbm_create_device (fd);
 
   if (gbm == nullptr)
     throw std::runtime_error (std::string ("Cannot create gbm object"));
 
-  EGLDisplay display = eglGetPlatformDisplay (EGL_PLATFORM_GBM_MESA, gbm, nullptr);
+  display = eglGetPlatformDisplay (EGL_PLATFORM_GBM_MESA, gbm, nullptr);
   display || pre ();
 
   eglInitialize (display, nullptr, nullptr) || pre ();
@@ -113,19 +113,50 @@ glGrib::Batch::Batch (const glGrib::Options & o) : glGrib::Render::Render (o)
 
   eglBindAPI (EGL_OPENGL_API) || pre ();
 
-  auto version = getOpenGLVersion ();
-
   const EGLint ctxAttr[] = 
   {
-    EGL_CONTEXT_MAJOR_VERSION, version.major,
-    EGL_CONTEXT_MINOR_VERSION, version.minor,
+    EGL_CONTEXT_MAJOR_VERSION, version_major,
+    EGL_CONTEXT_MINOR_VERSION, version_minor,
     EGL_NONE
   };
 
   context = eglCreateContext (display, config[0], EGL_NO_CONTEXT, ctxAttr); 
   context || pre ();
 
-  eglMakeCurrent (display, nullptr, nullptr, context) || pre ();
+#endif
+}
+
+
+glGrib::Batch::eglDisplay::~eglDisplay ()
+{
+#ifdef USE_EGL
+  if (display)
+    eglTerminate (display);
+  if (gbm)
+    gbm_device_destroy (gbm);
+  if (fd >= 0)
+    ::close (fd);
+#endif
+}
+
+glGrib::Batch::Batch (const glGrib::Options & o) : glGrib::Render::Render (o)
+{
+  setup (o);
+}
+
+void glGrib::Batch::setup (const Options & o)
+{
+  opts = o.render;
+
+  if (egl == nullptr)
+    {
+      auto version = getOpenGLVersion ();
+      egl = std::make_shared<eglDisplay> (opts.device.path, 
+                                          version.major, 
+                                          version.minor);
+    }
+
+  makeCurrent ();
 
   scene.setup (o);
 
@@ -133,9 +164,15 @@ glGrib::Batch::Batch (const glGrib::Options & o) : glGrib::Render::Render (o)
 
   glGrib::glInit ();
 
-#endif
-
   id_ = idcount++;
+}
+
+void glGrib::Batch::makeCurrent () 
+{
+#ifdef USE_EGL
+  eglMakeCurrent (egl->display, nullptr, nullptr, egl->context);
+  glViewport (0, 0, opts.width, opts.height);
+#endif
 }
 
 void glGrib::Batch::run (glGrib::Shell * shell)
@@ -163,7 +200,16 @@ class glGrib::Render * glGrib::Batch::clone ()
   auto opts = getScene ().getOptions ();
   opts.render = this->opts;
   cloned = false;
-  return new glGrib::Batch (opts);
+  Batch * batch = new Batch ();
+  batch->egl = egl;
+  batch->setup (opts);
+  return batch;
+}
+
+glGrib::Batch::~Batch ()
+{
+// Destroy the scene *before* the EGL context/display is destroyed
+  clear (scene);
 }
 
 

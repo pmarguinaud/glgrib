@@ -804,17 +804,17 @@ void glGrib::Window::createGFLWwindow (GLFWwindow * context)
   
   window = glfwCreateWindow (opts.width, opts.height, title.c_str (), nullptr, context);
 
-  if (opts.fullscreen.on || opts.fullscreen.x.on || opts.fullscreen.y.on)
-    moveTo (0, 0);
-
-  glfwSetWindowUserPointer (window, this);
-
   if (window == nullptr)
     {
       fprintf (stderr, "Failed to open GLFW window.");
       glfwTerminate ();
       return;
     }
+
+  if (opts.fullscreen.on || opts.fullscreen.x.on || opts.fullscreen.y.on)
+    moveTo (0, 0);
+
+  glfwSetWindowUserPointer (window, this);
 
   makeCurrent ();
   glInit ();

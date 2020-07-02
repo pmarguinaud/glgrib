@@ -138,7 +138,7 @@ public:
     friend class SQLite;
   };
 
-  stmt prepare (const std::string & sql)
+  const stmt prepare (const std::string & sql)
   {
     stmt st;
     st.db = db;

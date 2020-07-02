@@ -47,9 +47,9 @@ public:
   virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec2 [3]) const = 0;
   virtual bool triangleIsEdge (int) const = 0;
   virtual int getTriangle (float, float) const = 0;
-  virtual glm::vec2 xyz2conformal (const glm::vec3 &) const = 0;
-  virtual glm::vec3 conformal2xyz (const glm::vec2 &) const = 0;
-  virtual glm::vec2 conformal2latlon (const glm::vec2 &) const = 0;
+  virtual const glm::vec2 xyz2conformal (const glm::vec3 &) const = 0;
+  virtual const glm::vec3 conformal2xyz (const glm::vec2 &) const = 0;
+  virtual const glm::vec2 conformal2latlon (const glm::vec2 &) const = 0;
   virtual void checkTriangles () const;
   virtual void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const = 0;
   virtual void renderTriangles (int level = 0) const;
@@ -118,8 +118,8 @@ public:
   }
 
 private:
-  std::string md5string (const unsigned char []) const;
-  virtual std::string md5 () const = 0;
+  const std::string md5string (const unsigned char []) const;
+  virtual const std::string md5 () const = 0;
 private:
   OptionsGeometry opts;
 

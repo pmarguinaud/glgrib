@@ -35,15 +35,15 @@ public:
   void getTriangleNeighbours (int, int [3], int [3], glm::vec2 [3]) const override;
   bool triangleIsEdge (int) const override;
   int getTriangle (float, float) const override;
-  glm::vec2 xyz2conformal (const glm::vec3 &) const override;
-  glm::vec3 conformal2xyz (const glm::vec2 &) const override;
-  glm::vec2 conformal2latlon (const glm::vec2 &) const override;
+  const glm::vec2 xyz2conformal (const glm::vec3 &) const override;
+  const glm::vec3 conformal2xyz (const glm::vec2 &) const override;
+  const glm::vec2 conformal2latlon (const glm::vec2 &) const override;
   void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const override;
   float getLocalMeshSize (int) const override;
   void getView (View *) const override;
   void setProgramParameters (Program *) const override;
 private:
-  std::string md5 () const override;
+  const std::string md5 () const override;
   void setupCoordinates ();
   void setupFrame ();
   void getTriangleNeighboursLatLon (int, int [3], int [3], float &, float &, float &, float &) const;

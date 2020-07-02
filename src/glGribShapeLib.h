@@ -16,5 +16,4 @@ void read (const OptionsLines &,
            const std::string &);
 };
 
-
 }

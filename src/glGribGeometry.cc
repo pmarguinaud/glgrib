@@ -97,7 +97,7 @@ glGrib::Geometry::~Geometry ()
     delete subgrid;
 }
 
-std::string glGrib::Geometry::md5string (const unsigned char md5[]) const
+const std::string glGrib::Geometry::md5string (const unsigned char md5[]) const
 {
   const char * const lut = "0123456789ABCDEF";
 

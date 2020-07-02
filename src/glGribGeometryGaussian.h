@@ -38,9 +38,9 @@ public:
   void getTriangleNeighbours (int, int [3], int [3], glm::vec2 [3]) const override;
   bool triangleIsEdge (int) const override;
   int getTriangle (float, float) const override;
-  glm::vec2 xyz2conformal (const glm::vec3 &) const override;
-  glm::vec3 conformal2xyz (const glm::vec2 &) const override;
-  glm::vec2 conformal2latlon (const glm::vec2 &) const override;
+  const glm::vec2 xyz2conformal (const glm::vec3 &) const override;
+  const glm::vec3 conformal2xyz (const glm::vec2 &) const override;
+  const glm::vec2 conformal2latlon (const glm::vec2 &) const override;
   void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const override;
   float getLocalMeshSize (int) const override;
   void getView (View *) const override;
@@ -48,7 +48,7 @@ public:
 
 private:
   void setup (HandlePtr, const OptionsGeometry &) override;
-  std::string md5 () const override;
+  const std::string md5 () const override;
 
   class jlonlat_t
   {
@@ -59,8 +59,8 @@ private:
     int jlat = 0;
   };
 
-  jlonlat_t jlonlat (int) const;
-  glm::vec2 jlonlat2merc (const jlonlat_t & jlonlat) const
+  const jlonlat_t jlonlat (int) const;
+  const glm::vec2 jlonlat2merc (const jlonlat_t & jlonlat) const
   {
     int jlat = jlonlat.jlat;
     int jlon = jlonlat.jlon;
@@ -68,7 +68,7 @@ private:
     float coordx = 2. * M_PI * (float)(jlon-1) / (float)grid_gaussian.pl[jlat-1];
     return glm::vec2 (coordx, std::log (std::tan (M_PI / 4.0f + coordy / 2.0f)));
   }
-  glm::vec3 jlonlat2xyz (const jlonlat_t & jlonlat) const
+  const glm::vec3 jlonlat2xyz (const jlonlat_t & jlonlat) const
   {
     int jlat = jlonlat.jlat;
     int jlon = jlonlat.jlon;
@@ -89,7 +89,7 @@ private:
    
     return misc_gaussian.rot * glm::vec3 (X, Y, Z);
   }
-  glm::vec2 jlonlat2lonlat (const jlonlat_t & jlonlat) const
+  const glm::vec2 jlonlat2lonlat (const jlonlat_t & jlonlat) const
   {
     if ((misc_gaussian.stretchingFactor == 1.0f) && (! misc_gaussian.rotated))
       {

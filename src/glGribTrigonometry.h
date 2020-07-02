@@ -31,7 +31,7 @@ void xyz2lonlat (float x, float y, float z, float * lon, float * lat)
 }
 
 static inline
-glm::vec3 lonlat2xyz (const glm::vec2 & lonlat)
+const glm::vec3 lonlat2xyz (const glm::vec2 & lonlat)
 {
   float x, y, z;
   lonlat2xyz (lonlat.x, lonlat.y, &x, &y, &z);
@@ -39,7 +39,7 @@ glm::vec3 lonlat2xyz (const glm::vec2 & lonlat)
 }
 
 static inline
-glm::vec2 xyz2lonlat (const glm::vec3 & xyz)
+const glm::vec2 xyz2lonlat (const glm::vec3 & xyz)
 {
   float lon, lat;
   xyz2lonlat (xyz.x, xyz.y, xyz.z, &lon, &lat);
@@ -47,13 +47,13 @@ glm::vec2 xyz2lonlat (const glm::vec3 & xyz)
 }
 
 static inline
-glm::vec3 lonlat2xyz (float lon, float lat)
+const glm::vec3 lonlat2xyz (float lon, float lat)
 {
   return lonlat2xyz (glm::vec2 (lon, lat));
 }
 
 static inline
-glm::vec2 xyz2lonlat (float x, float y, float z)
+const glm::vec2 xyz2lonlat (float x, float y, float z)
 {
   return xyz2lonlat (glm::vec3 (x, y, z));
 }

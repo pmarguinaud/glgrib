@@ -1383,7 +1383,7 @@ void glGrib::GeometryGaussian::index2latlon (int jglo, float * lat, float * lon)
   *lat = lonlat[1];
 }
 
-std::string glGrib::GeometryGaussian::md5 () const
+const std::string glGrib::GeometryGaussian::md5 () const
 {
   unsigned char out[MD5_DIGEST_LENGTH];
   MD5_CTX c;
@@ -1481,7 +1481,8 @@ void glGrib::GeometryGaussian::sample (OpenGLBufferPtr<unsigned char> & pp, cons
     }
 }
 
-glGrib::GeometryGaussian::jlonlat_t glGrib::GeometryGaussian::jlonlat (int jglo) const 
+const glGrib::GeometryGaussian::jlonlat_t 
+glGrib::GeometryGaussian::jlonlat (int jglo) const 
 {
   int jlat1 = 0, jlat2 = grid_gaussian.Nj, jlat;
   while (jlat2 != jlat1 + 1)
@@ -1725,14 +1726,14 @@ int glGrib::GeometryGaussian::getTriangle (float lon, float lat) const
   return 0;
 }
 
-glm::vec2 glGrib::GeometryGaussian::xyz2conformal (const glm::vec3 & xyz) const
+const glm::vec2 glGrib::GeometryGaussian::xyz2conformal (const glm::vec3 & xyz) const
 {
   float lon = atan2 (xyz.y, xyz.x);
   float lat = std::asin (xyz.z);
   return glm::vec2 (lon, std::log (std::tan (pi / 4.0f + lat / 2.0f)));
 }
 
-glm::vec3 glGrib::GeometryGaussian::conformal2xyz (const glm::vec2 & merc) const
+const glm::vec3 glGrib::GeometryGaussian::conformal2xyz (const glm::vec2 & merc) const
 {
   float coordx = merc.x;
   float coordy = 2.0f * std::atan (std::exp (merc.y)) - halfpi;
@@ -1751,7 +1752,7 @@ glm::vec3 glGrib::GeometryGaussian::conformal2xyz (const glm::vec2 & merc) const
   return misc_gaussian.rot * glm::vec3 (X, Y, Z);
 }
 
-glm::vec2 glGrib::GeometryGaussian::conformal2latlon (const glm::vec2 & merc) const
+const glm::vec2 glGrib::GeometryGaussian::conformal2latlon (const glm::vec2 & merc) const
 {
   float lon = merc.x;
   float lat = 2.0f * std::atan (std::exp (merc.y)) - halfpi;

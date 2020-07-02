@@ -28,7 +28,7 @@ public:
 };
 
 
-hsva_t rgba2hsva (const glGrib::OptionColor & rgba)
+const hsva_t rgba2hsva (const glGrib::OptionColor & rgba)
 {
   float r = float (rgba.r) / 255.0f, g = float (rgba.g) / 255.0f;
   float b = float (rgba.b) / 255.0f, a = float (rgba.a) / 255.0f;
@@ -57,7 +57,7 @@ hsva_t rgba2hsva (const glGrib::OptionColor & rgba)
 }
 
 
-glGrib::OptionColor hsva2rgba (const hsva_t & hsva)
+const glGrib::OptionColor hsva2rgba (const hsva_t & hsva)
 {
   float h = hsva.h, s = hsva.s, v = hsva.v, a = hsva.a;
 
@@ -387,7 +387,7 @@ bool glGrib::Palette::isEqual (const glGrib::Palette & p) const
   return true;
 }
 
-glGrib::OptionColor glGrib::Palette::getColor (const float val) const
+const glGrib::OptionColor glGrib::Palette::getColor (const float val) const
 {
   if (opts.fixed.on)
     {

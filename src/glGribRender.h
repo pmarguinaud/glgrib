@@ -57,7 +57,7 @@ public:
   void unsetMaster () { master = false; }
   void toggleMaster () { master = ! master; }
   virtual void setOptions (const OptionsRender &) = 0;
-  OptionsRender getOptions () { return opts; }
+  const OptionsRender getOptions () { return opts; }
   void startShell ()
   {
     start_shell = true;

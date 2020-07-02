@@ -27,16 +27,16 @@ public:
   void delMVP (Program *) const;
   void calcMVP ();
   void setViewport (int, int);
-  glm::vec3 project (const glm::vec3 & xyz) const
+  const glm::vec3 project (const glm::vec3 & xyz) const
   {
     return glm::project (xyz, view * model, projection, viewport);
   }
-  glm::vec3 unproject (const glm::vec3 & xyz) const
+  const glm::vec3 unproject (const glm::vec3 & xyz) const
   {
     return glm::unProject (xyz, view * model, projection, viewport);
   }
-  glm::vec3 intersectPlane (const double &, const double &, const glm::vec3 &, const glm::vec3 &) const;
-  glm::vec3 intersectSphere (const double &, const double &, const glm::vec3 &, const float &) const;
+  const glm::vec3 intersectPlane (const double &, const double &, const glm::vec3 &, const glm::vec3 &) const;
+  const glm::vec3 intersectSphere (const double &, const double &, const glm::vec3 &, const float &) const;
 
   int getLatLonFromScreenCoords (float, float, float *, float *) const;
   int getScreenCoordsFromLatLon (float *, float *, float, float) const;

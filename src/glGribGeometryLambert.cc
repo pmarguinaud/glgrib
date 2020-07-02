@@ -233,7 +233,7 @@ void glGrib::GeometryLambert::index2latlon (int jglo, float * lat, float * lon) 
   *lat = latlon.lat;
 }
 
-std::string glGrib::GeometryLambert::md5 () const
+const std::string glGrib::GeometryLambert::md5 () const
 {
   unsigned char out[MD5_DIGEST_LENGTH];
   MD5_CTX c;
@@ -548,13 +548,13 @@ int glGrib::GeometryLambert::getTriangle (float lon, float lat) const
   return it;
 }
 
-glm::vec2 glGrib::GeometryLambert::xyz2conformal (const glm::vec3 &) const
+const glm::vec2 glGrib::GeometryLambert::xyz2conformal (const glm::vec3 &) const
 {
   throw std::runtime_error  
     (std::string ("glGrib::GeometryLambert::xyz2conformal not implemented"));
 }
 
-glm::vec3 glGrib::GeometryLambert::conformal2xyz (const glm::vec2 & xy) const
+const glm::vec3 glGrib::GeometryLambert::conformal2xyz (const glm::vec2 & xy) const
 {
   xy_t pt_xy (xy.x, xy.y);
   pt_xy = pt_xy + misc_lambert.center_xy;
@@ -565,7 +565,7 @@ glm::vec3 glGrib::GeometryLambert::conformal2xyz (const glm::vec2 & xy) const
 }
 
 
-glm::vec2 glGrib::GeometryLambert::conformal2latlon (const glm::vec2 & xy) const
+const glm::vec2 glGrib::GeometryLambert::conformal2latlon (const glm::vec2 & xy) const
 {
   xy_t pt_xy (xy.x, xy.y);
   pt_xy = pt_xy + misc_lambert.center_xy;

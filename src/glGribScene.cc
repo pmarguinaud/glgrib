@@ -430,7 +430,7 @@ void glGrib::Scene::reSize ()
       f->reSize (d.view);
 }
 
-glGrib::Options glGrib::Scene::getOptions () const
+const glGrib::Options glGrib::Scene::getOptions () const
 {
   glGrib::Options o = d.opts;
 

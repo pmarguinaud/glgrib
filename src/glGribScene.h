@@ -201,7 +201,7 @@ public:
   void setSceneOptions (const OptionsScene &);
   void setTitleOptions (const OptionsTitle &);
 
-  Options getOptions () const;
+  const Options getOptions () const;
 
   const OptionsScene & getSceneOptions () const 
   { 

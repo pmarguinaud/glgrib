@@ -34,7 +34,7 @@ public:
 
   void handleMasterWindow ();
   static WindowSet * create (const glGrib::Options &);
-  Options & getOptions ()
+  const Options & getOptions ()
   {
     return opts;
   }

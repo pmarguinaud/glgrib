@@ -22,7 +22,6 @@ public:
   void setup (const OptionsShell &) override;
   void start (class WindowSet *) override;
   void run () override;
-  char * optionGenerator (const char *, int);
   static ShellRegular & getInstance () 
   {
     if (shellregular == nullptr)
@@ -40,7 +39,10 @@ public:
       thread.join (); 
   }
 
+  // Should be private
+  char * optionGenerator (const char *, int);
 private:
+
   ShellRegular ();
   ~ShellRegular () {}
   ShellRegular & operator= (const ShellRegular &);

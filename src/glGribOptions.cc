@@ -13,26 +13,26 @@
 namespace glGrib::OptionsParserDetail
 {
 
-template <> std::string optionTmpl    <int>                 ::type () { return std::string ("INTEGER"); }
-template <> std::string optionTmpl    <float>               ::type () { return std::string ("FLOAT"); }
-template <> std::string optionTmplList<int>                 ::type () { return std::string ("INTEGER-LIST"); }
-template <> std::string optionTmplList<float>               ::type () { return std::string ("FLOAT-LIST"); }
-template <> std::string optionTmpl     <glGrib::OptionDate> ::type () { return std::string ("DATE"); }
-template <> std::string optionTmpl     <glGrib::OptionColor>::type () { return std::string ("COLOR"); }
-template <> std::string optionTmpl     <std::string>        ::type () { return std::string ("STRING"); }
-template <> std::string optionTmpl     <std::string>        ::asString () const { return *value; }
-template <> std::string optionTmpl     <std::string>        ::asJSON   () const { return glGrib::OptionsUtil::escape (*value); }
-template <> std::string optionTmpl     <std::string>        ::asOption () const { return name + " " + glGrib::OptionsUtil::escape (*value); }
-template <> std::string optionTmplList<glGrib::OptionColor> ::type () { return std::string ("COLOR-LIST"); }
-template <> std::string optionTmplList<std::string>         ::type () { return std::string ("STRING-LIST"); }
-template <> std::string optionTmplList<std::string>         ::asString () const 
+template <> const std::string optionTmpl    <int>                 ::type () { return std::string ("INTEGER"); }
+template <> const std::string optionTmpl    <float>               ::type () { return std::string ("FLOAT"); }
+template <> const std::string optionTmplList<int>                 ::type () { return std::string ("INTEGER-LIST"); }
+template <> const std::string optionTmplList<float>               ::type () { return std::string ("FLOAT-LIST"); }
+template <> const std::string optionTmpl     <glGrib::OptionDate> ::type () { return std::string ("DATE"); }
+template <> const std::string optionTmpl     <glGrib::OptionColor>::type () { return std::string ("COLOR"); }
+template <> const std::string optionTmpl     <std::string>        ::type () { return std::string ("STRING"); }
+template <> const std::string optionTmpl     <std::string>        ::asString () const { return *value; }
+template <> const std::string optionTmpl     <std::string>        ::asJSON   () const { return glGrib::OptionsUtil::escape (*value); }
+template <> const std::string optionTmpl     <std::string>        ::asOption () const { return name + " " + glGrib::OptionsUtil::escape (*value); }
+template <> const std::string optionTmplList<glGrib::OptionColor> ::type () { return std::string ("COLOR-LIST"); }
+template <> const std::string optionTmplList<std::string>         ::type () { return std::string ("STRING-LIST"); }
+template <> const std::string optionTmplList<std::string>         ::asString () const 
 { 
   std::string str; 
   for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); ++it)
     str = str + " " + *it;
   return str;
 }
-template <> std::string optionTmplList<std::string>         ::asJSON () const 
+template <> const std::string optionTmplList<std::string>         ::asJSON () const 
 { 
   std::string json; 
   for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); ++it)
@@ -43,14 +43,14 @@ template <> std::string optionTmplList<std::string>         ::asJSON () const
     }
   return std::string ("[") + json + std::string ("]");
 }
-template <> std::string optionTmplList<std::string>        ::asOption () const 
+template <> const std::string optionTmplList<std::string>        ::asOption () const 
 { 
   std::string str = name + " ";
   for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); ++it)
     str = str + " " + glGrib::OptionsUtil::escape (*it);
   return str;
 }
-template <> std::string optionTmpl     <bool>               ::type () { return std::string ("BOOLEAN"); }
+template <> const std::string optionTmpl     <bool>               ::type () { return std::string ("BOOLEAN"); }
 
 template <> void optionTmpl<bool>::set ()
 {
@@ -73,17 +73,17 @@ template <> void optionTmpl<bool>::clear ()
     *value = false; 
 }
 
-template <> std::string optionTmpl<bool>::asString () const
+template <> const std::string optionTmpl<bool>::asString () const
 {
   return *value ? std::string ("TRUE") : std::string ("FALSE");
 }
 
-template <> std::string optionTmpl<bool>::asJSON () const
+template <> const std::string optionTmpl<bool>::asJSON () const
 {
   return *value ? std::string ("true") : std::string ("false");
 }
 
-template <> std::string optionTmpl<bool>::asOption () const
+template <> const std::string optionTmpl<bool>::asOption () const
 {
   std::string val = name;
   val.replace (val.length () - 3, 3, (*value ? ".on" : ".off"));
@@ -121,7 +121,7 @@ void glGrib::OptionDate::parse (glGrib::OptionDate * date, const std::string & v
           &date->month, &date->day, &date->hour, &date->minute, &date->second);
 }
 
-std::string glGrib::OptionDate::asString () const 
+const std::string glGrib::OptionDate::asString () const 
 {
   char tmp[128];
   sprintf (tmp, "%4.4ld/%2.2ld/%2.2ld_%2.2ld:%2.2ld:%2.2ld", year, month, day, hour, minute, second);
@@ -276,7 +276,7 @@ glGrib::OptionColor glGrib::OptionColor::colorByName (const std::string & n)
   return color;
 }
 
-std::string glGrib::OptionsUtil::escape (const std::string & token)
+const std::string glGrib::OptionsUtil::escape (const std::string & token)
 { 
   std::string tok;
 
@@ -293,7 +293,7 @@ std::string glGrib::OptionsUtil::escape (const std::string & token)
 }
 
 
-std::string glGrib::OptionsUtil::nextToken (std::string * line)
+const std::string glGrib::OptionsUtil::nextToken (std::string * line)
 {
   while (line->length () && (*line)[0] == ' ')
     *line = line->substr (1);
@@ -662,7 +662,7 @@ void glGrib::OptionsParser::showHelpLong ()
   std::cout << getHelp ("--");
 }
 
-std::string glGrib::OptionsParser::asOption (glGrib::OptionsParser & p2) 
+const std::string glGrib::OptionsParser::asOption (glGrib::OptionsParser & p2) 
 {
   std::string str;
 
@@ -702,7 +702,7 @@ void glGrib::OptionsParser::getValue
 
 }
 
-std::string glGrib::OptionsParser::getHelp 
+const std::string glGrib::OptionsParser::getHelp 
   (const std::string & prefix, bool show_hidden, bool sort)
 {
   std::string help;
@@ -758,7 +758,7 @@ std::string glGrib::OptionsParser::getHelp
 
 
 
-std::vector<glGrib::OptionsParser::name2option_t::iterator>
+const std::vector<glGrib::OptionsParser::name2option_t::iterator>
 glGrib::OptionsParser::filterOptions
    (const std::string & prefix, bool show_hidden, bool sort,
     glGrib::OptionsParser * p1)
@@ -805,7 +805,7 @@ glGrib::OptionsParser::filterOptions
   return listOpts;
 }
 
-std::string glGrib::OptionsParser::getJSON 
+const std::string glGrib::OptionsParser::getJSON 
    (const std::string & prefix, bool show_hidden, bool sort,
     glGrib::OptionsParser * p1)
 {
@@ -833,7 +833,7 @@ std::string glGrib::OptionsParser::getJSON
   return json;
 }
 
-std::string glGrib::OptionsBase::asOption (glGrib::OptionsBase & opt2) 
+const std::string glGrib::OptionsBase::asOption (glGrib::OptionsBase & opt2) 
 {
   auto & opt1 = *this;
   glGrib::OptionsParser p1, p2;

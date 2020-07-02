@@ -17,8 +17,8 @@ namespace glGrib
 
 namespace OptionsUtil
 {
-  std::string nextToken (std::string *);
-  std::string escape (const std::string &);
+  const std::string nextToken (std::string *);
+  const std::string escape (const std::string &);
 };
 
 class OptionColor
@@ -33,13 +33,13 @@ public:
   explicit OptionColor (const std::string &);
 
   int r = 255, g = 255, b = 255, a = 255;
-  std::string asString () const 
+  const std::string asString () const 
   {
     char str[32]; 
     sprintf (str, "#%2.2x%2.2x%2.2x%2.2x", r, g, b, a); 
     return std::string (str); 
   }
-  std::string asJSON () const 
+  const std::string asJSON () const 
   {
     return std::string ("\"") + asString () + std::string ("\"");
   }
@@ -69,8 +69,8 @@ public:
   static OptionDate interpolate (const OptionDate &, const OptionDate &, const float);
   static OptionDate date_from_t (time_t);
   static time_t tFromDate (const OptionDate &);
-  std::string asString () const;
-  std::string asJSON () const;
+  const std::string asString () const;
+  const std::string asJSON () const;
   friend std::ostream & operator << (std::ostream &, const OptionDate &);
   friend std::istream & operator >> (std::istream &, OptionDate &);
   friend bool operator== (OptionDate const & d1, OptionDate const & d2)
@@ -100,10 +100,10 @@ namespace OptionsParserDetail
     { throw std::runtime_error (std::string ("Set method is not defined")); }
     std::string name;
     std::string desc;
-    virtual std::string type ()  = 0;
-    virtual std::string asString () const = 0;
-    virtual std::string asJSON   () const = 0;
-    virtual std::string asOption () const = 0;
+    virtual const std::string type ()  = 0;
+    virtual const std::string asString () const = 0;
+    virtual const std::string asJSON   () const = 0;
+    virtual const std::string asOption () const = 0;
     virtual void clear () = 0;
     virtual bool isEqual (const optionBase *) const = 0;
     bool hidden = false;
@@ -115,9 +115,9 @@ namespace OptionsParserDetail
   public:
     optionTmpl (const std::string & n, const std::string & d, T * v = nullptr) : optionBase (n, d), value (v) {}
     T * value = nullptr;
-    std::string asString () const { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
-    std::string asJSON   () const { return OptionsUtil::escape (asString ()); }
-    std::string asOption () const { return name + " " + OptionsUtil::escape (asString ()); }
+    const std::string asString () const { std::ostringstream ss; ss << *value; return std::string (ss.str ()); }
+    const std::string asJSON   () const { return OptionsUtil::escape (asString ()); }
+    const std::string asOption () const { return name + " " + OptionsUtil::escape (asString ()); }
     void set ()
     {
     }
@@ -134,7 +134,7 @@ namespace OptionsParserDetail
                 + std::string (" failed"));
         }
     }   
-    std::string type () { return std::string ("UNKNOWN"); }
+    const std::string type () { return std::string ("UNKNOWN"); }
     void clear () {}
     int hasArg () const { return 1; }
     bool isEqual (const optionBase * _o) const
@@ -158,7 +158,7 @@ namespace OptionsParserDetail
   public:
     optionTmplList (const std::string & n, const std::string & d, std::vector<T> * v = nullptr) : optionBase (n, d), value (v) {}
     std::vector<T> * value = nullptr;
-    std::string asOption () const 
+    const std::string asOption () const 
     { 
       std::string str = name;
       for (typename std::vector<T>::iterator it = value->begin(); it != value->end (); ++it)
@@ -169,14 +169,14 @@ namespace OptionsParserDetail
 	}
       return str;
     }
-    std::string asString () const
+    const std::string asString () const
     {
       std::ostringstream ss;
       for (typename std::vector<T>::iterator it = value->begin(); it != value->end (); ++it)
         ss << (*it) << " ";
       return std::string (ss.str ());
     }
-    std::string asJSON () const
+    const std::string asJSON () const
     {
       std::string json;
       for (typename std::vector<T>::iterator it = value->begin(); it != value->end (); ++it)
@@ -205,7 +205,7 @@ namespace OptionsParserDetail
         }
     }   
     void clear () { if (value) value->clear (); }
-    std::string type () { return std::string ("UNKNOWN"); }
+    const std::string type () { return std::string ("UNKNOWN"); }
     bool isEqual (const optionBase * _o) const 
     {
       const optionTmplList<T> * o = nullptr;
@@ -221,30 +221,30 @@ namespace OptionsParserDetail
     }
   };
 
-  template <> std::string optionTmpl     <int>               ::type ();
-  template <> std::string optionTmpl     <float>             ::type ();
-  template <> std::string optionTmplList<int>                ::type ();
-  template <> std::string optionTmplList<float>              ::type ();
-  template <> std::string optionTmpl     <OptionDate> ::type ();
-  template <> std::string optionTmpl     <OptionColor>::type ();
-  template <> std::string optionTmpl     <std::string>       ::type ();
-  template <> std::string optionTmpl     <std::string>       ::asString () const;
-  template <> std::string optionTmpl     <std::string>       ::asJSON   () const;
-  template <> std::string optionTmpl     <std::string>       ::asOption () const;
-  template <> std::string optionTmplList<OptionColor>        ::type ();
-  template <> std::string optionTmplList<std::string>        ::type ();
-  template <> std::string optionTmplList<std::string>        ::asString () const;
-  template <> std::string optionTmplList<std::string>        ::asJSON   () const;
-  template <> std::string optionTmplList<std::string>        ::asOption () const;
-  template <> std::string optionTmpl     <bool>              ::type ();
-  template <> void optionTmpl            <bool>              ::set ();
-  template <> void optionTmplList        <std::string>       ::set (const std::string &);
-  template <> void optionTmpl            <std::string>       ::set (const std::string &);
-  template <> void optionTmpl            <bool>              ::clear ();
-  template <> std::string optionTmpl     <bool>              ::asString () const;
-  template <> std::string optionTmpl     <bool>              ::asJSON   () const;
-  template <> std::string optionTmpl     <bool>              ::asOption () const;
-  template <> int optionTmpl             <bool>              ::hasArg () const;
+  template <> const std::string optionTmpl     <int>               ::type ();
+  template <> const std::string optionTmpl     <float>             ::type ();
+  template <> const std::string optionTmplList<int>                ::type ();
+  template <> const std::string optionTmplList<float>              ::type ();
+  template <> const std::string optionTmpl     <OptionDate>        ::type ();
+  template <> const std::string optionTmpl     <OptionColor>       ::type ();
+  template <> const std::string optionTmpl     <std::string>       ::type ();
+  template <> const std::string optionTmpl     <std::string>       ::asString () const;
+  template <> const std::string optionTmpl     <std::string>       ::asJSON   () const;
+  template <> const std::string optionTmpl     <std::string>       ::asOption () const;
+  template <> const std::string optionTmplList<OptionColor>        ::type ();
+  template <> const std::string optionTmplList<std::string>        ::type ();
+  template <> const std::string optionTmplList<std::string>        ::asString () const;
+  template <> const std::string optionTmplList<std::string>        ::asJSON   () const;
+  template <> const std::string optionTmplList<std::string>        ::asOption () const;
+  template <> const std::string optionTmpl     <bool>              ::type ();
+  template <> void optionTmpl            <bool>                    ::set ();
+  template <> void optionTmplList        <std::string>             ::set (const std::string &);
+  template <> void optionTmpl            <std::string>             ::set (const std::string &);
+  template <> void optionTmpl            <bool>                    ::clear ();
+  template <> const std::string optionTmpl     <bool>              ::asString () const;
+  template <> const std::string optionTmpl     <bool>              ::asJSON   () const;
+  template <> const std::string optionTmpl     <bool>              ::asOption () const;
+  template <> int optionTmpl             <bool>                    ::hasArg () const;
 
 };
 
@@ -280,14 +280,14 @@ public:
 class OptionsParser : public OptionsCallback
 {
 public:
-  virtual std::string asOption (OptionsParser &);
+  virtual const std::string asOption (OptionsParser &);
   bool parse (int, const char * [], const std::set<std::string> * = nullptr);
   void showHelpShort ();
   void showHelpLong ();
   void showJSON ();
-  std::string getHelp (const std::string &, bool = false, bool = false);
-  std::string getJSON (const std::string &, bool = false, bool = false,
-                       glGrib::OptionsParser * = nullptr);
+  const std::string getHelp (const std::string &, bool = false, bool = false);
+  const std::string getJSON (const std::string &, bool = false, bool = false,
+                             glGrib::OptionsParser * = nullptr);
   void getValue (std::vector<std::string> *, const std::string &, 
                  bool = false, bool = false, OptionsParser * = nullptr);
   ~OptionsParser ()
@@ -305,7 +305,7 @@ public:
       vs->push_back (it->first);
   }
 
-  std::set<std::string> getSeenOptions () const
+  const std::set<std::string> getSeenOptions () const
   {
     return seen;
   }
@@ -342,11 +342,11 @@ private:
   name2option_t name2option;
   std::vector<std::string> listoptions;
 
-  std::vector<name2option_t::iterator> filterOptions
+  const std::vector<name2option_t::iterator> filterOptions
      (const std::string &, bool = false, bool = false, 
       glGrib::OptionsParser * = nullptr);
 
-  std::string getOptName (const std::string & path, const std::string & name)
+  const std::string getOptName (const std::string & path, const std::string & name)
   {
     return "--" + path + (path == "" ? "" : ".") + name;
   }
@@ -396,7 +396,7 @@ public:
                          const OptionsCallback::opt * = nullptr) {}
   virtual bool parse (int, const char * [], const std::set<std::string> * = nullptr);
   virtual bool parse (const char *, const std::set<std::string> * = nullptr);
-  virtual std::string asOption (OptionsBase &);
+  virtual const std::string asOption (OptionsBase &);
   friend bool operator== (const OptionsBase &, const OptionsBase &);
 };
 

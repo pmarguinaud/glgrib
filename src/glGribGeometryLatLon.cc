@@ -256,7 +256,7 @@ void glGrib::GeometryLatLon::index2latlon (int jglo, float * lat, float * lon) c
   *lon = misc_latlon.lon0 + misc_latlon.dlon * static_cast<float> (i);
 }
 
-std::string glGrib::GeometryLatLon::md5 () const
+const std::string glGrib::GeometryLatLon::md5 () const
 {
   unsigned char out[MD5_DIGEST_LENGTH];
   MD5_CTX c;
@@ -581,14 +581,14 @@ int glGrib::GeometryLatLon::getTriangle (float lon, float lat) const
   return it;
 }
 
-glm::vec2 glGrib::GeometryLatLon::xyz2conformal (const glm::vec3 & xyz) const
+const glm::vec2 glGrib::GeometryLatLon::xyz2conformal (const glm::vec3 & xyz) const
 {
   float lon = atan2 (xyz.y, xyz.x);
   float lat = std::asin (xyz.z);
   return glm::vec2 (lon, std::log (std::tan (pi / 4.0f + lat / 2.0f)));
 }
 
-glm::vec3 glGrib::GeometryLatLon::conformal2xyz (const glm::vec2 & merc) const
+const glm::vec3 glGrib::GeometryLatLon::conformal2xyz (const glm::vec2 & merc) const
 {
   float lon = merc.x;
   float lat = 2.0f * std::atan (std::exp (merc.y)) - pi / 2.0f;
@@ -596,7 +596,7 @@ glm::vec3 glGrib::GeometryLatLon::conformal2xyz (const glm::vec2 & merc) const
   return lonlat2xyz (lon, lat);
 }
 
-glm::vec2 glGrib::GeometryLatLon::conformal2latlon (const glm::vec2 & merc) const
+const glm::vec2 glGrib::GeometryLatLon::conformal2latlon (const glm::vec2 & merc) const
 {
   float lon = merc.x;
   float lat = 2.0f * std::atan (std::exp (merc.y)) - pi / 2.0f;

@@ -48,7 +48,7 @@ public:
   }
   const std::vector<float> & getValues () const { return opts.values; }
 
-  OptionColor getColor (const float) const;
+  const OptionColor getColor (const float) const;
   int getColorIndex (const float) const;
 
   bool isLinear () const

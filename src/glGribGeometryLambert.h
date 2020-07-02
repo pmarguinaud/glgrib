@@ -92,7 +92,7 @@ private:
     double r_equateur;
     double kl;
 
-    latlon_j_t rthetaToLatLon (const rtheta_j_t & pt_rtheta) const
+    const latlon_j_t rthetaToLatLon (const rtheta_j_t & pt_rtheta) const
     {
       return latlon_j_t 
                (
@@ -115,12 +115,12 @@ private:
                    )
                );
     }
-    latlon_t rthetaToLatLon (const rtheta_t & pt_rtheta) const 
+    const latlon_t rthetaToLatLon (const rtheta_t & pt_rtheta) const 
     {
       return latlon_t (ref_pt.lon + pt_rtheta.theta / kl,
                        pole * ((pi / 2.0) - 2.0 * std::atan(std::pow (pt_rtheta.r / r_equateur, 1.0 / kl))));
     }
-    rtheta_j_t xy_to_rtheta (const xy_j_t & pt_xy) const
+    const rtheta_j_t xy_to_rtheta (const xy_j_t & pt_xy) const
     {
       double r2 = pt_xy.V.x * pt_xy.V.x + pt_xy.V.y * pt_xy.V.y;
       double r = std::sqrt (r2);
@@ -150,7 +150,7 @@ private:
    
       return rtheta_j_t (rtheta_t (r, theta), rtheta_t (dr_dA, dtheta_dA), rtheta_t (dr_dB, dtheta_dB));
     }
-    rtheta_t xy_to_rtheta (const xy_t & pt_xy) const 
+    const rtheta_t xy_to_rtheta (const xy_t & pt_xy) const 
     {
       double r = std::sqrt(pt_xy.x * pt_xy.x + pt_xy.y * pt_xy.y);
       double tatng;
@@ -164,25 +164,25 @@ private:
     
       return rtheta_t (r, theta);
     }
-    latlon_j_t xy_to_latlon (const xy_j_t & pt_xy) const
+    const latlon_j_t xy_to_latlon (const xy_j_t & pt_xy) const
     {
       return rthetaToLatLon (xy_to_rtheta (pt_xy));
     }
-    latlon_t xy_to_latlon (const xy_t & pt_xy) const 
+    const latlon_t xy_to_latlon (const xy_t & pt_xy) const 
     {
       return rthetaToLatLon (xy_to_rtheta (pt_xy));
     }
-    rtheta_t latlonToRtheta (const latlon_t & pt_coord) const 
+    const rtheta_t latlonToRtheta (const latlon_t & pt_coord) const 
     {
       return rtheta_t 
     	  (r_equateur * std::pow (std::tan ((pi / 4.0) - ((pole * pt_coord.lat) / 2.0)), kl),
                kl * dist2ref (pt_coord, ref_pt));
     }
-    xy_t rthetaToXy (const rtheta_t & pt_rtheta) const 
+    const xy_t rthetaToXy (const rtheta_t & pt_rtheta) const 
     {
       return xy_t (pt_rtheta.r * std::sin (pt_rtheta.theta), -pole * pt_rtheta.r * std::cos (pt_rtheta.theta));
     }
-    xy_t latlonToXy (const latlon_t & pt_coord) const 
+    const xy_t latlonToXy (const latlon_t & pt_coord) const 
     {
       return rthetaToXy (latlonToRtheta (pt_coord));
     }
@@ -206,16 +206,16 @@ public:
   void getTriangleNeighbours (int, int [3], int [3], glm::vec2 [3]) const override;
   bool triangleIsEdge (int) const override;
   int getTriangle (float, float) const override;
-  glm::vec2 xyz2conformal (const glm::vec3 &) const override;
-  glm::vec3 conformal2xyz (const glm::vec2 &) const override;
-  glm::vec2 conformal2latlon (const glm::vec2 &) const override;
+  const glm::vec2 xyz2conformal (const glm::vec3 &) const override;
+  const glm::vec3 conformal2xyz (const glm::vec2 &) const override;
+  const glm::vec2 conformal2latlon (const glm::vec2 &) const override;
   void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const override {}
   float getLocalMeshSize (int) const override;
   void getView (View *) const override;
   void setProgramParameters (Program *) const override;
 private:
   void setupFrame ();
-  std::string md5 () const override;
+  const std::string md5 () const override;
   void getTriangleNeighboursXY (int, int [3], int [3], xy_t [4]) const;
   void setupCoordinates ();
 private:

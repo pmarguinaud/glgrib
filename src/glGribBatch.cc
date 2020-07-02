@@ -197,12 +197,19 @@ void glGrib::Batch::setOptions (const OptionsRender & o)
 
 class glGrib::Render * glGrib::Batch::clone () 
 {
-  auto opts = getScene ().getOptions ();
-  opts.render = this->opts;
   cloned = false;
+
+  glGrib::Options opts; 
+
+  opts.render = this->opts;
+
   Batch * batch = new Batch ();
-  batch->egl = egl;
+
+//batch->egl = egl;
+
   batch->setup (opts);
+  batch->scene = scene;
+  
   return batch;
 }
 

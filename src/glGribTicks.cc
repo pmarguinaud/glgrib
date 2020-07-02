@@ -11,7 +11,7 @@ glGrib::Ticks & glGrib::Ticks::operator= (const glGrib::Ticks & other)
 {
   if ((this != &other) && other.isReady ())
     {
-      clear (*this);
+      glGrib::clear (*this);
       opts = other.opts;
       ticks = other.ticks;
       frame = other.frame;
@@ -331,7 +331,7 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
 
   if (opts.labels.on)
     {
-      clear (labels);
+      glGrib::clear (labels);
 
       glGrib::FontPtr font = getGlGribFontPtr (opts.labels.font); 
 

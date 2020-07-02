@@ -38,6 +38,11 @@ void glGrib::Shell::do_clone (const std::vector<std::string> & args, glGrib::Ren
   gwindow->setCloned ();
 }
 
+void glGrib::Shell::do_clear (const std::vector<std::string> & args, glGrib::Render * gwindow)
+{
+  gwindow->setCleared ();
+}
+
 void glGrib::Shell::do_set (const std::vector<std::string> & args, glGrib::Render * gwindow)
 {
   int argc = args.size ();
@@ -335,6 +340,7 @@ void glGrib::Shell::execute (const std::vector<std::string> & args)
   glGribShellIfCommand (snapshot);
   glGribShellIfCommand (sleep);
   glGribShellIfCommand (clone);
+  glGribShellIfCommand (clear);
   glGribShellIfCommand (get);
   glGribShellIfCommand (json);
   glGribShellIfCommand (set);

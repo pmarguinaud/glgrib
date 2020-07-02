@@ -1,5 +1,6 @@
 #include "glGribRender.h"
 #include "glGribSnapshot.h"
+#include "glGribClear.h"
 
 
 glGrib::Render::Render (const Options & o)
@@ -23,6 +24,12 @@ void glGrib::Render::reSize (int w, int h)
   makeCurrent ();
   glViewport (0, 0, opts.width, opts.height);
   scene.setViewport (opts.width, opts.height);
+}
+
+void glGrib::Render::clear ()
+{
+  cleared = false;
+  scene.clear ();
 }
 
 const glGrib::Render::version_t glGrib::Render::getOpenGLVersion () const

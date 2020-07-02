@@ -122,7 +122,6 @@ glGrib::Batch::eglDisplay::eglDisplay
 
   context = eglCreateContext (display, config[0], EGL_NO_CONTEXT, ctxAttr); 
   context || pre ();
-
 #endif
 }
 
@@ -170,7 +169,7 @@ void glGrib::Batch::setup (const Options & o)
 void glGrib::Batch::makeCurrent () 
 {
 #ifdef USE_EGL
-  eglMakeCurrent (egl->display, nullptr, nullptr, egl->context);
+  eglMakeCurrent (egl->display, nullptr, nullptr, egl->context) || pre ();
   glViewport (0, 0, opts.width, opts.height);
 #endif
 }
@@ -216,7 +215,7 @@ class glGrib::Render * glGrib::Batch::clone ()
 glGrib::Batch::~Batch ()
 {
 // Destroy the scene *before* the EGL context/display is destroyed
-  clear (scene);
+  clear ();
 }
 
 

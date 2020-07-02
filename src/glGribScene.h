@@ -43,6 +43,8 @@ public:
   void render () const;
   void render (const Object3D *) const;
   void render (const Object2D *) const;
+ 
+  void clear ();
 
   int getCurrentFieldRank () const
   {
@@ -102,7 +104,7 @@ public:
   template <typename T, typename O>
   void setObjectOptions (T & object, const O & o)
   {
-    clear (object);
+    glGrib::clear (object);
     object.setup (o);
     object.reSize (d.view);
   }

@@ -53,6 +53,10 @@ void glGrib::WindowSet::runShell (glGrib::Shell ** _shell, bool render)
           insert (w1);
           break;
 	}
+      if (w->isCleared ())
+        {
+          w->clear ();
+        }
     }
 
   *_shell = shell;

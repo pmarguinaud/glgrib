@@ -5,6 +5,12 @@
 
 #include <sys/time.h>
 
+void glGrib::Scene::clear ()
+{
+  glGrib::clear (*this);
+  glGrib::Options opts;
+  setup (opts);
+}
 
 glGrib::Scene & glGrib::Scene::operator= (const glGrib::Scene & other)
 {
@@ -291,7 +297,7 @@ void glGrib::Scene::updateTitle ()
 	}
       if (strtitle != title)
         {
-          clear (d.strtitle);
+          glGrib::clear (d.strtitle);
           glGrib::FontPtr font = getGlGribFontPtr (d.opts.scene.title.font);
           d.strtitle.setup (font, title, d.opts.scene.title.x, 
                               d.opts.scene.title.y, d.opts.scene.title.font.scale, 
@@ -462,7 +468,7 @@ void glGrib::Scene::setViewOptions (const glGrib::OptionsView & o)
 
 void glGrib::Scene::setLandscapeOptions (const glGrib::OptionsLandscape & o)
 {
-  clear (d.landscape);
+  glGrib::clear (d.landscape);
   d.landscape.setup (&ld, o);
 }
 
@@ -477,8 +483,8 @@ void glGrib::Scene::setFieldOptions (int j, const glGrib::OptionsField & o, floa
 void glGrib::Scene::setColorBarOptions (const glGrib::OptionsColorbar & o)
 {
   d.opts.colorbar = o;
-  clear (d.strmess);
-  clear (d.colorbar);
+  glGrib::clear (d.strmess);
+  glGrib::clear (d.colorbar);
 
   if (d.opts.colorbar.on)
     {
@@ -495,7 +501,7 @@ void glGrib::Scene::setColorBarOptions (const glGrib::OptionsColorbar & o)
 void glGrib::Scene::setTextOptions (const glGrib::OptionsText & o)
 {
   d.opts.scene.text = o;
-  clear (d.str);
+  glGrib::clear (d.str);
   if (d.opts.scene.text.on)
     {
       glGrib::FontPtr font = getGlGribFontPtr (d.opts.scene.text.font);
@@ -543,7 +549,7 @@ void glGrib::Scene::setDateOptions (const glGrib::OptionsDate & o)
 {
   strdate = "";
   d.opts.scene.date = o;
-  clear (d.strdate);
+  glGrib::clear (d.strdate);
   if (d.opts.scene.date.on)
     {
       glGrib::FontPtr font = getGlGribFontPtr (d.opts.scene.date.font);
@@ -559,7 +565,7 @@ void glGrib::Scene::setTitleOptions (const glGrib::OptionsTitle & o)
 {
   strtitle = "";
   d.opts.scene.title = o;
-  clear (d.strtitle);
+  glGrib::clear (d.strtitle);
   if (d.opts.scene.title.on)
     {
     }

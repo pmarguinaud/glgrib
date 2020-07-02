@@ -48,7 +48,11 @@ public:
   virtual void shouldClose () = 0;
   bool isClosed () { return closed; }
   bool isCloned () { return cloned; }
+  bool isCleared () { return cleared; }
   void setCloned () { cloned = true; }
+  void setCleared () { cleared = true; }
+
+  void clear ();
   
   int id () const { return id_; }
 
@@ -113,6 +117,7 @@ private:
 
   bool closed = false;
   bool cloned = false;
+  bool cleared = false;
   bool master = false;
   OptionsRender opts;
   bool next = false; // Next field

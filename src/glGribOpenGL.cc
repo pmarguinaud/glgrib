@@ -63,9 +63,11 @@ void errorCallback (int c, const char * desc)
 }
 #endif
 
-#ifdef USE_EGL
-bool pre ()
+}
+
+bool glGrib::preEGLError ()
 {
+#ifdef USE_EGL
   const char * m = nullptr;
   EGLint e = eglGetError (); 
   switch (e)
@@ -120,10 +122,9 @@ bool pre ()
 
   exit (1);
   return false;
-}
 #endif
-
 }
+
 
 glGrib::eglDisplay * glGrib::egl = nullptr;
 
@@ -142,9 +143,9 @@ glGrib::eglDisplay::eglDisplay
     throw std::runtime_error (std::string ("Cannot create gbm object"));
 
   display = eglGetPlatformDisplay (EGL_PLATFORM_GBM_MESA, gbm, nullptr);
-  display || pre ();
+  display || preEGLError ();
 
-  eglInitialize (display, nullptr, nullptr) || pre ();
+  eglInitialize (display, nullptr, nullptr) || preEGLError ();
 
   const EGLint cfgAttr[] = 
   {
@@ -157,9 +158,9 @@ glGrib::eglDisplay::eglDisplay
   EGLint numConfig;
   EGLConfig config[MAX_NUM_CONFIG];
 
-  eglChooseConfig (display, cfgAttr, config, MAX_NUM_CONFIG, &numConfig) || pre ();
+  eglChooseConfig (display, cfgAttr, config, MAX_NUM_CONFIG, &numConfig) || preEGLError ();
 
-  eglBindAPI (EGL_OPENGL_API) || pre ();
+  eglBindAPI (EGL_OPENGL_API) || preEGLError ();
 
   const EGLint ctxAttr[] = 
   {
@@ -169,7 +170,7 @@ glGrib::eglDisplay::eglDisplay
   };
 
   context = eglCreateContext (display, config[0], EGL_NO_CONTEXT, ctxAttr); 
-  context || pre ();
+  context || preEGLError ();
 #endif
 }
 

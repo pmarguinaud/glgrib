@@ -49,6 +49,8 @@ public:
 #endif
 };
 
+bool preEGLError ();
+
 extern eglDisplay * egl;
 
 typedef struct

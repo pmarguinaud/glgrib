@@ -43,7 +43,7 @@ void glGrib::Batch::setup (const Options & o)
 void glGrib::Batch::makeCurrent () 
 {
 #ifdef USE_EGL
-  eglMakeCurrent (egl->display, nullptr, nullptr, egl->context);
+  eglMakeCurrent (egl->display, nullptr, nullptr, egl->context) || preEGLError ();
   glViewport (0, 0, opts.width, opts.height);
 #endif
 }

@@ -154,11 +154,9 @@ glGrib::eglDisplay::eglDisplay
     EGL_BLUE_SIZE, 8, EGL_DEPTH_SIZE, 8, EGL_NONE
   };
 
-  const int MAX_NUM_CONFIG = 50;
   EGLint numConfig;
-  EGLConfig config[MAX_NUM_CONFIG];
 
-  eglChooseConfig (display, cfgAttr, config, MAX_NUM_CONFIG, &numConfig) || preEGLError ();
+  eglChooseConfig (display, cfgAttr, &config, 1, &numConfig) || preEGLError ();
 
   eglBindAPI (EGL_OPENGL_API) || preEGLError ();
 
@@ -169,7 +167,7 @@ glGrib::eglDisplay::eglDisplay
     EGL_NONE
   };
 
-  context = eglCreateContext (display, config[0], EGL_NO_CONTEXT, ctxAttr); 
+  context = eglCreateContext (display, config, EGL_NO_CONTEXT, ctxAttr); 
   context || preEGLError ();
 #endif
 }

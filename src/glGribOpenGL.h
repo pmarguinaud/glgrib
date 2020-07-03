@@ -44,6 +44,7 @@ public:
 #ifdef USE_EGL
   EGLDisplay display = nullptr;
   EGLContext context = nullptr;
+  EGLConfig  config  = nullptr;
   int fd = -1;
   struct gbm_device * gbm = nullptr;
 #endif

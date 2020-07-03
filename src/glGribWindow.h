@@ -33,7 +33,6 @@ public:
     glfwMakeContextCurrent (window); 
 #endif
   }
-  void debug (unsigned int, unsigned int, GLuint, unsigned int, int, const char *);
 
   void toggleCursorposDisplay ();
   void toggleFlat ()

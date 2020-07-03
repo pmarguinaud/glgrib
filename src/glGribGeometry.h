@@ -25,6 +25,7 @@ class Geometry
 {
 public:
   static GeometryPtr load (class Loader *, const std::string &, const OptionsGeometry & opts, const int  = 0);
+  static void clearCache ();
   virtual void setup (HandlePtr, const OptionsGeometry &) = 0;
   virtual void getPointNeighbours (int, std::vector<int> *) const = 0;
   virtual float getLocalMeshSize (int) const = 0;

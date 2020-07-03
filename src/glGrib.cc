@@ -2,6 +2,7 @@
 #include "glGribWindowSet.h"
 #include "glGribOptions.h"
 #include "glGribBatch.h"
+#include "glGribGeometry.h"
 
 #include <iostream>
 
@@ -12,7 +13,7 @@ int main (int argc, const char * argv[])
   if (! opts.parse (argc, argv))
     return 1;
 
-  glGrib::glStart ();
+  glGrib::glStart (opts.render);
 
   glGrib::WindowSet * wset = glGrib::WindowSet::create (opts);
   glGrib::ShellRegular & shell = glGrib::ShellRegular::getInstance ();

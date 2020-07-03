@@ -26,13 +26,6 @@ double currentTime ()
 
 
 #ifdef USE_GLFW
-void APIENTRY debugCallback (unsigned int source, unsigned int type, GLuint id, unsigned int severity, 
-                             int length, const char * message, const void * data)
-{
-  glGrib::Window * gwindow = (glGrib::Window *)data;
-  gwindow->debug (source, type, id, severity, length, message);
-}
-
 
 void cursorPositionCallback (GLFWwindow * window, double xpos, double ypos)
 {
@@ -775,15 +768,7 @@ void glGrib::Window::create (const glGrib::Options & o)
   createGFLWwindow (nullptr);
 
 
-  if (opts.info.on)
-    {
-#define PR(x) \
-  printf (" %-32s = %s\n", #x, glGetString (x))
-      PR (GL_VENDOR);
-      PR (GL_RENDERER);
-      PR (GL_VERSION);
-      PR (GL_EXTENSIONS);
-    }
+  setupDebug ();
 
   if ((opts.position.x != -1) && (opts.position.y != -1))
     glfwSetWindowPos (window, opts.position.x, opts.position.y);
@@ -827,26 +812,6 @@ void glGrib::Window::createGFLWwindow (GLFWwindow * context)
       return;
     }
   
-  if (opts.debug.on)
-   {
-#define pp(x) \
-     printf ("%-40s : %s\n", #x, glGetString (x));
-     pp (GL_VENDOR);
-     pp (GL_RENDERER);
-     pp (GL_VERSION); 
-     pp (GL_SHADING_LANGUAGE_VERSION);
-#undef pp
-     GLint flags; 
-     glGetIntegerv (GL_CONTEXT_FLAGS, &flags);
-     if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
-       {
-         glEnable (GL_DEBUG_OUTPUT);
-         glEnable (GL_DEBUG_OUTPUT_SYNCHRONOUS); 
-         glDebugMessageCallback (debugCallback, this);
-         glDebugMessageControl (GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
-       }
-   }
-
   glfwSetInputMode (window, GLFW_STICKY_KEYS, GL_TRUE);
   glfwSetKeyCallback (window, keyCallback);
   glfwSetScrollCallback (window, scrollCallback);
@@ -898,59 +863,6 @@ glGrib::Render * glGrib::Window::clone ()
 #endif
 
   return w;
-}
-
-namespace
-{
-
-
-#define GLMESS(x) case GL_DEBUG_SOURCE_##x: return #x
-const char * debugSource (unsigned int source)
-{
-  switch (source)
-    {
-      GLMESS (API); GLMESS (WINDOW_SYSTEM); GLMESS (SHADER_COMPILER);
-      GLMESS (THIRD_PARTY); GLMESS (APPLICATION); GLMESS (OTHER);
-    }
-  return "UNKNOWN";
-}
-#undef GLMESS
-
-#define GLMESS(x) case GL_DEBUG_TYPE_##x: return #x
-const char * debugType (unsigned int type)
-{
-  switch (type)
-    {
-      GLMESS (ERROR); GLMESS (DEPRECATED_BEHAVIOR); GLMESS (UNDEFINED_BEHAVIOR);
-      GLMESS (PORTABILITY); GLMESS (PERFORMANCE); GLMESS (MARKER);
-      GLMESS (PUSH_GROUP); GLMESS (POP_GROUP); GLMESS (OTHER);
-    } 
-  return "UNKNOWN";
-}
-#undef GLMESS
-
-#define GLMESS(x) case GL_DEBUG_SEVERITY_##x: return #x
-const char * debugSeverity (unsigned int severity)
-{
-  switch (severity)
-    {
-      GLMESS (HIGH); GLMESS (MEDIUM);
-      GLMESS (LOW); GLMESS (NOTIFICATION);
-    } 
-  return "UNKNOWN";
-}
-#undef GLMESS
-
-}
-
-void glGrib::Window::debug (unsigned int source, unsigned int type, GLuint id, 
-		           unsigned int severity, int length, const char * message)
-{
-  // ignore non-significant error/warning codes
-  if (id == 131169 || id == 131185 || id == 131218 || id == 131204) 
-    return; 
-  printf ("%-20s | %-20s | %-30s | %10d | %s\n", debugSource (source), 
-          debugSeverity (severity), debugType (type), id, message);
 }
 
 void glGrib::Window::setOptions (const glGrib::OptionsRender & o)

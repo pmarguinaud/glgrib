@@ -75,14 +75,6 @@ public:
 
   const OptionsRender & getOptions () const { return opts; }
 
-  typedef struct
-  {
-    int minor;
-    int major;
-  } version_t;
-
-  const version_t getOpenGLVersion () const;
-
   bool getNext ()
   {
     bool _next = next;
@@ -110,6 +102,8 @@ public:
   {
     return snapshot_cnt;
   }
+
+  void debug (unsigned int, unsigned int, GLuint, unsigned int, int, const char *);
   
 private:
   int snapshot_cnt = 0;
@@ -125,6 +119,9 @@ private:
   bool start_shell = false; // Start shell
   int id_ = 0;
   int nframes = 0;
+
+  void setupDebug ();
+
   friend class Window;
   friend class WindowOffscreen;
   friend class Batch;

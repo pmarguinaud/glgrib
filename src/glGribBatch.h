@@ -39,20 +39,7 @@ private:
   explicit Batch () {}
   void setup (const Options &);
 
-  class eglDisplay
-  {
-  public:
-    eglDisplay (const std::string &, int, int);
-    ~eglDisplay ();
-#ifdef USE_EGL
-    EGLDisplay display = nullptr;
-    EGLContext context = nullptr;
-    int fd = -1;
-    struct gbm_device * gbm = nullptr;
-#endif
-  };
-
-  std::shared_ptr<eglDisplay> egl;
+  glGrib::eglDisplay * egl = nullptr;
 
 };
 

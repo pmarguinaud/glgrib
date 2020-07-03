@@ -18,7 +18,7 @@ glGrib::ShellInterpreter::ShellInterpreter ()
 
 void glGrib::ShellInterpreter::runWset ()
 {
-  glGrib::glStart ();
+  glGrib::glStart (gopts.render);
 
   setWindowSet (glGrib::WindowSet::create (gopts));
  
@@ -36,7 +36,7 @@ void glGrib::ShellInterpreter::start (glGrib::WindowSet * ws)
   if (gopts.render.offscreen.on)
     {
       hasstarted = true;
-      glGrib::glStart ();
+      glGrib::glStart (gopts.render);
       setWindowSet (glGrib::WindowSet::create (gopts));
     }
   else

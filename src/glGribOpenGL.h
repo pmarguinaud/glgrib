@@ -26,13 +26,38 @@
 #include <memory>
 #include <iostream>
 #include <vector>
+#include <string>
 #include <assert.h>
 
 #include "glGribBuffer.h"
+#include "glGribOptions.h"
 
 
 namespace glGrib
 {
+
+class eglDisplay
+{
+public:
+  eglDisplay (const std::string &, int, int);
+  ~eglDisplay ();
+#ifdef USE_EGL
+  EGLDisplay display = nullptr;
+  EGLContext context = nullptr;
+  int fd = -1;
+  struct gbm_device * gbm = nullptr;
+#endif
+};
+
+extern eglDisplay * egl;
+
+typedef struct
+{
+  int minor;
+  int major;
+} OpenGLVersion;
+
+const OpenGLVersion getOpenGLVersion (const glGrib::OptionsRender &);
 
 template <typename T>
 class OpenGLBuffer
@@ -330,7 +355,7 @@ private:
 
 void glInit ();
 
-void glStart ();
+void glStart (const glGrib::OptionsRender &);
 void glStop ();
 
 template <typename T> GLenum getOpenGLType ();

@@ -35,11 +35,12 @@ public:
   virtual class Render * clone () override;
 
 private:
-
   explicit Batch () {}
-  void setup (const Options &);
-
-  glGrib::eglDisplay * egl = nullptr;
+#ifdef USE_EGL
+  eglDisplay * egl = nullptr;
+  void setup (const Options &, EGLContext);
+  EGLContext context = nullptr;
+#endif
 
 };
 

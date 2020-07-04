@@ -6,7 +6,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-void glGrib::glInit ()
+namespace glGrib
+{
+
+void glInit ()
 {
   glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
   glEnable (GL_DEPTH_TEST);
@@ -19,7 +22,7 @@ void glGrib::glInit ()
   glEnable (GL_MULTISAMPLE);
 }
   
-void glGrib::OpenGLTexture::init
+void OpenGLTexture::init
     (int width, int height, const void * data, GLint internalformat)
 {
   glGenTextures (1, &id_);
@@ -37,20 +40,17 @@ void glGrib::OpenGLTexture::init
   allocated_ = true;
 }
 
-glGrib::OpenGLTexture::~OpenGLTexture ()
+OpenGLTexture::~OpenGLTexture ()
 {
   if (allocated_)
     glDeleteTextures (1, &id_);
   allocated_ = false;
 }
 
-namespace glGrib
-{
 template <> GLenum getOpenGLType<unsigned char > () { return GL_UNSIGNED_BYTE ; }
 template <> GLenum getOpenGLType<unsigned short> () { return GL_UNSIGNED_SHORT; }
 template <> GLenum getOpenGLType<unsigned int  > () { return GL_UNSIGNED_INT  ; }
 template <> GLenum getOpenGLType<float         > () { return GL_FLOAT         ; }
-}
 
 namespace
 {
@@ -65,9 +65,9 @@ void errorCallback (int c, const char * desc)
 
 }
 
-bool glGrib::preEGLError ()
-{
 #ifdef USE_EGL
+bool preEGLError ()
+{
   const char * m = nullptr;
   EGLint e = eglGetError (); 
   switch (e)
@@ -122,16 +122,13 @@ bool glGrib::preEGLError ()
 
   exit (1);
   return false;
-#endif
 }
 
+eglDisplay * egl = nullptr;
 
-glGrib::eglDisplay * glGrib::egl = nullptr;
-
-glGrib::eglDisplay::eglDisplay 
-  (const std::string & path, int version_major, int version_minor)
+eglDisplay::eglDisplay 
+  (const std::string & path)
 {
-#ifdef USE_EGL
   fd = open (path.c_str (), O_RDWR);
 
   if (fd < 0)
@@ -160,39 +157,26 @@ glGrib::eglDisplay::eglDisplay
 
   eglBindAPI (EGL_OPENGL_API) || preEGLError ();
 
-  const EGLint ctxAttr[] = 
-  {
-    EGL_CONTEXT_MAJOR_VERSION, version_major,
-    EGL_CONTEXT_MINOR_VERSION, version_minor,
-    EGL_NONE
-  };
-
-  context = eglCreateContext (display, config, EGL_NO_CONTEXT, ctxAttr); 
-  context || preEGLError ();
-#endif
 }
 
-
-glGrib::eglDisplay::~eglDisplay ()
+eglDisplay::~eglDisplay ()
 {
-#ifdef USE_EGL
   if (display)
     eglTerminate (display);
   if (gbm)
     gbm_device_destroy (gbm);
   if (fd >= 0)
     ::close (fd);
-#endif
 }
+#endif
 
-const glGrib::OpenGLVersion glGrib::getOpenGLVersion 
-  (const glGrib::OptionsRender & opts) 
+const OpenGLVersion getOpenGLVersion (float V)
 {
   OpenGLVersion version;
 
-  version.major = static_cast<int> (opts.opengl.version);
+  version.major = static_cast<int> (V);
 
-  int v = 1000.0f * (opts.opengl.version - static_cast<float> (version.major));
+  int v = 1000.0f * (V - static_cast<float> (version.major));
 
   while (v && (v % 10 == 0))
     v /= 10;
@@ -203,26 +187,106 @@ const glGrib::OpenGLVersion glGrib::getOpenGLVersion
 }
 
 
-void glGrib::glStart (const glGrib::OptionsRender & opts)
+namespace
+{
+
+#define GLMESS(x) case GL_DEBUG_SOURCE_##x: return #x
+const char * debugSource (unsigned int source)
+{
+  switch (source)
+    {
+      GLMESS (API); GLMESS (WINDOW_SYSTEM); GLMESS (SHADER_COMPILER);
+      GLMESS (THIRD_PARTY); GLMESS (APPLICATION); GLMESS (OTHER);
+    }
+  return "UNKNOWN";
+}
+#undef GLMESS
+
+#define GLMESS(x) case GL_DEBUG_TYPE_##x: return #x
+const char * debugType (unsigned int type)
+{
+  switch (type)
+    {
+      GLMESS (ERROR); GLMESS (DEPRECATED_BEHAVIOR); GLMESS (UNDEFINED_BEHAVIOR);
+      GLMESS (PORTABILITY); GLMESS (PERFORMANCE); GLMESS (MARKER);
+      GLMESS (PUSH_GROUP); GLMESS (POP_GROUP); GLMESS (OTHER);
+    }
+  return "UNKNOWN";
+}
+#undef GLMESS
+
+#define GLMESS(x) case GL_DEBUG_SEVERITY_##x: return #x
+const char * debugSeverity (unsigned int severity)
+{
+  switch (severity)
+    {
+      GLMESS (HIGH); GLMESS (MEDIUM);
+      GLMESS (LOW); GLMESS (NOTIFICATION);
+    }
+  return "UNKNOWN";
+}
+#undef GLMESS
+
+}
+
+void APIENTRY debugCallback 
+  (unsigned int source, unsigned int type, GLuint id, unsigned int severity, 
+   int length, const char * message, const void * data)
+{
+  // ignore non-significant error/warning codes
+  if (id == 131169 || id == 131185 || id == 131218 || id == 131204)
+    return;
+  printf ("%-20s | %-20s | %-30s | %10d | %s\n", debugSource (source),
+          debugSeverity (severity), debugType (type), id, message);
+}
+
+void setupDebug (const OptionsRender & opts)
+{
+  if (opts.debug.on || opts.info.on)
+   {   
+#define pp(x) \
+     printf ("%-40s : %s\n", #x, glGetString (x));
+     pp (GL_VENDOR);
+     pp (GL_RENDERER);
+     pp (GL_VERSION); 
+     pp (GL_SHADING_LANGUAGE_VERSION);
+     pp (GL_EXTENSIONS);
+#undef pp
+   }   
+  if (opts.debug.on)
+   {   
+     GLint flags; 
+     glGetIntegerv (GL_CONTEXT_FLAGS, &flags);
+     if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
+       {
+         glEnable (GL_DEBUG_OUTPUT);
+         glEnable (GL_DEBUG_OUTPUT_SYNCHRONOUS); 
+         glDebugMessageCallback (debugCallback, nullptr);
+         glDebugMessageControl (GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+       }
+   }   
+
+}
+
+void glStart (const OptionsRender & opts)
 {
 #ifdef USE_GLFW
   glfwSetErrorCallback (errorCallback);
-
   if (! glfwInit ())
     {
       fprintf (stderr, "Failed to initialize GLFW\n");
-      exit (EXIT_FAILURE);
+      exit (1);
     }
 #endif
 #ifdef USE_EGL
-  auto version = getOpenGLVersion (opts);
-  egl = new glGrib::eglDisplay (opts.device.path, version.major, version.minor);
+  egl = new eglDisplay (opts.device.path);
 #endif
+  setupDebug (opts);
 }
 
-void glGrib::glStop ()
+void glStop ()
 {
-  glGrib::Geometry::clearCache ();
+  Geometry::clearCache ();
 #ifdef USE_GLFW
   glfwTerminate ();
 #endif
@@ -232,4 +296,4 @@ void glGrib::glStop ()
 #endif
 }
 
-
+}

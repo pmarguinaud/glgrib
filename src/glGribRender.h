@@ -120,8 +120,6 @@ private:
   int id_ = 0;
   int nframes = 0;
 
-  void setupDebug ();
-
   friend class Window;
   friend class WindowOffscreen;
   friend class Batch;

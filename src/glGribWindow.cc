@@ -720,7 +720,7 @@ void glGrib::Window::setHints ()
   if (opts.antialiasing.on)
     glfwWindowHint (GLFW_SAMPLES, opts.antialiasing.samples);
 
-  auto version = getOpenGLVersion ();
+  auto version = getOpenGLVersion (opts.opengl.version);
 
   glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, version.major);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, version.minor);
@@ -764,11 +764,7 @@ void glGrib::Window::create (const glGrib::Options & o)
   else
     title = opts.title;
 
-
   createGFLWwindow (nullptr);
-
-
-  setupDebug ();
 
   if ((opts.position.x != -1) && (opts.position.y != -1))
     glfwSetWindowPos (window, opts.position.x, opts.position.y);

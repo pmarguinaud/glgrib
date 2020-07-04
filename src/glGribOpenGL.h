@@ -1,6 +1,5 @@
 #pragma once
 
-
 #ifdef USE_EGL
 
 #define EGL_EGLEXT_PROTOTYPES
@@ -36,23 +35,22 @@
 namespace glGrib
 {
 
+#ifdef USE_EGL
 class eglDisplay
 {
 public:
-  eglDisplay (const std::string &, int, int);
+  eglDisplay (const std::string &);
   ~eglDisplay ();
-#ifdef USE_EGL
   EGLDisplay display = nullptr;
-  EGLContext context = nullptr;
   EGLConfig  config  = nullptr;
   int fd = -1;
   struct gbm_device * gbm = nullptr;
-#endif
 };
 
 bool preEGLError ();
 
 extern eglDisplay * egl;
+#endif
 
 typedef struct
 {
@@ -60,7 +58,7 @@ typedef struct
   int major;
 } OpenGLVersion;
 
-const OpenGLVersion getOpenGLVersion (const glGrib::OptionsRender &);
+const OpenGLVersion getOpenGLVersion (float);
 
 template <typename T>
 class OpenGLBuffer
@@ -358,7 +356,7 @@ private:
 
 void glInit ();
 
-void glStart (const glGrib::OptionsRender &);
+void glStart (const OptionsRender &);
 void glStop ();
 
 template <typename T> GLenum getOpenGLType ();

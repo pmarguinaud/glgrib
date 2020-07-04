@@ -10,6 +10,9 @@
 
 #include <string.h>
 
+namespace glGrib
+{
+
 namespace
 {
 
@@ -17,17 +20,31 @@ int idcount = 0;
 
 }
 
-glGrib::Batch::Batch (const glGrib::Options & o) : glGrib::Render::Render (o)
+Batch::Batch (const Options & o) : Render::Render (o)
 {
-  setup (o);
-  setupDebug ();
+#ifdef USE_EGL
+  setup (o, EGL_NO_CONTEXT);
+#endif
 }
 
-void glGrib::Batch::setup (const Options & o)
+#ifdef USE_EGL
+void Batch::setup (const Options & o, EGLContext c)
 {
   opts = o.render;
 
   egl = glGrib::egl;
+
+  auto version = getOpenGLVersion (opts.opengl.version);
+
+  const EGLint ctxAttr[] = 
+  {
+    EGL_CONTEXT_MAJOR_VERSION, version.major,
+    EGL_CONTEXT_MINOR_VERSION, version.minor,
+    EGL_NONE
+  };
+
+  context = eglCreateContext (egl->display, egl->config, c, ctxAttr); 
+  context || preEGLError ();
 
   makeCurrent ();
 
@@ -35,20 +52,21 @@ void glGrib::Batch::setup (const Options & o)
 
   reSize (opts.width, opts.height);
 
-  glGrib::glInit ();
+  glInit ();
 
   id_ = idcount++;
-}
 
-void glGrib::Batch::makeCurrent () 
+}
+#endif
+
+void Batch::makeCurrent () 
 {
 #ifdef USE_EGL
-  eglMakeCurrent (egl->display, nullptr, nullptr, egl->context) || preEGLError ();
-  glViewport (0, 0, opts.width, opts.height);
+  eglMakeCurrent (egl->display, nullptr, nullptr, context) || preEGLError ();
 #endif
 }
 
-void glGrib::Batch::run (glGrib::Shell * shell)
+void Batch::run (Shell * shell)
 {
   const auto & opts = getOptions ();
 
@@ -61,38 +79,42 @@ void glGrib::Batch::run (glGrib::Shell * shell)
   close ();
 }
 
-void glGrib::Batch::setOptions (const OptionsRender & o) 
+void Batch::setOptions (const OptionsRender & o) 
 {
   if ((o.width != opts.width) || (o.height != opts.height))
     reSize (o.width, o.height);
 }
 
 
-class glGrib::Render * glGrib::Batch::clone () 
+class Render * Batch::clone () 
 {
   cloned = false;
 
-  glGrib::Options opts; 
+  Options opts; 
 
   opts.render = this->opts;
 
   Batch * batch = new Batch ();
 
+#ifdef USE_EGL
   batch->egl = egl;
-
-  batch->setup (opts);
+  batch->setup (opts, context);
+#endif
   batch->scene = scene;
   
   return batch;
 }
 
-glGrib::Batch::~Batch ()
+Batch::~Batch ()
 {
 // Destroy the scene *before* the EGL context/display is destroyed
   clear ();
+#ifdef USE_EGL
+  eglDestroyContext (egl->display, context) || preEGLError ();
+#endif
 }
 
-
+}
 
 
 

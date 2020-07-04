@@ -795,7 +795,7 @@ glGrib::Window::~Window ()
     }
 }
 
-glGrib::Render * glGrib::Window::clone ()
+glGrib::Render * glGrib::Window::clone (bool deep)
 {
   glGrib::Window * w = nullptr;
 
@@ -813,7 +813,8 @@ glGrib::Render * glGrib::Window::clone ()
 
   w->createGFLWwindow (window); // use already existing context
 
-  COPY (scene);                 // copy the scene; invoke operator=
+  if (deep)
+    COPY (scene);                 // copy the scene; invoke operator=
 
 #undef COPY
 

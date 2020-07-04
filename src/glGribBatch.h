@@ -34,7 +34,7 @@ public:
 
   void setOptions (const OptionsRender &) override;
 
-  virtual class Render * clone () override;
+  virtual class Render * clone (bool = true) override;
 
 private:
   explicit Batch () {}

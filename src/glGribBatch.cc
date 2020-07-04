@@ -81,7 +81,7 @@ void Batch::setOptions (const OptionsRender & o)
 }
 
 
-class Render * Batch::clone () 
+class Render * Batch::clone (bool deep) 
 {
   cloned = false;
 
@@ -93,7 +93,9 @@ class Render * Batch::clone ()
 
   batch->egl = egl;
   batch->setup (opts, context);
-  batch->scene = scene;
+
+  if (deep)
+    batch->scene = scene;
   
   return batch;
 }

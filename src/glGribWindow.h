@@ -132,7 +132,7 @@ public:
   void duplicate          ();
   void create (const Options &);
 
-  class Render * clone () override;
+  class Render * clone (bool = true) override;
   void shouldClose () override
   { 
     glfwSetWindowShouldClose (window, 1); 

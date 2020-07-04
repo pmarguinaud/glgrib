@@ -1,3 +1,4 @@
+#ifdef USE_GLFW
 #include "glGribWindowOffscreen.h"
 
 #include <iostream>
@@ -12,10 +13,8 @@ glGrib::WindowOffscreen::WindowOffscreen (const Options & _opts)
 
 void glGrib::WindowOffscreen::setHints ()
 {
-#ifdef USE_GLFW
   glGrib::Window::setHints ();
   glfwWindowHint (GLFW_VISIBLE, GLFW_FALSE);
-#endif
 }
 
 void glGrib::WindowOffscreen::run (class glGrib::Shell * shell)
@@ -28,3 +27,4 @@ void glGrib::WindowOffscreen::run (class glGrib::Shell * shell)
     }
   close ();
 }
+#endif

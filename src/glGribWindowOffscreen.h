@@ -1,3 +1,4 @@
+#ifdef USE_GLFW
 #pragma once
 
 #include "glGribWindow.h"
@@ -15,5 +16,5 @@ private:
   int frames;
 };
 
-
 }
+#endif

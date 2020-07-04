@@ -168,6 +168,7 @@ eglDisplay::~eglDisplay ()
   if (fd >= 0)
     ::close (fd);
 }
+
 #endif
 
 const OpenGLVersion getOpenGLVersion (float V)

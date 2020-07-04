@@ -10,6 +10,7 @@
 
 #include <string>
 
+#ifdef USE_GLFW
 namespace glGrib
 {
 
@@ -29,9 +30,7 @@ public:
   void run (class Shell * = nullptr) override;
   void makeCurrent () override
   { 
-#ifdef USE_GLFW
     glfwMakeContextCurrent (window); 
-#endif
   }
 
   void toggleCursorposDisplay ();
@@ -136,9 +135,7 @@ public:
   class Render * clone () override;
   void shouldClose () override
   { 
-#ifdef USE_GLFW
     glfwSetWindowShouldClose (window, 1); 
-#endif
   }
   
   void setOptions (const OptionsRender &) override;
@@ -161,14 +158,10 @@ public:
 private:
   bool cursorpos = false;
 
-#ifdef USE_GLFW
   GLFWwindow * window = nullptr;
-#endif
 
   void showHelpItem (const char *, const char *, const char *, const char *);
-#ifdef USE_GLFW
   void createGFLWwindow (GLFWwindow * = nullptr);
-#endif
   double t0;
   std::string title = "";
   struct
@@ -177,5 +170,5 @@ private:
   } fullscreen;
 };
 
-
 }
+#endif

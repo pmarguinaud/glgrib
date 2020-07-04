@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef USE_EGL
+
 #include "glGribRender.h"
 #include "glGribScene.h"
 #include "glGribOpenGL.h"
@@ -36,13 +38,11 @@ public:
 
 private:
   explicit Batch () {}
-#ifdef USE_EGL
   eglDisplay * egl = nullptr;
   void setup (const Options &, EGLContext);
   EGLContext context = nullptr;
+
+};
+
+};
 #endif
-
-};
-
-
-};

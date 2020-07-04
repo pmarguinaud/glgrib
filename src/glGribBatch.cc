@@ -1,3 +1,4 @@
+#ifdef USE_EGL
 #include "glGribBatch.h"
 #include "glGribOptions.h"
 #include "glGribOpenGL.h"
@@ -22,12 +23,9 @@ int idcount = 0;
 
 Batch::Batch (const Options & o) : Render::Render (o)
 {
-#ifdef USE_EGL
   setup (o, EGL_NO_CONTEXT);
-#endif
 }
 
-#ifdef USE_EGL
 void Batch::setup (const Options & o, EGLContext c)
 {
   opts = o.render;
@@ -57,13 +55,10 @@ void Batch::setup (const Options & o, EGLContext c)
   id_ = idcount++;
 
 }
-#endif
 
 void Batch::makeCurrent () 
 {
-#ifdef USE_EGL
   eglMakeCurrent (egl->display, nullptr, nullptr, context) || preEGLError ();
-#endif
 }
 
 void Batch::run (Shell * shell)
@@ -96,10 +91,8 @@ class Render * Batch::clone ()
 
   Batch * batch = new Batch ();
 
-#ifdef USE_EGL
   batch->egl = egl;
   batch->setup (opts, context);
-#endif
   batch->scene = scene;
   
   return batch;
@@ -109,12 +102,10 @@ Batch::~Batch ()
 {
 // Destroy the scene *before* the EGL context/display is destroyed
   clear ();
-#ifdef USE_EGL
   eglDestroyContext (egl->display, context) || preEGLError ();
+}
+
+}
 #endif
-}
-
-}
-
 
 

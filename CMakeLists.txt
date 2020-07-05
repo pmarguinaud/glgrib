@@ -2,30 +2,30 @@ cmake_minimum_required (VERSION 3.16.3 FATAL_ERROR)
 
 project (glGrib VERSION 0.5 LANGUAGES C CXX)
 
-option (USE_EGL "Create non-interactive executable based on EGL" OFF)
+if (NOT CMAKE_BUILD_TYPE)
+  set (CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+endif()
+
+option (GLGRIB_USE_EGL "Create non-interactive executable based on EGL" OFF)
 
 set (CMAKE_CXX_STANDARD 11) 
 set (CMAKE_CXX_STANDARD_REQUIRED ON) 
 
-#set (OpenGL_GL_PREFERENCE LEGACY) # Or GLVND
 set (OpenGL_GL_PREFERENCE GLVND)
 
 find_package (OpenMP REQUIRED)
 
-if (USE_EGL)
-# find_package (EGL 1.5 REQUIRED)
-# find_package (gbm ?.? REQUIRED)
-else (USE_EGL)
+if (NOT GLGRIB_USE_EGL)
   find_package (glfw3 3.2 REQUIRED)
   find_package (GLEW 2.0 REQUIRED)
-endif (USE_EGL)
+endif ()
 
 find_package (eccodes 2.14.0 REQUIRED)
 find_package (OpenGL 1.2 REQUIRED)
 
-if (USE_EGL AND NOT OpenGL_EGL_FOUND)
+if (GLGRIB_USE_EGL AND NOT OpenGL_EGL_FOUND)
   message (FATAL_ERROR "EGL was not found")
-endif (USE_EGL AND NOT OpenGL_EGL_FOUND)
+endif ()
 
 
 find_package (SQLite3 3.22.0 REQUIRED)

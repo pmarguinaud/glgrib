@@ -67,11 +67,11 @@ set (SRC
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
-if (USE_EGL)
+if (GLGRIB_USE_EGL)
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGLGRIB_USE_EGL")
-else (USE_EGL)
+else ()
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGLGRIB_USE_GLFW")
-endif (USE_EGL)
+endif ()
 
 add_subdirectory (lfi)
 add_library (glGrib SHARED ${SRC})
@@ -83,13 +83,13 @@ add_executable (glgrib glGrib.cc)
 target_link_libraries (glgrib 
                        PUBLIC glGrib)
 
-if (USE_EGL)
+if (GLGRIB_USE_EGL)
 target_link_libraries (glgrib
                        PUBLIC EGL PUBLIC gbm)
-else (USE_EGL)
+else ()
 target_link_libraries (glgrib
                        PUBLIC glfw PUBLIC GLEW)
-endif (USE_EGL)
+endif ()
 
 target_link_libraries (glgrib 
                        PUBLIC eccodes PUBLIC GL PUBLIC sqlite3

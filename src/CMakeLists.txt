@@ -2,72 +2,81 @@
 # glGribDBase2SQLite.cc
 
 set (SRC
-  glGribGrok.o
-  glGribWindowReviewSet.cc
-  glGribBitmap.cc
-  glGribBorder.cc
-  glGribCities.cc
-  glGribCoast.cc
-  glGribColorbar.cc
-  glGribContainer.cc
-  glGribDBase.cc
-  glGribDepartements.cc
-  glGribEarCut.cc
-  glGribField.cc
-  glGribFieldContour.cc
-  glGribFieldIsoFill.cc
-  glGribFieldScalar.cc
-  glGribFieldStream.cc
-  glGribFieldVector.cc
-  glGribFitPolynomial.cc
-  glGribFont.cc
-  glGribGeometry.cc
-  glGribGeometryGaussian.cc
-  glGribGeometryLambert.cc
-  glGribGeometryLatLon.cc
-  glGribGrid.cc
-  glGribGSHHG.cc
-  glGribImage.cc
-  glGribLand.cc
-  glGribLandScape.cc
-  glGribLines.cc
-  glGribLoader.cc
-  glGribMapscale.cc
-  glGribOpenGL.cc
-  glGribOptions.cc
-  glGribPalette.cc
-  glGribPng.cc
-  glGribPoints.cc
-  glGribPolygon.cc
-  glGribProgram.cc
-  glGribProjection.cc
-  glGribResolve.cc
-  glGribRivers.cc
-  glGribScene.cc
-  glGribShader.cc
-  glGribShapeLib.cc
-  glGribShell.cc
-  glGribShellInterpreter.cc
-  glGribShellRegular.cc
-  glGribSQLite.cc
-  glGribString.cc
-  glGribSubdivide.cc
-  glGribTest.cc
-  glGribTicks.cc
-  glGribView.cc
-  glGribWindow.cc
-  glGribWindowDiffSet.cc
-  glGribWindowOffscreen.cc
-  glGribWindowSet.cc
-  glGribGeoPoints.cc
+   glGribGrok.cc
+   glGribDBase.cc
+   glGribShellInterpreter.cc
+   glGribShellRegular.cc
+   glGribContainer.cc
+   glGribWindowDiffSet.cc
+   glGribWindowSet.cc
+   glGribTicks.cc
+   glGribFitPolynomial.cc
+   glGribFieldIsoFill.cc
+   glGribSubdivide.cc
+   glGribEarCut.cc
+   glGribLand.cc
+   glGribSQLite.cc
+   glGribTest.cc
+   glGribCities.cc
+   glGribPoints.cc
+   glGribShapeLib.cc
+   glGribDepartements.cc
+   glGribMapscale.cc
+   glGribRivers.cc
+   glGribBorder.cc
+   glGribLines.cc
+   glGribGSHHG.cc
+   glGribImage.cc
+   glGribResolve.cc
+   glGribFieldContour.cc
+   glGribFieldVector.cc
+   glGribFieldScalar.cc
+   glGribGeometryLambert.cc
+   glGribProjection.cc
+   glGribColorbar.cc
+   glGribFont.cc
+   glGribString.cc
+   glGribGeometryLatLon.cc
+   glGribWindowOffscreen.cc
+   glGribGeometry.cc
+   glGribGeometryGaussian.cc
+   glGribWindow.cc
+   glGribOptions.cc
+   glGribShell.cc
+   glGribBitmap.cc
+   glGribLandScape.cc
+   glGribPalette.cc
+   glGribField.cc
+   glGribLoader.cc
+   glGribPolygon.cc
+   glGribProgram.cc
+   glGribView.cc
+   glGribOpenGL.cc
+   glGribPng.cc
+   glGribScene.cc
+   glGribCoast.cc
+   glGribGrid.cc
+   glGribShader.cc
+   glGribFieldStream.cc
+   glGribWindowReviewSet.cc
+   glGribGeoPoints.cc
+   glGribBatch.cc
+   glGribRender.cc
 )
 
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 
+if (USE_EGL)
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_EGL")
+else (USE_EGL)
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_GLFW")
+endif (USE_EGL)
+
 add_subdirectory (lfi)
 add_library (glGrib SHARED ${SRC})
 
+include_directories (lfi)
 
 add_executable (glgrib glGrib.cc)
 

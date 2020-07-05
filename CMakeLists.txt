@@ -2,6 +2,8 @@ cmake_minimum_required (VERSION 3.16.3 FATAL_ERROR)
 
 project (glGrib VERSION 0.5 LANGUAGES C CXX)
 
+option (USE_EGL "Create non-interactive executable based on EGL" OFF)
+
 set (CMAKE_CXX_STANDARD 11) 
 set (CMAKE_CXX_STANDARD_REQUIRED ON) 
 

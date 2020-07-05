@@ -125,13 +125,13 @@ Render * WindowSet::createWindow (const Options & opts)
 {
   Render * gwindow = nullptr;
 
-#ifdef USE_GLFW
+#ifdef GLGRIB_USE_GLFW
   if (opts.render.offscreen.on)
     gwindow = new WindowOffscreen (opts);
   else
     gwindow = new Window (opts);
 #endif
-#ifdef USE_EGL
+#ifdef GLGRIB_USE_EGL
   gwindow = new Batch (opts);
 #endif
 

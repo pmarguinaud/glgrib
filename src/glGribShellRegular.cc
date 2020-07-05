@@ -64,10 +64,10 @@ ShellRegular::ShellRegular ()
   opts.traverse ("", &p);
   p.getOptions (&getsetoptions);
   rl_attempted_completion_function = shellCompletion;
-#ifdef USE_GLFW
+#ifdef GLGRIB_USE_GLFW
   synchronous = false;
 #endif
-#ifdef USE_EGL
+#ifdef GLGRIB_USE_EGL
   synchronous = true;
 #endif
 }

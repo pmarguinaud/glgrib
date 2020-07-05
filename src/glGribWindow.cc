@@ -1,4 +1,4 @@
-#ifdef USE_GLFW
+#ifdef GLGRIB_USE_GLFW
 #include <cmath>
 #include <sys/types.h>
 #include <sys/stat.h>

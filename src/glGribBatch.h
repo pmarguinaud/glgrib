@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef USE_EGL
+#ifdef GLGRIB_USE_EGL
 
 #include "glGribRender.h"
 #include "glGribScene.h"

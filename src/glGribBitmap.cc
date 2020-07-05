@@ -42,6 +42,8 @@ void Bitmap (const std::string & file,
   if (! fh.read (reinterpret_cast<char*> (&rgb[0]), 3 * ncol * nrow))
     throw std::runtime_error (std::string ("Cannot read BMP file : ") + file);
 
+
+#pragma omp parallel for
   for (int i = 0; i < ncol * nrow; i++)
     {
       unsigned char r = rgb[3*i+2];

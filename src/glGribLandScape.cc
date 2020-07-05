@@ -105,7 +105,6 @@ void Landscape::setup (Loader * ld, const OptionsLandscape & o)
 
     }
 
-
   setReady ();
 }
 

@@ -10,7 +10,7 @@
 
 #include <string>
 
-#ifdef USE_GLFW
+#ifdef GLGRIB_USE_GLFW
 namespace glGrib
 {
 

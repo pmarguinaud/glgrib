@@ -1,4 +1,4 @@
-#ifdef USE_EGL
+#ifdef GLGRIB_USE_EGL
 #include "glGribBatch.h"
 #include "glGribOptions.h"
 #include "glGribOpenGL.h"

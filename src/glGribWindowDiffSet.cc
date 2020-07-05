@@ -45,7 +45,7 @@ WindowDiffSet::WindowDiffSet (const Options & o)
   fixOpts (&opts2);
 
   int maxWidth = 2000, maxHeight = 1000;
-#ifdef USE_GLFW
+#ifdef GLGRIB_USE_GLFW
   Window::getScreenSize (&maxWidth, &maxHeight);
 #endif
 

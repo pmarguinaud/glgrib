@@ -55,7 +55,7 @@ template <> GLenum getOpenGLType<float         > () { return GL_FLOAT         ; 
 namespace
 {
 
-#ifdef USE_GLFW
+#ifdef GLGRIB_USE_GLFW
 void errorCallback (int c, const char * desc)
 {
   fprintf (stderr, "Error: %4d | %s\n", c, desc);
@@ -65,7 +65,7 @@ void errorCallback (int c, const char * desc)
 
 }
 
-#ifdef USE_EGL
+#ifdef GLGRIB_USE_EGL
 bool preEGLError ()
 {
   const char * m = nullptr;
@@ -271,7 +271,7 @@ void setupDebug (const OptionsRender & opts)
 
 void glStart (const OptionsRender & opts)
 {
-#ifdef USE_GLFW
+#ifdef GLGRIB_USE_GLFW
   glfwSetErrorCallback (errorCallback);
   if (! glfwInit ())
     {
@@ -279,7 +279,7 @@ void glStart (const OptionsRender & opts)
       exit (1);
     }
 #endif
-#ifdef USE_EGL
+#ifdef GLGRIB_USE_EGL
   egl = new eglDisplay (opts.device.path);
 #endif
   setupDebug (opts);
@@ -288,10 +288,10 @@ void glStart (const OptionsRender & opts)
 void glStop ()
 {
   Geometry::clearCache ();
-#ifdef USE_GLFW
+#ifdef GLGRIB_USE_GLFW
   glfwTerminate ();
 #endif
-#ifdef USE_EGL
+#ifdef GLGRIB_USE_EGL
   delete egl;
   egl = nullptr;
 #endif

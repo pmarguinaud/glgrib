@@ -1,4 +1,4 @@
-#ifdef USE_GLFW
+#ifdef GLGRIB_USE_GLFW
 #include "glGribWindowOffscreen.h"
 
 #include <iostream>

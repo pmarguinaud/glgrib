@@ -1131,7 +1131,7 @@ public:
     DESC (fullscreen.on,         Window in fullscreen mode);
     DESC (fullscreen.x.on,       Window in fullscreen mode in X direction);
     DESC (fullscreen.y.on,       Window in fullscreen mode in Y direction);
-#ifdef USE_EGL
+#ifdef GLGRIB_USE_EGL
     DESC (device.path,           Path to EGL/gbm device);
 #endif
   }

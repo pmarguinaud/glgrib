@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef USE_EGL
+#ifdef GLGRIB_USE_EGL
 
 #define EGL_EGLEXT_PROTOTYPES
 #include <EGL/egl.h>
@@ -14,7 +14,7 @@
 
 #endif
 
-#ifdef USE_GLFW
+#ifdef GLGRIB_USE_GLFW
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -35,7 +35,7 @@
 namespace glGrib
 {
 
-#ifdef USE_EGL
+#ifdef GLGRIB_USE_EGL
 class eglDisplay
 {
 public:
@@ -79,7 +79,7 @@ public:
     }
     explicit Mapping (OpenGLBuffer * b) : buffer (b) 
     {
-#ifdef USE_EGL
+#ifdef GLGRIB_USE_EGL
       static PFNGLMAPNAMEDBUFFERPROC glMapNamedBuffer = nullptr;
       if (glMapNamedBuffer == nullptr)
         glMapNamedBuffer = (PFNGLMAPNAMEDBUFFERPROC)eglGetProcAddress ("glMapNamedBuffer");
@@ -110,7 +110,7 @@ public:
     {
       if (ptr)
         {
-#ifdef USE_EGL
+#ifdef GLGRIB_USE_EGL
           static PFNGLUNMAPNAMEDBUFFERPROC glUnmapNamedBuffer = nullptr;
           if (glUnmapNamedBuffer == nullptr)
             glUnmapNamedBuffer = (PFNGLUNMAPNAMEDBUFFERPROC)eglGetProcAddress ("glUnmapNamedBuffer");

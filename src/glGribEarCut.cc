@@ -10,8 +10,6 @@
 namespace glGrib
 {
 typedef void Diag_t (const glm::dmat2 &, glm::dmat2 *, glm::dvec2 *);
-}
-
 
 namespace
 {
@@ -840,7 +838,7 @@ void earCut (node_t ** nodelist,
 // X axis is chosen using average point
 // Y axis is chosen so that it matches maximum extent
 
-glm::mat3 getRotMat (glGrib::Diag_t diag, const std::vector<glm::vec3> & xyz, bool openmp)
+glm::mat3 getRotMat (Diag_t diag, const std::vector<glm::vec3> & xyz, bool openmp)
 {
 
   // Average point
@@ -927,11 +925,11 @@ glm::mat3 getRotMat (glGrib::Diag_t diag, const std::vector<glm::vec3> & xyz, bo
 }
 
 // Process a single ring
-void glGrib::EarCut::processRing (const std::vector<float> & lonlat1, 
-                                 int rankb, int rankl, 
-		                 int indrb, int * indrl,
-                                 std::vector<unsigned int> * ind,
-		                 bool openmp)
+void EarCut::processRing (const std::vector<float> & lonlat1, 
+                          int rankb, int rankl, 
+		          int indrb, int * indrl,
+                          std::vector<unsigned int> * ind,
+		          bool openmp)
 {
   int rank1 = rankb, rank2 = rankb + rankl;
   int indr1 = indrb, indr2 = indrb + *indrl;
@@ -1011,4 +1009,4 @@ void glGrib::EarCut::processRing (const std::vector<float> & lonlat1,
   *indrl = indr - indr1;
 }
 
-
+}

@@ -10,6 +10,9 @@
 
 #include <netcdf>
 
+namespace glGrib
+{
+
 namespace
 {
 
@@ -36,7 +39,7 @@ std::vector<float> readNC (const netCDF::NcFile & nc, const std::string & name)
 };
 
 
-void glGrib::GeoPoints::setup (const glGrib::OptionsGeoPoints & o)
+void GeoPoints::setup (const OptionsGeoPoints & o)
 {
   if (! o.on)
     return;
@@ -56,22 +59,24 @@ void glGrib::GeoPoints::setup (const glGrib::OptionsGeoPoints & o)
   if ((lon.size () != lat.size ()) || (lon.size () != val.size ()))
     throw std::runtime_error (std::string ("Size mismatch"));
 
-  glGrib::Points::setup (opts.points, lon, lat, val);
+  Points::setup (opts.points, lon, lat, val);
 }
 
-void glGrib::GeoPoints::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+void GeoPoints::render (const View & view, const OptionsLight & light) const
 {
   if (opts.time.on)
     {
-      glGrib::Points::render (view, light, 0, opts.time.rate * time);
+      Points::render (view, light, 0, opts.time.rate * time);
     }
   else
     {
-      glGrib::Points::render (view, light);
+      Points::render (view, light);
     }
 }
 
-void glGrib::GeoPoints::update ()
+void GeoPoints::update ()
 {
   time = time + 1;
+}
+
 }

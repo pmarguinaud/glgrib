@@ -3,7 +3,6 @@
 #include "glGribOptions.h"
 #include "glGribOpenGL.h"
 #include "glGribScene.h"
-#include "glGribSnapshot.h"
 #include "glGribClear.h"
 
 #include <iostream>

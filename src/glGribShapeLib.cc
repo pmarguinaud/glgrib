@@ -13,23 +13,25 @@
 #include <iostream>
 
 
-void glGrib::ShapeLib::read (const glGrib::OptionsLines & opts, 
-                            std::vector<float> * lonlat,
-                            std::vector<unsigned int> * ind, 
-                            const std::string & selector)
+namespace glGrib
+{
+
+void ShapeLib::read 
+  (const OptionsLines & opts, std::vector<float> * lonlat,
+   std::vector<unsigned int> * ind, const std::string & selector)
 {
   bool lonlatsel = (opts.lonmin != 0.0f) 
                 || (opts.lonmax != 0.0f)
                 || (opts.latmax != 0.0f)
                 || (opts.latmax != 0.0f);
 
-  std::string path = glGrib::Resolve (opts.path);
+  std::string path = Resolve (opts.path);
   if (path.length () > 4)
     path = path.substr (0, path.length () - 4);
 
   SHPHandle fp = SHPOpen (path.c_str (), "r");
 
-  glGrib::DBase d;
+  DBase d;
   d.convert2sqlite (path);
 
   if (fp == nullptr)
@@ -45,8 +47,8 @@ void glGrib::ShapeLib::read (const glGrib::OptionsLines & opts,
     {
       std::string sql = "SELECT rowid FROM dbase WHERE " + selector + ";";
 
-      glGrib::SQLite db (path + ".db");
-      glGrib::SQLite::stmt st = db.prepare (sql);
+      SQLite db (path + ".db");
+      SQLite::stmt st = db.prepare (sql);
 
       int k;
       while (st.fetchRow (&k))
@@ -145,3 +147,4 @@ void glGrib::ShapeLib::read (const glGrib::OptionsLines & opts,
 
 }
 
+}

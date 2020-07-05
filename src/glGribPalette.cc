@@ -8,6 +8,8 @@
 #include <cmath>
 
 
+namespace glGrib
+{
 
 namespace
 {
@@ -28,7 +30,7 @@ public:
 };
 
 
-const hsva_t rgba2hsva (const glGrib::OptionColor & rgba)
+const hsva_t rgba2hsva (const OptionColor & rgba)
 {
   float r = float (rgba.r) / 255.0f, g = float (rgba.g) / 255.0f;
   float b = float (rgba.b) / 255.0f, a = float (rgba.a) / 255.0f;
@@ -57,7 +59,7 @@ const hsva_t rgba2hsva (const glGrib::OptionColor & rgba)
 }
 
 
-const glGrib::OptionColor hsva2rgba (const hsva_t & hsva)
+const OptionColor hsva2rgba (const hsva_t & hsva)
 {
   float h = hsva.h, s = hsva.s, v = hsva.v, a = hsva.a;
 
@@ -80,20 +82,20 @@ const glGrib::OptionColor hsva2rgba (const hsva_t & hsva)
       case 5: r = v; g = l; b = m; break;
     }
 
-  return glGrib::OptionColor (int (255.0f * r), int (255.0f * g), 
+  return OptionColor (int (255.0f * r), int (255.0f * g), 
 		              int (255.0f * b), int (255.0f * a));
 }
 
 }
 
-glGrib::Palette::Palette (const glGrib::OptionsPalette & o,  
+Palette::Palette (const OptionsPalette & o,  
                           float min, float max)
 {
   createByOpts (o, min, max);
   computergba_255 ();
 }
 
-void glGrib::Palette::createValueLinearRange (const float min, const float max, const int n)
+void Palette::createValueLinearRange (const float min, const float max, const int n)
 {
   std::vector<float> values;
   
@@ -106,12 +108,12 @@ void glGrib::Palette::createValueLinearRange (const float min, const float max, 
   opts.values = values;
 }
 
-void glGrib::Palette::createRainbow ()
+void Palette::createRainbow ()
 {
   hsva_t hsva1 = rgba2hsva (opts.colors.front ());
   hsva_t hsva2 = rgba2hsva (opts.colors.back  ());
   
-  std::vector<glGrib::OptionColor> colors;
+  std::vector<OptionColor> colors;
   
   colors.push_back (opts.colors.front ());
   
@@ -134,7 +136,7 @@ void glGrib::Palette::createRainbow ()
       float v = hsva1.v * (1.0f - c) + hsva2.v * c;
       float a = hsva1.a * (1.0f - c) + hsva2.a * c;
       hsva_t hsva (h, s, v, a);
-      glGrib::OptionColor color = hsva2rgba (hsva);
+      OptionColor color = hsva2rgba (hsva);
       colors.push_back (color);
     }
   
@@ -143,7 +145,7 @@ void glGrib::Palette::createRainbow ()
   opts.colors = colors;
 }
 
-void glGrib::Palette::createGradient ()
+void Palette::createGradient ()
 {
   size_t j = 0;
   for (int i = 1; i < opts.ncolors-1; i++)
@@ -162,7 +164,7 @@ void glGrib::Palette::createGradient ()
         rgba.push_back (opts.colors.front ());
       else
         {
-          glGrib::OptionColor c;
+          OptionColor c;
           int ia = j-1, ib = j+0;
           float vala = opts.values[ia], valb = opts.values[ib];
           float b = (val - vala) / (valb - vala), a = 1.0 - b;
@@ -175,7 +177,7 @@ void glGrib::Palette::createGradient ()
     }
 }
 
-void glGrib::Palette::createDiscrete ()
+void Palette::createDiscrete ()
 {
   size_t j = 0;
   for (int i = 1; i < opts.ncolors; i++)
@@ -196,14 +198,14 @@ void glGrib::Palette::createDiscrete ()
     }
 }
 
-void glGrib::Palette::createByOpts (const glGrib::OptionsPalette & o,  
+void Palette::createByOpts (const OptionsPalette & o,  
                                     const float min, const float max)
 {
   if (o.colors.size () != 0)
     {
       opts = o;
 
-      rgba_mis = glGrib::OptionColor (0, 0, 0, 0);
+      rgba_mis = OptionColor (0, 0, 0, 0);
 
       if (opts.fixed.on)
         {
@@ -251,10 +253,10 @@ void glGrib::Palette::createByOpts (const glGrib::OptionsPalette & o,
 }
 
 
-void glGrib::Palette::createByName (const std::string & name, const float min, const float max)
+void Palette::createByName (const std::string & name, const float min, const float max)
 {
-  glGrib::SQLite db (glGrib::Resolve ("glGrib.db"));
-  glGrib::SQLite::stmt st = db.prepare ("SELECT hexa FROM PALETTES WHERE name = ?;");
+  SQLite db (Resolve ("glGrib.db"));
+  SQLite::stmt st = db.prepare ("SELECT hexa FROM PALETTES WHERE name = ?;");
   st.bindall (&name);
 
 
@@ -269,9 +271,9 @@ void glGrib::Palette::createByName (const std::string & name, const float min, c
           if (sscanf (&hexa[8*i], "%2x%2x%2x%2x", &r, &g, &b, &a) != 4)
             throw std::runtime_error ("Cannot parse hexa color");
           if (i == 0)
-            rgba_mis = glGrib::OptionColor (r, g, b, a);
+            rgba_mis = OptionColor (r, g, b, a);
           else
-            rgba.push_back (glGrib::OptionColor (r, g, b, a));
+            rgba.push_back (OptionColor (r, g, b, a));
         }
       opts.name = name;
     }
@@ -281,7 +283,7 @@ void glGrib::Palette::createByName (const std::string & name, const float min, c
       auto defp = [&] (const std::vector<OptionColor> & colors,
                        const float min, const float max)
       {
-        glGrib::OptionsPalette opts;
+        OptionsPalette opts;
         opts.colors = colors;
         for (size_t i = 0; i < colors.size (); i++)
           opts.values.push_back (min + (max - min) * static_cast<float>(i)
@@ -309,7 +311,7 @@ void glGrib::Palette::createByName (const std::string & name, const float min, c
 
 }
 
-void glGrib::Palette::computergba_255 () 
+void Palette::computergba_255 () 
 {
   rgba_.resize (opts.ncolors);
   int n = rgba.size ();
@@ -349,11 +351,11 @@ void glGrib::Palette::computergba_255 ()
   
 
 
-  rgba_buffer = glGrib::OpenGLBufferPtr<glm::vec4> (rgba_);
+  rgba_buffer = OpenGLBufferPtr<glm::vec4> (rgba_);
 
 }
 
-void glGrib::Palette::set (glGrib::Program * program) const
+void Palette::set (Program * program) const
 {
 #include "shaders/include/palette/buffer_index.h"
   program->set ("rgba_fixed", opts.fixed.on);
@@ -361,22 +363,17 @@ void glGrib::Palette::set (glGrib::Program * program) const
   rgba_buffer->bind (GL_SHADER_STORAGE_BUFFER, palette_buffer_idx);
 }
 
-namespace glGrib
-{
-
-bool operator== (const glGrib::Palette & p1, const glGrib::Palette & p2)
+bool operator== (const Palette & p1, const Palette & p2)
 {
   return p1.isEqual (p2);
 }
  
-bool operator!= (const glGrib::Palette & p1, const glGrib::Palette & p2)
+bool operator!= (const Palette & p1, const Palette & p2)
 {
   return ! p1.isEqual (p2);
 }
-
-}
  
-bool glGrib::Palette::isEqual (const glGrib::Palette & p) const
+bool Palette::isEqual (const Palette & p) const
 {
 #define TEST(x) \
   if (x != p.x) return false;
@@ -387,7 +384,7 @@ bool glGrib::Palette::isEqual (const glGrib::Palette & p) const
   return true;
 }
 
-const glGrib::OptionColor glGrib::Palette::getColor (const float val) const
+const OptionColor Palette::getColor (const float val) const
 {
   if (opts.fixed.on)
     {
@@ -404,12 +401,12 @@ const glGrib::OptionColor glGrib::Palette::getColor (const float val) const
       int pal = std::max (1, 
                 std::min (static_cast<int>(1 + (opts.ncolors-2) * (val - opts.min) / (opts.max - opts.min)), 
                           (opts.ncolors-1)));
-      return glGrib::OptionColor (255 * rgba_[pal][0], 255 * rgba_[pal][1], 255 * rgba_[pal][2], 255 * rgba_[pal][3]);
+      return OptionColor (255 * rgba_[pal][0], 255 * rgba_[pal][1], 255 * rgba_[pal][2], 255 * rgba_[pal][3]);
     }
   return rgba_mis;
 }
 
-int glGrib::Palette::getColorIndex (const float val) const
+int Palette::getColorIndex (const float val) const
 {
   if (opts.fixed.on)
     {
@@ -431,3 +428,4 @@ int glGrib::Palette::getColorIndex (const float val) const
   return 0;
 }
 
+}

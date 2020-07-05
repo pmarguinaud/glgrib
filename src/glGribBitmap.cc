@@ -4,6 +4,9 @@
 #include <fstream>
 #include <iostream>
 
+namespace glGrib
+{
+
 namespace
 {
 
@@ -14,9 +17,9 @@ int S4 (unsigned char * h)
   
 }
   
-void glGrib::Bitmap (const std::string & file, 
-                     glGrib::BufferPtr<unsigned char> & rgb, 
-                     int * width, int * height)
+void Bitmap (const std::string & file, 
+             BufferPtr<unsigned char> & rgb, 
+             int * width, int * height)
 {
   unsigned char h[54];
   std::ifstream fh (file, std::ios::in | std::ifstream::binary);
@@ -31,7 +34,7 @@ void glGrib::Bitmap (const std::string & file,
   int ncol = S4 (&h[18]);
   int nrow = S4 (&h[22]);
 
-  rgb = glGrib::BufferPtr<unsigned char> (3 * ncol * nrow);
+  rgb = BufferPtr<unsigned char> (3 * ncol * nrow);
   
   if (! fh.seekg (ioff))
     throw std::runtime_error (std::string ("Cannot seek BMP file : ") + file);
@@ -53,3 +56,4 @@ void glGrib::Bitmap (const std::string & file,
   *height = nrow;
 }
   
+}

@@ -6,17 +6,20 @@
 
 #include <iostream>
 
-glGrib::FieldVector * glGrib::FieldVector::clone () const
+namespace glGrib
 {
-  glGrib::FieldVector * fld = new glGrib::FieldVector (Field::Privatizer ());
+
+FieldVector * FieldVector::clone () const
+{
+  FieldVector * fld = new FieldVector (Field::Privatizer ());
   *fld = *this;
   return fld;
 }
 
 template <>
-void glGrib::FieldVector::scalar_t::setupVertexAttributes () const
+void FieldVector::scalar_t::setupVertexAttributes () const
 {
-  glGrib::Program * program = glGrib::Program::load ("SCALAR");
+  Program * program = Program::load ("SCALAR");
 
   const auto & geometry = field->getGeometry ();
 
@@ -40,9 +43,9 @@ void glGrib::FieldVector::scalar_t::setupVertexAttributes () const
 }
 
 template <>
-void glGrib::FieldVector::vector_t::setupVertexAttributes () const
+void FieldVector::vector_t::setupVertexAttributes () const
 {
-  glGrib::Program * program = glGrib::Program::load ("VECTOR");
+  Program * program = Program::load ("VECTOR");
 
   const auto & geometry = field->getGeometry ();
 
@@ -76,33 +79,33 @@ void glGrib::FieldVector::vector_t::setupVertexAttributes () const
 
 }
 
-void glGrib::FieldVector::setup 
-  (const Field::Privatizer, glGrib::Loader * ld, 
-   const glGrib::OptionsField & o, float slot)
+void FieldVector::setup 
+  (const Field::Privatizer, Loader * ld, 
+   const OptionsField & o, float slot)
 {
   opts = o;
 
-  glGrib::FieldMetadata meta_u, meta_v;
-  glGrib::FieldMetadata meta_n, meta_d;
+  FieldMetadata meta_u, meta_v;
+  FieldMetadata meta_n, meta_d;
 
-  glGrib::BufferPtr<float> data_u, data_v;
+  BufferPtr<float> data_u, data_v;
 
   ld->load (&data_u, opts.path, opts.geometry, slot, &meta_u, 2, 0);
   ld->load (&data_v, opts.path, opts.geometry, slot, &meta_v, 2, 1);
 
-  setGeometry (glGrib::Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry));
+  setGeometry (Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry));
 
 
   const auto & geometry = getGeometry ();
   const int numberOfPoints = geometry->getNumberOfPoints ();
 
-  glGrib::BufferPtr<float> data_n, data_d;
+  BufferPtr<float> data_n, data_d;
 
-  glGrib::Loader::uv2nd 
+  Loader::uv2nd 
     (geometry, data_u, data_v, data_n, data_d, 
      meta_u, meta_v, meta_n, meta_d);
 
-  d.buffer_n = glGrib::OpenGLBufferPtr<T> (numberOfPoints);
+  d.buffer_n = OpenGLBufferPtr<T> (numberOfPoints);
 
   pack (data_n, numberOfPoints, 
         meta_n.valmin, meta_n.valmax, meta_n.valmis, 
@@ -110,7 +113,7 @@ void glGrib::FieldVector::setup
 
   loadHeight (d.buffer_n, ld);
 
-  d.buffer_d = glGrib::OpenGLBufferPtr<T> (numberOfPoints);
+  d.buffer_d = OpenGLBufferPtr<T> (numberOfPoints);
 
 
   pack (data_d, numberOfPoints,
@@ -135,15 +138,15 @@ void glGrib::FieldVector::setup
 
   d.vscale = opts.vector.scale * (pi / npts) / (meta_n.valmax || 1.0f);
 
-  palette = glGrib::Palette (opts.palette, getNormedMinValue (), getNormedMaxValue ());
+  palette = Palette (opts.palette, getNormedMinValue (), getNormedMaxValue ());
   
   setReady ();
 }
 
 template <>
-void glGrib::FieldVector::scalar_t::render
-   (const glGrib::View & view, 
-    const glGrib::OptionsLight & light) 
+void FieldVector::scalar_t::render
+   (const View & view, 
+    const OptionsLight & light) 
 const
 {
   const auto & opts = field->opts;
@@ -153,7 +156,7 @@ const
   std::vector<float> valmax = field->getMaxValue ();
   std::vector<float> valmin = field->getMinValue ();
 
-  glGrib::Program * program = glGrib::Program::load ("SCALAR");
+  Program * program = Program::load ("SCALAR");
   program->use ();
 
   const auto & geometry = field->getGeometry ();
@@ -214,9 +217,9 @@ public:
 }
 
 template <>
-void glGrib::FieldVector::vector_t::render 
-   (const glGrib::View & view, 
-    const glGrib::OptionsLight & light) 
+void FieldVector::vector_t::render 
+   (const View & view, 
+    const OptionsLight & light) 
 const
 {
   const auto & opts = field->opts;
@@ -227,7 +230,7 @@ const
 
 // Display vectors
 
-  glGrib::Program * program = glGrib::Program::load ("VECTOR");
+  Program * program = Program::load ("VECTOR");
   program->use ();
 
   const auto & geometry = field->getGeometry ();
@@ -314,9 +317,9 @@ const
   view.delMVP (program);
 }
 
-void glGrib::FieldVector::render 
-  (const glGrib::View & view, 
-   const glGrib::OptionsLight & light) 
+void FieldVector::render 
+  (const View & view, 
+   const OptionsLight & light) 
 const
 {
   if (opts.vector.arrow.on || opts.vector.barb.on)
@@ -325,15 +328,15 @@ const
     scalar.VAID.render (view, light);
 }
 
-void glGrib::FieldVector::reSample (const glGrib::View & view)
+void FieldVector::reSample (const View & view)
 {
   if (! values[1].allocated ())
     return; 
 
-  const glGrib::FieldMetadata & meta_n = meta[0];
-  const glGrib::FieldMetadata & meta_d = meta[1];
+  const FieldMetadata & meta_n = meta[0];
+  const FieldMetadata & meta_d = meta[1];
 
-  const glGrib::OptionsView & view_opts = view.getOptions ();
+  const OptionsView & view_opts = view.getOptions ();
   float w = view_opts.distance * deg2rad * view_opts.fov;
 
   const int npts = 2 * opts.vector.density / w;
@@ -349,12 +352,12 @@ void glGrib::FieldVector::reSample (const glGrib::View & view)
   d.vscale = opts.vector.scale * (pi / npts) / (meta_n.valmax || 1.0f);
 }
 
-void glGrib::FieldVector::reSize (const glGrib::View & view)
+void FieldVector::reSize (const View & view)
 {
   reSample (view);
 }
 
 
-
+}
 
 

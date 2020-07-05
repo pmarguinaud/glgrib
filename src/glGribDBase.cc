@@ -8,6 +8,8 @@
 #include <iostream>
 #include <fstream>
 
+namespace glGrib
+{
 
 namespace
 {
@@ -28,7 +30,7 @@ std::string trim (const std::string & str)
 }
 }
 
-bool glGrib::DBase::open (const std::string & path)
+bool DBase::open (const std::string & path)
 {
   fh = std::ifstream (path + ".dbf", std::ios::in | std::ifstream::binary);
   if (! fh)
@@ -50,7 +52,7 @@ bool glGrib::DBase::open (const std::string & path)
   return true;
 }
 
-bool glGrib::DBase::read (record_t * record)
+bool DBase::read (record_t * record)
 {
   record->clear ();
 
@@ -79,7 +81,7 @@ bool glGrib::DBase::read (record_t * record)
   return true;
 }
 
-void glGrib::DBase::convert2sqlite (const std::string & path)
+void DBase::convert2sqlite (const std::string & path)
 {
   struct stat sta;
   if (stat ((path + ".db").c_str (), &sta) == 0)
@@ -87,7 +89,7 @@ void glGrib::DBase::convert2sqlite (const std::string & path)
 
   open (path);
 
-  glGrib::SQLite db (path + ".db");
+  SQLite db (path + ".db");
   std::string sql;
   record_t record;
 
@@ -115,7 +117,7 @@ void glGrib::DBase::convert2sqlite (const std::string & path)
     }
   sql += ")";
 
-  glGrib::SQLite::stmt st = db.prepare (sql);
+  SQLite::stmt st = db.prepare (sql);
 
   while (read (&record))
     {
@@ -131,4 +133,4 @@ void glGrib::DBase::convert2sqlite (const std::string & path)
 
 }
 
-
+}

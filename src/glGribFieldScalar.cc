@@ -7,16 +7,19 @@
 #include <iostream>
 #include <algorithm>
 
-template <int N>
-glGrib::FieldScalar<N> * glGrib::FieldScalar<N>::clone () const
+namespace glGrib
 {
-  glGrib::FieldScalar<N> * fld = new glGrib::FieldScalar<N> (Field::Privatizer ());
+
+template <int N>
+FieldScalar<N> * FieldScalar<N>::clone () const
+{
+  FieldScalar<N> * fld = new FieldScalar<N> (Field::Privatizer ());
   *fld = *this;
   return fld;
 }
 
 template <int N>
-void glGrib::FieldScalar<N>::scalar_t::setupVertexAttributes () const
+void FieldScalar<N>::scalar_t::setupVertexAttributes () const
 {
   auto program = this->getProgram ();
   const auto & field = this->field;
@@ -55,7 +58,7 @@ void glGrib::FieldScalar<N>::scalar_t::setupVertexAttributes () const
 }
 
 template <int N>
-void glGrib::FieldScalar<N>::points_t::setupVertexAttributes () const
+void FieldScalar<N>::points_t::setupVertexAttributes () const
 {
   auto program = this->getProgram ();
   const auto & field = this->field;
@@ -81,31 +84,29 @@ void glGrib::FieldScalar<N>::points_t::setupVertexAttributes () const
 }
 
 template <int N>
-void glGrib::FieldScalar<N>::setup (const Field::Privatizer, glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
+void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsField & o, float slot)
 {
   auto & opts = this->opts;
   auto & palette = this->palette;
 
   opts = o;
 
-  glGrib::FieldMetadata meta1;
+  FieldMetadata meta1;
 
-  glGrib::BufferPtr<float> data;
+  BufferPtr<float> data;
   ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
   this->meta.push_back (meta1);
 
-  palette = glGrib::Palette (opts.palette, 
-                             this->getNormedMinValue (), 
-                             this->getNormedMaxValue ());
+  palette = Palette (opts.palette, this->getNormedMinValue (), this->getNormedMaxValue ());
 
-  this->setGeometry (glGrib::Geometry::load (ld, opts.path[int (slot)], opts.geometry));
+  this->setGeometry (Geometry::load (ld, opts.path[int (slot)], opts.geometry));
 
   if (opts.hilo.on)
     this->setupHilo (data);
 
   const auto & geometry = this->getGeometry ();
 
-  colorbuffer = glGrib::OpenGLBufferPtr<T> (geometry->getNumberOfPoints ());
+  colorbuffer = OpenGLBufferPtr<T> (geometry->getNumberOfPoints ());
 
 
   if (palette.fixed ())
@@ -140,14 +141,14 @@ void glGrib::FieldScalar<N>::setup (const Field::Privatizer, glGrib::Loader * ld
 }
 
 template <int N>
-void glGrib::FieldScalar<N>::setupMpiView (glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
+void FieldScalar<N>::setupMpiView (Loader * ld, const OptionsField & o, float slot)
 {
   auto & opts = this->opts;
   const auto & geometry = this->getGeometry ();
   const int size = geometry->getNumberOfPoints ();
 
-  glGrib::FieldMetadata mpiview_meta;
-  glGrib::BufferPtr<float> mpiview;
+  FieldMetadata mpiview_meta;
+  BufferPtr<float> mpiview;
 
   ld->load (&mpiview, std::vector<std::string>{opts.mpiview.path}, 
             opts.geometry, slot, &mpiview_meta, 1, 0);
@@ -180,7 +181,7 @@ void glGrib::FieldScalar<N>::setupMpiView (glGrib::Loader * ld, const glGrib::Op
   for (int i = 0; i < max; i++)
     Disl[i] = xyz2lonlat (glm::normalize (Disp[i] / static_cast<float> (count[i])));
 
-  mpivbuffer = glGrib::OpenGLBufferPtr<float> (3 * size);
+  mpivbuffer = OpenGLBufferPtr<float> (3 * size);
 
   auto mpiv = mpivbuffer->map ();
 
@@ -195,9 +196,9 @@ void glGrib::FieldScalar<N>::setupMpiView (glGrib::Loader * ld, const glGrib::Op
 }
 
 template <int N>
-void glGrib::FieldScalar<N>::scalar_t::render (const glGrib::View & view) const
+void FieldScalar<N>::scalar_t::render (const View & view) const
 {
-  glGrib::Program * program = this->getProgram ();
+  Program * program = this->getProgram ();
   const auto & field = this->field;
   const auto & geometry = field->getGeometry ();
 
@@ -213,9 +214,9 @@ void glGrib::FieldScalar<N>::scalar_t::render (const glGrib::View & view) const
 }
 
 template <int N>
-void glGrib::FieldScalar<N>::points_t::render (const glGrib::View & view) const
+void FieldScalar<N>::points_t::render (const View & view) const
 {
-  glGrib::Program * program = this->getProgram ();
+  Program * program = this->getProgram ();
   const auto & field = this->field;
   const auto & geometry = field->getGeometry ();
 
@@ -232,7 +233,7 @@ void glGrib::FieldScalar<N>::points_t::render (const glGrib::View & view) const
 }
 
 template <int N>
-void glGrib::FieldScalar<N>::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+void FieldScalar<N>::render (const View & view, const OptionsLight & light) const
 {
   const auto & opts = this->opts;
   const auto & palette = this->palette;
@@ -242,7 +243,7 @@ void glGrib::FieldScalar<N>::render (const glGrib::View & view, const glGrib::Op
   if (opts.mpiview.on)
     scale0 = scale0 / (1.0f + opts.mpiview.scale);
 
-  glGrib::Program * program = opts.scalar.points.on 
+  Program * program = opts.scalar.points.on 
                             ? points.getProgram () 
                             : scalar.getProgram ();
 
@@ -285,8 +286,8 @@ void glGrib::FieldScalar<N>::render (const glGrib::View & view, const glGrib::Op
 }
 
 
-template class glGrib::FieldScalar< 8>;
-template class glGrib::FieldScalar<16>;
-template class glGrib::FieldScalar<32>;
+template class FieldScalar< 8>;
+template class FieldScalar<16>;
+template class FieldScalar<32>;
 
-
+}

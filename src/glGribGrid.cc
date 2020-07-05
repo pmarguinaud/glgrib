@@ -6,7 +6,10 @@
 #include <iostream>
 #include <vector>
 
-void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
+namespace glGrib
+{
+
+void Grid::setup (const OptionsGrid & o)
 {
   if (! o.on)
     return;
@@ -15,7 +18,7 @@ void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
 
   if (d.opts.labels.on)
     {
-      glGrib::FontPtr font = getGlGribFontPtr (d.opts.labels.font);
+      FontPtr font = getGlGribFontPtr (d.opts.labels.font);
 
       std::vector<std::string> L;
       std::vector<float> X, Y, Z, A;
@@ -52,7 +55,7 @@ void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
 	  push (lon, lat, str);
 	}
 
-      d.labels.setup (font, L, X, Y, Z, A, d.opts.labels.font.scale, glGrib::StringTypes::C);
+      d.labels.setup (font, L, X, Y, Z, A, d.opts.labels.font.scale, StringTypes::C);
       d.labels.setForegroundColor (d.opts.labels.font.color.foreground);
       d.labels.setBackgroundColor (d.opts.labels.font.color.background);
     }
@@ -60,9 +63,9 @@ void glGrib::Grid::setup (const glGrib::OptionsGrid & o)
   setReady ();
 }
 
-void glGrib::Grid::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+void Grid::render (const View & view, const OptionsLight & light) const
 {
-  glGrib::Program * program = glGrib::Program::load ("GRID");
+  Program * program = Program::load ("GRID");
   program->use ();
 
   view.setMVP (program);
@@ -91,7 +94,8 @@ void glGrib::Grid::render (const glGrib::View & view, const glGrib::OptionsLight
 
   view.delMVP (program);
 
-  d.labels.render (view, glGrib::OptionsLight ());
+  d.labels.render (view, OptionsLight ());
 
 }
 
+}

@@ -3,11 +3,13 @@
 #include <iostream>
 
 
+namespace glGrib
+{
 
 namespace
 {
 
-void setDiffOptions (glGrib::OptionsField & opts1, glGrib::OptionsField & opts2, 
+void setDiffOptions (OptionsField & opts1, OptionsField & opts2, 
                      const std::string & path1, const std::string & path2)
 {
   opts1.diff.on = true;
@@ -22,16 +24,16 @@ void setDiffOptions (glGrib::OptionsField & opts1, glGrib::OptionsField & opts2,
 
 }
 
-glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
-  : glGrib::WindowSet (o, false)
+WindowDiffSet::WindowDiffSet (const Options & o)
+  : WindowSet (o, false)
 {
-  glGrib::Options opts1 = getOptions (), opts2 = getOptions ();
+  Options opts1 = getOptions (), opts2 = getOptions ();
 
   if (getOptions ().diff.path.size () != 2)
     throw std::runtime_error (std::string ("Option --diff.path requires two arguments"));
 
 
-  auto fixOpts = [] (glGrib::Options * opts)
+  auto fixOpts = [] (Options * opts)
   {
     opts->diff.on = false;
     opts->diff.path.clear ();
@@ -42,8 +44,10 @@ glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
   fixOpts (&opts1);
   fixOpts (&opts2);
 
-  int maxWidth, maxHeight;
-  glGrib::Window::getScreenSize (&maxWidth, &maxHeight);
+  int maxWidth = 2000, maxHeight = 1000;
+#ifdef USE_GLFW
+  Window::getScreenSize (&maxWidth, &maxHeight);
+#endif
 
   opts1.render.position.x = 0;
   opts1.render.position.y = 0;
@@ -55,8 +59,8 @@ glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
   opts2.render.width = maxWidth / 2;
   opts2.render.height = maxWidth / 2;
 
-  cont1 = glGrib::Container::create (getOptions ().diff.path[0], true);
-  cont2 = glGrib::Container::create (getOptions ().diff.path[1], true);
+  cont1 = Container::create (getOptions ().diff.path[0], true);
+  cont2 = Container::create (getOptions ().diff.path[1], true);
 
 
   cont1->buildIndex ();
@@ -68,8 +72,8 @@ glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
                   getOptions ().diff.path[0] + "%" + ext, 
                   getOptions ().diff.path[1] + "%" + ext);
 
-  glGrib::Render * gwindow1 = createWindow (opts1);
-  glGrib::Render * gwindow2 = gwindow1->clone ();
+  Render * gwindow1 = createWindow (opts1);
+  Render * gwindow2 = gwindow1->clone ();
 
   gwindow2->setOptions (opts2.render);
 
@@ -81,7 +85,7 @@ glGrib::WindowDiffSet::WindowDiffSet (const glGrib::Options & o)
   
 }
 
-const std::string glGrib::WindowDiffSet::getNextExt () const
+const std::string WindowDiffSet::getNextExt () const
 {
   std::string e = ext;
   while (1)
@@ -96,7 +100,7 @@ const std::string glGrib::WindowDiffSet::getNextExt () const
   return e;
 }
 
-const std::string glGrib::WindowDiffSet::getPrevExt () const
+const std::string WindowDiffSet::getPrevExt () const
 {
   std::string e = ext;
   while (1)
@@ -111,10 +115,10 @@ const std::string glGrib::WindowDiffSet::getPrevExt () const
   return e;
 }
 
-void glGrib::WindowDiffSet::updateWindows ()
+void WindowDiffSet::updateWindows ()
 {
-  glGrib::Render * gwindow1 = getWindowById (0);
-  glGrib::Render * gwindow2 = getWindowById (1);
+  Render * gwindow1 = getWindowById (0);
+  Render * gwindow2 = getWindowById (1);
   if ((gwindow1 == nullptr) || (gwindow2 == nullptr))
     return;
 
@@ -146,3 +150,4 @@ void glGrib::WindowDiffSet::updateWindows ()
   gwindow2->getScene ().setFieldOptions (0, fopts2);
 }
 
+}

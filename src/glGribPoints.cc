@@ -6,9 +6,12 @@
 #include <algorithm>
 
 
-void glGrib::Points::setupVertexAttributes () const
+namespace glGrib
 {
-  glGrib::Program * program = glGrib::Program::load ("POINTS");
+
+void Points::setupVertexAttributes () const
+{
+  Program * program = Program::load ("POINTS");
   auto attr = program->getAttributeLocation ("aPos");
 
   d.llsbuffer->bind (GL_ARRAY_BUFFER);
@@ -18,10 +21,9 @@ void glGrib::Points::setupVertexAttributes () const
   glVertexAttribDivisor (attr, 1);
 }
 
-void glGrib::Points::setup (const glGrib::OptionsPoints & o, 
-		            const std::vector<float> & lon, 
-                            const std::vector<float> & lat, 
-                            const std::vector<float> & val)
+void Points::setup 
+  (const OptionsPoints & o, const std::vector<float> & lon, 
+   const std::vector<float> & lat, const std::vector<float> & val)
 {
   d.opts = o;
 
@@ -39,26 +41,26 @@ void glGrib::Points::setup (const glGrib::OptionsPoints & o,
       lls.push_back (val[i]);
     }
 
-  d.llsbuffer = glGrib::OpenGLBufferPtr<float> (lls);
+  d.llsbuffer = OpenGLBufferPtr<float> (lls);
 
-  d.p = glGrib::Palette (d.opts.palette, d.min, d.max);
+  d.p = Palette (d.opts.palette, d.min, d.max);
 
   setReady ();
 }
 
-void glGrib::Points::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+void Points::render (const View & view, const OptionsLight & light) const
 {
   render (view, light, 0, d.len);
 }
 
-void glGrib::Points::render (const glGrib::View & view, const glGrib::OptionsLight &, const int offset, const int length) const
+void Points::render (const View & view, const OptionsLight &, const int offset, const int length) const
 {
   if (! isReady ())
     return;
 
   float length10 = view.pixelToDistAtNadir (10);
 
-  glGrib::Program * program = glGrib::Program::load ("POINTS");
+  Program * program = Program::load ("POINTS");
   program->use ();
 
   program->set ("scale0", d.opts.scale);
@@ -96,5 +98,6 @@ void glGrib::Points::render (const glGrib::View & view, const glGrib::OptionsLig
 
 }
 
+}
 
 

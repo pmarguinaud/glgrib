@@ -3,7 +3,10 @@
 
 #include <iostream>
 
-glGrib::WindowOffscreen::WindowOffscreen (const Options & _opts) 
+namespace glGrib
+{
+
+WindowOffscreen::WindowOffscreen (const Options & _opts) 
 {
   create (_opts);
   getScene ().setup (_opts);
@@ -11,13 +14,13 @@ glGrib::WindowOffscreen::WindowOffscreen (const Options & _opts)
   frames = _opts.render.offscreen.frames;
 }
 
-void glGrib::WindowOffscreen::setHints ()
+void WindowOffscreen::setHints ()
 {
-  glGrib::Window::setHints ();
+  Window::setHints ();
   glfwWindowHint (GLFW_VISIBLE, GLFW_FALSE);
 }
 
-void glGrib::WindowOffscreen::run (class glGrib::Shell * shell)
+void WindowOffscreen::run (class Shell * shell)
 {
   const auto & opts = getOptions ();
   for (int i = 0; i < frames; i++)
@@ -26,5 +29,7 @@ void glGrib::WindowOffscreen::run (class glGrib::Shell * shell)
       framebuffer (opts.offscreen.format);
     }
   close ();
+}
+
 }
 #endif

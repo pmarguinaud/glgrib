@@ -10,17 +10,20 @@
 
 #include <unistd.h>
 
-glGrib::ShellInterpreter * glGrib::ShellInterpreter::shellinterp = nullptr;
+namespace glGrib
+{
 
-glGrib::ShellInterpreter::ShellInterpreter ()
+ShellInterpreter * ShellInterpreter::shellinterp = nullptr;
+
+ShellInterpreter::ShellInterpreter ()
 {
 }
 
-void glGrib::ShellInterpreter::runWset ()
+void ShellInterpreter::runWset ()
 {
-  glGrib::glStart (gopts.render);
+  glStart (gopts.render);
 
-  setWindowSet (glGrib::WindowSet::create (gopts));
+  setWindowSet (WindowSet::create (gopts));
  
   hasstarted = true;
 
@@ -28,16 +31,16 @@ void glGrib::ShellInterpreter::runWset ()
 
   clearWindowSet ();
 
-  glGrib::glStop ();
+  glStop ();
 }
 
-void glGrib::ShellInterpreter::start (glGrib::WindowSet * ws)
+void ShellInterpreter::start (WindowSet * ws)
 {
   if (gopts.render.offscreen.on)
     {
       hasstarted = true;
-      glGrib::glStart (gopts.render);
-      setWindowSet (glGrib::WindowSet::create (gopts));
+      glStart (gopts.render);
+      setWindowSet (WindowSet::create (gopts));
     }
   else
     {
@@ -52,16 +55,16 @@ void glGrib::ShellInterpreter::start (glGrib::WindowSet * ws)
     }
 }
 
-void glGrib::ShellInterpreter::run ()
+void ShellInterpreter::run ()
 {
 }
 
-void glGrib::ShellInterpreter::setup (const glGrib::OptionsShell & o)
+void ShellInterpreter::setup (const OptionsShell & o)
 { 
   setOptions (o);
 }
 
-void glGrib::ShellInterpreter::stop (const std::vector <std::string> & args)
+void ShellInterpreter::stop (const std::vector <std::string> & args)
 {
   if (closed ())
     return;
@@ -72,7 +75,7 @@ void glGrib::ShellInterpreter::stop (const std::vector <std::string> & args)
 
   if (gopts.render.offscreen.on)
     {
-      glGrib::glStop ();
+      glStop ();
     }
   else
     {
@@ -83,7 +86,7 @@ void glGrib::ShellInterpreter::stop (const std::vector <std::string> & args)
   hasstarted = false;
 }
 
-void glGrib::ShellInterpreter::start (const std::vector <std::string> & args)
+void ShellInterpreter::start (const std::vector <std::string> & args)
 {
   int argc = args.size ();
   const char * argv[argc];
@@ -92,13 +95,13 @@ void glGrib::ShellInterpreter::start (const std::vector <std::string> & args)
   start (argc, argv);
 }
 
-void glGrib::ShellInterpreter::start (int argc, const char * argv[])
+void ShellInterpreter::start (int argc, const char * argv[])
 {
   gopts.parse (argc, argv);
   start (nullptr);
 }
 
-void glGrib::ShellInterpreter::execute (const std::vector<std::string> & args)
+void ShellInterpreter::execute (const std::vector<std::string> & args)
 {
   if (closed ())
     return;
@@ -107,7 +110,8 @@ void glGrib::ShellInterpreter::execute (const std::vector<std::string> & args)
   lock ();
   if (args[0] == "stop")
     return stop (args);
-  glGrib::Shell::execute (args);
+  Shell::execute (args);
   unlock ();
 }
 
+}

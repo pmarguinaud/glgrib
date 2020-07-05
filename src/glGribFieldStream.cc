@@ -9,6 +9,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/string_cast.hpp>
 
+namespace glGrib
+{
 
 namespace
 {
@@ -23,14 +25,14 @@ double getTime ()
 
 }
 
-glGrib::FieldStream * glGrib::FieldStream::clone () const
+FieldStream * FieldStream::clone () const
 {
-  glGrib::FieldStream * fld = new glGrib::FieldStream (Field::Privatizer ());
+  FieldStream * fld = new FieldStream (Field::Privatizer ());
   *fld = *this;
   return fld;
 }
 
-void glGrib::FieldStream::streamline_t::setupVertexAttributes () const
+void FieldStream::streamline_t::setupVertexAttributes () const
 {
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);
   
@@ -67,7 +69,7 @@ void glGrib::FieldStream::streamline_t::setupVertexAttributes () const
   
 }
 
-void glGrib::FieldStream::streamline_t::setup 
+void FieldStream::streamline_t::setup 
   (const streamline_data_t & stream_data, GLint _vertexLonLat_attr[], 
    GLint _norm_attr[], GLint _dist_attr[])
 {
@@ -78,34 +80,34 @@ void glGrib::FieldStream::streamline_t::setup
   for (int j = 0; j < 2; j++)
     d.dist_attr[j] = _dist_attr[j];
 
-  d.vertexbuffer   = glGrib::OpenGLBufferPtr<float> (stream_data.lonlat);
-  d.normalbuffer   = glGrib::OpenGLBufferPtr<float> (stream_data.values);
-  d.distancebuffer = glGrib::OpenGLBufferPtr<float> (stream_data.length);
+  d.vertexbuffer   = OpenGLBufferPtr<float> (stream_data.lonlat);
+  d.normalbuffer   = OpenGLBufferPtr<float> (stream_data.values);
+  d.distancebuffer = OpenGLBufferPtr<float> (stream_data.length);
   d.size = stream_data.size () - 1;
 }
 
-void glGrib::FieldStream::setup (const Field::Privatizer, glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
+void FieldStream::setup (const Field::Privatizer, Loader * ld, const OptionsField & o, float slot)
 {
   opts = o;
 
   d.time0 = getTime ();
 
-  glGrib::FieldMetadata meta_u, meta_v;
-  glGrib::FieldMetadata meta_n, meta_d;
+  FieldMetadata meta_u, meta_v;
+  FieldMetadata meta_n, meta_d;
 
-  glGrib::BufferPtr<float> data_u, data_v;
+  BufferPtr<float> data_u, data_v;
   ld->load (&data_u, opts.path, opts.geometry, slot, &meta_u, 2, 0);
   ld->load (&data_v, opts.path, opts.geometry, slot, &meta_v, 2, 1);
 
-  setGeometry (glGrib::Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry));
+  setGeometry (Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry));
 
-  glGrib::BufferPtr<float> data_n, data_d;
+  BufferPtr<float> data_n, data_d;
 
   const auto & geometry = getGeometry ();
 
-  glGrib::Loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
+  Loader::uv2nd (geometry, data_u, data_v, data_n, data_d, meta_u, meta_v, meta_n, meta_d);
 
-  palette = glGrib::Palette (opts.palette, 0.0f, meta_n.valmax);
+  palette = Palette (opts.palette, 0.0f, meta_n.valmax);
 
   std::vector<streamline_data_t> stream_data;
 
@@ -143,7 +145,7 @@ void glGrib::FieldStream::setup (const Field::Privatizer, glGrib::Loader * ld, c
         computeStreamLine (it[i], data_u, data_v, &stream_data[j], geometry);
     }
 
-  glGrib::Program * program = glGrib::Program::load ("STREAM");
+  Program * program = Program::load ("STREAM");
 
   GLint vertexLonLat_attr[3];
   GLint norm_attr[2];
@@ -199,8 +201,8 @@ float lineLineIntersect (const glm::vec2 & P1, const glm::vec2 & V1,
 }
 
 
-void glGrib::FieldStream::getFirstPoint 
-  (int it, const glGrib::BufferPtr<float> & ru, const glGrib::BufferPtr<float> & rv, 
+void FieldStream::getFirstPoint 
+  (int it, const BufferPtr<float> & ru, const BufferPtr<float> & rv, 
    glm::vec2 & M, glm::vec2 & Vp, glm::vec2 & Vm,
    std::valarray<float> & wp, std::valarray<float> & wm, 
    int & itp, int & itm, const const_GeometryPtr & geometry)
@@ -279,8 +281,8 @@ void glGrib::FieldStream::getFirstPoint
 
 }
 
-void glGrib::FieldStream::computeStreamLineDir 
-  (int it, const glGrib::BufferPtr<float> & ru, const glGrib::BufferPtr<float> & rv, 
+void FieldStream::computeStreamLineDir 
+  (int it, const BufferPtr<float> & ru, const BufferPtr<float> & rv, 
    const glm::vec2 & M0, const glm::vec2 & V0,
    stream_seen_t & seen, float sign, std::valarray<float> w,
    std::vector<glm::vec3> & list, const const_GeometryPtr & geometry)
@@ -389,8 +391,8 @@ last:
 }
 
 
-void glGrib::FieldStream::computeStreamLine 
-  (int it0, const glGrib::BufferPtr<float> & ru, const glGrib::BufferPtr<float> & rv, 
+void FieldStream::computeStreamLine 
+  (int it0, const BufferPtr<float> & ru, const BufferPtr<float> & rv, 
    streamline_data_t * stream, const const_GeometryPtr & geometry)
 {
   std::vector<glm::vec3> listf, listb;
@@ -426,10 +428,10 @@ void glGrib::FieldStream::computeStreamLine
   return;
 }
 
-void glGrib::FieldStream::streamline_t::render 
-  (const bool & wide, const float & Width, const glGrib::View & view) const
+void FieldStream::streamline_t::render 
+  (const bool & wide, const float & Width, const View & view) const
 {
-  glGrib::Program * program = glGrib::Program::load ("STREAM");
+  Program * program = Program::load ("STREAM");
   if (wide)
     {
       float width = view.pixelToDistAtNadir (Width);
@@ -443,9 +445,9 @@ void glGrib::FieldStream::streamline_t::render
     }
 }
 
-void glGrib::FieldStream::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+void FieldStream::render (const View & view, const OptionsLight & light) const
 {
-  glGrib::Program * program = glGrib::Program::load ("STREAM");
+  Program * program = Program::load ("STREAM");
   program->use ();
 
   view.setMVP (program);
@@ -478,4 +480,4 @@ void glGrib::FieldStream::render (const glGrib::View & view, const glGrib::Optio
 
 }
 
-
+}

@@ -11,9 +11,12 @@
 
 #include <cmath>
 
-void glGrib::Landscape::setupVertexAttributes () const
+namespace glGrib
 {
-  glGrib::Program * program = glGrib::Program::load ("LANDSCAPE");
+
+void Landscape::setupVertexAttributes () const
+{
+  Program * program = Program::load ("LANDSCAPE");
 
   const auto & geometry = getGeometry ();
 
@@ -47,25 +50,25 @@ bool endsWith (const std::string & str, const std::string & end)
 
 }
 
-void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandscape & o)
+void Landscape::setup (Loader * ld, const OptionsLandscape & o)
 {
   if (! o.on)
     return;
 
   d.opts = o;
 
-  setGeometry (glGrib::Geometry::load (ld, d.opts.grid.path, d.opts.geometry,
-                                       d.opts.grid.number_of_latitudes));
+  setGeometry (Geometry::load (ld, d.opts.grid.path, d.opts.geometry,
+                               d.opts.grid.number_of_latitudes));
 
-  if (d.opts.color == glGrib::OptionColor ("#00000000"))
+  if (d.opts.color == OptionColor ("#00000000"))
     {
       BufferPtr<unsigned char> rgb;
       int w, h;
      
       if (endsWith (d.opts.path, ".png"))
-        glGrib::ReadPng (glGrib::Resolve (d.opts.path), &w, &h, rgb);
+        ReadPng (Resolve (d.opts.path), &w, &h, rgb);
       else if (endsWith (d.opts.path, ".bmp"))
-        glGrib::Bitmap (glGrib::Resolve (d.opts.path), rgb, &w, &h);
+        Bitmap (Resolve (d.opts.path), rgb, &w, &h);
       else
         throw std::runtime_error (std::string ("Unknown image format :") + d.opts.path);
      
@@ -74,25 +77,25 @@ void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandsca
       if ((sizemax < w) || (sizemax < h))
         throw std::runtime_error (std::string ("Image is too large to be used as a texture :") + d.opts.path);
      
-      d.texture = glGrib::OpenGLTexturePtr (w, h, rgb);
+      d.texture = OpenGLTexturePtr (w, h, rgb);
     }
 
   if (d.opts.geometry.height.on)
     {
       const auto & geometry = getGeometry ();
-      glGrib::GeometryPtr geometry_height = glGrib::Geometry::load (ld, d.opts.geometry.height.path, d.opts.geometry);
+      GeometryPtr geometry_height = Geometry::load (ld, d.opts.geometry.height.path, d.opts.geometry);
 
       if (! geometry_height->isEqual (*geometry))
         throw std::runtime_error (std::string ("Landscape and height have different geometries"));
 
       const int size = geometry->getNumberOfPoints ();
 
-      glGrib::BufferPtr<float> data;
-      glGrib::FieldMetadata meta;
+      BufferPtr<float> data;
+      FieldMetadata meta;
 
       ld->load (&data, d.opts.geometry.height.path, d.opts.geometry, &meta);
 
-      d.heightbuffer = glGrib::OpenGLBufferPtr<float> (size);
+      d.heightbuffer = OpenGLBufferPtr<float> (size);
 
       auto height = d.heightbuffer->map ();
 
@@ -106,16 +109,16 @@ void glGrib::Landscape::setup (glGrib::Loader * ld, const glGrib::OptionsLandsca
   setReady ();
 }
 
-void glGrib::Landscape::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+void Landscape::render (const View & view, const OptionsLight & light) const
 {
-  glGrib::Program * program = glGrib::Program::load ("LANDSCAPE");
+  Program * program = Program::load ("LANDSCAPE");
   program->use ();
 
   view.setMVP (program);
   program->set (light);
   program->set ("isflat", d.opts.flat.on);
 
-  if (d.opts.color == glGrib::OptionColor ("#00000000"))
+  if (d.opts.color == OptionColor ("#00000000"))
     {
       // the texture selection process is a bit obscure
       d.texture->bind (0);
@@ -180,4 +183,4 @@ void glGrib::Landscape::render (const glGrib::View & view, const glGrib::Options
   view.delMVP (program);
 }
 
-
+}

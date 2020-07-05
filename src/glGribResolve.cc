@@ -8,9 +8,13 @@
 
 #include <iostream>
 
-std::string glGrib::glGribPrefix;
 
-std::string glGrib::Resolve (const std::string & file)
+namespace glGrib
+{
+
+std::string glGribPrefix;
+
+std::string Resolve (const std::string & file)
 {
   struct stat st;
 
@@ -67,3 +71,4 @@ std::string glGrib::Resolve (const std::string & file)
   return file;
 }
 
+}

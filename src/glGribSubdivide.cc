@@ -8,6 +8,8 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+namespace glGrib
+{
 
 namespace
 {
@@ -314,10 +316,9 @@ void subdivideRing1 (std::vector<glm::vec3> & xyz,
 
 }
 
-void glGrib::Subdivide::init (const std::vector<float> & lonlat, 
-                             const std::vector<unsigned int> & ind,
-                             int indpb, int indpl,
-                             int indrb, int indrl)
+void Subdivide::init 
+  (const std::vector<float> & lonlat, const std::vector<unsigned int> & ind,
+   int indpb, int indpl, int indrb, int indrl)
 {
   // Init subdivider : copy coordinates and triangle indices
 
@@ -373,7 +374,7 @@ void glGrib::Subdivide::init (const std::vector<float> & lonlat,
 
 }
 
-void glGrib::Subdivide::subdivide (float angmax)
+void Subdivide::subdivide (float angmax)
 {
   // Two steps
 
@@ -383,7 +384,7 @@ void glGrib::Subdivide::subdivide (float angmax)
   subdivideRing1 (xyz1, ind1, ind1_size, ind1.size (), angmax);
 }
 
-void glGrib::Subdivide::append (std::vector<float> & lonlat, std::vector<unsigned int> & ind,
+void Subdivide::append (std::vector<float> & lonlat, std::vector<unsigned int> & ind,
                                int points_offset, int triangles_offset)
 {
   // Append new points
@@ -415,3 +416,4 @@ void glGrib::Subdivide::append (std::vector<float> & lonlat, std::vector<unsigne
 
 }
 
+}

@@ -12,19 +12,21 @@
 #include <exception>
 #include <functional>
 
+namespace glGrib
+{
 
 namespace
 {
 
-void computeLatgauss (int kn, glGrib::BufferPtr<double> & latgauss)
+void computeLatgauss (int kn, BufferPtr<double> & latgauss)
 {
   const double pi = M_PI;
   const int itemax = 20;
   const double zeps = std::numeric_limits <double>::epsilon ();
   
-  glGrib::Buffer<double> zfn ((kn+1)*(kn+1));
-  glGrib::Buffer<double> zfnlat (kn/2+2);
-  glGrib::Buffer<double> zmod (kn);
+  Buffer<double> zfn ((kn+1)*(kn+1));
+  Buffer<double> zfnlat (kn/2+2);
+  Buffer<double> zmod (kn);
 
   //     ------------------------------------------------------------------
   //        1. initialization.
@@ -197,7 +199,7 @@ void processLat (int jlat, int iloen1, int iloen2,
       
       auto RS2 = [&] ()
       {
-        *(inds_strip++) = glGrib::OpenGL::restart;   
+        *(inds_strip++) = OpenGL::restart;   
         *(inds_strip++) = ica-1;        
         *(inds_strip++) = icb-1;        
         *(inds_strip++) = icc-1;        
@@ -205,7 +207,7 @@ void processLat (int jlat, int iloen1, int iloen2,
 
       auto ST1 = [&] () 
       {
-        *(inds_strip++) = glGrib::OpenGL::restart;  
+        *(inds_strip++) = OpenGL::restart;  
         *(inds_strip++) = ica-1+iloen1-1;
         *(inds_strip++) = ica-1;
         *(inds_strip++) = icb-1;
@@ -215,7 +217,7 @@ void processLat (int jlat, int iloen1, int iloen2,
       auto RS1 = [&] ()
       {
         *(inds_strip++) = icc-1;
-        *(inds_strip++) = glGrib::OpenGL::restart;  
+        *(inds_strip++) = OpenGL::restart;  
         *(inds_strip++) = icb-1;
         *(inds_strip++) = icc-1;
       };
@@ -298,9 +300,9 @@ void processLat (int jlat, int iloen1, int iloen2,
   
 void computeTrigaussStrip 
   (const long int Nj, const std::vector<long int> & pl, 
-   glGrib::OpenGLBuffer<unsigned int>::Mapping & ind_stripm,
-   glGrib::BufferPtr<int> & ind_stripcnt_per_lat, 
-   glGrib::BufferPtr<int> & ind_stripoff_per_lat)
+   OpenGLBuffer<unsigned int>::Mapping & ind_stripm,
+   BufferPtr<int> & ind_stripcnt_per_lat, 
+   BufferPtr<int> & ind_stripoff_per_lat)
 {
   int iglooff[Nj];
 
@@ -353,7 +355,7 @@ void computeTrigaussStrip
         abort ();
   
       for (; inds_strip < inds_strip_last; inds_strip++)
-        *inds_strip = glGrib::OpenGL::restart;
+        *inds_strip = OpenGL::restart;
   
     }
 
@@ -363,11 +365,11 @@ void computeTrigaussStrip
 
 
 void computeTrigauss (const long int Nj, const std::vector<long int> & pl, 
-                      glGrib::BufferPtr<unsigned int> & ind, 
-                      const glGrib::BufferPtr<int> & indoff, 
-                      const glGrib::BufferPtr<int> & indcnt, 
-                      glGrib::BufferPtr<int> & triu, 
-                      glGrib::BufferPtr<int> & trid)
+                      BufferPtr<unsigned int> & ind, 
+                      const BufferPtr<int> & indoff, 
+                      const BufferPtr<int> & indcnt, 
+                      BufferPtr<int> & triu, 
+                      BufferPtr<int> & trid)
 {
   int iglooff[Nj];
 
@@ -494,7 +496,7 @@ void computeTrigauss (const long int Nj, const std::vector<long int> & pl,
 
 }
 
-int glGrib::GeometryGaussian::computeLowerTriangle (int jlat, int jlon) const
+int GeometryGaussian::computeLowerTriangle (int jlat, int jlon) const
 {
   if (jlat == grid_gaussian.Nj)
     return -1;
@@ -521,7 +523,7 @@ int glGrib::GeometryGaussian::computeLowerTriangle (int jlat, int jlon) const
   return itrid;
 }
 
-int glGrib::GeometryGaussian::computeUpperTriangle (int jlat, int jlon) const
+int GeometryGaussian::computeUpperTriangle (int jlat, int jlon) const
 {
   if (jlat == 1)
     return -1;
@@ -551,7 +553,7 @@ int glGrib::GeometryGaussian::computeUpperTriangle (int jlat, int jlon) const
   return itriu;
 }
 
-void glGrib::GeometryGaussian::computeTriangleVertices (int itri, int jglo[3]) const
+void GeometryGaussian::computeTriangleVertices (int itri, int jglo[3]) const
 {
   int jlat1 = 1, jlat2 = grid_gaussian.Nj, jlat;
   while (1)
@@ -699,12 +701,12 @@ void glGrib::GeometryGaussian::computeTriangleVertices (int itri, int jglo[3]) c
 
 }
 
-int glGrib::GeometryGaussian::size () const
+int GeometryGaussian::size () const
 {
   return grid_gaussian.jglooff[grid_gaussian.Nj-1] + grid_gaussian.pl[grid_gaussian.Nj-1];
 }
 
-void glGrib::GeometryGaussian::setProgramParameters (glGrib::Program * program) const 
+void GeometryGaussian::setProgramParameters (Program * program) const 
 {
 #include "shaders/include/geometry/buffer_index.h"
 #include "shaders/include/geometry/types.h"
@@ -735,7 +737,7 @@ void glGrib::GeometryGaussian::setProgramParameters (glGrib::Program * program) 
    }
 }
 
-glGrib::GeometryGaussian::GeometryGaussian (int _Nj)
+GeometryGaussian::GeometryGaussian (int _Nj)
 {
   grid_gaussian.Nj = _Nj;
 
@@ -754,7 +756,7 @@ glGrib::GeometryGaussian::GeometryGaussian (int _Nj)
 
 }
 
-glGrib::GeometryGaussian::GeometryGaussian (glGrib::HandlePtr ghp)
+GeometryGaussian::GeometryGaussian (HandlePtr ghp)
 {
   codes_handle * h = ghp == nullptr ? nullptr : ghp->getCodesHandle ();
 
@@ -829,7 +831,7 @@ void roll3 (int jglo[3])
 }
 }
         
-void glGrib::GeometryGaussian::checkTriangleComputation () const
+void GeometryGaussian::checkTriangleComputation () const
 {
 
   if (0){
@@ -916,13 +918,13 @@ void glGrib::GeometryGaussian::checkTriangleComputation () const
   return;
 }
 
-void glGrib::GeometryGaussian::setupSSBO ()
+void GeometryGaussian::setupSSBO ()
 {
   // jlat
 
   if (! opts.gaussian.fit.on)
     {
-      misc_gaussian.ssbo_jlat = glGrib::OpenGLBufferPtr<int> (grid.numberOfPoints);
+      misc_gaussian.ssbo_jlat = OpenGLBufferPtr<int> (grid.numberOfPoints);
       auto jlat = misc_gaussian.ssbo_jlat->map ();
 
 #pragma omp parallel for
@@ -934,11 +936,11 @@ void glGrib::GeometryGaussian::setupSSBO ()
 
   // jglooff
 
-  misc_gaussian.ssbo_jglo = glGrib::OpenGLBufferPtr<int> (grid_gaussian.jglooff);
+  misc_gaussian.ssbo_jglo = OpenGLBufferPtr<int> (grid_gaussian.jglooff);
 
   // Gaussian latitudes
  
-  misc_gaussian.ssbo_glat = glGrib::OpenGLBufferPtr<float> (grid_gaussian.Nj);
+  misc_gaussian.ssbo_glat = OpenGLBufferPtr<float> (grid_gaussian.Nj);
   auto glat = misc_gaussian.ssbo_glat->map ();
 
   for (int i = 0; i < grid_gaussian.Nj; i++)
@@ -946,9 +948,9 @@ void glGrib::GeometryGaussian::setupSSBO ()
 
 }
 
-void glGrib::GeometryGaussian::setupCoordinates ()
+void GeometryGaussian::setupCoordinates ()
 {
-  crds.vertexbuffer = glGrib::OpenGLBufferPtr<float> (2 * grid.numberOfPoints);
+  crds.vertexbuffer = OpenGLBufferPtr<float> (2 * grid.numberOfPoints);
   auto lonlat = crds.vertexbuffer->map ();
   
   int iglooff[grid_gaussian.Nj];
@@ -1055,7 +1057,7 @@ private:
 
 }
 
-void glGrib::GeometryGaussian::setupFitLatitudes ()
+void GeometryGaussian::setupFitLatitudes ()
 {
 #include "shaders/include/geometry/gaussian/kinds.h"
 
@@ -1081,7 +1083,7 @@ void glGrib::GeometryGaussian::setupFitLatitudes ()
 
 
 
-void glGrib::GeometryGaussian::tryFitLatitudes (int _kind, latfit_t * latfit)
+void GeometryGaussian::tryFitLatitudes (int _kind, latfit_t * latfit)
 {
 #include "shaders/include/geometry/gaussian/kinds.h"
 
@@ -1107,7 +1109,7 @@ void glGrib::GeometryGaussian::tryFitLatitudes (int _kind, latfit_t * latfit)
   std::vector<double> coeff;
 
   const int degree = 3;
-  glGrib::FitPolynomial (x, y, degree, coeff);
+  FitPolynomial (x, y, degree, coeff);
 
   gj.geometry_gaussian_latfit_degre      = coeff.size () - 1;
   for (auto c : coeff)
@@ -1139,7 +1141,7 @@ void glGrib::GeometryGaussian::tryFitLatitudes (int _kind, latfit_t * latfit)
 
 }
 
-void glGrib::GeometryGaussian::triangulate ()
+void GeometryGaussian::triangulate ()
 {
 
   // Compute number of triangles
@@ -1167,7 +1169,7 @@ void glGrib::GeometryGaussian::triangulate ()
       grid_gaussian.trid = BufferPtr<int> (grid.numberOfPoints); 
       // Generation of triangles
       computeTrigauss (grid_gaussian.Nj, grid_gaussian.pl, grid_gaussian.ind, grid_gaussian.indoff_per_lat, grid_gaussian.indcnt_per_lat, grid_gaussian.triu, grid_gaussian.trid);
-      grid.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (grid_gaussian.ind);
+      grid.elementbuffer = OpenGLBufferPtr<unsigned int> (grid_gaussian.ind);
     }
   else
     {
@@ -1190,7 +1192,7 @@ void glGrib::GeometryGaussian::triangulate ()
       for (int jlat = 1; jlat < grid_gaussian.Nj; jlat++)
         grid.ind_strip_size += ind_stripcnt_per_lat[jlat-1];
 
-      grid.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (grid.ind_strip_size);
+      grid.elementbuffer = OpenGLBufferPtr<unsigned int> (grid.ind_strip_size);
       auto ind_strip = grid.elementbuffer->map ();
 
       computeTrigaussStrip 
@@ -1200,7 +1202,7 @@ void glGrib::GeometryGaussian::triangulate ()
 
 }
 
-void glGrib::GeometryGaussian::setupSubGrid ()
+void GeometryGaussian::setupSubGrid ()
 {
   GeometryGaussian * subgridGauss = new GeometryGaussian ();
   subgrid = subgridGauss;
@@ -1269,8 +1271,8 @@ void glGrib::GeometryGaussian::setupSubGrid ()
 }
 
 
-void glGrib::GeometryGaussian::setup 
-  (glGrib::HandlePtr ghp, const glGrib::OptionsGeometry & o)
+void GeometryGaussian::setup 
+  (HandlePtr ghp, const OptionsGeometry & o)
 {
   opts = o;
 
@@ -1303,7 +1305,7 @@ void glGrib::GeometryGaussian::setup
     setupSubGrid ();
 }
 
-void glGrib::GeometryGaussian::latlon2coordxy 
+void GeometryGaussian::latlon2coordxy 
   (float lat, float lon, 
    float & coordx, float & coordy) 
 const
@@ -1325,7 +1327,7 @@ const
   coordy = std::asin ((-misc_gaussian.omc2 + sinlat * misc_gaussian.opc2) / (misc_gaussian.opc2 - sinlat * misc_gaussian.omc2));
 }
 
-int glGrib::GeometryGaussian::latlon2jlatjlon (float lat, float lon, int & jlat, int & jlon) const
+int GeometryGaussian::latlon2jlatjlon (float lat, float lon, int & jlat, int & jlon) const
 {
   float coordx, coordy;
 
@@ -1368,14 +1370,14 @@ int glGrib::GeometryGaussian::latlon2jlatjlon (float lat, float lon, int & jlat,
   return 0;
 }
 
-int glGrib::GeometryGaussian::latlon2index (float lat, float lon) const
+int GeometryGaussian::latlon2index (float lat, float lon) const
 {
   int jlat, jlon;
   latlon2jlatjlon (lat, lon, jlat, jlon);
   return grid_gaussian.jglooff[jlat] + jlon;
 }
 
-void glGrib::GeometryGaussian::index2latlon (int jglo, float * lat, float * lon) const
+void GeometryGaussian::index2latlon (int jglo, float * lat, float * lon) const
 {
   jlonlat_t jlonlat = this->jlonlat (jglo);
   glm::vec2 lonlat = jlonlat2lonlat (jlonlat);
@@ -1383,7 +1385,7 @@ void glGrib::GeometryGaussian::index2latlon (int jglo, float * lat, float * lon)
   *lat = lonlat[1];
 }
 
-const std::string glGrib::GeometryGaussian::md5 () const
+const std::string GeometryGaussian::md5 () const
 {
   unsigned char out[MD5_DIGEST_LENGTH];
   MD5_CTX c;
@@ -1400,12 +1402,12 @@ const std::string glGrib::GeometryGaussian::md5 () const
 }
 
 
-bool glGrib::GeometryGaussian::isEqual (const glGrib::Geometry & other) const
+bool GeometryGaussian::isEqual (const Geometry & other) const
 {
   const float epsilon = 1E-4;
   try
     {
-      const glGrib::GeometryGaussian & geom = dynamic_cast<const glGrib::GeometryGaussian &>(other);
+      const GeometryGaussian & geom = dynamic_cast<const GeometryGaussian &>(other);
       return (grid_gaussian.Nj == geom.grid_gaussian.Nj) && (std::abs (misc_gaussian.stretchingFactor - geom.misc_gaussian.stretchingFactor) < epsilon) &&
              (std::abs (misc_gaussian.latitudeOfStretchingPoleInDegrees - geom.misc_gaussian.latitudeOfStretchingPoleInDegrees) < epsilon) &&
 	     (std::abs (misc_gaussian.longitudeOfStretchingPoleInDegrees - geom.misc_gaussian.longitudeOfStretchingPoleInDegrees) < epsilon) &&
@@ -1417,7 +1419,7 @@ bool glGrib::GeometryGaussian::isEqual (const glGrib::Geometry & other) const
     }
 }
 
-void glGrib::GeometryGaussian::applyUVangle (glGrib::BufferPtr<float> & angle) const 
+void GeometryGaussian::applyUVangle (BufferPtr<float> & angle) const 
 {
   if (misc_gaussian.rotated)
     {
@@ -1462,7 +1464,7 @@ void glGrib::GeometryGaussian::applyUVangle (glGrib::BufferPtr<float> & angle) c
   return;
 }
 
-void glGrib::GeometryGaussian::sample (OpenGLBufferPtr<unsigned char> & pp, const unsigned char p0, const int level) const
+void GeometryGaussian::sample (OpenGLBufferPtr<unsigned char> & pp, const unsigned char p0, const int level) const
 {
   auto p = pp->map ();
   int lat_stride = static_cast<float> (grid_gaussian.Nj) / static_cast<float> (level);
@@ -1481,8 +1483,8 @@ void glGrib::GeometryGaussian::sample (OpenGLBufferPtr<unsigned char> & pp, cons
     }
 }
 
-const glGrib::GeometryGaussian::jlonlat_t 
-glGrib::GeometryGaussian::jlonlat (int jglo) const 
+const GeometryGaussian::jlonlat_t 
+GeometryGaussian::jlonlat (int jglo) const 
 {
   int jlat1 = 0, jlat2 = grid_gaussian.Nj, jlat;
   while (jlat2 != jlat1 + 1)
@@ -1499,7 +1501,7 @@ glGrib::GeometryGaussian::jlonlat (int jglo) const
 }
 
 
-void glGrib::GeometryGaussian::getTriangleNeighbours (int it, int jglo[3], int itri[3], jlonlat_t jlonlat_[3]) const
+void GeometryGaussian::getTriangleNeighbours (int it, int jglo[3], int itri[3], jlonlat_t jlonlat_[3]) const
 {
   int jgloABC[3];
   getTriangleVertices (it, jgloABC);
@@ -1554,7 +1556,7 @@ void glGrib::GeometryGaussian::getTriangleNeighbours (int it, int jglo[3], int i
   jlonlat_[2] = jlonlat2;
 }
 
-int glGrib::GeometryGaussian::getUpperTriangle (int jglo, const jlonlat_t & jlonlat) const
+int GeometryGaussian::getUpperTriangle (int jglo, const jlonlat_t & jlonlat) const
 {
   if (grid_gaussian.triu.allocated ())
     return grid_gaussian.triu[jglo];
@@ -1562,7 +1564,7 @@ int glGrib::GeometryGaussian::getUpperTriangle (int jglo, const jlonlat_t & jlon
     return computeUpperTriangle (jlonlat.jlat, jlonlat.jlon);
 }
 
-int glGrib::GeometryGaussian::getLowerTriangle (int jglo, const jlonlat_t & jlonlat) const
+int GeometryGaussian::getLowerTriangle (int jglo, const jlonlat_t & jlonlat) const
 {
   if (grid_gaussian.trid.allocated ())
     return grid_gaussian.trid[jglo];
@@ -1570,7 +1572,7 @@ int glGrib::GeometryGaussian::getLowerTriangle (int jglo, const jlonlat_t & jlon
     return computeLowerTriangle (jlonlat.jlat, jlonlat.jlon);
 }
 
-void glGrib::GeometryGaussian::getTriangleVertices (int it, int jglo[3]) const
+void GeometryGaussian::getTriangleVertices (int it, int jglo[3]) const
 {
   if (grid_gaussian.ind)
     {
@@ -1582,7 +1584,7 @@ void glGrib::GeometryGaussian::getTriangleVertices (int it, int jglo[3]) const
     }
 }
 
-void glGrib::GeometryGaussian::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
+void GeometryGaussian::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec3 xyz[3]) const
 {
   jlonlat_t jlonlat[3];
 
@@ -1593,7 +1595,7 @@ void glGrib::GeometryGaussian::getTriangleNeighbours (int it, int jglo[3], int i
   xyz[2] = jlonlat2xyz (jlonlat[2]);
 }
 
-void glGrib::GeometryGaussian::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec2 merc[3]) const
+void GeometryGaussian::getTriangleNeighbours (int it, int jglo[3], int itri[3], glm::vec2 merc[3]) const
 {
   jlonlat_t jlonlat[3];
 
@@ -1605,7 +1607,7 @@ void glGrib::GeometryGaussian::getTriangleNeighbours (int it, int jglo[3], int i
 }
 
 
-bool glGrib::GeometryGaussian::triangleIsEdge (int it) const
+bool GeometryGaussian::triangleIsEdge (int it) const
 {
   int jgloABC[3];
   getTriangleVertices (it, jgloABC);
@@ -1626,7 +1628,7 @@ bool glGrib::GeometryGaussian::triangleIsEdge (int it) const
 }
 
 
-void glGrib::GeometryGaussian::applyNormScale (glGrib::BufferPtr<float> & data) const 
+void GeometryGaussian::applyNormScale (BufferPtr<float> & data) const 
 {
   if (! opts.gaussian.apply_norm_scale.on)
     return;
@@ -1648,7 +1650,7 @@ void glGrib::GeometryGaussian::applyNormScale (glGrib::BufferPtr<float> & data) 
     }
 }
 
-void glGrib::GeometryGaussian::sampleTriangle (glGrib::BufferPtr<unsigned char> & s, const unsigned char s0, const int level) const
+void GeometryGaussian::sampleTriangle (BufferPtr<unsigned char> & s, const unsigned char s0, const int level) const
 {
   int lev = std::max (1, level);
   int itrioff = 0;
@@ -1663,7 +1665,7 @@ void glGrib::GeometryGaussian::sampleTriangle (glGrib::BufferPtr<unsigned char> 
 }
 
 
-int glGrib::GeometryGaussian::getTriangle (float lon, float lat) const
+int GeometryGaussian::getTriangle (float lon, float lat) const
 {
   int jlat, jlon;
 
@@ -1726,14 +1728,14 @@ int glGrib::GeometryGaussian::getTriangle (float lon, float lat) const
   return 0;
 }
 
-const glm::vec2 glGrib::GeometryGaussian::xyz2conformal (const glm::vec3 & xyz) const
+const glm::vec2 GeometryGaussian::xyz2conformal (const glm::vec3 & xyz) const
 {
   float lon = atan2 (xyz.y, xyz.x);
   float lat = std::asin (xyz.z);
   return glm::vec2 (lon, std::log (std::tan (pi / 4.0f + lat / 2.0f)));
 }
 
-const glm::vec3 glGrib::GeometryGaussian::conformal2xyz (const glm::vec2 & merc) const
+const glm::vec3 GeometryGaussian::conformal2xyz (const glm::vec2 & merc) const
 {
   float coordx = merc.x;
   float coordy = 2.0f * std::atan (std::exp (merc.y)) - halfpi;
@@ -1752,14 +1754,14 @@ const glm::vec3 glGrib::GeometryGaussian::conformal2xyz (const glm::vec2 & merc)
   return misc_gaussian.rot * glm::vec3 (X, Y, Z);
 }
 
-const glm::vec2 glGrib::GeometryGaussian::conformal2latlon (const glm::vec2 & merc) const
+const glm::vec2 GeometryGaussian::conformal2latlon (const glm::vec2 & merc) const
 {
   float lon = merc.x;
   float lat = 2.0f * std::atan (std::exp (merc.y)) - halfpi;
   return glm::vec2 (glm::degrees (lon), glm::degrees (lat));
 }
 
-void glGrib::GeometryGaussian::fixPeriodicity (const glm::vec2 & M, glm::vec2 * P, int n) const
+void GeometryGaussian::fixPeriodicity (const glm::vec2 & M, glm::vec2 * P, int n) const
 {
   // Fix periodicity issue
   for (int i = 0; i < n; i++)
@@ -1771,7 +1773,7 @@ void glGrib::GeometryGaussian::fixPeriodicity (const glm::vec2 & M, glm::vec2 * 
     }
 }
 
-void glGrib::GeometryGaussian::getPointNeighbours (int jglo, std::vector<int> * neigh) const
+void GeometryGaussian::getPointNeighbours (int jglo, std::vector<int> * neigh) const
 {
   neigh->resize (0);
  
@@ -1837,7 +1839,7 @@ void glGrib::GeometryGaussian::getPointNeighbours (int jglo, std::vector<int> * 
   
 }
 
-float glGrib::GeometryGaussian::getLocalMeshSize (int jglo) const
+float GeometryGaussian::getLocalMeshSize (int jglo) const
 {
   float mesh = pi / grid_gaussian.Nj;
 
@@ -1854,14 +1856,14 @@ float glGrib::GeometryGaussian::getLocalMeshSize (int jglo) const
   return mesh / N;
 }
 
-void glGrib::GeometryGaussian::getView (glGrib::View * view) const
+void GeometryGaussian::getView (View * view) const
 {
   if (! misc_gaussian.rotated)
     return;
-  glGrib::OptionsView view_opts = view->getOptions (); 
+  OptionsView view_opts = view->getOptions (); 
   view_opts.lon = misc_gaussian.longitudeOfStretchingPoleInDegrees;
   view_opts.lat = misc_gaussian.latitudeOfStretchingPoleInDegrees;
   view->setOptions (view_opts);
 }
 
-
+}

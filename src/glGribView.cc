@@ -8,14 +8,16 @@
 #include <iostream>
 #include <cctype>
 
+namespace glGrib
+{
 
-void glGrib::View::delMVP (glGrib::Program * program) const
+void View::delMVP (Program * program) const
 {
   glDisable (GL_SCISSOR_TEST);
 }
 
 
-void glGrib::View::setMVP (glGrib::Program * program) const
+void View::setMVP (Program * program) const
 {
   program->set ("MVP", MVP);
   program->set ("proj", ps.current ()->getType ());
@@ -46,8 +48,8 @@ void glGrib::View::setMVP (glGrib::Program * program) const
       float xmin = width  * opts.clip.xmin, xmax = width  * opts.clip.xmax, 
 	    ymin = height * opts.clip.ymin, ymax = height * opts.clip.ymax;
       int type = ps.current ()->getType ();
-      if ((type == glGrib::Projection::LATLON)
-       || (type == glGrib::Projection::MERCATOR))
+      if ((type == Projection::LATLON)
+       || (type == Projection::MERCATOR))
         {
           float xpos1, xpos2, ypos1, ypos2;
           float lon1 = lon0 + opts.clip.dlon, lon2 = lon0 - opts.clip.dlon, 
@@ -64,9 +66,9 @@ void glGrib::View::setMVP (glGrib::Program * program) const
     }
 }
 
-void glGrib::View::calcMVP () 
+void View::calcMVP () 
 {
-  glGrib::Projection::type pt = glGrib::Projection::typeFromString (opts.projection);
+  Projection::type pt = Projection::typeFromString (opts.projection);
   ps.setType (pt);
 
   glm::vec3 pos
@@ -109,14 +111,14 @@ void glGrib::View::calcMVP ()
   ps.current ()->setLon0 (lon0);
 }
 
-void glGrib::View::setViewport (int w, int h)
+void View::setViewport (int w, int h)
 {
   width = w;
   height = h;
   calcMVP ();
 }
 
-int glGrib::View::getScreenCoordsFromLatLon (float * xpos, float * ypos, float lat, float lon) const
+int View::getScreenCoordsFromLatLon (float * xpos, float * ypos, float lat, float lon) const
 {
   lat = glm::radians (lat); 
   lon = glm::radians (lon);
@@ -126,7 +128,7 @@ int glGrib::View::getScreenCoordsFromLatLon (float * xpos, float * ypos, float l
   return getScreenCoordsFromXYZ (xpos, ypos, pos);
 }
 
-int glGrib::View::getLatLonFromScreenCoords (float xpos, float ypos, float * lat, float * lon) const
+int View::getLatLonFromScreenCoords (float xpos, float ypos, float * lat, float * lon) const
 {
   glm::vec3 pos;
 
@@ -139,7 +141,7 @@ int glGrib::View::getLatLonFromScreenCoords (float xpos, float ypos, float * lat
   return 1;
 }
 
-int glGrib::View::getScreenCoordsFromXYZ (float * xpos, float * ypos, const glm::vec3 & xyz) const
+int View::getScreenCoordsFromXYZ (float * xpos, float * ypos, const glm::vec3 & xyz) const
 {
   glm::vec3 pos = ps.current ()->project (xyz);
   pos = project (pos);
@@ -150,7 +152,7 @@ int glGrib::View::getScreenCoordsFromXYZ (float * xpos, float * ypos, const glm:
   return 1;
 }
 
-int glGrib::View::getXYZFromScreenCoords (float xpos, float ypos, glm::vec3 * xyz) const
+int View::getXYZFromScreenCoords (float xpos, float ypos, glm::vec3 * xyz) const
 {
   glm::vec3 xa = unproject (glm::vec3 (xpos, ypos, +0.985601f));
   glm::vec3 xb = unproject (glm::vec3 (xpos, ypos, +0.900000f));
@@ -161,12 +163,12 @@ int glGrib::View::getXYZFromScreenCoords (float xpos, float ypos, glm::vec3 * xy
   return 1;
 }
 
-float glGrib::View::fracToDistAtNadir (float frac) const
+float View::fracToDistAtNadir (float frac) const
 {
   return pixelToDistAtNadir (height * frac);
 }
 
-float glGrib::View::pixelToDistAtNadir (float pixels) const
+float View::pixelToDistAtNadir (float pixels) const
 {
   float lon = deg2rad * opts.lon, lat = deg2rad * opts.lat;
 
@@ -197,14 +199,14 @@ float glGrib::View::pixelToDistAtNadir (float pixels) const
     }
 }
 
-void glGrib::View::setup (const glGrib::OptionsView & o)
+void View::setup (const OptionsView & o)
 {
   opts = o;
   calcMVP ();
   calcZoom ();
 }
 
-glGrib::View::transform_type glGrib::View::typeFromString (std::string str)
+View::transform_type View::typeFromString (std::string str)
 {
   for (size_t i = 0; i < str.length (); i++)
     str[i] = std::toupper (str[i]);
@@ -215,7 +217,7 @@ glGrib::View::transform_type glGrib::View::typeFromString (std::string str)
   return PERSPECTIVE;
 }
 
-void glGrib::View::toggleTransformType () 
+void View::toggleTransformType () 
 { 
   if (opts.transformation == "PERSPECTIVE")
     opts.transformation = "ORTHOGRAPHIC";
@@ -225,7 +227,7 @@ void glGrib::View::toggleTransformType ()
 }
 
 
-void glGrib::View::calcZoom ()
+void View::calcZoom ()
 {
   float lonP = opts.zoom.lon, latP = opts.zoom.lat;
 
@@ -251,4 +253,6 @@ void glGrib::View::calcZoom ()
 
   zoom_rotd = glm::mat3 (zoom4rotd);
   zoom_roti = glm::mat3 (zoom4roti);
+}
+
 }

@@ -1,8 +1,10 @@
 #include "glGribPolygon.h"
 #include "glGribOpenGL.h"
 
+namespace glGrib
+{
 
-void glGrib::Polygon::setupVertexAttributes () const
+void Polygon::setupVertexAttributes () const
 {
   vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
@@ -10,7 +12,7 @@ void glGrib::Polygon::setupVertexAttributes () const
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 }
 
-void glGrib::Polygon::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+void Polygon::render (const View & view, const OptionsLight & light) const
 {
   VAID.bind ();
   glEnable (GL_PRIMITIVE_RESTART);
@@ -20,3 +22,4 @@ void glGrib::Polygon::render (const glGrib::View & view, const glGrib::OptionsLi
   VAID.unbind ();
 }
 
+}

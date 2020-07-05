@@ -12,7 +12,10 @@
 #include <errno.h>
 #include <time.h>
 
-glGrib::HandlePtr glGrib::Loader::handleFromFile (const std::string & f)
+namespace glGrib
+{
+
+HandlePtr Loader::handleFromFile (const std::string & f)
 {
   // Search cache
   for (cache_t::iterator it = cache.begin (); it != cache.end (); it++)
@@ -41,13 +44,13 @@ glGrib::HandlePtr glGrib::Loader::handleFromFile (const std::string & f)
     }
 
 
-  glGrib::Container * cont = glGrib::Container::create (file);
+  Container * cont = Container::create (file);
 
   h = cont->getHandleByExt (ext);
 
-  glGrib::Container::remove (cont);
+  Container::remove (cont);
 
-  glGrib::HandlePtr ghp = std::make_shared<glGrib::Handle>(h);
+  HandlePtr ghp = std::make_shared<Handle>(h);
 
   if (this->size > 0)
     {
@@ -63,8 +66,8 @@ glGrib::HandlePtr glGrib::Loader::handleFromFile (const std::string & f)
   return ghp;
 }
 
-void glGrib::Loader::load (glGrib::BufferPtr<float> * ptr, const std::vector<std::string> & file, const glGrib::OptionsGeometry & opts_geom, 
-		           float fslot, glGrib::FieldMetadata * meta, int mult, int base, bool diff)
+void Loader::load (BufferPtr<float> * ptr, const std::vector<std::string> & file, const OptionsGeometry & opts_geom, 
+		   float fslot, FieldMetadata * meta, int mult, int base, bool diff)
 {
   int islot = static_cast<int> (fslot);
   float a, b;
@@ -86,8 +89,8 @@ void glGrib::Loader::load (glGrib::BufferPtr<float> * ptr, const std::vector<std
   const std::string file1 = file[mult*(islot+0)+base];
   const std::string file2 = file[mult*(islot+1)+base];
 
-  glGrib::const_GeometryPtr geom1 = glGrib::Geometry::load (this, file1, opts_geom);
-  glGrib::const_GeometryPtr geom2 = glGrib::Geometry::load (this, file2, opts_geom);
+  const_GeometryPtr geom1 = Geometry::load (this, file1, opts_geom);
+  const_GeometryPtr geom2 = Geometry::load (this, file2, opts_geom);
 
   if (! geom1->isEqual (*geom2))
     {
@@ -95,7 +98,7 @@ void glGrib::Loader::load (glGrib::BufferPtr<float> * ptr, const std::vector<std
                                 + file1 + ", " + file2);
     }
 
-  glGrib::FieldMetadata meta1, meta2;
+  FieldMetadata meta1, meta2;
 
   if (ptr == nullptr)
     {
@@ -104,13 +107,13 @@ void glGrib::Loader::load (glGrib::BufferPtr<float> * ptr, const std::vector<std
     }
   else
     {
-      glGrib::BufferPtr<float> val1, val2;
+      BufferPtr<float> val1, val2;
 
       load (&val1, file1, opts_geom, &meta1);
       load (&val2, file2, opts_geom, &meta2);
     
       int size = geom1->size ();
-      glGrib::BufferPtr<float> val = glGrib::BufferPtr<float> (size);
+      BufferPtr<float> val = BufferPtr<float> (size);
     
       float valmin = std::numeric_limits<float>::max (), 
             valmax = std::numeric_limits<float>::min (), 
@@ -162,7 +165,7 @@ void glGrib::Loader::load (glGrib::BufferPtr<float> * ptr, const std::vector<std
         }
       else
         {
-          meta->term = glGrib::OptionDate::interpolate (meta1.term, meta2.term, a);
+          meta->term = OptionDate::interpolate (meta1.term, meta2.term, a);
           meta->valmin = valmin;
           meta->valmax = valmax;
           meta->valmis = valmis;
@@ -172,11 +175,11 @@ void glGrib::Loader::load (glGrib::BufferPtr<float> * ptr, const std::vector<std
     }
 }
 
-void glGrib::Loader::load (glGrib::BufferPtr<float> * ptr, const std::string & file, 
-		           const glGrib::OptionsGeometry & opts_geom,  
-                           glGrib::FieldMetadata * meta)
+void Loader::load (BufferPtr<float> * ptr, const std::string & file, 
+		   const OptionsGeometry & opts_geom,  
+                   FieldMetadata * meta)
 {
-  glGrib::HandlePtr ghp = handleFromFile (file);
+  HandlePtr ghp = handleFromFile (file);
   codes_handle * h = ghp == nullptr ? nullptr : ghp->getCodesHandle ();
 
   size_t v_len = 0;
@@ -189,11 +192,11 @@ void glGrib::Loader::load (glGrib::BufferPtr<float> * ptr, const std::string & f
 
   if (ptr != nullptr)
     {
-      glGrib::Buffer<double> v (v_len);
+      Buffer<double> v (v_len);
 
       codes_get_double_array (h, "values", &v[0], &v_len);
 
-      glGrib::BufferPtr<float> val = glGrib::BufferPtr<float> (v_len);
+      BufferPtr<float> val = BufferPtr<float> (v_len);
 
       for (size_t i = 0; i < v_len; i++)
         val[i] = v[i];
@@ -275,7 +278,7 @@ void glGrib::Loader::load (glGrib::BufferPtr<float> * ptr, const std::string & f
         throw std::runtime_error (std::string ("Unexpected indicatorOfUnitOfTimeRange found in `") + file + std::string ("'"));
     }
 
-  meta->term = glGrib::OptionDate::date_from_t (glGrib::OptionDate::tFromDate (meta->base) + meta->forecastTerm);
+  meta->term = OptionDate::date_from_t (OptionDate::tFromDate (meta->base) + meta->forecastTerm);
 
   if (false)
     {
@@ -295,30 +298,27 @@ void glGrib::Loader::load (glGrib::BufferPtr<float> * ptr, const std::string & f
        << " " << meta->term.hour  
        << " " << meta->term.minute
        << " " << meta->term.second
-       << " " << glGrib::OptionDate::tFromDate (meta->term)
+       << " " << OptionDate::tFromDate (meta->term)
        << " " << std::endl;
     }
 
 
 }
 
-void glGrib::Loader::uv2nd (glGrib::const_GeometryPtr geometry,
-                           const glGrib::BufferPtr<float> data_u, 
-                           const glGrib::BufferPtr<float> data_v,
-                           glGrib::BufferPtr<float> & data_n, 
-                           glGrib::BufferPtr<float> & data_d,
-                           const glGrib::FieldMetadata & meta_u, 
-                           const glGrib::FieldMetadata & meta_v,
-                           glGrib::FieldMetadata & meta_n, 
-                           glGrib::FieldMetadata & meta_d)
+void Loader::uv2nd 
+  (const_GeometryPtr geometry,
+   const BufferPtr<float> data_u, const BufferPtr<float> data_v,
+   BufferPtr<float> & data_n,     BufferPtr<float> & data_d,
+   const FieldMetadata & meta_u,  const FieldMetadata & meta_v,
+   FieldMetadata & meta_n,        FieldMetadata & meta_d)
 {
-  data_n = glGrib::BufferPtr<float> (geometry->getNumberOfPoints ());
-  data_d = glGrib::BufferPtr<float> (geometry->getNumberOfPoints ());
+  data_n = BufferPtr<float> (geometry->getNumberOfPoints ());
+  data_d = BufferPtr<float> (geometry->getNumberOfPoints ());
 
   meta_n = meta_u; // TODO : handle this differently
   meta_d = meta_u;
   
-  meta_n.valmin = glGrib::Palette::defaultMin ();
+  meta_n.valmin = Palette::defaultMin ();
   meta_n.valmax = 0.0f;
   meta_d.valmin = -180.0f;
   meta_d.valmax = +180.0f;
@@ -357,5 +357,5 @@ void glGrib::Loader::uv2nd (glGrib::const_GeometryPtr geometry,
 
 }
 
-
+}
 

@@ -6,36 +6,38 @@
 
 #include <map>
 
+namespace glGrib
+{
 
 namespace
 {
-class cache_t : public std::map <std::string,glGrib::FontPtr>
+class cache_t : public std::map <std::string,FontPtr>
 {
 };
 cache_t cache;
 };
 
 
-glGrib::FontPtr glGrib::getGlGribFontPtr (const glGrib::OptionsFont & opts)
+FontPtr getGlGribFontPtr (const OptionsFont & opts)
 {
   auto it = cache.find (opts.bitmap);
-  glGrib::FontPtr font;
+  FontPtr font;
   if (it != cache.end ())
     { 
       font = it->second;
     }
   else
     {
-      font = std::make_shared<glGrib::Font> ();
+      font = std::make_shared<Font> ();
       font->setup (opts);
-      cache.insert (std::pair<std::string,glGrib::FontPtr> (opts.bitmap, font));
+      cache.insert (std::pair<std::string,FontPtr> (opts.bitmap, font));
     }
   return font;
 }
 
-void glGrib::Font::select () const
+void Font::select () const
 {
-  glGrib::Program * program = glGrib::Program::load ("FONT");
+  Program * program = Program::load ("FONT");
   program->use ();
   program->set ("xoff", xoff);
   program->set ("yoff", yoff);
@@ -47,14 +49,14 @@ void glGrib::Font::select () const
 
 }
 
-void glGrib::Font::setup (const glGrib::OptionsFont & o)
+void Font::setup (const OptionsFont & o)
 {
   opts = o;
   BufferPtr<unsigned char> rgb;
   int w, h;
   std::vector<int> ioff, joff;
 
-  glGrib::Bitmap (glGrib::Resolve (opts.bitmap), rgb, &w, &h);
+  Bitmap (Resolve (opts.bitmap), rgb, &w, &h);
 
   for (int i = 0, p = w * (h - 2); i < w; i++, p += 1)
     if ((rgb[3*p+0] == 255) && (rgb[3*p+1] == 0) && (rgb[3*p+2] == 0))
@@ -121,8 +123,9 @@ found_u:
   
   aspect = (static_cast<float> (w) / static_cast<float> (nx)) / (static_cast<float> (h) / static_cast<float> (ny));
 
-  texture = glGrib::OpenGLTexturePtr (w, h, rgb, GL_RED);
+  texture = OpenGLTexturePtr (w, h, rgb, GL_RED);
 
   ready = true;
 }
 
+}

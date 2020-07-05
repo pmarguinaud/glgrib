@@ -3,6 +3,9 @@
 #include <vector>
 #include <stdexcept>
 
+namespace glGrib
+{
+
 namespace
 {
 
@@ -18,7 +21,7 @@ TYPE ipow (TYPE x, int n)
 }
 
 template <typename TYPE>
-void glGrib::FitPolynomial
+void FitPolynomial
 ( 
   const std::vector<TYPE> & x,
   const std::vector<TYPE> & y,
@@ -115,7 +118,7 @@ void glGrib::FitPolynomial
 }
 
 template <typename TYPE>
-TYPE glGrib::Evalpolynomial (const std::vector<TYPE> & coeff, TYPE x)
+TYPE Evalpolynomial (const std::vector<TYPE> & coeff, TYPE x)
 {
   TYPE y = 0;
   for (int i = coeff.size () - 1; i >= 0; i--)
@@ -123,7 +126,7 @@ TYPE glGrib::Evalpolynomial (const std::vector<TYPE> & coeff, TYPE x)
   return y;
 }
 
-template void glGrib::FitPolynomial<double>
+template void FitPolynomial<double>
 (
   const std::vector<double> &,
   const std::vector<double> &,
@@ -132,8 +135,9 @@ template void glGrib::FitPolynomial<double>
 );
 
 
-template double glGrib::Evalpolynomial<double>
+template double Evalpolynomial<double>
 (
   const std::vector<double> &, double
 );
 
+}

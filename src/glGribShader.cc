@@ -1,8 +1,10 @@
 #include "glGribShader.h"
-
 #include "glGribOpenGL.h"
 
 #include <stdexcept>
+
+namespace glGrib
+{
 
 namespace
 {
@@ -31,10 +33,9 @@ GLuint compileShader (const std::string & name, const std::string & code, GLuint
 
 }
 
-GLuint glGrib::LoadShader (const std::string & name,
-		         const std::string & FragmentShaderCode,
-		         const std::string & VertexShaderCode,
-			 const std::string & GeometryShaderCode)
+GLuint LoadShader 
+  (const std::string & name, const std::string & FragmentShaderCode,
+   const std::string & VertexShaderCode, const std::string & GeometryShaderCode)
 {
   GLuint VertexShaderID = compileShader (name, VertexShaderCode, GL_VERTEX_SHADER);
   GLuint FragmentShaderID = compileShader (name, FragmentShaderCode, GL_FRAGMENT_SHADER);
@@ -81,4 +82,4 @@ GLuint glGrib::LoadShader (const std::string & name,
   return ProgramID;
 }
 
-
+}

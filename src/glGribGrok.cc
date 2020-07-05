@@ -8,7 +8,10 @@ extern "C"
 #include <cstring>
 #include <fstream>
 
-glGrib::grok_t glGrib::Grok (const std::string & f)
+namespace glGrib
+{
+
+grok_t Grok (const std::string & f)
 {
   std::string file, ext;
   int k = f.find_last_of ('%');
@@ -48,4 +51,6 @@ glGrib::grok_t glGrib::Grok (const std::string & f)
     
 unknown:
   return grok_t::UNKNOWN;
+}
+
 }

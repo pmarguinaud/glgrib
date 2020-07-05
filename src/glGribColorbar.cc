@@ -2,13 +2,15 @@
 #include "glGribShader.h"
 #include "glGribClear.h"
 
+namespace glGrib
+{
 
-glGrib::Colorbar & glGrib::Colorbar::operator= (const glGrib::Colorbar & colorbar)
+Colorbar & Colorbar::operator= (const Colorbar & colorbar)
 {
   if (this != &colorbar)
     {
       clear (d);
-      glGrib::Object2D::operator= (colorbar);
+      Object2D::operator= (colorbar);
       VAID.clear ();
       if (colorbar.isReady ())
         setup (colorbar.d.opts);
@@ -16,7 +18,7 @@ glGrib::Colorbar & glGrib::Colorbar::operator= (const glGrib::Colorbar & colorba
   return *this;
 }
 
-void glGrib::Colorbar::setup (const glGrib::OptionsColorbar & o)
+void Colorbar::setup (const OptionsColorbar & o)
 {
   if (! o.on)
     return;
@@ -34,19 +36,19 @@ void glGrib::Colorbar::setup (const glGrib::OptionsColorbar & o)
       jj += 4;
     }
 
-  d.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind);
+  d.elementbuffer = OpenGLBufferPtr<unsigned int> (ind);
 
   setReady ();
 }
 
-void glGrib::Colorbar::setupVertexAttributes () const
+void Colorbar::setupVertexAttributes () const
 {
   d.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 }
 
-void glGrib::Colorbar::createLabels (std::vector<float> & x, std::vector<float> & y, 
-                                     std::vector<std::string> & str,
-                                     const std::vector<float> & values, const bool nonlinear)
+void Colorbar::createLabels (std::vector<float> & x, std::vector<float> & y, 
+                             std::vector<std::string> & str,
+                             const std::vector<float> & values, const bool nonlinear)
 {
   for (size_t i = 0; i < values.size (); i++)
     {
@@ -73,9 +75,9 @@ void glGrib::Colorbar::createLabels (std::vector<float> & x, std::vector<float> 
     }
 }
 
-void glGrib::Colorbar::updateNonLinear (const float min, const float max, 
-                                        std::vector<float> & x, std::vector <float> & y,
-                                        std::vector<std::string> & str) 
+void Colorbar::updateNonLinear (const float min, const float max, 
+                                std::vector<float> & x, std::vector <float> & y,
+                                std::vector<std::string> & str) 
 {
   const std::vector<float> & values_pal = d.palette.getValues ();
   std::vector<float> values;
@@ -109,9 +111,9 @@ void glGrib::Colorbar::updateNonLinear (const float min, const float max,
     d.rank2rgba[i] = 1 + (i * (ncolors-1)) / 256;
 }
 
-void glGrib::Colorbar::updateLinear (const float min, const float max, 
-                                     std::vector<float> & x, std::vector <float> & y,
-                                     std::vector<std::string> & str) 
+void Colorbar::updateLinear (const float min, const float max, 
+                             std::vector<float> & x, std::vector <float> & y,
+                             std::vector<std::string> & str) 
 {
   const std::vector<float> & values_pal = d.palette.getValues ();
 
@@ -128,7 +130,7 @@ void glGrib::Colorbar::updateLinear (const float min, const float max,
     }
 }
 
-void glGrib::Colorbar::update (const glGrib::Palette & p) 
+void Colorbar::update (const Palette & p) 
 {
 
   if (! isReady ())
@@ -145,7 +147,7 @@ void glGrib::Colorbar::update (const glGrib::Palette & p)
   
   const float min = d.palette.getMin (), max = d.palette.getMax ();
   
-  glGrib::FontPtr font = getGlGribFontPtr (d.opts.font);
+  FontPtr font = getGlGribFontPtr (d.opts.font);
   
   std::vector<std::string> str;
   std::vector<float> x, y;
@@ -155,7 +157,7 @@ void glGrib::Colorbar::update (const glGrib::Palette & p)
   else
     updateLinear (min, max, x, y, str);
   
-  d.label.setup (font, str, x, y, d.opts.font.scale, glGrib::StringTypes::SE);
+  d.label.setup (font, str, x, y, d.opts.font.scale, StringTypes::SE);
   d.label.setForegroundColor (d.opts.font.color.foreground);
   d.label.setBackgroundColor (d.opts.font.color.background);
   
@@ -163,14 +165,14 @@ void glGrib::Colorbar::update (const glGrib::Palette & p)
 
 }
 
-void glGrib::Colorbar::render (const glm::mat4 & MVP) const
+void Colorbar::render (const glm::mat4 & MVP) const
 {
   if (! isReady ())
     return;
 
   d.label.render (MVP);
 
-  glGrib::Program * program = glGrib::Program::load ("COLORBAR");
+  Program * program = Program::load ("COLORBAR");
 
   program->use ();
 
@@ -190,3 +192,4 @@ void glGrib::Colorbar::render (const glm::mat4 & MVP) const
 
 }
 
+}

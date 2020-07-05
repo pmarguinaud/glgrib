@@ -106,6 +106,7 @@ public:
   void debug (unsigned int, unsigned int, GLuint, unsigned int, int, const char *);
   
 private:
+
   int snapshot_cnt = 0;
   Scene scene;
 

@@ -10,6 +10,8 @@
 #include <fstream>
 #include <iostream>
 
+namespace glGrib
+{
 
 namespace
 {
@@ -91,13 +93,13 @@ int read_GSHHG_POINT_list (std::vector<GSHHG_POINT_t> * gpl, int n, std::ifstrea
 
 }
 
-void glGrib::GSHHG::read (const glGrib::OptionsLines & opts, 
-		         std::vector<float> * lonlat,
-			 std::vector<unsigned int> * ind, 
-                         const std::vector<unsigned int> & mask, 
-                         const std::vector<unsigned int> & code)
+void GSHHG::read (const OptionsLines & opts, 
+		  std::vector<float> * lonlat,
+		  std::vector<unsigned int> * ind, 
+                  const std::vector<unsigned int> & mask, 
+                  const std::vector<unsigned int> & code)
 {
-  std::string path = glGrib::Resolve (opts.path);
+  std::string path = Resolve (opts.path);
 
   GSHHG_t h;
   std::vector<GSHHG_POINT_t> gpl;
@@ -185,3 +187,4 @@ void glGrib::GSHHG::read (const glGrib::OptionsLines & opts,
       
 }
 
+}

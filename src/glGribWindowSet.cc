@@ -8,9 +8,12 @@
 #include "glGribShellRegular.h"
 
 
-void glGrib::WindowSet::handleMasterWindow ()
+namespace glGrib
 {
-  const glGrib::Render * wl = nullptr;
+
+void WindowSet::handleMasterWindow ()
+{
+  const Render * wl = nullptr;
   
   for (auto w : *this)
     if (w->isMaster ())
@@ -25,14 +28,14 @@ void glGrib::WindowSet::handleMasterWindow ()
       w->getScene ().setViewOptions (wl->getScene ().getViewOptions ());
 }
 
-void glGrib::WindowSet::runShell (glGrib::Shell ** _shell, bool render)
+void WindowSet::runShell (Shell ** _shell, bool render)
 {
-  glGrib::Shell * shell = *_shell;
+  Shell * shell = *_shell;
   for (auto w : *this)
     {
       if ((! shell) && (w->getStartShell ()))
         {
-          shell = &glGrib::ShellRegular::getInstance ();
+          shell = &ShellRegular::getInstance ();
           shell->setup (w->getScene ().getOptions ().shell);
           shell->start (this);
         }
@@ -49,7 +52,7 @@ void glGrib::WindowSet::runShell (glGrib::Shell ** _shell, bool render)
   
       if (w->isCloned ())
         {
-          glGrib::Render * w1 = w->clone ();
+          Render * w1 = w->clone ();
           insert (w1);
           break;
 	}
@@ -62,11 +65,11 @@ void glGrib::WindowSet::runShell (glGrib::Shell ** _shell, bool render)
   *_shell = shell;
 }
 
-void glGrib::WindowSet::updateWindows ()
+void WindowSet::updateWindows ()
 {
   for (auto w : *this)
     {
-      glGrib::Field * f = w->getScene ().getCurrentField ();
+      Field * f = w->getScene ().getCurrentField ();
 
       if (f == nullptr)
         continue;
@@ -93,7 +96,7 @@ void glGrib::WindowSet::updateWindows ()
     }
 }
 
-void glGrib::WindowSet::run (glGrib::Shell * shell)
+void WindowSet::run (Shell * shell)
 {
   while (! empty ())
     {
@@ -103,7 +106,7 @@ void glGrib::WindowSet::run (glGrib::Shell * shell)
     }
 }
 
-glGrib::Render * glGrib::WindowSet::getWindowById (int id)
+Render * WindowSet::getWindowById (int id)
 {
   for (auto w : *this)
     if (w->id () == id)
@@ -111,25 +114,25 @@ glGrib::Render * glGrib::WindowSet::getWindowById (int id)
   return nullptr;
 }
 
-void glGrib::WindowSet::close ()
+void WindowSet::close ()
 {
   for (auto win : *this)
     win->shouldClose ();
 }
 
 
-glGrib::Render * glGrib::WindowSet::createWindow (const glGrib::Options & opts)
+Render * WindowSet::createWindow (const Options & opts)
 {
-  glGrib::Render * gwindow = nullptr;
+  Render * gwindow = nullptr;
 
 #ifdef USE_GLFW
   if (opts.render.offscreen.on)
-    gwindow = new glGrib::WindowOffscreen (opts);
+    gwindow = new WindowOffscreen (opts);
   else
-    gwindow = new glGrib::Window (opts);
+    gwindow = new Window (opts);
 #endif
 #ifdef USE_EGL
-  gwindow = new glGrib::Batch (opts);
+  gwindow = new Batch (opts);
 #endif
 
   insert (gwindow);
@@ -137,20 +140,20 @@ glGrib::Render * glGrib::WindowSet::createWindow (const glGrib::Options & opts)
   return gwindow;
 }
 
-glGrib::WindowSet::WindowSet (const glGrib::Options & o, bool newwin)
+WindowSet::WindowSet (const Options & o, bool newwin)
 {
   opts = o;
   if (newwin)
     createWindow (opts);
 }
 
-glGrib::WindowSet * glGrib::WindowSet::create (const glGrib::Options & opts)
+WindowSet * WindowSet::create (const Options & opts)
 {
   if (opts.diff.on)
-    return new glGrib::WindowDiffSet (opts);
+    return new WindowDiffSet (opts);
   if (opts.review.on)
-    return new glGrib::WindowReviewSet (opts);
-  return new glGrib::WindowSet (opts);
+    return new WindowReviewSet (opts);
+  return new WindowSet (opts);
 }
 
-
+}

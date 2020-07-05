@@ -1,6 +1,9 @@
 #include "glGribBorder.h"
 
-void glGrib::Border::setup (const glGrib::OptionsBorder & o)
+namespace glGrib
+{
+
+void Border::setup (const OptionsBorder & o)
 {
   if (! o.on)
     return;
@@ -20,5 +23,7 @@ void glGrib::Border::setup (const glGrib::OptionsBorder & o)
     {
       mask.push_back (0x000000ff); code.push_back (0x00000003);
     }
-  glGrib::Lines::setup (opts.lines, mask, code);
+  Lines::setup (opts.lines, mask, code);
+}
+
 }

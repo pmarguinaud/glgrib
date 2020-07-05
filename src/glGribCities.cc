@@ -6,8 +6,10 @@
 #include <iostream>
 #include <vector>
 
+namespace glGrib
+{
 
-void glGrib::Cities::setup (const glGrib::OptionsCities & o)
+void Cities::setup (const OptionsCities & o)
 {
   if (! o.on)
     return;
@@ -20,8 +22,8 @@ void glGrib::Cities::setup (const glGrib::OptionsCities & o)
   std::vector<std::string> Str;
 
 
-  glGrib::SQLite db (glGrib::Resolve ("glGrib.db"));
-  glGrib::SQLite::stmt st;
+  SQLite db (Resolve ("glGrib.db"));
+  SQLite::stmt st;
  
   st = db.prepare ("SELECT max (size) FROM CITIES;");
 
@@ -52,20 +54,22 @@ void glGrib::Cities::setup (const glGrib::OptionsCities & o)
     }
 
 
-  glGrib::Points::setup (opts.points, lon, lat, siz);
+  Points::setup (opts.points, lon, lat, siz);
 
-  glGrib::FontPtr font = getGlGribFontPtr (opts.labels.font);
+  FontPtr font = getGlGribFontPtr (opts.labels.font);
 
   d.labels.setup (font, Str, X, Y, Z, A,
-                  opts.labels.font.scale, glGrib::StringTypes::C);
+                  opts.labels.font.scale, StringTypes::C);
   d.labels.setForegroundColor (opts.labels.font.color.foreground);
   d.labels.setBackgroundColor (opts.labels.font.color.background);
 
 
 }
 
-void glGrib::Cities::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+void Cities::render (const View & view, const OptionsLight & light) const
 {
-  glGrib::Points::render (view, light);
-  d.labels.render (view, glGrib::OptionsLight ());
+  Points::render (view, light);
+  d.labels.render (view, OptionsLight ());
+}
+
 }

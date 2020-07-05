@@ -11,22 +11,25 @@
 #include <map>
 #include <stdexcept>
 
+namespace glGrib
+{
+
 namespace
 {
-class cache_t : public std::map <std::string,glGrib::GeometryPtr> {};
+class cache_t : public std::map <std::string,GeometryPtr> {};
 cache_t cache;
 }
 
-void glGrib::Geometry::clearCache ()
+void Geometry::clearCache ()
 {
   cache.clear ();
 }
 
-glGrib::GeometryPtr glGrib::Geometry::load 
-  (glGrib::Loader * ld, const std::string & file, 
-   const glGrib::OptionsGeometry & opts, const int Nj)
+GeometryPtr Geometry::load 
+  (Loader * ld, const std::string & file, 
+   const OptionsGeometry & opts, const int Nj)
 {
-  glGrib::HandlePtr ghp;
+  HandlePtr ghp;
   codes_handle * h = nullptr;
  
   if (file != "")
@@ -40,22 +43,22 @@ glGrib::GeometryPtr glGrib::Geometry::load
   if (h != nullptr)
     codes_get_long (h, "gridDefinitionTemplateNumber", &gridDefinitionTemplateNumber);
 
-  glGrib::GeometryPtr geom;
+  GeometryPtr geom;
  
   // Read geometry metadata
   switch (gridDefinitionTemplateNumber)
     {
       case 30: case 33:
-        geom = std::make_shared<glGrib::GeometryLambert> (ghp);
+        geom = std::make_shared<GeometryLambert> (ghp);
         break;
       case 40: case 41: case 42: case 43:
-        geom = std::make_shared<glGrib::GeometryGaussian> (ghp);
+        geom = std::make_shared<GeometryGaussian> (ghp);
 	break;
       case 0:
-        geom = std::make_shared<glGrib::GeometryLatLon> (ghp);
+        geom = std::make_shared<GeometryLatLon> (ghp);
 	break;
       case -1:
-        geom = std::make_shared<glGrib::GeometryGaussian> (Nj);
+        geom = std::make_shared<GeometryGaussian> (Nj);
 	break;
       default:
         throw std::runtime_error (std::string ("Unexpected gridDefinitionTemplateNumber ") 
@@ -66,7 +69,7 @@ glGrib::GeometryPtr glGrib::Geometry::load
   auto it = cache.find (geom->md5 ());
   if (it != cache.end ())
     {
-      glGrib::GeometryPtr g = it->second;
+      GeometryPtr g = it->second;
       if (*g == *geom)  // Same geometry
         {
           geom = g;
@@ -79,7 +82,7 @@ glGrib::GeometryPtr glGrib::Geometry::load
   if (opts.check.on)
     geom->checkTriangles ();
 
-  cache.insert (std::pair<std::string,glGrib::GeometryPtr> (geom->md5 (), geom));
+  cache.insert (std::pair<std::string,GeometryPtr> (geom->md5 (), geom));
 
 found:
 
@@ -96,13 +99,13 @@ again:
   return geom;
 }
 
-glGrib::Geometry::~Geometry ()
+Geometry::~Geometry ()
 {
   if (subgrid)
     delete subgrid;
 }
 
-const std::string glGrib::Geometry::md5string (const unsigned char md5[]) const
+const std::string Geometry::md5string (const unsigned char md5[]) const
 {
   const char * const lut = "0123456789ABCDEF";
 
@@ -119,7 +122,7 @@ const std::string glGrib::Geometry::md5string (const unsigned char md5[]) const
   return str;
 }
 
-void glGrib::Geometry::checkTriangles () const
+void Geometry::checkTriangles () const
 {
   int nt = grid.numberOfTriangles;
 #pragma omp parallel for
@@ -159,13 +162,13 @@ void glGrib::Geometry::checkTriangles () const
   printf ("checkTriangles OK\n");
 }
 
-void glGrib::Geometry::bindTriangles (int level) const
+void Geometry::bindTriangles (int level) const
 {
   const Geometry * geom = (level && subgrid) ? subgrid : this;
   geom->grid.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 }
 
-void glGrib::Geometry::renderTriangles (int level) const
+void Geometry::renderTriangles (int level) const
 {
   const Geometry * geom = (level && subgrid) ? subgrid : this;
   if (geom->grid.ind_strip_size)
@@ -183,7 +186,7 @@ void glGrib::Geometry::renderTriangles (int level) const
     }
 }
 
-void glGrib::Geometry::setProgramParameters (glGrib::Program * program) const 
+void Geometry::setProgramParameters (Program * program) const 
 {
 #include "shaders/include/geometry/types.h"
   
@@ -192,7 +195,7 @@ void glGrib::Geometry::setProgramParameters (glGrib::Program * program) const
   program->set ("geometry_type", geometry_none);
 }
 
-void glGrib::Geometry::bindCoordinates (int attr) const
+void Geometry::bindCoordinates (int attr) const
 {
   if (crds.vertexbuffer != nullptr)
     {
@@ -210,4 +213,4 @@ void glGrib::Geometry::bindCoordinates (int attr) const
     }
 }
 
-
+}

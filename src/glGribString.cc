@@ -5,7 +5,10 @@
 #include <iostream>
 #include <stdexcept>
 
-glGrib::StringTypes::align_t glGrib::StringTypes::str2align 
+namespace glGrib
+{
+
+StringTypes::align_t StringTypes::str2align 
   (const std::string & str)
 {
 #define S2A(x) do { if (str == #x) return x; } while (0)
@@ -18,9 +21,9 @@ glGrib::StringTypes::align_t glGrib::StringTypes::str2align
 
 template <bool SHARED, bool CHANGE>
 template <bool OK>
-typename std::enable_if<OK,glGrib::String<SHARED,CHANGE> &>::type
-glGrib::String<SHARED,CHANGE>::operator=
-   (const glGrib::String<SHARED,CHANGE> & str)
+typename std::enable_if<OK,String<SHARED,CHANGE> &>::type
+String<SHARED,CHANGE>::operator=
+   (const String<SHARED,CHANGE> & str)
 {
   if (this != &str)
     {
@@ -33,21 +36,21 @@ glGrib::String<SHARED,CHANGE>::operator=
 }
 
 template <>
-void glGrib::String<1,0>::do_copy (const String & str)
+void String<1,0>::do_copy (const String & str)
 {
   d = str.d;   
   VAID = str.VAID;
 }
 
 template <>
-void glGrib::String<1,1>::do_copy (const String & str)
+void String<1,1>::do_copy (const String & str)
 {
   d = str.d;   
   VAID = str.VAID;
 }
 
 template <>
-void glGrib::String<0,1>::do_copy (const String & str)
+void String<0,1>::do_copy (const String & str)
 {
   setup (str.d.font, str.d.data, str.d.x, str.d.y, str.d.scale, 
          str.d.align, str.d.X, str.d.Y, str.d.Z, str.d.A);
@@ -58,8 +61,8 @@ void glGrib::String<0,1>::do_copy (const String & str)
 }
 
 template <bool SHARED, bool CHANGE>
-void glGrib::String<SHARED,CHANGE>::setup
-  (glGrib::const_FontPtr ff, const string_v & str, 
+void String<SHARED,CHANGE>::setup
+  (const_FontPtr ff, const string_v & str, 
    const float_v & _x, const float_v & _y, 
    float s, const align_v & _align,
    const float_v & _X, const float_v & _Y,
@@ -174,9 +177,9 @@ void glGrib::String<SHARED,CHANGE>::setup
     }
      
 
-  d.vertexbuffer = glGrib::OpenGLBufferPtr<float> (xy);
-  d.letterbuffer = glGrib::OpenGLBufferPtr<float> (let);
-  d.xyzbuffer = glGrib::OpenGLBufferPtr<float> (xyz);
+  d.vertexbuffer = OpenGLBufferPtr<float> (xy);
+  d.letterbuffer = OpenGLBufferPtr<float> (let);
+  d.xyzbuffer = OpenGLBufferPtr<float> (xyz);
 
   d.ready = true;
   
@@ -192,9 +195,9 @@ void glGrib::String<SHARED,CHANGE>::setup
 }
 
 template <bool SHARED, bool CHANGE>
-void glGrib::String<SHARED,CHANGE>::setupVertexAttributes () const
+void String<SHARED,CHANGE>::setupVertexAttributes () const
 {
-  glGrib::Program * program = d.font->getProgram ();
+  Program * program = d.font->getProgram ();
 
   auto pattr = program->getAttributeLocation ("letterPos");
   auto vattr = program->getAttributeLocation ("letterVal");
@@ -219,7 +222,7 @@ void glGrib::String<SHARED,CHANGE>::setupVertexAttributes () const
 template <bool SHARED, bool CHANGE>
 template <bool OK>
 typename std::enable_if<OK,void>::type
-glGrib::String<SHARED,CHANGE>::do_update (const string_v & str)
+String<SHARED,CHANGE>::do_update (const string_v & str)
 {
   if (str.size () > d.data.size ())
     return;
@@ -248,19 +251,19 @@ glGrib::String<SHARED,CHANGE>::do_update (const string_v & str)
       }
 }
 
-template void glGrib::String<1,1>::do_update (const string_v &);
-template void glGrib::String<0,1>::do_update (const string_v &);
+template void String<1,1>::do_update (const string_v &);
+template void String<0,1>::do_update (const string_v &);
 
 
 template <bool SHARED, bool CHANGE>
-void glGrib::String2D<SHARED,CHANGE>::render (const glm::mat4 & MVP) const
+void String2D<SHARED,CHANGE>::render (const glm::mat4 & MVP) const
 {
   if (! isReady ())
     return;
 
   str.d.font->select ();
 
-  glGrib::Program * program = str.d.font->getProgram ();
+  Program * program = str.d.font->getProgram ();
   program->set ("MVP", MVP);
   program->set ("scale", str.d.scale);
   program->set ("scaleXYZ", 1.0f);
@@ -276,8 +279,8 @@ void glGrib::String2D<SHARED,CHANGE>::render (const glm::mat4 & MVP) const
 }
 
 template <bool SHARED, bool CHANGE>
-void glGrib::String3D<SHARED,CHANGE>::render
-  (const glGrib::View & view, const glGrib::OptionsLight & light) 
+void String3D<SHARED,CHANGE>::render
+  (const View & view, const OptionsLight & light) 
 const
 {
   if (! isReady ())
@@ -285,7 +288,7 @@ const
 
   str.d.font->select ();
 
-  glGrib::Program * program = str.d.font->getProgram ();
+  Program * program = str.d.font->getProgram ();
 
   view.setMVP (program);
 
@@ -310,13 +313,13 @@ const
 
 
 #define DEF(SHARED,CHANGE) \
-template class glGrib::String<SHARED,CHANGE>; \
-template class glGrib::String2D<SHARED,CHANGE>; \
-template class glGrib::String3D<SHARED,CHANGE>
+template class String<SHARED,CHANGE>; \
+template class String2D<SHARED,CHANGE>; \
+template class String3D<SHARED,CHANGE>
 
 DEF (1, 0);
 DEF (0, 1);
 DEF (1, 1);
 DEF (0, 0);
 
-
+}

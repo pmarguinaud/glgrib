@@ -15,35 +15,37 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
+namespace glGrib
+{
 
-void glGrib::Shell::do_close (const std::vector<std::string> & args, glGrib::Render * gwindow)
+void Shell::do_close (const std::vector<std::string> & args, Render * gwindow)
 {
   gwindow->shouldClose ();
 }
 
-void glGrib::Shell::do_snapshot (const std::vector<std::string> & args, glGrib::Render * gwindow)
+void Shell::do_snapshot (const std::vector<std::string> & args, Render * gwindow)
 {
   gwindow->framebuffer ();
 }
 
-void glGrib::Shell::do_sleep (const std::vector<std::string> & args, glGrib::Render * gwindow)
+void Shell::do_sleep (const std::vector<std::string> & args, Render * gwindow)
 {
   unlock ();
   sleep (std::stoi (args[1]));
   lock ();
 }
 
-void glGrib::Shell::do_clone (const std::vector<std::string> & args, glGrib::Render * gwindow)
+void Shell::do_clone (const std::vector<std::string> & args, Render * gwindow)
 {
   gwindow->setCloned ();
 }
 
-void glGrib::Shell::do_clear (const std::vector<std::string> & args, glGrib::Render * gwindow)
+void Shell::do_clear (const std::vector<std::string> & args, Render * gwindow)
 {
   gwindow->setCleared ();
 }
 
-void glGrib::Shell::do_set (const std::vector<std::string> & args, glGrib::Render * gwindow)
+void Shell::do_set (const std::vector<std::string> & args, Render * gwindow)
 {
   int argc = args.size ();
   const char * argv[argc];
@@ -53,12 +55,12 @@ void glGrib::Shell::do_set (const std::vector<std::string> & args, glGrib::Rende
   
   auto & scene = gwindow->getScene ();
 
-  glGrib::Options opts = scene.getOptions ();
+  Options opts = scene.getOptions ();
 
   opts.render = gwindow->getOptions ();
   opts.shell = this->opts;
   
-  glGrib::OptionsParser p;
+  OptionsParser p;
   opts.traverse ("", &p);
   
   if (p.parse (argc, argv))
@@ -201,7 +203,7 @@ do { \
   
 }
 
-void glGrib::Shell::do_window_select (const std::vector<std::string> & args, glGrib::Render * gwindow)
+void Shell::do_window_select (const std::vector<std::string> & args, Render * gwindow)
 {
   try
     {
@@ -213,7 +215,7 @@ void glGrib::Shell::do_window_select (const std::vector<std::string> & args, glG
     }
 }
 
-void glGrib::Shell::do_window (const std::vector<std::string> & args, glGrib::Render * gwindow)
+void Shell::do_window (const std::vector<std::string> & args, Render * gwindow)
 {
   if (args.size () == 1)
     do_window_list (args, gwindow);
@@ -221,12 +223,12 @@ void glGrib::Shell::do_window (const std::vector<std::string> & args, glGrib::Re
     do_window_select (args, gwindow);
 }
 
-void glGrib::Shell::do_help (const std::vector<std::string> & args, glGrib::Render * gwindow)
+void Shell::do_help (const std::vector<std::string> & args, Render * gwindow)
 {
   std::string help;
 
-  glGrib::Options opts = gwindow->getScene ().getOptions ();
-  glGrib::OptionsParser p;
+  Options opts = gwindow->getScene ().getOptions ();
+  OptionsParser p;
   opts.traverse ("", &p);
  
   for (size_t i = 1; i < args.size (); i++)
@@ -242,10 +244,10 @@ template <typename F>
 void getopts 
   (const std::vector<std::string> & args, 
    std::vector<std::string> & listStr,
-   glGrib::Render * gwindow, F f)
+   Render * gwindow, F f)
 {
-  glGrib::Options opts0 = gwindow->getScene ().getOptions ();
-  glGrib::OptionsParser p0;
+  Options opts0 = gwindow->getScene ().getOptions ();
+  OptionsParser p0;
   opts0.traverse ("", &p0);
 
   if ((args.size () > 1) && (args[1] == "+diff"))
@@ -254,16 +256,16 @@ void getopts
       a.push_back (args[0]);
       for (size_t i = 2; i < args.size (); i++)
         a.push_back (args[i]);
-      glGrib::Options opts1;
-      glGrib::OptionsParser p1;
+      Options opts1;
+      OptionsParser p1;
       opts1.traverse ("", &p1);
       for (size_t i = 1; i < a.size (); i++)
         f (listStr, &p0, &p1, a[i]);
     }
   else if ((args.size () > 1) && (args[1] == "+base"))
     {
-      glGrib::Options opts1;
-      glGrib::OptionsParser p1;
+      Options opts1;
+      OptionsParser p1;
       opts1.traverse ("", &p1);
       for (size_t i = 2; i < args.size (); i++)
         f (listStr, &p1, nullptr, args[i]);
@@ -276,41 +278,41 @@ void getopts
 }
 };
 
-void glGrib::Shell::do_json (const std::vector<std::string> & args, glGrib::Render * gwindow)
+void Shell::do_json (const std::vector<std::string> & args, Render * gwindow)
 {
   getopts (args, listStr, gwindow, 
   [] (std::vector<std::string> & listStr, 
-      glGrib::OptionsParser * pA, 
-      glGrib::OptionsParser * pB, 
+      OptionsParser * pA, 
+      OptionsParser * pB, 
       const std::string a)
   {
     listStr.push_back (pA->getJSON (a, true, pB));
   });
 }
 
-void glGrib::Shell::do_get (const std::vector<std::string> & args, glGrib::Render * gwindow)
+void Shell::do_get (const std::vector<std::string> & args, Render * gwindow)
 {
   getopts (args, listStr, gwindow, 
   [] (std::vector<std::string> & listStr, 
-      glGrib::OptionsParser * pA, 
-      glGrib::OptionsParser * pB, 
+      OptionsParser * pA, 
+      OptionsParser * pB, 
       const std::string a)
   {
     pA->getValue (&listStr, a, true, pB);
   });
 }
 
-void glGrib::Shell::do_window_list (const std::vector<std::string> & args, glGrib::Render * gwindow)
+void Shell::do_window_list (const std::vector<std::string> & args, Render * gwindow)
 {
   for (const auto w : *wset)
     listStr.push_back (std::to_string (w->id ()));
 }
 
-void glGrib::Shell::execute (const std::vector<std::string> & args)
+void Shell::execute (const std::vector<std::string> & args)
 {
   listStr.clear ();
 
-  glGrib::Render * gwindow = wset->getWindowById (windowid);
+  Render * gwindow = wset->getWindowById (windowid);
   if (gwindow == nullptr)
     {
       for (auto w : *wset)
@@ -351,31 +353,32 @@ void glGrib::Shell::execute (const std::vector<std::string> & args)
   
 }
 
-void glGrib::Shell::setWindowSet (glGrib::WindowSet * _wset)
+void Shell::setWindowSet (WindowSet * _wset)
 {
   if (wset != nullptr)
     throw std::runtime_error (std::string ("wset already set"));
   wset = _wset;
 }
 
-glGrib::WindowSet * glGrib::Shell::getWindowSet ()
+WindowSet * Shell::getWindowSet ()
 {
   return wset;
 }
 
-void glGrib::Shell::clearWindowSet ()
+void Shell::clearWindowSet ()
 {
   delete wset;
   wset = nullptr;
 }
 
-glGrib::Render * glGrib::Shell::getWindow ()
+Render * Shell::getWindow ()
 {
   return wset->getWindowById (windowid);
 }
 
-glGrib::Render * glGrib::Shell::getFirstWindow ()
+Render * Shell::getFirstWindow ()
 {
   return wset->getFirstWindow ();
 }
 
+}

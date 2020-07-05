@@ -7,11 +7,14 @@
 #include <iostream>
 #include <vector>
 
-glGrib::Ticks & glGrib::Ticks::operator= (const glGrib::Ticks & other)
+namespace glGrib
+{
+
+Ticks & Ticks::operator= (const Ticks & other)
 {
   if ((this != &other) && other.isReady ())
     {
-      glGrib::clear (*this);
+      clear (*this);
       opts = other.opts;
       ticks = other.ticks;
       frame = other.frame;
@@ -20,7 +23,7 @@ glGrib::Ticks & glGrib::Ticks::operator= (const glGrib::Ticks & other)
   return *this;
 }
 
-void glGrib::Ticks::setup (const glGrib::OptionsTicks & o)
+void Ticks::setup (const OptionsTicks & o)
 {
   if (o.lines.on)
     goto on;
@@ -40,18 +43,18 @@ on:
 }
 
 template <>
-void glGrib::Ticks::ticks_t::render (const glm::mat4 & MVP) const
+void Ticks::ticks_t::render (const glm::mat4 & MVP) const
 {
-  glGrib::Program * program = glGrib::Program::load ("TICKS");
+  Program * program = Program::load ("TICKS");
   program->use ();
   
   int kind = std::min (1, std::max (0, ticks->opts.lines.kind));
   
   program->set ("MVP", MVP);
-  program->set ("N", float (glGrib::StringTypes::N));
-  program->set ("S", float (glGrib::StringTypes::S));
-  program->set ("W", float (glGrib::StringTypes::W));
-  program->set ("E", float (glGrib::StringTypes::E));
+  program->set ("N", float (StringTypes::N));
+  program->set ("S", float (StringTypes::S));
+  program->set ("W", float (StringTypes::W));
+  program->set ("E", float (StringTypes::E));
   program->set ("color0", ticks->opts.lines.color);
   program->set ("length", ticks->opts.lines.length);
   program->set ("width", ticks->opts.lines.width);
@@ -79,9 +82,9 @@ void glGrib::Ticks::ticks_t::render (const glm::mat4 & MVP) const
 }
 
 template <>
-void glGrib::Ticks::frame_t::render (const glm::mat4 & MVP) const
+void Ticks::frame_t::render (const glm::mat4 & MVP) const
 {
-  glGrib::Program * program = glGrib::Program::load ("FTICKS");
+  Program * program = Program::load ("FTICKS");
   program->use ();
   
   program->set ("MVP", MVP);
@@ -100,7 +103,7 @@ void glGrib::Ticks::frame_t::render (const glm::mat4 & MVP) const
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, 4);
 }
 
-void glGrib::Ticks::render (const glm::mat4 & MVP) const
+void Ticks::render (const glm::mat4 & MVP) const
 {
   if (! isReady ())
     return;
@@ -117,12 +120,12 @@ void glGrib::Ticks::render (const glm::mat4 & MVP) const
 }
 
 
-void glGrib::Ticks::createStr 
-(const glGrib::OptionsTicksSide & sopts,
- glGrib::StringTypes::align_t _align, const glGrib::View & view, 
+void Ticks::createStr 
+(const OptionsTicksSide & sopts,
+ StringTypes::align_t _align, const View & view, 
  std::vector<std::string> & S, std::vector<float> & X, 
  std::vector<float> & Y, std::vector<float> & A,
- std::vector<glGrib::StringTypes::align_t> & align)
+ std::vector<StringTypes::align_t> & align)
 {
   float ratio = float (width) / float (height);
 
@@ -148,10 +151,10 @@ void glGrib::Ticks::createStr
 
   switch (_align)
     {
-      case glGrib::StringTypes::E: nxy = ny; break;
-      case glGrib::StringTypes::W: nxy = ny; break;
-      case glGrib::StringTypes::N: nxy = nx; break;
-      case glGrib::StringTypes::S: nxy = nx; break;
+      case StringTypes::E: nxy = ny; break;
+      case StringTypes::W: nxy = ny; break;
+      case StringTypes::N: nxy = nx; break;
+      case StringTypes::S: nxy = nx; break;
       default: 
         throw std::runtime_error (std::string ("Unexpected alignment"));
         break;
@@ -176,16 +179,16 @@ void glGrib::Ticks::createStr
 
       switch (_align)
         {
-          case glGrib::StringTypes::E: 
+          case StringTypes::E: 
             x = width * vopts.clip.xmax; y = cy ();                               
 	    break;
-          case glGrib::StringTypes::W: 
+          case StringTypes::W: 
 	    x = width * vopts.clip.xmin; y = cy ();                               
 	    break;
-          case glGrib::StringTypes::N: 
+          case StringTypes::N: 
 	    x = cx ();                   y = height * (vopts.clip.ymax - dymaxf); 
 	    break;
-          case glGrib::StringTypes::S: 
+          case StringTypes::S: 
 	    x = cx ();                   y = height * (vopts.clip.ymin + dyminf); 
 	    break;
           default:
@@ -206,8 +209,8 @@ void glGrib::Ticks::createStr
       {
         switch (_align)
           {
-            case glGrib::StringTypes::E:
-            case glGrib::StringTypes::W:
+            case StringTypes::E:
+            case StringTypes::W:
               {
                 float y0 = xyllv[i-1].y, y1 = xyllv[i+0].y, x = xyllv[i-1].x;
                 float lat0 = xyllv[i-1].lat, lat1 = xyllv[i+0].lat;
@@ -243,8 +246,8 @@ void glGrib::Ticks::createStr
                   }
 	      }
 	    break;
-            case glGrib::StringTypes::N:
-            case glGrib::StringTypes::S:
+            case StringTypes::N:
+            case StringTypes::S:
               {
                 float x0 = xyllv[i-1].x, x1 = xyllv[i+0].x, y = xyllv[i-1].y;
                 float lon0 = xyllv[i-1].lon, lon1 = xyllv[i+0].lon;
@@ -302,7 +305,7 @@ void glGrib::Ticks::createStr
 }
 
 
-void glGrib::Ticks::reSize (const glGrib::View & view)
+void Ticks::reSize (const View & view)
 {
   if ((! opts.labels.on) && (! opts.lines.on) && (! opts.frame.on))
     return;
@@ -322,18 +325,18 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
   // Create ticks labels
   std::vector<std::string> S; 
   std::vector<float> X, Y, A;
-  std::vector<glGrib::StringTypes::align_t> align;
+  std::vector<StringTypes::align_t> align;
 
-  createStr (opts.E, glGrib::StringTypes::E, view, S, X, Y, A, align);
-  createStr (opts.W, glGrib::StringTypes::W, view, S, X, Y, A, align);
-  createStr (opts.N, glGrib::StringTypes::N, view, S, X, Y, A, align);
-  createStr (opts.S, glGrib::StringTypes::S, view, S, X, Y, A, align);
+  createStr (opts.E, StringTypes::E, view, S, X, Y, A, align);
+  createStr (opts.W, StringTypes::W, view, S, X, Y, A, align);
+  createStr (opts.N, StringTypes::N, view, S, X, Y, A, align);
+  createStr (opts.S, StringTypes::S, view, S, X, Y, A, align);
 
   if (opts.labels.on)
     {
-      glGrib::clear (labels);
+      clear (labels);
 
-      glGrib::FontPtr font = getGlGribFontPtr (opts.labels.font); 
+      FontPtr font = getGlGribFontPtr (opts.labels.font); 
 
       labels.setup (font, S, X, Y, opts.labels.font.scale, align, A);
       labels.setForegroundColor (opts.labels.font.color.foreground);
@@ -355,7 +358,7 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
           XYa[i].z = align[i];
         }
 
-      vertexbuffer = glGrib::OpenGLBufferPtr<glm::vec3> (XYa);
+      vertexbuffer = OpenGLBufferPtr<glm::vec3> (XYa);
 
       numberOfTicks = XYa.size ();
     }
@@ -363,9 +366,9 @@ void glGrib::Ticks::reSize (const glGrib::View & view)
 }
 
 template <>
-void glGrib::Ticks::ticks_t::setupVertexAttributes () const
+void Ticks::ticks_t::setupVertexAttributes () const
 {
-  glGrib::Program * program = glGrib::Program::load ("TICKS");
+  Program * program = Program::load ("TICKS");
   ticks->vertexbuffer->bind (GL_ARRAY_BUFFER);
   auto attr = program->getAttributeLocation ("xya");
   glEnableVertexAttribArray (attr); 
@@ -374,9 +377,10 @@ void glGrib::Ticks::ticks_t::setupVertexAttributes () const
 }
 
 template <>
-void glGrib::Ticks::frame_t::setupVertexAttributes () const
+void Ticks::frame_t::setupVertexAttributes () const
 {
   // Needed to use a shader
 }
 
+}
 

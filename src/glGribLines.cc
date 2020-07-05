@@ -8,9 +8,12 @@
 #include <iostream>
 #include <stdexcept>
 
-void glGrib::Lines::setup (const glGrib::OptionsLines & o, 
-                           const std::vector<unsigned int> & mask, 
-                           const std::vector<unsigned int> & code)
+namespace glGrib
+{
+
+void Lines::setup (const OptionsLines & o, 
+                   const std::vector<unsigned int> & mask, 
+                   const std::vector<unsigned int> & code)
 {
   opts = o;
 
@@ -18,18 +21,18 @@ void glGrib::Lines::setup (const glGrib::OptionsLines & o,
   std::vector <unsigned int> ind;
 
   if (opts.format == "gshhg")
-     glGrib::GSHHG::read (opts, &lonlat, &ind, mask, code);
+     GSHHG::read (opts, &lonlat, &ind, mask, code);
   else
-     glGrib::ShapeLib::read (opts, &lonlat, &ind, opts.selector);
+     ShapeLib::read (opts, &lonlat, &ind, opts.selector);
 
-  glGrib::Polygon::setup (lonlat, ind);
+  Polygon::setup (lonlat, ind);
 
   setReady ();
 }
 
-void glGrib::Lines::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+void Lines::render (const View & view, const OptionsLight & light) const
 {
-  glGrib::Program * program = glGrib::Program::load ("MONO");
+  Program * program = Program::load ("MONO");
   program->use ();
   view.setMVP (program);
   program->set (light);
@@ -37,10 +40,10 @@ void glGrib::Lines::render (const glGrib::View & view, const glGrib::OptionsLigh
   program->set ("do_alpha", 1);
   program->set ("scale", opts.scale);
 
-  glGrib::Polygon::render (view, light);
+  Polygon::render (view, light);
 
   view.delMVP (program);
 
 }
 
-
+}

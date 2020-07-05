@@ -6,8 +6,11 @@
 
 #include "glGribPng.h"
 
-void glGrib::ReadPng (const std::string & filename, int * pwidth, int * pheight, 
-                      glGrib::BufferPtr<unsigned char> & pixels)
+namespace glGrib
+{
+
+void ReadPng (const std::string & filename, int * pwidth, int * pheight, 
+              BufferPtr<unsigned char> & pixels)
 {
   int width, height;
   png_byte color_type;
@@ -94,8 +97,8 @@ void glGrib::ReadPng (const std::string & filename, int * pwidth, int * pheight,
   *pheight = height;
 }
 
-void glGrib::WritePng (const std::string & filename, int width, int height, 
-                       const glGrib::BufferPtr<unsigned char> & pixels) 
+void WritePng (const std::string & filename, int width, int height, 
+               const BufferPtr<unsigned char> & pixels) 
 {
   const size_t format_nchannels = 3;
   size_t nvals = format_nchannels * width * height;
@@ -142,3 +145,4 @@ void glGrib::WritePng (const std::string & filename, int width, int height,
   fclose (fp);
 }
 
+}

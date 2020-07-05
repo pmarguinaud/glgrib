@@ -3,7 +3,10 @@
 #include "glGribBuffer.h"
 
 
-void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
+namespace glGrib
+{
+
+void Mapscale::setup (const OptionsMapscale & o)
 {
   if (! o.on)
     return;
@@ -21,23 +24,23 @@ void glGrib::Mapscale::setup (const glGrib::OptionsMapscale & o)
       jj += 4;
     }
 
-  elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind);
+  elementbuffer = OpenGLBufferPtr<unsigned int> (ind);
   
-  glGrib::FontPtr font = getGlGribFontPtr (opts.font);
+  FontPtr font = getGlGribFontPtr (opts.font);
 
-  label.setup (font, std::string (15, ' '), opts.position.xmin, opts.position.ymax + 0.01, opts.font.scale, glGrib::StringTypes::SW);
+  label.setup (font, std::string (15, ' '), opts.position.xmin, opts.position.ymax + 0.01, opts.font.scale, StringTypes::SW);
   label.setForegroundColor (opts.font.color.foreground);
   label.setBackgroundColor (opts.font.color.background);
 
   setReady ();
 }
 
-void glGrib::Mapscale::setupVertexAttributes () const
+void Mapscale::setupVertexAttributes () const
 {
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 }
 
-void glGrib::Mapscale::reSize (const glGrib::View & view) 
+void Mapscale::reSize (const View & view) 
 {
   if (! isReady ())
     return;
@@ -81,14 +84,14 @@ void glGrib::Mapscale::reSize (const glGrib::View & view)
 
 }
 
-void glGrib::Mapscale::render (const glm::mat4 & MVP) const
+void Mapscale::render (const glm::mat4 & MVP) const
 {
   if (! isReady ())
     return;
 
   label.render (MVP);
 
-  glGrib::Program * program = glGrib::Program::load ("MAPSCALE");
+  Program * program = Program::load ("MAPSCALE");
 
   program->use ();
 
@@ -104,3 +107,4 @@ void glGrib::Mapscale::render (const glm::mat4 & MVP) const
 
 }
 
+}

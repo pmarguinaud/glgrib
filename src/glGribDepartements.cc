@@ -1,10 +1,15 @@
 #include "glGribDepartements.h"
 
-void glGrib::Departements::setup (const glGrib::OptionsDepartements & o)
+namespace glGrib
+{
+
+void Departements::setup (const OptionsDepartements & o)
 {
   if (! o.on)
     return;
 
   opts = o;
-  glGrib::Lines::setup (opts.lines);
+  Lines::setup (opts.lines);
+}
+
 }

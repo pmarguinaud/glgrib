@@ -2,19 +2,20 @@
 
 #include <iostream>
 
+namespace glGrib
+{
 
-
-glGrib::WindowReviewSet::WindowReviewSet (const glGrib::Options & o)
-  : glGrib::WindowSet (o, false)
+WindowReviewSet::WindowReviewSet (const Options & o)
+  : WindowSet (o, false)
 {
   const auto & opts = getOptions ();
-  glGrib::Options opts_ = opts;
+  Options opts_ = opts;
 
   if (opts.review.path.size () == 0)
     throw std::runtime_error (std::string ("Option --review.path is required"));
 
 
-  cont = glGrib::Container::create (opts.review.path, true);
+  cont = Container::create (opts.review.path, true);
 
   cont->buildIndex ();
 
@@ -26,19 +27,19 @@ glGrib::WindowReviewSet::WindowReviewSet (const glGrib::Options & o)
   createWindow (opts_);
 }
 
-const std::string glGrib::WindowReviewSet::getNextExt () const
+const std::string WindowReviewSet::getNextExt () const
 {
   return cont->getNextExt (ext);
 }
 
-const std::string glGrib::WindowReviewSet::getPrevExt () const
+const std::string WindowReviewSet::getPrevExt () const
 {
   return cont->getPrevExt (ext);
 }
 
-void glGrib::WindowReviewSet::updateWindows ()
+void WindowReviewSet::updateWindows ()
 {
-  glGrib::Render * gwindow = getWindowById (0);
+  Render * gwindow = getWindowById (0);
   if (gwindow == nullptr)
     return;
 
@@ -65,3 +66,4 @@ void glGrib::WindowReviewSet::updateWindows ()
   
 }
 
+}

@@ -11,16 +11,19 @@
 #include <omp.h>
 
 
-glGrib::FieldIsoFill * glGrib::FieldIsoFill::clone () const
+namespace glGrib
 {
-  glGrib::FieldIsoFill * fld = new glGrib::FieldIsoFill (Field::Privatizer ());
+
+FieldIsoFill * FieldIsoFill::clone () const
+{
+  FieldIsoFill * fld = new FieldIsoFill (Field::Privatizer ());
   *fld = *this;
   return fld;
 }
 
-void glGrib::FieldIsoFill::isoband_t::setupVertexAttributes () const
+void FieldIsoFill::isoband_t::setupVertexAttributes () const
 {
-  glGrib::Program * program = glGrib::Program::load ("ISOFILL2");
+  Program * program = Program::load ("ISOFILL2");
 
   // Elements
   d.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
@@ -32,9 +35,9 @@ void glGrib::FieldIsoFill::isoband_t::setupVertexAttributes () const
   glVertexAttribPointer (attr, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 }
 
-void glGrib::FieldIsoFill::setupVertexAttributes () const
+void FieldIsoFill::setupVertexAttributes () const
 {
-  glGrib::Program * program = glGrib::Program::load ("ISOFILL1");
+  Program * program = Program::load ("ISOFILL1");
 
   const auto & geometry = getGeometry ();
 
@@ -248,8 +251,8 @@ void processTriangle2 (std::vector<isoband_maker_t> * isomake,
 }
 
 void processTriangle1 (std::vector<isoband_maker_t> * isomake, 
-                       glGrib::const_GeometryPtr geometry,
-                       const glGrib::BufferPtr<float> & val, int it, 
+                       const_GeometryPtr geometry,
+                       const BufferPtr<float> & val, int it, 
                        const std::vector<float> & levels)
 {
   int jglo[3];
@@ -278,7 +281,7 @@ void processTriangle1 (std::vector<isoband_maker_t> * isomake,
     {
       float lon, lat;
       geometry->index2latlon (jglo[i], &lat, &lon);
-      xyz[i] = glGrib::lonlat2xyz (glm::vec2 (lon, lat));
+      xyz[i] = lonlat2xyz (glm::vec2 (lon, lat));
     }
 
   processTriangle2 (isomake, v, xyz, levels);
@@ -286,19 +289,19 @@ void processTriangle1 (std::vector<isoband_maker_t> * isomake,
 
 }
 
-void glGrib::FieldIsoFill::setup (const Field::Privatizer, glGrib::Loader * ld, const glGrib::OptionsField & o, float slot)
+void FieldIsoFill::setup (const Field::Privatizer, Loader * ld, const OptionsField & o, float slot)
 {
 
   opts = o;
 
-  glGrib::FieldMetadata meta1;
-  glGrib::BufferPtr<float> data;
+  FieldMetadata meta1;
+  BufferPtr<float> data;
   ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
 
-  palette = glGrib::Palette (opts.palette, getNormedMinValue (), getNormedMaxValue ());
+  palette = Palette (opts.palette, getNormedMinValue (), getNormedMaxValue ());
 
-  setGeometry (glGrib::Geometry::load (ld, opts.path[int (slot)], opts.geometry));
+  setGeometry (Geometry::load (ld, opts.path[int (slot)], opts.geometry));
 
   const auto & geometry = getGeometry ();
   int size = geometry->size ();
@@ -307,9 +310,9 @@ void glGrib::FieldIsoFill::setup (const Field::Privatizer, glGrib::Loader * ld, 
 
   if (levels.size () == 0)
     {
-      float min = opts.isofill.min == glGrib::OptionsIsofill::defaultMin ()
+      float min = opts.isofill.min == OptionsIsofill::defaultMin ()
                 ? meta1.valmin : opts.isofill.min;
-      float max = opts.isofill.max == glGrib::OptionsIsofill::defaultMax ()
+      float max = opts.isofill.max == OptionsIsofill::defaultMax ()
                 ? meta1.valmax : opts.isofill.max;
       for (int i = 0; i < opts.isofill.number; i++)
         levels.push_back (min + (i + 1) * (max - min) / (opts.isofill.number + 1));
@@ -352,7 +355,7 @@ void glGrib::FieldIsoFill::setup (const Field::Privatizer, glGrib::Loader * ld, 
 
 
   {
-    d.colorbuffer  = glGrib::OpenGLBufferPtr<T> (size);
+    d.colorbuffer  = OpenGLBufferPtr<T> (size);
     auto color = d.colorbuffer->map ();
 
 #pragma omp parallel for
@@ -395,7 +398,7 @@ void glGrib::FieldIsoFill::setup (const Field::Privatizer, glGrib::Loader * ld, 
 
 
       // Element buffer
-      d.isoband[i].d.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (length_indice);
+      d.isoband[i].d.elementbuffer = OpenGLBufferPtr<unsigned int> (length_indice);
 
       {
         auto indice = d.isoband[i].d.elementbuffer->map ();
@@ -412,7 +415,7 @@ void glGrib::FieldIsoFill::setup (const Field::Privatizer, glGrib::Loader * ld, 
 
 
       // Coordinate buffer
-      d.isoband[i].d.vertexbuffer  = glGrib::OpenGLBufferPtr<float> (length_lonlat);
+      d.isoband[i].d.vertexbuffer  = OpenGLBufferPtr<float> (length_lonlat);
 
       {
         auto lonlat = d.isoband[i].d.vertexbuffer->map ();
@@ -440,22 +443,20 @@ void glGrib::FieldIsoFill::setup (const Field::Privatizer, glGrib::Loader * ld, 
 
 }
 
-void glGrib::FieldIsoFill::isoband_t::render () const
+void FieldIsoFill::isoband_t::render () const
 {
-  glGrib::Program * program = glGrib::Program::load ("ISOFILL2");
+  Program * program = Program::load ("ISOFILL2");
   program->set ("color0", d.color);
   glDrawElements (GL_TRIANGLES, d.size, GL_UNSIGNED_INT, nullptr);
 }
 
-void glGrib::FieldIsoFill::render (const glGrib::View & view, 
-                                   const glGrib::OptionsLight & light) 
-const
+void FieldIsoFill::render (const View & view, const OptionsLight & light) const
 {
   if (opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
   
 
-  glGrib::Program * program = glGrib::Program::load ("ISOFILL1");
+  Program * program = Program::load ("ISOFILL1");
   program->use ();
 
   view.setMVP (program);
@@ -470,7 +471,7 @@ const
 
   view.delMVP (program);
 
-  glGrib::Program * program2 = glGrib::Program::load ("ISOFILL2");
+  Program * program2 = Program::load ("ISOFILL2");
   program2->use ();
 
   view.setMVP (program2);
@@ -486,4 +487,4 @@ const
 
 }
 
-
+}

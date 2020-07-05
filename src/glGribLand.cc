@@ -9,10 +9,12 @@
 #include <iostream>
 #include <omp.h>
 
-
-void glGrib::Land::layer_t::render (const glGrib::OptionsLandLayer & opts) const
+namespace glGrib
 {
-  glGrib::Program * program = glGrib::Program::load ("LAND");
+
+void Land::layer_t::render (const OptionsLandLayer & opts) const
+{
+  Program * program = Program::load ("LAND");
 
   program->set ("scale0", opts.scale);
   program->set ("color0", opts.color);
@@ -21,9 +23,9 @@ void glGrib::Land::layer_t::render (const glGrib::OptionsLandLayer & opts) const
   glDrawElements (GL_TRIANGLES, 3 * d.numberOfTriangles, GL_UNSIGNED_INT, nullptr);
 }
 
-void glGrib::Land::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+void Land::render (const View & view, const OptionsLight & light) const
 {
-  glGrib::Program * program = glGrib::Program::load ("LAND");
+  Program * program = Program::load ("LAND");
   program->use (); 
 
   view.setMVP (program);
@@ -36,7 +38,7 @@ void glGrib::Land::render (const glGrib::View & view, const glGrib::OptionsLight
 
 }
 
-void glGrib::Land::layer_t::triangulate 
+void Land::layer_t::triangulate 
     (int_v * _pos_offset, 
      int_v * _pos_length,
      int_v * _ind_offset,
@@ -112,9 +114,9 @@ void glGrib::Land::layer_t::triangulate
       if (pos_length[j] < 300)
         break;
       if (pos_length[j] > 2)
-        glGrib::EarCut::processRing (lonlat, pos_offset[j], pos_length[j], 
-                                    ind_offset[j], &ind_length[j],
-                                    &ind, true);
+        EarCut::processRing (lonlat, pos_offset[j], pos_length[j], 
+                             ind_offset[j], &ind_length[j],
+                             &ind, true);
     }
 
 
@@ -124,13 +126,13 @@ void glGrib::Land::layer_t::triangulate
     {
       int j = ord[l];
       if (pos_length[j] > 2)
-        glGrib::EarCut::processRing (lonlat, pos_offset[j], pos_length[j], 
-                                    ind_offset[j], &ind_length[j],
-                                    &ind, false);
+        EarCut::processRing (lonlat, pos_offset[j], pos_length[j], 
+                            ind_offset[j], &ind_length[j],
+                            &ind, false);
     }
 }
 
-void glGrib::Land::layer_t::subdivide 
+void Land::layer_t::subdivide 
    (const int_v & ind_offset,
     const int_v & ind_length,
     const int_v & pos_offset,
@@ -203,7 +205,7 @@ void glGrib::Land::layer_t::subdivide
     }
 
   const int n = pos_offset_sub.size ();
-  std::vector<glGrib::Subdivide> sr (n);
+  std::vector<Subdivide> sr (n);
 
   // Subdivide information kept in subdivide objects
 #pragma omp parallel for
@@ -239,14 +241,14 @@ void glGrib::Land::layer_t::subdivide
 }
 
 
-void glGrib::Land::layer_t::setup (const glGrib::OptionsLandLayer & opts)
+void Land::layer_t::setup (const OptionsLandLayer & opts)
 {
-  glGrib::OptionsLines lopts;
+  OptionsLines lopts;
   std::vector<float> lonlat;
   std::vector<unsigned int> indl;
   
   lopts.path = opts.path; lopts.selector = opts.selector;
-  glGrib::ShapeLib::read (lopts, &lonlat, &indl, lopts.selector);
+  ShapeLib::read (lopts, &lonlat, &indl, lopts.selector);
   
   int_v pos_offset, pos_length;
   int_v ord;
@@ -269,12 +271,12 @@ void glGrib::Land::layer_t::setup (const glGrib::OptionsLandLayer & opts)
   
   d.numberOfTriangles = ind.size () / 3;
   
-  d.vertexbuffer = glGrib::OpenGLBufferPtr<float> (lonlat);
-  d.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind);
+  d.vertexbuffer = OpenGLBufferPtr<float> (lonlat);
+  d.elementbuffer = OpenGLBufferPtr<unsigned int> (ind);
 
 }
 
-void glGrib::Land::setup (const glGrib::OptionsLand & o)
+void Land::setup (const OptionsLand & o)
 {
   if (! o.on)
     return;
@@ -290,9 +292,9 @@ void glGrib::Land::setup (const glGrib::OptionsLand & o)
   setReady ();
 }
 
-void glGrib::Land::layer_t::setupVertexAttributes () const
+void Land::layer_t::setupVertexAttributes () const
 {
-  glGrib::Program * program = glGrib::Program::load ("LAND");
+  Program * program = Program::load ("LAND");
   d.vertexbuffer->bind (GL_ARRAY_BUFFER);
   auto attr = program->getAttributeLocation ("vertexLonLat");
   glEnableVertexAttribArray (attr); 
@@ -300,4 +302,4 @@ void glGrib::Land::layer_t::setupVertexAttributes () const
   d.elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 }
 
-
+}

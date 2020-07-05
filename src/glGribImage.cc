@@ -4,8 +4,10 @@
 
 #include <iostream>
 
+namespace glGrib
+{
 
-void glGrib::Image::setup (const glGrib::OptionsImage & o)
+void Image::setup (const OptionsImage & o)
 {
   if (! o.on)
     return;
@@ -15,19 +17,19 @@ void glGrib::Image::setup (const glGrib::OptionsImage & o)
 
   opts = o;
 
-  glGrib::Bitmap (opts.path, rgb, &w, &h);
+  Bitmap (opts.path, rgb, &w, &h);
 
-  texture = glGrib::OpenGLTexturePtr (w, h, rgb);
+  texture = OpenGLTexturePtr (w, h, rgb);
 
   setReady ();
 }
 
-void glGrib::Image::render (const glm::mat4 & MVP) const
+void Image::render (const glm::mat4 & MVP) const
 {
   if (! isReady ())
     return;
 
-  glGrib::Program * program = glGrib::Program::load ("IMAGE");
+  Program * program = Program::load ("IMAGE");
   program->use ();
 
   program->set ("MVP", MVP);
@@ -48,5 +50,5 @@ void glGrib::Image::render (const glm::mat4 & MVP) const
 
 }
 
-
+}
 

@@ -3,12 +3,13 @@
 #include "glGribOpenGL.h"
 
 
+namespace glGrib
+{
 
-
-void glGrib::Test::render (const glGrib::View & view, const glGrib::OptionsLight & light) const
+void Test::render (const View & view, const OptionsLight & light) const
 {
   return;
-  glGrib::Program * program = glGrib::Program::load ("TEST");
+  Program * program = Program::load ("TEST");
   program->use (); 
 
   view.setMVP (program);
@@ -25,7 +26,7 @@ void glGrib::Test::render (const glGrib::View & view, const glGrib::OptionsLight
 
 }
 
-void glGrib::Test::setupVertexAttributes () const
+void Test::setupVertexAttributes () const
 {
   vertexbuffer->bind (GL_ARRAY_BUFFER);
   glEnableVertexAttribArray (0); 
@@ -33,7 +34,7 @@ void glGrib::Test::setupVertexAttributes () const
   elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 }
 
-void glGrib::Test::setup ()
+void Test::setup ()
 {
   return;
 
@@ -43,9 +44,10 @@ void glGrib::Test::setup ()
 
   numberOfTriangles = ind.size () / 3;
 
-  vertexbuffer = glGrib::OpenGLBufferPtr<float> (lonlat);
-  elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind);
+  vertexbuffer = OpenGLBufferPtr<float> (lonlat);
+  elementbuffer = OpenGLBufferPtr<unsigned int> (ind);
 
   setReady ();
 }
 
+}

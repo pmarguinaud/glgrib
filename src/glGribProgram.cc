@@ -14,10 +14,12 @@
 #include <stdexcept>
 #include <fstream>
 
+namespace glGrib
+{
 
 namespace
 {
-typedef std::map<std::string,glGrib::Program> name2prog_t;
+typedef std::map<std::string,Program> name2prog_t;
 name2prog_t name2prog;
 
 std::string slurp (const std::string & file, bool fatal = true)
@@ -42,42 +44,42 @@ std::string slurp (const std::string & file, bool fatal = true)
 
 }
 
-void glGrib::Program::read (const std::string & file)
+void Program::read (const std::string & file)
 {
-  VertexShaderCode   = slurp (glGrib::Resolve ("/shaders/" + file + ".vs"));
-  FragmentShaderCode = slurp (glGrib::Resolve ("/shaders/" + file + ".fs"));
-  GeometryShaderCode = slurp (glGrib::Resolve ("/shaders/" + file + ".gs"), false);
+  VertexShaderCode   = slurp (Resolve ("/shaders/" + file + ".vs"));
+  FragmentShaderCode = slurp (Resolve ("/shaders/" + file + ".fs"));
+  GeometryShaderCode = slurp (Resolve ("/shaders/" + file + ".gs"), false);
   name = file;
 }
 
-void glGrib::Program::compile ()
+void Program::compile ()
 {
   if (loaded) 
     return;
-  programID = glGrib::LoadShader (name, FragmentShaderCode, VertexShaderCode, GeometryShaderCode);
+  programID = LoadShader (name, FragmentShaderCode, VertexShaderCode, GeometryShaderCode);
   loaded = true;
 }
 
-glGrib::Program * glGrib::Program::load (const std::string & name)
+Program * Program::load (const std::string & name)
 {
   if (name2prog.find (name) == name2prog.end ())
     {
-      glGrib::Program prog;
-      name2prog.insert (std::pair<std::string,glGrib::Program> (name, prog));
+      Program prog;
+      name2prog.insert (std::pair<std::string,Program> (name, prog));
       name2prog[name].read (name);
       name2prog[name].compile ();
     }
   return &name2prog[name];
 }
 
-glGrib::Program::~Program ()
+Program::~Program ()
 {
   if (loaded)
     glDeleteProgram (programID);
 }
 
 
-void glGrib::Program::use () const
+void Program::use () const
 {
   glUseProgram (programID);
   if (! active)
@@ -90,7 +92,7 @@ void glGrib::Program::use () const
     }
 }
 
-void glGrib::Program::set (const glGrib::OptionsLight & light)
+void Program::set (const OptionsLight & light)
 {
   int lightid = getUniformLocation ("light");
 
@@ -106,5 +108,5 @@ void glGrib::Program::set (const glGrib::OptionsLight & light)
     }
 }
 
-
+}
 

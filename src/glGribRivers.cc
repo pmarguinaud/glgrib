@@ -1,10 +1,15 @@
 #include "glGribRivers.h"
 
-void glGrib::Rivers::setup (const glGrib::OptionsRivers & o)
+namespace glGrib
+{
+
+void Rivers::setup (const OptionsRivers & o)
 {
   if (! o.on)
     return;
 
   opts = o;
-  glGrib::Lines::setup (opts.lines);
+  Lines::setup (opts.lines);
+}
+
 }

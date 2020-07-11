@@ -62,6 +62,20 @@ sub isMainWindow
   return $class->isa ('Tk::MainWindow');
 }
 
+my %map;
+
+
+sub getWidgetByOpts
+{
+  my ($opt) = @_;
+  my $w = $map{$opt};
+  unless (&Exists ($w))
+    {
+      delete $map{$opt};
+    }
+  return $w;
+}
+
 sub create
 {
   my ($win, $name, $opts, $default, @args) = @_;
@@ -71,8 +85,11 @@ sub create
   $class =~ s/[^a-z]+$//io;
   $class =~ s{_(\w)}{uc ($1)}egoms;
 
-  if ((ref ($opts) eq 'ARRAY') && (scalar (@$opts) > 0)  
-   && (! $default) && (ref ($opts->[1]) ne 'ARRAY'))
+  # terminal option
+
+  my $term = $opts->[0] =~ m/^--/o;
+
+  if ($term)
     {
       my $type = $opts->[1];
       $type =~ s/[^A-Z]//go;
@@ -84,10 +101,19 @@ sub create
 
   $class ||= 'glGrib_Frame';
 
-  return &isMainWindow ("Tk::$class")
+  my $w = &isMainWindow ("Tk::$class")
        ? "Tk::$class"->new (glGrib => {name => $name, opts => $opts}, 
                             -title => ucfirst ($name), @args)
        : $win->$class (glGrib => {name => $name, opts => $opts}, @args);
+  
+  # Record widget
+
+  if ($term)
+    {
+      $map{$opts->[0]} = $w;
+    }
+
+  return $w;
 }
 
 package Tk::glGrib_Frame;
@@ -169,22 +195,23 @@ sub populate
   my ($self, $args) = @_;
   
   $self->{glGrib} = delete $args->{glGrib};
-  
-
-  my $opts = $self->{glGrib}{opts};
-  my $name = $self->{glGrib}{name};
-
+ 
   my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
 
-  $frame->Label (-text => $opts->[2])->pack (-side => 'left');
+  if (my $opts = $self->{glGrib}{opts})
+    {
+      $frame->Label (-text => $opts->[2])->pack (-side => 'left');
+      $self->{variable} = \$opts->[2];
+    }
+  else
+    {
+      $self->{variable} = delete $args->{variable};
+    }
+  
 
   $self->{entry} =
   $frame->Entry (-textvariable => $self->getVariable (), -validate => 'key',
                  -validatecommand => sub { $self->validate (@_) })
-    ->pack (-side => 'right');
-
-  $self->Button (-text => 'Dump', 
-                 -command => sub { print &Data::Dumper::Dumper ($opts) })
     ->pack (-side => 'right');
 
   return $self;
@@ -193,13 +220,19 @@ sub populate
 sub getVariable
 {
   my $self = shift;
-  return \$self->{glGrib}{opts}[3];
+  return $self->{variable};
 }
 
 sub validate
 {
   my $self = shift;
   return 1;
+}
+
+sub set
+{
+  my ($self, $value) = @_;
+  ${ $self->getVariable () } = $value;
 }
 
 1;
@@ -228,7 +261,6 @@ sub populate
   $self->{frame} = $frame->Frame ()
     ->pack (-side => 'top', -expand => 1, -fill => 'both');
 
-  $self->append ();
 
   if ($self->{glGrib}{opts}[1] eq 'STRING-LIST')
     {
@@ -237,6 +269,11 @@ sub populate
         ->pack (-side => 'left', -expand => 1, -fill => 'x');
       $frame->Button (-text => '-', -command => sub { $self->remove () })
         ->pack (-side => 'right', -expand => 1, -fill => 'x');
+      $self->set ($self->{glGrib}{opts}[3]);
+    }
+  else
+    {
+      $self->append ();
     }
 
 }
@@ -255,10 +292,23 @@ sub append
                   -command => sub { $self->selectPath ($rank); })
     ->pack (-side => 'left');
 
-  my $text = '';
-
-  $frame->Entry (-textvariable => \$text)
-    ->pack (-side => 'right', -expand => 1, -fill => 'x');
+  if ($self->{glGrib}{opts}[1] eq 'STRING-LIST')
+    {
+      my $o = $self->{glGrib}{opts}[3];
+     
+      if (scalar (@c) == scalar (@$o))
+        {
+          push @$o, '';
+        }
+      
+      $frame->Entry (-textvariable => \$o->[$rank])
+        ->pack (-side => 'right', -expand => 1, -fill => 'x');
+    }
+  else
+    {
+      $frame->Entry (-textvariable => \$self->{glGrib}{opts}[3])
+        ->pack (-side => 'right', -expand => 1, -fill => 'x');
+    }
 
 }
 
@@ -272,12 +322,13 @@ sub remove
 
   my $c = pop (@c);
 
+  my $o = $self->{glGrib}{opts}[3];
+  pop (@$o);
+
+
   $c->packForget ();
 
   $c->destroy ();
-
-
-  @c = $self->{frame}->children ();
 
 }
 
@@ -298,6 +349,34 @@ sub selectPath
 
   $$text = $path;
 
+}
+
+sub set
+{
+  my ($self, $value) = @_;
+
+  if ($self->{glGrib}{opts}[1] eq 'STRING-LIST')
+    {
+      while (1)
+        {
+          my @c = $self->{frame}->children ();
+          last if (scalar (@c) == scalar (@$value));
+          $self->append () if (scalar (@c) < scalar (@$value));
+          $self->remove () if (scalar (@c) > scalar (@$value));
+        } 
+      
+      my @c = $self->{frame}->children ();
+      for (my $i = 0; $i < @$value; $i++)
+        {
+          my $e = $c[$i];
+          my $text = $e->cget ('-textvariable');
+          $$text = $value->[$i];
+        }
+   }
+ else
+   {
+     $self->{glGrib}{opts}[3] = $value;
+   }
 }
 
 package Tk::glGribDATE;
@@ -330,12 +409,6 @@ package Tk::glGribCOLORLIST;
 
 use strict;
 
-sub chooseRGB
-{
-  my $self = shift;
-  $self->{color} .= ' ' . $self->getRGB ();
-}
-
 package Tk::glGribFLOAT;
 
 use tkbase qw (Tk::glGrib_Entry);
@@ -353,18 +426,22 @@ sub populate
 {
   my ($self, $args) = @_;
   
-  $self->{glGrib} = delete $args->{glGrib};
-  
-
-  my $opts = $self->{glGrib}{opts};
-  my $name = $self->{glGrib}{name};
-
   my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
 
-  $frame->Label (-text => $opts->[2])->pack (-side => 'left');
+  $self->{glGrib} = delete $args->{glGrib};
+
+  if (my $opts = $self->{glGrib}{opts})
+    {
+      $frame->Label (-text => $opts->[2])->pack (-side => 'left');
+      $self->{variable} = \$opts->[3];
+    }
+  else
+    {
+      $self->{variable} = delete $args->{variable};
+    }
 
   $self->{entry} =
-  $frame->Entry (-textvariable => \$opts->[3], -validate => 'key',
+  $frame->Entry (-textvariable => $self->{variable}, -validate => 'key',
                  -validatecommand => sub { $self->validate (@_); } )
     ->pack (-side => 'right');
   $frame->Button (-text => 'RGB', -command => sub { $self->chooseRGB (); })
@@ -391,6 +468,12 @@ sub validate
   my $self = shift;
   my ($value) = @_;
   return $value =~ m/^(?:\w*|^#[0-9a-h]*)$/o;
+}
+
+sub set
+{
+  my ($self, $value) = @_;
+  ${ $self->{entry}->cget ('-textvariable') } = $value;
 }
 
 
@@ -529,6 +612,30 @@ sub populate
 
   my @opts = @$opts;
 
+  my $tt;
+
+  for (my $i = 0; $i < $#{$opts}; $i++)
+    {
+      if ($opts->[$i] eq 'type')
+        {
+          $tt = \$opts->[$i+1][3];
+          last;
+        }
+    }
+
+  my $fb = $g->Frame ()->pack (-expand => 1, -fill => 'x');
+
+  for my $type (@type)
+    {
+      $fb->Radiobutton 
+      (
+        -text => $type,
+        -value => uc ($type),
+        -variable => $tt,
+        -command => sub { $self->enableTab ($type) },
+      )->pack (-side => 'left');
+    }
+
   my @sep;
 
   while (my ($key, $opt) = splice (@opts, 0, 2))
@@ -569,6 +676,23 @@ sub populate
                  -command => sub { $self->destroy (); })
   ->pack (-side => 'right', -fill => 'both');
 
+  $self->enableTab (lc ($$tt));
+}
+
+sub enableTab
+{
+  my ($self, $type) = @_;
+
+  my @type = qw (scalar vector contour stream isofill);
+  @type = grep { $_ ne $type } @type;
+
+  $self->{glGrib}{notebook}->pageconfigure ($type, -state => 'normal');
+
+  for my $type (@type)
+    {
+      $self->{glGrib}{notebook}->pageconfigure ($type, -state => 'disabled');
+    }
+  
 }
 
 sub Apply

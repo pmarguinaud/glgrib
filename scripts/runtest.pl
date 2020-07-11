@@ -38,6 +38,7 @@ sub readme
   my @t = @test;
   print "
 Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, gaussian grid.
+GLFW backend for interactive display, EGL backend for batch processing without X11 display.
   ";
   while (my ($desc, $name, $opts) = splice (@t, 0, 3))
     {

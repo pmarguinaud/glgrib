@@ -1,3 +1,101 @@
+package Tk::glGribLIST;
+
+use Tk;
+
+use tkbase qw (Tk::Frame);
+use strict;
+
+sub populate 
+{
+  my ($self, $args) = @_;
+  
+  $self->{glGrib} = delete $args->{glGrib};
+  
+  my $opts = $self->{glGrib}{opts};
+  my $name = $self->{glGrib}{name};
+
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+
+  $frame->Label (-text => $opts->[2])->pack (-side => 'top');
+
+  $self->{frame} = $frame->Frame ()
+    ->pack (-side => 'top', -expand => 1, -fill => 'both');
+
+
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+  $frame->Button (-text => '+', -command => sub { $self->append () })
+    ->pack (-side => 'left', -expand => 1, -fill => 'x');
+  $frame->Button (-text => '-', -command => sub { $self->remove () })
+    ->pack (-side => 'right', -expand => 1, -fill => 'x');
+  $self->set ($self->{glGrib}{opts}[3]);
+
+}
+
+sub append
+{
+  my $self = shift;
+
+  my $o = $self->{glGrib}{opts}[3];
+
+  my @c = $self->{frame}->children ();
+  my $rank = scalar (@c);
+
+  if (scalar (@c) == scalar (@$o))
+    {
+      push @$o, '';
+    }
+  
+  my $class = $self->class ();
+
+  my $frame = $self->{frame}->$class (variable => \$o->[$rank])
+    ->pack (-side => 'top', -expand => 1, -fill => 'both');
+
+     
+}
+
+sub remove
+{
+  my $self = shift;
+  
+  my @c = $self->{frame}->children ();
+
+  return unless (@c);
+
+  my $c = pop (@c);
+
+  my $o = $self->{glGrib}{opts}[3];
+  pop (@$o);
+
+
+  $c->packForget ();
+
+  $c->destroy ();
+
+}
+
+sub set
+{
+  my ($self, $value) = @_;
+
+  while (1)
+    {
+      my @c = $self->{frame}->children ();
+      last if (scalar (@c) == scalar (@$value));
+      $self->append () if (scalar (@c) < scalar (@$value));
+      $self->remove () if (scalar (@c) > scalar (@$value));
+    } 
+  
+  my @c = $self->{frame}->children ();
+  for (my $i = 0; $i < @$value; $i++)
+    {
+      my $e = $c[$i];
+      my $text = $e->cget ('-textvariable');
+      $$text = $value->[$i];
+    }
+}
+
+1;
+
 package tkbaselist;
 
 use strict;
@@ -11,43 +109,13 @@ sub import
   my $code = << "EOF";
 package ${class}LIST;
 
-use strict;
+use tkbase qw (Tk::glGribLIST);
 
-use tkbase qw ($class);
-
-sub validate
+sub class
 {
-  my \$self = shift;
-  my \@value = split (m/\s+/o, \$_[0]);
-
-  for (\@value)
-    {
-      return 0 unless (\$self->SUPER\::validate (\$_));
-    }
-  
-  \@{ \$self->{glGrib}{opts}[3] } = \@value;
-
-  return 1;
+  shift;
+  return \"$class\";
 }
-
-sub populate
-{
-  my \$self = shift;
-
-  \$self->{value} = "";
-  \$self->$class\::populate (\@_);
-
-  \$self->{value} = join (' ', \@{ \$self->{glGrib}{opts}[3] });
-  return \$self;
-}
-
-sub getVariable
-{
-  my \$self = shift;
-  return \\\$self->{value};
-}
-
-1;
 
 EOF
 

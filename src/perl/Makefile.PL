@@ -6,7 +6,7 @@ my $prefix = "$ENV{HOME}/3d/glgrib";
 my $NETCDF_PREFIX  = "/home/marguina/install/netcdf-c-4.7.4";
 my $ECCODES_PREFIX = "/home/marguina/install/eccodes-2.14.0";
 
-my $USE_EGL = 1;
+my $USE_EGL = 0;
 
 my @lib = $USE_EGL ? qw (-lEGL -lgbm) : qw (-lGLEW -lglfw);
 my @def = $USE_EGL ? '-DUSE_EGL' : '-DUSE_GLFW';

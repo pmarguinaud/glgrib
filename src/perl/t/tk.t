@@ -201,7 +201,7 @@ sub populate
   if (my $opts = $self->{glGrib}{opts})
     {
       $frame->Label (-text => $opts->[2])->pack (-side => 'left');
-      $self->{variable} = \$opts->[2];
+      $self->{variable} = \$opts->[3];
     }
   else
     {
@@ -237,146 +237,124 @@ sub set
 
 1;
 
-package Tk::glGribPath;
+package Tk::glGribFIELDREF;
 
 use Tk;
 use Tk::FileSelect;
 
 use tkbase qw (Tk::Frame);
+use tkbaselist;
 use strict;
 
 sub populate 
 {
   my ($self, $args) = @_;
   
-  $self->{glGrib} = delete $args->{glGrib};
-  
-  my $opts = $self->{glGrib}{opts};
-  my $name = $self->{glGrib}{name};
-
   my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
 
-  $frame->Label (-text => $opts->[2])->pack (-side => 'top');
-
-  $self->{frame} = $frame->Frame ()
-    ->pack (-side => 'top', -expand => 1, -fill => 'both');
-
-
-  if ($self->{glGrib}{opts}[1] eq 'STRING-LIST')
+  $self->{glGrib} = delete $args->{glGrib};
+  
+  if (my $opts = $self->{glGrib}{opts})
     {
-      my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
-      $frame->Button (-text => '+', -command => sub { $self->append () })
-        ->pack (-side => 'left', -expand => 1, -fill => 'x');
-      $frame->Button (-text => '-', -command => sub { $self->remove () })
-        ->pack (-side => 'right', -expand => 1, -fill => 'x');
-      $self->set ($self->{glGrib}{opts}[3]);
+      $frame->Label (-text => $opts->[2])->pack (-side => 'top'); 
+      $self->{variable} = \$opts->[3];
     }
   else
     {
-      $self->append ();
+      $self->{variable} = delete $args->{variable};
     }
-
-}
-
-sub append
-{
-  my $self = shift;
-
-  my @c = $self->{frame}->children ();
-  my $rank = scalar (@c);
-
-  my $frame = $self->{frame}->Frame ()
-    ->pack (-side => 'top', -expand => 1, -fill => 'both');
 
   $frame->Button (-text => 'Browse', 
-                  -command => sub { $self->selectPath ($rank); })
+                  -command => sub { $self->selectPath (); })
     ->pack (-side => 'left');
 
-  if ($self->{glGrib}{opts}[1] eq 'STRING-LIST')
-    {
-      my $o = $self->{glGrib}{opts}[3];
-     
-      if (scalar (@c) == scalar (@$o))
-        {
-          push @$o, '';
-        }
-      
-      $frame->Entry (-textvariable => \$o->[$rank])
-        ->pack (-side => 'right', -expand => 1, -fill => 'x');
-    }
-  else
-    {
-      $frame->Entry (-textvariable => \$self->{glGrib}{opts}[3])
-        ->pack (-side => 'right', -expand => 1, -fill => 'x');
-    }
-
-}
-
-sub remove
-{
-  my $self = shift;
-  
-  my @c = $self->{frame}->children ();
-
-  return unless (@c);
-
-  my $c = pop (@c);
-
-  my $o = $self->{glGrib}{opts}[3];
-  pop (@$o);
-
-
-  $c->packForget ();
-
-  $c->destroy ();
+  $frame->Entry (-textvariable => $self->{variable})
+    ->pack (-side => 'right', -expand => 1, -fill => 'x');
 
 }
 
 sub selectPath
 {
-  my ($self, $rank) = @_;
+  my ($self) = @_;
 
   my $select = $self->FileSelect (-directory => '.');
 
   my $path = $select->Show ();
 
-  my @c = $self->{frame}->children ();
-  my $c = $c[$rank];
+  ${$self->getVariable ()} = $path;
+}
 
-  my ($e) = ($c->children ())[1];
-
-  my $text = $e->cget ('-textvariable');
-
-  $$text = $path;
-
+sub getVariable
+{
+  my $self = shift;
+  return $self->{variable};
 }
 
 sub set
 {
   my ($self, $value) = @_;
+  ${$self->getVariable ()} = $value;
+}
 
-  if ($self->{glGrib}{opts}[1] eq 'STRING-LIST')
+
+
+package Tk::glGribPATH;
+
+use Tk;
+use Tk::FileSelect;
+
+use tkbase qw (Tk::Frame);
+use tkbaselist;
+use strict;
+
+sub populate 
+{
+  my ($self, $args) = @_;
+  
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+
+  $self->{glGrib} = delete $args->{glGrib};
+  
+  if (my $opts = $self->{glGrib}{opts})
     {
-      while (1)
-        {
-          my @c = $self->{frame}->children ();
-          last if (scalar (@c) == scalar (@$value));
-          $self->append () if (scalar (@c) < scalar (@$value));
-          $self->remove () if (scalar (@c) > scalar (@$value));
-        } 
-      
-      my @c = $self->{frame}->children ();
-      for (my $i = 0; $i < @$value; $i++)
-        {
-          my $e = $c[$i];
-          my $text = $e->cget ('-textvariable');
-          $$text = $value->[$i];
-        }
-   }
- else
-   {
-     $self->{glGrib}{opts}[3] = $value;
-   }
+      $frame->Label (-text => $opts->[2])->pack (-side => 'top'); 
+      $self->{variable} = \$opts->[3];
+    }
+  else
+    {
+      $self->{variable} = delete $args->{variable};
+    }
+
+  $frame->Button (-text => 'Browse', 
+                  -command => sub { $self->selectPath (); })
+    ->pack (-side => 'left');
+
+  $frame->Entry (-textvariable => \$self->{glGrib}{opts}[3])
+    ->pack (-side => 'right', -expand => 1, -fill => 'x');
+
+}
+
+sub selectPath
+{
+  my ($self) = @_;
+
+  my $select = $self->FileSelect (-directory => '.');
+
+  my $path = $select->Show ();
+
+  ${$self->getVariable ()} = $path;
+}
+
+sub getVariable
+{
+  my $self = shift;
+  return $self->{variable};
+}
+
+sub set
+{
+  my ($self, $value) = @_;
+  ${$self->getVariable ()} = $value;
 }
 
 package Tk::glGribDATE;
@@ -566,10 +544,10 @@ sub populate
   my $b = 
   $self->Button (-relief => 'raised', -text => 'Apply', 
                  -command => sub { })
-  ->pack (-side => 'left', -fill => 'both');
+  ->pack (-side => 'left', -expand => 1, -fill => 'x');
   $self->Button (-relief => 'raised', -text => 'Close', 
                  -command => sub { $self->destroy (); })
-  ->pack (-side => 'right', -fill => 'both');
+  ->pack (-side => 'right', -expand => 1, -fill => 'x');
 
 }
 
@@ -667,10 +645,10 @@ sub populate
   
   $self->Button (-relief => 'raised', -text => 'Apply', 
                  -command => sub { $self->Apply () })
-  ->pack (-side => 'left', -fill => 'both');
+  ->pack (-side => 'left', -fill => 'x', -expand => 1);
   $self->Button (-relief => 'raised', -text => 'Close', 
                  -command => sub { $self->destroy (); })
-  ->pack (-side => 'right', -fill => 'both');
+  ->pack (-side => 'right', -fill => 'x', -expand => 1);
 
   $self->enableTab (lc ($$tt));
 }
@@ -694,7 +672,7 @@ sub enableTab
 sub Apply
 {
   my $self = shift;
-  print $self->{glGrib}{notebook}->raised (), "\n";
+
 }
 
 1;

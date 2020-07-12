@@ -125,7 +125,7 @@ void glGrib::Field::setupHilo (glGrib::BufferPtr<float> data)
   glGrib::FontPtr font = getGlGribFontPtr (opts.hilo.font);
 
   hilo.setup (font, lhilo.L, lhilo.X, lhilo.Y, lhilo.Z, lhilo.A, 
-              opts.hilo.font.scale, glGrib::StringTypes::C);
+              opts.hilo.font.bitmap.scale, glGrib::StringTypes::C);
   hilo.setForegroundColor (opts.hilo.font.color.foreground);
   hilo.setScale (opts.scale);
 

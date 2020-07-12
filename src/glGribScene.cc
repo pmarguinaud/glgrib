@@ -303,7 +303,7 @@ void Scene::updateTitle ()
           glGrib::clear (d.strtitle);
           FontPtr font = getGlGribFontPtr (d.opts.scene.title.font);
           d.strtitle.setup (font, title, d.opts.scene.title.x, 
-                              d.opts.scene.title.y, d.opts.scene.title.font.scale, 
+                              d.opts.scene.title.y, d.opts.scene.title.font.bitmap.scale, 
                               StringTypes::str2align (d.opts.scene.title.a));
           d.strtitle.setForegroundColor (d.opts.scene.title.font.color.foreground);
           d.strtitle.setBackgroundColor (d.opts.scene.title.font.color.background);
@@ -493,7 +493,7 @@ void Scene::setColorBarOptions (const OptionsColorbar & o)
     {
       FontPtr font = getGlGribFontPtr (d.opts.colorbar.font);
       d.strmess.setup (font, std::string (30, ' '), 1.0f, 1.0f, 
-                       d.opts.colorbar.font.scale, StringTypes::NE);
+                       d.opts.colorbar.font.bitmap.scale, StringTypes::NE);
       d.strmess.setForegroundColor (d.opts.colorbar.font.color.foreground);
       d.strmess.setSide (Object2D::RIGHT);
       d.colorbar.setup (d.opts.colorbar);
@@ -522,7 +522,7 @@ void Scene::setTextOptions (const OptionsText & o)
             StringTypes::str2align (d.opts.scene.text.a[i]) : StringTypes::C;
 
           d.str[i].setup (font, d.opts.scene.text.s[i], d.opts.scene.text.x[i], 
-                          d.opts.scene.text.y[i], d.opts.scene.text.font.scale, a);
+                          d.opts.scene.text.y[i], d.opts.scene.text.font.bitmap.scale, a);
           d.str[i].setForegroundColor (d.opts.scene.text.font.color.foreground);
           d.str[i].setBackgroundColor (d.opts.scene.text.font.color.background);
           d.str[i].setSide (Object2D::RIGHT);
@@ -557,7 +557,7 @@ void Scene::setDateOptions (const OptionsDate & o)
     {
       FontPtr font = getGlGribFontPtr (d.opts.scene.date.font);
       d.strdate.setup (font, std::string (20, ' '), 1.0f, 0.0f, 
-                       d.opts.scene.date.font.scale, StringTypes::SE);
+                       d.opts.scene.date.font.bitmap.scale, StringTypes::SE);
       d.strdate.setSide (Object2D::RIGHT);
       d.strdate.setForegroundColor (d.opts.scene.date.font.color.foreground);
       d.strdate.setBackgroundColor (d.opts.scene.date.font.color.background);

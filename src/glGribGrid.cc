@@ -55,7 +55,7 @@ void Grid::setup (const OptionsGrid & o)
 	  push (lon, lat, str);
 	}
 
-      d.labels.setup (font, L, X, Y, Z, A, d.opts.labels.font.scale, StringTypes::C);
+      d.labels.setup (font, L, X, Y, Z, A, d.opts.labels.font.bitmap.scale, StringTypes::C);
       d.labels.setForegroundColor (d.opts.labels.font.color.foreground);
       d.labels.setBackgroundColor (d.opts.labels.font.color.background);
     }

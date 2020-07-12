@@ -157,7 +157,7 @@ void Colorbar::update (const Palette & p)
   else
     updateLinear (min, max, x, y, str);
   
-  d.label.setup (font, str, x, y, d.opts.font.scale, StringTypes::SE);
+  d.label.setup (font, str, x, y, d.opts.font.bitmap.scale, StringTypes::SE);
   d.label.setForegroundColor (d.opts.font.color.foreground);
   d.label.setBackgroundColor (d.opts.font.color.background);
   

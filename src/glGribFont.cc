@@ -20,7 +20,7 @@ cache_t cache;
 
 FontPtr getGlGribFontPtr (const OptionsFont & opts)
 {
-  auto it = cache.find (opts.bitmap);
+  auto it = cache.find (opts.bitmap.path);
   FontPtr font;
   if (it != cache.end ())
     { 
@@ -30,7 +30,7 @@ FontPtr getGlGribFontPtr (const OptionsFont & opts)
     {
       font = std::make_shared<Font> ();
       font->setup (opts);
-      cache.insert (std::pair<std::string,FontPtr> (opts.bitmap, font));
+      cache.insert (std::pair<std::string,FontPtr> (opts.bitmap.path, font));
     }
   return font;
 }
@@ -56,7 +56,7 @@ void Font::setup (const OptionsFont & o)
   int w, h;
   std::vector<int> ioff, joff;
 
-  Bitmap (Resolve (opts.bitmap), rgb, &w, &h);
+  Bitmap (Resolve (opts.bitmap.path), rgb, &w, &h);
 
   for (int i = 0, p = w * (h - 2); i < w; i++, p += 1)
     if ((rgb[3*p+0] == 255) && (rgb[3*p+1] == 0) && (rgb[3*p+2] == 0))

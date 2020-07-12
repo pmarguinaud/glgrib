@@ -405,10 +405,6 @@ package Tk::glGribSTRING;
 use tkbase qw (Tk::glGrib_Entry);
 use tkbaselist;
 
-package Tk::glGribCOLORLIST;
-
-use strict;
-
 package Tk::glGribFLOAT;
 
 use tkbase qw (Tk::glGrib_Entry);

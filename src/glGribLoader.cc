@@ -66,7 +66,7 @@ HandlePtr Loader::handleFromFile (const std::string & f)
   return ghp;
 }
 
-void Loader::load (BufferPtr<float> * ptr, const std::vector<std::string> & file, const OptionsGeometry & opts_geom, 
+void Loader::load (BufferPtr<float> * ptr, const std::vector<OptionPath> & file, const OptionsGeometry & opts_geom, 
 		   float fslot, FieldMetadata * meta, int mult, int base, bool diff)
 {
   int islot = static_cast<int> (fslot);
@@ -175,7 +175,7 @@ void Loader::load (BufferPtr<float> * ptr, const std::vector<std::string> & file
     }
 }
 
-void Loader::load (BufferPtr<float> * ptr, const std::string & file, 
+void Loader::load (BufferPtr<float> * ptr, const OptionPath & file, 
 		   const OptionsGeometry & opts_geom,  
                    FieldMetadata * meta)
 {

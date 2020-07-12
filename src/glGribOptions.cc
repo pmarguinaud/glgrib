@@ -22,38 +22,84 @@ template <> const std::string optionTmplList<int>         ::type () { return std
 template <> const std::string optionTmplList<float>       ::type () { return std::string ("FLOAT-LIST"); }
 template <> const std::string optionTmpl     <OptionDate> ::type () { return std::string ("DATE"); }
 template <> const std::string optionTmpl     <OptionColor>::type () { return std::string ("COLOR"); }
+template <> const std::string optionTmpl     <OptionPath> ::type () { return std::string ("PATH"); }
 template <> const std::string optionTmpl     <std::string>::type () { return std::string ("STRING"); }
 template <> const std::string optionTmpl     <std::string>::asString () const { return *value; }
 template <> const std::string optionTmpl     <std::string>::asJSON   () const { return OptionsUtil::escape (*value); }
+template <> const std::string optionTmpl     <OptionPath> ::asJSON   () const { return OptionsUtil::escape (*value); }
 template <> const std::string optionTmpl     <std::string>::asOption () const { return name + " " + OptionsUtil::escape (*value); }
 template <> const std::string optionTmplList<OptionColor> ::type () { return std::string ("COLOR-LIST"); }
+template <> const std::string optionTmplList<OptionPath>  ::type () { return std::string ("PATH-LIST"); }
 template <> const std::string optionTmplList<std::string> ::type () { return std::string ("STRING-LIST"); }
-template <> const std::string optionTmplList<std::string> ::asString () const 
+
+
+namespace
+{
+
+template <typename T> 
+const std::string listOfStringLikeAsString (const T & t) 
 { 
   std::string str; 
-  for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); ++it)
+  for (auto it = t.value->begin (); it != t.value->end (); ++it)
     str = str + " " + *it;
   return str;
 }
-template <> const std::string optionTmplList<std::string>         ::asJSON () const 
+
+template <typename T> 
+const std::string listOfStringLikeAsJSON (const T & t) 
 { 
   std::string json; 
-  for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); ++it)
+  for (auto it = t.value->begin (); it != t.value->end (); ++it)
     {
-      if (it != value->begin ())
+      if (it != t.value->begin ())
         json += ",";
       json += OptionsUtil::escape (*it);
     }
   return std::string ("[") + json + std::string ("]");
 }
-template <> const std::string optionTmplList<std::string>        ::asOption () const 
+
+template <typename T> 
+const std::string listOfStringLikeAsOption (const T & t) 
 { 
-  std::string str = name + " ";
-  for (std::vector<std::string>::const_iterator it = value->begin (); it != value->end (); ++it)
+  std::string str = t.name + " ";
+  for (auto it = t.value->begin (); it != t.value->end (); ++it)
     str = str + " " + OptionsUtil::escape (*it);
   return str;
 }
-template <> const std::string optionTmpl     <bool>               ::type () { return std::string ("BOOLEAN"); }
+
+}
+
+template <> const std::string optionTmplList<std::string>::asString () const 
+{ 
+  return listOfStringLikeAsString (*this);
+}
+
+template <> const std::string optionTmplList<std::string>::asJSON () const 
+{ 
+  return listOfStringLikeAsJSON (*this);
+}
+
+template <> const std::string optionTmplList<std::string>::asOption () const 
+{ 
+  return listOfStringLikeAsOption (*this);
+}
+
+template <> const std::string optionTmplList<OptionPath>::asString () const 
+{ 
+  return listOfStringLikeAsString (*this);
+}
+
+template <> const std::string optionTmplList<OptionPath>::asJSON () const 
+{ 
+  return listOfStringLikeAsJSON (*this);
+}
+
+template <> const std::string optionTmplList<OptionPath>::asOption () const 
+{ 
+  return listOfStringLikeAsOption (*this);
+}
+
+template <> const std::string optionTmpl<bool>::type () { return std::string ("BOOLEAN"); }
 
 template <> void optionTmpl<bool>::set ()
 {
@@ -160,6 +206,17 @@ OptionDate OptionDate::interpolate
 )
 {
   return date_from_t (round (static_cast<double> (alpha) * tFromDate (d1) + (1.0 - static_cast<double> (alpha)) * tFromDate (d2)));
+}
+
+std::ostream & operator << (std::ostream & out, const OptionPath & path)
+{
+  return out << path.value;
+}
+
+std::istream & operator >> (std::istream & in, OptionPath & path)
+{
+  in >> path.value;
+  return in;
 }
 
 std::ostream & operator << (std::ostream & out, const OptionColor & color)

@@ -59,7 +59,7 @@ void Cities::setup (const OptionsCities & o)
   FontPtr font = getGlGribFontPtr (opts.labels.font);
 
   d.labels.setup (font, Str, X, Y, Z, A,
-                  opts.labels.font.scale, StringTypes::C);
+                  opts.labels.font.bitmap.scale, StringTypes::C);
   d.labels.setForegroundColor (opts.labels.font.color.foreground);
   d.labels.setBackgroundColor (opts.labels.font.color.background);
 

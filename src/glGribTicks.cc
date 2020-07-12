@@ -338,7 +338,7 @@ void Ticks::reSize (const View & view)
 
       FontPtr font = getGlGribFontPtr (opts.labels.font); 
 
-      labels.setup (font, S, X, Y, opts.labels.font.scale, align, A);
+      labels.setup (font, S, X, Y, opts.labels.font.bitmap.scale, align, A);
       labels.setForegroundColor (opts.labels.font.color.foreground);
       labels.setBackgroundColor (opts.labels.font.color.background);
     }

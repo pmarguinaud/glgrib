@@ -28,7 +28,7 @@ void Mapscale::setup (const OptionsMapscale & o)
   
   FontPtr font = getGlGribFontPtr (opts.font);
 
-  label.setup (font, std::string (15, ' '), opts.position.xmin, opts.position.ymax + 0.01, opts.font.scale, StringTypes::SW);
+  label.setup (font, std::string (15, ' '), opts.position.xmin, opts.position.ymax + 0.01, opts.font.bitmap.scale, StringTypes::SW);
   label.setForegroundColor (opts.font.color.foreground);
   label.setBackgroundColor (opts.font.color.background);
 

@@ -21,6 +21,64 @@ namespace OptionsUtil
   const std::string escape (const std::string &);
 };
 
+class OptionPath
+{
+public:
+  OptionPath () {}
+  OptionPath (const std::string & p) : value (p) {}
+  OptionPath (const char * p) : value (p) {}
+
+  operator const std::string & () const
+  {
+    return value;
+  }
+  operator std::string ()
+  {
+    return value;
+  }
+  const std::string * operator -> () const
+  {
+    return &value;
+  }
+  std::string * operator -> ()
+  {
+    return &value;
+  }
+  const std::string asString () const
+  {
+    return value;
+  }
+  const std::string asJSON () const;
+  friend std::ostream & operator << (std::ostream &, const OptionPath &);
+  friend std::istream & operator >> (std::istream &, OptionPath &);
+  friend bool operator== (OptionPath const & path1, const char * path2)
+  {
+    return path1.value == std::string (path2);
+  }
+  friend bool operator== (OptionPath const & path1, OptionPath const & path2)
+  {
+    return path1.value == path2.value;
+  }
+  friend bool operator!= (OptionPath const & path1, const char * path2)
+  {
+    return ! (path1 == path2);
+  } 
+  friend bool operator!= (OptionPath const & path1, OptionPath const & path2)
+  {
+    return ! (path1 == path2);
+  } 
+  std::string operator+ (const std::string & s) const
+  {
+    return value + s;
+  }
+  friend std::string operator + (const std::string & s, const OptionPath & path)
+  {
+    return s + path.value;
+  }
+private:
+  std::string value;
+};
+
 class OptionColor
 {
 public:
@@ -221,30 +279,34 @@ namespace OptionsParserDetail
     }
   };
 
-  template <> const std::string optionTmpl     <int>               ::type ();
-  template <> const std::string optionTmpl     <float>             ::type ();
-  template <> const std::string optionTmplList<int>                ::type ();
-  template <> const std::string optionTmplList<float>              ::type ();
-  template <> const std::string optionTmpl     <OptionDate>        ::type ();
-  template <> const std::string optionTmpl     <OptionColor>       ::type ();
-  template <> const std::string optionTmpl     <std::string>       ::type ();
-  template <> const std::string optionTmpl     <std::string>       ::asString () const;
-  template <> const std::string optionTmpl     <std::string>       ::asJSON   () const;
-  template <> const std::string optionTmpl     <std::string>       ::asOption () const;
-  template <> const std::string optionTmplList<OptionColor>        ::type ();
-  template <> const std::string optionTmplList<std::string>        ::type ();
-  template <> const std::string optionTmplList<std::string>        ::asString () const;
-  template <> const std::string optionTmplList<std::string>        ::asJSON   () const;
-  template <> const std::string optionTmplList<std::string>        ::asOption () const;
-  template <> const std::string optionTmpl     <bool>              ::type ();
-  template <> void optionTmpl            <bool>                    ::set ();
-  template <> void optionTmplList        <std::string>             ::set (const std::string &);
-  template <> void optionTmpl            <std::string>             ::set (const std::string &);
-  template <> void optionTmpl            <bool>                    ::clear ();
-  template <> const std::string optionTmpl     <bool>              ::asString () const;
-  template <> const std::string optionTmpl     <bool>              ::asJSON   () const;
-  template <> const std::string optionTmpl     <bool>              ::asOption () const;
-  template <> int optionTmpl             <bool>                    ::hasArg () const;
+  template <> const std::string optionTmpl    <int>               ::type ();
+  template <> const std::string optionTmpl    <float>             ::type ();
+  template <> const std::string optionTmplList<int>               ::type ();
+  template <> const std::string optionTmplList<float>             ::type ();
+  template <> const std::string optionTmpl    <OptionDate>        ::type ();
+  template <> const std::string optionTmpl    <OptionColor>       ::type ();
+  template <> const std::string optionTmpl    <OptionPath>        ::type ();
+  template <> const std::string optionTmplList<OptionPath>        ::asString () const;
+  template <> const std::string optionTmplList<OptionPath>        ::asJSON   () const;
+  template <> const std::string optionTmplList<OptionPath>        ::asOption () const;
+  template <> const std::string optionTmpl    <std::string>       ::type ();
+  template <> const std::string optionTmpl    <std::string>       ::asString () const;
+  template <> const std::string optionTmpl    <std::string>       ::asJSON   () const;
+  template <> const std::string optionTmpl    <std::string>       ::asOption () const;
+  template <> const std::string optionTmplList<OptionPath>        ::type ();
+  template <> const std::string optionTmplList<std::string>       ::type ();
+  template <> const std::string optionTmplList<std::string>       ::asString () const;
+  template <> const std::string optionTmplList<std::string>       ::asJSON   () const;
+  template <> const std::string optionTmplList<std::string>       ::asOption () const;
+  template <> const std::string optionTmpl    <bool>              ::type ();
+  template <> void optionTmpl                 <bool>              ::set ();
+  template <> void optionTmplList             <std::string>       ::set (const std::string &);
+  template <> void optionTmpl                 <std::string>       ::set (const std::string &);
+  template <> void optionTmpl                 <bool>              ::clear ();
+  template <> const std::string optionTmpl    <bool>              ::asString () const;
+  template <> const std::string optionTmpl    <bool>              ::asJSON   () const;
+  template <> const std::string optionTmpl    <bool>              ::asOption () const;
+  template <> int optionTmpl                  <bool>              ::hasArg () const;
 
 };
 
@@ -272,6 +334,8 @@ public:
   DEF_APPLY (std::vector<int>);
   DEF_APPLY (OptionColor);
   DEF_APPLY (std::vector<OptionColor>);
+  DEF_APPLY (OptionPath);
+  DEF_APPLY (std::vector<OptionPath>);
   DEF_APPLY (OptionDate);
 #undef DEF_APPLY
 };
@@ -380,6 +444,8 @@ private:
   DEF_APPLY (std::vector<int>                  , OptionsParserDetail::optionTmplList<int>);
   DEF_APPLY (OptionColor                       , OptionsParserDetail::optionTmpl<OptionColor>);
   DEF_APPLY (std::vector<OptionColor>          , OptionsParserDetail::optionTmplList<OptionColor>);
+  DEF_APPLY (OptionPath                        , OptionsParserDetail::optionTmpl<OptionPath>);
+  DEF_APPLY (std::vector<OptionPath>           , OptionsParserDetail::optionTmplList<OptionPath>);
   DEF_APPLY (OptionDate                        , OptionsParserDetail::optionTmpl<OptionDate>);
 
 #undef DEF_APPLY
@@ -390,6 +456,7 @@ class OptionsBase
 {
 public:
   typedef std::vector<std::string> string_list;
+  typedef std::vector<OptionPath> path_list;
   typedef std::vector<float> float_list;
   typedef std::string string;
   virtual void traverse (const std::string &, OptionsCallback *, 
@@ -455,7 +522,7 @@ public:
   struct
   {
     bool on = false;
-    std::string path = "";
+    OptionPath path;
     float scale = 0.05;
   } height;
   struct 
@@ -483,18 +550,28 @@ public:
 class OptionsFont : public OptionsBase
 {
 public:
-  OptionsFont (const std::string & b, float s) : bitmap (b), scale (s) {}
-  OptionsFont (float s) : scale (s) {}
+  OptionsFont (const std::string & b, float s) 
+  {
+    bitmap.path = b;
+    bitmap.scale = s;
+  }
+  OptionsFont (float s) 
+  {
+    bitmap.scale  = s;
+  }
   OptionsFont () {}
   DEFINE
   {
-    DESC (bitmap,     Bitmap path);
-    DESC (scale,      Bitmap scale);
+    DESC (bitmap.path,     Bitmap path);
+    DESC (bitmap.scale,    Bitmap scale);
     DESC (color.foreground, Foreground color);
     DESC (color.background, Background color);
   }
-  std::string bitmap = "fonts/08.bmp";
-  float scale = 0.05f;
+  struct 
+  {
+    OptionPath path = "fonts/08.bmp";
+    float scale = 0.05f;
+  } bitmap;
   struct
   {
     OptionColor foreground = OptionColor (255, 255, 255, 255);
@@ -757,7 +834,7 @@ public:
     DESC (scale, Displacement scale);
   }
 
-  std::string path;
+  OptionPath path;
   bool on = false;
   float scale = 0.1f;
 };
@@ -806,7 +883,7 @@ public:
   {
     bool on = true;
   } user_pref;
-  string_list  path;
+  std::vector<OptionPath> path;
   float scale   = 1.0f;
   struct
   {
@@ -959,7 +1036,7 @@ public:
     DESC_H (debug.on,         Debug);
   }
   std::string selector = "";
-  std::string path     = "coastlines/shp/GSHHS_c_L1.shp";
+  OptionPath path      = "coastlines/shp/GSHHS_c_L1.shp";
   float scale          = 1.0f;
   struct
   {
@@ -1182,7 +1259,7 @@ public:
   } fullscreen;
   struct
   {
-    std::string path = "/dev/dri/renderD128";
+    OptionPath path = "/dev/dri/renderD128";
   } device;
 };
 
@@ -1272,7 +1349,7 @@ public:
     DESC (align,         Image alignment);
   }  
   bool on = false;
-  std::string path = "";
+  OptionPath path;
   float x0 = 0.0, x1 = 1.0, y0 = 0.0, y1 = 1.0;
   std::string align;
 };
@@ -1569,7 +1646,7 @@ public:
     int rate = 1;
   } time;
   OptionsPoints points;
-  std::string path;
+  OptionPath path;
   std::string lon, lat, val;
 };
 
@@ -1672,7 +1749,7 @@ public:
   struct
   {
     bool on = false;
-    std::string path;
+    OptionPath path;
   } review;
   struct
   {

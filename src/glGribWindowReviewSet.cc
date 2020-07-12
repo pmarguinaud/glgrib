@@ -11,7 +11,7 @@ WindowReviewSet::WindowReviewSet (const Options & o)
   const auto & opts = getOptions ();
   Options opts_ = opts;
 
-  if (opts.review.path.size () == 0)
+  if (opts.review.path->size () == 0)
     throw std::runtime_error (std::string ("Option --review.path is required"));
 
 

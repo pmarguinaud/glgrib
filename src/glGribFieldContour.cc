@@ -102,7 +102,7 @@ void FieldContour::isoline_t::setupLabels (const OptionsField & opts,
       L[i] = label; 
     }
 
-  d.labels.setup (font, L, X, Y, Z, A, opts.contour.labels.font.scale, StringTypes::C);
+  d.labels.setup (font, L, X, Y, Z, A, opts.contour.labels.font.bitmap.scale, StringTypes::C);
   d.labels.setForegroundColor (opts.contour.labels.font.color.foreground);
   d.labels.setBackgroundColor (opts.contour.labels.font.color.background);
 

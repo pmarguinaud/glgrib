@@ -21,12 +21,14 @@ namespace OptionsUtil
   const std::string escape (const std::string &);
 };
 
-class OptionPath
+
+template <int N>
+class OptionStringLike
 {
 public:
-  OptionPath () {}
-  OptionPath (const std::string & p) : value (p) {}
-  OptionPath (const char * p) : value (p) {}
+  OptionStringLike () {}
+  OptionStringLike (const std::string & p) : value (p) {}
+  OptionStringLike (const char * p) : value (p) {}
 
   operator const std::string & () const
   {
@@ -49,35 +51,48 @@ public:
     return value;
   }
   const std::string asJSON () const;
-  friend std::ostream & operator << (std::ostream &, const OptionPath &);
-  friend std::istream & operator >> (std::istream &, OptionPath &);
-  friend bool operator== (OptionPath const & path1, const char * path2)
+
+  friend std::ostream & operator << (std::ostream & out, const OptionStringLike<N> & osl)
   {
-    return path1.value == std::string (path2);
+    return out << osl.value;
   }
-  friend bool operator== (OptionPath const & path1, OptionPath const & path2)
+
+  friend std::istream & operator >> (std::istream & in, OptionStringLike<N> & osl)
   {
-    return path1.value == path2.value;
+    in >> osl.value;
+    return in;
   }
-  friend bool operator!= (OptionPath const & path1, const char * path2)
+
+  friend bool operator== (OptionStringLike const & osl1, const char * osl2)
   {
-    return ! (path1 == path2);
+    return osl1.value == std::string (osl2);
+  }
+  friend bool operator== (OptionStringLike const & osl1, OptionStringLike const & osl2)
+  {
+    return osl1.value == osl2.value;
+  }
+  friend bool operator!= (OptionStringLike const & osl1, const char * osl2)
+  {
+    return ! (osl1 == osl2);
   } 
-  friend bool operator!= (OptionPath const & path1, OptionPath const & path2)
+  friend bool operator!= (OptionStringLike const & osl1, OptionStringLike const & osl2)
   {
-    return ! (path1 == path2);
+    return ! (osl1 == osl2);
   } 
   std::string operator+ (const std::string & s) const
   {
     return value + s;
   }
-  friend std::string operator + (const std::string & s, const OptionPath & path)
+  friend std::string operator + (const std::string & s, const OptionStringLike & osl)
   {
-    return s + path.value;
+    return s + osl.value;
   }
 private:
   std::string value;
 };
+
+typedef OptionStringLike<0> OptionPath;
+typedef OptionStringLike<1> OptionFieldRef;
 
 class OptionColor
 {
@@ -286,14 +301,19 @@ namespace OptionsParserDetail
   template <> const std::string optionTmpl    <OptionDate>        ::type ();
   template <> const std::string optionTmpl    <OptionColor>       ::type ();
   template <> const std::string optionTmpl    <OptionPath>        ::type ();
+  template <> const std::string optionTmplList<OptionPath>        ::type ();
   template <> const std::string optionTmplList<OptionPath>        ::asString () const;
   template <> const std::string optionTmplList<OptionPath>        ::asJSON   () const;
   template <> const std::string optionTmplList<OptionPath>        ::asOption () const;
+  template <> const std::string optionTmpl    <OptionFieldRef>    ::type ();
+  template <> const std::string optionTmplList<OptionFieldRef>    ::type ();
+  template <> const std::string optionTmplList<OptionFieldRef>    ::asString () const;
+  template <> const std::string optionTmplList<OptionFieldRef>    ::asJSON   () const;
+  template <> const std::string optionTmplList<OptionFieldRef>    ::asOption () const;
   template <> const std::string optionTmpl    <std::string>       ::type ();
   template <> const std::string optionTmpl    <std::string>       ::asString () const;
   template <> const std::string optionTmpl    <std::string>       ::asJSON   () const;
   template <> const std::string optionTmpl    <std::string>       ::asOption () const;
-  template <> const std::string optionTmplList<OptionPath>        ::type ();
   template <> const std::string optionTmplList<std::string>       ::type ();
   template <> const std::string optionTmplList<std::string>       ::asString () const;
   template <> const std::string optionTmplList<std::string>       ::asJSON   () const;
@@ -336,6 +356,8 @@ public:
   DEF_APPLY (std::vector<OptionColor>);
   DEF_APPLY (OptionPath);
   DEF_APPLY (std::vector<OptionPath>);
+  DEF_APPLY (OptionFieldRef);
+  DEF_APPLY (std::vector<OptionFieldRef>);
   DEF_APPLY (OptionDate);
 #undef DEF_APPLY
 };
@@ -446,6 +468,8 @@ private:
   DEF_APPLY (std::vector<OptionColor>          , OptionsParserDetail::optionTmplList<OptionColor>);
   DEF_APPLY (OptionPath                        , OptionsParserDetail::optionTmpl<OptionPath>);
   DEF_APPLY (std::vector<OptionPath>           , OptionsParserDetail::optionTmplList<OptionPath>);
+  DEF_APPLY (OptionFieldRef                    , OptionsParserDetail::optionTmpl<OptionFieldRef>);
+  DEF_APPLY (std::vector<OptionFieldRef>       , OptionsParserDetail::optionTmplList<OptionFieldRef>);
   DEF_APPLY (OptionDate                        , OptionsParserDetail::optionTmpl<OptionDate>);
 
 #undef DEF_APPLY
@@ -522,7 +546,7 @@ public:
   struct
   {
     bool on = false;
-    OptionPath path;
+    OptionFieldRef path;
     float scale = 0.05;
   } height;
   struct 
@@ -834,7 +858,7 @@ public:
     DESC (scale, Displacement scale);
   }
 
-  OptionPath path;
+  OptionFieldRef path;
   bool on = false;
   float scale = 0.1f;
 };
@@ -883,7 +907,7 @@ public:
   {
     bool on = true;
   } user_pref;
-  std::vector<OptionPath> path;
+  std::vector<OptionFieldRef> path;
   float scale   = 1.0f;
   struct
   {

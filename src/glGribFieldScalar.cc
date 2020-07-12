@@ -150,7 +150,7 @@ void FieldScalar<N>::setupMpiView (Loader * ld, const OptionsField & o, float sl
   FieldMetadata mpiview_meta;
   BufferPtr<float> mpiview;
 
-  ld->load (&mpiview, std::vector<OptionPath>{opts.mpiview.path}, 
+  ld->load (&mpiview, std::vector<OptionFieldRef>{opts.mpiview.path}, 
             opts.geometry, slot, &mpiview_meta, 1, 0);
 
   float pmax = mpiview_meta.valmax;

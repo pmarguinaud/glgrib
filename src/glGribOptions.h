@@ -22,7 +22,6 @@ namespace OptionsUtil
 };
 
 
-template <int N>
 class OptionStringLike
 {
 public:
@@ -52,12 +51,12 @@ public:
   }
   const std::string asJSON () const;
 
-  friend std::ostream & operator << (std::ostream & out, const OptionStringLike<N> & osl)
+  friend std::ostream & operator << (std::ostream & out, const OptionStringLike & osl)
   {
     return out << osl.value;
   }
 
-  friend std::istream & operator >> (std::istream & in, OptionStringLike<N> & osl)
+  friend std::istream & operator >> (std::istream & in, OptionStringLike & osl)
   {
     in >> osl.value;
     return in;
@@ -91,16 +90,16 @@ private:
   std::string value;
 };
 
-class OptionPath : public OptionStringLike<0>
+class OptionPath : public OptionStringLike
 {
 public:
-  using OptionStringLike<0>::OptionStringLike;
+  using OptionStringLike::OptionStringLike;
 };
 
-class OptionFieldRef : public OptionStringLike<1>
+class OptionFieldRef : public OptionStringLike
 {
 public:
-  using OptionStringLike<1>::OptionStringLike;
+  using OptionStringLike::OptionStringLike;
 };
 
 class OptionColor

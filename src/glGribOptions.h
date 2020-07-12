@@ -91,8 +91,17 @@ private:
   std::string value;
 };
 
-typedef OptionStringLike<0> OptionPath;
-typedef OptionStringLike<1> OptionFieldRef;
+class OptionPath : public OptionStringLike<0>
+{
+public:
+  using OptionStringLike<0>::OptionStringLike;
+};
+
+class OptionFieldRef : public OptionStringLike<1>
+{
+public:
+  using OptionStringLike<1>::OptionStringLike;
+};
 
 class OptionColor
 {

@@ -101,11 +101,13 @@ sub create
 
   $class ||= 'glGrib_Frame';
 
-  my $w = &isMainWindow ("Tk::$class")
+  my $main = &isMainWindow ("Tk::$class");
+
+  my $w = $main
        ? "Tk::$class"->new (glGrib => {name => $name, opts => $opts}, 
                             -title => ucfirst ($name), @args)
        : $win->$class (glGrib => {name => $name, opts => $opts}, @args);
-  
+
   # Record widget
 
   if ($term)
@@ -128,6 +130,7 @@ sub populate
   my ($self, $args) = @_;
   
   $self->{glGrib} = delete $args->{glGrib};
+  $args->{'-relief'} = 'groove';
 
   
   my $opts = $self->{glGrib}{opts};
@@ -161,6 +164,8 @@ sub populate
           next if ($key eq 'on');
           my $w = &TkglGrib::create ($frame, $key, $opt);
           $w->pack (-side => 'top', -fill => 'both', -side => 'top');
+          $frame->Separator (-width => 2)->pack (-side => 'top', -fill => 'x')
+            if (@opts);
         }
      
       $self->Enable () if ((! $on) || $on->getValue ());
@@ -237,7 +242,7 @@ sub set
 
 1;
 
-package Tk::glGribFIELDREF;
+package Tk::glGribPATH;
 
 use Tk;
 use Tk::FileSelect;
@@ -296,66 +301,11 @@ sub set
   ${$self->getVariable ()} = $value;
 }
 
+package Tk::glGribFIELDREF;
 
-
-package Tk::glGribPATH;
-
-use Tk;
-use Tk::FileSelect;
-
-use tkbase qw (Tk::Frame);
-use tkbaselist;
 use strict;
-
-sub populate 
-{
-  my ($self, $args) = @_;
-  
-  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
-
-  $self->{glGrib} = delete $args->{glGrib};
-  
-  if (my $opts = $self->{glGrib}{opts})
-    {
-      $frame->Label (-text => $opts->[2])->pack (-side => 'top'); 
-      $self->{variable} = \$opts->[3];
-    }
-  else
-    {
-      $self->{variable} = delete $args->{variable};
-    }
-
-  $frame->Button (-text => 'Browse', 
-                  -command => sub { $self->selectPath (); })
-    ->pack (-side => 'left');
-
-  $frame->Entry (-textvariable => \$self->{glGrib}{opts}[3])
-    ->pack (-side => 'right', -expand => 1, -fill => 'x');
-
-}
-
-sub selectPath
-{
-  my ($self) = @_;
-
-  my $select = $self->FileSelect (-directory => '.');
-
-  my $path = $select->Show ();
-
-  ${$self->getVariable ()} = $path;
-}
-
-sub getVariable
-{
-  my $self = shift;
-  return $self->{variable};
-}
-
-sub set
-{
-  my ($self, $value) = @_;
-  ${$self->getVariable ()} = $value;
-}
+use tkbase qw (Tk::glGribPATH);
+use tkbaselist;
 
 package Tk::glGribDATE;
 
@@ -391,7 +341,7 @@ use tkbaselist;
 package Tk::glGribCOLOR;
 
 use tkbase qw (Tk::Frame);
-use tkbaselist;
+use tkbaselist qw (width => 5);
 use strict;
 
 use Tk::ColorPicker;
@@ -414,12 +364,29 @@ sub populate
       $self->{variable} = delete $args->{variable};
     }
 
-  $self->{entry} =
-  $frame->Entry (-textvariable => $self->{variable}, -validate => 'key',
-                 -validatecommand => sub { $self->validate (@_); } )
-    ->pack (-side => 'right');
-  $frame->Button (-text => 'RGB', -command => sub { $self->chooseRGB (); })
-    ->pack (-side => 'right');
+  unless (${ $self->{variable} })
+    {
+      ${ $self->{variable} } = '#000000';
+    }
+
+  $self->{button} =
+  $frame->Button (-height => 1, -command => sub { $self->chooseRGB (); })
+    ->pack (-side => 'right', -fill => 'x', -expand => 1);
+  $self->setColor ();
+}
+
+sub setColor
+{
+  my $self = shift;
+
+  my $color = ${ $self->{variable} };
+
+  if ($color =~ m/^(#[a-f0-9]{6})/o)
+    {
+      my $c = $1;
+      $self->{button}->configure (-background => $c);
+    }
+
 }
 
 sub getRGB
@@ -434,20 +401,15 @@ sub getRGB
 sub chooseRGB
 {
   my $self = shift;
-  ${ $self->{entry}->cget ('-textvariable') } = $self->getRGB ();
-}
-
-sub validate
-{
-  my $self = shift;
-  my ($value) = @_;
-  return $value =~ m/^(?:\w*|^#[0-9a-h]*)$/o;
+  ${ $self->{variable} } = $self->getRGB ();
+  $self->setColor ();
 }
 
 sub set
 {
   my ($self, $value) = @_;
-  ${ $self->{entry}->cget ('-textvariable') } = $value;
+  ${ $self->{variable} } = $value;
+  $self->setColor ();
 }
 
 
@@ -580,9 +542,11 @@ sub populate
 
   my $opts = $self->{glGrib}{opts};
   
-  my $n = $self->{glGrib}{notebook} = $self->NoteBook ()->pack (-expand => 1, -fill => 'both', -side => 'top');
+  my $n = $self->{glGrib}{notebook} = 
+  $self->NoteBook ()->pack (-expand => 1, -fill => 'both', -side => 'top');
+
   my $g = $self->{glGrib}{general} = $n->add ('general', -label => 'General');
-  $g = $g->Scrolled ('Frame', -scrollbars => 'e', -sticky => 'nswe')->pack (-side => 'top', -expand => 1, -fill => 'both');
+  $g = $g->Scrolled ('Frame', -width => 500, -height => 600, -scrollbars => 'e', -sticky => 'nswe')->pack (-side => 'top', -expand => 1, -fill => 'both');
 
   my @opts = @$opts;
 
@@ -597,7 +561,7 @@ sub populate
         }
     }
 
-  my $fb = $g->Frame ()->pack (-expand => 1, -fill => 'x');
+  my $fb = $g->Frame ()->pack (-expand => 1, -fill => 'x', -side => 'top');
 
   for my $type (@type)
     {
@@ -607,10 +571,8 @@ sub populate
         -value => uc ($type),
         -variable => $tt,
         -command => sub { $self->enableTab ($type) },
-      )->pack (-side => 'left');
+      )->pack (-side => 'left', -fill => 'x');
     }
-
-  my @sep;
 
   while (my ($key, $opt) = splice (@opts, 0, 2))
     {
@@ -619,8 +581,8 @@ sub populate
       my $w = &TkglGrib::create ($g, $key, $opt);
       $w->pack (-side => 'top', -fill => 'both')
         unless ($w->isa ('Tk::MainWindow'));
-      push @sep,
-      $w->Separator (-width => 2)->pack (-side => 'top', -fill => 'x');
+      $w->Separator (-width => 2)->pack (-side => 'top', -fill => 'x')
+        if (@opts);
     }
 
   for my $type (@type)
@@ -672,7 +634,7 @@ sub enableTab
 sub Apply
 {
   my $self = shift;
-
+  print &Data::Dumper::Dumper ($self->{glGrib}{opts});
 }
 
 1;

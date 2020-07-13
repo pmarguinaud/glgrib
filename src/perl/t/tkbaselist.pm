@@ -11,24 +11,27 @@ sub populate
   
   $self->{glGrib} = delete $args->{glGrib};
   
+  my $o = $self->get_options ();
+  $self->{width} = $o->{width} || 1;
+
   my $opts = $self->{glGrib}{opts};
-  my $name = $self->{glGrib}{name};
 
   my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
 
   $frame->Label (-text => $opts->[2])->pack (-side => 'top');
 
-  $self->{frame} = $frame->Frame ()
-    ->pack (-side => 'top', -expand => 1, -fill => 'both');
 
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both', -side => 'top');
 
-  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
   $frame->Button (-text => '+', -command => sub { $self->append () })
     ->pack (-side => 'left', -expand => 1, -fill => 'x');
   $frame->Button (-text => '-', -command => sub { $self->remove () })
     ->pack (-side => 'right', -expand => 1, -fill => 'x');
-  $self->set ($self->{glGrib}{opts}[3]);
 
+  $self->{frame} = $self->Frame ()
+    ->pack (-side => 'top', -expand => 1, -fill => 'both');
+
+  $self->set ($self->{glGrib}{opts}[3]);
 }
 
 sub append
@@ -99,10 +102,14 @@ sub set
 package tkbaselist;
 
 use strict;
+use Data::Dumper;
 
 sub import
 {
   shift;
+  my %args = @_;
+
+  my $args = do { local $Data::Dumper::Terse = 1; &Dumper (\%args) };
 
   my $class = (caller (0))[0];
 
@@ -115,6 +122,11 @@ sub class
 {
   shift;
   return \"$class\";
+}
+
+sub get_options
+{
+  return $args;
 }
 
 EOF

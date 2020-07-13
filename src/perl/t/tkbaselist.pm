@@ -12,25 +12,25 @@ sub populate
   $self->{glGrib} = delete $args->{glGrib};
   
   my $o = $self->get_options ();
+
   $self->{width} = $o->{width} || 1;
 
   my $opts = $self->{glGrib}{opts};
 
-  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'x');
 
-  $frame->Label (-text => $opts->[2])->pack (-side => 'top');
-
-
-  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both', -side => 'top');
 
   $frame->Button (-text => '+', -command => sub { $self->append () })
-    ->pack (-side => 'left', -expand => 1, -fill => 'x');
+    ->pack (-side => 'left');
+  $frame->Label (-text => $opts->[2])->pack (-side => 'left', -expand => 1, -fill => 'x');
   $frame->Button (-text => '-', -command => sub { $self->remove () })
-    ->pack (-side => 'right', -expand => 1, -fill => 'x');
+    ->pack (-side => 'left');
 
-  $self->{frame} = $self->Frame ()
-    ->pack (-side => 'top', -expand => 1, -fill => 'both');
+  $self->{frame} = $self->Frame (-relief => 'groove', -borderwidth => 2)
+    ->pack (-side => 'top', -expand => 1, -fill => 'both', -anchor => 'nw');
 
+
+  $self->{number} = 0;
   $self->set ($self->{glGrib}{opts}[3]);
 }
 
@@ -40,19 +40,24 @@ sub append
 
   my $o = $self->{glGrib}{opts}[3];
 
-  my @c = $self->{frame}->children ();
-  my $rank = scalar (@c);
+  my $rank = $self->{number};
 
-  if (scalar (@c) == scalar (@$o))
+  if ($self->{number} == scalar (@$o))
     {
       push @$o, '';
     }
   
   my $class = $self->class ();
 
-  my $frame = $self->{frame}->$class (variable => \$o->[$rank])
-    ->pack (-side => 'top', -expand => 1, -fill => 'both');
+  my $len = $self->{width};
+  my $num = $self->{number};
+  my $row = int ($num / $len);
+  my $col = $num - $row * $len;
 
+  $self->{frame}->$class (variable => \$o->[$rank])
+    ->grid (-row => $row, -column => $col, -sticky => 'nw');
+
+  $self->{number}++;
      
 }
 
@@ -60,20 +65,23 @@ sub remove
 {
   my $self = shift;
   
-  my @c = $self->{frame}->children ();
+  return unless ($self->{number});
 
-  return unless (@c);
+  my $len = $self->{width};
+  my $num = $self->{number}-1;
+  my $row = int ($num / $len);
+  my $col = $num - $row * $len;
 
-  my $c = pop (@c);
+  my ($c) = $self->{frame}->gridSlaves (-row => $row, -column => $col);
 
   my $o = $self->{glGrib}{opts}[3];
   pop (@$o);
 
-
-  $c->packForget ();
+  $c->gridForget ();
 
   $c->destroy ();
 
+  $self->{number}--;
 }
 
 sub set
@@ -82,10 +90,9 @@ sub set
 
   while (1)
     {
-      my @c = $self->{frame}->children ();
-      last if (scalar (@c) == scalar (@$value));
-      $self->append () if (scalar (@c) < scalar (@$value));
-      $self->remove () if (scalar (@c) > scalar (@$value));
+      last if ($self->{number} == scalar (@$value));
+      $self->append () if ($self->{number} < scalar (@$value));
+      $self->remove () if ($self->{number} > scalar (@$value));
     } 
   
   my @c = $self->{frame}->children ();

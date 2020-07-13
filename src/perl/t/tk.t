@@ -6,6 +6,85 @@ package TkglGrib;
 
 use strict;
 use JSON;
+use Storable;
+use Data::Dumper;
+
+sub optionsToList
+{
+  my $opts = shift;
+
+  if ((scalar (@$opts) == 4) 
+   && (! ref ($opts->[0]))
+   && (! ref ($opts->[1]))
+   && (! ref ($opts->[2])))
+    {
+      return $opts;
+    }
+
+  my @list;
+  my @opts = @$opts;
+  while (my ($key, $val) = splice (@opts, 0, 2))
+    {
+      push @list, &optionsToList ($val);
+    }
+
+  return @list;
+}
+
+sub eqOptions
+{
+  my ($o1, $o2) = @_;
+  
+  $o1 = $o1->[3];
+  $o2 = $o2->[3];
+
+  if (ref ($o1))
+    {
+      return "@$o1" eq "@$o2";
+    }
+  else
+    {
+      return $o1 eq $o2;
+    }
+}
+
+sub optionToString
+{
+  my $o = shift;
+  if (ref ($o->[3]))
+    {
+      return ($o->[0], @{$o->[3]});
+    }
+  elsif ($o->[0] =~ m/\.on$/o)
+    {
+      my $opt = $o->[0];
+      $opt =~ s/\.on$/.off/o unless ($o->[3]);
+      return ($opt);
+    }
+  else
+    {
+      return ($o->[0], $o->[3]);
+    }
+}
+
+sub diffOptions
+{
+  my ($opts1, $opts2) = @_;
+
+  my @o1 = &optionsToList ($opts1);
+  my @o2 = &optionsToList ($opts2);
+
+
+  my @diff;
+
+  for my $i (0 .. $#o1)
+    {
+      next if (&eqOptions ($o1[$i], $o2[$i]));
+      push @diff, &optionToString ($o2[$i]);
+    }
+
+  return @diff;
+}
 
 sub json2tree
 {
@@ -216,7 +295,7 @@ sub populate
 
   $self->{entry} =
   $frame->Entry (-textvariable => $self->getVariable (), -validate => 'key',
-                 -validatecommand => sub { $self->validate (@_) })
+                 -validatecommand => sub { $self->validate (@_) }, -width => 12)
     ->pack (-side => 'right');
 
   return $self;
@@ -273,7 +352,7 @@ sub populate
                   -command => sub { $self->selectPath (); })
     ->pack (-side => 'left');
 
-  $frame->Entry (-textvariable => $self->{variable})
+  $frame->Entry (-textvariable => $self->{variable}, -width => 60)
     ->pack (-side => 'right', -expand => 1, -fill => 'x');
 
 }
@@ -336,12 +415,12 @@ use tkbaselist;
 package Tk::glGribFLOAT;
 
 use tkbase qw (Tk::glGrib_Entry);
-use tkbaselist;
+use tkbaselist (width => 5);
 
 package Tk::glGribCOLOR;
 
 use tkbase qw (Tk::Frame);
-use tkbaselist qw (width => 5);
+use tkbaselist (width => 5);
 use strict;
 
 use Tk::ColorPicker;
@@ -356,7 +435,7 @@ sub populate
 
   if (my $opts = $self->{glGrib}{opts})
     {
-      $frame->Label (-text => $opts->[2])->pack (-side => 'left');
+      $frame->Label (-text => $opts->[2])->pack (-side => 'left', -expand => 1, -fill => 'x');
       $self->{variable} = \$opts->[3];
     }
   else
@@ -370,7 +449,7 @@ sub populate
     }
 
   $self->{button} =
-  $frame->Button (-height => 1, -command => sub { $self->chooseRGB (); })
+  $frame->Button (-width => 9, -height => 1, -command => sub { $self->chooseRGB (); })
     ->pack (-side => 'right', -fill => 'x', -expand => 1);
   $self->setColor ();
 }
@@ -392,7 +471,7 @@ sub setColor
 sub getRGB
 {
   my $self = shift;
-  my $picker = 'Tk::ColorPicker'->new ();
+  my $picker = 'Tk::ColorPicker'->new (-color => ${ $self->{variable} });
   my $color = $picker->Show ();
   $picker->destroy ();
   return $color;
@@ -470,6 +549,7 @@ sub populate
   $self->{glGrib} = delete $args->{glGrib};
   
   my $opts = $self->{glGrib}{opts};
+  $self->{glGrib}{opts_} = &Storable::dclone ($opts);
 
   my $frame = $self->Scrolled ('Frame', -width => 400, -height => 400, -scrollbars => 'e', -sticky => 'nswe')->pack (-expand => 1, -fill => 'both');
   $frame = $frame->Frame ()->pack (-expand => 1, -fill => 'both', -side => 'top');
@@ -505,7 +585,7 @@ sub populate
 
   my $b = 
   $self->Button (-relief => 'raised', -text => 'Apply', 
-                 -command => sub { })
+                 -command => sub { $self->Apply (); })
   ->pack (-side => 'left', -expand => 1, -fill => 'x');
   $self->Button (-relief => 'raised', -text => 'Close', 
                  -command => sub { $self->destroy (); })
@@ -525,6 +605,19 @@ sub Disable
   $self->{glGrib}{frame}->packForget ();
 }
 
+sub Apply
+{
+  my $self = shift;
+
+  my @opts = &TkglGrib::diffOptions ($self->{glGrib}{opts_}, $self->{glGrib}{opts});
+
+  print &Data::Dumper::Dumper (\@opts);
+  'glGrib'->set (@opts);
+
+  $self->{glGrib}{opts_} = &Storable::dclone ($self->{glGrib}{opts});
+
+}
+
 1;
 
 package Tk::glGribField;
@@ -541,6 +634,7 @@ sub populate
   my @type = qw (scalar vector contour stream isofill);
 
   my $opts = $self->{glGrib}{opts};
+  $self->{glGrib}{opts_} = &Storable::dclone ($self->{glGrib}{opts});
   
   my $n = $self->{glGrib}{notebook} = 
   $self->NoteBook ()->pack (-expand => 1, -fill => 'both', -side => 'top');
@@ -634,7 +728,10 @@ sub enableTab
 sub Apply
 {
   my $self = shift;
-  print &Data::Dumper::Dumper ($self->{glGrib}{opts});
+  my @opts = &TkglGrib::diffOptions ($self->{glGrib}{opts_}, $self->{glGrib}{opts});
+  print &Data::Dumper::Dumper (\@opts);
+  'glGrib'->set (@opts);
+  $self->{glGrib}{opts_} = &Storable::dclone ($self->{glGrib}{opts});
 }
 
 1;
@@ -783,7 +880,7 @@ sub debug
   print &Dumper (['glGrib'->window ()]);
 }
 
-#'glGrib'->start ('--grid.on', '--landscape.on');
+'glGrib'->start ();
 
 my $main = 'Tk::glGribMainWindow'->new ();
 
@@ -794,5 +891,5 @@ $main->bind ('<Enter>' => \&enter);
 
 &MainLoop ();
 
-#'glGrib'->stop ();
+'glGrib'->stop ();
 

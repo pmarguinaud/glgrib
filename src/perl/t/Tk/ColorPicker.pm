@@ -85,6 +85,8 @@ sub populate
 
   my $color = delete $args->{-color};
 
+print "color=$color\n";
+
   $self->withdraw ();
 
   $self->{frame} = $self->Frame (-height => 20)
@@ -92,7 +94,7 @@ sub populate
 
 
   @{$self}{qw (r g b)} = map { hex ($_) } (($color || '#000000') 
-                         =~ m/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/goms);
+                         =~ m/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/goms);
 
   for (qw (r g b))
     {

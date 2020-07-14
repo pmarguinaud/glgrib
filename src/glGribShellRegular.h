@@ -63,6 +63,7 @@ private:
   void process_get           (const std::vector<std::string> &, glGrib::Render *) override;
   void process_window        (const std::vector<std::string> &, glGrib::Render *) override;
   void process_json          (const std::vector<std::string> &, glGrib::Render *) override;
+  void process_list          (const std::vector<std::string> &, glGrib::Render *) override;
 
   std::vector<std::string> getsetoptions;
   struct

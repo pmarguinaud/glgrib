@@ -1,6 +1,7 @@
 #include "glGribShell.h"
 #include "glGribWindowSet.h"
 #include "glGribRender.h"
+#include "glGribContainer.h"
 
 #include <iostream>
 #include <exception>
@@ -43,6 +44,23 @@ void Shell::do_clone (const std::vector<std::string> & args, Render * gwindow)
 void Shell::do_clear (const std::vector<std::string> & args, Render * gwindow)
 {
   gwindow->setCleared ();
+}
+
+void Shell::do_list (const std::vector<std::string> & args, Render * gwindow)
+{
+  if (args.size () < 2)
+    return;
+
+  try
+    {
+      auto cont = Container::create (args[1]);
+      for (auto it = cont->begin (); it != cont->end (); ++it)
+        listStr.push_back (*it);
+      delete cont;
+    } 
+  catch (...)
+    {
+    }
 }
 
 void Shell::do_set (const std::vector<std::string> & args, Render * gwindow)
@@ -345,6 +363,7 @@ void Shell::execute (const std::vector<std::string> & args)
   glGribShellIfCommand (clear);
   glGribShellIfCommand (get);
   glGribShellIfCommand (json);
+  glGribShellIfCommand (list);
   glGribShellIfCommand (set);
   glGribShellIfCommand (window);
   glGribShellIfCommand (help);

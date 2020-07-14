@@ -85,8 +85,6 @@ sub populate
 
   my $color = delete $args->{-color};
 
-print "color=$color\n";
-
   $self->withdraw ();
 
   $self->{frame} = $self->Frame (-height => 20)

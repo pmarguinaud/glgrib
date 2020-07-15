@@ -72,9 +72,9 @@ void View::calcMVP ()
   ps.setType (pt);
 
   glm::vec3 pos
-    (opts.distance * glm::cos (glm::radians (opts.lon)) * glm::cos (glm::radians (opts.lat)), 
-     opts.distance * glm::sin (glm::radians (opts.lon)) * glm::cos (glm::radians (opts.lat)),
-     opts.distance *                                      glm::sin (glm::radians (opts.lat)));
+    (opts.distance * glm::cos (glm::radians (float (opts.lon))) * glm::cos (glm::radians (float (opts.lat))), 
+     opts.distance * glm::sin (glm::radians (float (opts.lon))) * glm::cos (glm::radians (float (opts.lat))),
+     opts.distance *                                              glm::sin (glm::radians (float (opts.lat))));
 
   viewport   = glm::vec4 (0.0f, 0.0f, static_cast<float> (width), static_cast<float> (height));
 

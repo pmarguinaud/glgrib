@@ -16,24 +16,29 @@ namespace glGrib
 namespace OptionsParserDetail
 {
 
-template <> const std::string optionTmpl    <int>            ::type () { return std::string ("INTEGER"); }
-template <> const std::string optionTmpl    <float>          ::type () { return std::string ("FLOAT"); }
-template <> const std::string optionTmplList<int>            ::type () { return std::string ("INTEGER-LIST"); }
-template <> const std::string optionTmplList<float>          ::type () { return std::string ("FLOAT-LIST"); }
-template <> const std::string optionTmpl     <OptionDate>    ::type () { return std::string ("DATE"); }
-template <> const std::string optionTmpl     <OptionColor>   ::type () { return std::string ("COLOR"); }
-template <> const std::string optionTmpl     <OptionPath>    ::type () { return std::string ("PATH"); }
-template <> const std::string optionTmpl     <OptionFieldRef>::type () { return std::string ("FIELD-REF"); }
-template <> const std::string optionTmpl     <std::string>   ::type () { return std::string ("STRING"); }
-template <> const std::string optionTmpl     <std::string>   ::asString () const { return *value; }
-template <> const std::string optionTmpl     <std::string>   ::asJSON   () const { return OptionsUtil::escape (*value); }
-template <> const std::string optionTmpl     <OptionPath>    ::asJSON   () const { return OptionsUtil::escape (*value); }
-template <> const std::string optionTmpl     <OptionFieldRef>::asJSON   () const { return OptionsUtil::escape (*value); }
-template <> const std::string optionTmpl     <std::string>   ::asOption () const { return name + " " + OptionsUtil::escape (*value); }
-template <> const std::string optionTmplList<OptionColor>    ::type () { return std::string ("COLOR-LIST"); }
-template <> const std::string optionTmplList<OptionPath>     ::type () { return std::string ("PATH-LIST"); }
-template <> const std::string optionTmplList<OptionFieldRef> ::type () { return std::string ("FIELD-REF-LIST"); }
-template <> const std::string optionTmplList<std::string>    ::type () { return std::string ("STRING-LIST"); }
+template <> const std::string optionTmpl    <int>                  ::type () { return std::string ("INTEGER"); }
+template <> const std::string optionTmpl    <float>                ::type () { return std::string ("FLOAT"); }
+template <> const std::string optionTmplList<int>                  ::type () { return std::string ("INTEGER-LIST"); }
+template <> const std::string optionTmplList<float>                ::type () { return std::string ("FLOAT-LIST"); }
+template <> const std::string optionTmpl     <OptionDate>          ::type () { return std::string ("DATE"); }
+template <> const std::string optionTmpl     <OptionColor>         ::type () { return std::string ("COLOR"); }
+template <> const std::string optionTmpl     <OptionScale>         ::type () { return std::string ("SCALE"); }
+template <> const std::string optionTmpl     <OptionLongitude>     ::type () { return std::string ("LONGITUDE"); }
+template <> const std::string optionTmpl     <OptionLatitude>      ::type () { return std::string ("LATITUDE"); }
+template <> const std::string optionTmpl     <OptionPath>          ::type () { return std::string ("PATH"); }
+template <> const std::string optionTmpl     <OptionProjection>    ::type () { return std::string ("PROJECTION"); }
+template <> const std::string optionTmpl     <OptionTransformation>::type () { return std::string ("TRANSFORMATION"); }
+template <> const std::string optionTmpl     <OptionFieldRef>      ::type () { return std::string ("FIELD-REF"); }
+template <> const std::string optionTmpl     <std::string>         ::type () { return std::string ("STRING"); }
+template <> const std::string optionTmpl     <std::string>         ::asString () const { return *value; }
+template <> const std::string optionTmpl     <std::string>         ::asJSON   () const { return OptionsUtil::escape (*value); }
+template <> const std::string optionTmpl     <OptionPath>          ::asJSON   () const { return OptionsUtil::escape (*value); }
+template <> const std::string optionTmpl     <OptionFieldRef>      ::asJSON   () const { return OptionsUtil::escape (*value); }
+template <> const std::string optionTmpl     <std::string>         ::asOption () const { return name + " " + OptionsUtil::escape (*value); }
+template <> const std::string optionTmplList<OptionColor>          ::type () { return std::string ("COLOR-LIST"); }
+template <> const std::string optionTmplList<OptionPath>           ::type () { return std::string ("PATH-LIST"); }
+template <> const std::string optionTmplList<OptionFieldRef>       ::type () { return std::string ("FIELD-REF-LIST"); }
+template <> const std::string optionTmplList<std::string>          ::type () { return std::string ("STRING-LIST"); }
 
 
 namespace

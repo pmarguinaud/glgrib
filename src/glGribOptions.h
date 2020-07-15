@@ -22,6 +22,82 @@ namespace OptionsUtil
 };
 
 
+class OptionFloatLike
+{
+public:
+  OptionFloatLike () {}
+  OptionFloatLike (float s) : value (s) {}
+
+  operator float () const
+  {
+    return value;
+  }
+
+  float operator + (float s)
+  {
+    return value + s;
+  }
+
+  float operator - (float s)
+  {
+    return value - s;
+  }
+
+  OptionFloatLike & operator += (float s)
+  { 
+    value += s;
+    return *this;
+  }
+
+  OptionFloatLike & operator -= (float s)
+  { 
+    value -= s;
+    return *this;
+  }
+
+  friend bool operator == (const OptionFloatLike & s1, const OptionFloatLike & s2)
+  {  
+    return s1.value == s2.value;
+  }
+
+  friend bool operator != (const OptionFloatLike & s1, const OptionFloatLike & s2)
+  {  
+    return ! (s1 == s2);
+  }
+
+  friend std::ostream & operator << (std::ostream & out, const OptionFloatLike & osl)
+  {
+    return out << osl.value;
+  }
+
+  friend std::istream & operator >> (std::istream & in, OptionFloatLike & osl)
+  {
+    in >> osl.value;
+    return in;
+  }
+
+private:
+  float value = 0.0f;
+};
+
+class OptionScale : public OptionFloatLike
+{
+public:
+  using OptionFloatLike::OptionFloatLike;
+};
+
+class OptionLongitude : public OptionFloatLike
+{
+public:
+  using OptionFloatLike::OptionFloatLike;
+};
+
+class OptionLatitude : public OptionFloatLike
+{
+public:
+  using OptionFloatLike::OptionFloatLike;
+};
+
 class OptionStringLike
 {
 public:
@@ -91,6 +167,18 @@ private:
 };
 
 class OptionPath : public OptionStringLike
+{
+public:
+  using OptionStringLike::OptionStringLike;
+};
+
+class OptionProjection : public OptionStringLike
+{
+public:
+  using OptionStringLike::OptionStringLike;
+};
+
+class OptionTransformation : public OptionStringLike
 {
 public:
   using OptionStringLike::OptionStringLike;
@@ -302,39 +390,42 @@ namespace OptionsParserDetail
     }
   };
 
-  template <> const std::string optionTmpl    <int>               ::type ();
-  template <> const std::string optionTmpl    <float>             ::type ();
-  template <> const std::string optionTmplList<int>               ::type ();
-  template <> const std::string optionTmplList<float>             ::type ();
-  template <> const std::string optionTmpl    <OptionDate>        ::type ();
-  template <> const std::string optionTmpl    <OptionColor>       ::type ();
-  template <> const std::string optionTmpl    <OptionPath>        ::type ();
-  template <> const std::string optionTmplList<OptionPath>        ::type ();
-  template <> const std::string optionTmplList<OptionPath>        ::asString () const;
-  template <> const std::string optionTmplList<OptionPath>        ::asJSON   () const;
-  template <> const std::string optionTmplList<OptionPath>        ::asOption () const;
-  template <> const std::string optionTmpl    <OptionFieldRef>    ::type ();
-  template <> const std::string optionTmplList<OptionFieldRef>    ::type ();
-  template <> const std::string optionTmplList<OptionFieldRef>    ::asString () const;
-  template <> const std::string optionTmplList<OptionFieldRef>    ::asJSON   () const;
-  template <> const std::string optionTmplList<OptionFieldRef>    ::asOption () const;
-  template <> const std::string optionTmpl    <std::string>       ::type ();
-  template <> const std::string optionTmpl    <std::string>       ::asString () const;
-  template <> const std::string optionTmpl    <std::string>       ::asJSON   () const;
-  template <> const std::string optionTmpl    <std::string>       ::asOption () const;
-  template <> const std::string optionTmplList<std::string>       ::type ();
-  template <> const std::string optionTmplList<std::string>       ::asString () const;
-  template <> const std::string optionTmplList<std::string>       ::asJSON   () const;
-  template <> const std::string optionTmplList<std::string>       ::asOption () const;
-  template <> const std::string optionTmpl    <bool>              ::type ();
-  template <> void optionTmpl                 <bool>              ::set ();
-  template <> void optionTmplList             <std::string>       ::set (const std::string &);
-  template <> void optionTmpl                 <std::string>       ::set (const std::string &);
-  template <> void optionTmpl                 <bool>              ::clear ();
-  template <> const std::string optionTmpl    <bool>              ::asString () const;
-  template <> const std::string optionTmpl    <bool>              ::asJSON   () const;
-  template <> const std::string optionTmpl    <bool>              ::asOption () const;
-  template <> int optionTmpl                  <bool>              ::hasArg () const;
+  template <> const std::string optionTmpl    <int>                   ::type ();
+  template <> const std::string optionTmpl    <float>                 ::type ();
+  template <> const std::string optionTmplList<int>                   ::type ();
+  template <> const std::string optionTmplList<float>                 ::type ();
+  template <> const std::string optionTmpl    <OptionDate>            ::type ();
+  template <> const std::string optionTmpl    <OptionColor>           ::type ();
+  template <> const std::string optionTmpl    <OptionScale>           ::type ();
+  template <> const std::string optionTmpl    <OptionProjection>      ::type ();
+  template <> const std::string optionTmpl    <OptionTransformation>  ::type ();
+  template <> const std::string optionTmpl    <OptionPath>            ::type ();
+  template <> const std::string optionTmplList<OptionPath>            ::type ();
+  template <> const std::string optionTmplList<OptionPath>            ::asString () const;
+  template <> const std::string optionTmplList<OptionPath>            ::asJSON   () const;
+  template <> const std::string optionTmplList<OptionPath>            ::asOption () const;
+  template <> const std::string optionTmpl    <OptionFieldRef>        ::type ();
+  template <> const std::string optionTmplList<OptionFieldRef>        ::type ();
+  template <> const std::string optionTmplList<OptionFieldRef>        ::asString () const;
+  template <> const std::string optionTmplList<OptionFieldRef>        ::asJSON   () const;
+  template <> const std::string optionTmplList<OptionFieldRef>        ::asOption () const;
+  template <> const std::string optionTmpl    <std::string>           ::type ();
+  template <> const std::string optionTmpl    <std::string>           ::asString () const;
+  template <> const std::string optionTmpl    <std::string>           ::asJSON   () const;
+  template <> const std::string optionTmpl    <std::string>           ::asOption () const;
+  template <> const std::string optionTmplList<std::string>           ::type ();
+  template <> const std::string optionTmplList<std::string>           ::asString () const;
+  template <> const std::string optionTmplList<std::string>           ::asJSON   () const;
+  template <> const std::string optionTmplList<std::string>           ::asOption () const;
+  template <> const std::string optionTmpl    <bool>                  ::type ();
+  template <> void optionTmpl                 <bool>                  ::set ();
+  template <> void optionTmplList             <std::string>           ::set (const std::string &);
+  template <> void optionTmpl                 <std::string>           ::set (const std::string &);
+  template <> void optionTmpl                 <bool>                  ::clear ();
+  template <> const std::string optionTmpl    <bool>                  ::asString () const;
+  template <> const std::string optionTmpl    <bool>                  ::asJSON   () const;
+  template <> const std::string optionTmpl    <bool>                  ::asOption () const;
+  template <> int optionTmpl                  <bool>                  ::hasArg () const;
 
 };
 
@@ -362,6 +453,11 @@ public:
   DEF_APPLY (std::vector<int>);
   DEF_APPLY (OptionColor);
   DEF_APPLY (std::vector<OptionColor>);
+  DEF_APPLY (OptionScale);
+  DEF_APPLY (OptionLongitude);
+  DEF_APPLY (OptionLatitude);
+  DEF_APPLY (OptionProjection);
+  DEF_APPLY (OptionTransformation);
   DEF_APPLY (OptionPath);
   DEF_APPLY (std::vector<OptionPath>);
   DEF_APPLY (OptionFieldRef);
@@ -474,7 +570,12 @@ private:
   DEF_APPLY (std::vector<int>                  , OptionsParserDetail::optionTmplList<int>);
   DEF_APPLY (OptionColor                       , OptionsParserDetail::optionTmpl<OptionColor>);
   DEF_APPLY (std::vector<OptionColor>          , OptionsParserDetail::optionTmplList<OptionColor>);
+  DEF_APPLY (OptionScale                       , OptionsParserDetail::optionTmpl<OptionScale>);
+  DEF_APPLY (OptionLongitude                   , OptionsParserDetail::optionTmpl<OptionLongitude>);
+  DEF_APPLY (OptionLatitude                    , OptionsParserDetail::optionTmpl<OptionLatitude>);
   DEF_APPLY (OptionPath                        , OptionsParserDetail::optionTmpl<OptionPath>);
+  DEF_APPLY (OptionProjection                  , OptionsParserDetail::optionTmpl<OptionProjection>);
+  DEF_APPLY (OptionTransformation              , OptionsParserDetail::optionTmpl<OptionTransformation>);
   DEF_APPLY (std::vector<OptionPath>           , OptionsParserDetail::optionTmplList<OptionPath>);
   DEF_APPLY (OptionFieldRef                    , OptionsParserDetail::optionTmpl<OptionFieldRef>);
   DEF_APPLY (std::vector<OptionFieldRef>       , OptionsParserDetail::optionTmplList<OptionFieldRef>);
@@ -487,10 +588,6 @@ private:
 class OptionsBase 
 {
 public:
-  typedef std::vector<std::string> string_list;
-  typedef std::vector<OptionPath> path_list;
-  typedef std::vector<float> float_list;
-  typedef std::string string;
   virtual void traverse (const std::string &, OptionsCallback *, 
                          const OptionsCallback::opt * = nullptr) {}
   virtual bool parse (int, const char * [], const std::set<std::string> * = nullptr);
@@ -774,7 +871,7 @@ public:
     DESC (generate.levels,    Number of values to generate);
     DESC (fixed.on,           Fixed palette);
   }
-  string name = "default";
+  std::string name = "default";
   float min = defaultMin ();
   float max = defaultMax ();
   std::vector<float> values;
@@ -916,7 +1013,7 @@ public:
     bool on = true;
   } user_pref;
   std::vector<OptionFieldRef> path;
-  float scale   = 1.0f;
+  OptionScale scale = 1.0f;
   struct
   {
     bool on = false;
@@ -1041,11 +1138,12 @@ public:
   float dash_length = 4.0f;
   OptionColor color = OptionColor (0, 255, 0);
   bool on = false;
-  float scale = 1.005;
+  OptionScale scale = 1.005;
   struct 
   {
     bool on = false;
-    float lon = 0.0f, lat = 0.0f;
+    OptionLongitude lon = 0.0f;
+    OptionLatitude lat = 0.0f;
     float angle = 0.0f;
     OptionsFont font;
   } labels;
@@ -1069,7 +1167,7 @@ public:
   }
   std::string selector = "";
   OptionPath path      = "coastlines/shp/GSHHS_c_L1.shp";
-  float scale          = 1.0f;
+  OptionScale scale    = 1.0f;
   struct
   {
     float angle        = 1.0f;
@@ -1149,12 +1247,12 @@ public:
   {
     bool on = true;
   } visible;
-  string projection = "LONLAT";
-  string path  = "landscape/Whole_world_-_land_and_oceans_08000.bmp";
+  std::string projection = "LONLAT";
+  std::string path  = "landscape/Whole_world_-_land_and_oceans_08000.bmp";
   float  orography  = 0.05;
   struct
   {
-    string path = "";
+    std::string path = "";
     int number_of_latitudes  = 500;
   } grid;
   struct
@@ -1171,7 +1269,7 @@ public:
     OptionsLandscapePosition position;
   } lonlat;
   OptionsGeometry geometry;
-  float scale = 1.0f;
+  OptionScale scale = 1.0f;
   OptionColor color = OptionColor ("#00000000");
 };
 
@@ -1179,7 +1277,7 @@ class OptionsLines : public OptionsBase
 {
 public:
   OptionsLines () {}
-  OptionsLines (const std::string & p, const string & f) : path (p), format (f) {}
+  OptionsLines (const std::string & p, const std::string & f) : path (p), format (f) {}
   DEFINE
   {
     DESC (visible.on,         Lines are visible);
@@ -1198,10 +1296,10 @@ public:
     bool on = true;
   } visible;
   std::string selector;
-  string path;
-  string format = "gshhg";
+  std::string path;
+  std::string format = "gshhg";
   OptionColor color;
-  float scale = 1.005;
+  OptionScale scale = 1.005;
   float latmin = 0.0f, latmax = 0.0f, lonmin = 0.0f, lonmax = 0.0f;
 };
 
@@ -1259,7 +1357,7 @@ public:
   {
     bool on = false;
   } statistics;
-  string  title  = "";
+  std::string  title  = "";
   struct
   {
     bool on = false;
@@ -1320,8 +1418,8 @@ public:
     bool on = false;
     float rate = 1.0f;
   } rotate;
-  float  lon  = 0.0f;
-  float  lat  = 0.0f;
+  OptionLongitude lon  = 0.0f;
+  OptionLatitude  lat  = 0.0f;
   float  night = 0.1f;
 };
 
@@ -1334,8 +1432,8 @@ public:
     DESC (lat,            Latitude);
     DESC (fov,            Field of view);
   }
-  float  lon  = 0.0f;
-  float  lat  = 0.0f;
+  OptionLongitude  lon  = 0.0f;
+  OptionLatitude   lat  = 0.0f;
   float  fov  = 0.0f;
 };
 
@@ -1503,11 +1601,11 @@ public:
     DESC (zoom.lat,           Latitude of zoom);
     DESC (zoom.stretch,       Stretching factor);
   }
-  string  projection  = "XYZ";
-  string  transformation  = "PERSPECTIVE";
+  OptionProjection projection = "XYZ";
+  OptionTransformation transformation = "PERSPECTIVE";
   float  distance  = 6.0; 
-  float  lat       = 0.0; 
-  float  lon       = 0.0; 
+  OptionLatitude  lat       = 0.0; 
+  OptionLongitude lon       = 0.0; 
   float  fov       = 20.;
   struct
   {
@@ -1516,8 +1614,8 @@ public:
   struct
   {
     bool on = false;
-    float lon = 2.0f;
-    float lat = 46.7f;
+    OptionLongitude lon = 2.0f;
+    OptionLatitude  lat = 46.7f;
     float stretch = 0.5f;
   } zoom;
   struct
@@ -1646,7 +1744,7 @@ public:
   } visible;
   OptionsPalette palette = OptionsPalette ("none");
   OptionColor color;
-  float scale = 1.0f;
+  OptionScale scale = 1.0f;
   struct
   {
     float value = 1.0f;

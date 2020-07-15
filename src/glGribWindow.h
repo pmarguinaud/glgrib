@@ -86,25 +86,25 @@ public:
   void rotateNorth        () 
   { 
     OptionsView o = scene.getViewOptions ();
-    o.lat = o.lat + 5.; 
+    o.lat = float (o.lat) + 5.; 
     scene.setViewOptions (o);
   }
   void rotateSouth        () 
   { 
     OptionsView o = scene.getViewOptions ();
-    o.lat = o.lat - 5.; 
+    o.lat = float (o.lat) - 5.; 
     scene.setViewOptions (o);
   }
   void rotateWest         () 
   { 
     OptionsView o = scene.getViewOptions ();
-    o.lon = o.lon - 5.; 
+    o.lon = float (o.lon) - 5.; 
     scene.setViewOptions (o);
   }
   void rotateEast         () 
   { 
     OptionsView o = scene.getViewOptions ();
-    o.lon = o.lon + 5.; 
+    o.lon = float (o.lon) + 5.; 
     scene.setViewOptions (o);
   }
   void toggleWireframe ();

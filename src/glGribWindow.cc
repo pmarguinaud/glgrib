@@ -558,8 +558,11 @@ void Window::centerLightAtCursorPos ()
 void Window::centerViewAtCursorPos ()
 {
   OptionsView o = scene.getViewOptions ();
-  if (getLatLonFromCursor (&o.lat, &o.lon))
+  float lon, lat;
+  if (getLatLonFromCursor (&lat, &lon))
     {
+      o.lon = lon;
+      o.lat = lat;
       scene.setViewOptions (o);
       float xpos, ypos;
       scene.getView ().getScreenCoordsFromLatLon (&xpos, &ypos, o.lat, o.lon);

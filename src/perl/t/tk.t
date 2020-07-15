@@ -531,6 +531,7 @@ use tkbaselist (width => 5);
 use strict;
 
 use Tk::ColorPicker;
+use Tk::ColorPickerDB;
 
 sub populate 
 {
@@ -556,8 +557,10 @@ sub populate
     }
 
   $self->{button} =
-  $frame->Button (-width => 9, -height => 1, -command => sub { $self->chooseRGB (); })
+  $frame->Button (-width => 9, -height => 1)
     ->pack (-side => 'right', -fill => 'x', -expand => 1);
+  $self->{button}->bind ('<Control-Button>' => sub { $self->chooseRGB (1); });
+  $self->{button}->bind ('<Button>' => sub { $self->chooseRGB (0); });
   $self->setColor ();
 }
 
@@ -577,8 +580,11 @@ sub setColor
 
 sub getRGB
 {
-  my $self = shift;
-  my $picker = 'Tk::ColorPicker'->new (-color => ${ $self->{variable} });
+  my ($self, $db) = @_;
+
+  my $picker = $db
+             ? 'Tk::ColorPickerDB'->new (-db => 'glGrib'->resolve ('glGrib.db'))
+             : 'Tk::ColorPicker'->new (-color => ${ $self->{variable} });
   my $color = $picker->Show ();
   $picker->destroy ();
   return $color;
@@ -586,8 +592,8 @@ sub getRGB
 
 sub chooseRGB
 {
-  my $self = shift;
-  ${ $self->{variable} } = $self->getRGB ();
+  my ($self, $db) = @_;
+  ${ $self->{variable} } = $self->getRGB ($db);
   $self->setColor ();
 }
 

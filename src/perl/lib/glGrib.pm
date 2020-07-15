@@ -16,7 +16,7 @@ sub import
 {
   return if ($done);
 
-  my %method = qw (start 0 snapshot 0 get 1 set 0 stop 0 json 1 window 1 list 1);
+  my %method = qw (start 0 snapshot 0 get 1 set 0 stop 0 json 1 window 1 list 1 resolve 1);
 
   while (my ($method, $return) = each (%method))
     {

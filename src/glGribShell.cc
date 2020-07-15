@@ -2,6 +2,7 @@
 #include "glGribWindowSet.h"
 #include "glGribRender.h"
 #include "glGribContainer.h"
+#include "glGribResolve.h"
 
 #include <iostream>
 #include <exception>
@@ -61,6 +62,14 @@ void Shell::do_list (const std::vector<std::string> & args, Render * gwindow)
   catch (...)
     {
     }
+}
+
+void Shell::do_resolve (const std::vector<std::string> & args, Render * gwindow)
+{
+  if (args.size () < 2)
+    return;
+
+  listStr.push_back (Resolve (args[1]));
 }
 
 void Shell::do_set (const std::vector<std::string> & args, Render * gwindow)
@@ -364,6 +373,7 @@ void Shell::execute (const std::vector<std::string> & args)
   glGribShellIfCommand (get);
   glGribShellIfCommand (json);
   glGribShellIfCommand (list);
+  glGribShellIfCommand (resolve);
   glGribShellIfCommand (set);
   glGribShellIfCommand (window);
   glGribShellIfCommand (help);

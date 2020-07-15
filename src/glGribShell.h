@@ -46,6 +46,7 @@ public:
   void do_window_list   (const std::vector<std::string> &, glGrib::Render *);
   void do_clear         (const std::vector<std::string> &, glGrib::Render *);
   void do_list          (const std::vector<std::string> &, glGrib::Render *);
+  void do_resolve       (const std::vector<std::string> &, glGrib::Render *);
 
   // Process command output
   virtual void process_help          (const std::vector<std::string> &, glGrib::Render *) {}
@@ -59,6 +60,7 @@ public:
   virtual void process_window        (const std::vector<std::string> &, glGrib::Render *) {}
   virtual void process_clear         (const std::vector<std::string> &, glGrib::Render *) {}
   virtual void process_list          (const std::vector<std::string> &, glGrib::Render *) {}
+  virtual void process_resolve       (const std::vector<std::string> &, glGrib::Render *) {}
 
   const std::vector<std::string> & getList ()
   {

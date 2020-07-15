@@ -83,7 +83,7 @@ sub populate
 {
   my ($self, $args) = @_;
 
-  my $color = delete $args->{-color};
+  my $color = delete $args->{'-color'};
 
   $self->withdraw ();
 
@@ -92,7 +92,7 @@ sub populate
 
 
   @{$self}{qw (r g b)} = map { hex ($_) } (($color || '#000000') 
-                         =~ m/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/goms);
+                         =~ m/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?$/goms);
 
   for (qw (r g b))
     {
@@ -121,7 +121,7 @@ sub populate
                 -command => sub { $self->setColorHSV () })
   ->pack (-expand => 1, -fill => 'both', -side => 'top');
 
-  $self->Button (-text => 'OK', -command => sub { $self->OnClick () })
+  $self->Button (-text => 'OK', -command => sub { $self->onClick () })
     ->pack (-expand => 1, -fill => 'x', -side => 'top');
 }
 
@@ -131,7 +131,7 @@ sub getColor
   sprintf ('#%2.2x%2.2x%2.2x', @{$self}{qw (r g b)});
 }
 
-sub OnClick
+sub onClick
 {
   my $self = shift;
   $self->{done}++;

@@ -98,6 +98,12 @@ void ShellRegular::process_list (const std::vector<std::string> & args, Render *
      std::cout << o << std::endl;
 }
 
+void ShellRegular::process_resolve (const std::vector<std::string> & args, Render * gwindow)
+{
+  for (const auto & o : getList ())
+     std::cout << o << std::endl;
+}
+
 void ShellRegular::process_window (const std::vector<std::string> & args, Render * gwindow) 
 {
   if (getList ().size () > 0)

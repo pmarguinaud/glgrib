@@ -26,42 +26,53 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     --coast.lines.color cyan --coast.on 
 ```
 # [String](STRING.md)
-## Font background color                                             -- background
-![](share/test/background/TEST_0000.png)
+## Contour with labels                                               -- contourlabels2
+![](share/test/contourlabels2/TEST_0000.png)
 
 ```
-    --landscape.on --landscape.grid.path share/data/t1198c2.2/Z.grb 
-    --field[0].path share/data/t1198c2.2/N.grb --field[0].scale 1.03 
-    --scene.date.on --scene.date.font.bitmap.scale 0.03 
-    --scene.date.font.color.foreground red 
-    --scene.date.font.color.background white 
+    --landscape.on --field[0].path share/data/z500.grb --field[0].scale 
+    1.01 --field[0].type CONTOUR --view.lat 56 --view.lon 20 
+    --field[0].contour.labels.on --grid.on --grid.color black 
+    --field[0].palette.colors red --field[0].contour.levels 48000 48500 
+    49000 49500 50000 50500 51000 51500 52000 52500 53000 53500 54000 
+    54500 55000 55500 56000 56500 57000 57500 --field[0].contour.labels-{ 
+    --font.color.foreground white --font.color.background black 
+    --font.bitmap.scale 0.04 --format %.0f }- --coast.on 
+    --coast.lines.color pink 
 ```
 # [Misc](MISC.md)
-## Enable debug mode                                                 -- debug
-![](share/test/debug/TEST_0000.png)
+## Cities                                                            -- cities
+![](share/test/cities/TEST_0000.png)
 
 ```
-    --landscape.on --landscape.grid.path share/data/t1198c2.2/Z.grb 
-    --field[0].path share/data/t1198c2.2/N.grb --field[0].scale 1.03 
-    --render.debug.on 
+    --landscape.on --cities.on --cities.points.scale 1.01 
+    --cities.points.size.value 1 --cities.points.size.variable.on 
+    --view.lat 46.7 --view.lon 2 --view.fov 2 --cities.points.size.value 2 
+    --cities.labels.on --cities.labels.font.color.foreground red 
+    --cities.labels.font.bitmap.scale 0.04 
 ```
 # [Palette](PALETTE.md)
-## Select palette automatically                                      -- bw
-![](share/test/bw/TEST_0000.png)
+## Display field with palette gradient color                         -- palette_values_grad
+![](share/test/palette_values_grad/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path share/data/t1198c2.2/Z.grb 
     --field[0].path share/data/t1198c2.2/N.grb --field[0].scale 1.03 
+    --field[0].palette-{ --colors #00000000 #008bff #01f8e9 #05cf66 
+    #34c00c #b6e904 #ffe600 #ffb500 #ff6900 #ff0f00 #b3003e #570088 
+    --values 0 2 6 10 14 18 22 26 30 34 38 42 --min 0 --max 46 }- 
+    --colorbar.on --render.width 1200 
 ```
 # [Contour](CONTOUR.md)
-## Low-res contour                                                   -- contour1
-![](share/test/contour1/TEST_0000.png)
+## Medium-res contour and raster, global geometry                    -- contour_latlon4
+![](share/test/contour_latlon4/TEST_0000.png)
 
 ```
-    --render.width 1024 --render.height 1024 --landscape.on 
-    --landscape.path landscape/black.bmp --field[0].path 
-    share/data/contour/t0049.grb --field[0].scale 1.03 --field[0].type 
-    CONTOUR 
+    --render.width 1024 --render.height 1024 --field[0].path 
+    share/data/glob025/lfpw_0_0_0_pl_1000_t.grib2 --field[1].path 
+    share/data/glob025/lfpw_0_0_0_pl_1000_t.grib2 
+    --field[1].palette.colors black --field[1].type CONTOUR 
+    --field[1].scale 1.001 
 ```
 # [Diff](DIFF.md)
 ## Contour in diff mode, global lat/lon geometry                     -- contour_diff
@@ -110,14 +121,24 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     --shell.on 
 ```
 # [Vector](VECTOR.md)
-## Wind on small AROME domain (raster & vector)                      -- small_aro
-![](share/test/small_aro/TEST_0000.png)
+## Wind Australia                                                    -- windaustralia3
+![](share/test/windaustralia3/TEST_0000.png)
 
 ```
-    --field[0].type VECTOR --field[0].path 
-    share/data/aro_small/S041WIND.U.PHYS.grb 
-    share/data/aro_small/S041WIND.V.PHYS.grb --field[0].scale 1.00 
-    --view.lon 26.64 --view.lat 67.36 --view.fov 0.5 --coast.on --grid.on 
+    --field[0].path share/data/uv200.grib%paramId=131 
+    share/data/uv200.grib%paramId=132 --field[0].type VECTOR --coast.on 
+    --view.lat -37 --view.lon 140 --view.fov 3 --field[0].vector.norm.off 
+    --land.on --landscape.on --landscape.color #333333 --landscape.scale 
+    0.999 --coast.on --coast.lines.color black --coast.lines.path 
+    coastlines/gshhg/GSHHS_bin/gshhs_i.b --field[0].vector.scale 1 
+    --render.width 1200 --field[0].scale 1.001 --view.projection LATLON 
+    --field[0].vector.density 10 --field[0].palette.colors #1cb8a6 #19c25c 
+    #24cb15 #80d511 #e0d50d #ea7209 #f50408 #ff007f 
+    --field[0].palette.values 20 30 40 50 60 70 80 90 100 
+    --field[0].vector.arrow.color #00000000 
+    --field[0].vector.arrow.fixed.on --field[0].vector.arrow.min 10 
+    --land.layers[0].color black --coast.on --coast.lines.color #555555 
+    --colorbar.on --field[0].vector.density 20 --field[0].vector.scale 2 
 ```
 # [Stream](STREAM.md)
 ## Streamlines on t1198c2.2 (surface)                                -- stream_t1198c22
@@ -157,12 +178,14 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     --view.fov 25 --view.lon 20 --scene.light.on 
 ```
 # [Height](HEIGHT.md)
-## Orography with height                                             -- orography_height
-![](share/test/orography_height/TEST_0000.png)
+## Orography (raster & contour) with height                          -- contour_height
+![](share/test/contour_height/TEST_0000.png)
 
 ```
-    --field[0].path ./share/data/t1798/Z.grb --field[0].palette.name topo 
-    --field[0].scale 1.005 --landscape.on --field[0].geometry.height.on 
+    --field[0].path share/data/t479/Z.grb --field[0].scale 1.005 
+    --field[0].type CONTOUR --field[1].geometry.height.on 
+    --field[0].palette.colors black --field[1].path share/data/t479/Z.grb 
+    --field[0].geometry.height.on --view.lat -16 --view.lon 134 
 ```
 # [Grid](GRID.md)
 ## Grid labels                                                       -- grid_labels

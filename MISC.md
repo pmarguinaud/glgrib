@@ -1,11 +1,3 @@
-## Enable debug mode                                                 -- debug
-![](share/test/debug/TEST_0000.png)
-
-```
-    --landscape.on --landscape.grid.path share/data/t1198c2.2/Z.grb 
-    --field[0].path share/data/t1198c2.2/N.grb --field[0].scale 1.03 
-    --render.debug.on 
-```
 ## Cities                                                            -- cities
 ![](share/test/cities/TEST_0000.png)
 
@@ -15,6 +7,14 @@
     --view.lat 46.7 --view.lon 2 --view.fov 2 --cities.points.size.value 2 
     --cities.labels.on --cities.labels.font.color.foreground red 
     --cities.labels.font.bitmap.scale 0.04 
+```
+## Enable debug mode                                                 -- debug
+![](share/test/debug/TEST_0000.png)
+
+```
+    --landscape.on --landscape.grid.path share/data/t1198c2.2/Z.grb 
+    --field[0].path share/data/t1198c2.2/N.grb --field[0].scale 1.03 
+    --render.debug.on 
 ```
 ## Colorbar                                                          -- colorbar
 ![](share/test/colorbar/TEST_0000.png)

@@ -1,3 +1,13 @@
+## Medium-res contour and raster, global geometry                    -- contour_latlon4
+![](share/test/contour_latlon4/TEST_0000.png)
+
+```
+    --render.width 1024 --render.height 1024 --field[0].path 
+    share/data/glob025/lfpw_0_0_0_pl_1000_t.grib2 --field[1].path 
+    share/data/glob025/lfpw_0_0_0_pl_1000_t.grib2 
+    --field[1].palette.colors black --field[1].type CONTOUR 
+    --field[1].scale 1.001 
+```
 ## Low-res contour                                                   -- contour1
 ![](share/test/contour1/TEST_0000.png)
 
@@ -71,16 +81,6 @@
     --landscape.path landscape/black.bmp --field[0].path 
     share/data/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --field[0].scale 1.03 
     --field[0].type CONTOUR 
-```
-## Medium-res contour and raster, global geometry                    -- contour_latlon4
-![](share/test/contour_latlon4/TEST_0000.png)
-
-```
-    --render.width 1024 --render.height 1024 --field[0].path 
-    share/data/glob025/lfpw_0_0_0_pl_1000_t.grib2 --field[1].path 
-    share/data/glob025/lfpw_0_0_0_pl_1000_t.grib2 
-    --field[1].palette.colors black --field[1].type CONTOUR 
-    --field[1].scale 1.001 
 ```
 ## Contour on stretched/rotated gaussian geometry                    -- contour_stretched
 ![](share/test/contour_stretched/TEST_0000.png)

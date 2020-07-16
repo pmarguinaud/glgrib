@@ -1,3 +1,22 @@
+## Wind Australia                                                    -- windaustralia3
+![](share/test/windaustralia3/TEST_0000.png)
+
+```
+    --field[0].path share/data/uv200.grib%paramId=131 
+    share/data/uv200.grib%paramId=132 --field[0].type VECTOR --coast.on 
+    --view.lat -37 --view.lon 140 --view.fov 3 --field[0].vector.norm.off 
+    --land.on --landscape.on --landscape.color #333333 --landscape.scale 
+    0.999 --coast.on --coast.lines.color black --coast.lines.path 
+    coastlines/gshhg/GSHHS_bin/gshhs_i.b --field[0].vector.scale 1 
+    --render.width 1200 --field[0].scale 1.001 --view.projection LATLON 
+    --field[0].vector.density 10 --field[0].palette.colors #1cb8a6 #19c25c 
+    #24cb15 #80d511 #e0d50d #ea7209 #f50408 #ff007f 
+    --field[0].palette.values 20 30 40 50 60 70 80 90 100 
+    --field[0].vector.arrow.color #00000000 
+    --field[0].vector.arrow.fixed.on --field[0].vector.arrow.min 10 
+    --land.layers[0].color black --coast.on --coast.lines.color #555555 
+    --colorbar.on --field[0].vector.density 20 --field[0].vector.scale 2 
+```
 ## Wind on small AROME domain (raster & vector)                      -- small_aro
 ![](share/test/small_aro/TEST_0000.png)
 
@@ -130,25 +149,6 @@
     coastlines/gshhg/GSHHS_bin/gshhs_i.b --field[0].vector.scale 5 
     --render.width 1200 --field[0].scale 1.001 --view.projection LATLON 
     --field[0].vector.density 10 
-```
-## Wind Australia                                                    -- windaustralia3
-![](share/test/windaustralia3/TEST_0000.png)
-
-```
-    --field[0].path share/data/uv200.grib%paramId=131 
-    share/data/uv200.grib%paramId=132 --field[0].type VECTOR --coast.on 
-    --view.lat -37 --view.lon 140 --view.fov 3 --field[0].vector.norm.off 
-    --land.on --landscape.on --landscape.color #333333 --landscape.scale 
-    0.999 --coast.on --coast.lines.color black --coast.lines.path 
-    coastlines/gshhg/GSHHS_bin/gshhs_i.b --field[0].vector.scale 1 
-    --render.width 1200 --field[0].scale 1.001 --view.projection LATLON 
-    --field[0].vector.density 10 --field[0].palette.colors #1cb8a6 #19c25c 
-    #24cb15 #80d511 #e0d50d #ea7209 #f50408 #ff007f 
-    --field[0].palette.values 20 30 40 50 60 70 80 90 100 
-    --field[0].vector.arrow.color #00000000 
-    --field[0].vector.arrow.fixed.on --field[0].vector.arrow.min 10 
-    --land.layers[0].color black --coast.on --coast.lines.color #555555 
-    --colorbar.on --field[0].vector.density 20 --field[0].vector.scale 2 
 ```
 ## Wind Australia                                                    -- windaustralia4
 ![](share/test/windaustralia4/TEST_0000.png)

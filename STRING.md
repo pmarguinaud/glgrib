@@ -1,3 +1,17 @@
+## Contour with labels                                               -- contourlabels2
+![](share/test/contourlabels2/TEST_0000.png)
+
+```
+    --landscape.on --field[0].path share/data/z500.grb --field[0].scale 
+    1.01 --field[0].type CONTOUR --view.lat 56 --view.lon 20 
+    --field[0].contour.labels.on --grid.on --grid.color black 
+    --field[0].palette.colors red --field[0].contour.levels 48000 48500 
+    49000 49500 50000 50500 51000 51500 52000 52500 53000 53500 54000 
+    54500 55000 55500 56000 56500 57000 57500 --field[0].contour.labels-{ 
+    --font.color.foreground white --font.color.background black 
+    --font.bitmap.scale 0.04 --format %.0f }- --coast.on 
+    --coast.lines.color pink 
+```
 ## Font background color                                             -- background
 ![](share/test/background/TEST_0000.png)
 
@@ -37,18 +51,4 @@
     --grid.color white --field[0].palette.colors red 
     --field[0].contour.labels-{ --font.color.foreground white 
     --font.color.background black }- --coast.on --coast.lines.color pink 
-```
-## Contour with labels                                               -- contourlabels2
-![](share/test/contourlabels2/TEST_0000.png)
-
-```
-    --landscape.on --field[0].path share/data/z500.grb --field[0].scale 
-    1.01 --field[0].type CONTOUR --view.lat 56 --view.lon 20 
-    --field[0].contour.labels.on --grid.on --grid.color black 
-    --field[0].palette.colors red --field[0].contour.levels 48000 48500 
-    49000 49500 50000 50500 51000 51500 52000 52500 53000 53500 54000 
-    54500 55000 55500 56000 56500 57000 57500 --field[0].contour.labels-{ 
-    --font.color.foreground white --font.color.background black 
-    --font.bitmap.scale 0.04 --format %.0f }- --coast.on 
-    --coast.lines.color pink 
 ```

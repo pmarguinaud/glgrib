@@ -28,7 +28,7 @@ std::string Resolve (const std::string & file)
   struct passwd *pw = getpwuid (getuid ());
   const char * home = pw->pw_dir;
   std::string HOME = std::string (home);
-  std::string path = HOME + "/.glgribrc/" + file;
+  std::string path = HOME + "/.glGribrc/" + file;
 
   if (stat (path.c_str (), &st) == 0)
     return path;

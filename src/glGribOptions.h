@@ -80,23 +80,14 @@ private:
   float value = 0.0f;
 };
 
-class OptionScale : public OptionFloatLike
-{
-public:
-  using OptionFloatLike::OptionFloatLike;
-};
+#define DEF_OPTION_FLOAT(c) \
+class c : public OptionFloatLike \
+{ public: using OptionFloatLike::OptionFloatLike; }
 
-class OptionLongitude : public OptionFloatLike
-{
-public:
-  using OptionFloatLike::OptionFloatLike;
-};
 
-class OptionLatitude : public OptionFloatLike
-{
-public:
-  using OptionFloatLike::OptionFloatLike;
-};
+DEF_OPTION_FLOAT (OptionScale);
+DEF_OPTION_FLOAT (OptionLongitude);
+DEF_OPTION_FLOAT (OptionLatitude);
 
 class OptionStringLike
 {
@@ -166,29 +157,16 @@ private:
   std::string value;
 };
 
-class OptionPath : public OptionStringLike
-{
-public:
-  using OptionStringLike::OptionStringLike;
-};
 
-class OptionProjection : public OptionStringLike
-{
-public:
-  using OptionStringLike::OptionStringLike;
-};
+#define DEF_OPTION_STRING(c) \
+class c : public OptionStringLike \
+{ public: using OptionStringLike::OptionStringLike; }
 
-class OptionTransformation : public OptionStringLike
-{
-public:
-  using OptionStringLike::OptionStringLike;
-};
-
-class OptionFieldRef : public OptionStringLike
-{
-public:
-  using OptionStringLike::OptionStringLike;
-};
+DEF_OPTION_STRING (OptionPath);
+DEF_OPTION_STRING (OptionProjection);
+DEF_OPTION_STRING (OptionTransformation);
+DEF_OPTION_STRING (OptionFieldRef);
+DEF_OPTION_STRING (OptionPaletteName);
 
 class OptionColor
 {
@@ -398,6 +376,7 @@ namespace OptionsParserDetail
   template <> const std::string optionTmpl    <OptionColor>           ::type ();
   template <> const std::string optionTmpl    <OptionScale>           ::type ();
   template <> const std::string optionTmpl    <OptionProjection>      ::type ();
+  template <> const std::string optionTmpl    <OptionPaletteName>     ::type ();
   template <> const std::string optionTmpl    <OptionTransformation>  ::type ();
   template <> const std::string optionTmpl    <OptionPath>            ::type ();
   template <> const std::string optionTmplList<OptionPath>            ::type ();
@@ -457,6 +436,7 @@ public:
   DEF_APPLY (OptionLongitude);
   DEF_APPLY (OptionLatitude);
   DEF_APPLY (OptionProjection);
+  DEF_APPLY (OptionPaletteName);
   DEF_APPLY (OptionTransformation);
   DEF_APPLY (OptionPath);
   DEF_APPLY (std::vector<OptionPath>);
@@ -575,6 +555,7 @@ private:
   DEF_APPLY (OptionLatitude                    , OptionsParserDetail::optionTmpl<OptionLatitude>);
   DEF_APPLY (OptionPath                        , OptionsParserDetail::optionTmpl<OptionPath>);
   DEF_APPLY (OptionProjection                  , OptionsParserDetail::optionTmpl<OptionProjection>);
+  DEF_APPLY (OptionPaletteName                 , OptionsParserDetail::optionTmpl<OptionPaletteName>);
   DEF_APPLY (OptionTransformation              , OptionsParserDetail::optionTmpl<OptionTransformation>);
   DEF_APPLY (std::vector<OptionPath>           , OptionsParserDetail::optionTmplList<OptionPath>);
   DEF_APPLY (OptionFieldRef                    , OptionsParserDetail::optionTmpl<OptionFieldRef>);
@@ -871,7 +852,7 @@ public:
     DESC (generate.levels,    Number of values to generate);
     DESC (fixed.on,           Fixed palette);
   }
-  std::string name = "default";
+  OptionPaletteName name = "default";
   float min = defaultMin ();
   float max = defaultMax ();
   std::vector<float> values;

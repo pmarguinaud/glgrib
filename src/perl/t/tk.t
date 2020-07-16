@@ -267,6 +267,85 @@ sub Disable
 
 1;
 
+package Tk::glGrib_Popup;
+
+use Tk;
+
+use tkbase qw (Tk::Frame);
+use strict;
+
+sub list
+{
+  my $self = shift;
+  my $class = ref ($self);
+  no strict 'refs';
+  return @{"$class\::LIST"};
+}
+
+sub populate 
+{
+  my ($self, $args) = @_;
+  
+  $self->{glGrib} = delete $args->{glGrib};
+ 
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+
+  if (my $opts = $self->{glGrib}{opts})
+    {
+      $frame->Label (-text => $opts->[2])->pack (-side => 'top');
+      $self->{variable} = \$opts->[3];
+    }
+  else
+    {
+      $self->{variable} = delete $args->{variable};
+    }
+  
+  my $button;
+
+  $button =
+  $frame->Button (-textvariable => $self->{variable}, -command => sub
+  {
+    my ($x, $y) = $button->pointerxy ();
+    my $menu = $button->Menu
+    (
+      -tearoff => 0, 
+      -menuitems =>  
+      [
+        map 
+        { 
+          my $p = $_;
+          [command => $p, -command => sub { ${$self->{variable}} = $p; }]  
+        } $self->list ()
+      ],
+    );
+    $menu->post ($x, $y);
+  })->pack (-side => 'top', -expand => 1, -fill => 'x');
+  
+ 
+
+  return $self;
+}
+
+sub getVariable
+{
+  my $self = shift;
+  return $self->{variable};
+}
+
+sub validate
+{
+  my $self = shift;
+  return 1;
+}
+
+sub set
+{
+  my ($self, $value) = @_;
+  ${ $self->getVariable () } = $value;
+}
+
+1;
+
 package Tk::glGrib_Entry;
 
 use Tk;
@@ -426,7 +505,7 @@ sub selectField
   
   my $file = ${ $self->{variable} };
   $file =~ s/%.*$//o;
-  $file = '/home/phi001/3d/glgrib/share/data/joachim_surf.grib';
+# $file = '/home/phi001/3d/glgrib/share/data/joachim_surf.grib';
 
   if ($ref)
     {
@@ -519,10 +598,82 @@ package Tk::glGribSTRING;
 use tkbase qw (Tk::glGrib_Entry);
 use tkbaselist;
 
+package Tk::glGribPROJECTION;
+
+use tkbase qw (Tk::glGrib_Popup);
+our @LIST = qw (XYZ POLAR_NORTH POLAR_SOUTH MERCATOR LONLAT);
+
+package Tk::glGribTRANSFORMATION;
+
+use tkbase qw (Tk::glGrib_Popup);
+our @LIST = qw (PERSPECTIVE ORTHOGRAPHIC);
+
 package Tk::glGribFLOAT;
 
 use tkbase qw (Tk::glGrib_Entry);
 use tkbaselist (width => 5);
+
+package Tk::glGribSCALE;
+
+use Tk;
+
+use tkbase qw (Tk::Frame);
+use strict;
+
+sub populate 
+{
+  my ($self, $args) = @_;
+  
+  $self->{glGrib} = delete $args->{glGrib};
+ 
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+
+  if (my $opts = $self->{glGrib}{opts})
+    {
+      $frame->Label (-text => $opts->[2])->pack (-side => 'left');
+      $self->{variable} = \$opts->[3];
+    }
+  else
+    {
+      $self->{variable} = delete $args->{variable};
+    }
+  
+  $self->{entry} =
+  $frame->Scale (-variable => $self->getVariable (), -from => 0.95, -to => 1.05, 
+                 -showvalue => 1, -orient => 'horizontal', -resolution => 0.01)
+    ->pack (-side => 'right', -expand => 1, -fill => 'x');
+
+  return $self;
+}
+
+sub getVariable
+{
+  my $self = shift;
+  return $self->{variable};
+}
+
+sub validate
+{
+  my $self = shift;
+  return 1;
+}
+
+sub set
+{
+  my ($self, $value) = @_;
+  ${ $self->getVariable () } = $value;
+}
+
+1;
+
+
+package Tk::glGribLONGITUDE;
+
+use tkbase qw (glGribFLOAT);
+
+package Tk::glGribLATITUDE;
+
+use tkbase qw (glGribFLOAT);
 
 package Tk::glGribCOLOR;
 
@@ -697,12 +848,15 @@ sub populate
   $self->Enable () if ((! $on) || $on->getValue ());
 
   my $b = 
-  $self->Button (-relief => 'raised', -text => 'Apply', 
+  $self->Button (-relief => 'raised', -text => 'Apply', -width => 12,
                  -command => sub { $self->Apply (); })
   ->pack (-side => 'left', -expand => 1, -fill => 'x');
-  $self->Button (-relief => 'raised', -text => 'Close', 
+  $self->Button (-relief => 'raised', -text => 'Close', -width => 12,
                  -command => sub { $self->destroy (); })
-  ->pack (-side => 'right', -expand => 1, -fill => 'x');
+  ->pack (-side => 'left', -expand => 1, -fill => 'x');
+  $self->Button (-relief => 'raised', -text => 'Apply/Close', -width => 12,
+                 -command => sub { $self->Apply (); $self->destroy (); })
+  ->pack (-side => 'left', -expand => 1, -fill => 'x');
 
 }
 
@@ -812,12 +966,15 @@ sub populate
 
     }
   
-  $self->Button (-relief => 'raised', -text => 'Apply', 
+  $self->Button (-relief => 'raised', -text => 'Apply', -width => 12,
                  -command => sub { $self->Apply () })
   ->pack (-side => 'left', -fill => 'x', -expand => 1);
-  $self->Button (-relief => 'raised', -text => 'Close', 
+  $self->Button (-relief => 'raised', -text => 'Close', -width => 12,
                  -command => sub { $self->destroy (); })
-  ->pack (-side => 'right', -fill => 'x', -expand => 1);
+  ->pack (-side => 'left', -fill => 'x', -expand => 1);
+  $self->Button (-relief => 'raised', -text => 'Apply/Close', -width => 12,
+                 -command => sub { $self->Apply (); $self->destroy (); })
+  ->pack (-side => 'left', -expand => 1, -fill => 'x');
 
   $self->enableTab (lc ($$tt));
 }

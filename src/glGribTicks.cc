@@ -34,6 +34,8 @@ void Ticks::setup (const OptionsTicks & o)
   if (o.labels.on)
     goto on;
 
+  opts = o;
+
   return;
 
 on:

@@ -207,6 +207,7 @@ void Shell::do_set (const std::vector<std::string> & args, Render * gwindow)
       hof.add ("--scene.light"               , [&opts,&scene,gwindow]() { scene.setLightOptions          (opts.scene.light        );  });
       hof.add ("--scene.lon_at_hour"         , [&opts,&scene,gwindow]() { scene.setSceneOptions          (opts.scene              );  });
       hof.add ("--scene.rotate_earth"        , [&opts,&scene,gwindow]() { scene.setSceneOptions          (opts.scene              );  });
+      hof.add ("--departements"              , [&opts,&scene,gwindow]() { scene.setDepartementsOptions   (opts.departements       );  });
       hof.add ("--shell.prompt.on"           , [&opts,&scene,this   ]() { this->opts.prompt.on =          opts.shell.prompt.on;       });
 
 #define SFO(j) \

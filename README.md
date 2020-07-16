@@ -1,8 +1,7 @@
 
 Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, gaussian grid.
 GLFW backend for interactive display, EGL backend for batch processing without X11 display.
-  # CLOUD
-[>>](CLOUD.md)
+  # [Cloud](CLOUD.md)
 ## Clouds, 3 layers, t1198c2.2                                       -- t1198_3l
 ![](share/test/t1198_3l/TEST_0000.png)
 
@@ -15,18 +14,18 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     --field[0].palette.name cloud --field[1].palette.name cloud 
     --field[2].palette.name cloud 
 ```
-# LAMBERT
-[>>](LAMBERT.md)
-## AROME, Lambert geometry                                           -- aro
-![](share/test/aro/TEST_0000.png)
+# [Lambert](LAMBERT.md)
+## AROME 1.3km                                                       -- arome13
+![](share/test/arome13/TEST_0000.png)
 
 ```
-    --field[0].path share/data/aro2.5/SURFIND.TERREMER.grb 
-    --field[0].palette.name cold_hot --field[0].scale 1.00 --view.lat 46.2 
-    --view.lon 2.0 --view.fov 5 --coast.on --grid.on 
+    --field[0].path share/data/aro1.3/CLSVENT.ZONAL.grb 
+    share/data/aro1.3/CLSVENT.MERIDIEN.grb --field[0].type VECTOR --view-{ 
+    --lon 2 --lat 46.2 --fov 3 }- --field[0].palette.colors black green 
+    --field[0].palette.values 0. 20. --field[0].vector.arrow.color red 
+    --coast.lines.color cyan --coast.on 
 ```
-# STRING
-[>>](STRING.md)
+# [String](STRING.md)
 ## Font background color                                             -- background
 ![](share/test/background/TEST_0000.png)
 
@@ -37,8 +36,7 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     --scene.date.font.color.foreground red 
     --scene.date.font.color.background white 
 ```
-# MISC
-[>>](MISC.md)
+# [Misc](MISC.md)
 ## Enable debug mode                                                 -- debug
 ![](share/test/debug/TEST_0000.png)
 
@@ -47,8 +45,7 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     --field[0].path share/data/t1198c2.2/N.grb --field[0].scale 1.03 
     --render.debug.on 
 ```
-# PALETTE
-[>>](PALETTE.md)
+# [Palette](PALETTE.md)
 ## Select palette automatically                                      -- bw
 ![](share/test/bw/TEST_0000.png)
 
@@ -56,8 +53,7 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     --landscape.on --landscape.grid.path share/data/t1198c2.2/Z.grb 
     --field[0].path share/data/t1198c2.2/N.grb --field[0].scale 1.03 
 ```
-# CONTOUR
-[>>](CONTOUR.md)
+# [Contour](CONTOUR.md)
 ## Low-res contour                                                   -- contour1
 ![](share/test/contour1/TEST_0000.png)
 
@@ -67,8 +63,7 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     share/data/contour/t0049.grb --field[0].scale 1.03 --field[0].type 
     CONTOUR 
 ```
-# DIFF
-[>>](DIFF.md)
+# [Diff](DIFF.md)
 ## Contour in diff mode, global lat/lon geometry                     -- contour_diff
 ![](share/test/contour_diff/TEST_0000.png)
 
@@ -78,8 +73,7 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     share/data/glob01/lfpw_0_3_1_sfc_0_prmsl+0102.grib2 --field[0].scale 
     1.01 --landscape.on --landscape.color white --field[0].user_pref.off 
 ```
-# SCALAR
-[>>](SCALAR.md)
+# [Scalar](SCALAR.md)
 ## Surface temperature, global lat/lon field                         -- glob01
 ![](share/test/glob01/TEST_0000.png)
 
@@ -88,8 +82,7 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     --field[0].scale 1.00 --field[0].palette.name cold_hot_temp --coast.on 
     --grid.on 
 ```
-# LANDSCAPE
-[>>](LANDSCAPE.md)
+# [Landscape](LANDSCAPE.md)
 ## Landscape over Europe only                                        -- landscape_eurat01
 ![](share/test/landscape_eurat01/TEST_0000.png)
 
@@ -97,8 +90,7 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     --landscape.on --landscape.grid.path 
     share/data/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --coast.on --grid.on 
 ```
-# PROJECTION
-[>>](PROJECTION.md)
+# [Projection](PROJECTION.md)
 ## Display contour field using Mercator projection                   -- mercator
 ![](share/test/mercator/TEST_0000.png)
 
@@ -108,8 +100,7 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     share/data/glob01/lfpw_0_3_1_sfc_0_prmsl+0102.grib2 --field[0].scale 
     1.01 --view.projection MERCATOR --landscape.on 
 ```
-# SHELL
-[>>](SHELL.md)
+# [Shell](SHELL.md)
 ## Test interactive shell                                            -- shell
 ![](share/test/shell/TEST_0000.png)
 
@@ -118,8 +109,7 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     --field[0].path share/data/t1198c2.2/N.grb --field[0].scale 1.03 
     --shell.on 
 ```
-# VECTOR
-[>>](VECTOR.md)
+# [Vector](VECTOR.md)
 ## Wind on small AROME domain (raster & vector)                      -- small_aro
 ![](share/test/small_aro/TEST_0000.png)
 
@@ -129,8 +119,7 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     share/data/aro_small/S041WIND.V.PHYS.grb --field[0].scale 1.00 
     --view.lon 26.64 --view.lat 67.36 --view.fov 0.5 --coast.on --grid.on 
 ```
-# STREAM
-[>>](STREAM.md)
+# [Stream](STREAM.md)
 ## Streamlines on t1198c2.2 (surface)                                -- stream_t1198c22
 ![](share/test/stream_t1198c22/TEST_0000.png)
 
@@ -148,8 +137,7 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     --coast.on --coast.lines.color red --landscape.on --landscape.path 
     landscape/white.png 
 ```
-# POINTS
-[>>](POINTS.md)
+# [Points](POINTS.md)
 ## Gaussian grid wireframe                                           -- gauss_wireframe
 ![](share/test/gauss_wireframe/TEST_0000.png)
 
@@ -158,8 +146,7 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     --scalar.wireframe.on }- --coast.on --view.lon 2 --view.lat 46.7 
     --view.fov 5 
 ```
-# SPECTRAL
-[>>](SPECTRAL.md)
+# [Spectral](SPECTRAL.md)
 ## Spherical harmonic (T1198)                                        -- harmonic
 ![](share/test/harmonic/TEST_0000.png)
 
@@ -169,8 +156,7 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 
     --view.fov 25 --view.lon 20 --scene.light.on 
 ```
-# HEIGHT
-[>>](HEIGHT.md)
+# [Height](HEIGHT.md)
 ## Orography with height                                             -- orography_height
 ![](share/test/orography_height/TEST_0000.png)
 
@@ -178,16 +164,14 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     --field[0].path ./share/data/t1798/Z.grb --field[0].palette.name topo 
     --field[0].scale 1.005 --landscape.on --field[0].geometry.height.on 
 ```
-# GRID
-[>>](GRID.md)
+# [Grid](GRID.md)
 ## Grid labels                                                       -- grid_labels
 ![](share/test/grid_labels/TEST_0000.png)
 
 ```
     --grid.on --grid.labels.on --landscape.on 
 ```
-# MPI
-[>>](MPI.md)
+# [Mpi](MPI.md)
 ## Display sphere partitionning (t1198)                              -- myproc
 ![](share/test/myproc/TEST_0000.png)
 
@@ -200,16 +184,14 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     313.15 --palette.min 253.15 --palette.name cold_hot_temp }- --view.lat 
     36 --view.lon -15 
 ```
-# LAND
-[>>](LAND.md)
+# [Land](LAND.md)
 ## Display land surface                                              -- land
 ![](share/test/land/TEST_0000.png)
 
 ```
     --land.on 
 ```
-# ISOFILL
-[>>](ISOFILL.md)
+# [Isofill](ISOFILL.md)
 ## Isofill test                                                      -- isofill
 ![](share/test/isofill/TEST_0000.png)
 
@@ -220,8 +202,7 @@ GLFW backend for interactive display, EGL backend for batch processing without X
     cold_hot_temp }- --view.lat 2.32 --view.lon 14.12 --view.fov 0.5 
     --render.width 1200 
 ```
-# SATELLITE
-[>>](SATELLITE.md)
+# [Satellite](SATELLITE.md)
 ## SSMI satellite data                                               -- ssmigeopoints
 ![](share/test/ssmigeopoints/TEST_0000.png)
 

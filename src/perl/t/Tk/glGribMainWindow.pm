@@ -1,0 +1,84 @@
+package Tk::glGribMainWindow;
+
+use Tk;
+use tkbase qw (Tk::MainWindow);
+use strict;
+
+sub populate 
+{
+  my ($self, $args) = @_;
+
+  $self->{glGrib}{base} = my $base = &Tk::glGrib::base ('--');
+
+  $self->{glGrib}{panels} = {};
+  
+  my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
+  
+  my @b;
+  
+  my @base = @$base;
+  while (my ($name, $opts) = splice (@base, 0, 2))
+    {
+      push @b,
+      $frame->Button 
+       (-text => ucfirst ($name), 
+        -command => sub { $self->createPanel ($name); })
+        ->pack (-expand => 1, -fill => 'both', -side => 'top');
+    }
+  
+  push @b,
+  $frame->Button (-relief => 'raised', -text => 'Quit', 
+                  -command => sub { $self->quit (); })
+  ->pack (-side => 'top', -fill => 'x');
+
+
+  $self->ConfigSpecs
+  (
+    -width => [[@b[-1]], qw//],
+  );
+
+
+}
+
+sub createPanel
+{
+  my ($self, $name) = @_;
+  my $p = $self->{glGrib}{panels}{$name};
+  
+  return if ($p && &Exists ($p));
+
+  my $opts;
+
+  for (my $i = 0; $i < scalar (@{ $self->{glGrib}{base} }); $i += 2)
+    {
+      if ($self->{glGrib}{base}[$i] eq $name)
+        {
+          $opts = $self->{glGrib}{base}[$i+1];
+          last;
+        }
+    }
+
+  my $w = &Tk::glGrib::create 
+     ($self, $name, $opts, 
+     'glGrib_Panel');
+
+  $self->{glGrib}{panels}{$name} = $w;
+}
+
+sub quit
+{
+  my $self = shift;
+
+  for my $p (values (%{ $self->{glGrib}{panels} }))
+    {
+      next unless (&Exists ($p));
+      $p->destroy ();
+    }
+
+  $self->destroy ();
+}
+
+1;
+
+
+

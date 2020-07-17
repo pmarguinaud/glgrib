@@ -231,6 +231,13 @@ public:
   }
 };
 
+class OptionBlock
+{
+public:
+  friend std::ostream & operator << (std::ostream & os, const OptionBlock &) { return os; }
+  friend std::istream & operator >> (std::istream & is, OptionBlock &) { return is; }
+  friend bool operator== (OptionBlock const & o1, OptionBlock const & o2) { return &o1 == &o2; }
+};
 
 namespace OptionsParserDetail 
 {
@@ -255,7 +262,7 @@ namespace OptionsParserDetail
     virtual bool isEqual (const optionBase *) const = 0;
     bool hidden = false;
   };
-
+ 
   template <class T>
   class optionTmpl : public optionBase
   {
@@ -373,6 +380,7 @@ namespace OptionsParserDetail
   template <> const std::string optionTmplList<int>                   ::type ();
   template <> const std::string optionTmplList<float>                 ::type ();
   template <> const std::string optionTmpl    <OptionDate>            ::type ();
+  template <> const std::string optionTmpl    <OptionBlock>           ::type ();
   template <> const std::string optionTmpl    <OptionColor>           ::type ();
   template <> const std::string optionTmpl    <OptionScale>           ::type ();
   template <> const std::string optionTmpl    <OptionProjection>      ::type ();
@@ -419,6 +427,14 @@ public:
   public:
   virtual void _dummy_ () {}
   };
+
+  virtual void startBlock (const std::string & path, const std::string & name, const std::string & desc, const OptionsCallback::opt * = nullptr)
+  {
+  }
+
+  virtual void closeBlock (const std::string & path, const std::string & name, const std::string & desc, const OptionsCallback::opt * = nullptr)
+  {
+  }
 
 #define DEF_APPLY(T) \
   virtual void apply (const std::string & path, const std::string & name, OptionsBase *, \
@@ -533,9 +549,9 @@ private:
   }
 
 #define DEF_APPLY(T,C) \
-  void apply (const std::string & path, const std::string & name,              \
-              OptionsBase *, const std::string & desc, T * data,               \
-              const OptionsCallback::opt * o = nullptr)                        \
+  void apply (const std::string & path, const std::string & name,    \
+              OptionsBase *, const std::string & desc, T * data,     \
+              const OptionsCallback::opt * o = nullptr) override     \
   {                                                                            \
     std::string opt_name = getOptName (path, name);                            \
     createOption (opt_name, new C (opt_name, desc, data), o);                  \
@@ -564,6 +580,10 @@ private:
 
 #undef DEF_APPLY
 
+  void startBlock (const std::string & path, const std::string & name, const std::string & desc, const OptionsCallback::opt * = nullptr) override;
+
+  void closeBlock (const std::string & path, const std::string & name, const std::string & desc, const OptionsCallback::opt * = nullptr) override;
+
 };
 
 class OptionsBase 
@@ -582,6 +602,14 @@ public:
 #define DESC_H(name, desc) \
   do { OptionsParser::opt o; o.hidden = true; \
        cb->apply (p, #name, this, #desc, &name, &o); } while (0)
+
+#define INCLUDE_N(name,desc) \
+  do { \
+    const std::string pp = p + ( p == "" ? "" : ".") + #name; \
+    cb->startBlock (pp, #name, #desc, o); \
+    name.traverse (pp, cb, o); \
+    cb->closeBlock (pp, #name, #desc, o); \
+  } while (0)
 
 #define INCLUDE(name) do { name.traverse (p + ( p == "" ? "" : ".") + #name, cb, o); } while (0)
 
@@ -704,7 +732,7 @@ public:
     DESC (patterns,      List of dash patterns);
     DESC (lengths,       List of dash lengths);
     DESC (labels.on,     Enable labels);
-    INCLUDE (labels.font);
+    INCLUDE_N (labels.font, Contour labels font);
     DESC (labels.distmin, Minimal length in degrees for labelled lines);
     DESC (labels.format,  Format to print labels);
   }
@@ -964,7 +992,7 @@ public:
     DESC (hilo.on,             Display low & high);
     DESC (hilo.radius,         High/low radius in degrees);
     INCLUDE (hilo.font);
-    INCLUDE (palette);
+    INCLUDE_N (palette, Field palette);
     INCLUDE (scalar);
     INCLUDE (vector);
     INCLUDE (contour);

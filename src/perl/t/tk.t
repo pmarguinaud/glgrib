@@ -2,7 +2,7 @@
 use FindBin qw ($Bin);
 use lib $Bin;
 
-package TkglGrib;
+package Tk::glGrib;
 
 use strict;
 use JSON;
@@ -23,6 +23,13 @@ sub optionsToList
 
   my @list;
   my @opts = @$opts;
+  
+  my $bloc = ($opts[0] =~ m/^--/o) && ($opts[1] eq 'BLOCK');
+  if ($bloc)
+    {
+      shift (@opts) for (1 .. 4);
+    }
+
   while (my ($key, $val) = splice (@opts, 0, 2))
     {
       push @list, &optionsToList ($val);
@@ -125,7 +132,9 @@ sub base
 {
 # my $json = do { my $fh = 'FileHandle'->new ('<glgrib.json'); local $/ = undef; <$fh> };
 # return &json2tree (&decode_json ($json));
-  return &json2tree (&decode_json ('glGrib'->json ('+base', $_[0])));
+  my $tree = &json2tree (&decode_json ('glGrib'->json ('+base', $_[0])));
+  'FileHandle'->new ('>glgrib.pl')->print (&Data::Dumper::Dumper ($tree));
+  return $tree;
 }
 
 sub exists 
@@ -166,7 +175,7 @@ sub create
 
   # terminal option
 
-  my $term = $opts->[0] =~ m/^--/o;
+  my $term = ($opts->[0] =~ m/^--/o) && ($opts->[1] ne 'BLOCK');
 
   if ($term)
     {
@@ -200,6 +209,7 @@ sub create
 package Tk::glGrib_Frame;
 
 use Tk;
+use Tk::Font;
 
 use tkbase qw (Tk::Frame);
 use strict;
@@ -219,9 +229,26 @@ sub populate
 
   my @opts = @$opts;
 
+  my $bloc = ($opts[0] =~ m/^--/o) && ($opts[1] eq 'BLOCK');
+  if ($bloc)
+    {
+
+      (undef, undef, my $desc, undef) = splice (@opts, 0, 4);
+
+      my $lab = 
+      $self->Label (-text => $desc, -relief => 'groove')
+        ->pack (-side => 'top', -expand => 1, -fill => 'x', -ipady => 5, -pady => 5);
+
+      my $font = $lab->cget ('-font');
+      $font =~ s{(\d+)}{int (1.5 * $1)}eo;
+      $lab->configure (-font => $font);
+
+    }
+
+
   if (@opts && ($opts[0] eq 'on'))
     {
-      $on = &TkglGrib::create ($self, 'on', $opts[1]);
+      $on = &Tk::glGrib::create ($self, 'on', $opts[1]);
       splice (@opts, 0, 2);
 
       if (@opts)
@@ -241,7 +268,7 @@ sub populate
       while (my ($key, $opt) = splice (@opts, 0, 2))
         {
           next if ($key eq 'on');
-          my $w = &TkglGrib::create ($frame, $key, $opt);
+          my $w = &Tk::glGrib::create ($frame, $key, $opt);
           $w->pack (-side => 'top', -fill => 'both', -side => 'top');
           $frame->Separator (-width => 2)->pack (-side => 'top', -fill => 'x')
             if (@opts);
@@ -896,6 +923,16 @@ sub populate
   $self->{glGrib}{opts_} = &Storable::dclone ($opts);
 
   my $frame = $self->Scrolled ('Frame', -width => 400, -height => 400, -scrollbars => 'e', -sticky => 'nswe')->pack (-expand => 1, -fill => 'both');
+
+  my $lab =
+  $frame->Label (-text => ucfirst ($self->{glGrib}{name}), -relief => 'groove')
+    ->pack (-fill => 'both', -side => 'top', -ipady => 5);
+
+  my $font = $lab->cget ('-font');
+  $font =~ s{(\d+)}{int (1.5 * $1)}eo;
+  $lab->configure (-font => $font);
+  
+
   $frame = $frame->Frame ()->pack (-expand => 1, -fill => 'both', -side => 'top');
 
   my (@sep, $on);
@@ -903,7 +940,7 @@ sub populate
 
   if (@opts && ($opts[0] eq 'on'))
     {
-      $on = &TkglGrib::create ($frame, 'on', $opts[1]);
+      $on = &Tk::glGrib::create ($frame, 'on', $opts[1]);
       splice (@opts, 0, 2);
    
       $on->setCommand (sub { $on->getValue ()
@@ -919,7 +956,7 @@ sub populate
 
   while (my ($key, $opt) = splice (@opts, 0, 2))
     {
-      my $w = &TkglGrib::create ($frame, $key, $opt);
+      my $w = &Tk::glGrib::create ($frame, $key, $opt);
       $w->pack (-side => 'top', -fill => 'both', -side => 'top');
       $w->Separator (-width => 2)->pack (-side => 'top', -fill => 'x')
         if (@opts);
@@ -956,7 +993,7 @@ sub Apply
 {
   my $self = shift;
 
-  my @opts = &TkglGrib::diffOptions ($self->{glGrib}{opts_}, $self->{glGrib}{opts});
+  my @opts = &Tk::glGrib::diffOptions ($self->{glGrib}{opts_}, $self->{glGrib}{opts});
 
   print &Data::Dumper::Dumper (\@opts);
   'glGrib'->set (@opts);
@@ -982,6 +1019,14 @@ sub populate
 
   my $opts = $self->{glGrib}{opts};
   $self->{glGrib}{opts_} = &Storable::dclone ($self->{glGrib}{opts});
+
+  my $lab =
+  $self->Label (-text => ucfirst ($self->{glGrib}{name}), -relief => 'groove')
+    ->pack (-fill => 'both', -side => 'top', -ipady => 5);
+
+  my $font = $lab->cget ('-font');
+  $font =~ s{(\d+)}{int (1.5 * $1)}eo;
+  $lab->configure (-font => $font);
   
   my $n = $self->{glGrib}{notebook} = 
   $self->NoteBook ()->pack (-expand => 1, -fill => 'both', -side => 'top');
@@ -1019,7 +1064,7 @@ sub populate
     {
       next if (grep { $_ eq $key } @type);
       next if ($key eq 'type');
-      my $w = &TkglGrib::create ($g, $key, $opt);
+      my $w = &Tk::glGrib::create ($g, $key, $opt);
       $w->pack (-side => 'top', -fill => 'both')
         unless ($w->isa ('Tk::MainWindow'));
       $w->Separator (-width => 2)->pack (-side => 'top', -fill => 'x')
@@ -1040,7 +1085,7 @@ sub populate
           last if ($key eq $type);
         }
 
-      my $w = &TkglGrib::create ($p, $type, $opt);
+      my $w = &Tk::glGrib::create ($p, $type, $opt);
       $w->pack (-side => 'top', -fill => 'both')
         unless ($w->isa ('Tk::MainWindow'));
 
@@ -1078,7 +1123,7 @@ sub enableTab
 sub Apply
 {
   my $self = shift;
-  my @opts = &TkglGrib::diffOptions ($self->{glGrib}{opts_}, $self->{glGrib}{opts});
+  my @opts = &Tk::glGrib::diffOptions ($self->{glGrib}{opts_}, $self->{glGrib}{opts});
   print &Data::Dumper::Dumper (\@opts);
   'glGrib'->set (@opts);
   $self->{glGrib}{opts_} = &Storable::dclone ($self->{glGrib}{opts});
@@ -1096,7 +1141,7 @@ sub populate
 {
   my ($self, $args) = @_;
 
-  $self->{glGrib}{base} = my $base = &TkglGrib::base ('--');
+  $self->{glGrib}{base} = my $base = &Tk::glGrib::base ('--');
 
   $self->{glGrib}{panels} = {};
   
@@ -1146,11 +1191,9 @@ sub createPanel
         }
     }
 
-  my $w = &TkglGrib::create 
+  my $w = &Tk::glGrib::create 
      ($self, $name, $opts, 
      'glGrib_Panel');
-
-# die unless ($w->isa ('Tk::glGrib_Panel'));
 
   $self->{glGrib}{panels}{$name} = $w;
 }

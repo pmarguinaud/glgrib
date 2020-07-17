@@ -20,6 +20,7 @@ template <> const std::string optionTmpl    <int>                  ::type () { r
 template <> const std::string optionTmpl    <float>                ::type () { return std::string ("FLOAT"); }
 template <> const std::string optionTmplList<int>                  ::type () { return std::string ("INTEGER-LIST"); }
 template <> const std::string optionTmplList<float>                ::type () { return std::string ("FLOAT-LIST"); }
+template <> const std::string optionTmpl     <OptionBlock>         ::type () { return std::string ("BLOCK"); }
 template <> const std::string optionTmpl     <OptionDate>          ::type () { return std::string ("DATE"); }
 template <> const std::string optionTmpl     <OptionColor>         ::type () { return std::string ("COLOR"); }
 template <> const std::string optionTmpl     <OptionScale>         ::type () { return std::string ("SCALE"); }
@@ -570,6 +571,21 @@ bool OptionsParser::parse (int _argc, const char * _argv[],
   return true;
 }
 
+
+void OptionsParser::startBlock 
+  (const std::string & path, const std::string & name, 
+   const std::string & desc, const OptionsCallback::opt * opt)
+{
+  createOption (std::string ("--") + path, new OptionsParserDetail::optionTmpl<OptionBlock> 
+                (path, desc, (OptionBlock*)nullptr), opt); 
+}
+
+void OptionsParser::closeBlock 
+  (const std::string & path, const std::string & name, 
+   const std::string & desc, const OptionsCallback::opt *)
+{
+}
+
 bool OptionsBase::parse (int argc, const char * argv[], 
 		                 const std::set<std::string> * skip)
 {
@@ -805,6 +821,8 @@ const std::string OptionsParser::getHelp
       {   
         auto it = name2option.find (opt_name);
 	OptionsParserDetail::optionBase * opt = it->second;
+        if (dynamic_cast<OptionsParserDetail::optionTmpl<OptionBlock>*>(opt))
+          continue;
         if ((! show_hidden) && (opt->hidden))
           continue;
 	char str[256];

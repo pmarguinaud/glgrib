@@ -5,6 +5,19 @@ use Tk;
 use tkbase qw (Tk::Frame);
 use strict;
 
+sub eq
+{
+  my $class = shift;
+  my ($v1, $v2) = @_;
+  return unless (scalar (@$v1) == scalar (@$v2));
+  $class = $class->class ();
+  for my $i (0 .. $#{$v1})
+    {
+      return unless ($class->eq ($v1->[$i], $v2->[$i]));
+    }
+  return 1;
+}
+
 sub populate 
 {
   my ($self, $args) = @_;

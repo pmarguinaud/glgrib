@@ -5,6 +5,12 @@ use Tk;
 use tkbase qw (Tk::Frame);
 use strict;
 
+sub eq
+{
+  shift;
+  return $_[0] == $_[1];
+}
+
 sub populate 
 {
   my ($self, $args) = @_;

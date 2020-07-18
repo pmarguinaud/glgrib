@@ -3,6 +3,8 @@ package Tk::glGribField;
 use tkbase qw (Tk::MainWindow);
 use strict;
 
+use Tk::NoteBook;
+
 sub populate 
 {
   my ($self, $args) = @_;
@@ -118,5 +120,4 @@ sub Apply
 }
 
 1;
-
 

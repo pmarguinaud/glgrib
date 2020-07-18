@@ -7,6 +7,12 @@ use strict;
 use Tk::ColorPicker;
 use Tk::ColorPickerDB;
 
+sub eq
+{
+  shift;
+  return $_[0] eq $_[1];
+}
+
 sub populate 
 {
   my ($self, $args) = @_;

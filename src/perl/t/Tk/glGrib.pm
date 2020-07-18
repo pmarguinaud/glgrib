@@ -4,6 +4,7 @@ use strict;
 use JSON;
 use Storable;
 use Data::Dumper;
+use FileHandle;
 
 sub h1
 {
@@ -66,17 +67,18 @@ sub eqOptions
 {
   my ($o1, $o2) = @_;
   
-  $o1 = $o1->[3];
-  $o2 = $o2->[3];
+  die unless ($o1->[0] eq $o2->[0]);
+  die unless ($o1->[1] eq $o2->[1]);
 
-  if (ref ($o1))
-    {
-      return "@$o1" eq "@$o2";
-    }
-  else
-    {
-      return $o1 eq $o2;
-    }
+  my $type = $o1->[1];
+  $type =~ s/[^A-Z]//go;
+
+  my $v1 = $o1->[3];
+  my $v2 = $o2->[3];
+
+  my $class = "Tk::glGrib$type";
+
+  return $class->eq ($v1, $v2);
 }
 
 sub optionToString
@@ -228,6 +230,14 @@ sub create
     }
 
   return $w;
+}
+
+sub Tk::Separator
+{
+  my ($self, %args) = @_;
+  my $direction = delete $args{'-orient'} // 'horizontal';
+  my $width = delete $args{'-width'};
+  $self->Frame (-bg => 'black', $direction eq 'vertical' ? '-width' : '-height' => $width, %args);
 }
 
 1;

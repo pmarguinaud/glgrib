@@ -10,4 +10,10 @@ sub validate
   return $value =~ m/^\d+$/o;
 }
 
+sub eq
+{
+  shift;
+  return $_[0] == $_[1];
+}
+
 1;

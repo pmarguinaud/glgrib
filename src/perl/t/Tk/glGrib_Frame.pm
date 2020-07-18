@@ -21,26 +21,21 @@ sub populate
 
   my @opts = @$opts;
 
+  my $ftop = $self;
+
   my $bloc = ($opts[0] =~ m/^--/o) && ($opts[1] eq 'BLOCK');
   if ($bloc)
     {
-
+      $ftop = $self->Frame (-relief => 'groove', -borderwidth => 2)
+        ->pack (-side => 'top', -expand => 1, -fill => 'x');
       (undef, undef, my $desc, undef) = splice (@opts, 0, 4);
-
-      my $lab = 
-      $self->Label (-text => $desc, -relief => 'groove')
-        ->pack (-side => 'top', -expand => 1, -fill => 'x', -ipady => 5, -pady => 5);
-
-      my $font = $lab->cget ('-font');
-      $font =~ s{(\d+)}{int (1.5 * $1)}eo;
-      $lab->configure (-font => $font);
-
+      &Tk::glGrib::h2 ($ftop, $desc);
     }
 
 
   if (@opts && ($opts[0] eq 'on'))
     {
-      $on = &Tk::glGrib::create ($self, 'on', $opts[1]);
+      $on = &Tk::glGrib::create ($ftop, 'on', $opts[1]);
       splice (@opts, 0, 2);
 
       if (@opts)
@@ -55,7 +50,7 @@ sub populate
   
   if (@opts)
     {
-      my $frame = $self->{glGrib}{frame} = $self->Frame ();
+      my $frame = $self->{glGrib}{frame} = $ftop->Frame ();
      
       while (my ($key, $opt) = splice (@opts, 0, 2))
         {
@@ -68,6 +63,11 @@ sub populate
      
       $self->Enable () if ((! $on) || $on->getValue ());
 
+    }
+
+  if ($bloc)
+    {
+      $ftop->Label (-text => ' ')->pack (-side => 'top', -fill => 'x');
     }
 
 }

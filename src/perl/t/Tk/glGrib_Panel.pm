@@ -16,14 +16,7 @@ sub populate
 
   my $frame = $self->Scrolled ('Frame', -width => 400, -height => 400, -scrollbars => 'e', -sticky => 'nswe')->pack (-expand => 1, -fill => 'both');
 
-  my $lab =
-  $frame->Label (-text => ucfirst ($self->{glGrib}{name}), -relief => 'groove')
-    ->pack (-fill => 'both', -side => 'top', -ipady => 5);
-
-  my $font = $lab->cget ('-font');
-  $font =~ s{(\d+)}{int (1.5 * $1)}eo;
-  $lab->configure (-font => $font);
-  
+  &Tk::glGrib::h1 ($frame, ucfirst ($self->{glGrib}{name}));
 
   $frame = $frame->Frame ()->pack (-expand => 1, -fill => 'both', -side => 'top');
 

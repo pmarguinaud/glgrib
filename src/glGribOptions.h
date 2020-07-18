@@ -432,10 +432,6 @@ public:
   {
   }
 
-  virtual void closeBlock (const std::string & path, const std::string & name, const std::string & desc, const OptionsCallback::opt * = nullptr)
-  {
-  }
-
 #define DEF_APPLY(T) \
   virtual void apply (const std::string & path, const std::string & name, OptionsBase *, \
                       const std::string & desc, T * data, const opt * = nullptr) {}
@@ -582,8 +578,6 @@ private:
 
   void startBlock (const std::string & path, const std::string & name, const std::string & desc, const OptionsCallback::opt * = nullptr) override;
 
-  void closeBlock (const std::string & path, const std::string & name, const std::string & desc, const OptionsCallback::opt * = nullptr) override;
-
 };
 
 class OptionsBase 
@@ -608,7 +602,12 @@ public:
     const std::string pp = p + ( p == "" ? "" : ".") + #name; \
     cb->startBlock (pp, #name, #desc, o); \
     name.traverse (pp, cb, o); \
-    cb->closeBlock (pp, #name, #desc, o); \
+  } while (0)
+
+#define BLOC(name,desc) \
+  do { \
+    const std::string pp = p + ( p == "" ? "" : ".") + #name; \
+    cb->startBlock (pp, #name, #desc, o); \
   } while (0)
 
 #define INCLUDE(name) do { name.traverse (p + ( p == "" ? "" : ".") + #name, cb, o); } while (0)
@@ -628,16 +627,23 @@ public:
     DESC (subgrid.on,         Create subgrid);
     DESC (triangle_strip.on,  Enable use of triangle strip);
     DESC (check.on,           Check geometry);
+
+    BLOC (height,             Height parameters);
     DESC (height.on,          Enable height);
     DESC (height.path,        Height field path);
     DESC (height.scale,       Scale to apply to height field);
+
+    BLOC (frame,              Domain frame);
     DESC (frame.on,           Draw frame around domain);
     DESC (frame.color1,       First frame color);
     DESC (frame.color2,       Second frame color);
     DESC (frame.width,        Frame width);
     DESC (frame.dlon,         Longitude interval);
     DESC (frame.dlat,         Latitude interval);
+
     DESC (gencoords.on,       Generate coordinates on GPU when possible);
+
+    BLOC (gaussian,           Gaussian geometry options);
     DESC (gaussian.fit.on,    Fit Gaussian latitude retrieval);
     DESC (gaussian.apply_norm_scale.on, Apply norm scaling);
   }
@@ -700,8 +706,8 @@ public:
   OptionsFont () {}
   DEFINE
   {
-    DESC (bitmap.path,     Bitmap path);
-    DESC (bitmap.scale,    Bitmap scale);
+    DESC (bitmap.path,      Bitmap path);
+    DESC (bitmap.scale,     Bitmap scale);
     DESC (color.foreground, Foreground color);
     DESC (color.background, Background color);
   }
@@ -731,8 +737,9 @@ public:
     DESC (widths,        List of widths);
     DESC (patterns,      List of dash patterns);
     DESC (lengths,       List of dash lengths);
+    BLOC (labels,        Contour labels);
     DESC (labels.on,     Enable labels);
-    INCLUDE_N (labels.font, Contour labels font);
+    INCLUDE (labels.font);
     DESC (labels.distmin, Minimal length in degrees for labelled lines);
     DESC (labels.format,  Format to print labels);
   }
@@ -797,15 +804,19 @@ public:
   DEFINE
   {
     DESC (norm.on,         Show norm field);            
-    DESC (arrow.color,     Color for arrows);
     DESC (density,         Vector density);
     DESC (scale,           Vector scale);
+
+    BLOC (arrow,           Arrow parameters);
     DESC (arrow.on,        Show arrows);                
+    DESC (arrow.color,     Color for arrows);
     DESC (arrow.head_size, Vector head size);
     DESC (arrow.kind,      Arrow kind);
     DESC (arrow.fill.on,   Fill arrow);
     DESC (arrow.fixed.on,  Fixed sized arrow);
     DESC (arrow.min,       Vector min value);
+
+    BLOC (barb,            Barb parameters);
     DESC (barb.on,         Enable barbs);
     DESC (barb.color,      Barbs color);
     DESC (barb.angle,      Barbs angle);
@@ -918,11 +929,15 @@ public:
   {
     DESC (smooth.on,    Smooth scalar fields);
     DESC (wireframe.on, Display field as wireframe);
+
+    BLOC (points,       Points parameters);
     DESC (points.on,    Display field as points);
     DESC (points.size.value,  Field point size);
     DESC (points.size.variable.on,  Variable field point size);
     DESC (points.size.factor.on,  Apply scale factor to point size);
+
     DESC (pack.bits,    Number of bytes used to pack field);
+
     DESC (discrete.on,  Plot as a discrete field);
     DESC (discrete.missing_color, Color for missing values);
   }
@@ -989,17 +1004,22 @@ public:
     DESC (scale,               Scales to be applied to fields);        
     DESC (no_value_pointer.on, Do not keep field values in memory);    
     DESC (diff.on,             Show field difference);
+
+    BLOC (hilo,                High & low values);
     DESC (hilo.on,             Display low & high);
     DESC (hilo.radius,         High/low radius in degrees);
     INCLUDE (hilo.font);
+
     INCLUDE_N (palette, Field palette);
+
     INCLUDE (scalar);
     INCLUDE (vector);
     INCLUDE (contour);
     INCLUDE (isofill);
     INCLUDE (stream);
-    INCLUDE (geometry);
-    INCLUDE_H (mpiview);
+
+    INCLUDE_N (geometry,   Geometry options);
+    INCLUDE_N (mpiview,    MPI distribution parameters);
     DESC (fatal.on,        Fatal error if field fails to be created);
   }
   std::set<std::string> seen;
@@ -1073,17 +1093,24 @@ public:
   DEFINE
   {
     DESC (visible.on,              Ticks are visible);
+
+    BLOC (lines,                   Line options);
     DESC (lines.on,                Display ticks);
     DESC (lines.color,             Tick color);
     DESC (lines.length,            Tick length);
     DESC (lines.width,             Tick width);
     DESC (lines.kind,              Tick kind);
+
+    BLOC (labels,                  Tick labels options);
     DESC (labels.on,               Display tick labels);
     DESC (labels.format,           Format for tick labels);
     INCLUDE (labels.font);
+
+    BLOC (frame,                   Window frame);
     DESC (frame.on,                Enable frame);
     DESC (frame.width,             Frame width);
     DESC (frame.color,             Frame color);
+
     INCLUDE (N);
     INCLUDE (S);
     INCLUDE (W);
@@ -1130,6 +1157,8 @@ public:
     DESC (points,            Number of points along a parallel);
     DESC (color,             Grid color);
     DESC (scale,             Grid scale);
+
+    BLOC (labels,            Grid labels);
     DESC (labels.on,         Enable labels);
     DESC (labels.lon,        Longitude of latitude labels);
     DESC (labels.lat,        Latitude of longitude labels);
@@ -1243,6 +1272,8 @@ public:
     DESC (projection,          Projection : LONLAT or WEBMERCATOR);
     DESC (flat.on,             Make Earth flat);
     DESC (path,                Path to landscape image in BMP format);
+ 
+    BLOC (grid,                Landscape geometry);
     DESC (grid.path,           Take geometry from this file);
     DESC (grid.number_of_latitudes, Number of latitudes);
     DESC (wireframe.on,        Draw landscape in wireframe mode);
@@ -1342,8 +1373,12 @@ public:
     INCLUDE (offscreen);
     DESC (info.on,               Show hardware info);
     DESC_H (fixlandscape.on,     Fix landscape position);
+
+    BLOC (position,              Window position);
     DESC (position.x,            Window x position);
     DESC (position.y,            Window y position);
+
+    BLOC (fullscreen,            Fullscreen window);
     DESC (fullscreen.on,         Window in fullscreen mode);
     DESC (fullscreen.x.on,       Window in fullscreen mode in X direction);
     DESC (fullscreen.y.on,       Window in fullscreen mode in Y direction);
@@ -1411,10 +1446,12 @@ public:
     DESC (date_from_grib.on, Calculate light position from GRIB date);
     DESC (lon,               Light longitude);
     DESC (lat,               Light latitude);
-    DESC (rotate.on,         Make sunlight move);
-    DESC (rotate.rate,       Rate of rotation : angle/frame);
     DESC (date,              Date for sunlight position);
     DESC (night,             Fraction of light during for night);
+   
+    BLOC (rotate,            Control light rotation);
+    DESC (rotate.on,         Make sunlight move);
+    DESC (rotate.rate,       Rate of rotation : angle/frame);
   }
   OptionDate date;
   bool   on  = false;
@@ -1551,15 +1588,19 @@ public:
   DEFINE
   {
     DESC (lon_at_hour,         Set longitude at solar time);
+
+    BLOC (rotate_earth,        Earth rotation control);
     DESC (rotate_earth.on,     Make earth rotate);
     DESC (rotate_earth.rate,   Rate of rotation : angle/frame);
-    INCLUDE (light);
-    INCLUDE (travelling);
-    INCLUDE (interpolation);
-    INCLUDE (text);
-    INCLUDE (image);
-    INCLUDE (date);
-    INCLUDE (title);
+
+    INCLUDE_N (light,          Light options);
+    INCLUDE_N (travelling,     Travelling options);
+    INCLUDE_N (interpolation,  Interpolation options);
+    INCLUDE_N (text,           Text options);
+    INCLUDE_N (image,          Image options);
+    INCLUDE_N (date,           Date options);
+    INCLUDE_N (title,          Title options);
+
     DESC (select.field_rank, Rank of field to select);
     DESC (center.on, Center on first field);
   }
@@ -1598,6 +1639,8 @@ public:
     DESC (fov,                Camera field of view);
     DESC (distance,           Camera distance);
     DESC (center.on,          Center view);
+
+    BLOC (clip,               Clip options);
     DESC (clip.on,            Enable Mercator and lat/lon clippling);
     DESC (clip.dlon,          Amount of longitude to clip);
     DESC (clip.dlat,          Amount of latitude to clip);
@@ -1605,6 +1648,8 @@ public:
     DESC (clip.xmax,          Max viewport x coordinate);
     DESC (clip.ymin,          Min viewport y coordinate);
     DESC (clip.ymax,          Max viewport y coordinate);
+
+    BLOC (zoom,               Zoom options);
     DESC (zoom.on,            Enable zoom with Schmidt transform);
     DESC (zoom.lon,           Longitude of zoom);
     DESC (zoom.lat,           Latitude of zoom);
@@ -1643,14 +1688,18 @@ public:
   DEFINE
   {
     DESC (on, Activate colorbar);
-    INCLUDE (font);
+    INCLUDE_N (font,     Font options);
+ 
+    BLOC (levels,        Colorbar levels);
     DESC (levels.number, Colorbar number of levels);
     DESC (levels.values, Colorbar level values);
     DESC (format, Format (sprintf) use to display numbers);
-    DESC (position.xmin, Colorbar position);
-    DESC (position.xmax, Colorbar position); 
-    DESC (position.ymin, Colorbar position); 
-    DESC (position.ymax, Colorbar position);
+   
+    BLOC (position,      Colorbar position);
+    DESC (position.xmin, Colorbar xmin);
+    DESC (position.xmax, Colorbar xmax); 
+    DESC (position.ymin, Colorbar ymin); 
+    DESC (position.ymax, Colorbar ymax);
   }
   bool on = false;
   OptionsFont font = OptionsFont ("fonts/16.bmp", 0.02f);
@@ -1675,11 +1724,15 @@ public:
   DEFINE
   {
     DESC (on, Activate mapscale);
-    INCLUDE (font);
-    DESC (position.xmin, Mapscale position);
-    DESC (position.xmax, Mapscale position); 
-    DESC (position.ymin, Mapscale position); 
-    DESC (position.ymax, Mapscale position);
+
+    INCLUDE_N (font, Font options);
+
+    BLOC (position,      Mapscale position);
+    DESC (position.xmin, Mapscale xmin);
+    DESC (position.xmax, Mapscale xmax); 
+    DESC (position.ymin, Mapscale ymin); 
+    DESC (position.ymax, Mapscale ymax);
+
     DESC (color1, First color);
     DESC (color2, Second color);
   }
@@ -1742,9 +1795,12 @@ public:
   {
     DESC (visible.on,  Points are visible);
     DESC (scale, Scale);
+
+    BLOC (size,             Size options);
     DESC (size.variable.on, Enable variable point size);
     DESC (size.value, Point size);
-    INCLUDE (palette);
+ 
+    INCLUDE_N (palette,     Points palette);
     DESC (color, Point color);
   }
   struct
@@ -1796,6 +1852,8 @@ public:
   {
     DESC (on, Display cities);
     INCLUDE (points);
+
+    BLOC (labels,    City labels);
     DESC (labels.on, Enable city names display);
     INCLUDE (labels.font);
   }

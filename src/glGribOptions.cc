@@ -580,12 +580,6 @@ void OptionsParser::startBlock
                 (path, desc, (OptionBlock*)nullptr), opt); 
 }
 
-void OptionsParser::closeBlock 
-  (const std::string & path, const std::string & name, 
-   const std::string & desc, const OptionsCallback::opt *)
-{
-}
-
 bool OptionsBase::parse (int argc, const char * argv[], 
 		                 const std::set<std::string> * skip)
 {

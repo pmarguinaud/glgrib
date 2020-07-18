@@ -5,6 +5,34 @@ use JSON;
 use Storable;
 use Data::Dumper;
 
+sub h1
+{
+  my ($win, $text) = @_;
+  my $lab =
+  $win->Label (-text => $text, -relief => 'groove')
+    ->pack (-fill => 'both', -side => 'top', -ipady => 5);
+
+  my $font = $lab->cget ('-font');
+  $font =~ s{(\d+)}{int (2.0 * $1)}eo;
+  $lab->configure (-font => $font);
+  
+  return $lab;
+}
+
+sub h2
+{
+  my ($win, $text) = @_;
+  my $lab =
+  $win->Label (-text => $text)
+    ->pack (-fill => 'both', -side => 'top', -ipady => 5);
+
+  my $font = $lab->cget ('-font');
+  $font =~ s{(\d+)}{int (1.5 * $1)}eo;
+  $lab->configure (-font => $font);
+  
+  return $lab;
+}
+
 sub optionsToList
 {
   my $opts = shift;

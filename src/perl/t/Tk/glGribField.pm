@@ -14,13 +14,7 @@ sub populate
   my $opts = $self->{glGrib}{opts};
   $self->{glGrib}{opts_} = &Storable::dclone ($self->{glGrib}{opts});
 
-  my $lab =
-  $self->Label (-text => ucfirst ($self->{glGrib}{name}), -relief => 'groove')
-    ->pack (-fill => 'both', -side => 'top', -ipady => 5);
-
-  my $font = $lab->cget ('-font');
-  $font =~ s{(\d+)}{int (1.5 * $1)}eo;
-  $lab->configure (-font => $font);
+  &Tk::glGrib::h1 ($self, ucfirst ($self->{glGrib}{name}));
   
   my $n = $self->{glGrib}{notebook} = 
   $self->NoteBook ()->pack (-expand => 1, -fill => 'both', -side => 'top');

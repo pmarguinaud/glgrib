@@ -1,9 +1,12 @@
 package Tk::glGribField;
 
 use tkbase qw (Tk::MainWindow);
+use base qw (Tk::glGrib_Entity);
 use strict;
 
 use Tk::NoteBook;
+
+our @TYPE = qw (scalar vector contour stream isofill);
 
 sub populate 
 {
@@ -11,10 +14,9 @@ sub populate
   
   $self->{glGrib} = delete $args->{glGrib};
 
-  my @type = qw (scalar vector contour stream isofill);
 
   my $opts = $self->{glGrib}{opts};
-  $self->{glGrib}{opts_} = &Storable::dclone ($self->{glGrib}{opts});
+  $self->saveOpts ();
 
   &Tk::glGrib::h1 ($self, ucfirst ($self->{glGrib}{name}));
   
@@ -26,42 +28,24 @@ sub populate
 
   my @opts = @$opts;
 
-  my $tt;
 
-  for (my $i = 0; $i < $#{$opts}; $i++)
-    {
-      if ($opts->[$i] eq 'type')
-        {
-          $tt = \$opts->[$i+1][3];
-          last;
-        }
-    }
-
-  my $fb = $g->Frame ()->pack (-expand => 1, -fill => 'x', -side => 'top');
-
-  for my $type (@type)
-    {
-      $fb->Radiobutton 
-      (
-        -text => $type,
-        -value => uc ($type),
-        -variable => $tt,
-        -command => sub { $self->enableTab ($type) },
-      )->pack (-side => 'left', -fill => 'x');
-    }
+  my $selector;
 
   while (my ($key, $opt) = splice (@opts, 0, 2))
     {
-      next if (grep { $_ eq $key } @type);
-      next if ($key eq 'type');
+      next if (grep { $_ eq $key } @TYPE);
       my $w = &Tk::glGrib::create ($g, $key, $opt);
       $w->pack (-side => 'top', -fill => 'both')
         unless ($w->isa ('Tk::MainWindow'));
       $w->Separator (-width => 2)->pack (-side => 'top', -fill => 'x')
         if (@opts);
+      if ($key eq 'type')
+        {
+          $selector = $w;
+        }
     }
 
-  for my $type (@type)
+  for my $type (@TYPE)
     {
       $self->{glGrib}{$type} =
       my $p = $n->add ($type, -label => ucfirst ($type));
@@ -76,30 +60,24 @@ sub populate
         }
 
       my $w = &Tk::glGrib::create ($p, $type, $opt);
-      $w->pack (-side => 'top', -fill => 'both')
-        unless ($w->isa ('Tk::MainWindow'));
+      $w->pack (-side => 'top', -fill => 'both');
 
     }
   
-  $self->Button (-relief => 'raised', -text => 'Apply', -width => 12,
-                 -command => sub { $self->Apply () })
-  ->pack (-side => 'left', -fill => 'x', -expand => 1);
-  $self->Button (-relief => 'raised', -text => 'Close', -width => 12,
-                 -command => sub { $self->destroy (); })
-  ->pack (-side => 'left', -fill => 'x', -expand => 1);
-  $self->Button (-relief => 'raised', -text => 'Apply/Close', -width => 12,
-                 -command => sub { $self->Apply (); $self->destroy (); })
-  ->pack (-side => 'left', -expand => 1, -fill => 'x');
+  $self->createButtons ();
 
-  $self->enableTab (lc ($$tt));
+  $selector->setCommand (sub { $self->enableTab (@_) });
+
+  $self->enableTab (lc ($selector->getValue ()));
 }
 
 sub enableTab
 {
   my ($self, $type) = @_;
 
-  my @type = qw (scalar vector contour stream isofill);
-  @type = grep { $_ ne $type } @type;
+  $type = lc ($type);
+
+  my @type = grep { $_ ne $type } @TYPE;
 
   $self->{glGrib}{notebook}->pageconfigure ($type, -state => 'normal');
 
@@ -108,15 +86,6 @@ sub enableTab
       $self->{glGrib}{notebook}->pageconfigure ($type, -state => 'disabled');
     }
   
-}
-
-sub Apply
-{
-  my $self = shift;
-  my @opts = &Tk::glGrib::diffOptions ($self->{glGrib}{opts_}, $self->{glGrib}{opts});
-  print &Data::Dumper::Dumper (\@opts);
-  'glGrib'->set (@opts);
-  $self->{glGrib}{opts_} = &Storable::dclone ($self->{glGrib}{opts});
 }
 
 1;

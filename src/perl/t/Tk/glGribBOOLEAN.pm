@@ -20,12 +20,14 @@ sub populate
   my $opts = $self->{glGrib}{opts};
   my $name = $self->{glGrib}{name};
 
+  $self->{variable} = \$opts->[3];
+
   my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
 
   $frame->Label (-text => $opts->[2])->pack (-side => 'left');
 
   $self->{glGrib}{button} = 
-  $frame->Checkbutton (-variable => \$opts->[3])
+  $frame->Checkbutton (-variable => $self->{variable})
     ->pack (-side => 'right');
 
 }
@@ -40,7 +42,25 @@ sub setCommand
 sub getValue
 {
   my $self = shift;
-  ${ $self->{glGrib}{button}->cget ('-variable') }
+  ${ $self->{variable} };
+}
+
+sub getVariable
+{
+  my $self = shift;
+  $self->{variable};
+}
+
+sub set
+{
+  my ($self, $value) = @_;
+
+  my $v = $self->getVariable ();
+
+  if (! $self->eq ($self->getValue (), $value))
+    {
+      $self->{glGrib}{button}->invoke ();
+    }
 }
 
 1;

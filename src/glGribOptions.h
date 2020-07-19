@@ -162,6 +162,7 @@ private:
 class c : public OptionStringLike \
 { public: using OptionStringLike::OptionStringLike; }
 
+DEF_OPTION_STRING (OptionFieldType);
 DEF_OPTION_STRING (OptionPath);
 DEF_OPTION_STRING (OptionProjection);
 DEF_OPTION_STRING (OptionTransformation);
@@ -386,6 +387,7 @@ namespace OptionsParserDetail
   template <> const std::string optionTmpl    <OptionProjection>      ::type ();
   template <> const std::string optionTmpl    <OptionPaletteName>     ::type ();
   template <> const std::string optionTmpl    <OptionTransformation>  ::type ();
+  template <> const std::string optionTmpl    <OptionFieldType>       ::type ();
   template <> const std::string optionTmpl    <OptionPath>            ::type ();
   template <> const std::string optionTmplList<OptionPath>            ::type ();
   template <> const std::string optionTmplList<OptionPath>            ::asString () const;
@@ -451,6 +453,7 @@ public:
   DEF_APPLY (OptionPaletteName);
   DEF_APPLY (OptionTransformation);
   DEF_APPLY (OptionPath);
+  DEF_APPLY (OptionFieldType);
   DEF_APPLY (std::vector<OptionPath>);
   DEF_APPLY (OptionFieldRef);
   DEF_APPLY (std::vector<OptionFieldRef>);
@@ -565,6 +568,7 @@ private:
   DEF_APPLY (OptionScale                       , OptionsParserDetail::optionTmpl<OptionScale>);
   DEF_APPLY (OptionLongitude                   , OptionsParserDetail::optionTmpl<OptionLongitude>);
   DEF_APPLY (OptionLatitude                    , OptionsParserDetail::optionTmpl<OptionLatitude>);
+  DEF_APPLY (OptionFieldType                   , OptionsParserDetail::optionTmpl<OptionFieldType>);
   DEF_APPLY (OptionPath                        , OptionsParserDetail::optionTmpl<OptionPath>);
   DEF_APPLY (OptionProjection                  , OptionsParserDetail::optionTmpl<OptionProjection>);
   DEF_APPLY (OptionPaletteName                 , OptionsParserDetail::optionTmpl<OptionPaletteName>);
@@ -997,8 +1001,8 @@ class OptionsField : public OptionsBase
 public:
   DEFINE
   {
-    DESC (visible.on,          Field is visible);
     DESC (type,                Field type : SCALAR VECTOR STREAM CONTOUR);
+    DESC (visible.on,          Field is visible);
     DESC (user_pref.on,        Lookup field settings in database);
     DESC (path,                List of GRIB files);                    
     DESC (scale,               Scales to be applied to fields);        
@@ -1036,7 +1040,7 @@ public:
     float radius = 10.0f;
   } hilo;
 
-  std::string type = "SCALAR";
+  OptionFieldType type = "SCALAR";
   struct
   {
     bool on = true;

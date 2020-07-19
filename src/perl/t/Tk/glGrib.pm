@@ -5,6 +5,7 @@ use JSON;
 use Storable;
 use Data::Dumper;
 use FileHandle;
+use Tk;
 
 sub h1
 {
@@ -67,8 +68,10 @@ sub eqOptions
 {
   my ($o1, $o2) = @_;
   
-  die unless ($o1->[0] eq $o2->[0]);
-  die unless ($o1->[1] eq $o2->[1]);
+  die &Data::Dumper::Dumper ([$o1, $o2]) 
+    unless ($o1->[0] eq $o2->[0]);
+  die &Data::Dumper::Dumper ([$o1, $o2]) 
+    unless ($o1->[1] eq $o2->[1]);
 
   my $type = $o1->[1];
   $type =~ s/[^A-Z]//go;
@@ -107,7 +110,6 @@ sub diffOptions
   my @o1 = &optionsToList ($opts1);
   my @o2 = &optionsToList ($opts2);
 
-
   my @diff;
 
   for my $i (0 .. $#o1)
@@ -117,6 +119,12 @@ sub diffOptions
     }
 
   return @diff;
+}
+
+sub isList
+{
+  my $w = shift;
+  return $w->isa ('Tk::glGribLIST');
 }
 
 sub json2tree
@@ -179,15 +187,15 @@ sub isMainWindow
 my %map;
 
 
-sub getWidgetByOpts
+sub getWidgetByOption
 {
   my ($opt) = @_;
-  my $w = $map{$opt};
+  return unless (my $w = $map{$opt});
   unless (&Exists ($w))
     {
       delete $map{$opt};
     }
-  return $w;
+  return $map{$opt};
 }
 
 sub create

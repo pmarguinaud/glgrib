@@ -30,9 +30,9 @@ sub populate
     }
   
   $self->{button} =
-  $frame->Button (-textvariable => $self->getVariable (), -width => 30,
+  $frame->Button (-textvariable => $self->getVariable (), -width => 20,
                   -command => sub { $self->choosePalette () })
-    ->pack (-side => 'left', -expand => 1, -fill => 'x');
+    ->pack (-side => 'right', -fill => 'x', -expand => 1);
 
   $self->setImage ();
 
@@ -47,7 +47,7 @@ sub setImage
 
   if ($image20)
     {
-      $self->{button}->configure (-image => $image20, -text => undef); 
+      $self->{button}->configure (-image => $image20, -text => undef);
     }
   else
     {

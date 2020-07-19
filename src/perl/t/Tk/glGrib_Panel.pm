@@ -3,6 +3,7 @@ package Tk::glGrib_Panel;
 use Tk;
 
 use tkbase qw (Tk::MainWindow);
+use base qw (Tk::glGrib_Entity);
 use strict;
 
 sub populate 
@@ -12,7 +13,7 @@ sub populate
   $self->{glGrib} = delete $args->{glGrib};
   
   my $opts = $self->{glGrib}{opts};
-  $self->{glGrib}{opts_} = &Storable::dclone ($opts);
+  $self->saveOpts ();
 
   my $frame = $self->Scrolled ('Frame', -width => 400, -height => 400, -scrollbars => 'e', -sticky => 'nswe')->pack (-expand => 1, -fill => 'both');
 
@@ -47,19 +48,10 @@ sub populate
         if (@opts);
     }
 
+
+  $self->createButtons ();
+
   $self->Enable () if ((! $on) || $on->getValue ());
-
-  my $b = 
-  $self->Button (-relief => 'raised', -text => 'Apply', -width => 12,
-                 -command => sub { $self->Apply (); })
-  ->pack (-side => 'left', -expand => 1, -fill => 'x');
-  $self->Button (-relief => 'raised', -text => 'Close', -width => 12,
-                 -command => sub { $self->destroy (); })
-  ->pack (-side => 'left', -expand => 1, -fill => 'x');
-  $self->Button (-relief => 'raised', -text => 'Apply/Close', -width => 12,
-                 -command => sub { $self->Apply (); $self->destroy (); })
-  ->pack (-side => 'left', -expand => 1, -fill => 'x');
-
 }
 
 sub Enable
@@ -72,19 +64,6 @@ sub Disable
 {
   my $self = shift;
   $self->{glGrib}{frame}->packForget ();
-}
-
-sub Apply
-{
-  my $self = shift;
-
-  my @opts = &Tk::glGrib::diffOptions ($self->{glGrib}{opts_}, $self->{glGrib}{opts});
-
-  print &Data::Dumper::Dumper (\@opts);
-  'glGrib'->set (@opts);
-
-  $self->{glGrib}{opts_} = &Storable::dclone ($self->{glGrib}{opts});
-
 }
 
 1;

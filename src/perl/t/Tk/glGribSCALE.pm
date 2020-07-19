@@ -31,7 +31,7 @@ sub populate
   
   $self->{entry} =
   $frame->Scale (-variable => $self->getVariable (), -from => 0.95, -to => 1.05, 
-                 -showvalue => 1, -orient => 'horizontal', -resolution => 0.01)
+                 -showvalue => 1, -orient => 'horizontal', -resolution => 0.001)
     ->pack (-side => 'right', -expand => 1, -fill => 'x');
 
   return $self;

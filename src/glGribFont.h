@@ -13,6 +13,7 @@ namespace glGrib
 class Font
 {
 public:
+  static void clearCache ();
   void setup (const OptionsFont &);
   int map (char c) const
   { 
@@ -43,6 +44,5 @@ typedef std::shared_ptr<Font> FontPtr;
 typedef std::shared_ptr<const Font> const_FontPtr;
 
 FontPtr getGlGribFontPtr (const OptionsFont &);
-
 
 }

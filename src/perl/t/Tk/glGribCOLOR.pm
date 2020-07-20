@@ -39,8 +39,8 @@ sub populate
   $self->{button} =
   $frame->Button (-width => 9, -height => 1)
     ->pack (-side => 'right', -fill => 'x', -expand => 1);
-  $self->{button}->bind ('<Control-Button>' => sub { $self->chooseRGB (1); });
-  $self->{button}->bind ('<Button>' => sub { $self->chooseRGB (0); });
+  $self->{button}->bind ('<Control-Button-1>' => sub { $self->chooseRGB (1); });
+  $self->{button}->bind ('<Button-1>' => sub { $self->chooseRGB (0); });
   $self->setColor ();
 }
 
@@ -66,6 +66,7 @@ sub getRGB
              ? 'Tk::ColorPickerDB'->new (-db => 'glGrib'->resolve ('glGrib.db'))
              : 'Tk::ColorPicker'->new (-color => ${ $self->{variable} });
   my $color = $picker->Show ();
+
   $picker->destroy ();
   return $color;
 }

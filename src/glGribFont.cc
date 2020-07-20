@@ -17,6 +17,11 @@ class cache_t : public std::map <std::string,FontPtr>
 cache_t cache;
 };
 
+void Font::clearCache ()
+{
+  cache.clear ();
+}
+
 
 FontPtr getGlGribFontPtr (const OptionsFont & opts)
 {

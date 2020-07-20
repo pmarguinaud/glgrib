@@ -63,7 +63,7 @@ sub choosePalette
   my $db = 'glGrib'->resolve ('glGrib.db');
 
   my $pick = $self->PalettePickerDB 
-     (-db => $db, -palette => ${$self->{variable}});
+     (-db => $db, -palette => ${$self->{variable}}, -title => 'Palette');
 
   ${$self->{variable}} = $pick->Show ();
 

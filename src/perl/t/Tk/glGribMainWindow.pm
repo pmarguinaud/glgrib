@@ -58,11 +58,8 @@ sub createPanel
         }
     }
 
-  my $w = &Tk::glGrib::create 
-     ($self, $name, $opts, 
-     'glGrib_Panel');
-
-  $self->{glGrib}{panels}{$name} = $w;
+  $self->{glGrib}{panels}{$name} = 
+    &Tk::glGrib::create ($self, $name, $opts, 'glGrib_Panel');
 }
 
 sub quit

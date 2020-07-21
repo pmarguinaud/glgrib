@@ -14,7 +14,6 @@ sub populate
   
   $self->{glGrib} = delete $args->{glGrib};
 
-
   my $opts = $self->{glGrib}{opts};
   $self->saveOpts ();
 

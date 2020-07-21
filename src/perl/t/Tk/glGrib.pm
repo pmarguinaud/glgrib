@@ -164,10 +164,8 @@ sub json2tree
 
 sub base
 {
-# my $json = do { my $fh = 'FileHandle'->new ('<glgrib.json'); local $/ = undef; <$fh> };
-# return &json2tree (&decode_json ($json));
   my $tree = &json2tree (&decode_json ('glGrib'->json ('+base', $_[0])));
-  'FileHandle'->new ('>glgrib.pl')->print (&Data::Dumper::Dumper ($tree));
+# 'FileHandle'->new ('>glgrib.pl')->print (&Data::Dumper::Dumper ($tree));
   return $tree;
 }
 

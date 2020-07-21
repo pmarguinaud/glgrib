@@ -10,31 +10,23 @@ sub getOptions
     (&JSON::decode_json ('glGrib'->json (@_, "--$self->{glGrib}{name}")));
 }
 
-sub getCurrentOptions
-{
-  my $self = shift;
-  $self->getOptions (); 
-}
-
-sub getBasicOptions
-{
-  my $self = shift;
-  $self->getOptions ('+base'); 
-}
-
 sub Apply
 {
   my $self = shift; 
-  my @opts = &Tk::glGrib::diffOptions 
-               ($self->{glGrib}{oldOpts}, $self->{glGrib}{opts});
-  print &Data::Dumper::Dumper (\@opts);
-  'glGrib'->set (@opts);
+
+  my $opts = $self->getOptions ();
+  my @diff = &Tk::glGrib::diffOptions 
+               ($opts, $self->{glGrib}{opts});
+  'glGrib'->set (@diff);
   $self->saveOpts ();
 }
 
 sub Reload
 {
-
+  my $self = shift;
+  my $opts = $self->getOptions ();
+  my @diff = &Tk::glGrib::diffOptions ($self->{glGrib}{opts}, $opts);
+  $self->setOptions (@diff);
 }
 
 sub setOptions
@@ -80,14 +72,9 @@ sub setOptions
 sub Clear
 {
   my $self = shift;
-
   my $opts = $self->getOptions ('+base');
-
   my @diff = &Tk::glGrib::diffOptions ($self->{glGrib}{opts}, $opts);
-
   $self->setOptions (@diff);
-
-  $self->saveOpts ();
 }
 
 sub saveOpts

@@ -20,18 +20,22 @@ namespace glGrib
 class Palette
 {
 public:
-  static float defaultMin () { return std::numeric_limits<float>::max (); }
-  static float defaultMax () { return std::numeric_limits<float>::min (); }
+  static float defaultMin () { return +std::numeric_limits<float>::max (); }
+  static float defaultMax () { return -std::numeric_limits<float>::max (); }
+
+  static bool isDefaultMin (float x) { return x > 0.9 * defaultMin (); }
+  static bool isDefaultMax (float x) { return x < 0.9 * defaultMax (); }
 
   explicit Palette (const OptionsPalette &,  
-                    const float = defaultMin (), const float = defaultMax ());
+                    const float = defaultMin (), 
+                    const float = defaultMax ());
 
   const std::string & getName () const { return opts.name; }
 
   float getMin () const { return opts.min; }
   float getMax () const { return opts.max; }
-  bool hasMin () const { return opts.min != defaultMin (); }
-  bool hasMax () const { return opts.max != defaultMax (); }
+  bool hasMin () const { return ! isDefaultMin (opts.min); }
+  bool hasMax () const { return ! isDefaultMax (opts.max); }
   bool fixed () const { return opts.fixed.on; }
 
   Palette () {}
@@ -78,9 +82,9 @@ private:
   std::vector<glm::vec4> rgba_;
   void setMinMax (const float min, const float max) 
   { 
-    if (opts.min == defaultMin ()) 
+    if (isDefaultMin (opts.min))
       opts.min = min; 
-    if (opts.max == defaultMax ()) 
+    if (isDefaultMax (opts.max))
       opts.max = max; 
   }
   void computergba_255 ();

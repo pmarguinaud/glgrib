@@ -115,8 +115,8 @@ void Loader::load (BufferPtr<float> * ptr, const std::vector<OptionFieldRef> & f
       int size = geom1->size ();
       BufferPtr<float> val = BufferPtr<float> (size);
     
-      float valmin = std::numeric_limits<float>::max (), 
-            valmax = std::numeric_limits<float>::min (), 
+      float valmin = +std::numeric_limits<float>::max (), 
+            valmax = -std::numeric_limits<float>::max (), 
             valmis = 0.0;
       bool valmis_ok = true;
     

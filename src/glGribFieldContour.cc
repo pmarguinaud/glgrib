@@ -263,8 +263,8 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
 
   if (levels.size () == 0)
     {
-      float min = opts.contour.min == OptionsContour::defaultMin () ? meta1.valmin : opts.contour.min;
-      float max = opts.contour.max == OptionsContour::defaultMax () ? meta1.valmax : opts.contour.max;
+      float min = glGrib::Palette::isDefaultMin (opts.contour.min) ? meta1.valmin : opts.contour.min;
+      float max = glGrib::Palette::isDefaultMax (opts.contour.max) ? meta1.valmax : opts.contour.max;
       for (int i = 0; i < opts.contour.number; i++)
         levels.push_back (min + (i + 1) * (max - min) / (opts.contour.number + 1));
     }

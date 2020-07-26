@@ -16,13 +16,10 @@ for my $x (<$Bin/Tk/*.pm>)
       }
   }
 
-use glGrib;
 
 use Tk;
 
 $ENV{GLGRIB_PREFIX} = "$Bin/../..";
-
-'glGrib'->start ();
 
 my $main = 'Tk::glGribMainWindow'->new ();
 
@@ -30,5 +27,4 @@ $main->geometry ('+0+0');
 
 &MainLoop ();
 
-'glGrib'->stop ();
 

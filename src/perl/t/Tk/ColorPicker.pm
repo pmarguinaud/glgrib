@@ -164,5 +164,4 @@ sub Show
   return $self->getColor ();
 }
 
-
 1;

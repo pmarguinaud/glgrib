@@ -61,7 +61,6 @@ sub setColor
 sub getRGB
 {
   my ($self, $db) = @_;
-
   my $picker = $db
              ? 'Tk::ColorPickerDB'->new (-db => 'glGrib'->resolve ('glGrib.db'))
              : 'Tk::ColorPicker'->new (-color => ${ $self->{variable} });

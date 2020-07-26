@@ -114,6 +114,19 @@ void ShellRegular::process_window (const std::vector<std::string> & args, Render
     }
 }
 
+
+namespace
+{
+
+std::string eatSpace (std::string line)
+{
+  while (line.length () && line[0] == ' ')
+    line = line.substr (1);
+  return line;
+}
+
+}
+
 std::vector<std::string> ShellRegular::tokenize (const std::string & _line)
 {
   std::vector<std::string> args;
@@ -122,20 +135,13 @@ std::vector<std::string> ShellRegular::tokenize (const std::string & _line)
 
   try 
     {
-      args.push_back (OptionsUtil::nextToken (&line));
-
-      if ((args[0] == "") || (args[0][0] == '#'))
-        {
-          args.clear ();
-          return args;
-        }
-     
       while (1)
         {
+          line = eatSpace (line); 
+          if (line.length () && (line[0] == '#'))
+            return args;          
           std::string arg = OptionsUtil::nextToken (&line);
           if (arg == "") 
-            break;
-          if (arg[0] == '#')
             break;
           args.push_back (arg);
         }
@@ -147,6 +153,7 @@ std::vector<std::string> ShellRegular::tokenize (const std::string & _line)
       args.clear ();
       return args;
     }
+
 
   return args;
 }

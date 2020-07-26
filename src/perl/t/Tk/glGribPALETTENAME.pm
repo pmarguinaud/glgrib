@@ -62,8 +62,9 @@ sub choosePalette
 
   my $db = 'glGrib'->resolve ('glGrib.db');
 
-  my $pick = $self->PalettePickerDB 
-     (-db => $db, -palette => ${$self->{variable}}, -title => 'Palette');
+  my $pick = 
+    'Tk::PalettePickerDB'->new (-db => $db, 
+     -palette => ${$self->{variable}}, -title => 'Palette');
 
   ${$self->{variable}} = $pick->Show ();
 
@@ -80,6 +81,7 @@ sub set
 {
   my ($self, $value) = @_;
   ${ $self->getVariable () } = $value;
+  $self->setImage ();
 }
 
 1;

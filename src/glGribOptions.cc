@@ -425,7 +425,7 @@ cont:
 }
 
 bool OptionsParser::parse (int _argc, const char * _argv[], 
-		                   const std::set<std::string> * skip)
+		           const std::set<std::string> * skip)
 {
   int argc = _argc;
   bool do_skip = false;
@@ -433,6 +433,7 @@ bool OptionsParser::parse (int _argc, const char * _argv[],
   std::list<std::string> argv;
   for (int i = 1; i < argc; i++)
     argv.push_back (_argv[i]);
+
   try
     {
       OptionsParserDetail::optionBase * opt = nullptr;

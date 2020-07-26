@@ -4,9 +4,13 @@ use Tk;
 use tkbase qw (Tk::MainWindow);
 use strict;
 
+use glGrib;
+
 sub populate 
 {
   my ($self, $args) = @_;
+
+  'glGrib'->start ();
 
   $self->{glGrib}{base} = my $base = &Tk::glGrib::base ('--');
 
@@ -70,13 +74,13 @@ sub quit
 {
   my $self = shift;
 
-  for my $p (values (%{ $self->{glGrib}{panels} }))
-    {
-      next unless (&Exists ($p));
-      $p->destroy ();
-    }
+  &Tk::glGrib::destroyToplevel ();
 
   $self->destroy ();
+
+  'glGrib'->stop ();
+
+  exit (0);
 }
 
 1;

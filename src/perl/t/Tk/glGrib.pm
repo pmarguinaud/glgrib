@@ -176,10 +176,10 @@ sub exists
   return scalar (@{"$class\::ISA"});
 }
 
-sub isMainWindow
+sub isToplevel
 {
   my $class = shift;
-  return $class->isa ('Tk::MainWindow');
+  return $class->isa ('Tk::Toplevel');
 }
 
 my %map;
@@ -194,6 +194,28 @@ sub getWidgetByOption
       delete $map{$opt};
     }
   return $map{$opt};
+}
+
+my @top;
+
+sub createToplevel
+{
+  my $class = shift;
+  my $top = $class->new (@_);
+
+  @top = grep { &Exists ($_) } @top;
+  push @top, $top;
+
+  return $top;
+}
+
+sub destroyToplevel
+{
+  for my $top (@top)
+    {
+      next unless (&Exists ($top));
+      $top->destroy ();
+    }
 }
 
 sub create
@@ -221,11 +243,11 @@ sub create
 
   $class ||= 'glGrib_Frame';
 
-  my $main = &isMainWindow ("Tk::$class");
+  my $main = &isToplevel ("Tk::$class");
 
   my $w = $main
-       ? "Tk::$class"->new (glGrib => {name => $name, opts => $opts}, 
-                            -title => ucfirst ($name), @args)
+       ? &createToplevel ("Tk::$class", glGrib => {name => $name, opts => $opts}, 
+                          -title => ucfirst ($name), @args)
        : $win->$class (glGrib => {name => $name, opts => $opts}, @args);
 
   # Record widget

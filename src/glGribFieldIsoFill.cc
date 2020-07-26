@@ -310,9 +310,9 @@ void FieldIsoFill::setup (const Field::Privatizer, Loader * ld, const OptionsFie
 
   if (levels.size () == 0)
     {
-      float min = opts.isofill.min == OptionsIsofill::defaultMin ()
+      float min = glGrib::Palette::isDefaultMin (opts.isofill.min)
                 ? meta1.valmin : opts.isofill.min;
-      float max = opts.isofill.max == OptionsIsofill::defaultMax ()
+      float max = glGrib::Palette::isDefaultMax (opts.isofill.max)
                 ? meta1.valmax : opts.isofill.max;
       for (int i = 0; i < opts.isofill.number; i++)
         levels.push_back (min + (i + 1) * (max - min) / (opts.isofill.number + 1));

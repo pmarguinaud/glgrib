@@ -43,8 +43,72 @@ sub populate
     ->pack (-side => 'top', -expand => 1, -fill => 'both', -anchor => 'nw');
 
 
-  $self->{number} = 0;
+  $self->{children} = [];
   $self->set ($self->{glGrib}{opts}[3]);
+}
+
+sub regrid
+{
+  my $self = shift;
+
+  my @c = @{ $self->{children} };
+
+  my ($row, $col) = (0, 0);
+  for my $i (0 .. $#c)
+    {
+      $c[$i]->grid (-row => $row, -column => $col, -sticky => 'nswe');
+      my ($b) = $c[$i]->children ();
+      $b->bind ('<Button-1>'         => sub { $self->splice ($i); });
+      $b->bind ('<Control-Button-1>' => sub { $self->insert ($i); });
+      $col++;
+      if ($col % $self->{width} == 0)
+        {
+          $col = 0;
+          $row++;
+        }
+    }
+
+}
+
+sub splice : method
+{
+  my ($self, $rank) = @_;
+
+  my ($c) = $self->{children}[$rank];
+
+  my $o = $self->{glGrib}{opts}[3];
+  splice (@$o, $rank, 1);
+  splice (@{ $self->{children} }, $rank, 1);
+
+  $c->gridForget ();
+
+  $c->destroy ();
+
+  $self->regrid ();
+}
+
+sub insert
+{
+  my ($self, $rank) = @_;
+
+  my $o = $self->{glGrib}{opts}[3];
+
+  splice (@$o, $rank, 0, '');
+
+  my $class = $self->class ();
+
+  my $f = $self->{frame}->Frame ();
+
+  my $b = 
+  $f->Button (-text => ' ')
+    ->pack (-side => 'left', -expand => 1);
+
+  $f->$class (variable => \$o->[$rank])
+    ->pack (-side => 'right', -fill => 'x', -expand => 1);
+
+  splice (@{ $self->{children} }, $rank, 0, $f);
+
+  $self->regrid ();
 }
 
 sub append
@@ -53,48 +117,42 @@ sub append
 
   my $o = $self->{glGrib}{opts}[3];
 
-  my $rank = $self->{number};
+  my $rank = scalar (@{ $self->{children} });
 
-  if ($self->{number} == scalar (@$o))
+  if ($rank == scalar (@$o))
     {
       push @$o, '';
     }
   
   my $class = $self->class ();
 
-  my $len = $self->{width};
-  my $num = $self->{number};
-  my $row = int ($num / $len);
-  my $col = $num - $row * $len;
+  my $f = $self->{frame}->Frame ();
 
-  $self->{frame}->$class (variable => \$o->[$rank])
-    ->grid (-row => $row, -column => $col, -sticky => 'nw');
+  my $b = 
+  $f->Button (-text => ' ')
+    ->pack (-side => 'left', -expand => 1);
 
-  $self->{number}++;
-     
+  $f->$class (variable => \$o->[$rank])
+    ->pack (-side => 'right', -fill => 'x', -expand => 1);
+
+  push @{ $self->{children} }, $f;
+
+  $self->regrid ();
+
 }
 
 sub remove
 {
   my $self = shift;
   
-  return unless ($self->{number});
+  return unless (@{ $self->{children} });
 
-  my $len = $self->{width};
-  my $num = $self->{number}-1;
-  my $row = int ($num / $len);
-  my $col = $num - $row * $len;
-
-  my ($c) = $self->{frame}->gridSlaves (-row => $row, -column => $col);
-
-  my $o = $self->{glGrib}{opts}[3];
-  pop (@$o);
+  my $c = pop (@{ $self->{children} });
+  pop (@{ $self->{glGrib}{opts}[3] });
 
   $c->gridForget ();
 
   $c->destroy ();
-
-  $self->{number}--;
 }
 
 sub set
@@ -103,15 +161,16 @@ sub set
 
   while (1)
     {
-      last if ($self->{number} == scalar (@$value));
-      $self->append () if ($self->{number} < scalar (@$value));
-      $self->remove () if ($self->{number} > scalar (@$value));
+      last if (scalar (@{ $self->{children} }) == scalar (@$value));
+      $self->append () if (scalar (@{ $self->{children} }) < scalar (@$value));
+      $self->remove () if (scalar (@{ $self->{children} }) > scalar (@$value));
     } 
   
-  my @c = $self->{frame}->children ();
+  my @c = @{ $self->{children} };
   for (my $i = 0; $i < @$value; $i++)
     {
       my $e = $c[$i];
+      (undef, $e) = $e->children ();
       my $text = $e->cget ('-textvariable');
       $$text = $value->[$i];
     }

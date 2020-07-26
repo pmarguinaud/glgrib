@@ -1,6 +1,7 @@
 package Tk::glGrib_Entity;
 
 use strict;
+use Tk;
 
 
 sub getOptions
@@ -18,6 +19,7 @@ sub Apply
   my @diff = &Tk::glGrib::diffOptions 
                ($opts, $self->{glGrib}{opts});
   'glGrib'->set (@diff);
+  $self->Reload ();
   $self->saveOpts ();
 }
 
@@ -83,15 +85,26 @@ sub saveOpts
   $self->{glGrib}{oldOpts} = &Storable::dclone ($self->{glGrib}{opts});
 }
 
+sub Text_
+{
+  my $self = shift;
+  my $opts = $self->getOptions ('+base');
+  my @diff = &Tk::glGrib::diffOptions ($opts, $self->{glGrib}{opts});
+
+  'Tk::TextOptions'->new (-opts => \@diff, -command => sub
+     { 'glGrib'->set (@_); $self->Reload () if (&Exists ($self)); },
+     -title => "$self->{glGrib}{name} options");
+}
+
 sub createButtons
 {
   my $self = shift;
   $self->Button (-relief => 'raised', -text => 'Apply', -width => 12,
                  -command => sub { $self->Apply (); })
   ->pack (-side => 'left', -expand => 1, -fill => 'x');
-# $self->Button (-relief => 'raised', -text => 'Apply/Close', -width => 12,
-#                -command => sub { $self->Apply (); $self->destroy (); })
-# ->pack (-side => 'left', -expand => 1, -fill => 'x');
+  $self->Button (-relief => 'raised', -text => 'Text', -width => 12,
+                 -command => sub { $self->Text_ (); })
+  ->pack (-side => 'left', -expand => 1, -fill => 'x');
   $self->Button (-relief => 'raised', -text => 'Reload', -width => 12,
                  -command => sub { $self->Reload (); })
   ->pack (-side => 'left', -expand => 1, -fill => 'x');

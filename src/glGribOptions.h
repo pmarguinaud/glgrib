@@ -730,8 +730,8 @@ public:
 class OptionsContour : public OptionsBase
 {
 public:
-  static float defaultMin () { return std::numeric_limits<float>::max (); }
-  static float defaultMax () { return std::numeric_limits<float>::min (); }
+  static float defaultMin () { return +std::numeric_limits<float>::max (); }
+  static float defaultMax () { return -std::numeric_limits<float>::max (); }
   DEFINE
   {
     DESC (number,        Number of levels);
@@ -766,8 +766,8 @@ public:
 class OptionsIsofill : public OptionsBase
 {
 public:
-  static float defaultMin () { return std::numeric_limits<float>::max (); }
-  static float defaultMax () { return std::numeric_limits<float>::min (); }
+  static float defaultMin () { return +std::numeric_limits<float>::max (); }
+  static float defaultMax () { return -std::numeric_limits<float>::max (); }
   DEFINE
   {
     DESC (number,        Number of levels);
@@ -874,8 +874,8 @@ public:
 class OptionsPalette : public OptionsBase
 {
 public:
-  static float defaultMin () { return std::numeric_limits<float>::max (); }
-  static float defaultMax () { return std::numeric_limits<float>::min (); }
+  static float defaultMin () { return +std::numeric_limits<float>::max (); }
+  static float defaultMax () { return -std::numeric_limits<float>::max (); }
   OptionsPalette () {}
   OptionsPalette (const std::string & n) : name (n) {}
   DEFINE

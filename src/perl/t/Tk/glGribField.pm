@@ -1,6 +1,6 @@
 package Tk::glGribField;
 
-use tkbase qw (Tk::MainWindow);
+use tkbase qw (Tk::Toplevel);
 use base qw (Tk::glGrib_Entity);
 use strict;
 

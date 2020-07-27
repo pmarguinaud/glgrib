@@ -100,7 +100,7 @@ sub insert
   my $f = $self->{frame}->Frame ();
 
   my $b = 
-  $f->Button (-text => ' ')
+  $f->Button (-text => '.')
     ->pack (-side => 'left', -expand => 1);
 
   $f->$class (variable => \$o->[$rank])
@@ -129,7 +129,7 @@ sub append
   my $f = $self->{frame}->Frame ();
 
   my $b = 
-  $f->Button (-text => ' ')
+  $f->Button (-text => '.')
     ->pack (-side => 'left', -expand => 1);
 
   $f->$class (variable => \$o->[$rank])

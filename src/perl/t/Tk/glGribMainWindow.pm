@@ -10,27 +10,40 @@ sub populate
 {
   my ($self, $args) = @_;
 
-  'glGrib'->start ();
+  my $opts = delete $args->{'-opts'};
+
+  'glGrib'->start (@$opts);
 
   $self->{glGrib}{base} = my $base = &Tk::glGrib::base ('--');
 
   $self->{glGrib}{panels} = {};
+
   
   my $frame = $self->Frame ()->pack (-expand => 1, -fill => 'both');
-  
-  my @b;
   
   my @base = @$base;
   while (my ($name, $opts) = splice (@base, 0, 2))
     {
-      push @b,
       $frame->Button 
        (-text => ucfirst ($name), 
         -command => sub { $self->createPanel ($name); })
         ->pack (-expand => 1, -fill => 'both', -side => 'top');
     }
   
-  push @b,
+  
+=pod
+  
+  my $bs;
+
+  $bs = 
+  $frame->Button (-relief => 'raised', -text => 'Select', 
+                  -command => sub { $self->select ($bs); })
+  ->pack (-side => 'top', -fill => 'x');
+
+=cut
+
+
+  my $quit = 
   $frame->Button (-relief => 'raised', -text => 'Quit', 
                   -command => sub { $self->quit (); })
   ->pack (-side => 'top', -fill => 'x');
@@ -38,9 +51,33 @@ sub populate
 
   $self->ConfigSpecs
   (
-    -width => [[@b[-1]], qw//],
+    -width => [[$quit], qw//],
   );
 
+
+}
+
+sub select : method
+{
+  my ($self, $button) = @_;
+
+  my @w = 'glGrib'->window ();
+
+  my ($x, $y) = $button->pointerxy (); 
+  my $menu = $button->Menu
+  (   
+    -title => 'Select window',
+    -tearoff => 0,  
+    -menuitems =>  
+    [   
+      map
+      {
+        my $p = $_; 
+        [command => $p, -command => sub { 'glGrib'->window ($p) }]  
+      } @w
+    ],  
+  );  
+  $menu->post ($x, $y);
 
 }
 

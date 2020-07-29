@@ -21,7 +21,7 @@ use Tk;
 
 $ENV{GLGRIB_PREFIX} = "$Bin/../..";
 
-my $main = 'Tk::glGribMainWindow'->new ();
+my $main = 'Tk::glGribMainWindow'->new (-opts => \@ARGV);
 
 $main->geometry ('+0+0');
 

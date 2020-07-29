@@ -1,3 +1,3 @@
 #!/bin/bash
 
-perl -Mblib t/glGribTk.pl
+perl -Mblib t/glGribTk.pl $*

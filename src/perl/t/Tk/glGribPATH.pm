@@ -40,13 +40,21 @@ sub populate
 
 }
 
+my $directory = '.';
+
 sub selectPath
 {
   my ($self) = @_;
 
-  my $select = $self->FileSelect (-directory => '.');
+  my $select = $self->FileSelect (-directory => $directory);
 
   my $path = $select->Show ();
+
+  if ($path)
+    {
+      use File::Basename;
+      $directory = &dirname ($path);
+    }
 
   ${$self->getVariable ()} = $path;
 }

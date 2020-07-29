@@ -50,14 +50,12 @@ sub selectField
   
   my $file = ${ $self->{variable} };
   $file =~ s/%.*$//o;
-# $file = '/home/phi001/3d/glgrib/share/data/joachim_surf.grib';
 
   if ($ref)
     {
       ${ $self->{variable} } = "$file%$ref";
       return;
     }
-
 
   my @r = 'glGrib'->list ($file);
 
@@ -93,13 +91,21 @@ sub selectField
 
 }
 
+my $directory = '.';
+
 sub selectPath
 {
   my ($self) = @_;
 
-  my $select = $self->FileSelect (-directory => '.');
+  my $select = $self->FileSelect (-directory => $directory);
 
   my $path = $select->Show ();
+
+  if ($path)
+    {
+      use File::Basename;
+      $directory = &dirname ($path);
+    }
 
   ${$self->getVariable ()} = $path;
 }

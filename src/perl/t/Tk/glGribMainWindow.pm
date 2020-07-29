@@ -30,9 +30,9 @@ sub populate
         ->pack (-expand => 1, -fill => 'both', -side => 'top');
     }
   
-  
+
 =pod
-  
+
   my $bs;
 
   $bs = 
@@ -41,7 +41,6 @@ sub populate
   ->pack (-side => 'top', -fill => 'x');
 
 =cut
-
 
   my $quit = 
   $frame->Button (-relief => 'raised', -text => 'Quit', 
@@ -66,7 +65,6 @@ sub select : method
   my ($x, $y) = $button->pointerxy (); 
   my $menu = $button->Menu
   (   
-    -title => 'Select window',
     -tearoff => 0,  
     -menuitems =>  
     [   

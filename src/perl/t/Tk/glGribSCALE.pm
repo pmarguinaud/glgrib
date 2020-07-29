@@ -34,6 +34,12 @@ sub populate
                  -showvalue => 1, -orient => 'horizontal', -resolution => 0.001)
     ->pack (-side => 'right', -expand => 1, -fill => 'x');
 
+  $self->{entry}
+    ->bind ('<4>' => sub { ${$self->{variable}} += 0.001 });
+
+  $self->{entry}
+    ->bind ('<5>' => sub { ${$self->{variable}} -= 0.001 });
+
   return $self;
 }
 

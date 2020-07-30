@@ -5,6 +5,8 @@ use tkbase qw (Tk::MainWindow);
 use strict;
 
 use glGrib;
+use Tk::glGrib;
+use Tk::glGrib_Panel;
 
 sub populate 
 {

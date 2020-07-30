@@ -1,0 +1,6 @@
+Revision history for Perl extension glGribTk.
+
+0.01  Thu Jul 30 11:03:00 2020
+	- original version; created by h2xs 1.23 with options
+		-A -n glGribTk
+

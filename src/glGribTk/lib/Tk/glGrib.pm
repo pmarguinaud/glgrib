@@ -1,11 +1,36 @@
 package Tk::glGrib;
 
+our $VERSION = 1.0;
+
 use strict;
 use JSON;
 use Storable;
 use Data::Dumper;
 use FileHandle;
 use Tk;
+use Tk::Pane;
+
+use Tk::glGrib_Frame;
+use Tk::glGrib_Entry;
+
+use Tk::glGribField;
+
+use Tk::glGribBOOLEAN;
+use Tk::glGribCOLOR;
+use Tk::glGribDATE;
+use Tk::glGribFIELDREF;
+use Tk::glGribFIELDTYPE;
+use Tk::glGribFLOAT;
+use Tk::glGribINTEGER;
+use Tk::glGribLATITUDE;
+use Tk::glGribLIST;
+use Tk::glGribLONGITUDE;
+use Tk::glGribPALETTENAME;
+use Tk::glGribPATH;
+use Tk::glGribPROJECTION;
+use Tk::glGribSCALE;
+use Tk::glGribSTRING;
+use Tk::glGribTRANSFORMATION;
 
 sub h1
 {
@@ -269,3 +294,27 @@ sub Tk::Separator
 }
 
 1;
+
+
+__END__
+
+# Below is stub documentation for your module. You'd better edit it!
+
+=head1 NAME
+
+Tk::glGrib - Perl/Tk interface to glGrib
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 SEE ALSO
+
+=head1 AUTHOR
+
+Philippe Marguinaud, pmarguinaud@hotmail.com
+
+=cut
+
+
+

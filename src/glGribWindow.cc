@@ -13,6 +13,9 @@
 #include <iostream>
 #include <stdexcept>
 
+#define GLFW_EXPOSE_NATIVE_X11
+#include <GLFW/glfw3native.h>
+
 namespace glGrib
 {
 
@@ -755,7 +758,13 @@ void Window::createGFLWwindow (GLFWwindow * context)
   else if (opts.fullscreen.y.on)
     getScreenSize (nullptr, &opts.height);
   
-  window = glfwCreateWindow (opts.width, opts.height, title.c_str (), nullptr, context);
+
+  {
+    // GLFW sets its on handler when creating a new window; this may interfere with other X11 libraries such as PerlTk
+    int (* handler)(Display *, XErrorEvent *) = XSetErrorHandler (nullptr);
+    window = glfwCreateWindow (opts.width, opts.height, title.c_str (), nullptr, context);
+    XSetErrorHandler (handler);
+  }
 
   if (window == nullptr)
     {

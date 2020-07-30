@@ -31,16 +31,10 @@ sub populate
     }
   
 
-=pod
-
-  my $bs;
-
-  $bs = 
+  $self->{glGrib}{select} = 
   $frame->Button (-relief => 'raised', -text => 'Select', 
-                  -command => sub { $self->select ($bs); })
+                  -command => sub { $self->select (); })
   ->pack (-side => 'top', -fill => 'x');
-
-=cut
 
   my $quit = 
   $frame->Button (-relief => 'raised', -text => 'Quit', 
@@ -58,7 +52,9 @@ sub populate
 
 sub select : method
 {
-  my ($self, $button) = @_;
+  my ($self) = @_;
+
+  my $button = $self->{glGrib}{select};
 
   my @w = 'glGrib'->window ();
 
@@ -71,11 +67,32 @@ sub select : method
       map
       {
         my $p = $_; 
-        [command => $p, -command => sub { 'glGrib'->window ($p) }]  
+        [command => "Window #$p", -command => sub { $self->selectPost ($p) }]  
       } @w
     ],  
   );  
   $menu->post ($x, $y);
+
+}
+
+sub selectPost
+{
+  my ($self, $rank) = @_;
+
+  'glGrib'->window ($rank);
+
+  for my $name (keys (%{ $self->{glGrib}{panels} }))
+    {
+      my $pane = $self->{glGrib}{panels}{$name};
+      if (&Exists ($pane))
+        {
+          $pane->Reload ();
+	}
+      else
+        {
+          delete $self->{glGrib}{panels}{$name};
+        }
+    }
 
 }
 

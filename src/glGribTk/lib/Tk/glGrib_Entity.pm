@@ -91,6 +91,7 @@ sub Text_
   my $opts = $self->getOptions ('+base');
   my @diff = &Tk::glGrib::diffOptions ($opts, $self->{glGrib}{opts});
 
+  use Tk::TextOptions;
   'Tk::TextOptions'->new (-opts => \@diff, -command => sub
      { 'glGrib'->set (@_); $self->Reload () if (&Exists ($self)); },
      -title => "$self->{glGrib}{name} options");

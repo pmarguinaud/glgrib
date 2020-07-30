@@ -41,6 +41,12 @@ sub readme
   $fh->print ("
 Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, gaussian grid.
 GLFW backend for interactive display, EGL backend for batch processing without X11 display.
+
+Perl/Tk interface.
+
+![](share/perltk/tk1.png)
+![](share/perltk/tk2.png)
+
   ");
 
 

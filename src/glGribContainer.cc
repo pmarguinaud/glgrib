@@ -330,10 +330,10 @@ void containerPlain::buildIndex ()
         {
 	  size_t len = 256;
           char tmp[len];
-          if (ext != "")
-            ext += ",";
           if (codes_is_defined (h, k.c_str ()))
             {
+              if (ext != "")
+                ext += ",";
               codes_get_string (h, k.c_str (), tmp, &len);
 	      ext += k + "=\"" + std::string (tmp) + "\"";
 	    }

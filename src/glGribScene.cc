@@ -404,7 +404,19 @@ void Scene::setup (const Options & o)
       if (field != nullptr)
         {
           const_GeometryPtr geometry = field->getGeometry ();
-          geometry->getView (&d.view);
+          if (d.opts.scene.center.gridpoint < 0)
+            {
+              geometry->getView (&d.view);
+            }
+          else
+            {
+              OptionsView view_opts = d.view.getOptions ();
+              float lon, lat;
+              geometry->index2latlon (d.opts.scene.center.gridpoint, &lat, &lon);
+              view_opts.lat = lat * rad2deg;
+              view_opts.lon = lon * rad2deg;
+              d.view.setOptions (view_opts);
+            }
         }
     }
 

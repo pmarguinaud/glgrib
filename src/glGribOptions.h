@@ -1606,7 +1606,9 @@ public:
     INCLUDE_N (title,          Title options);
 
     DESC (select.field_rank, Rank of field to select);
+
     DESC (center.on, Center on first field);
+    DESC (center.gridpoint, Rank of grid point to set focus on);
   }
   struct
   {
@@ -1628,6 +1630,7 @@ public:
   struct
   {
     bool on = false;
+    int gridpoint = -1;
   } center;
 };
 

@@ -70,7 +70,13 @@ public:
   {
     palette = glGrib::Palette (o, getNormedMinValue (), getNormedMaxValue ());
   }
-  virtual std::vector<float> getValue (int index) const 
+
+  const std::vector<BufferPtr<float>> & getValues () const
+  {
+    return values;
+  }
+
+  virtual const std::vector<float> getValue (int index) const 
   { 
     std::vector<float> val;
     for (size_t i = 0; i < values.size (); i++)
@@ -78,13 +84,13 @@ public:
         val.push_back (values[i][index]);
     return val;
   }
-  virtual std::vector<float> getMaxValue () const 
+  virtual const std::vector<float> getMaxValue () const 
   { 
     std::vector<float> val; 
     for (size_t i = 0; i < meta.size (); i++) val.push_back (meta[i].valmax); 
     return val; 
   }
-  virtual std::vector<float> getMinValue () const 
+  virtual const std::vector<float> getMinValue () const 
   { 
     std::vector<float> val; 
     for (size_t i = 0; i < meta.size (); i++) val.push_back (meta[i].valmin); 

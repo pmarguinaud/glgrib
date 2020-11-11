@@ -3,6 +3,7 @@
 #include "glGribRender.h"
 #include "glGribContainer.h"
 #include "glGribResolve.h"
+#include "glGribTrigonometry.h"
 
 #include <iostream>
 #include <exception>
@@ -70,6 +71,51 @@ void Shell::do_resolve (const std::vector<std::string> & args, Render * gwindow)
     return;
 
   listStr.push_back (Resolve (args[1]));
+}
+
+void Shell::do_goto (const std::vector<std::string> & args, Render * gwindow)
+{
+  if (args.size () < 2)
+    return;
+
+  auto & scene = gwindow->getScene ();
+
+  auto field = scene.getCurrentField ();
+
+  if (field == nullptr)
+    return;
+
+  int gridpoint = -1;
+
+  if ((args[1] == "min") || (args[1] == "max"))
+    {
+      auto & values = field->getValues ();
+      if (values.size () != 1)
+        return;
+      auto v = values[0];
+  
+      float * b = &v[0], * e = &v[0] + v->size ();
+
+      gridpoint = ((args[1] == "min") ?  std::min_element (b, e) : std::max_element (b, e)) - b;
+    }
+  else
+    {
+      gridpoint = std::stoi (args[1]);
+    }
+
+  if (gridpoint < 0)
+    return;
+
+  const_GeometryPtr geometry = field->getGeometry ();
+
+  auto & view = scene.getView ();
+
+  OptionsView view_opts = view.getOptions ();
+  float lon, lat;
+  geometry->index2latlon (gridpoint, &lat, &lon);
+  view_opts.lat = lat * rad2deg;
+  view_opts.lon = lon * rad2deg;
+  view.setOptions (view_opts);
 }
 
 void Shell::do_set (const std::vector<std::string> & args, Render * gwindow)
@@ -378,6 +424,7 @@ void Shell::execute (const std::vector<std::string> & args)
   glGribShellIfCommand (set);
   glGribShellIfCommand (window);
   glGribShellIfCommand (help);
+  glGribShellIfCommand (goto);
 
 #undef glGribShellIfCommand
   

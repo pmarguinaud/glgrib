@@ -47,7 +47,7 @@ static CURL * get_curl (CURL * ua)
   curl_easy_setopt (ua, CURLOPT_NETRC, (long)CURL_NETRC_REQUIRED);
   curl_easy_setopt (ua, CURLOPT_USERAGENT, "curl/7.58.0");
   curl_easy_setopt (ua, CURLOPT_MAXREDIRS, 50L);
-  curl_easy_setopt (ua, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_2TLS);
+  curl_easy_setopt (ua, CURLOPT_HTTP_VERSION, (long)CURL_HTTP_VERSION_1_1);
   curl_easy_setopt (ua, CURLOPT_TCP_KEEPALIVE, 1L);
   return ua;
 }

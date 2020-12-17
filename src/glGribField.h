@@ -223,7 +223,6 @@ private:
   friend class FieldVector;
   friend class FieldScalar< 8>;
   friend class FieldScalar<16>;
-  friend class FieldScalar<16>;
   friend class FieldScalar<32>;
   friend class FieldIsoFill;
   friend class FieldStream;
@@ -251,7 +250,6 @@ private:
   OpenGLBufferPtr<T> heightbuffer;
   friend class FieldVector;
   friend class FieldScalar< 8>;
-  friend class FieldScalar<16>;
   friend class FieldScalar<16>;
   friend class FieldScalar<32>;
   friend class FieldIsoFill;

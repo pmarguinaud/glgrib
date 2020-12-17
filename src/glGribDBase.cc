@@ -32,7 +32,7 @@ std::string trim (const std::string & str)
 
 bool DBase::open (const std::string & path)
 {
-  fh = std::ifstream (path + ".dbf", std::ios::in | std::ifstream::binary);
+  fh.open (path + ".dbf", std::ios::in | std::ifstream::binary);
   if (! fh)
     return false;
   header.read (fh);

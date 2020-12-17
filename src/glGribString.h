@@ -138,7 +138,7 @@ private:
     float scaleXYZ = 1.0f;
     int len;    // Total number of characters
     OpenGLBufferPtr<float> xyzbuffer, vertexbuffer, letterbuffer;
-    const_FontPtr font = nullptr; 
+    const_FontPtr font;
   } d;
   OpenGLVertexArray<String> VAID;
   friend class String2D<SHARED,CHANGE>;

@@ -18,6 +18,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+const float halfpi = M_PI / 2;
+
 EGLDisplay display = nullptr;
 EGLConfig  config  = nullptr;
 EGLContext context = nullptr;
@@ -152,9 +154,15 @@ int main (int argc, const char * argv[])
   glGrib::Test test;
   glm::mat4 MVP;
 
-  test.setup ();
+  std::vector<unsigned int> ind {0, 1, 2};
+  std::vector<float> lonlat {0.0f, 0.0f, halfpi, 0.0f, 0.0f, halfpi};
 
-{
+  test.numberOfTriangles = ind.size () / 3;
+
+  test.vertexbuffer = glGrib::OpenGLBufferPtr<float> (lonlat);
+  test.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind);
+
+
   glm::vec3 pos
     (opts.view.distance * glm::cos (glm::radians (float (opts.view.lon))) * glm::cos (glm::radians (float (opts.view.lat))), 
      opts.view.distance * glm::sin (glm::radians (float (opts.view.lon))) * glm::cos (glm::radians (float (opts.view.lat))),
@@ -166,7 +174,6 @@ int main (int argc, const char * argv[])
   glm::mat4 view       = glm::lookAt (pos, glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 0.0f, 1.0f));
   glm::mat4 model      = glm::mat4 (1.0f);
   MVP = projection * view * model; 
-}
 
   glViewport (0, 0, opts.render.width, opts.render.height);
 
@@ -217,9 +224,12 @@ int main (int argc, const char * argv[])
 
   glDisable (GL_CULL_FACE);
 
-  test.VAID.bind ();
+  GLuint VertexArrayID;
+  glGenVertexArrays (1, &VertexArrayID);
+  glBindVertexArray (VertexArrayID);
+  test.setupVertexAttributes ();
   glDrawElements (GL_TRIANGLES, 3 * test.numberOfTriangles, GL_UNSIGNED_INT, nullptr);
-  test.VAID.unbind ();
+  glBindVertexArray (0);
 
   glEnable (GL_CULL_FACE);
 

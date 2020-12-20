@@ -45,13 +45,13 @@ void Batch::setup (const Options & o, EGLContext c)
   context || preEGLError ();
 
   makeCurrent ();
-#endif
 
   scene.setup (o);
 
   reSize (opts.width, opts.height);
 
   glInit ();
+#endif
 
   id_ = idcount++;
 

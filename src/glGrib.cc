@@ -147,24 +147,79 @@ int main (int argc, const char * argv[])
 
   eglMakeCurrent (display, nullptr, nullptr, context) || preEGLError ();
 
-  glGrib::WindowSet * wset = glGrib::WindowSet::create (opts);
-  glGrib::ShellRegular & shell = glGrib::ShellRegular::getInstance ();
+  glGrib::Batch * gwindow = new glGrib::Batch (opts);
+  gwindow->getScene ().setup (opts);
+  gwindow->reSize (opts.render.width, opts.render.height);
+  glGrib::glInit ();
 
-  if (opts.shell.on)
-    {
-      shell.setup (opts.shell);
-      shell.start (wset);
-      if (! shell.isSynchronous ())
-        wset->run (&shell);
-    }
-  else
-    {
-      wset->run ();
-    }
+//gwindow->framebuffer (opts.render.offscreen.format);
+  {
+    unsigned int framebufferMMSA;
+    unsigned int texturebufferMMSA;
+    unsigned int renderbufferMMSA;
+    unsigned int framebufferPOST;
+    unsigned int texturebufferPOST;
 
-  shell.wait ();
+    glGenFramebuffers (1, &framebufferMMSA);
+    glBindFramebuffer (GL_FRAMEBUFFER, framebufferMMSA);
 
-  delete wset;
+    glGenTextures (1, &texturebufferMMSA);
+    glBindTexture (GL_TEXTURE_2D_MULTISAMPLE, texturebufferMMSA);
+    glTexImage2DMultisample (GL_TEXTURE_2D_MULTISAMPLE, opts.render.antialiasing.samples, 
+      	               GL_RGB, opts.render.width, opts.render.height, GL_TRUE);
+    glBindTexture (GL_TEXTURE_2D_MULTISAMPLE, 0);
+    glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
+                            GL_TEXTURE_2D_MULTISAMPLE, texturebufferMMSA, 0);
+
+    glGenRenderbuffers (1, &renderbufferMMSA);
+    glBindRenderbuffer (GL_RENDERBUFFER, renderbufferMMSA);
+    glRenderbufferStorageMultisample (GL_RENDERBUFFER, opts.render.antialiasing.samples, 
+      	                        GL_DEPTH24_STENCIL8, opts.render.width, opts.render.height);
+    glBindRenderbuffer (GL_RENDERBUFFER, 0);
+    glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 
+                               GL_RENDERBUFFER, renderbufferMMSA);
+
+    if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+      throw std::runtime_error (std::string ("Framebuffer is not complete"));
+
+    glGenFramebuffers (1, &framebufferPOST);
+    glBindFramebuffer (GL_FRAMEBUFFER, framebufferPOST);
+
+    glGenTextures (1, &texturebufferPOST);
+    glBindTexture (GL_TEXTURE_2D, texturebufferPOST);
+    glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, opts.render.width, opts.render.height, 
+                  0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D (GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 
+                            GL_TEXTURE_2D, texturebufferPOST, 0);	
+
+    if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+      throw std::runtime_error (std::string ("Framebuffer is not complete"));
+
+    glBindFramebuffer (GL_FRAMEBUFFER, framebufferMMSA);
+    
+    gwindow->getScene ().render ();
+
+    glBindFramebuffer (GL_READ_FRAMEBUFFER, framebufferMMSA);
+    glBindFramebuffer (GL_DRAW_FRAMEBUFFER, framebufferPOST);
+    glBlitFramebuffer (0, 0, opts.render.width, opts.render.height, 0, 0, opts.render.width, opts.render.height, 
+                       GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+    glBindFramebuffer (GL_FRAMEBUFFER, framebufferPOST);
+    
+    gwindow->snapshot (opts.render.offscreen.format);
+
+    glDeleteTextures (1, &texturebufferPOST);
+    glDeleteFramebuffers (1, &framebufferPOST);
+    glDeleteRenderbuffers (1, &renderbufferMMSA);
+    glDeleteTextures (1, &texturebufferMMSA);
+    glDeleteFramebuffers (1, &framebufferMMSA);
+    
+    glBindFramebuffer (GL_FRAMEBUFFER, 0);
+  }
+
+  delete gwindow;
 
   eglDestroyContext (display, context) || preEGLError ();
 

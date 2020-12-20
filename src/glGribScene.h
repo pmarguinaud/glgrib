@@ -270,7 +270,7 @@ public:
   const OptionsTitle & getTitleOptions () const;
 
 
-private:
+public:
   std::vector<Field*> fieldlist;
 
   class _data

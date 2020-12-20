@@ -148,9 +148,22 @@ int main (int argc, const char * argv[])
   eglMakeCurrent (display, nullptr, nullptr, context) || preEGLError ();
 
   glGrib::Batch * gwindow = new glGrib::Batch (opts);
-  gwindow->getScene ().setup (opts);
-  gwindow->reSize (opts.render.width, opts.render.height);
-  glGrib::glInit ();
+
+  auto & scene = gwindow->getScene ();
+
+  scene.setup (opts);
+  glViewport (0, 0, opts.render.width, opts.render.height);
+  scene.setViewport (opts.render.width, opts.render.height);
+
+  glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
+  glEnable (GL_DEPTH_TEST);
+  glEnable (GL_BLEND);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glCullFace (GL_BACK);
+  glFrontFace (GL_CCW);
+  glEnable (GL_CULL_FACE);
+  glDepthFunc (GL_LESS); 
+  glEnable (GL_MULTISAMPLE);
 
 //gwindow->framebuffer (opts.render.offscreen.format);
   {
@@ -199,7 +212,7 @@ int main (int argc, const char * argv[])
 
     glBindFramebuffer (GL_FRAMEBUFFER, framebufferMMSA);
     
-    gwindow->getScene ().render ();
+    scene.render ();
 
     glBindFramebuffer (GL_READ_FRAMEBUFFER, framebufferMMSA);
     glBindFramebuffer (GL_DRAW_FRAMEBUFFER, framebufferPOST);

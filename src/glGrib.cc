@@ -151,16 +151,15 @@ int main (int argc, const char * argv[])
 
   glGrib::Batch * gwindow = new glGrib::Batch (opts);
 
-  glGrib::Test test;
   glm::mat4 MVP;
 
   std::vector<unsigned int> ind {0, 1, 2};
   std::vector<float> lonlat {0.0f, 0.0f, halfpi, 0.0f, 0.0f, halfpi};
 
-  test.numberOfTriangles = ind.size () / 3;
+  int numberOfTriangles = ind.size () / 3;
 
-  test.vertexbuffer = glGrib::OpenGLBufferPtr<float> (lonlat);
-  test.elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind);
+  glGrib::OpenGLBufferPtr<float> vertexbuffer = glGrib::OpenGLBufferPtr<float> (lonlat);
+  glGrib::OpenGLBufferPtr<unsigned int> elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind);
 
 
   glm::vec3 pos
@@ -227,8 +226,13 @@ int main (int argc, const char * argv[])
   GLuint VertexArrayID;
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
-  test.setupVertexAttributes ();
-  glDrawElements (GL_TRIANGLES, 3 * test.numberOfTriangles, GL_UNSIGNED_INT, nullptr);
+
+  vertexbuffer->bind (GL_ARRAY_BUFFER);
+  glEnableVertexAttribArray (0); 
+  glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+  elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+
+  glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, nullptr);
   glBindVertexArray (0);
 
   glEnable (GL_CULL_FACE);

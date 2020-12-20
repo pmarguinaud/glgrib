@@ -206,7 +206,7 @@ int main (int argc, const char * argv[])
   const EGLint ctxAttr[] = 
   {
     EGL_CONTEXT_MAJOR_VERSION, 4,
-    EGL_CONTEXT_MINOR_VERSION, 3,
+    EGL_CONTEXT_MINOR_VERSION, 4,
     EGL_NONE
   };
 
@@ -365,7 +365,7 @@ void main()
     for (int j = 0; j < 3; j++)
       rgb[3*i+j] = rgb[4*i+j];
 
-  screenshot_ppm ("glgrib.ppm", width, height, &rgb[0]);
+  screenshot_ppm ("image.ppm", width, height, &rgb[0]);
 
   // Cleanup
 

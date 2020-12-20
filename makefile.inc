@@ -8,7 +8,7 @@ NETCDF_PREFIX=/home/marguina/install/netcdf-c-4.7.4
 ECCODES_PREFIX=/home/marguina/install/eccodes-2.14.0
 SQLITE3_PREFIX=/home/marguina/install/sqlite-3.34.0
 
-LDFLAGS=-fopenmp -lglGrib -L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib \
+LDFLAGS=-fopenmp -L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib \
         -lLFI -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto -lpthread \
         -L$(SQLITE3_PREFIX)/lib -Wl,-rpath,$(SQLITE3_PREFIX)/lib -lsqlite3 -lcurl -lshp \
         -L$(ECCODES_PREFIX)/lib -Wl,-rpath,$(ECCODES_PREFIX)/lib -leccodes \

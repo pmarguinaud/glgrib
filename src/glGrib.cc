@@ -153,33 +153,20 @@ int main (int argc, const char * argv[])
   glGrib::View view;
 
   test.setup ();
-  view.width =  opts.render.width;
-  view.height =  opts.render.height;
 
 {
-  glGrib::Projection::type pt = glGrib::Projection::typeFromString ("XYZ");
-  view.ps.setType (pt);
-
   glm::vec3 pos
     (opts.view.distance * glm::cos (glm::radians (float (opts.view.lon))) * glm::cos (glm::radians (float (opts.view.lat))), 
      opts.view.distance * glm::sin (glm::radians (float (opts.view.lon))) * glm::cos (glm::radians (float (opts.view.lat))),
      opts.view.distance *                                              glm::sin (glm::radians (float (opts.view.lat))));
 
-  view.viewport   = glm::vec4 (0.0f, 0.0f, static_cast<float> (view.width), static_cast<float> (view.height));
+  view.viewport   = glm::vec4 (0.0f, 0.0f, static_cast<float> (opts.render.width), static_cast<float> (opts.render.height));
 
-  float ratio = static_cast<float> (view.width) / static_cast<float> (view.height);
+  float ratio = static_cast<float> (opts.render.width) / static_cast<float> (opts.render.height);
 
-  glm::mat4 trans = glm::mat4 (1.0f);
-
-  if ((! opts.view.center.on) && (ratio > 1.0f))
-    trans = glm::translate (trans, glm::vec3 ((ratio - 1.0f) / 2.0f, 0.0f, 0.0f));
-       
   glm::mat4 p = glm::perspective (glm::radians (opts.view.fov), ratio, 0.1f, 100.0f);
-
-  view.projection = trans * p;
-
+  view.projection = p;
   view.view       = glm::lookAt (pos, glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 0.0f, 1.0f));
-
   view.model      = glm::mat4 (1.0f);
   view.MVP = view.projection * view.view * view.model; 
 }

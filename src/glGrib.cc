@@ -1,6 +1,5 @@
-#include "glGribProgram.h"
-
 #include <iostream>
+#include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -17,12 +16,6 @@
 #include <unistd.h>
 
 const float halfpi = M_PI / 2;
-
-EGLDisplay display = nullptr;
-EGLConfig  config  = nullptr;
-EGLContext context = nullptr;
-int fd = -1;
-struct gbm_device * gbm = nullptr;
 
 
 static void screenshot_ppm
@@ -41,6 +34,79 @@ static void screenshot_ppm
       fprintf(f, "\n");
   }
   fclose(f);
+}
+
+static
+GLuint compileShader (const std::string & name, const std::string & code, GLuint type)
+{
+  int len;
+  GLint res = GL_FALSE;
+  GLuint id = glCreateShader (type);
+  const char * str = code.c_str ();
+
+  glShaderSource (id, 1, &str, nullptr);
+  glCompileShader (id);
+
+  glGetShaderiv (id, GL_COMPILE_STATUS, &res);
+  glGetShaderiv (id, GL_INFO_LOG_LENGTH, &len);
+  if (len > 0)
+    {
+      char mess[len+1];
+      glGetShaderInfoLog (id, len, nullptr, &mess[0]);
+      throw std::runtime_error (std::string ("Error compiling shader : ") + name + ", " + std::string (mess));
+    }
+
+  return id;
+}
+
+static
+GLuint LoadShader 
+  (const std::string & name, const std::string & FragmentShaderCode,
+   const std::string & VertexShaderCode, const std::string & GeometryShaderCode)
+{
+  GLuint VertexShaderID = compileShader (name, VertexShaderCode, GL_VERTEX_SHADER);
+  GLuint FragmentShaderID = compileShader (name, FragmentShaderCode, GL_FRAGMENT_SHADER);
+
+  bool geom = GeometryShaderCode != "";
+  GLuint GeometryShaderID = 0;
+  if (geom)
+    GeometryShaderID = compileShader (name, GeometryShaderCode, GL_GEOMETRY_SHADER);
+
+  // Link the program
+  GLuint ProgramID = glCreateProgram ();
+  glAttachShader (ProgramID, VertexShaderID);
+  glAttachShader (ProgramID, FragmentShaderID);
+  if (geom)
+    glAttachShader (ProgramID, GeometryShaderID);
+
+  glLinkProgram (ProgramID);
+  
+  // Check the program
+
+  int len;
+  GLint res = GL_FALSE;
+
+  glGetProgramiv (ProgramID, GL_LINK_STATUS, &res);
+  glGetProgramiv (ProgramID, GL_INFO_LOG_LENGTH, &len);
+  if (len > 0)
+    {
+      char mess[len+1];
+      glGetProgramInfoLog (ProgramID, len, nullptr, &mess[0]);
+      throw std::runtime_error (std::string ("Error linking program : ") + name + ", " + std::string (mess));
+    }
+  
+  glDetachShader (ProgramID, VertexShaderID);
+  glDetachShader (ProgramID, FragmentShaderID);
+  if (geom)
+    glDetachShader (ProgramID, GeometryShaderID);
+  
+  glDeleteShader (VertexShaderID);
+  glDeleteShader (FragmentShaderID);
+
+  if (geom)
+    glDeleteShader (GeometryShaderID);
+  
+  return ProgramID;
 }
 
 
@@ -108,6 +174,10 @@ int main (int argc, const char * argv[])
   const int width = 800, height = 800;
   const float distance = 6.0f, lon = 0.0f, lat = 0.0f, fov = 20.0f;
   
+  EGLDisplay display = nullptr;
+  EGLConfig  config  = nullptr;
+  EGLContext context = nullptr;
+  struct gbm_device * gbm = nullptr;
 
   int fd = open ("/dev/dri/renderD128", O_RDWR);
 
@@ -221,12 +291,51 @@ int main (int argc, const char * argv[])
   
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  glGrib::Program program;
-  program.read ("TEST");
-  program.compile ();
-  program.use ();
-  program.set ("MVP", MVP);
+  std::string FragmentShaderCode = R"V0G0N(
+#version 440 core
+out vec4 color;
 
+void main()
+{
+  int k = gl_PrimitiveID % 6;
+  
+  vec3 colors[6];
+  colors[0] = vec3 (1.0f, 0.0f, 0.0f);
+  colors[1] = vec3 (0.0f, 1.0f, 0.0f);
+  colors[2] = vec3 (0.0f, 0.0f, 1.0f);
+  colors[3] = vec3 (0.9f, 0.9f, 0.6f);
+  colors[4] = vec3 (0.0f, 0.1f, 1.0f);
+  colors[5] = vec3 (1.0f, 0.0f, 1.0f);
+  
+  color.rgb = colors[k];
+  color.a   = 1.;
+}
+
+)V0G0N";
+
+  std::string VertexShaderCode = R"V0G0N(
+#version 440 core
+layout(location = 0) in vec2 vertexLonLat;
+
+uniform mat4 MVP;
+
+void main()
+{
+  float lon = vertexLonLat.x, lat = vertexLonLat.y;
+
+  float coslon = cos (lon), sinlon = sin (lon);
+  float coslat = cos (lat), sinlat = sin (lat);
+
+  vec3 vertexPos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
+
+  gl_Position = MVP * vec4 (vertexPos, 1); 
+}
+
+)V0G0N";
+
+  GLuint programID = LoadShader ("TEST", FragmentShaderCode, VertexShaderCode, "");
+  glUseProgram (programID);
+  glUniformMatrix4fv (glGetUniformLocation (programID, "MVP"), 1, GL_FALSE, &MVP[0][0]);
 
   glDisable (GL_CULL_FACE);
 

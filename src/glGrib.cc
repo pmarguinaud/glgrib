@@ -150,7 +150,7 @@ int main (int argc, const char * argv[])
   glGrib::Batch * gwindow = new glGrib::Batch (opts);
 
   glGrib::Test test;
-  glGrib::View view;
+  glm::mat4 MVP;
 
   test.setup ();
 
@@ -160,15 +160,12 @@ int main (int argc, const char * argv[])
      opts.view.distance * glm::sin (glm::radians (float (opts.view.lon))) * glm::cos (glm::radians (float (opts.view.lat))),
      opts.view.distance *                                              glm::sin (glm::radians (float (opts.view.lat))));
 
-  view.viewport   = glm::vec4 (0.0f, 0.0f, static_cast<float> (opts.render.width), static_cast<float> (opts.render.height));
-
   float ratio = static_cast<float> (opts.render.width) / static_cast<float> (opts.render.height);
 
-  glm::mat4 p = glm::perspective (glm::radians (opts.view.fov), ratio, 0.1f, 100.0f);
-  view.projection = p;
-  view.view       = glm::lookAt (pos, glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 0.0f, 1.0f));
-  view.model      = glm::mat4 (1.0f);
-  view.MVP = view.projection * view.view * view.model; 
+  glm::mat4 projection = glm::perspective (glm::radians (opts.view.fov), ratio, 0.1f, 100.0f);
+  glm::mat4 view       = glm::lookAt (pos, glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 0.0f, 1.0f));
+  glm::mat4 model      = glm::mat4 (1.0f);
+  MVP = projection * view * model; 
 }
 
   glViewport (0, 0, opts.render.width, opts.render.height);
@@ -216,7 +213,7 @@ int main (int argc, const char * argv[])
   glGrib::Program * program = glGrib::Program::load ("TEST");
   program->use (); 
 
-  program->set ("MVP", view.MVP);
+  program->set ("MVP", MVP);
 
   glDisable (GL_CULL_FACE);
 

@@ -1,10 +1,8 @@
-#include "glGribShellRegular.h"
-#include "glGribWindowSet.h"
-#include "glGribOptions.h"
-#include "glGribBatch.h"
-#include "glGribGeometry.h"
+#include "glGribProgram.h"
 
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #define EGL_EGLEXT_PROTOTYPES
 #include <EGL/egl.h>
@@ -107,7 +105,9 @@ bool preEGLError ()
 
 int main (int argc, const char * argv[])
 {
-  glGrib::Options opts;
+  const int width = 800, height = 800;
+  const float distance = 6.0f, lon = 0.0f, lat = 0.0f, fov = 20.0f;
+  
 
   int fd = open ("/dev/dri/renderD128", O_RDWR);
 
@@ -149,8 +149,6 @@ int main (int argc, const char * argv[])
 
   eglMakeCurrent (display, nullptr, nullptr, context) || preEGLError ();
 
-  glGrib::Batch * gwindow = new glGrib::Batch (opts);
-
   glm::mat4 MVP;
 
   std::vector<unsigned int> ind {0, 1, 2};
@@ -158,23 +156,30 @@ int main (int argc, const char * argv[])
 
   int numberOfTriangles = ind.size () / 3;
 
-  glGrib::OpenGLBufferPtr<float> vertexbuffer = glGrib::OpenGLBufferPtr<float> (lonlat);
-  glGrib::OpenGLBufferPtr<unsigned int> elementbuffer = glGrib::OpenGLBufferPtr<unsigned int> (ind);
+  GLuint vertexbufferID;
+  glGenBuffers (1, &vertexbufferID);
+  glBindBuffer (GL_ARRAY_BUFFER, vertexbufferID);
+  glBufferData (GL_ARRAY_BUFFER, sizeof (float) * lonlat.size (), &lonlat[0], GL_STATIC_DRAW);
+  glBindBuffer (GL_ARRAY_BUFFER, 0);
 
+  GLuint elementbufferID;
+  glGenBuffers (1, &elementbufferID);
+  glBindBuffer (GL_ARRAY_BUFFER, elementbufferID);
+  glBufferData (GL_ARRAY_BUFFER, sizeof (unsigned int) * ind.size (), &ind[0], GL_STATIC_DRAW);
 
   glm::vec3 pos
-    (opts.view.distance * glm::cos (glm::radians (float (opts.view.lon))) * glm::cos (glm::radians (float (opts.view.lat))), 
-     opts.view.distance * glm::sin (glm::radians (float (opts.view.lon))) * glm::cos (glm::radians (float (opts.view.lat))),
-     opts.view.distance *                                              glm::sin (glm::radians (float (opts.view.lat))));
+    (distance * glm::cos (glm::radians (float (lon))) * glm::cos (glm::radians (float (lat))), 
+     distance * glm::sin (glm::radians (float (lon))) * glm::cos (glm::radians (float (lat))),
+     distance *                                         glm::sin (glm::radians (float (lat))));
 
-  float ratio = static_cast<float> (opts.render.width) / static_cast<float> (opts.render.height);
+  float ratio = static_cast<float> (width) / static_cast<float> (height);
 
-  glm::mat4 projection = glm::perspective (glm::radians (opts.view.fov), ratio, 0.1f, 100.0f);
+  glm::mat4 projection = glm::perspective (glm::radians (fov), ratio, 0.1f, 100.0f);
   glm::mat4 view       = glm::lookAt (pos, glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 0.0f, 1.0f));
   glm::mat4 model      = glm::mat4 (1.0f);
   MVP = projection * view * model; 
 
-  glViewport (0, 0, opts.render.width, opts.render.height);
+  glViewport (0, 0, width, height);
 
   glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
   glEnable (GL_DEPTH_TEST);
@@ -195,8 +200,8 @@ int main (int argc, const char * argv[])
   
   glGenTextures (1, &texturebuffer);
   glBindTexture (GL_TEXTURE_2D, texturebuffer);
-  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, opts.render.width, 
-                opts.render.height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+  glTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, width, 
+                height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
   
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -207,7 +212,7 @@ int main (int argc, const char * argv[])
   glBindRenderbuffer (GL_RENDERBUFFER, renderbuffer);
   
   glRenderbufferStorage (GL_RENDERBUFFER, GL_DEPTH32F_STENCIL8, 
-                         opts.render.width, opts.render.height); 
+                         width, height); 
   glFramebufferRenderbuffer (GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, 
                              GL_RENDERBUFFER, renderbuffer); 
   
@@ -216,10 +221,12 @@ int main (int argc, const char * argv[])
   
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  glGrib::Program * program = glGrib::Program::load ("TEST");
-  program->use (); 
+  glGrib::Program program;
+  program.read ("TEST");
+  program.compile ();
+  program.use ();
+  program.set ("MVP", MVP);
 
-  program->set ("MVP", MVP);
 
   glDisable (GL_CULL_FACE);
 
@@ -227,31 +234,30 @@ int main (int argc, const char * argv[])
   glGenVertexArrays (1, &VertexArrayID);
   glBindVertexArray (VertexArrayID);
 
-  vertexbuffer->bind (GL_ARRAY_BUFFER);
+  glBindBuffer (GL_ARRAY_BUFFER, vertexbufferID);
   glEnableVertexAttribArray (0); 
   glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-  elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
+
+  glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, elementbufferID);
 
   glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, nullptr);
   glBindVertexArray (0);
 
   glEnable (GL_CULL_FACE);
 
-  std::vector<unsigned char> rgb (opts.render.width * opts.render.height * 4);
-  glReadPixels (0, 0, opts.render.width, opts.render.height, GL_RGBA, GL_UNSIGNED_BYTE, &rgb[0]);
+  std::vector<unsigned char> rgb (width * height * 4);
+  glReadPixels (0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, &rgb[0]);
 
-  for (int i = 0; i < opts.render.width * opts.render.height; i++)
+  for (int i = 0; i < width * height; i++)
     for (int j = 0; j < 3; j++)
       rgb[3*i+j] = rgb[4*i+j];
 
-  screenshot_ppm ("glgrib.ppm", opts.render.width, opts.render.height, &rgb[0]);
+  screenshot_ppm ("glgrib.ppm", width, height, &rgb[0]);
 
   glDeleteRenderbuffers (1, &renderbuffer); 
   glDeleteTextures (1, &texturebuffer);
   glDeleteFramebuffers (1, &framebuffer);
   glBindFramebuffer (GL_FRAMEBUFFER, 0);
-
-  delete gwindow;
 
   eglDestroyContext (display, context) || preEGLError ();
 

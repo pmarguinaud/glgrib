@@ -138,7 +138,7 @@ public:
 
   Program () {}
 
-private:
+public:
   explicit Program (const std::string & fsc, const std::string & vsc, const std::string & gsc)
                   : FragmentShaderCode (fsc), VertexShaderCode (vsc), GeometryShaderCode (gsc) { }
   explicit Program (const std::string & fsc, const std::string & vsc)

@@ -8,7 +8,6 @@ namespace glGrib
 
 void Test::render (const View & view, const OptionsLight & light) const
 {
-  return;
   Program * program = Program::load ("TEST");
   program->use (); 
 
@@ -36,7 +35,6 @@ void Test::setupVertexAttributes () const
 
 void Test::setup ()
 {
-  return;
 
   std::vector<unsigned int> ind {0, 1, 2};
   std::vector<float> lonlat {0.0f, 0.0f, halfpi, 0.0f, 0.0f, halfpi};

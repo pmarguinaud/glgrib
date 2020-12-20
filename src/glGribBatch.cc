@@ -29,6 +29,7 @@ void Batch::setup (const Options & o, EGLContext c)
 {
   opts = o.render;
 
+#ifdef UNDEF
   egl = glGrib::egl;
 
   auto version = getOpenGLVersion (opts.opengl.version);
@@ -44,6 +45,7 @@ void Batch::setup (const Options & o, EGLContext c)
   context || preEGLError ();
 
   makeCurrent ();
+#endif
 
   scene.setup (o);
 
@@ -57,6 +59,7 @@ void Batch::setup (const Options & o, EGLContext c)
 
 void Batch::makeCurrent () 
 {
+  return;
   eglMakeCurrent (egl->display, nullptr, nullptr, context) || preEGLError ();
 }
 

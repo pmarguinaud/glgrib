@@ -59,8 +59,6 @@ void Batch::setup (const Options & o, EGLContext c)
 
 void Batch::makeCurrent () 
 {
-  return;
-  eglMakeCurrent (egl->display, nullptr, nullptr, context) || preEGLError ();
 }
 
 void Batch::run (Shell * shell)
@@ -106,7 +104,6 @@ Batch::~Batch ()
 {
 // Destroy the scene *before* the EGL context/display is destroyed
   clear ();
-  eglDestroyContext (egl->display, context) || preEGLError ();
 }
 
 }

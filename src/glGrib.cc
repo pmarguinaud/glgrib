@@ -166,6 +166,8 @@ int main (int argc, const char * argv[])
 
   delete wset;
 
+  eglDestroyContext (display, context) || preEGLError ();
+
   glGrib::glStop ();
 
   return 0;

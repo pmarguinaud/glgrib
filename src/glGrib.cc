@@ -193,11 +193,31 @@ int main (int argc, const char * argv[])
   if (glCheckFramebufferStatus (GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
     throw std::runtime_error (std::string ("Framebuffer is not complete"));
   
-//scene.render ();
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  scene.d.test.render (scene.d.view, scene.d.opts.scene.light);
 
-  gwindow->snapshot (opts.render.offscreen.format);
+  glGrib::Program * program = glGrib::Program::load ("TEST");
+  program->use (); 
+
+  scene.d.view.setMVP (program);
+
+  glDisable (GL_CULL_FACE);
+
+  scene.d.test.VAID.bind ();
+  glDrawElements (GL_TRIANGLES, 3 * scene.d.test.numberOfTriangles, GL_UNSIGNED_INT, nullptr);
+  scene.d.test.VAID.unbind ();
+
+  glEnable (GL_CULL_FACE);
+
+  scene.d.view.delMVP (program);
+
+  std::vector<unsigned char> rgb (opts.render.width * opts.render.height * 4);
+  glReadPixels (0, 0, opts.render.width, opts.render.height, GL_RGBA, GL_UNSIGNED_BYTE, &rgb[0]);
+
+  for (int i = 0; i < opts.render.width * opts.render.height; i++)
+    for (int j = 0; j < 3; j++)
+      rgb[3*i+j] = rgb[4*i+j];
+
+  screenshot_ppm ("glgrib.ppm", opts.render.width, opts.render.height, &rgb[0]);
 
   glDeleteRenderbuffers (1, &renderbuffer); 
   glDeleteTextures (1, &texturebuffer);

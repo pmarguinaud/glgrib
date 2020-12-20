@@ -16,7 +16,7 @@ public:
   virtual void setup ();
   void reSize (const View &) override {}
   float getScale () const override { return 1; }
-private:
+public:
   bool _visible = true;
   const bool & getVisibleRef () const override
   {

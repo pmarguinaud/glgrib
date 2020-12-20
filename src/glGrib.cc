@@ -37,7 +37,7 @@ static void screenshot_ppm
 }
 
 static
-GLuint compileShader (const std::string & name, const std::string & code, GLuint type)
+GLuint compileShader (const std::string & code, GLuint type)
 {
   int len;
   GLint res = GL_FALSE;
@@ -53,7 +53,7 @@ GLuint compileShader (const std::string & name, const std::string & code, GLuint
     {
       char mess[len+1];
       glGetShaderInfoLog (id, len, nullptr, &mess[0]);
-      throw std::runtime_error (std::string ("Error compiling shader : ") + name + ", " + std::string (mess));
+      throw std::runtime_error (std::string ("Error compiling shader : ") + std::string (mess));
     }
 
   return id;
@@ -61,23 +61,15 @@ GLuint compileShader (const std::string & name, const std::string & code, GLuint
 
 static
 GLuint LoadShader 
-  (const std::string & name, const std::string & FragmentShaderCode,
-   const std::string & VertexShaderCode, const std::string & GeometryShaderCode)
+  (const std::string & FragmentShaderCode, const std::string & VertexShaderCode)
 {
-  GLuint VertexShaderID = compileShader (name, VertexShaderCode, GL_VERTEX_SHADER);
-  GLuint FragmentShaderID = compileShader (name, FragmentShaderCode, GL_FRAGMENT_SHADER);
-
-  bool geom = GeometryShaderCode != "";
-  GLuint GeometryShaderID = 0;
-  if (geom)
-    GeometryShaderID = compileShader (name, GeometryShaderCode, GL_GEOMETRY_SHADER);
+  GLuint VertexShaderID = compileShader (VertexShaderCode, GL_VERTEX_SHADER);
+  GLuint FragmentShaderID = compileShader (FragmentShaderCode, GL_FRAGMENT_SHADER);
 
   // Link the program
   GLuint ProgramID = glCreateProgram ();
   glAttachShader (ProgramID, VertexShaderID);
   glAttachShader (ProgramID, FragmentShaderID);
-  if (geom)
-    glAttachShader (ProgramID, GeometryShaderID);
 
   glLinkProgram (ProgramID);
   
@@ -92,20 +84,15 @@ GLuint LoadShader
     {
       char mess[len+1];
       glGetProgramInfoLog (ProgramID, len, nullptr, &mess[0]);
-      throw std::runtime_error (std::string ("Error linking program : ") + name + ", " + std::string (mess));
+      throw std::runtime_error (std::string ("Error linking program : ") + std::string (mess));
     }
   
   glDetachShader (ProgramID, VertexShaderID);
   glDetachShader (ProgramID, FragmentShaderID);
-  if (geom)
-    glDetachShader (ProgramID, GeometryShaderID);
   
   glDeleteShader (VertexShaderID);
   glDeleteShader (FragmentShaderID);
 
-  if (geom)
-    glDeleteShader (GeometryShaderID);
-  
   return ProgramID;
 }
 
@@ -333,7 +320,7 @@ void main()
 
 )V0G0N";
 
-  GLuint programID = LoadShader ("TEST", FragmentShaderCode, VertexShaderCode, "");
+  GLuint programID = LoadShader (FragmentShaderCode, VertexShaderCode);
   glUseProgram (programID);
   glUniformMatrix4fv (glGetUniformLocation (programID, "MVP"), 1, GL_FALSE, &MVP[0][0]);
 

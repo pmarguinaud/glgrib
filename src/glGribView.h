@@ -61,7 +61,7 @@ public:
   void setOptions (const OptionsView & o) { opts = o; calcMVP (); calcZoom (); }
   float getRatio () const { return (float)width/(float)height; }
   void calcZoom ();
-private:
+public:
   OptionsView opts;
   int width, height;
   ProjectionSet ps;

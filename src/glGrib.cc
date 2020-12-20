@@ -149,14 +149,40 @@ int main (int argc, const char * argv[])
 
   glGrib::Batch * gwindow = new glGrib::Batch (opts);
 
-  auto & scene = gwindow->getScene ();
-
   glGrib::Test test;
   glGrib::View view;
 
-  scene.d.test.setup ();
-  scene.d.view.setViewport (opts.render.width, opts.render.height);
-  scene.d.view.setup (opts.view);
+  test.setup ();
+  view.width =  opts.render.width;
+  view.height =  opts.render.height;
+
+{
+  glGrib::Projection::type pt = glGrib::Projection::typeFromString ("XYZ");
+  view.ps.setType (pt);
+
+  glm::vec3 pos
+    (opts.view.distance * glm::cos (glm::radians (float (opts.view.lon))) * glm::cos (glm::radians (float (opts.view.lat))), 
+     opts.view.distance * glm::sin (glm::radians (float (opts.view.lon))) * glm::cos (glm::radians (float (opts.view.lat))),
+     opts.view.distance *                                              glm::sin (glm::radians (float (opts.view.lat))));
+
+  view.viewport   = glm::vec4 (0.0f, 0.0f, static_cast<float> (view.width), static_cast<float> (view.height));
+
+  float ratio = static_cast<float> (view.width) / static_cast<float> (view.height);
+
+  glm::mat4 trans = glm::mat4 (1.0f);
+
+  if ((! opts.view.center.on) && (ratio > 1.0f))
+    trans = glm::translate (trans, glm::vec3 ((ratio - 1.0f) / 2.0f, 0.0f, 0.0f));
+       
+  glm::mat4 p = glm::perspective (glm::radians (opts.view.fov), ratio, 0.1f, 100.0f);
+
+  view.projection = trans * p;
+
+  view.view       = glm::lookAt (pos, glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 0.0f, 1.0f));
+
+  view.model      = glm::mat4 (1.0f);
+  view.MVP = view.projection * view.view * view.model; 
+}
 
   glViewport (0, 0, opts.render.width, opts.render.height);
 
@@ -203,13 +229,13 @@ int main (int argc, const char * argv[])
   glGrib::Program * program = glGrib::Program::load ("TEST");
   program->use (); 
 
-  scene.d.view.setMVP (program);
+  program->set ("MVP", view.MVP);
 
   glDisable (GL_CULL_FACE);
 
-  scene.d.test.VAID.bind ();
-  glDrawElements (GL_TRIANGLES, 3 * scene.d.test.numberOfTriangles, GL_UNSIGNED_INT, nullptr);
-  scene.d.test.VAID.unbind ();
+  test.VAID.bind ();
+  glDrawElements (GL_TRIANGLES, 3 * test.numberOfTriangles, GL_UNSIGNED_INT, nullptr);
+  test.VAID.unbind ();
 
   glEnable (GL_CULL_FACE);
 

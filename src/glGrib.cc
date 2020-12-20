@@ -151,9 +151,14 @@ int main (int argc, const char * argv[])
 
   auto & scene = gwindow->getScene ();
 
-  scene.setup (opts);
+  glGrib::Test test;
+  glGrib::View view;
+
+  scene.d.test.setup ();
+  scene.d.view.setViewport (opts.render.width, opts.render.height);
+  scene.d.view.setup (opts.view);
+
   glViewport (0, 0, opts.render.width, opts.render.height);
-  scene.setViewport (opts.render.width, opts.render.height);
 
   glClearColor (0.0f, 0.0f, 0.0f, 0.0f);
   glEnable (GL_DEPTH_TEST);
@@ -208,8 +213,6 @@ int main (int argc, const char * argv[])
 
   glEnable (GL_CULL_FACE);
 
-  scene.d.view.delMVP (program);
-
   std::vector<unsigned char> rgb (opts.render.width * opts.render.height * 4);
   glReadPixels (0, 0, opts.render.width, opts.render.height, GL_RGBA, GL_UNSIGNED_BYTE, &rgb[0]);
 
@@ -227,8 +230,6 @@ int main (int argc, const char * argv[])
   delete gwindow;
 
   eglDestroyContext (display, context) || preEGLError ();
-
-  glGrib::glStop ();
 
   return 0;
 }

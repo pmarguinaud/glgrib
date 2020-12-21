@@ -37,7 +37,7 @@ void main ()
   vec3 vertexPos = posFromLonLat (vertexLonLat_);
   vec3 pos = vertexPos;
 
-  vec2 pos2; 
+  vec2 pos2 = vec2 (0.0f, 0.0f);
 
   if (gl_VertexID == 0)
     pos2 = vec2 (-1.0f, -1.0f);

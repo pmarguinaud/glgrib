@@ -13,7 +13,7 @@ uniform float y1;
 
 void main ()
 {
-  vec2 pos2;
+  vec2 pos2 = vec2 (0.0f, 0.0f);
 
   if (gl_VertexID == 0)
     pos2 = vec2 (0.0f, 0.0f);

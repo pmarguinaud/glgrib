@@ -69,7 +69,7 @@ void computeLatgauss (int kn, BufferPtr<double> & latgauss)
       // legendre polynomial of degree kn. 
       double z = (4 * jgl - 1) * pi / (4 * kn + 2);
       double zdlx = z + 1.0 / (std::tan (z) * 8 * (kn * kn));
-      double zxn;
+      double zxn = 0.0;
       int iflag = 0;
   
       // newton iteration.

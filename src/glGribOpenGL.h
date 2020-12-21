@@ -10,7 +10,9 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 
+#ifdef GLGRIB_USE_GBM
 #include <gbm.h>
+#endif
 
 #endif
 
@@ -43,8 +45,10 @@ public:
   ~eglDisplay ();
   EGLDisplay display = nullptr;
   EGLConfig  config  = nullptr;
+#ifdef GLGRIB_USE_GBM
   int fd = -1;
   struct gbm_device * gbm = nullptr;
+#endif
 };
 
 bool preEGLError ();

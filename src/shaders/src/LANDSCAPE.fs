@@ -111,8 +111,8 @@ vec4 getColorMERCATOR (vec3 fragmentPos)
 
 void main ()
 {
-  vec4 col;
-
+  vec4 col = vec4 (0.0, 0.0, 0.0, 0.0);
+  
   if (colored)
     {
       col = color0;

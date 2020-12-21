@@ -130,6 +130,7 @@ eglDisplay * egl = nullptr;
 eglDisplay::eglDisplay 
   (const std::string & path)
 {
+#ifdef GLGRIB_USE_GBM
   fd = open (path.c_str (), O_RDWR);
 
   if (fd < 0)
@@ -141,6 +142,10 @@ eglDisplay::eglDisplay
     throw std::runtime_error (std::string ("Cannot create gbm object"));
 
   display = eglGetPlatformDisplay (EGL_PLATFORM_GBM_MESA, gbm, nullptr);
+#else
+  display = eglGetDisplay (EGL_DEFAULT_DISPLAY); 
+#endif
+
   display || preEGLError ();
 
   eglInitialize (display, nullptr, nullptr) || preEGLError ();
@@ -164,10 +169,12 @@ eglDisplay::~eglDisplay ()
 {
   if (display)
     eglTerminate (display);
+#ifdef GLGRIB_USE_GBM
   if (gbm)
     gbm_device_destroy (gbm);
   if (fd >= 0)
     ::close (fd);
+#endif
 }
 
 #endif
@@ -281,7 +288,11 @@ void glStart (const OptionsRender & opts)
     }
 #endif
 #ifdef GLGRIB_USE_EGL
+#ifdef GLGRIB_USE_GBM
   egl = new eglDisplay (opts.device.path);
+#else
+  egl = new eglDisplay ("");
+#endif
 #endif
   setupDebug (opts);
 }

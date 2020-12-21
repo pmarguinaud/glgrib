@@ -288,7 +288,11 @@ void glStart (const OptionsRender & opts)
     }
 #endif
 #ifdef GLGRIB_USE_EGL
+#ifdef GLGRIB_USE_GBM
   egl = new eglDisplay (opts.device.path);
+#else
+  egl = new eglDisplay ("");
+#endif
 #endif
   setupDebug (opts);
 }

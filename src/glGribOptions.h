@@ -1387,7 +1387,9 @@ public:
     DESC (fullscreen.x.on,       Window in fullscreen mode in X direction);
     DESC (fullscreen.y.on,       Window in fullscreen mode in Y direction);
 #ifdef GLGRIB_USE_EGL
+#ifdef GLGRIB_USE_GBM
     DESC (device.path,           Path to EGL/gbm device);
+#endif
 #endif
   }
   int     width   = 800;
@@ -1435,10 +1437,13 @@ public:
       bool on = false;
     } y;
   } fullscreen;
+
+#ifdef GLGRIB_USE_GBM
   struct
   {
     OptionPath path = "/dev/dri/renderD128";
   } device;
+#endif
 };
 
 class OptionsLight : public OptionsBase

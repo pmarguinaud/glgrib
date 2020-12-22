@@ -21,7 +21,7 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal,
 
   vec4 color;
 
-  if ((discrete) && (fragmentValFlat != fragmentVal))
+  if ((discrete) && (abs (fragmentValFlat - fragmentVal) > 0.0001))
     {
       if ((RGBAM.r == 0.0f) && (RGBAM.g == 0.0f) && (RGBAM.b == 0.0f) && (RGBAM.a == 0.0f))
         discard;

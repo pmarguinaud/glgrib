@@ -20,9 +20,10 @@ void main ()
 {
   float dx = scale * aspect;
   float dy = scale;
+  int letterVal = int (round (font_vs.fletterVal));
 
-  int ix = int (mod (font_vs.fletterVal, nx));
-  int iy = int (font_vs.fletterVal / nx);
+  int ix = int (mod (letterVal, nx));
+  int iy = int (letterVal / nx);
 
   float tx = (font_vs.fragmentPos.x - font_vs.fletterPos.x) / dx;
   float ty = (font_vs.fragmentPos.y - font_vs.fletterPos.y) / dy;

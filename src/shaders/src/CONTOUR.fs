@@ -15,7 +15,7 @@ uniform bool dash;
 
 void main ()
 {
-  if (contour_vs.alpha < 1.0)
+  if (contour_vs.alpha < 0.99999)
     discard;
 
   if(! dash)
@@ -36,5 +36,6 @@ void main ()
       else
         color.a = 0.;
    }
+
 }
 

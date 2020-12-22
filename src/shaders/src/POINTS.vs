@@ -26,7 +26,7 @@ void main()
 
   pointVal = aPos.z;
 
-  vec2 pos2; 
+  vec2 pos2 = vec2 (0.0f, 0.0f);
 
   if (gl_VertexID == 0)
     pos2 = vec2 (-1.0f, -1.0f);

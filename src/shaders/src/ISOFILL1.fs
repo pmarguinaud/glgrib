@@ -8,5 +8,5 @@ out vec4 color;
 
 void main ()
 {
-  color = rgba_[int (isofill1_gs.fragmentColInd)];
+  color = rgba_[int(round (isofill1_gs.fragmentColInd))];
 }

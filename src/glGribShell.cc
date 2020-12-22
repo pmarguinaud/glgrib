@@ -384,6 +384,9 @@ void Shell::do_window_list (const std::vector<std::string> & args, Render * gwin
 
 void Shell::execute (const std::vector<std::string> & args)
 {
+  if (args.size () == 0)
+    return;
+
   listStr.clear ();
 
   Render * gwindow = wset->getWindowById (windowid);

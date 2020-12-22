@@ -4,6 +4,14 @@ GLFW backend for interactive display, EGL backend for batch processing without X
 
 Perl/Tk interface.
 
+Tested on :
+
+* VGA compatible controller: Intel Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller (rev 06) 
+* VGA compatible controller: Intel Corporation HD Graphics 530 (rev 06) 
+* VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev c8) 
+* 3D controller: NVIDIA Corporation GV100GL [Tesla V100S PCIe 32GB] (rev a1) 
+
+
 ![](share/perltk/tk1.png)
 ![](share/perltk/tk2.png)
 
@@ -237,9 +245,9 @@ Perl/Tk interface.
 
 ```
     --geopoints.path share/data/geopoints/ssmis_light.nc --geopoints.on 
-    --geopoints.points.palette.name cold_hot --landscape.on 
-    --geopoints.points.size.value 0.5 --grid.on --grid.color black 
-    --coast.on --coast.lines.color black --colorbar.on 
+    --geopoints.points.scale 1.005 --geopoints.points.palette.name 
+    cold_hot --landscape.on --geopoints.points.size.value 0.5 --grid.on 
+    --grid.color black --coast.on --coast.lines.color black --colorbar.on 
     --geopoints.points.palette.min 200 --geopoints.points.palette.max 240 
     --geopoints.lon col_4 --geopoints.lat col_3 --geopoints.val col_5 
     --render.width 1200 --view.lat -32.736 --view.lon 41.909 

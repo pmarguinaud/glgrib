@@ -98,7 +98,7 @@ Tested on :
         {
           my $Kind = ucfirst (lc ($kind));
           $fh{$kind} = 'FileHandle'->new (">$kind.md");
-          $fh->print ("# [$Kind]($kind.md)\n");
+          $fh->print ("# [$Kind ...]($kind.md)\n");
           $fh->print ($text);
         }
 

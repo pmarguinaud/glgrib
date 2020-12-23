@@ -1388,7 +1388,10 @@ public:
     DESC (fullscreen.y.on,       Window in fullscreen mode in Y direction);
 #ifdef GLGRIB_USE_EGL
 #ifdef GLGRIB_USE_GBM
-    DESC (device.path,           Path to EGL/gbm device);
+    DESC (egl.gbm.on,            Enable gbm);
+    DESC (egl.gbm.path,          Path to gbm device);
+#else
+    DESC (egl.device,            Device rank);
 #endif
 #endif
   }
@@ -1438,11 +1441,19 @@ public:
     } y;
   } fullscreen;
 
-#ifdef GLGRIB_USE_GBM
+#ifdef GLGRIB_USE_EGL
   struct
   {
-    OptionPath path = "/dev/dri/renderD128";
-  } device;
+#ifdef GLGRIB_USE_GBM
+    struct
+    {
+      bool on = false;
+      OptionPath path = "/dev/dri/renderD128";
+    } gbm;
+#else
+    int device = -1;
+  } egl;
+#endif
 #endif
 };
 

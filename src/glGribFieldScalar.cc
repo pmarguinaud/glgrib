@@ -259,6 +259,7 @@ void FieldScalar<N>::render (const View & view, const OptionsLight & light) cons
   program->set ("palmax", palette.getMax ());
   program->set ("height_scale", opts.geometry.height.scale);
   program->set ("discrete", opts.scalar.discrete.on);
+  program->set ("dinteger", opts.scalar.discrete.integer.on);
   program->set ("mpiview_scale", opts.mpiview.on ? opts.mpiview.scale : 0.0f);
 
   program->set ("RGBAM", opts.scalar.discrete.missing_color);

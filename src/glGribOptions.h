@@ -943,6 +943,7 @@ public:
     DESC (pack.bits,    Number of bytes used to pack field);
 
     DESC (discrete.on,  Plot as a discrete field);
+    DESC (discrete.integer.on,    Values are integers);
     DESC (discrete.missing_color, Color for missing values);
   }
 
@@ -977,6 +978,10 @@ public:
   struct
   {
     bool on = false;
+    struct
+    {
+      bool on = false;
+    } integer;
     OptionColor missing_color = OptionColor (0, 0, 0, 0);
   } discrete;
 };

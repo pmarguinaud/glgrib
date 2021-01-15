@@ -11,6 +11,7 @@ uniform bool light = false;
 uniform float frac = 0.1;
 uniform bool smoothed = false;
 uniform bool discrete = false;
+uniform bool dinteger = false;
 
 
 vec4 enlightFragment (vec3 fragmentPos, float fragmentVal, 
@@ -23,10 +24,17 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal,
 
   if ((discrete) && (abs (fragmentValFlat - fragmentVal) > 0.0001))
     {
-      if ((RGBAM.r == 0.0f) && (RGBAM.g == 0.0f) && (RGBAM.b == 0.0f) && (RGBAM.a == 0.0f))
-        discard;
-      color = RGBAM;
-      return color;
+      if (dinteger)
+        {
+          fragmentVal = round (fragmentVal);
+        }
+      else
+        {
+          if ((RGBAM.r == 0.0f) && (RGBAM.g == 0.0f) && (RGBAM.b == 0.0f) && (RGBAM.a == 0.0f))
+            discard;
+          color = RGBAM;
+          return color;
+        }
     }
 
 

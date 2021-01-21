@@ -44,6 +44,11 @@ std::string slurp (const std::string & file, bool fatal = true)
 
 }
 
+void Program::clearCache ()
+{
+  name2prog.clear ();
+}
+
 void Program::read (const std::string & file)
 {
   VertexShaderCode   = slurp (Resolve ("/shaders/" + file + ".vs"));

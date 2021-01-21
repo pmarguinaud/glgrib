@@ -1,5 +1,6 @@
 #include "glGribOpenGL.h"
 #include "glGribPng.h"
+#include "glGribProgram.h"
 #include "glGribGeometry.h"
 #include "glGribFont.h"
 
@@ -334,6 +335,7 @@ void glStop ()
 {
   Geometry::clearCache ();
   Font::clearCache ();
+  Program::clearCache ();
 #ifdef GLGRIB_USE_GLFW
   glfwTerminate ();
 #endif

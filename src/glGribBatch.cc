@@ -4,6 +4,7 @@
 #include "glGribOpenGL.h"
 #include "glGribScene.h"
 #include "glGribClear.h"
+#include "glGribContainer.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -64,10 +65,41 @@ void Batch::run (Shell * shell)
 {
   const auto & opts = getOptions ();
 
-  for (int i = 0; i < opts.offscreen.frames; i++)
+  const auto & sopts = scene.getOptions ();
+
+  if (sopts.review.on && sopts.review.path->size ())
     {
-      scene.update ();
-      framebuffer (opts.offscreen.format);
+      auto cont = Container::create (sopts.review.path, true);
+      cont->buildIndex ();
+      
+      std::string e;
+    
+      while (1)
+        {
+          e = cont->getNextExt (e);
+          if (e == "")
+            break;
+
+          auto fopts = sopts.field[0];
+
+          fopts.path.resize (1);
+          fopts.path[0] = sopts.review.path + "%" + e;
+
+          scene.setFieldOptions (0, fopts);
+
+          scene.update ();
+
+          framebuffer (opts.offscreen.format);
+        }  
+
+    }
+  else
+    {
+      for (int i = 0; i < opts.offscreen.frames; i++)
+        {
+          scene.update ();
+          framebuffer (opts.offscreen.format);
+        }
     }
 
   close ();

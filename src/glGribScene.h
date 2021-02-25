@@ -269,6 +269,7 @@ public:
   const OptionsLight & getLightOptions () const;
   const OptionsTitle & getTitleOptions () const;
 
+  std::string getCurrentFieldName () const;
 
 private:
   std::vector<Field*> fieldlist;

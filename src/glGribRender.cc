@@ -10,6 +10,30 @@
 namespace glGrib
 {
 
+namespace
+{
+
+void replace (std::string & fmt, const std::string & K, const std::string & V)
+{
+  for (int i = 0; ; i++)
+    {
+      size_t pos = fmt.find (K, i);
+      if (pos == std::string::npos)
+        break;
+      i = pos + V.length ();
+      fmt.replace (pos, K.length (), V);
+    }
+}
+
+void cleanup (std::string & str, char r)
+{
+  for (size_t i = 0; i < str.size (); i++)
+    if ((str[i] == ' ') || (str[i] == '/'))
+      str[i] = r;
+}
+
+}
+
 Render::Render (const Options & opts)
 {
 }
@@ -47,25 +71,20 @@ void Render::snapshot (const std::string & format)
 
   // %N  -> snapshot_cnt
   // %D  -> date
+  // %F  -> Field name
 
   const OptionDate * date = getScene ().getDate ();
   std::string dstr = date ? date->asString () : "";
-  for (size_t i = 0; i < dstr.size (); i++)
-    if ((dstr[i] == ' ') || (dstr[i] == '/'))
-      dstr[i] = ':';
+  std::string fnam = getScene ().getCurrentFieldName ();
+
+  cleanup (dstr, ':');
+  cleanup (fnam, '_');
 
   std::string fmt = format;
 
-  for (int i = 0; ; i++)
-    {
-      size_t pos = fmt.find ("%D", i);
-      if (pos == std::string::npos)
-        break;
-      i = pos + 1;
-      fmt.replace (pos, 2, dstr);
-    }
+  replace (fmt, "%D", dstr);
+  replace (fmt, "%F", fnam);
 
-  
   std::vector<int> posN;
   for (int i = 0; ; i++)
     {
@@ -88,7 +107,6 @@ void Render::snapshot (const std::string & format)
           char cnt[16];
       
           sprintf (cnt, "%4.4d", *snapshot_cnt);
-           
       
           filename = fmt;
       

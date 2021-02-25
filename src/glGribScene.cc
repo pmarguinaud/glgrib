@@ -287,17 +287,28 @@ void Scene::updateDate ()
     }
 }
 
+std::string Scene::getCurrentFieldName () const
+{
+  std::string name;
+
+  Field * fld = getCurrentField ();
+  if (fld != nullptr) 
+    {
+      const std::vector<FieldMetadata> & meta = fld->getMeta ();
+      name = meta[0].getName ();
+    }
+  return name;
+}
+
 void Scene::updateTitle ()
 {
   if (d.opts.scene.title.on)
     {
       std::string title = d.opts.scene.title.text;
-      Field * fld = getCurrentField ();
-      if ((fld != nullptr) && (title == ""))
-        {
-          const std::vector<FieldMetadata> & meta = fld->getMeta ();
-          title = meta[0].getName ();
-	}
+      std::string fname = getCurrentFieldName ();
+
+      if ((fname != "") && (title == ""))
+        title = fname;
       if (strtitle != title)
         {
           glGrib::clear (d.strtitle);

@@ -11,6 +11,9 @@ class WindowReviewSet : public WindowSet
 {
 public:
   explicit WindowReviewSet (const Options &);
+  virtual ~WindowReviewSet () 
+  {
+  }
   const std::string getNextExt () const;
   const std::string getPrevExt () const;
   void updateWindows () override;

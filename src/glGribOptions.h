@@ -1457,8 +1457,8 @@ public:
     } gbm;
 #else
     int device = -1;
-  } egl;
 #endif
+  } egl;
 #endif
 };
 

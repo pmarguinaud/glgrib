@@ -149,10 +149,12 @@ WindowSet::WindowSet (const Options & o, bool newwin)
 
 WindowSet * WindowSet::create (const Options & opts)
 {
+#ifdef GLGRIB_USE_GLFW
   if (opts.diff.on)
     return new WindowDiffSet (opts);
   if (opts.review.on)
     return new WindowReviewSet (opts);
+#endif
   return new WindowSet (opts);
 }
 

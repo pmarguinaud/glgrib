@@ -67,7 +67,45 @@ void Batch::run (Shell * shell)
 
   const auto & sopts = scene.getOptions ();
 
-  if (sopts.review.on && sopts.review.path->size ())
+  if (sopts.diff.on)
+    {
+      if (sopts.diff.path.size () != 2)
+        throw std::runtime_error (std::string ("Option --diff.path requires two arguments"));
+      auto cont1 = Container::create (sopts.diff.path[0], true);
+      auto cont2 = Container::create (sopts.diff.path[1], true);
+      cont1->buildIndex ();
+      cont2->buildIndex ();
+
+      std::string e;
+    
+      while (1)
+        {
+          e = cont1->getNextExt (e);
+          if (e == "")
+            break;
+
+          if (! cont2->hasExt (e))
+            continue;
+
+          auto fopts = sopts.field[0];
+
+          fopts.path.resize (2);
+          fopts.path[0] = sopts.diff.path[0] + "%" + e;
+          fopts.path[1] = sopts.diff.path[1] + "%" + e;
+          fopts.diff.on = true;
+          fopts.palette.name = "cold_hot";
+          fopts.user_pref.on = false;
+
+          scene.setFieldOptions (0, fopts);
+
+          scene.update ();
+
+          framebuffer (opts.offscreen.format);
+        }  
+
+
+    }  
+  else if (sopts.review.on && sopts.review.path->size ())
     {
       auto cont = Container::create (sopts.review.path, true);
       cont->buildIndex ();

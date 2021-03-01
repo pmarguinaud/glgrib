@@ -152,16 +152,9 @@ void Loader::load (BufferPtr<float> * ptr, const std::vector<OptionFieldRef> & f
       if (diff)
         {
           float valm = std::max (std::abs (valmin), std::abs (valmax));
-
-
           meta->valmin = - valm;
           meta->valmax = + valm;
           meta->valmis = valmis;
-
-          meta->CLNOMA            = "diff";
-          meta->discipline        = 255;
-          meta->parameterCategory = 255;
-          meta->parameterNumber   = 255;
         }
       else
         {

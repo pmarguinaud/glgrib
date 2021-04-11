@@ -945,6 +945,10 @@ public:
     DESC (discrete.on,  Plot as a discrete field);
     DESC (discrete.integer.on,    Values are integers);
     DESC (discrete.missing_color, Color for missing values);
+
+    DESC (light.reverse.on,       Reverse light);
+    DESC (light.reverse.b,        Reverse light coefficient);
+    DESC (light.reverse.c,        Reverse light coefficient);
   }
 
   struct 
@@ -984,6 +988,17 @@ public:
     } integer;
     OptionColor missing_color = OptionColor (0, 0, 0, 0);
   } discrete;
+
+  struct
+  {
+    struct
+    {
+      bool on = false;
+      float b = 0.2;
+      float c = 15.;
+    } reverse;
+  } light;
+
 };
 
 class OptionsMpiview : public OptionsBase

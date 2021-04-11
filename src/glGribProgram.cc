@@ -109,6 +109,7 @@ void Program::set (const OptionsLight & light)
           glm::vec3 lightDir = lonlat2xyz (deg2rad * light.lon, deg2rad * light.lat);
           glUniform3fv (getUniformLocation ("lightDir"), 1, &lightDir[0]);
           glUniform1f (getUniformLocation ("frac"), light.night);
+          glUniform1i (getUniformLocation ("lreverse"), 0);
         }
     }
 }

@@ -251,6 +251,10 @@ void FieldScalar<N>::render (const View & view, const OptionsLight & light) cons
 
   view.setMVP (program);
   program->set (light);
+  program->set ("lreverse", opts.scalar.light.reverse.on);
+  program->set ("breverse", opts.scalar.light.reverse.b);
+  program->set ("creverse", opts.scalar.light.reverse.c);
+
   palette.set (program);
   program->set ("scale0", scale0);
   program->set ("valmin", this->getNormedMinValue ());

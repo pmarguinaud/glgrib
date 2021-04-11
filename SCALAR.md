@@ -104,3 +104,15 @@
     --linear.on }- --colorbar.on --render.width 1200 --coast.on 
     --coast.lines.color black 
 ```
+## Display field in offscreen mode city lights                       -- citylight
+![](share/test/citylight/TEST.gif)
+
+```
+    --landscape.on --render.offscreen.on --render.offscreen.frames 36 
+    --scene.light.rotate.on --scene.light.on --field[0].path 
+    ./share/data/town/town1800.grb --field[0].palette-{ --colors #bbbb0000 
+    #bbbb00ff #bbbb00ff --values 0. 0.1 1.0 }- 
+    --field[0].scalar.light.reverse.on --field[1].path 
+    share/data/t1198c2.2/SURFNEBUL.BASSE.grb --field[1].scale 1.03 
+    --field[1].palette.name cloud_auto --scene.light.rotate.rate 10 
+```

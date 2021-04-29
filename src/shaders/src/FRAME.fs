@@ -21,7 +21,7 @@ void main ()
   float lon = 360.0 + rad2deg * atan (frame_vs.fragmentPos.y, frame_vs.fragmentPos.x);
   float lat =  90.0 + rad2deg * asin (frame_vs.fragmentPos.z);
 
-  if (frame_vs.alpha < 1.)
+  if (abs (frame_vs.alpha - 1.) > 0.0001)
     discard;
 
   if (frame_vs.islatcst > 0.0f)

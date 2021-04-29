@@ -326,6 +326,11 @@ const
     vector.VAID.render (view, light);
   if (opts.vector.norm.on)
     scalar.VAID.render (view, light);
+
+  const auto & geometry = this->getGeometry ();
+
+  if (opts.geometry.frame.on && geometry->hasFrame ())
+    this->renderFrame (view);
 }
 
 void FieldVector::reSample (const View & view)

@@ -271,6 +271,8 @@ public:
 
   std::string getCurrentFieldName () const;
 
+  void centerOnCurrentField ();
+
 private:
   std::vector<Field*> fieldlist;
 

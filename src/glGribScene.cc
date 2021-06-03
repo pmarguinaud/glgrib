@@ -410,28 +410,31 @@ void Scene::setup (const Options & o)
 
 
   if (d.opts.scene.center.on)
-    {
-      Field * field = getCurrentField ();
-      if (field != nullptr)
-        {
-          const_GeometryPtr geometry = field->getGeometry ();
-          if (d.opts.scene.center.gridpoint < 0)
-            {
-              geometry->getView (&d.view);
-            }
-          else
-            {
-              OptionsView view_opts = d.view.getOptions ();
-              float lon, lat;
-              geometry->index2latlon (d.opts.scene.center.gridpoint, &lat, &lon);
-              view_opts.lat = lat * rad2deg;
-              view_opts.lon = lon * rad2deg;
-              d.view.setOptions (view_opts);
-            }
-        }
-    }
+    centerOnCurrentField ();
 
   reSize ();
+}
+
+void Scene::centerOnCurrentField ()
+{
+  Field * field = getCurrentField ();
+  if (field != nullptr)
+    {
+      const_GeometryPtr geometry = field->getGeometry ();
+      if (d.opts.scene.center.gridpoint < 0)
+        {
+          geometry->getView (&d.view);
+        }
+      else
+        {
+          OptionsView view_opts = d.view.getOptions ();
+          float lon, lat;
+          geometry->index2latlon (d.opts.scene.center.gridpoint, &lat, &lon);
+          view_opts.lat = lat * rad2deg;
+          view_opts.lon = lon * rad2deg;
+          d.view.setOptions (view_opts);
+        }
+    }
 }
 
 void Scene::setViewport (int _width, int _height)
@@ -504,6 +507,9 @@ void Scene::setFieldOptions (int j, const OptionsField & o, float slot)
     delete fieldlist[j];
 
   fieldlist[j] = Field::create (o, slot, &ld);
+
+  if (d.opts.scene.center.on)
+    centerOnCurrentField ();
 }
 
 void Scene::setColorBarOptions (const OptionsColorbar & o)

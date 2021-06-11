@@ -949,6 +949,10 @@ public:
     DESC (light.reverse.on,       Reverse light);
     DESC (light.reverse.b,        Reverse light coefficient);
     DESC (light.reverse.c,        Reverse light coefficient);
+
+    DESC (widen.on, Enable region widening);
+    DESC (widen.value, Value for region);
+    DESC (widen.size, Size for region);
   }
 
   struct 
@@ -998,6 +1002,13 @@ public:
       float c = 15.;
     } reverse;
   } light;
+
+  struct
+  {
+    bool on = false;
+    float value = 0.0f;
+    int size = 0;
+  } widen;
 
 };
 

@@ -123,6 +123,10 @@ void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsF
     }
   else
     {
+
+      if (opts.scalar.widen.on)
+        geometry->widenRegion (opts.scalar.widen.value, opts.scalar.widen.size, data);
+
       this->pack (data, geometry->getNumberOfPoints (), meta1.valmin, 
                   meta1.valmax, meta1.valmis, colorbuffer);
     }

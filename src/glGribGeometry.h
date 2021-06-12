@@ -55,8 +55,6 @@ public:
   virtual void fixPeriodicity (const glm::vec2 &, glm::vec2 *, int) const = 0;
   virtual void renderTriangles (int level = 0) const;
 
-  void widenRegion (const float, const int, glGrib::BufferPtr<float> &) const;
-
   int getNumberOfPoints () const
   {
     return grid.numberOfPoints;

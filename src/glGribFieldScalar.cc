@@ -83,6 +83,63 @@ void FieldScalar<N>::points_t::setupVertexAttributes () const
   
 }
 
+static void widenRegion (const float value, const int size, 
+                         const_GeometryPtr geometry,
+                         glGrib::BufferPtr<float> & data) 
+{
+  const int sz = geometry->size ();
+
+  std::set<int> halo1, halo2;
+  
+  std::vector<int> neigh;
+
+  // Find halo : scan whole grid
+
+#pragma omp parallel for private (neigh)
+  for (int jglo = 0; jglo < sz; jglo++) 
+    {
+      if (data[jglo] != value)
+        continue;
+
+      geometry->getPointNeighbours (jglo, &neigh);
+
+      for (auto jglh : neigh)
+        {
+          if (data[jglh] == value)
+            continue;
+#pragma omp critical
+          halo1.insert (jglh);
+        }
+    }
+  
+  // halo1 contains the previous halo
+  // halo2 is filled with the next halo
+
+  for (int iter = 0; iter < size; iter++)
+    {
+      for (auto jglh : halo1)
+        data[jglh] = value;
+
+      for (auto jglo : halo1)
+        {
+          geometry->getPointNeighbours (jglo, &neigh);
+          for (auto jglh : neigh)
+            {
+              if (data[jglh] == value)
+                continue;
+              halo2.insert (jglh);
+            }
+
+        }
+
+      std::swap (halo1, halo2);
+      halo2.clear ();
+
+    }
+
+
+}
+
 template <int N>
 void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsField & o, float slot)
 {
@@ -125,7 +182,7 @@ void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsF
     {
 
       if (opts.scalar.widen.on)
-        geometry->widenRegion (opts.scalar.widen.value, opts.scalar.widen.size, data);
+        widenRegion (opts.scalar.widen.value, opts.scalar.widen.size, geometry, data);
 
       this->pack (data, geometry->getNumberOfPoints (), meta1.valmin, 
                   meta1.valmax, meta1.valmis, colorbuffer);

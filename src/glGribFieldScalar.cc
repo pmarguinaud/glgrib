@@ -83,32 +83,33 @@ void FieldScalar<N>::points_t::setupVertexAttributes () const
   
 }
 
-static void widenRegion (const float value, const int size, 
-                         const_GeometryPtr geometry,
-                         glGrib::BufferPtr<float> & data) 
+static void widenRegion (const std::vector<float> & values, const int size, 
+                         const_GeometryPtr geometry, glGrib::BufferPtr<float> & data) 
 {
   const int sz = geometry->size ();
+  const int nb = values.size ();
 
-  std::set<int> halo1, halo2;
+  std::set<int> halo1[nb], halo2[nb];
   
   std::vector<int> neigh;
 
   // Find halo : scan whole grid
 
-#pragma omp parallel for private (neigh)
+#pragma omp parallel for private (neigh) 
   for (int jglo = 0; jglo < sz; jglo++) 
+  for (int ib = 0; ib < nb; ib++)
     {
-      if (data[jglo] != value)
+      if (data[jglo] != values[ib])
         continue;
 
       geometry->getPointNeighbours (jglo, &neigh);
 
       for (auto jglh : neigh)
         {
-          if (data[jglh] == value)
+          if (data[jglh] == values[ib])
             continue;
 #pragma omp critical
-          halo1.insert (jglh);
+          halo1[ib].insert (jglh);
         }
     }
   
@@ -116,24 +117,29 @@ static void widenRegion (const float value, const int size,
   // halo2 is filled with the next halo
 
   for (int iter = 0; iter < size; iter++)
+  for (int ib = 0; ib < nb; ib++)
     {
-      for (auto jglh : halo1)
-        data[jglh] = value;
+      for (auto jglh : halo1[ib])
+        {
+          if (std::any_of (values.begin (), values.begin () + ib, [&] (float x) 
+              { return x == data[jglh]; }))
+            continue;
+          data[jglh] = values[ib];
+        }
 
-      for (auto jglo : halo1)
+      for (auto jglo : halo1[ib])
         {
           geometry->getPointNeighbours (jglo, &neigh);
           for (auto jglh : neigh)
             {
-              if (data[jglh] == value)
+              if (data[jglh] == values[ib])
                 continue;
-              halo2.insert (jglh);
+              halo2[ib].insert (jglh);
             }
-
         }
 
-      std::swap (halo1, halo2);
-      halo2.clear ();
+      std::swap (halo1[ib], halo2[ib]);
+      halo2[ib].clear ();
 
     }
 
@@ -182,7 +188,7 @@ void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsF
     {
 
       if (opts.scalar.widen.on)
-        widenRegion (opts.scalar.widen.value, opts.scalar.widen.size, geometry, data);
+        widenRegion (opts.scalar.widen.values, opts.scalar.widen.size, geometry, data);
 
       this->pack (data, geometry->getNumberOfPoints (), meta1.valmin, 
                   meta1.valmax, meta1.valmis, colorbuffer);

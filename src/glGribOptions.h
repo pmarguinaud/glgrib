@@ -951,7 +951,7 @@ public:
     DESC (light.reverse.c,        Reverse light coefficient);
 
     DESC (widen.on, Enable region widening);
-    DESC (widen.value, Value for region);
+    DESC (widen.values, Values for region);
     DESC (widen.size, Size for region);
   }
 
@@ -1006,7 +1006,7 @@ public:
   struct
   {
     bool on = false;
-    float value = 0.0f;
+    std::vector<float> values = {0.0f};
     int size = 0;
   } widen;
 

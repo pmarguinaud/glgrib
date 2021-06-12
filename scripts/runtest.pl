@@ -197,13 +197,20 @@ Tested on :
  'MPI'          , "MPI view                                                         " ,  mpiview             => '--field[0].path share/data/discrete/SURFTEMPERATURE.grb  --field[0].mpiview.on  --field[0].mpiview.path share/data/discrete/MYPROC.grb  --field[0].mpiview.scale 0.2 --view.lon 31 --view.lat 41',
  'MPI'          , "MPI halo                                                         " ,  mpihalo             =>  sub
  {
+   my $nproc = 80;
    my $i = shift;
-   return unless ($i < 80);
+   my $n = 10;
+   my $p = $nproc / $n;
+   return unless ($i < $n);
    use feature 'state';
-   state @n = do { my @n = (0 .. 79); my @x = map { rand () } @n; sort { $x[$a] <=> $x[$b] } @n };
-   $i = $n[$i];
-   print "$i\n";
-   sprintf ('--field[0].scalar.widen.on --field[0].scalar.widen.value %d.0 --field[0].scalar.widen.size 20 --field[0].scalar.discrete.on --field[0].path share/data/discrete/MYPROC.grb --field[0].palette.colors green --field[0].scalar.discrete.missing_color black --field[0].palette.colors #00000000 --field[1].path share/data/discrete/SURFTEMPERATURE.grb --field[1]-{ --palette.max 313.15 --palette.min 253.15 --palette.name cold_hot_temp }- --view.lat 36 --view.lon -15', $i + 1)
+   state @nn = do { my @n = (0 .. $nproc-1); my @x = map { rand () } @n; sort { $x[$a] <=> $x[$b] } @n };
+   my @ii = @nn[($i*$p .. $i*$p+$p-1)];
+   sprintf ('--field[0].scalar.widen.on --field[0].scalar.widen.values %s --field[0].scalar.widen.size 20 '
+          . '--field[0].scalar.discrete.on --field[0].path share/data/discrete/MYPROC.grb '
+          . '--field[0].palette.colors green --field[0].scalar.discrete.missing_color black '
+          . '--field[0].palette.colors #00000000 --field[1].path share/data/discrete/SURFTEMPERATURE.grb '
+          . '--field[1]-{ --palette.max 313.15 --palette.min 253.15 --palette.name cold_hot_temp }- '
+          . '--view.lat 36 --view.lon -15', join (' ', map { sprintf ('%d.0', $_ + 1) } @ii));
  },
  'STREAM'       , "Lat/lon streamlines                                              " ,  latlonstream        => '--field[0].path share/data/advection_850.grib%\'shortName="u"\' share/data/advection_850.grib%\'shortName="v"\' --field[0].type STREAM --field[0].palette.colors darkblue --land.on --land.layers[0].path coastlines/shp/GSHHS_i_L1.shp --land.layers[1].path coastlines/shp/GSHHS_i_L2.shp --land.layers[2].path coastlines/shp/GSHHS_i_L3.shp --land.layers[3].path coastlines/shp/GSHHS_i_L5.shp --land.layers[0].color grey --grid.on --grid.resolution 18  --grid.color black  --landscape.on --landscape.path landscape/white.bmp --landscape.scale 0.99 --view.lon -9.5 --view.lat 46 --view.fov 1.3 --view.projection LATLON  --render.width 1200',
  'VECTOR'       , "Wind on global lat/lon grid                                      " ,  windlatlon          => '--field[0].path share/data/data_uv.grib%shortName=\'"u"\' share/data/data_uv.grib%shortName=\'"v"\' --field[0].type vector --field[0].vector.arrow.off  --field[0].palette.values 0 10 15 20 25 30 40 50 60 80 100  --colorbar.on  --field[0].palette.linear.on --field[0].palette-{ --min 0 --max 100 }- --field[0].palette.colors \'#ffffffff\' \'#ffff66ff\'  \'#daff00ff\' \'#94ff00ff\' \'#6ca631ff\' \'#00734bff\' \'#005447ff\' \'#004247ff\' \'#003370ff\' \'#0033a3ff\'  --coast.on --coast.lines.color black  --grid.on --grid.color black --grid.resolution 18 --view.fov 10 --view.projection LATLON --render.width 1650 --render.height 750',
@@ -323,6 +330,7 @@ for my $name (@name)
         @cmd = ('gdb', '-ex=set confirm on', '-ex=run', '-ex=quit', '--args', @cmd) if ($ENV{GDB});
         
         print "Running test $name...\n"; 
+        print "@cmd\n";
      
         system (@cmd)
           and die;

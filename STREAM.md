@@ -1,4 +1,4 @@
-## Streamlines on t1198c2.2 (surface)                                -- stream_t1198c22
+## Streamlines on t1198c2.2 (surface) -- stream_t1198c22
 ![](share/test/stream_t1198c22/TEST_0000.png)
 
 ```
@@ -15,7 +15,7 @@
     --coast.on --coast.lines.color red --landscape.on --landscape.path 
     landscape/white.png 
 ```
-## Streamlines on GLOB025 (high level)                               -- stream_glob025
+## Streamlines on GLOB025 (high level) -- stream_glob025
 ![](share/test/stream_glob025/TEST_0000.png)
 
 ```
@@ -30,7 +30,7 @@
     landscape/white.bmp --field[0].scale 1.01 --grid.color pink --coast.on 
     --coast.lines.color pink 
 ```
-## Streamlines on EURAT01 (surface)                                  -- stream_eurat01
+## Streamlines on EURAT01 (surface) -- stream_eurat01
 ![](share/test/stream_eurat01/TEST_0000.png)
 
 ```
@@ -45,7 +45,7 @@
     landscape/white.bmp --field[0].scale 1.01 --grid.color pink --coast.on 
     --coast.lines.color pink --view.lat 45 --view.lon 5 --view.fov 10 
 ```
-## Streamlines on AROME 2.5km (surface)                              -- stream_lambert
+## Streamlines on AROME 2.5km (surface) -- stream_lambert
 ![](share/test/stream_lambert/TEST_0000.png)
 
 ```
@@ -61,7 +61,7 @@
     1.01 --grid.color pink --coast.on --coast.lines.color pink --view.lon 
     2 --view.lat 46.7 --view.fov 4 
 ```
-## Lat/lon streamlines                                               -- latlonstream
+## Lat/lon streamlines -- latlonstream
 ![](share/test/latlonstream/TEST_0000.png)
 
 ```
@@ -77,7 +77,7 @@
     -9.5 --view.lat 46 --view.fov 1.3 --view.projection LATLON 
     --render.width 1200 
 ```
-## Stream motion                                                     -- streammotion
+## Stream motion -- streammotion
 ![](share/test/streammotion/TEST.gif)
 
 ```

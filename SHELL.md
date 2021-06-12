@@ -1,4 +1,4 @@
-## Test interactive shell                                            -- shell
+## Test interactive shell -- shell
 ![](share/test/shell/TEST_0000.png)
 
 ```

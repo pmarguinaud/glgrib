@@ -1,4 +1,4 @@
-## Cities                                                            -- cities
+## Cities -- cities
 ![](share/test/cities/TEST_0000.png)
 
 ```
@@ -8,7 +8,7 @@
     --cities.labels.on --cities.labels.font.color.foreground red 
     --cities.labels.font.bitmap.scale 0.04 
 ```
-## Enable debug mode                                                 -- debug
+## Enable debug mode -- debug
 ![](share/test/debug/TEST_0000.png)
 
 ```
@@ -16,7 +16,7 @@
     --field[0].path share/data/t1198c2.2/N.grb --field[0].scale 1.03 
     --render.debug.on 
 ```
-## Colorbar                                                          -- colorbar
+## Colorbar -- colorbar
 ![](share/test/colorbar/TEST_0000.png)
 
 ```
@@ -25,7 +25,7 @@
     --colorbar.on --colorbar.font.color.foreground green --render.width 
     1000 
 ```
-## Display French departements                                       -- departements
+## Display French departements -- departements
 ![](share/test/departements/TEST_0000.png)
 
 ```
@@ -34,14 +34,14 @@
     code_insee = 23 or code_insee = 19 or code_insee = 87 --view.lon 2 
     --view.lat 46.7 --view.fov 5 --coast.on 
 ```
-## Test FA format, display sea fraction                              -- fa
+## Test FA format, display sea fraction -- fa
 ![](share/test/fa/TEST_0000.png)
 
 ```
     --field[0].path share/data/fa/PGD.t479.fa%SFX.FRAC_SEA 
     --field[0].scale 1.03 
 ```
-## Image on top of cloud fields                                      -- image
+## Image on top of cloud fields -- image
 ![](share/test/image/TEST_0000.png)
 
 ```
@@ -51,7 +51,7 @@
     --scene.image.x0 0. --scene.image.y0 0. --scene.image.x1 0.1 
     --scene.image.y1 0.1 
 ```
-## Interpolate field over time                                       -- interpolation
+## Interpolate field over time -- interpolation
 ![](share/test/interpolation/TEST.gif)
 
 ```
@@ -63,20 +63,20 @@
     --scene.date.font.color.foreground red --scene.date.on --coast.on 
     --grid.on --render.offscreen.on --render.offscreen.frames 72 
 ```
-## Display mapscale                                                  -- mapscale
+## Display mapscale -- mapscale
 ![](share/test/mapscale/TEST_0000.png)
 
 ```
     --landscape.on --mapscale.on 
 ```
-## Display field with missing values                                 -- missingvalue
+## Display field with missing values -- missingvalue
 ![](share/test/missingvalue/TEST_0000.png)
 
 ```
     --field[0].path share/data/t49/SFX.CLAY.grb --coast.on --grid.on 
     --field[0].user_pref.off 
 ```
-## Display field with keeping field values in RAM                    -- novalue
+## Display field with keeping field values in RAM -- novalue
 ![](share/test/novalue/TEST_0000.png)
 
 ```
@@ -84,7 +84,7 @@
     --field[0].path share/data/t1798/SURFNEBUL.BASSE.grb --field[0].scale 
     1.03 --field[0].palette.name cloud_auto --field[0].no_value_pointer.on 
 ```
-## Display field in offscreen mode                                   -- offscreen
+## Display field in offscreen mode -- offscreen
 ![](share/test/offscreen/TEST.gif)
 
 ```
@@ -97,13 +97,13 @@
     1.03 --field[0].palette.name cloud_auto cloud_auto cloud_auto 
     --scene.light.rotate.rate 10 
 ```
-## Display field with options in file                                -- optionsfile
+## Display field with options in file -- optionsfile
 ![](share/test/optionsfile/TEST_0000.png)
 
 ```
     --{share/data/options.list} 
 ```
-## Select field from GRIB file                                       -- select_grib
+## Select field from GRIB file -- select_grib
 ![](share/test/select_grib/TEST_0000.png)
 
 ```
@@ -112,7 +112,7 @@
     share/data/t1198c2.2/N.grb%parameterCategory=6,year=2019 
     --field[0].scale 1.03 
 ```
-## Low-res ARPEGE resolution                                         -- small
+## Low-res ARPEGE resolution -- small
 ![](share/test/small/TEST_0000.png)
 
 ```
@@ -120,7 +120,7 @@
     --field[0].scale 1.01 --field[0].path share/data/t49/SFX.CLAY.grb 
     --coast.on --grid.on --field[0].user_pref.off 
 ```
-## Test travelling option                                            -- travelling
+## Test travelling option -- travelling
 ![](share/test/travelling/TEST.gif)
 
 ```
@@ -132,7 +132,7 @@
     --field[0].scale 1.03 --render.offscreen.on --render.offscreen.frames 
     72 
 ```
-## Zoom with Schmidt transform                                       -- zoomschmidt1
+## Zoom with Schmidt transform -- zoomschmidt1
 ![](share/test/zoomschmidt1/TEST_0000.png)
 
 ```

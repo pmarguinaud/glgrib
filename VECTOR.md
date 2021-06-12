@@ -1,4 +1,4 @@
-## Wind Australia                                                    -- windaustralia3
+## Wind Australia -- windaustralia3
 ![](share/test/windaustralia3/TEST_0000.png)
 
 ```
@@ -17,7 +17,7 @@
     --land.layers[0].color black --coast.on --coast.lines.color #555555 
     --colorbar.on --field[0].vector.density 20 --field[0].vector.scale 2 
 ```
-## Wind on small AROME domain (raster & vector)                      -- small_aro
+## Wind on small AROME domain (raster & vector) -- small_aro
 ![](share/test/small_aro/TEST_0000.png)
 
 ```
@@ -26,7 +26,7 @@
     share/data/aro_small/S041WIND.V.PHYS.grb --field[0].scale 1.00 
     --view.lon 26.64 --view.lat 67.36 --view.fov 0.5 --coast.on --grid.on 
 ```
-## Display vector norm & arrow, Lambert geometry                     -- vector
+## Display vector norm & arrow, Lambert geometry -- vector
 ![](share/test/vector/TEST_0000.png)
 
 ```
@@ -36,7 +36,7 @@
     --field[0].vector.arrow.color green --view.lat 46.2 --view.lon 2.0 
     --view.fov 5 --coast.on --grid.on 
 ```
-## Display vector norm, global lat/lon geometry                      -- vector_glob25
+## Display vector norm, global lat/lon geometry -- vector_glob25
 ![](share/test/vector_glob25/TEST_0000.png)
 
 ```
@@ -46,7 +46,7 @@
     share/data/arpt1798_wind/glob25_+1.grb --field[0].scale 1.01 
     --coast.on --grid.on 
 ```
-## Vector arrow, stretched/rotated gaussian geometry                 -- vector_t1798
+## Vector arrow, stretched/rotated gaussian geometry -- vector_t1798
 ![](share/test/vector_t1798/TEST_0000.png)
 
 ```
@@ -55,7 +55,7 @@
     share/data/arpt1798_wind/+1.grb --field[0].scale 1.01 --coast.on 
     --grid.on 
 ```
-## Display wind on stretched/rotated gaussian geometry               -- wind_arp
+## Display wind on stretched/rotated gaussian geometry -- wind_arp
 ![](share/test/wind_arp/TEST_0000.png)
 
 ```
@@ -65,7 +65,7 @@
     share/data/t31c2.4/S015WIND.V.PHYS.grb --field[0].scale 1.01 
     --coast.on --grid.on 
 ```
-## Wind on global lat/lon geometry                                   -- wind_glob25
+## Wind on global lat/lon geometry -- wind_glob25
 ![](share/test/wind_glob25/TEST_0000.png)
 
 ```
@@ -76,7 +76,7 @@
     share/data/arpt1798_wind/lfpw_0_2_3_sfc_20_v.grib2 --field[0].scale 
     1.01 --coast.on --grid.on 
 ```
-## Wind on stretched/rotated gaussian geometry                       -- wind_t1798
+## Wind on stretched/rotated gaussian geometry -- wind_t1798
 ![](share/test/wind_t1798/TEST_0000.png)
 
 ```
@@ -86,7 +86,7 @@
     share/data/arpt1798_wind/S105WIND.V.PHYS.grb --field[0].scale 1.01 
     --coast.on --grid.on 
 ```
-## Wind & vorticity                                                  -- wind4
+## Wind & vorticity -- wind4
 ![](share/test/wind4/TEST_0000.png)
 
 ```
@@ -109,7 +109,7 @@
     --view.fov 3 --view.projection POLAR_NORTH --view.clip.xmin 0.15 
     --render.width 1500 --grid.resolution 18 
 ```
-## Wind on global lat/lon grid                                       -- windlatlon
+## Wind on global lat/lon grid -- windlatlon
 ![](share/test/windlatlon/TEST_0000.png)
 
 ```
@@ -123,7 +123,7 @@
     --grid.on --grid.color black --grid.resolution 18 --view.fov 10 
     --view.projection LATLON --render.width 1650 --render.height 750 
 ```
-## Wind Australia                                                    -- windaustralia
+## Wind Australia -- windaustralia
 ![](share/test/windaustralia/TEST_0000.png)
 
 ```
@@ -136,7 +136,7 @@
     coastlines/gshhg/GSHHS_bin/gshhs_i.b --field[0].vector.density 100 
     --field[0].vector.scale 10 --render.width 1200 --field[0].scale 1.001 
 ```
-## Wind Australia                                                    -- windaustralia2
+## Wind Australia -- windaustralia2
 ![](share/test/windaustralia2/TEST_0000.png)
 
 ```
@@ -150,7 +150,7 @@
     --render.width 1200 --field[0].scale 1.001 --view.projection LATLON 
     --field[0].vector.density 10 
 ```
-## Wind Australia                                                    -- windaustralia4
+## Wind Australia -- windaustralia4
 ![](share/test/windaustralia4/TEST_0000.png)
 
 ```
@@ -165,7 +165,7 @@
     --field[0].vector.barb.color brown --field[0].vector.barb.circle.level 
     15 
 ```
-## Wind + geopotential                                               -- windgeop
+## Wind + geopotential -- windgeop
 ![](share/test/windgeop/TEST_0000.png)
 
 ```

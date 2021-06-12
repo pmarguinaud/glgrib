@@ -1,4 +1,4 @@
-## Spherical harmonic (T1198)                                        -- harmonic
+## Spherical harmonic (T1198) -- harmonic
 ![](share/test/harmonic/TEST_0000.png)
 
 ```
@@ -7,7 +7,7 @@
     --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 
     --view.fov 25 --view.lon 20 --scene.light.on 
 ```
-## Spherical harmonic (T1198C2.2)                                    -- harmonic_stretch
+## Spherical harmonic (T1198C2.2) -- harmonic_stretch
 ![](share/test/harmonic_stretch/TEST_0000.png)
 
 ```

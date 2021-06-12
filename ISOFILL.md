@@ -1,4 +1,4 @@
-## Isofill test                                                      -- isofill
+## Isofill test -- isofill
 ![](share/test/isofill/TEST_0000.png)
 
 ```
@@ -8,7 +8,7 @@
     cold_hot_temp }- --view.lat 2.32 --view.lon 14.12 --view.fov 0.5 
     --render.width 1200 
 ```
-## Isofill test wireframe                                            -- isofillwire
+## Isofill test wireframe -- isofillwire
 ![](share/test/isofillwire/TEST_0000.png)
 
 ```
@@ -18,7 +18,7 @@
     --isofill.max 296 --palette.name cold_hot_temp }- --view.lat 2.32 
     --view.lon 14.12 --view.fov 0.5 --render.width 1200 
 ```
-## Isofill temperature                                               -- isofilltemp
+## Isofill temperature -- isofilltemp
 ![](share/test/isofilltemp/TEST_0000.png)
 
 ```
@@ -26,7 +26,7 @@
     --field[0].type ISOFILL --field[0]-{ --palette.name cold_hot_temp }- 
     --colorbar.on --render.width 1200 --coast.on --coast.lines.color black 
 ```
-## Isofill Lambert                                                   -- isofilllambert
+## Isofill Lambert -- isofilllambert
 ![](share/test/isofilllambert/TEST_0000.png)
 
 ```
@@ -36,7 +36,7 @@
     5 --view.lon -52 --view.fov 2 --coast.on --grid.on --colorbar.on 
     --render.width 1200 --coast.lines.scale 1.02 --coast.lines.color black 
 ```
-## Isofill latlon                                                    -- isofilllatlon
+## Isofill latlon -- isofilllatlon
 ![](share/test/isofilllatlon/TEST_0000.png)
 
 ```

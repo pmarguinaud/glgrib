@@ -1,4 +1,4 @@
-## AROME 1.3km                                                       -- arome13
+## AROME 1.3km -- arome13
 ![](share/test/arome13/TEST_0000.png)
 
 ```
@@ -8,7 +8,7 @@
     --field[0].palette.values 0. 20. --field[0].vector.arrow.color red 
     --coast.lines.color cyan --coast.on 
 ```
-## AROME, Lambert geometry                                           -- aro
+## AROME, Lambert geometry -- aro
 ![](share/test/aro/TEST_0000.png)
 
 ```
@@ -16,7 +16,7 @@
     --field[0].palette.name cold_hot --field[0].scale 1.00 --view.lat 46.2 
     --view.lon 2.0 --view.fov 5 --coast.on --grid.on 
 ```
-## AROME, Lambert geometry, polar stereo                             -- aro_polar
+## AROME, Lambert geometry, polar stereo -- aro_polar
 ![](share/test/aro_polar/TEST_0000.png)
 
 ```

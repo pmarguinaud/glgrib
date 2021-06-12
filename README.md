@@ -16,7 +16,7 @@ Tested on :
 ![](share/perltk/tk2.png)
 
   # [Cloud ...](CLOUD.md)
-## Clouds, 3 layers, t1198c2.2                                       -- t1198_3l
+## Clouds, 3 layers, t1198c2.2 -- t1198_3l
 ![](share/test/t1198_3l/TEST_0000.png)
 
 ```
@@ -29,7 +29,7 @@ Tested on :
     --field[2].palette.name cloud 
 ```
 # [Lambert ...](LAMBERT.md)
-## AROME 1.3km                                                       -- arome13
+## AROME 1.3km -- arome13
 ![](share/test/arome13/TEST_0000.png)
 
 ```
@@ -40,7 +40,7 @@ Tested on :
     --coast.lines.color cyan --coast.on 
 ```
 # [String ...](STRING.md)
-## Contour with labels                                               -- contourlabels2
+## Contour with labels -- contourlabels2
 ![](share/test/contourlabels2/TEST_0000.png)
 
 ```
@@ -55,7 +55,7 @@ Tested on :
     --coast.lines.color pink 
 ```
 # [Misc ...](MISC.md)
-## Cities                                                            -- cities
+## Cities -- cities
 ![](share/test/cities/TEST_0000.png)
 
 ```
@@ -66,7 +66,7 @@ Tested on :
     --cities.labels.font.bitmap.scale 0.04 
 ```
 # [Palette ...](PALETTE.md)
-## Display field with palette gradient color                         -- palette_values_grad
+## Display field with palette gradient color -- palette_values_grad
 ![](share/test/palette_values_grad/TEST_0000.png)
 
 ```
@@ -78,7 +78,7 @@ Tested on :
     --colorbar.on --render.width 1200 
 ```
 # [Contour ...](CONTOUR.md)
-## Medium-res contour and raster, global geometry                    -- contour_latlon4
+## Medium-res contour and raster, global geometry -- contour_latlon4
 ![](share/test/contour_latlon4/TEST_0000.png)
 
 ```
@@ -89,7 +89,7 @@ Tested on :
     --field[1].scale 1.001 
 ```
 # [Diff ...](DIFF.md)
-## Contour in diff mode, global lat/lon geometry                     -- contour_diff
+## Contour in diff mode, global lat/lon geometry -- contour_diff
 ![](share/test/contour_diff/TEST_0000.png)
 
 ```
@@ -99,7 +99,7 @@ Tested on :
     1.01 --landscape.on --landscape.color white --field[0].user_pref.off 
 ```
 # [Scalar ...](SCALAR.md)
-## Surface temperature, global lat/lon field                         -- glob01
+## Surface temperature, global lat/lon field -- glob01
 ![](share/test/glob01/TEST_0000.png)
 
 ```
@@ -108,7 +108,7 @@ Tested on :
     --grid.on 
 ```
 # [Landscape ...](LANDSCAPE.md)
-## Landscape over Europe only                                        -- landscape_eurat01
+## Landscape over Europe only -- landscape_eurat01
 ![](share/test/landscape_eurat01/TEST_0000.png)
 
 ```
@@ -116,7 +116,7 @@ Tested on :
     share/data/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --coast.on --grid.on 
 ```
 # [Projection ...](PROJECTION.md)
-## Display contour field using Mercator projection                   -- mercator
+## Display contour field using Mercator projection -- mercator
 ![](share/test/mercator/TEST_0000.png)
 
 ```
@@ -126,7 +126,7 @@ Tested on :
     1.01 --view.projection MERCATOR --landscape.on 
 ```
 # [Shell ...](SHELL.md)
-## Test interactive shell                                            -- shell
+## Test interactive shell -- shell
 ![](share/test/shell/TEST_0000.png)
 
 ```
@@ -135,7 +135,7 @@ Tested on :
     --shell.on 
 ```
 # [Vector ...](VECTOR.md)
-## Wind Australia                                                    -- windaustralia3
+## Wind Australia -- windaustralia3
 ![](share/test/windaustralia3/TEST_0000.png)
 
 ```
@@ -155,7 +155,7 @@ Tested on :
     --colorbar.on --field[0].vector.density 20 --field[0].vector.scale 2 
 ```
 # [Stream ...](STREAM.md)
-## Streamlines on t1198c2.2 (surface)                                -- stream_t1198c22
+## Streamlines on t1198c2.2 (surface) -- stream_t1198c22
 ![](share/test/stream_t1198c22/TEST_0000.png)
 
 ```
@@ -173,7 +173,7 @@ Tested on :
     landscape/white.png 
 ```
 # [Points ...](POINTS.md)
-## Gaussian grid wireframe                                           -- gauss_wireframe
+## Gaussian grid wireframe -- gauss_wireframe
 ![](share/test/gauss_wireframe/TEST_0000.png)
 
 ```
@@ -182,7 +182,7 @@ Tested on :
     --view.fov 5 
 ```
 # [Spectral ...](SPECTRAL.md)
-## Spherical harmonic (T1198)                                        -- harmonic
+## Spherical harmonic (T1198) -- harmonic
 ![](share/test/harmonic/TEST_0000.png)
 
 ```
@@ -192,7 +192,7 @@ Tested on :
     --view.fov 25 --view.lon 20 --scene.light.on 
 ```
 # [Height ...](HEIGHT.md)
-## Orography (raster & contour) with height                          -- contour_height
+## Orography (raster & contour) with height -- contour_height
 ![](share/test/contour_height/TEST_0000.png)
 
 ```
@@ -202,14 +202,14 @@ Tested on :
     --field[0].geometry.height.on --view.lat -16 --view.lon 134 
 ```
 # [Grid ...](GRID.md)
-## Grid labels                                                       -- grid_labels
+## Grid labels -- grid_labels
 ![](share/test/grid_labels/TEST_0000.png)
 
 ```
     --grid.on --grid.labels.on --landscape.on 
 ```
 # [Mpi ...](MPI.md)
-## Display sphere partitionning (t1198)                              -- myproc
+## Display sphere partitionning (t1198) -- myproc
 ![](share/test/myproc/TEST_0000.png)
 
 ```
@@ -222,14 +222,14 @@ Tested on :
     36 --view.lon -15 
 ```
 # [Land ...](LAND.md)
-## Display land surface                                              -- land
+## Display land surface -- land
 ![](share/test/land/TEST_0000.png)
 
 ```
     --land.on 
 ```
 # [Isofill ...](ISOFILL.md)
-## Isofill test                                                      -- isofill
+## Isofill test -- isofill
 ![](share/test/isofill/TEST_0000.png)
 
 ```
@@ -240,7 +240,7 @@ Tested on :
     --render.width 1200 
 ```
 # [Satellite ...](SATELLITE.md)
-## SSMI satellite data                                               -- ssmigeopoints
+## SSMI satellite data -- ssmigeopoints
 ![](share/test/ssmigeopoints/TEST_0000.png)
 
 ```

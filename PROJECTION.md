@@ -1,4 +1,4 @@
-## Display contour field using Mercator projection                   -- mercator
+## Display contour field using Mercator projection -- mercator
 ![](share/test/mercator/TEST_0000.png)
 
 ```

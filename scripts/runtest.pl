@@ -61,6 +61,8 @@ Tested on :
   while (my ($kind, $desc, $name, $opts) = splice (@t, 0, 4))
     {
 
+      $opts = join (' ', @{ $opts->[0] });
+
       next unless ($opts =~ m/^--/o);
 
       my $text = '';
@@ -249,6 +251,7 @@ Tested on :
 
 
 my @t = @test;
+@test = ();
 while (my ($kind, $desc, $name, $opts) = splice (@t, 0, 4))
   {
     $desc =~ s/\s*$//o;
@@ -269,7 +272,9 @@ while (my ($kind, $desc, $name, $opts) = splice (@t, 0, 4))
       }
     $test{$name} && die ("Duplicate test: $name\n");
     $test{$name} = [$desc, \@opts];
+    push @test, ($kind, $desc, $name, \@opts);
   }
+
 
 
 my $help = $ENV{HELP};

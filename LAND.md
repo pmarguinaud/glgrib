@@ -1,10 +1,10 @@
-## Display land surface                                              -- land
+## Display land surface -- land
 ![](share/test/land/TEST_0000.png)
 
 ```
     --land.on 
 ```
-## Display land surface (high resolution)                            -- land_high
+## Display land surface (high resolution) -- land_high
 ![](share/test/land_high/TEST_0000.png)
 
 ```
@@ -14,7 +14,7 @@
     --land.layers[3].path coastlines/shp/GSHHS_h_L5.shp --view.lon 7 
     --view.lat 60 --view.fov 2 
 ```
-## Coastlines                                                        -- coastlines
+## Coastlines -- coastlines
 ![](share/test/coastlines/TEST_0000.png)
 
 ```

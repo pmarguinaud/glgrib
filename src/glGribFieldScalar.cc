@@ -83,9 +83,11 @@ void FieldScalar<N>::points_t::setupVertexAttributes () const
   
 }
 
-static void widenRegion (const std::vector<float> & values, const int size, 
-                         const_GeometryPtr geometry, glGrib::BufferPtr<float> & data) 
+static void widenRegion (const std::vector<float> & values, const std::vector<int> & radius,
+                         const_GeometryPtr geometry, BufferPtr<float> & data) 
 {
+  const int size = *std::max_element (radius.begin (), radius.end ());
+
   const int sz = geometry->size ();
   const int nb = values.size ();
 
@@ -119,6 +121,9 @@ static void widenRegion (const std::vector<float> & values, const int size,
   for (int iter = 0; iter < size; iter++)
   for (int ib = 0; ib < nb; ib++)
     {
+      if (iter >= radius[ib % radius.size ()])
+        continue;
+
       for (auto jglh : halo1[ib])
         {
           if (std::any_of (values.begin (), values.begin () + ib, [&] (float x) 
@@ -188,7 +193,7 @@ void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsF
     {
 
       if (opts.scalar.widen.on)
-        widenRegion (opts.scalar.widen.values, opts.scalar.widen.size, geometry, data);
+        widenRegion (opts.scalar.widen.values, opts.scalar.widen.radius, geometry, data);
 
       this->pack (data, geometry->getNumberOfPoints (), meta1.valmin, 
                   meta1.valmax, meta1.valmis, colorbuffer);

@@ -207,7 +207,7 @@ Tested on :
    use feature 'state';
    state @nn = do { my @n = (0 .. $nproc-1); my @x = map { rand () } @n; sort { $x[$a] <=> $x[$b] } @n };
    my @ii = @nn[($i*$p .. $i*$p+$p-1)];
-   sprintf ('--field[0].scalar.widen.on --field[0].scalar.widen.values %s --field[0].scalar.widen.size 20 '
+   sprintf ('--field[0].scalar.widen.on --field[0].scalar.widen.values %s --field[0].scalar.widen.radius 20 '
           . '--field[0].scalar.discrete.on --field[0].path share/data/discrete/MYPROC.grb '
           . '--field[0].palette.colors green --field[0].scalar.discrete.missing_color black '
           . '--field[0].palette.colors #00000000 --field[1].path share/data/discrete/SURFTEMPERATURE.grb '

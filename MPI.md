@@ -35,8 +35,8 @@
 ![](share/test/mpihalo/TEST.gif)
 
 ```
-    --field[0].scalar.widen.on --field[0].scalar.widen.values 60.0 52.0 
-    62.0 17.0 53.0 6.0 5.0 39.0 --field[0].scalar.widen.size 20 
+    --field[0].scalar.widen.on --field[0].scalar.widen.values 38.0 63.0 
+    15.0 65.0 9.0 80.0 2.0 23.0 --field[0].scalar.widen.radius 20 
     --field[0].scalar.discrete.on --field[0].path 
     share/data/discrete/MYPROC.grb --field[0].palette.colors green 
     --field[0].scalar.discrete.missing_color black 

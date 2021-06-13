@@ -53,6 +53,8 @@
 ```
 ## Interpolate field over time -- interpolation
 ![](share/test/interpolation/TEST.gif)
+![](share/test/interpolation/TEST.png)
+![](share/test/interpolation/TEST.mp4)
 
 ```
     --field[0].path share/data/interp/01.grb share/data/interp/36.grb 

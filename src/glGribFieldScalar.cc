@@ -257,6 +257,7 @@ void FieldScalar<N>::setupMpiView (Loader * ld, const OptionsField & o, float sl
       }
     }
 
+#pragma omp parallel for
   for (int mpi = 0; mpi < max; mpi++)
     Disl[mpi] = xyz2lonlat (glm::normalize (Disp[mpi] / static_cast<float> (count[mpi])));
 

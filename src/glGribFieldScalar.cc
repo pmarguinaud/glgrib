@@ -240,6 +240,7 @@ void FieldScalar<N>::setupMpiView (Loader * ld, const OptionsField & o, float sl
       count[mpi] = 0;
     }
 
+#pragma omp parallel for
   for (int jglo = 0; jglo < size; jglo++)
     {
       float lon, lat;
@@ -247,8 +248,13 @@ void FieldScalar<N>::setupMpiView (Loader * ld, const OptionsField & o, float sl
 
       int mpi = static_cast<int> (std::round (mpiview[jglo])) - 1;
 
-      Disp[mpi] += lonlat2xyz (glm::vec2 (lon, lat));
-      count[mpi]++;
+      glm::vec3 d = lonlat2xyz (glm::vec2 (lon, lat));
+
+#pragma omp critical
+      {
+        Disp[mpi] += d;
+        count[mpi]++;   
+      }
     }
 
   for (int mpi = 0; mpi < max; mpi++)

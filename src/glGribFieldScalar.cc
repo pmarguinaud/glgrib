@@ -233,36 +233,38 @@ void FieldScalar<N>::setupMpiView (Loader * ld, const OptionsField & o, float sl
   glm::vec2 Disl[max];
   int count[max];
 
-  for (int i = 0; i < max; i++)
+#pragma omp parallel for
+  for (int mpi = 0; mpi < max; mpi++)
     {
-      Disp[i] = glm::vec3 (0.0f, 0.0f, 0.0f);
-      count[i] = 0;
+      Disp[mpi] = glm::vec3 (0.0f, 0.0f, 0.0f);
+      count[mpi] = 0;
     }
 
-  for (int i = 0; i < size; i++)
+  for (int jglo = 0; jglo < size; jglo++)
     {
       float lon, lat;
-      geometry->index2latlon (i, &lat, &lon);
+      geometry->index2latlon (jglo, &lat, &lon);
 
-      int j = static_cast<int> ((*mpiview)[i]-1);
+      int mpi = static_cast<int> (std::round (mpiview[jglo])) - 1;
 
-      Disp[j] += lonlat2xyz (glm::vec2 (lon, lat));
-      count[j]++;
+      Disp[mpi] += lonlat2xyz (glm::vec2 (lon, lat));
+      count[mpi]++;
     }
 
-  for (int i = 0; i < max; i++)
-    Disl[i] = xyz2lonlat (glm::normalize (Disp[i] / static_cast<float> (count[i])));
+  for (int mpi = 0; mpi < max; mpi++)
+    Disl[mpi] = xyz2lonlat (glm::normalize (Disp[mpi] / static_cast<float> (count[mpi])));
 
   mpivbuffer = OpenGLBufferPtr<float> (3 * size);
 
   auto mpiv = mpivbuffer->map ();
 
-  for (int i = 0; i < size; i++)
+#pragma omp parallel for
+  for (int jglo = 0; jglo < size; jglo++)
     {
-      int j = (*mpiview)[i]-1;
-      mpiv[3*i+0] = (*mpiview)[i];
-      mpiv[3*i+1] = Disl[j].x;
-      mpiv[3*i+2] = Disl[j].y;
+      int mpi = static_cast<int> (std::round (mpiview[jglo]))-1;
+      mpiv[3*jglo+0] = mpi + 1;
+      mpiv[3*jglo+1] = Disl[mpi].x;
+      mpiv[3*jglo+2] = Disl[mpi].y;
     }
 
 }

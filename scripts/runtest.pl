@@ -214,6 +214,22 @@ Tested on :
           . '--field[1]-{ --palette.max 313.15 --palette.min 253.15 --palette.name cold_hot_temp }- '
           . '--view.lat 36 --view.lon -15', join (' ', map { sprintf ('%d.0', $_ + 1) } @ii));
  },
+ 'MPI'          , "MPI transpositions                                               " ,  mpitrans            => sub
+ {
+   my $n = 4;
+   my $i = shift;
+   return unless ($i < 6 * $n);
+
+   my @x = ('', '.NPRGPEW=1', '.NPRGPNS=1', '.NPRGPNS=1', '.NPRGPEW=1', '');
+   @x = map { ($_) x $n } @x;
+
+   my $myproc = 'share/data/discrete/MYPROC' . $x[$i] . '.grb';
+
+   sprintf ('--field[0].scalar.discrete.on --field[0].path %s --field[0].scalar.discrete.missing_color black '
+          . '--field[0].palette.colors #00000000 --field[1].path share/data/discrete/SURFTEMPERATURE.grb '
+          . '--field[1]-{ --palette.max 313.15 --palette.min 253.15 --palette.name cold_hot_temp }- --view.lat 36 --view.lon -15', $myproc);
+
+ },
  'STREAM'       , "Lat/lon streamlines                                              " ,  latlonstream        => '--field[0].path share/data/advection_850.grib%\'shortName="u"\' share/data/advection_850.grib%\'shortName="v"\' --field[0].type STREAM --field[0].palette.colors darkblue --land.on --land.layers[0].path coastlines/shp/GSHHS_i_L1.shp --land.layers[1].path coastlines/shp/GSHHS_i_L2.shp --land.layers[2].path coastlines/shp/GSHHS_i_L3.shp --land.layers[3].path coastlines/shp/GSHHS_i_L5.shp --land.layers[0].color grey --grid.on --grid.resolution 18  --grid.color black  --landscape.on --landscape.path landscape/white.bmp --landscape.scale 0.99 --view.lon -9.5 --view.lat 46 --view.fov 1.3 --view.projection LATLON  --render.width 1200',
  'VECTOR'       , "Wind on global lat/lon grid                                      " ,  windlatlon          => '--field[0].path share/data/data_uv.grib%shortName=\'"u"\' share/data/data_uv.grib%shortName=\'"v"\' --field[0].type vector --field[0].vector.arrow.off  --field[0].palette.values 0 10 15 20 25 30 40 50 60 80 100  --colorbar.on  --field[0].palette.linear.on --field[0].palette-{ --min 0 --max 100 }- --field[0].palette.colors \'#ffffffff\' \'#ffff66ff\'  \'#daff00ff\' \'#94ff00ff\' \'#6ca631ff\' \'#00734bff\' \'#005447ff\' \'#004247ff\' \'#003370ff\' \'#0033a3ff\'  --coast.on --coast.lines.color black  --grid.on --grid.color black --grid.resolution 18 --view.fov 10 --view.projection LATLON --render.width 1650 --render.height 750',
  'CONTOUR'      , "Z500, T850                                                       " ,  z500t850            => '--coast.lines.color black --coast.on --colorbar.font.color.foreground black --colorbar.on --field[0].palette.colors \'#ffffffff\' \'#0000ffff\' \'#0071ffff\' \'#00e3ffff\' \'#00ffaaff\' \'#00ff39ff\' \'#39ff00ff\' \'#aaff00ff\' \'#ffe300ff\' \'#ff7100ff\' \'#ff0000ff\' \'#ffffffff\' --field[0].palette.offset -273.15 --field[0].palette.values 262.15 263.15 265.15 267.15 269.15 271.15 273.15 275.15 277.15 279.15 281.15 283.15 284.15 --field[0].path share/data/t850.grb --field[1].contour.levels  47000 47500 48000 48500 49000 49500 50000 50500 51000 51500 52000 52500 53000 53500 54000 54500 55000 55500 56000 56500 57000 57500 --field[1].contour.widths 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0  --field[1].hilo.font.color.foreground black --field[1].hilo.font.bitmap.scale 0.02  --field[1].hilo.on  --field[1].palette.colors black  --field[1].path share/data/z500.grb --field[1].type CONTOUR  --grid.color black --grid.labels.font.color.background white --grid.labels.font.color.foreground  black  --grid.labels.font.bitmap.scale 0.02 --grid.labels.on  --grid.on --grid.resolution 18 --view.fov 5 --view.lat 49 --view.lon 2 --view.projection POLAR_NORTH --render.width 1200',

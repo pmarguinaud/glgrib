@@ -35,10 +35,22 @@
 ![](share/test/mpihalo/TEST.gif)
 
 ```
-    --field[0].scalar.widen.on --field[0].scalar.widen.values 38.0 63.0 
-    15.0 65.0 9.0 80.0 2.0 23.0 --field[0].scalar.widen.radius 20 
+    --field[0].scalar.widen.on --field[0].scalar.widen.values 11.0 36.0 
+    60.0 20.0 2.0 42.0 61.0 62.0 --field[0].scalar.widen.radius 20 
     --field[0].scalar.discrete.on --field[0].path 
     share/data/discrete/MYPROC.grb --field[0].palette.colors green 
+    --field[0].scalar.discrete.missing_color black 
+    --field[0].palette.colors #00000000 --field[1].path 
+    share/data/discrete/SURFTEMPERATURE.grb --field[1]-{ --palette.max 
+    313.15 --palette.min 253.15 --palette.name cold_hot_temp }- --view.lat 
+    36 --view.lon -15 
+```
+## MPI transpositions -- mpitrans
+![](share/test/mpitrans/TEST.gif)
+
+```
+    --field[0].scalar.discrete.on --field[0].path 
+    share/data/discrete/MYPROC.grb 
     --field[0].scalar.discrete.missing_color black 
     --field[0].palette.colors #00000000 --field[1].path 
     share/data/discrete/SURFTEMPERATURE.grb --field[1]-{ --palette.max 

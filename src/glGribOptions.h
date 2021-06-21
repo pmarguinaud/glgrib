@@ -943,7 +943,16 @@ public:
     DESC (pack.bits,    Number of bytes used to pack field);
 
     DESC (discrete.on,  Plot as a discrete field);
+    DESC (discrete.integer.on,    Values are integers);
     DESC (discrete.missing_color, Color for missing values);
+
+    DESC (light.reverse.on,       Reverse light);
+    DESC (light.reverse.b,        Reverse light coefficient);
+    DESC (light.reverse.c,        Reverse light coefficient);
+
+    DESC (widen.on, Enable region widening);
+    DESC (widen.values, Values for regions);
+    DESC (widen.radius, Radius for regions);
   }
 
   struct 
@@ -977,8 +986,30 @@ public:
   struct
   {
     bool on = false;
+    struct
+    {
+      bool on = false;
+    } integer;
     OptionColor missing_color = OptionColor (0, 0, 0, 0);
   } discrete;
+
+  struct
+  {
+    struct
+    {
+      bool on = false;
+      float b = 0.2;
+      float c = 15.;
+    } reverse;
+  } light;
+
+  struct
+  {
+    bool on = false;
+    std::vector<float> values = {0.0f};
+    std::vector<int>   radius = {0};
+  } widen;
+
 };
 
 class OptionsMpiview : public OptionsBase
@@ -1388,7 +1419,10 @@ public:
     DESC (fullscreen.y.on,       Window in fullscreen mode in Y direction);
 #ifdef GLGRIB_USE_EGL
 #ifdef GLGRIB_USE_GBM
-    DESC (device.path,           Path to EGL/gbm device);
+    DESC (egl.gbm.on,            Enable gbm);
+    DESC (egl.gbm.path,          Path to gbm device);
+#else
+    DESC (egl.device,            Device rank);
 #endif
 #endif
   }
@@ -1438,11 +1472,19 @@ public:
     } y;
   } fullscreen;
 
-#ifdef GLGRIB_USE_GBM
+#ifdef GLGRIB_USE_EGL
   struct
   {
-    OptionPath path = "/dev/dri/renderD128";
-  } device;
+#ifdef GLGRIB_USE_GBM
+    struct
+    {
+      bool on = false;
+      OptionPath path = "/dev/dri/renderD128";
+    } gbm;
+#else
+    int device = -1;
+#endif
+  } egl;
 #endif
 };
 

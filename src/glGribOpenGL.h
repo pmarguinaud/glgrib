@@ -41,7 +41,11 @@ namespace glGrib
 class eglDisplay
 {
 public:
+#ifdef GLGRIB_USE_GBM
   eglDisplay (const std::string &);
+#else
+  eglDisplay (int);
+#endif
   ~eglDisplay ();
   EGLDisplay display = nullptr;
   EGLConfig  config  = nullptr;
@@ -49,6 +53,8 @@ public:
   int fd = -1;
   struct gbm_device * gbm = nullptr;
 #endif
+private:
+  void setup ();
 };
 
 bool preEGLError ();

@@ -17,7 +17,7 @@ sub help
     {
       print "* $name\n";
       print "   $desc\n";
-      my @o = @{ $test{$name}[1] };
+      my @o = @{ $test{$name}[1][0] };
       my @l = ('');
       while (my $o = shift (@o))
         {
@@ -61,6 +61,8 @@ Tested on :
   while (my ($kind, $desc, $name, $opts) = splice (@t, 0, 4))
     {
 
+      $opts = join (' ', @{ $opts->[0] });
+
       next unless ($opts =~ m/^--/o);
 
       my $text = '';
@@ -78,7 +80,7 @@ Tested on :
 
       $text .= "\n";
 
-      my @o = @{ $test{$name}[1] };
+      my @o = @{ $test{$name}[1][0] };
 
       my @l = ('');
       while (defined (my $o = shift (@o)))
@@ -98,7 +100,7 @@ Tested on :
         {
           my $Kind = ucfirst (lc ($kind));
           $fh{$kind} = 'FileHandle'->new (">$kind.md");
-          $fh->print ("# [$Kind]($kind.md)\n");
+          $fh->print ("# [$Kind ...]($kind.md)\n");
           $fh->print ($text);
         }
 
@@ -180,6 +182,9 @@ Tested on :
  'LANDSCAPE'    , "Landscape with orography (T479)                                  " ,  land_orography      => '--landscape.on --landscape.grid.path ./share/data/t479/Z.grb  --landscape.geometry.height.on --landscape.geometry.height.scale 0.2 --landscape.geometry.height.path ./share/data/t479/Z.grb --landscape.flat.off',
  'SPECTRAL'     , "Spherical harmonic (T1198)                                       " ,  harmonic            => '--field[0].path share/data/harmonics/SPEC.+0008.+0004.grb --field[0].palette-{ --colors blue green red  --values -1 0. 1 }- --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 --view.fov 25 --view.lon 20 --scene.light.on',
  'SPECTRAL'     , "Spherical harmonic (T1198C2.2)                                   " ,  harmonic_stretch    => '--field[0].path share/data/harmonics/SPEC.+0008.+0004_stretched.grb --field[0].palette-{ --colors blue green red  --values -1 0. 1 }- --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 --view.fov 25 --view.lon 20 --scene.light.on',
+ 'SPECTRAL'     , "Spherical harmonic (T1198)                                       " ,  tharmonic1          => '--field[0].path share/data/wind+temp/t1198/S105TEMPERATURE.grb --field[1].path share/data/harmonics/SPEC.+0008.+0004.grb --field[1].scale 1.01 --field[1].type CONTOUR --field[1].palette.colors black white --view.lon -25 --view.lat 25 --scene.light.on  --grid.on',
+ 'SPECTRAL'     , "Spherical harmonic (T1198)                                       " ,  tharmonic2          => '--field[0].path share/data/wind+temp/t1198/S105TEMPERATURE.grb  --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 --field[0].geometry.height.path share/data/harmonics/SPEC.+0008.+0004.grb --field[0].scale 0.8 --scene.light.on  --grid.on  --view.lon -25 --view.lat 25',
+ 'SPECTRAL'     , "Spherical harmonic (T1198)                                       " ,  tharmonic3          => '--field[0].path share/data/wind+temp/t1198/S105TEMPERATURE.grb --field[1].path share/data/harmonics/SPEC.+0008.+0004.grb --field[1].scale 1.01 --field[1].palette.colors #00ff0044 #00000100 #00ff0044 --field[1].palette.values -1 0. +1 --view.lon -25 --view.lat 25 --scene.light.on  --grid.on',
  'HEIGHT'       , "Orography (raster & contour) with height                         " ,  contour_height      => '--field[0].path share/data/t479/Z.grb  --field[0].scale 1.005 --field[0].type CONTOUR --field[1].geometry.height.on --field[0].palette.colors black --field[1].path share/data/t479/Z.grb  --field[0].geometry.height.on  --view.lat -16 --view.lon 134',
  'HEIGHT'       , "Orography with height                                            " ,  orography_height    => '--field[0].path ./share/data/t1798/Z.grb --field[0].palette.name topo --field[0].scale 1.005 --landscape.on --field[0].geometry.height.on',
  'HEIGHT'       , "Height = vector norm value                                       " ,  height_vector       => '--field[0].type VECTOR --field[0].path share/data/wind+temp/t0224/S105WIND.U.PHYS.grb share/data/wind+temp/t0224/S105WIND.V.PHYS.grb  --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 --field[0].vector.arrow.color red --field[0].palette.name summer',
@@ -195,6 +200,39 @@ Tested on :
  'LAND'         , "Display land surface                                             " ,  land                => '--land.on',
  'LAND'         , "Display land surface (high resolution)                           " ,  land_high           => '--land.on --land.layers[0].path coastlines/shp/GSHHS_h_L1.shp --land.layers[1].path coastlines/shp/GSHHS_h_L2.shp --land.layers[2].path coastlines/shp/GSHHS_h_L3.shp --land.layers[3].path coastlines/shp/GSHHS_h_L5.shp  --view.lon 7 --view.lat 60 --view.fov 2',
  'MPI'          , "MPI view                                                         " ,  mpiview             => '--field[0].path share/data/discrete/SURFTEMPERATURE.grb  --field[0].mpiview.on  --field[0].mpiview.path share/data/discrete/MYPROC.grb  --field[0].mpiview.scale 0.2 --view.lon 31 --view.lat 41',
+ 'MPI'          , "MPI halo                                                         " ,  mpihalo             =>  sub
+ {
+   my $nproc = 80;
+   my $i = shift;
+   my $n = 10;
+   my $p = $nproc / $n;
+   return unless ($i < $n);
+   use feature 'state';
+   state @nn = do { my @n = (0 .. $nproc-1); my @x = map { rand () } @n; sort { $x[$a] <=> $x[$b] } @n };
+   my @ii = @nn[($i*$p .. $i*$p+$p-1)];
+   sprintf ('--field[0].scalar.widen.on --field[0].scalar.widen.values %s --field[0].scalar.widen.radius 20 '
+          . '--field[0].scalar.discrete.on --field[0].path share/data/discrete/MYPROC.grb '
+          . '--field[0].palette.colors green --field[0].scalar.discrete.missing_color black '
+          . '--field[0].palette.colors #00000000 --field[1].path share/data/discrete/SURFTEMPERATURE.grb '
+          . '--field[1]-{ --palette.max 313.15 --palette.min 253.15 --palette.name cold_hot_temp }- '
+          . '--view.lat 36 --view.lon -15', join (' ', map { sprintf ('%d.0', $_ + 1) } @ii));
+ },
+ 'MPI'          , "MPI transpositions                                               " ,  mpitrans            => sub
+ {
+   my $n = 4;
+   my $i = shift;
+   return unless ($i < 6 * $n);
+
+   my @x = ('', '.NPRGPEW=1', '.NPRGPNS=1', '.NPRGPNS=1', '.NPRGPEW=1', '');
+   @x = map { ($_) x $n } @x;
+
+   my $myproc = 'share/data/discrete/MYPROC' . $x[$i] . '.grb';
+
+   sprintf ('--field[0].scalar.discrete.on --field[0].path %s --field[0].scalar.discrete.missing_color black '
+          . '--field[0].palette.colors #00000000 --field[1].path share/data/discrete/SURFTEMPERATURE.grb '
+          . '--field[1]-{ --palette.max 313.15 --palette.min 253.15 --palette.name cold_hot_temp }- --view.lat 36 --view.lon -15', $myproc);
+
+ },
  'STREAM'       , "Lat/lon streamlines                                              " ,  latlonstream        => '--field[0].path share/data/advection_850.grib%\'shortName="u"\' share/data/advection_850.grib%\'shortName="v"\' --field[0].type STREAM --field[0].palette.colors darkblue --land.on --land.layers[0].path coastlines/shp/GSHHS_i_L1.shp --land.layers[1].path coastlines/shp/GSHHS_i_L2.shp --land.layers[2].path coastlines/shp/GSHHS_i_L3.shp --land.layers[3].path coastlines/shp/GSHHS_i_L5.shp --land.layers[0].color grey --grid.on --grid.resolution 18  --grid.color black  --landscape.on --landscape.path landscape/white.bmp --landscape.scale 0.99 --view.lon -9.5 --view.lat 46 --view.fov 1.3 --view.projection LATLON  --render.width 1200',
  'VECTOR'       , "Wind on global lat/lon grid                                      " ,  windlatlon          => '--field[0].path share/data/data_uv.grib%shortName=\'"u"\' share/data/data_uv.grib%shortName=\'"v"\' --field[0].type vector --field[0].vector.arrow.off  --field[0].palette.values 0 10 15 20 25 30 40 50 60 80 100  --colorbar.on  --field[0].palette.linear.on --field[0].palette-{ --min 0 --max 100 }- --field[0].palette.colors \'#ffffffff\' \'#ffff66ff\'  \'#daff00ff\' \'#94ff00ff\' \'#6ca631ff\' \'#00734bff\' \'#005447ff\' \'#004247ff\' \'#003370ff\' \'#0033a3ff\'  --coast.on --coast.lines.color black  --grid.on --grid.color black --grid.resolution 18 --view.fov 10 --view.projection LATLON --render.width 1650 --render.height 750',
  'CONTOUR'      , "Z500, T850                                                       " ,  z500t850            => '--coast.lines.color black --coast.on --colorbar.font.color.foreground black --colorbar.on --field[0].palette.colors \'#ffffffff\' \'#0000ffff\' \'#0071ffff\' \'#00e3ffff\' \'#00ffaaff\' \'#00ff39ff\' \'#39ff00ff\' \'#aaff00ff\' \'#ffe300ff\' \'#ff7100ff\' \'#ff0000ff\' \'#ffffffff\' --field[0].palette.offset -273.15 --field[0].palette.values 262.15 263.15 265.15 267.15 269.15 271.15 273.15 275.15 277.15 279.15 281.15 283.15 284.15 --field[0].path share/data/t850.grb --field[1].contour.levels  47000 47500 48000 48500 49000 49500 50000 50500 51000 51500 52000 52500 53000 53500 54000 54500 55000 55500 56000 56500 57000 57500 --field[1].contour.widths 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 0  --field[1].hilo.font.color.foreground black --field[1].hilo.font.bitmap.scale 0.02  --field[1].hilo.on  --field[1].palette.colors black  --field[1].path share/data/z500.grb --field[1].type CONTOUR  --grid.color black --grid.labels.font.color.background white --grid.labels.font.color.foreground  black  --grid.labels.font.bitmap.scale 0.02 --grid.labels.on  --grid.on --grid.resolution 18 --view.fov 5 --view.lat 49 --view.lon 2 --view.projection POLAR_NORTH --render.width 1200',
@@ -224,6 +262,7 @@ Tested on :
  'SCALAR'       , "Temperature with fixed palette                                   " ,  fixedpaltemp        => '--field[0].path share/data/wind+temp/t0224/S105TEMPERATURE.grb --field[0].user_pref.off --field[0].palette-{ --colors blue pink orange yellow cyan --values 260 270 280 290 300 320 --fixed.on --linear.on }-  --field[0].type ISOFILL --field[0].isofill.levels 260 270 280 290 300 320 --colorbar.on  --render.width 1200 --coast.on --coast.lines.color black',
  'SCALAR'       , "Temperature with fixed palette (smooth)                          " ,  fixedpalscalsmooth  => '--field[0].path share/data/wind+temp/t0224/S105TEMPERATURE.grb --field[0].user_pref.off --field[0].palette-{ --colors blue pink orange yellow cyan --values 260 270 280 290 300 320 --fixed.on --linear.on }-  --colorbar.on  --render.width 1200 --coast.on --coast.lines.color black  --field[0].scalar.smooth.on',
  'SCALAR'       , "Temperature with fixed palette (rough)                           " ,  fixedpalscalrough   => '--field[0].path share/data/wind+temp/t0224/S105TEMPERATURE.grb --field[0].user_pref.off --field[0].palette-{ --colors blue pink orange yellow cyan --values 260 270 280 290 300 320 --fixed.on --linear.on }-  --colorbar.on  --render.width 1200 --coast.on --coast.lines.color black',
+ 'SCALAR'       , "Display field in offscreen mode city lights                      " ,  citylight           => '--landscape.on --render.offscreen.on --render.offscreen.frames 36 --scene.light.rotate.on --scene.light.on --field[0].path ./share/data/town/town1800.grb  --field[0].palette-{ --colors "#bbbb0000" "#bbbb00ff" "#bbbb00ff"  --values 0. 0.1 1.0 }- --field[0].scalar.light.reverse.on --field[1].path share/data/t1198c2.2/SURFNEBUL.BASSE.grb --field[1].scale 1.03 --field[1].palette.name cloud_auto --scene.light.rotate.rate 10',
  'SATELLITE'    , "SSMI satellite data                                              " ,  ssmigeopoints       => '--geopoints.path share/data/geopoints/ssmis_light.nc --geopoints.on  --geopoints.points.scale 1.005 --geopoints.points.palette.name cold_hot  --landscape.on  --geopoints.points.size.value 0.5 --grid.on --grid.color black --coast.on --coast.lines.color black --colorbar.on  --geopoints.points.palette.min 200 --geopoints.points.palette.max 240 --geopoints.lon col_4 --geopoints.lat col_3 --geopoints.val col_5 --render.width 1200 --view.lat -32.736 --view.lon 41.909',
  'SATELLITE'    , "SSMI satellite data (polar projection)                           " ,  ssmigeopointspolar  => '--geopoints.path share/data/geopoints/ssmis_light.nc --geopoints.on --geopoints.points.palette.name cold_hot --landscape.on --geopoints.points.size.value 0.5 --grid.on --grid.color black --coast.on --coast.lines.color black --colorbar.on --geopoints.points.palette.min 200 --geopoints.points.palette.max 240 --geopoints.lon col_4 --geopoints.lat col_3 --geopoints.val col_5 --render.width 1200 --view.lat 62.577 --view.lon 71.4523 --view.projection POLAR_NORTH',
  'SATELLITE'    , "SSMI satellite data (lat/lon)                                    " ,  ssmigeopointlatlon  => '--geopoints.path share/data/geopoints/ssmis_light.nc --geopoints.on --geopoints.points.palette.name cold_hot --landscape.on --geopoints.points.size.value 0.5 --grid.on --grid.color black --coast.on --coast.lines.color black --colorbar.on --geopoints.points.palette.min 200 --geopoints.points.palette.max 240 --geopoints.lon col_4 --geopoints.lat col_3 --geopoints.val col_5 --render.width 1200  --view.fov 10 --view.lat 5.04296 --view.lon -9.39295 --view.projection LATLON  --view.clip.xmin 0.15',
@@ -231,12 +270,30 @@ Tested on :
 
 
 my @t = @test;
+@test = ();
 while (my ($kind, $desc, $name, $opts) = splice (@t, 0, 4))
   {
     $desc =~ s/\s*$//o;
+    my @opts;
+    if (ref ($opts))
+      {
+        my $i = 0;
+        while (my $o = $opts->($i++))
+          {
+            $o =~ s/\n/ /goms;
+            push @opts, [&quotewords ('\s+', 0, $o)];
+          }
+      }
+    else
+      {
+        $opts =~ s/\n/ /goms;
+        @opts = ([&quotewords ('\s+', 0, $opts)]);
+      }
     $test{$name} && die ("Duplicate test: $name\n");
-    $test{$name} = [$desc, [&quotewords ('\s+', 0, $opts)]];
+    $test{$name} = [$desc, \@opts];
+    push @test, ($kind, $desc, $name, \@opts);
   }
+
 
 
 my $help = $ENV{HELP};
@@ -268,31 +325,40 @@ for my $name (@name)
     
     my $exec = "$Bin/../bin/glgrib";
     
-    my @args = @{ $test->[1] };
-    
-    if ($args[0] !~ m/^--/o)
+    my @argl = @{ $test->[1] };
+
+    if ($argl[0][0] !~ m/^--/o)
       {
         $auto = 0;
       }
     
     if ($auto)
       {
-        my $off = grep { m/^--render.offscreen.on$/o } @args;
-        push (@args, '--render.offscreen.on') unless ($off);
-        push (@args, '--render.offscreen.format', 'TEST_%N.png');
-        for (<TEST*.png>)
+        for my $argl (@argl)
           {
-            unlink ($_);
+            my $off = grep { m/^--render.offscreen.on$/o } @$argl;
+            push (@$argl, '--render.offscreen.on') unless ($off);
+            push (@$argl, '--render.offscreen.format', 'TEST_%N.png');
+            for (<TEST*.png>)
+              {
+                unlink ($_);
+              }
+            @$argl = grep { $_ ne '--shell.on' } @$argl;
           }
-        @args = grep { $_ ne '--shell.on' } @args;
       }
     
-    my @cmd = ('gdb', '-ex=set confirm on', '-ex=run', '-ex=quit', '--args', $exec, @args);
-    
-    print "Running test $name...\n"; 
-
-    system (@cmd)
-      and die;
+    for my $argl (@argl)
+      {
+        
+        my @cmd = ($exec, @$argl);
+        @cmd = ('gdb', '-ex=set confirm on', '-ex=run', '-ex=quit', '--args', @cmd) if ($ENV{GDB});
+        
+        print "Running test $name...\n"; 
+        print "@cmd\n";
+     
+        system (@cmd)
+          and die;
+      }
     
 
     if ($auto)

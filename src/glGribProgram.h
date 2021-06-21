@@ -11,7 +11,7 @@ namespace glGrib
 class Program
 {
 public:
-
+  static void clearCache ();
 
   static Program * load (const std::string &);
 

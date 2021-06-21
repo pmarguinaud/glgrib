@@ -1,4 +1,4 @@
-## Gaussian grid wireframe                                           -- gauss_wireframe
+## Gaussian grid wireframe -- gauss_wireframe
 ![](share/test/gauss_wireframe/TEST_0000.png)
 
 ```
@@ -6,7 +6,7 @@
     --scalar.wireframe.on }- --coast.on --view.lon 2 --view.lat 46.7 
     --view.fov 5 
 ```
-## Scalar field displayed using points                               -- points_scalar
+## Scalar field displayed using points -- points_scalar
 ![](share/test/points_scalar/TEST_0000.png)
 
 ```
@@ -14,7 +14,7 @@
     --scalar.points-{ --on --size.value 0.5 --size.variable.on 
     --size.factor.off }- }- --coast.on --coast.lines.color green 
 ```
-## Scalar field with points (stretched/rotated grid)                 -- points_scalar_rot
+## Scalar field with points (stretched/rotated grid) -- points_scalar_rot
 ![](share/test/points_scalar_rot/TEST_0000.png)
 
 ```
@@ -23,7 +23,7 @@
     --on --size.value 0.2 --size.variable.on --size.factor.on }- }- 
     --coast.on --coast.lines.color green --landscape.on 
 ```
-## Polynesie                                                         -- polynesie
+## Polynesie -- polynesie
 ![](share/test/polynesie/TEST_0000.png)
 
 ```

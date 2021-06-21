@@ -287,17 +287,28 @@ void Scene::updateDate ()
     }
 }
 
+std::string Scene::getCurrentFieldName () const
+{
+  std::string name;
+
+  Field * fld = getCurrentField ();
+  if (fld != nullptr) 
+    {
+      const std::vector<FieldMetadata> & meta = fld->getMeta ();
+      name = meta[0].getName ();
+    }
+  return name;
+}
+
 void Scene::updateTitle ()
 {
   if (d.opts.scene.title.on)
     {
       std::string title = d.opts.scene.title.text;
-      Field * fld = getCurrentField ();
-      if ((fld != nullptr) && (title == ""))
-        {
-          const std::vector<FieldMetadata> & meta = fld->getMeta ();
-          title = meta[0].getName ();
-	}
+      std::string fname = getCurrentFieldName ();
+
+      if ((fname != "") && (title == ""))
+        title = fname;
       if (strtitle != title)
         {
           glGrib::clear (d.strtitle);
@@ -399,28 +410,31 @@ void Scene::setup (const Options & o)
 
 
   if (d.opts.scene.center.on)
-    {
-      Field * field = getCurrentField ();
-      if (field != nullptr)
-        {
-          const_GeometryPtr geometry = field->getGeometry ();
-          if (d.opts.scene.center.gridpoint < 0)
-            {
-              geometry->getView (&d.view);
-            }
-          else
-            {
-              OptionsView view_opts = d.view.getOptions ();
-              float lon, lat;
-              geometry->index2latlon (d.opts.scene.center.gridpoint, &lat, &lon);
-              view_opts.lat = lat * rad2deg;
-              view_opts.lon = lon * rad2deg;
-              d.view.setOptions (view_opts);
-            }
-        }
-    }
+    centerOnCurrentField ();
 
   reSize ();
+}
+
+void Scene::centerOnCurrentField ()
+{
+  Field * field = getCurrentField ();
+  if (field != nullptr)
+    {
+      const_GeometryPtr geometry = field->getGeometry ();
+      if (d.opts.scene.center.gridpoint < 0)
+        {
+          geometry->getView (&d.view);
+        }
+      else
+        {
+          OptionsView view_opts = d.view.getOptions ();
+          float lon, lat;
+          geometry->index2latlon (d.opts.scene.center.gridpoint, &lat, &lon);
+          view_opts.lat = lat * rad2deg;
+          view_opts.lon = lon * rad2deg;
+          d.view.setOptions (view_opts);
+        }
+    }
 }
 
 void Scene::setViewport (int _width, int _height)
@@ -493,6 +507,9 @@ void Scene::setFieldOptions (int j, const OptionsField & o, float slot)
     delete fieldlist[j];
 
   fieldlist[j] = Field::create (o, slot, &ld);
+
+  if (d.opts.scene.center.on)
+    centerOnCurrentField ();
 }
 
 void Scene::setColorBarOptions (const OptionsColorbar & o)

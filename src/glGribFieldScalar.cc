@@ -83,6 +83,74 @@ void FieldScalar<N>::points_t::setupVertexAttributes () const
   
 }
 
+static void widenRegion (const std::vector<float> & values, const std::vector<int> & radius,
+                         const_GeometryPtr geometry, BufferPtr<float> & data) 
+{
+  const int size = *std::max_element (radius.begin (), radius.end ());
+
+  const int sz = geometry->size ();
+  const int nb = values.size ();
+
+  std::set<int> halo1[nb], halo2[nb];
+  
+  std::vector<int> neigh;
+
+  // Find halo : scan whole grid
+
+#pragma omp parallel for private (neigh) 
+  for (int jglo = 0; jglo < sz; jglo++) 
+  for (int ib = 0; ib < nb; ib++)
+    {
+      if (data[jglo] != values[ib])
+        continue;
+
+      geometry->getPointNeighbours (jglo, &neigh);
+
+      for (auto jglh : neigh)
+        {
+          if (data[jglh] == values[ib])
+            continue;
+#pragma omp critical
+          halo1[ib].insert (jglh);
+        }
+    }
+  
+  // halo1 contains the previous halo
+  // halo2 is filled with the next halo
+
+  for (int iter = 0; iter < size; iter++)
+  for (int ib = 0; ib < nb; ib++)
+    {
+      if (iter >= radius[ib % radius.size ()])
+        continue;
+
+      for (auto jglh : halo1[ib])
+        {
+          if (std::any_of (values.begin (), values.begin () + ib, [&] (float x) 
+              { return x == data[jglh]; }))
+            continue;
+          data[jglh] = values[ib];
+        }
+
+      for (auto jglo : halo1[ib])
+        {
+          geometry->getPointNeighbours (jglo, &neigh);
+          for (auto jglh : neigh)
+            {
+              if (data[jglh] == values[ib])
+                continue;
+              halo2[ib].insert (jglh);
+            }
+        }
+
+      std::swap (halo1[ib], halo2[ib]);
+      halo2[ib].clear ();
+
+    }
+
+
+}
+
 template <int N>
 void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsField & o, float slot)
 {
@@ -123,6 +191,10 @@ void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsF
     }
   else
     {
+
+      if (opts.scalar.widen.on)
+        widenRegion (opts.scalar.widen.values, opts.scalar.widen.radius, geometry, data);
+
       this->pack (data, geometry->getNumberOfPoints (), meta1.valmin, 
                   meta1.valmax, meta1.valmis, colorbuffer);
     }
@@ -161,36 +233,45 @@ void FieldScalar<N>::setupMpiView (Loader * ld, const OptionsField & o, float sl
   glm::vec2 Disl[max];
   int count[max];
 
-  for (int i = 0; i < max; i++)
+#pragma omp parallel for
+  for (int mpi = 0; mpi < max; mpi++)
     {
-      Disp[i] = glm::vec3 (0.0f, 0.0f, 0.0f);
-      count[i] = 0;
+      Disp[mpi] = glm::vec3 (0.0f, 0.0f, 0.0f);
+      count[mpi] = 0;
     }
 
-  for (int i = 0; i < size; i++)
+#pragma omp parallel for
+  for (int jglo = 0; jglo < size; jglo++)
     {
       float lon, lat;
-      geometry->index2latlon (i, &lat, &lon);
+      geometry->index2latlon (jglo, &lat, &lon);
 
-      int j = static_cast<int> ((*mpiview)[i]-1);
+      int mpi = static_cast<int> (std::round (mpiview[jglo])) - 1;
 
-      Disp[j] += lonlat2xyz (glm::vec2 (lon, lat));
-      count[j]++;
+      glm::vec3 d = lonlat2xyz (glm::vec2 (lon, lat));
+
+#pragma omp critical
+      {
+        Disp[mpi] += d;
+        count[mpi]++;   
+      }
     }
 
-  for (int i = 0; i < max; i++)
-    Disl[i] = xyz2lonlat (glm::normalize (Disp[i] / static_cast<float> (count[i])));
+#pragma omp parallel for
+  for (int mpi = 0; mpi < max; mpi++)
+    Disl[mpi] = xyz2lonlat (glm::normalize (Disp[mpi] / static_cast<float> (count[mpi])));
 
   mpivbuffer = OpenGLBufferPtr<float> (3 * size);
 
   auto mpiv = mpivbuffer->map ();
 
-  for (int i = 0; i < size; i++)
+#pragma omp parallel for
+  for (int jglo = 0; jglo < size; jglo++)
     {
-      int j = (*mpiview)[i]-1;
-      mpiv[3*i+0] = (*mpiview)[i];
-      mpiv[3*i+1] = Disl[j].x;
-      mpiv[3*i+2] = Disl[j].y;
+      int mpi = static_cast<int> (std::round (mpiview[jglo]))-1;
+      mpiv[3*jglo+0] = mpi + 1;
+      mpiv[3*jglo+1] = Disl[mpi].x;
+      mpiv[3*jglo+2] = Disl[mpi].y;
     }
 
 }
@@ -251,6 +332,10 @@ void FieldScalar<N>::render (const View & view, const OptionsLight & light) cons
 
   view.setMVP (program);
   program->set (light);
+  program->set ("lreverse", opts.scalar.light.reverse.on);
+  program->set ("breverse", opts.scalar.light.reverse.b);
+  program->set ("creverse", opts.scalar.light.reverse.c);
+
   palette.set (program);
   program->set ("scale0", scale0);
   program->set ("valmin", this->getNormedMinValue ());
@@ -259,6 +344,7 @@ void FieldScalar<N>::render (const View & view, const OptionsLight & light) cons
   program->set ("palmax", palette.getMax ());
   program->set ("height_scale", opts.geometry.height.scale);
   program->set ("discrete", opts.scalar.discrete.on);
+  program->set ("dinteger", opts.scalar.discrete.integer.on);
   program->set ("mpiview_scale", opts.mpiview.on ? opts.mpiview.scale : 0.0f);
 
   program->set ("RGBAM", opts.scalar.discrete.missing_color);

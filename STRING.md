@@ -1,4 +1,4 @@
-## Contour with labels                                               -- contourlabels2
+## Contour with labels -- contourlabels2
 ![](share/test/contourlabels2/TEST_0000.png)
 
 ```
@@ -12,7 +12,7 @@
     --font.bitmap.scale 0.04 --format %.0f }- --coast.on 
     --coast.lines.color pink 
 ```
-## Font background color                                             -- background
+## Font background color -- background
 ![](share/test/background/TEST_0000.png)
 
 ```
@@ -22,7 +22,7 @@
     --scene.date.font.color.foreground red 
     --scene.date.font.color.background white 
 ```
-## Display text                                                      -- text
+## Display text -- text
 ![](share/test/text/TEST_0000.png)
 
 ```
@@ -33,7 +33,7 @@
     0.03 --scene.text.font.color.foreground black 
     --scene.text.font.color.background white 
 ```
-## Display title (field name)                                        -- title
+## Display title (field name) -- title
 ![](share/test/title/TEST_0000.png)
 
 ```
@@ -41,7 +41,7 @@
     --field[0].path share/data/t1198c2.2/N.grb --field[0].scale 1.03 
     --scene.title.on 
 ```
-## Contour with labels (dummy field)                                 -- contourlabels
+## Contour with labels (dummy field) -- contourlabels
 ![](share/test/contourlabels/TEST_0000.png)
 
 ```

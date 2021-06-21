@@ -11,7 +11,10 @@ uniform bool light = false;
 uniform float frac = 0.1;
 uniform bool smoothed = false;
 uniform bool discrete = false;
-
+uniform bool dinteger = false;
+uniform bool lreverse = false;
+uniform float breverse = 0.2f;
+uniform float creverse = 15.0f;
 
 vec4 enlightFragment (vec3 fragmentPos, float fragmentVal, 
                       float missingFlag, float fragmentValFlat)
@@ -23,19 +26,19 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal,
 
   if ((discrete) && (abs (fragmentValFlat - fragmentVal) > 0.0001))
     {
-      if ((RGBAM.r == 0.0f) && (RGBAM.g == 0.0f) && (RGBAM.b == 0.0f) && (RGBAM.a == 0.0f))
-        discard;
-      color = RGBAM;
-      return color;
+      if (dinteger)
+        {
+          fragmentVal = round (fragmentVal);
+        }
+      else
+        {
+          if ((RGBAM.r == 0.0f) && (RGBAM.g == 0.0f) && (RGBAM.b == 0.0f) && (RGBAM.a == 0.0f))
+            discard;
+          color = RGBAM;
+          return color;
+        }
     }
 
-
-  float total = 1.;
-
-  if (light)
-    {
-      total = frac + (1.0 - frac) * max (dot (fragmentPos, lightDir), 0.0);
-    }
 
   if (rgba_fixed)
     {
@@ -84,7 +87,18 @@ vec4 enlightFragment (vec3 fragmentPos, float fragmentVal,
         }
     }
 
-  color.rgb = total * color.rgb;
+
+  if (light && lreverse)
+    {
+      float scal = min (+1., max (-1., dot (fragmentPos, lightDir)));
+      color.a = color.a * tanh (breverse - creverse * scal);
+//    color.a = color.a * (1. - scal) / 2;
+    }
+  else if (light) 
+    {
+      float total = frac + (1.0 - frac) * max (dot (fragmentPos, lightDir), 0.0);
+      color.rgb = total * color.rgb;
+    }
 
   if (discrete)
     {

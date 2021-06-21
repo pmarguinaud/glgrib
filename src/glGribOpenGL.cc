@@ -1,5 +1,6 @@
 #include "glGribOpenGL.h"
 #include "glGribPng.h"
+#include "glGribProgram.h"
 #include "glGribGeometry.h"
 #include "glGribFont.h"
 
@@ -127,10 +128,10 @@ bool preEGLError ()
 
 eglDisplay * egl = nullptr;
 
+#ifdef GLGRIB_USE_GBM
 eglDisplay::eglDisplay 
   (const std::string & path)
 {
-#ifdef GLGRIB_USE_GBM
   fd = open (path.c_str (), O_RDWR);
 
   if (fd < 0)
@@ -142,10 +143,43 @@ eglDisplay::eglDisplay
     throw std::runtime_error (std::string ("Cannot create gbm object"));
 
   display = eglGetPlatformDisplay (EGL_PLATFORM_GBM_MESA, gbm, nullptr);
+  setup ();
+}
 #else
-  display = eglGetDisplay (EGL_DEFAULT_DISPLAY); 
+eglDisplay::eglDisplay 
+  (int idev)
+{
+  if (idev < 0)
+    {
+      display = eglGetDisplay (EGL_DEFAULT_DISPLAY); 
+    }
+  else
+    {
+      const int mdev = 10;
+      EGLDeviceEXT dev[mdev];
+      EGLint ndev;
+     
+      PFNEGLQUERYDEVICESEXTPROC eglQueryDevicesEXT =
+        (PFNEGLQUERYDEVICESEXTPROC)
+        eglGetProcAddress ("eglQueryDevicesEXT");
+     
+      eglQueryDevicesEXT (mdev, dev, &ndev);
+     
+      if (idev >= ndev)
+        throw std::runtime_error (std::string ("Device not available"));
+     
+      PFNEGLGETPLATFORMDISPLAYEXTPROC eglGetPlatformDisplayEXT =
+        (PFNEGLGETPLATFORMDISPLAYEXTPROC)
+        eglGetProcAddress ("eglGetPlatformDisplayEXT");
+     
+      display = eglGetPlatformDisplayEXT (EGL_PLATFORM_DEVICE_EXT, dev[idev], nullptr);
+    }
+  setup ();
+}
 #endif
 
+void eglDisplay::setup ()
+{
   display || preEGLError ();
 
   eglInitialize (display, nullptr, nullptr) || preEGLError ();
@@ -289,9 +323,9 @@ void glStart (const OptionsRender & opts)
 #endif
 #ifdef GLGRIB_USE_EGL
 #ifdef GLGRIB_USE_GBM
-  egl = new eglDisplay (opts.device.path);
+  egl = new eglDisplay (opts.egl.gbm.path);
 #else
-  egl = new eglDisplay ("");
+  egl = new eglDisplay (opts.egl.device);
 #endif
 #endif
   setupDebug (opts);
@@ -301,6 +335,7 @@ void glStop ()
 {
   Geometry::clearCache ();
   Font::clearCache ();
+  Program::clearCache ();
 #ifdef GLGRIB_USE_GLFW
   glfwTerminate ();
 #endif

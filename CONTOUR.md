@@ -1,4 +1,4 @@
-## Medium-res contour and raster, global geometry                    -- contour_latlon4
+## Medium-res contour and raster, global geometry -- contour_latlon4
 ![](share/test/contour_latlon4/TEST_0000.png)
 
 ```
@@ -8,7 +8,7 @@
     --field[1].palette.colors black --field[1].type CONTOUR 
     --field[1].scale 1.001 
 ```
-## Low-res contour                                                   -- contour1
+## Low-res contour -- contour1
 ![](share/test/contour1/TEST_0000.png)
 
 ```
@@ -17,7 +17,7 @@
     share/data/contour/t0049.grb --field[0].scale 1.03 --field[0].type 
     CONTOUR 
 ```
-## Medium-res contour                                                -- contour2
+## Medium-res contour -- contour2
 ![](share/test/contour2/TEST_0000.png)
 
 ```
@@ -26,7 +26,7 @@
     share/data/contour/t0479.grb --field[0].scale 1.03 --field[0].type 
     CONTOUR 
 ```
-## High-res contour                                                  -- contour3
+## High-res contour -- contour3
 ![](share/test/contour3/TEST_0000.png)
 
 ```
@@ -35,7 +35,7 @@
     share/data/contour/t1798.grb --field[0].scale 1.03 --field[0].type 
     CONTOUR 
 ```
-## Contour & raster, Lambert geometry                                -- contour_aro1
+## Contour & raster, Lambert geometry -- contour_aro1
 ![](share/test/contour_aro1/TEST_0000.png)
 
 ```
@@ -45,7 +45,7 @@
     --field[1].type CONTOUR --view.lon 26.64 --view.lat 67.36 --view.fov 
     0.5 --coast.on --grid.on 
 ```
-## Contour & raster, Lambert geometry                                -- contour_aro2
+## Contour & raster, Lambert geometry -- contour_aro2
 ![](share/test/contour_aro2/TEST_0000.png)
 
 ```
@@ -55,7 +55,7 @@
     --field[1].type CONTOUR --view.lat 46.2 --view.lon 2.0 --view.fov 5 
     --coast.on --grid.on 
 ```
-## Low-res simple contour, limited area lat/lon geometry             -- contour_latlon1
+## Low-res simple contour, limited area lat/lon geometry -- contour_latlon1
 ![](share/test/contour_latlon1/TEST_0000.png)
 
 ```
@@ -64,7 +64,7 @@
     share/data/contour/latlon9x6.grb --field[0].scale 1.03 --field[0].type 
     CONTOUR 
 ```
-## Low-res simple contour, limited area lat/lon geometry             -- contour_latlon2
+## Low-res simple contour, limited area lat/lon geometry -- contour_latlon2
 ![](share/test/contour_latlon2/TEST_0000.png)
 
 ```
@@ -73,7 +73,7 @@
     share/data/contour/latlon18x13.grb --field[0].scale 1.03 
     --field[0].type CONTOUR 
 ```
-## Medium-res contour, limited area lat/lon geometry                 -- contour_latlon3
+## Medium-res contour, limited area lat/lon geometry -- contour_latlon3
 ![](share/test/contour_latlon3/TEST_0000.png)
 
 ```
@@ -82,7 +82,7 @@
     share/data/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --field[0].scale 1.03 
     --field[0].type CONTOUR 
 ```
-## Contour on stretched/rotated gaussian geometry                    -- contour_stretched
+## Contour on stretched/rotated gaussian geometry -- contour_stretched
 ![](share/test/contour_stretched/TEST_0000.png)
 
 ```
@@ -90,7 +90,7 @@
     share/data/t1198c2.2/Z.grb --field[0].scale 1.03 --field[0].type 
     CONTOUR 
 ```
-## Contour with dashed lines, gaussian geometry                      -- dashed1
+## Contour with dashed lines, gaussian geometry -- dashed1
 ![](share/test/dashed1/TEST_0000.png)
 
 ```
@@ -101,7 +101,7 @@
     CONTOUR --field[0].contour.lengths 100 --field[0].contour.patterns X- 
     --view.fov 5 
 ```
-## Contour with dashed thick lines, gaussian geometry                -- dashed2
+## Contour with dashed thick lines, gaussian geometry -- dashed2
 ![](share/test/dashed2/TEST_0000.png)
 
 ```
@@ -112,7 +112,7 @@
     CONTOUR --field[0].contour.lengths 100 --field[0].contour.patterns 
     XXXXXXXXX-X- --view.fov 5 --field[0].contour.widths 5 
 ```
-## Contour with dashed thick colored lines, gaussian geometry        -- dashed3
+## Contour with dashed thick colored lines, gaussian geometry -- dashed3
 ![](share/test/dashed3/TEST_0000.png)
 
 ```
@@ -123,7 +123,7 @@
     --field[0].contour.patterns XXXXXXXXX-X- --view.fov 5 
     --field[0].contour.widths 5 --field[0].palette.colors red green blue 
 ```
-## Contour shading                                                   -- contour5
+## Contour shading -- contour5
 ![](share/test/contour5/TEST_0000.png)
 
 ```
@@ -139,7 +139,7 @@
     253.15 263.15 268.15 270.65 272.15 272.65 273.15 273.65 274.15 275.65 
     278.15 283.15 293.15 303.15 --field[0].palette.linear.on 
 ```
-## 2m temperature                                                    -- contour9
+## 2m temperature -- contour9
 ![](share/test/contour9/TEST_0000.png)
 
 ```
@@ -158,7 +158,7 @@
     black --view.projection LATLON --render.width 1500 --view.lon 10 
     --view.lat 52 --view.fov 3 --view.clip.xmin 0.15 
 ```
-## Z500, T850                                                        -- z500t850
+## Z500, T850 -- z500t850
 ![](share/test/z500t850/TEST_0000.png)
 
 ```
@@ -182,7 +182,7 @@
     --grid.resolution 18 --view.fov 5 --view.lat 49 --view.lon 2 
     --view.projection POLAR_NORTH --render.width 1200 
 ```
-## Joachim storm                                                     -- joachim
+## Joachim storm -- joachim
 ![](share/test/joachim/TEST_0000.png)
 
 ```
@@ -216,7 +216,7 @@
     --landscape.path  --landscape.color white --landscape.scale 0.999 
     --view.lon 4 --view.lat 51 --view.fov 3 
 ```
-## Precipitations Europe                                             -- precipeurope
+## Precipitations Europe -- precipeurope
 ![](share/test/precipeurope/TEST_0000.png)
 
 ```
@@ -238,7 +238,7 @@
     --field[0].palette.scale 1000 --colorbar.font.color.background black 
     --view.clip.xmin 0.15 
 ```
-## Precipitations Europe (precise, with fixed palette)               -- precipfixed
+## Precipitations Europe (precise, with fixed palette) -- precipfixed
 ![](share/test/precipfixed/TEST_0000.png)
 
 ```
@@ -261,7 +261,7 @@
     1.001 --field[1].contour.levels 0. 0.0001 0.0005 0.002 0.004 0.010 
     0.025 0.050 0.100 0.250 --field[1].palette.colors black 
 ```
-## Z500                                                              -- z500europe
+## Z500 -- z500europe
 ![](share/test/z500europe/TEST_0000.png)
 
 ```
@@ -275,7 +275,7 @@
     --view.fov 5 --grid.on --grid.color black --grid.resolution 18 
     --view.projection POLAR_NORTH 
 ```
-## Temperature, contour, colors                                      -- tempcontour
+## Temperature, contour, colors -- tempcontour
 ![](share/test/tempcontour/TEST_0000.png)
 
 ```

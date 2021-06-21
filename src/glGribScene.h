@@ -269,6 +269,9 @@ public:
   const OptionsLight & getLightOptions () const;
   const OptionsTitle & getTitleOptions () const;
 
+  std::string getCurrentFieldName () const;
+
+  void centerOnCurrentField ();
 
 private:
   std::vector<Field*> fieldlist;

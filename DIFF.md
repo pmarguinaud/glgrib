@@ -1,4 +1,4 @@
-## Contour in diff mode, global lat/lon geometry                     -- contour_diff
+## Contour in diff mode, global lat/lon geometry -- contour_diff
 ![](share/test/contour_diff/TEST_0000.png)
 
 ```
@@ -7,7 +7,7 @@
     share/data/glob01/lfpw_0_3_1_sfc_0_prmsl+0102.grib2 --field[0].scale 
     1.01 --landscape.on --landscape.color white --field[0].user_pref.off 
 ```
-## Display field difference                                          -- scalar_diff
+## Display field difference -- scalar_diff
 ![](share/test/scalar_diff/TEST_0000.png)
 
 ```

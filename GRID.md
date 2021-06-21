@@ -1,17 +1,17 @@
-## Grid labels                                                       -- grid_labels
+## Grid labels -- grid_labels
 ![](share/test/grid_labels/TEST_0000.png)
 
 ```
     --grid.on --grid.labels.on --landscape.on 
 ```
-## Display low & high                                                -- hilo
+## Display low & high -- hilo
 ![](share/test/hilo/TEST_0000.png)
 
 ```
     --field[0].path share/data/wind+temp/t0224/S105TEMPERATURE.grb 
     --field[0].hilo.on --field[0].hilo.font.color.foreground green 
 ```
-## Grid ticks & labels                                               -- tickslabels
+## Grid ticks & labels -- tickslabels
 ![](share/test/tickslabels/TEST_0000.png)
 
 ```

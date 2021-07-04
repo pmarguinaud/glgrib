@@ -83,6 +83,21 @@ void FieldScalar<N>::points_t::setupVertexAttributes () const
   
 }
 
+static void mergeRegion (const std::vector<float> & values, const_GeometryPtr geometry, BufferPtr<float> & data) 
+{
+  const int sz = geometry->size ();
+
+#pragma omp parallel for 
+  for (int jglo = 0; jglo < sz; jglo++)
+    {
+      if (std::any_of (values.begin (), values.end (), [&] (float x) 
+          { return x == data[jglo]; }))
+        continue;
+      data[jglo] = 0;
+    }
+
+}
+
 static void widenRegion (const std::vector<float> & values, const std::vector<int> & radius,
                          const_GeometryPtr geometry, BufferPtr<float> & data) 
 {
@@ -193,7 +208,11 @@ void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsF
     {
 
       if (opts.scalar.widen.on)
-        widenRegion (opts.scalar.widen.values, opts.scalar.widen.radius, geometry, data);
+        {
+          widenRegion (opts.scalar.widen.values, opts.scalar.widen.radius, geometry, data);
+          if (opts.scalar.widen.merge.on)
+            mergeRegion (opts.scalar.widen.values, geometry, data);
+        }
 
       this->pack (data, geometry->getNumberOfPoints (), meta1.valmin, 
                   meta1.valmax, meta1.valmis, colorbuffer);

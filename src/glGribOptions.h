@@ -953,6 +953,7 @@ public:
     DESC (widen.on, Enable region widening);
     DESC (widen.values, Values for regions);
     DESC (widen.radius, Radius for regions);
+    DESC (widen.merge.on, Merge other regions);
   }
 
   struct 
@@ -1008,6 +1009,10 @@ public:
     bool on = false;
     std::vector<float> values = {0.0f};
     std::vector<int>   radius = {0};
+    struct
+    {
+      bool on = false;
+    } merge;
   } widen;
 
 };

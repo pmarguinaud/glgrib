@@ -954,6 +954,7 @@ public:
     DESC (widen.values, Values for regions);
     DESC (widen.radius, Radius for regions);
     DESC (widen.merge.on, Merge other regions);
+    DESC (widen.merge.value, Merge value);
   }
 
   struct 
@@ -1012,6 +1013,8 @@ public:
     struct
     {
       bool on = false;
+      static float defaultValue () { return +std::numeric_limits<float>::max (); }
+      float value = defaultValue ();
     } merge;
   } widen;
 

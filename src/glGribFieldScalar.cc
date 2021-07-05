@@ -84,9 +84,11 @@ void FieldScalar<N>::points_t::setupVertexAttributes () const
 }
 
 static void mergeRegion (const std::vector<float> & values, const_GeometryPtr geometry, 
-                         BufferPtr<float> & data, const FieldMetadata & meta) 
+                         BufferPtr<float> & data, FieldMetadata & meta) 
 {
   const int sz = geometry->size ();
+
+  meta.valmin = meta.valmin - 1;
 
 #pragma omp parallel for 
   for (int jglo = 0; jglo < sz; jglo++)
@@ -94,7 +96,7 @@ static void mergeRegion (const std::vector<float> & values, const_GeometryPtr ge
       if (std::any_of (values.begin (), values.end (), [&] (float x) 
           { return x == data[jglo]; }))
         continue;
-      data[jglo] = meta.valmis;
+      data[jglo] = meta.valmin;
     }
 
 }

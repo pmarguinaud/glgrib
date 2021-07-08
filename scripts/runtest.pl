@@ -185,6 +185,15 @@ Tested on :
  'SPECTRAL'     , "Spherical harmonic (T1198)                                       " ,  tharmonic1          => '--field[0].path share/data/wind+temp/t1198/S105TEMPERATURE.grb --field[1].path share/data/harmonics/SPEC.+0008.+0004.grb --field[1].scale 1.01 --field[1].type CONTOUR --field[1].palette.colors black white --view.lon -25 --view.lat 25 --scene.light.on  --grid.on',
  'SPECTRAL'     , "Spherical harmonic (T1198)                                       " ,  tharmonic2          => '--field[0].path share/data/wind+temp/t1198/S105TEMPERATURE.grb  --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 --field[0].geometry.height.path share/data/harmonics/SPEC.+0008.+0004.grb --field[0].scale 0.8 --scene.light.on  --grid.on  --view.lon -25 --view.lat 25',
  'SPECTRAL'     , "Spherical harmonic (T1198)                                       " ,  tharmonic3          => '--field[0].path share/data/wind+temp/t1198/S105TEMPERATURE.grb --field[1].path share/data/harmonics/SPEC.+0008.+0004.grb --field[1].scale 1.01 --field[1].palette.colors #00ff0044 #00000100 #00ff0044 --field[1].palette.values -1 0. +1 --view.lon -25 --view.lat 25 --scene.light.on  --grid.on',
+ 'SPECTRAL'     , "Spherical harmonic (T1198)                                       " ,  tharmonic4          => sub
+  {
+    my $i = shift;
+    return unless ($i <= 40);
+    my $f = sprintf ('SPEC.+0020.%+4.4d.grb', $i-20);
+    return sprintf ('--field[0].path share/data/wind+temp/t1198/S105TEMPERATURE.grb  --field[0].geometry.height.on '
+                  . '--field[0].geometry.height.scale 0.2 --field[0].geometry.height.path share/data/wind+temp/t1198/spectral/%s '
+                  . '--field[0].scale 0.8 --scene.light.on  --grid.on  --view.lon -25 --view.lat 25', $f);
+  },
  'HEIGHT'       , "Orography (raster & contour) with height                         " ,  contour_height      => '--field[0].path share/data/t479/Z.grb  --field[0].scale 1.005 --field[0].type CONTOUR --field[1].geometry.height.on --field[0].palette.colors black --field[1].path share/data/t479/Z.grb  --field[0].geometry.height.on  --view.lat -16 --view.lon 134',
  'HEIGHT'       , "Orography with height                                            " ,  orography_height    => '--field[0].path ./share/data/t1798/Z.grb --field[0].palette.name topo --field[0].scale 1.005 --landscape.on --field[0].geometry.height.on',
  'HEIGHT'       , "Height = vector norm value                                       " ,  height_vector       => '--field[0].type VECTOR --field[0].path share/data/wind+temp/t0224/S105WIND.U.PHYS.grb share/data/wind+temp/t0224/S105WIND.V.PHYS.grb  --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 --field[0].vector.arrow.color red --field[0].palette.name summer',

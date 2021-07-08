@@ -46,3 +46,14 @@
     #00ff0044 --field[1].palette.values -1 0. +1 --view.lon -25 --view.lat 
     25 --scene.light.on --grid.on 
 ```
+## Spherical harmonic (T1198) -- tharmonic4
+![](share/test/tharmonic4/TEST.gif)
+
+```
+    --field[0].path share/data/wind+temp/t1198/S105TEMPERATURE.grb 
+    --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 
+    --field[0].geometry.height.path 
+    share/data/wind+temp/t1198/spectral/SPEC.+0020.-0020.grb 
+    --field[0].scale 0.8 --scene.light.on --grid.on --view.lon -25 
+    --view.lat 25 
+```

@@ -46,10 +46,8 @@ void main()
 
   float lon = 2.0f * pi * float (ilon) / float (nlon);
   float lat = 0.5f * pi * float (ilat) / float (nlat / 2.0f) - 0.5 * pi;
-  float coslon = cos (lon), sinlon = sin (lon);
-  float coslat = cos (lat), sinlat = sin (lat);
 
-  grid_vs.vertexPos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
+  grid_vs.vertexPos = posFromLonLat (vec2 (lon, lat));
 
   if (proj == XYZ)
     {

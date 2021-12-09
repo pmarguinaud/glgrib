@@ -42,10 +42,8 @@ void main()
   float siz = 0.5 * pointSiz;
   if (lpointSiz)
     siz = siz * pointVal / valmax;
-  float coslon = cos (lon), sinlon = sin (lon);
-  float coslat = cos (lat), sinlat = sin (lat);
   
-  vec3 pos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
+  vec3 pos = posFromLonLat (vec2 (lon, lat));
 
   if (proj == XYZ)
     {

@@ -9,6 +9,7 @@
 #include "glGribFieldScalar.h"
 #include "glGribFieldVector.h"
 #include "glGribBuffer.h"
+#include "glGribOpenGL.h"
 
 #include <iostream>
 #include <stdexcept>
@@ -745,6 +746,8 @@ void Window::create (const Options & o)
 
   if ((opts.position.x != -1) && (opts.position.y != -1))
     glfwSetWindowPos (window, opts.position.x, opts.position.y);
+
+  glSetupDebug (o.render);
 }
 
 void Window::createGFLWwindow (GLFWwindow * context)

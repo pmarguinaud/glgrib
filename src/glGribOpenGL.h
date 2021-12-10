@@ -368,6 +368,7 @@ void glInit ();
 
 void glStart (const OptionsRender &);
 void glStop ();
+void glSetupDebug (const OptionsRender & opts);
 
 template <typename T> GLenum getOpenGLType ();
 template <> GLenum getOpenGLType<unsigned char > ();

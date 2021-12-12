@@ -10,6 +10,11 @@ namespace glGrib
 namespace
 {
 
+const float sq22 = 1.4142135623731/2;
+const glm::mat3 COORDM = glm::mat3 (glm::vec3 (+sq22, +0.0f, +sq22), 
+                                    glm::vec3 (+0.0f, +1.0f, +0.0f),
+                                    glm::vec3 (-sq22, +0.0f, +sq22));
+
 const glm::vec3 intersectPlane 
   (const glm::vec3 & xa, const glm::vec3 & xb,
    const glm::vec3 & p, const glm::vec3 & v) 
@@ -76,7 +81,7 @@ const glm::mat4 ProjectionXYZ::getView (const glm::vec3 & p, const float dist) c
 const glm::vec3 ProjectionLatLon::project (const glm::vec3 & xyz) const
 {
   float lat, lon;
-  xyz2lonlat (compNormedPos (xyz), &lon, &lat);
+  xyz2lonlat (compNormedPos (COORDM * xyz), &lon, &lat);
   lon = glm::mod (lon, 2.0f * pi);
   float X = (glm::mod (lon - lon0 * pi / 180.0f, 2.0f * pi) - pi) / pi;
   float Y = lat / pi;
@@ -89,6 +94,7 @@ int ProjectionLatLon::unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm
   float lon = pos.y * pi + lon0 * pi / 180.0f + pi;
   float lat = pos.z * pi;
   *xyz = lonlat2xyz (glm::vec2 (lon, lat));
+  *xyz = glm::inverse (COORDM) * (*xyz);
   return 1;
 }
 
@@ -101,7 +107,7 @@ const glm::mat4 ProjectionLatLon::getView (const glm::vec3 & p, const float dist
 const glm::vec3 ProjectionMercator::project (const glm::vec3 & xyz) const
 {
   float lon, lat;
-  xyz2lonlat (compNormedPos (xyz), &lon, &lat);
+  xyz2lonlat (compNormedPos (COORDM * xyz), &lon, &lat);
   lon = glm::mod (lon, 2.0f * pi);
   float X = (glm::mod (lon - lon0 * pi / 180.0f, 2.0f * pi) - pi) / pi;
   float Y = glm::log (glm::tan (pi / 4.0f + lat / 2.0f)) / pi;
@@ -114,6 +120,7 @@ int ProjectionMercator::unproject (const glm::vec3 & xa, const glm::vec3 & xb, g
   float lon = pos.y * pi + lon0 * pi / 180.0f + pi;
   float lat = 2.0f * glm::atan (glm::exp (pos.z * pi)) - pi / 2.0f;
   *xyz = lonlat2xyz (glm::vec2 (lon, lat));
+  *xyz = glm::inverse (COORDM) * (*xyz);
   return 1;
 }
 
@@ -125,7 +132,7 @@ const glm::mat4 ProjectionMercator::getView (const glm::vec3 & p, const float di
 
 const glm::vec3 ProjectionPolarNorth::project (const glm::vec3 & xyz) const
 {
-  glm::vec3 normedPos = compNormedPos (xyz);
+  glm::vec3 normedPos = compNormedPos (COORDM * xyz);
   return glm::vec3 (0.0f, normedPos.x / (+normedPos.z + 1.0f), 
                     normedPos.y / (+normedPos.z + 1.0f));
 }
@@ -138,6 +145,7 @@ int ProjectionPolarNorth::unproject (const glm::vec3 & xa, const glm::vec3 & xb,
   float x = (1.0f + z) * pos.y;
   float y = (1.0f + z) * pos.z;
   *xyz = glm::vec3 (x, y, z);
+  *xyz = glm::inverse (COORDM) * (*xyz);
   return 1;
 }
 
@@ -149,7 +157,7 @@ const glm::mat4 ProjectionPolarNorth::getView (const glm::vec3 & p, const float 
 
 const glm::vec3 ProjectionPolarSouth::project (const glm::vec3 & xyz) const
 {
-  glm::vec3 normedPos = compNormedPos (xyz);
+  glm::vec3 normedPos = compNormedPos (COORDM * xyz);
   return glm::vec3 (0.0f, normedPos.x / (-normedPos.z + 1.0f), 
                     normedPos.y / (-normedPos.z + 1.0f));
 }
@@ -162,6 +170,7 @@ int ProjectionPolarSouth::unproject (const glm::vec3 & xa, const glm::vec3 & xb,
   float x = (1.0f - z) * pos.y;
   float y = (1.0f - z) * pos.z;
   *xyz = glm::vec3 (x, y, z);
+  *xyz = glm::inverse (COORDM) * (*xyz);
   return 1;
 }
 

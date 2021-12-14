@@ -5,10 +5,8 @@ uniform bool isflat = true;
 uniform float lon0 = 180.0; // Longitude of right handside
 const float pi = 3.1415926;
 
-const float sq22 = 1.4142135623731/2;
-const mat3 COORDM = mat3 (vec3 (+sq22, +0.0f, +sq22), 
-                          vec3 (+0.0f, +1.0f, +0.0f),
-                          vec3 (-sq22, +0.0f, +sq22));
+uniform bool apply_coordm = false;
+uniform mat3 COORDM;
 
 vec3 posFromLonLat (vec2 vertexLonLat)
 {
@@ -43,21 +41,21 @@ vec3 compProjedPos (vec3 vertexPos, vec3 normedPos)
         break;
       case POLAR_NORTH:
         {
-          vec3 p = COORDM * normedPos;
+          vec3 p = apply_coordm ? COORDM * normedPos : normedPos;
           pos =  vec3 (0., p.x / (+p.z + 1.0),
                        p.y / (+p.z + 1.0));
         }
         break;
       case POLAR_SOUTH:
         {
-          vec3 p = COORDM * normedPos;
+          vec3 p = apply_coordm ? COORDM * normedPos : normedPos;
           pos =  vec3 (0., p.x / (-p.z + 1.0),
                        p.y / (-p.z + 1.0));
         }
         break;
       case MERCATOR:
         {
-          vec3 p = COORDM * normedPos;
+          vec3 p = apply_coordm ? COORDM * normedPos : normedPos;
           float lat = asin (p.z);
           float lon = mod (atan (p.y, p.x), 2 * pi);
           float X = (mod (lon - lon0 * pi / 180.0, 2 * pi) - pi) / pi;
@@ -67,7 +65,7 @@ vec3 compProjedPos (vec3 vertexPos, vec3 normedPos)
         break;
       case LATLON:
         {
-          vec3 p = COORDM * normedPos;
+          vec3 p = apply_coordm ? COORDM * normedPos : normedPos;
           float lat = asin (p.z);
           float lon = mod (atan (p.y, p.x), 2 * pi);
           float X = (mod (lon - lon0 * pi / 180.0, 2 * pi) - pi) / pi;

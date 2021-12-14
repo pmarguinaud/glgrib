@@ -11,10 +11,31 @@
 namespace glGrib
 {
 
-const float sq22 = 1.4142135623731/2;
-const glm::mat3 COORDM = glm::mat3 (glm::vec3 (+sq22, +0.0f, +sq22), 
-                                    glm::vec3 (+0.0f, +1.0f, +0.0f),
-                                    glm::vec3 (-sq22, +0.0f, +sq22));
+const glm::mat3 & View::getCoordm () const
+{
+  return coordm;
+}
+
+void View::calcCoordm ()
+{
+  coordm = glm::mat3 (1.0f);
+  if (opts.trans.on && (opts.trans.matrix.size () == 9))
+    {
+      const std::vector<float> & m = opts.trans.matrix;
+      coordm = glm::mat3 (glm::vec3 (m[0], m[1], m[2]),
+                          glm::vec3 (m[3], m[4], m[5]),
+                          glm::vec3 (m[6], m[7], m[8]));
+      auto ii = coordm * glm::transpose (coordm) - glm::mat3 (1.0f);
+      float ddd = std::sqrt (glm::dot (ii[0], ii[0]) 
+                         + glm::dot (ii[1], ii[1]) 
+                         + glm::dot (ii[2], ii[2]));
+      float eps = 1e-7;
+      if (std::fabs (ddd) > eps)
+        {
+          throw std::runtime_error ("coordm is not an orthogonal matrix");
+        }
+    }
+}
 
 void View::delMVP (Program * program) const
 {
@@ -41,11 +62,11 @@ void View::setMVP (Program * program) const
       program->set ("schmidt_opc2", opc2);
     }
 
-  bool apply_coordm = true;
+  bool apply_coordm = opts.trans.on;
   program->set ("apply_coordm", apply_coordm);
   if (apply_coordm)
     {
-      program->set ("COORDM", COORDM);
+      program->set ("COORDM", getCoordm ());
     }
 
   float lon0 = opts.lon + 180.0f;
@@ -120,7 +141,7 @@ void View::calcMVP ()
 
   projection = trans * p;
 
-  view       = ps.current ()->getView (pos, opts.distance, COORDM);
+  view       = ps.current ()->getView (pos, opts.distance, getCoordm ());
   model      = glm::mat4 (1.0f);
   MVP = projection * view * model; 
 
@@ -160,7 +181,7 @@ int View::getLatLonFromScreenCoords (float xpos, float ypos, float * lat, float 
 
 int View::getScreenCoordsFromXYZ (float * xpos, float * ypos, const glm::vec3 & xyz) const
 {
-  glm::vec3 pos = ps.current ()->project (xyz, COORDM);
+  glm::vec3 pos = ps.current ()->project (xyz, getCoordm ());
   pos = project (pos);
 
   *xpos = pos.x;
@@ -174,7 +195,7 @@ int View::getXYZFromScreenCoords (float xpos, float ypos, glm::vec3 * xyz) const
   glm::vec3 xa = unproject (glm::vec3 (xpos, ypos, +0.985601f));
   glm::vec3 xb = unproject (glm::vec3 (xpos, ypos, +0.900000f));
 
-  if (! ps.current ()->unproject (xa, xb, xyz, COORDM))
+  if (! ps.current ()->unproject (xa, xb, xyz, getCoordm ()))
     return 0;
 
   return 1;
@@ -221,6 +242,7 @@ void View::setup (const OptionsView & o)
   opts = o;
   calcMVP ();
   calcZoom ();
+  calcCoordm ();
 }
 
 View::transform_type View::typeFromString (std::string str)

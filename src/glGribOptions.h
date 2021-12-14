@@ -1728,6 +1728,9 @@ public:
     DESC (zoom.lon,           Longitude of zoom);
     DESC (zoom.lat,           Latitude of zoom);
     DESC (zoom.stretch,       Stretching factor);
+
+    DESC (trans.on,           Enable transformation matrix);
+    DESC (trans.matrix,       Transformation matrix values);
   }
   OptionProjection projection = "XYZ";
   OptionTransformation transformation = "PERSPECTIVE";
@@ -1746,6 +1749,11 @@ public:
     OptionLatitude  lat = 46.7f;
     float stretch = 0.5f;
   } zoom;
+  struct
+  {
+    bool on = false;
+    std::vector<float> matrix;
+  } trans;
   OptionsClip clip;
 };
 

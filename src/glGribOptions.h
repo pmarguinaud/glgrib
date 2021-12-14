@@ -1689,6 +1689,25 @@ public:
   } center;
 };
 
+class OptionsClip : public OptionsBase
+{
+public:
+  DEFINE
+  {
+    DESC (on,            Enable Mercator and lat/lon clipping);
+    DESC (dlon,          Amount of longitude to clip);
+    DESC (dlat,          Amount of latitude to clip);
+    DESC (xmin,          Min viewport x coordinate);
+    DESC (xmax,          Max viewport x coordinate);
+    DESC (ymin,          Min viewport y coordinate);
+    DESC (ymax,          Max viewport y coordinate);
+  }
+  float dlon = 10.0f;
+  float dlat =  5.0f;
+  float xmin = 0.0f, xmax = 1.0f, ymin = 0.0f, ymax = 1.0f;
+  bool on = true;
+};
+
 class OptionsView : public OptionsBase
 {
 public:
@@ -1702,14 +1721,7 @@ public:
     DESC (distance,           Camera distance);
     DESC (center.on,          Center view);
 
-    BLOC (clip,               Clip options);
-    DESC (clip.on,            Enable Mercator and lat/lon clippling);
-    DESC (clip.dlon,          Amount of longitude to clip);
-    DESC (clip.dlat,          Amount of latitude to clip);
-    DESC (clip.xmin,          Min viewport x coordinate);
-    DESC (clip.xmax,          Max viewport x coordinate);
-    DESC (clip.ymin,          Min viewport y coordinate);
-    DESC (clip.ymax,          Max viewport y coordinate);
+    INCLUDE_N (clip,          Clipping options);
 
     BLOC (zoom,               Zoom options);
     DESC (zoom.on,            Enable zoom with Schmidt transform);
@@ -1734,13 +1746,7 @@ public:
     OptionLatitude  lat = 46.7f;
     float stretch = 0.5f;
   } zoom;
-  struct
-  {
-    float dlon = 10.0f;
-    float dlat =  5.0f;
-    float xmin = 0.0f, xmax = 1.0f, ymin = 0.0f, ymax = 1.0f;
-    bool on = true;
-  } clip;
+  OptionsClip clip;
 };
 
 

@@ -88,6 +88,7 @@ class c : public OptionFloatLike \
 DEF_OPTION_FLOAT (OptionScale);
 DEF_OPTION_FLOAT (OptionLongitude);
 DEF_OPTION_FLOAT (OptionLatitude);
+DEF_OPTION_FLOAT (OptionAngle);
 
 class OptionStringLike
 {
@@ -449,6 +450,7 @@ public:
   DEF_APPLY (OptionScale);
   DEF_APPLY (OptionLongitude);
   DEF_APPLY (OptionLatitude);
+  DEF_APPLY (OptionAngle);
   DEF_APPLY (OptionProjection);
   DEF_APPLY (OptionPaletteName);
   DEF_APPLY (OptionTransformation);
@@ -568,6 +570,7 @@ private:
   DEF_APPLY (OptionScale                       , OptionsParserDetail::optionTmpl<OptionScale>);
   DEF_APPLY (OptionLongitude                   , OptionsParserDetail::optionTmpl<OptionLongitude>);
   DEF_APPLY (OptionLatitude                    , OptionsParserDetail::optionTmpl<OptionLatitude>);
+  DEF_APPLY (OptionAngle                       , OptionsParserDetail::optionTmpl<OptionAngle>);
   DEF_APPLY (OptionFieldType                   , OptionsParserDetail::optionTmpl<OptionFieldType>);
   DEF_APPLY (OptionPath                        , OptionsParserDetail::optionTmpl<OptionPath>);
   DEF_APPLY (OptionProjection                  , OptionsParserDetail::optionTmpl<OptionProjection>);
@@ -1717,6 +1720,9 @@ public:
     DESC (transformation,     Perspective or orthographic);
     DESC (lon,                Camera longitude);
     DESC (lat,                Camera latitude);
+    DESC (roll,               Camera roll);
+    DESC (pitch,              Camera pitch);
+    DESC (yaw,                Camera yaw);
     DESC (fov,                Camera field of view);
     DESC (distance,           Camera distance);
     DESC (center.on,          Center view);
@@ -1737,7 +1743,10 @@ public:
   float  distance  = 6.0; 
   OptionLatitude  lat       = 0.0; 
   OptionLongitude lon       = 0.0; 
-  float  fov       = 20.;
+  OptionAngle     roll      = 0.0;
+  OptionAngle     pitch     = 0.0;
+  OptionAngle     yaw       = 0.0;
+  OptionAngle     fov       = 20.;
   struct
   {
     bool on = true;

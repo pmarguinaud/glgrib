@@ -109,10 +109,15 @@ void View::calcMVP ()
   Projection::type pt = Projection::typeFromString (opts.projection);
   ps.setType (pt);
 
+  float coslon = glm::cos (glm::radians (float (opts.lon))), 
+        sinlon = glm::sin (glm::radians (float (opts.lon))),
+        coslat = glm::cos (glm::radians (float (opts.lat))), 
+        sinlat = glm::sin (glm::radians (float (opts.lat)));
+
   glm::vec3 pos
-    (opts.distance * glm::cos (glm::radians (float (opts.lon))) * glm::cos (glm::radians (float (opts.lat))), 
-     opts.distance * glm::sin (glm::radians (float (opts.lon))) * glm::cos (glm::radians (float (opts.lat))),
-     opts.distance *                                              glm::sin (glm::radians (float (opts.lat))));
+    (opts.distance * coslon * coslat, 
+     opts.distance * sinlon * coslat,
+     opts.distance *          sinlat);
 
   viewport   = glm::vec4 (0.0f, 0.0f, static_cast<float> (width), static_cast<float> (height));
 
@@ -123,12 +128,29 @@ void View::calcMVP ()
   if ((! opts.center.on) && (ratio > 1.0f))
     trans = glm::translate (trans, glm::vec3 ((ratio - 1.0f) / 2.0f, 0.0f, 0.0f));
        
-  glm::mat4 p;
 
+  // (Roll, pitch, yaw) matrix
+  glm::mat3 RPY = glm::rotate (glm::mat4 (1.0f), glm::radians (float (opts.roll )), glm::vec3 (0.0f, 0.0f, 1.0f))
+                * glm::rotate (glm::mat4 (1.0f), glm::radians (float (opts.yaw  )), glm::vec3 (0.0f, 1.0f, 0.0f))
+                * glm::rotate (glm::mat4 (1.0f), glm::radians (float (opts.pitch)), glm::vec3 (1.0f, 0.0f, 0.0f));
+
+
+  // Matrix to go from/to local coordinate system
+  glm::mat3 R = glm::mat3 (glm::vec3 (-sinlon         , +coslon         ,    0.0f), 
+                           glm::vec3 (+coslon * sinlat, +sinlon * sinlat, -coslat),
+                           glm::vec3 (-coslon * coslat, -sinlon * coslat, -sinlat));
+              
+  glm::vec3 posOR = glm::inverse (R) * - pos; // Coordinates of origin in local system, should be = glm::vec3 (0.0f, 0.0f, opts.distance)
+  glm::vec3 posQR = RPY * posOR;                // Rotate origin in local coordinates system
+  glm::vec3 posQr = R * posQR + pos;          // Coordinates of rotated origin back in original system
+
+  glm::vec3 up = R * RPY * glm::vec3 (+0.0f, -1.0f, 0.0f);
+
+  glm::mat4 p;
   switch (typeFromString (opts.transformation))
     {
       case PERSPECTIVE:
-        p = glm::perspective (glm::radians (opts.fov), ratio, 0.1f, 100.0f);
+        p = glm::perspective (glm::radians (float (opts.fov)), ratio, 0.1f, 100.0f);
 	break;
       case ORTHOGRAPHIC:
         const float margin = 1.05;
@@ -141,7 +163,8 @@ void View::calcMVP ()
 
   projection = trans * p;
 
-  view       = ps.current ()->getView (pos, opts.distance, getCoordm ());
+  view       = ps.current ()->getView (pos, opts.distance, getCoordm (), posQr, up);
+//                                     glm::vec3 (0.0f, 0.0f, 1.0f));
   model      = glm::mat4 (1.0f);
   MVP = projection * view * model; 
 

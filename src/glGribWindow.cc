@@ -176,10 +176,19 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
       glGribWindowIfKey (NONE,    6     ,  Increase size of current field                       , increaseRadius          ());
       glGribWindowIfKey (NONE,    EQUAL ,  Decrease size of current field                       , decreaseRadius          ());
       glGribWindowIfKey (NONE,    SPACE ,  Reset view                                           , resetView               ());
-      glGribWindowIfKey (NONE,    UP    ,  Move northwards                                      , rotateNorth             ());
-      glGribWindowIfKey (NONE,    DOWN  ,  Move southwards                                      , rotateSouth             ());
-      glGribWindowIfKey (NONE,    LEFT  ,  Move westwards                                       , rotateWest              ());
-      glGribWindowIfKey (NONE,    RIGHT ,  Move eastwards                                       , rotateEast              ());
+
+      glGribWindowIfKey (SHIFT,   LEFT  ,  Roll camera leftward                                 , rollLeft                ());
+      glGribWindowIfKey (SHIFT,   RIGHT ,  Roll camera rightward                                , rollRight               ());
+
+      glGribWindowIfKey (CONTROL, UP    ,  Rotate camera upward                                 , rotateUp                ());
+      glGribWindowIfKey (CONTROL, DOWN  ,  Rotate camera downward                               , rotateDown              ());
+      glGribWindowIfKey (CONTROL, LEFT  ,  Rotate camera leftward                               , rotateLeft              ());
+      glGribWindowIfKey (CONTROL, RIGHT ,  Rotate camera rightward                              , rotateRight             ());
+
+      glGribWindowIfKey (NONE,    UP    ,  Move northward                                       , rotateNorth             ());
+      glGribWindowIfKey (NONE,    DOWN  ,  Move southward                                       , rotateSouth             ());
+      glGribWindowIfKey (NONE,    LEFT  ,  Move westward                                        , rotateWest              ());
+      glGribWindowIfKey (NONE,    RIGHT ,  Move eastward                                        , rotateEast              ());
 
       glGribWindowIfKey (NONE,    F1    ,  Select field #1                                      , selectField           ( 0));
       glGribWindowIfKey (NONE,    F2    ,  Select field #2                                      , selectField           ( 1));

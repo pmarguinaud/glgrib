@@ -72,9 +72,10 @@ int ProjectionXYZ::unproject
 }
 
 const glm::mat4 ProjectionXYZ::getView 
-(const glm::vec3 & p, const float dist, const glm::mat3 &) const
+(const glm::vec3 & p, const float dist, const glm::mat3 &,
+ const glm::vec3 & center, const glm::vec3 & up) const
 {
-  return glm::lookAt (p, glm::vec3 (0.0f, 0.0f, 0.0f), glm::vec3 (0.0f, 0.0f, 1.0f));
+  return glm::lookAt (p, center, up);
 }
 
 const glm::vec3 ProjectionLatLon::project 
@@ -102,7 +103,8 @@ int ProjectionLatLon::unproject
 
 const glm::mat4 ProjectionLatLon::getView 
 (const glm::vec3 & p, const float dist, 
- const glm::mat3 & coordm) const
+ const glm::mat3 & coordm,
+ const glm::vec3 & center, const glm::vec3 & up) const
 {
   glm::vec3 co = project (p, coordm);
   return glm::lookAt (glm::vec3 (+dist, co.y, co.z), glm::vec3 (0.0f, +co.y, +co.z), glm::vec3 (0.0f, 0.0f, +1.0f));
@@ -133,7 +135,8 @@ int ProjectionMercator::unproject
 
 const glm::mat4 ProjectionMercator::getView 
 (const glm::vec3 & p, const float dist, 
- const glm::mat3 & coordm) const
+ const glm::mat3 & coordm,
+ const glm::vec3 & center, const glm::vec3 & up) const
 {
   glm::vec3 co = project (p, coordm);
   return glm::lookAt (glm::vec3 (+dist, co.y, co.z), glm::vec3 (0.0f, +co.y, +co.z), glm::vec3 (0.0f, 0.0f, +1.0f));
@@ -163,7 +166,8 @@ int ProjectionPolarNorth::unproject
 
 const glm::mat4 ProjectionPolarNorth::getView 
 (const glm::vec3 & p, const float dist, 
- const glm::mat3 & coordm) const
+ const glm::mat3 & coordm,
+ const glm::vec3 & center, const glm::vec3 & up) const
 {
   glm::vec3 co = project (p, coordm);
   return glm::lookAt (glm::vec3 (+dist, co.y, co.z), glm::vec3 (0.0f, +co.y, +co.z), glm::vec3 (0.0f, -co.y, -co.z));
@@ -193,7 +197,8 @@ int ProjectionPolarSouth::unproject
 
 const glm::mat4 ProjectionPolarSouth::getView 
 (const glm::vec3 & p, const float dist, 
- const glm::mat3 & coordm) const
+ const glm::mat3 & coordm,
+ const glm::vec3 & center, const glm::vec3 & up) const
 {
   glm::vec3 co = project (p, coordm);
   return glm::lookAt (glm::vec3 (-dist, co.y, co.z), glm::vec3 (0.0f, +co.y, +co.z), glm::vec3 (0.0f, +co.y, +co.z));

@@ -26,6 +26,7 @@ template <> const std::string optionTmpl     <OptionColor>         ::type () { r
 template <> const std::string optionTmpl     <OptionScale>         ::type () { return std::string ("SCALE"); }
 template <> const std::string optionTmpl     <OptionLongitude>     ::type () { return std::string ("LONGITUDE"); }
 template <> const std::string optionTmpl     <OptionLatitude>      ::type () { return std::string ("LATITUDE"); }
+template <> const std::string optionTmpl     <OptionAngle>         ::type () { return std::string ("ANGLE"); }
 template <> const std::string optionTmpl     <OptionFieldType>     ::type () { return std::string ("FIELD-TYPE"); }
 template <> const std::string optionTmpl     <OptionPath>          ::type () { return std::string ("PATH"); }
 template <> const std::string optionTmpl     <OptionProjection>    ::type () { return std::string ("PROJECTION"); }

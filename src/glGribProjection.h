@@ -19,10 +19,10 @@ public:
     MERCATOR=3,
     LATLON=4 
   };
-  virtual const glm::vec3 project (const glm::vec3 &, const glm::mat3 &) const = 0;
-  virtual int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *, const glm::mat3 &) const = 0;
-  virtual const glm::mat4 getView (const glm::vec3 &, const float, const glm::mat3 &, 
-                                   const glm::vec3 &, const glm::vec3 &) const = 0;
+  virtual const glm::vec3 project (const glm::vec3 & xyz, const glm::mat3 & coordm) const = 0;
+  virtual int unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz, const glm::mat3 & coordm) const = 0;
+  virtual const glm::mat4 getView (const glm::vec3 & p, const float dist, const glm::mat3 & coordm, 
+                                   const glm::vec3 & center, const glm::vec3 & up, const float roll) const = 0;
   virtual int getType () const = 0;
   virtual bool setLon0 (const float &) const = 0;
   static type typeFromString (std::string str);
@@ -31,10 +31,10 @@ public:
 class ProjectionXYZ : public Projection
 {
 public:
-  const glm::vec3 project (const glm::vec3 &, const glm::mat3 &) const override;
-  int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *, const glm::mat3 &) const override;
-  const glm::mat4 getView (const glm::vec3 &, const float, const glm::mat3 &, 
-                           const glm::vec3 &, const glm::vec3 &) const override;
+  const glm::vec3 project (const glm::vec3 & xyz, const glm::mat3 & coordm) const override;
+  int unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz, const glm::mat3 & coordm) const override;
+  const glm::mat4 getView (const glm::vec3 & p, const float dist, const glm::mat3 & coordm, 
+                           const glm::vec3 & center, const glm::vec3 & up, const float roll) const override;
   int getType () const override { return Projection::XYZ; }
   bool setLon0 (const float &) const override { return false; }
 };
@@ -42,10 +42,10 @@ public:
 class ProjectionLatLon : public Projection
 {
 public:
-  const glm::vec3 project (const glm::vec3 &, const glm::mat3 &) const override;
-  int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *, const glm::mat3 &) const override;
-  const glm::mat4 getView (const glm::vec3 &, const float, const glm::mat3 &, 
-                           const glm::vec3 &, const glm::vec3 &) const override;
+  const glm::vec3 project (const glm::vec3 & xyz, const glm::mat3 & coordm) const override;
+  int unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz, const glm::mat3 & coordm) const override;
+  const glm::mat4 getView (const glm::vec3 & p, const float dist, const glm::mat3 & coordm, 
+                           const glm::vec3 & center, const glm::vec3 & up, const float roll) const override;
   int getType () const override { return Projection::LATLON; }
   bool setLon0 (const float & lon) const override { lon0 = lon; return true; }
 private:
@@ -55,10 +55,10 @@ private:
 class ProjectionMercator : public Projection
 {
 public:
-  const glm::vec3 project (const glm::vec3 &, const glm::mat3 &) const override;
-  int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *, const glm::mat3 &) const override;
-  const glm::mat4 getView (const glm::vec3 &, const float, const glm::mat3 &, 
-                           const glm::vec3 &, const glm::vec3 &) const override;
+  const glm::vec3 project (const glm::vec3 & xyz, const glm::mat3 & coordm) const override;
+  int unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz, const glm::mat3 & coordm) const override;
+  const glm::mat4 getView (const glm::vec3 & p, const float dist, const glm::mat3 & coordm, 
+                           const glm::vec3 & center, const glm::vec3 & up, const float roll) const override;
   int getType () const override { return Projection::MERCATOR; }
   bool setLon0 (const float & lon) const override { lon0 = lon; return true; }
 private:
@@ -68,10 +68,10 @@ private:
 class ProjectionPolarNorth : public Projection
 {
 public:
-  const glm::vec3 project (const glm::vec3 &, const glm::mat3 &) const override;
-  int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *, const glm::mat3 &) const override;
-  const glm::mat4 getView (const glm::vec3 &, const float, const glm::mat3 &, 
-                           const glm::vec3 &, const glm::vec3 &) const override;
+  const glm::vec3 project (const glm::vec3 & xyz, const glm::mat3 & coordm) const override;
+  int unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz, const glm::mat3 & coordm) const override;
+  const glm::mat4 getView (const glm::vec3 & p, const float dist, const glm::mat3 & coordm, 
+                           const glm::vec3 & center, const glm::vec3 & up, const float roll) const override;
   int getType () const override { return Projection::POLAR_NORTH; }
   bool setLon0 (const float &) const override { return false; }
 };
@@ -79,10 +79,10 @@ public:
 class ProjectionPolarSouth : public Projection
 {
 public:
-  const glm::vec3 project (const glm::vec3 &, const glm::mat3 &) const override;
-  int unproject (const glm::vec3 &, const glm::vec3 &, glm::vec3 *, const glm::mat3 &) const override;
-  const glm::mat4 getView (const glm::vec3 &, const float, const glm::mat3 &, 
-                           const glm::vec3 &, const glm::vec3 &) const override;
+  const glm::vec3 project (const glm::vec3 & xyz, const glm::mat3 & coordm) const override;
+  int unproject (const glm::vec3 & xa, const glm::vec3 & xb, glm::vec3 * xyz, const glm::mat3 & coordm) const override;
+  const glm::mat4 getView (const glm::vec3 & p, const float dist, const glm::mat3 & coordm, 
+                           const glm::vec3 & center, const glm::vec3 & up, const float roll) const override;
   int getType () const override { return Projection::POLAR_SOUTH; }
   bool setLon0 (const float &) const override { return false; }
 };

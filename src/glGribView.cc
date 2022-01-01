@@ -140,8 +140,9 @@ void View::calcMVP ()
                            glm::vec3 (+coslon * sinlat, +sinlon * sinlat, -coslat),
                            glm::vec3 (-coslon * coslat, -sinlon * coslat, -sinlat));
               
-  glm::vec3 posOR = glm::inverse (R) * - pos; // Coordinates of origin in local system, should be = glm::vec3 (0.0f, 0.0f, opts.distance)
-  glm::vec3 posQR = RPY * posOR;                // Rotate origin in local coordinates system
+  glm::vec3 posOR = glm::inverse (R) * - pos; // Coordinates of origin in local system, 
+                                              // should be = glm::vec3 (0.0f, 0.0f, opts.distance)
+  glm::vec3 posQR = RPY * posOR;              // Rotate origin in local coordinates system
   glm::vec3 posQr = R * posQR + pos;          // Coordinates of rotated origin back in original system
 
   glm::vec3 up = R * RPY * glm::vec3 (+0.0f, -1.0f, 0.0f);
@@ -163,8 +164,7 @@ void View::calcMVP ()
 
   projection = trans * p;
 
-  view       = ps.current ()->getView (pos, opts.distance, getCoordm (), posQr, up);
-//                                     glm::vec3 (0.0f, 0.0f, 1.0f));
+  view       = ps.current ()->getView (pos, opts.distance, getCoordm (), posQr, up, opts.roll);
   model      = glm::mat4 (1.0f);
   MVP = projection * view * model; 
 

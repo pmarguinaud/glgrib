@@ -73,7 +73,7 @@ int ProjectionXYZ::unproject
 
 const glm::mat4 ProjectionXYZ::getView 
 (const glm::vec3 & p, const float dist, const glm::mat3 &,
- const glm::vec3 & center, const glm::vec3 & up) const
+ const glm::vec3 & center, const glm::vec3 & up, const float) const
 {
   return glm::lookAt (p, center, up);
 }
@@ -104,10 +104,14 @@ int ProjectionLatLon::unproject
 const glm::mat4 ProjectionLatLon::getView 
 (const glm::vec3 & p, const float dist, 
  const glm::mat3 & coordm,
- const glm::vec3 & center, const glm::vec3 & up) const
+ const glm::vec3 & center, const glm::vec3 & up, 
+ const float roll) const
 {
   glm::vec3 co = project (p, coordm);
-  return glm::lookAt (glm::vec3 (+dist, co.y, co.z), glm::vec3 (0.0f, +co.y, +co.z), glm::vec3 (0.0f, 0.0f, +1.0f));
+  const float cosr = glm::cos (glm::radians (roll)), sinr = glm::sin (glm::radians (roll));
+  return glm::lookAt (glm::vec3 (+dist, co.y, co.z), 
+                      glm::vec3 (0.0f, +co.y, +co.z), 
+                      glm::vec3 (0.0f, sinr, cosr));
 }
 
 const glm::vec3 ProjectionMercator::project 
@@ -136,10 +140,14 @@ int ProjectionMercator::unproject
 const glm::mat4 ProjectionMercator::getView 
 (const glm::vec3 & p, const float dist, 
  const glm::mat3 & coordm,
- const glm::vec3 & center, const glm::vec3 & up) const
+ const glm::vec3 & center, const glm::vec3 & up, 
+ const float roll) const
 {
   glm::vec3 co = project (p, coordm);
-  return glm::lookAt (glm::vec3 (+dist, co.y, co.z), glm::vec3 (0.0f, +co.y, +co.z), glm::vec3 (0.0f, 0.0f, +1.0f));
+  const float cosr = glm::cos (glm::radians (roll)), sinr = glm::sin (glm::radians (roll));
+  return glm::lookAt (glm::vec3 (+dist, co.y, co.z), 
+                      glm::vec3 (0.0f, +co.y, +co.z), 
+                      glm::vec3 (0.0f, sinr, cosr));
 }
 
 const glm::vec3 ProjectionPolarNorth::project 
@@ -167,10 +175,16 @@ int ProjectionPolarNorth::unproject
 const glm::mat4 ProjectionPolarNorth::getView 
 (const glm::vec3 & p, const float dist, 
  const glm::mat3 & coordm,
- const glm::vec3 & center, const glm::vec3 & up) const
+ const glm::vec3 & center, const glm::vec3 & up, 
+ const float roll) const
 {
   glm::vec3 co = project (p, coordm);
-  return glm::lookAt (glm::vec3 (+dist, co.y, co.z), glm::vec3 (0.0f, +co.y, +co.z), glm::vec3 (0.0f, -co.y, -co.z));
+  const float cosr = glm::cos (glm::radians (roll)), sinr = glm::sin (glm::radians (roll));
+  const float uy = -co.y * cosr - co.z * sinr,
+              uz = +co.y * sinr - co.z * cosr;
+  return glm::lookAt (glm::vec3 (+dist, co.y, co.z), 
+                      glm::vec3 (0.0f, +co.y, +co.z), 
+                      glm::vec3 (0.0f, uy, uz));
 }
 
 const glm::vec3 ProjectionPolarSouth::project 
@@ -198,10 +212,16 @@ int ProjectionPolarSouth::unproject
 const glm::mat4 ProjectionPolarSouth::getView 
 (const glm::vec3 & p, const float dist, 
  const glm::mat3 & coordm,
- const glm::vec3 & center, const glm::vec3 & up) const
+ const glm::vec3 & center, const glm::vec3 & up, 
+ const float roll) const
 {
   glm::vec3 co = project (p, coordm);
-  return glm::lookAt (glm::vec3 (-dist, co.y, co.z), glm::vec3 (0.0f, +co.y, +co.z), glm::vec3 (0.0f, +co.y, +co.z));
+  const float cosr = glm::cos (glm::radians (roll)), sinr = glm::sin (glm::radians (roll));
+  const float uy = -co.y * cosr - co.z * sinr,
+              uz = +co.y * sinr - co.z * cosr;
+  return glm::lookAt (glm::vec3 (-dist, co.y, co.z), 
+                      glm::vec3 (0.0f, +co.y, +co.z), 
+                      glm::vec3 (0.0f, uy, uz));
 }
 
 

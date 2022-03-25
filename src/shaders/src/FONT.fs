@@ -5,7 +5,7 @@ in
 
 out vec4 color;
 
-uniform sampler2D texture;
+uniform sampler2D tex;
 
 uniform float xoff[30];
 uniform float yoff[30];
@@ -31,7 +31,7 @@ void main ()
   tx = xoff[ix] + tx * (xoff[ix+1] - xoff[ix]);
   ty = yoff[iy] + ty * (yoff[iy+1] - yoff[iy]);
 
-  vec4 col = texture2D (texture, vec2 (tx, ty));
+  vec4 col = texture (tex, vec2 (tx, ty));
 
 
   float a = col.r;

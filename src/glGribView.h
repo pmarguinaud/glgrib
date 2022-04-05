@@ -26,6 +26,7 @@ public:
   void setMVP (Program *) const;
   void delMVP (Program *) const;
   void calcMVP ();
+  void calcCoordm ();
   void setViewport (int, int);
   const glm::vec3 project (const glm::vec3 & xyz) const
   {
@@ -62,12 +63,14 @@ public:
   float getRatio () const { return (float)width/(float)height; }
   void calcZoom ();
 private:
+  const glm::mat3 & getCoordm () const;
   OptionsView opts;
   int width, height;
   ProjectionSet ps;
   glm::mat4 model, view, projection, MVP;
   glm::mat3 zoom_roti, zoom_rotd;
   glm::vec4 viewport;
+  glm::mat3 coordm;
 };
 
 

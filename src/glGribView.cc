@@ -11,6 +11,32 @@
 namespace glGrib
 {
 
+const glm::mat3 & View::getCoordm () const
+{
+  return coordm;
+}
+
+void View::calcCoordm ()
+{
+  coordm = glm::mat3 (1.0f);
+  if (opts.trans.on && (opts.trans.matrix.size () == 9))
+    {
+      const std::vector<float> & m = opts.trans.matrix;
+      coordm = glm::mat3 (glm::vec3 (m[0], m[1], m[2]),
+                          glm::vec3 (m[3], m[4], m[5]),
+                          glm::vec3 (m[6], m[7], m[8]));
+      auto ii = coordm * glm::transpose (coordm) - glm::mat3 (1.0f);
+      float ddd = std::sqrt (glm::dot (ii[0], ii[0]) 
+                         + glm::dot (ii[1], ii[1]) 
+                         + glm::dot (ii[2], ii[2]));
+      float eps = 1e-7;
+      if (std::fabs (ddd) > eps)
+        {
+          throw std::runtime_error ("coordm is not an orthogonal matrix");
+        }
+    }
+}
+
 void View::delMVP (Program * program) const
 {
   glDisable (GL_SCISSOR_TEST);
@@ -36,6 +62,12 @@ void View::setMVP (Program * program) const
       program->set ("schmidt_opc2", opc2);
     }
 
+  bool apply_coordm = opts.trans.on;
+  program->set ("apply_coordm", apply_coordm);
+  if (apply_coordm)
+    {
+      program->set ("COORDM", getCoordm ());
+    }
 
   float lon0 = opts.lon + 180.0f;
 
@@ -55,8 +87,14 @@ void View::setMVP (Program * program) const
           float lon1 = lon0 + opts.clip.dlon, lon2 = lon0 - opts.clip.dlon, 
                 lat1 = -90.0f + opts.clip.dlat, lat2 = +90.0f - opts.clip.dlat;
 
-          getScreenCoordsFromLatLon (&xpos1, &ypos1, lat1, lon1);
-          getScreenCoordsFromLatLon (&xpos2, &ypos2, lat2, lon2);
+          glm::vec3 pos1 = lonlat2xyz (glm::radians (lon1), glm::radians (lat1)); 
+          glm::vec3 pos2 = lonlat2xyz (glm::radians (lon2), glm::radians (lat2)); 
+          glm::mat3 id3 (1.0f);
+          pos1 = project (ps.current ()->project (pos1, id3));
+          pos2 = project (ps.current ()->project (pos2, id3));
+  
+          xpos1 = pos1.x; ypos1 = pos1.y;
+          xpos2 = pos2.x; ypos2 = pos2.y;
 
           xmin = std::max (xmin, xpos1); xmax = std::min (xmax, xpos2);
           ymin = std::max (ymin, ypos1); ymax = std::min (ymax, ypos2);
@@ -71,10 +109,15 @@ void View::calcMVP ()
   Projection::type pt = Projection::typeFromString (opts.projection);
   ps.setType (pt);
 
+  float coslon = glm::cos (glm::radians (float (opts.lon))), 
+        sinlon = glm::sin (glm::radians (float (opts.lon))),
+        coslat = glm::cos (glm::radians (float (opts.lat))), 
+        sinlat = glm::sin (glm::radians (float (opts.lat)));
+
   glm::vec3 pos
-    (opts.distance * glm::cos (glm::radians (float (opts.lon))) * glm::cos (glm::radians (float (opts.lat))), 
-     opts.distance * glm::sin (glm::radians (float (opts.lon))) * glm::cos (glm::radians (float (opts.lat))),
-     opts.distance *                                              glm::sin (glm::radians (float (opts.lat))));
+    (opts.distance * coslon * coslat, 
+     opts.distance * sinlon * coslat,
+     opts.distance *          sinlat);
 
   viewport   = glm::vec4 (0.0f, 0.0f, static_cast<float> (width), static_cast<float> (height));
 
@@ -85,12 +128,30 @@ void View::calcMVP ()
   if ((! opts.center.on) && (ratio > 1.0f))
     trans = glm::translate (trans, glm::vec3 ((ratio - 1.0f) / 2.0f, 0.0f, 0.0f));
        
-  glm::mat4 p;
 
+  // (Roll, pitch, yaw) matrix
+  glm::mat3 RPY = glm::rotate (glm::mat4 (1.0f), glm::radians (float (opts.roll )), glm::vec3 (0.0f, 0.0f, 1.0f))
+                * glm::rotate (glm::mat4 (1.0f), glm::radians (float (opts.yaw  )), glm::vec3 (0.0f, 1.0f, 0.0f))
+                * glm::rotate (glm::mat4 (1.0f), glm::radians (float (opts.pitch)), glm::vec3 (1.0f, 0.0f, 0.0f));
+
+
+  // Matrix to go from/to local coordinate system
+  glm::mat3 R = glm::mat3 (glm::vec3 (-sinlon         , +coslon         ,    0.0f), 
+                           glm::vec3 (+coslon * sinlat, +sinlon * sinlat, -coslat),
+                           glm::vec3 (-coslon * coslat, -sinlon * coslat, -sinlat));
+              
+  glm::vec3 posOR = glm::inverse (R) * - pos; // Coordinates of origin in local system, 
+                                              // should be = glm::vec3 (0.0f, 0.0f, opts.distance)
+  glm::vec3 posQR = RPY * posOR;              // Rotate origin in local coordinates system
+  glm::vec3 posQr = R * posQR + pos;          // Coordinates of rotated origin back in original system
+
+  glm::vec3 up = R * RPY * glm::vec3 (+0.0f, -1.0f, 0.0f);
+
+  glm::mat4 p;
   switch (typeFromString (opts.transformation))
     {
       case PERSPECTIVE:
-        p = glm::perspective (glm::radians (opts.fov), ratio, 0.1f, 100.0f);
+        p = glm::perspective (glm::radians (float (opts.fov)), ratio, 0.1f, 100.0f);
 	break;
       case ORTHOGRAPHIC:
         const float margin = 1.05;
@@ -103,7 +164,7 @@ void View::calcMVP ()
 
   projection = trans * p;
 
-  view       = ps.current ()->getView (pos, opts.distance);
+  view       = ps.current ()->getView (pos, opts.distance, getCoordm (), posQr, up, opts.roll);
   model      = glm::mat4 (1.0f);
   MVP = projection * view * model; 
 
@@ -143,7 +204,7 @@ int View::getLatLonFromScreenCoords (float xpos, float ypos, float * lat, float 
 
 int View::getScreenCoordsFromXYZ (float * xpos, float * ypos, const glm::vec3 & xyz) const
 {
-  glm::vec3 pos = ps.current ()->project (xyz);
+  glm::vec3 pos = ps.current ()->project (xyz, getCoordm ());
   pos = project (pos);
 
   *xpos = pos.x;
@@ -157,7 +218,7 @@ int View::getXYZFromScreenCoords (float xpos, float ypos, glm::vec3 * xyz) const
   glm::vec3 xa = unproject (glm::vec3 (xpos, ypos, +0.985601f));
   glm::vec3 xb = unproject (glm::vec3 (xpos, ypos, +0.900000f));
 
-  if (! ps.current ()->unproject (xa, xb, xyz))
+  if (! ps.current ()->unproject (xa, xb, xyz, getCoordm ()))
     return 0;
 
   return 1;
@@ -204,6 +265,7 @@ void View::setup (const OptionsView & o)
   opts = o;
   calcMVP ();
   calcZoom ();
+  calcCoordm ();
 }
 
 View::transform_type View::typeFromString (std::string str)

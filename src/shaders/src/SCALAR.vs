@@ -32,9 +32,7 @@ void main ()
   if (mpiview_scale > 0.0f)
     {
       float lon = vertexMPIView.y, lat = vertexMPIView.z;
-      float coslon = cos (lon), sinlon = sin (lon);
-      float coslat = cos (lat), sinlat = sin (lat);
-      vertexDisp = vec3 (coslon * coslat, sinlon * coslat, sinlat);
+      vertexDisp = posFromLonLat (vec2 (lon, lat));
     }
 
   scalar_vs.fragmentValFlat = vertexVal;

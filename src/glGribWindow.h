@@ -83,6 +83,42 @@ public:
     o.distance -= 0.1; 
     scene.setViewOptions (o);
   }
+  void rollLeft           () 
+  { 
+    OptionsView o = scene.getViewOptions ();
+    o.roll = float (o.roll) + 1.; 
+    scene.setViewOptions (o);
+  }
+  void rollRight          () 
+  { 
+    OptionsView o = scene.getViewOptions ();
+    o.roll = float (o.roll) - 1.; 
+    scene.setViewOptions (o);
+  }
+  void rotateUp           () 
+  { 
+    OptionsView o = scene.getViewOptions ();
+    o.pitch = float (o.pitch) + 1.; 
+    scene.setViewOptions (o);
+  }
+  void rotateDown         ()
+  {
+    OptionsView o = scene.getViewOptions ();
+    o.pitch = float (o.pitch) - 1.; 
+    scene.setViewOptions (o);
+  }
+  void rotateRight        ()
+  {
+    OptionsView o = scene.getViewOptions ();
+    o.yaw = float (o.yaw) + 1.; 
+    scene.setViewOptions (o);
+  }
+  void rotateLeft         ()
+  {
+    OptionsView o = scene.getViewOptions ();
+    o.yaw = float (o.yaw) - 1.; 
+    scene.setViewOptions (o);
+  }
   void rotateNorth        () 
   { 
     OptionsView o = scene.getViewOptions ();

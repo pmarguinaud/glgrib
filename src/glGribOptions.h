@@ -88,6 +88,7 @@ class c : public OptionFloatLike \
 DEF_OPTION_FLOAT (OptionScale);
 DEF_OPTION_FLOAT (OptionLongitude);
 DEF_OPTION_FLOAT (OptionLatitude);
+DEF_OPTION_FLOAT (OptionAngle);
 
 class OptionStringLike
 {
@@ -449,6 +450,7 @@ public:
   DEF_APPLY (OptionScale);
   DEF_APPLY (OptionLongitude);
   DEF_APPLY (OptionLatitude);
+  DEF_APPLY (OptionAngle);
   DEF_APPLY (OptionProjection);
   DEF_APPLY (OptionPaletteName);
   DEF_APPLY (OptionTransformation);
@@ -568,6 +570,7 @@ private:
   DEF_APPLY (OptionScale                       , OptionsParserDetail::optionTmpl<OptionScale>);
   DEF_APPLY (OptionLongitude                   , OptionsParserDetail::optionTmpl<OptionLongitude>);
   DEF_APPLY (OptionLatitude                    , OptionsParserDetail::optionTmpl<OptionLatitude>);
+  DEF_APPLY (OptionAngle                       , OptionsParserDetail::optionTmpl<OptionAngle>);
   DEF_APPLY (OptionFieldType                   , OptionsParserDetail::optionTmpl<OptionFieldType>);
   DEF_APPLY (OptionPath                        , OptionsParserDetail::optionTmpl<OptionPath>);
   DEF_APPLY (OptionProjection                  , OptionsParserDetail::optionTmpl<OptionProjection>);
@@ -953,6 +956,8 @@ public:
     DESC (widen.on, Enable region widening);
     DESC (widen.values, Values for regions);
     DESC (widen.radius, Radius for regions);
+    DESC (widen.merge.on, Merge other regions);
+    DESC (widen.merge.value, Merge value);
   }
 
   struct 
@@ -1008,6 +1013,12 @@ public:
     bool on = false;
     std::vector<float> values = {0.0f};
     std::vector<int>   radius = {0};
+    struct
+    {
+      bool on = false;
+      static float defaultValue () { return +std::numeric_limits<float>::max (); }
+      float value = defaultValue ();
+    } merge;
   } widen;
 
 };
@@ -1681,6 +1692,25 @@ public:
   } center;
 };
 
+class OptionsClip : public OptionsBase
+{
+public:
+  DEFINE
+  {
+    DESC (on,            Enable Mercator and lat/lon clipping);
+    DESC (dlon,          Amount of longitude to clip);
+    DESC (dlat,          Amount of latitude to clip);
+    DESC (xmin,          Min viewport x coordinate);
+    DESC (xmax,          Max viewport x coordinate);
+    DESC (ymin,          Min viewport y coordinate);
+    DESC (ymax,          Max viewport y coordinate);
+  }
+  float dlon = 10.0f;
+  float dlat =  5.0f;
+  float xmin = 0.0f, xmax = 1.0f, ymin = 0.0f, ymax = 1.0f;
+  bool on = true;
+};
+
 class OptionsView : public OptionsBase
 {
 public:
@@ -1690,31 +1720,33 @@ public:
     DESC (transformation,     Perspective or orthographic);
     DESC (lon,                Camera longitude);
     DESC (lat,                Camera latitude);
+    DESC (roll,               Camera roll);
+    DESC (pitch,              Camera pitch);
+    DESC (yaw,                Camera yaw);
     DESC (fov,                Camera field of view);
     DESC (distance,           Camera distance);
     DESC (center.on,          Center view);
 
-    BLOC (clip,               Clip options);
-    DESC (clip.on,            Enable Mercator and lat/lon clippling);
-    DESC (clip.dlon,          Amount of longitude to clip);
-    DESC (clip.dlat,          Amount of latitude to clip);
-    DESC (clip.xmin,          Min viewport x coordinate);
-    DESC (clip.xmax,          Max viewport x coordinate);
-    DESC (clip.ymin,          Min viewport y coordinate);
-    DESC (clip.ymax,          Max viewport y coordinate);
+    INCLUDE_N (clip,          Clipping options);
 
     BLOC (zoom,               Zoom options);
     DESC (zoom.on,            Enable zoom with Schmidt transform);
     DESC (zoom.lon,           Longitude of zoom);
     DESC (zoom.lat,           Latitude of zoom);
     DESC (zoom.stretch,       Stretching factor);
+
+    DESC (trans.on,           Enable transformation matrix);
+    DESC (trans.matrix,       Transformation matrix values);
   }
   OptionProjection projection = "XYZ";
   OptionTransformation transformation = "PERSPECTIVE";
   float  distance  = 6.0; 
   OptionLatitude  lat       = 0.0; 
   OptionLongitude lon       = 0.0; 
-  float  fov       = 20.;
+  OptionAngle     roll      = 0.0;
+  OptionAngle     pitch     = 0.0;
+  OptionAngle     yaw       = 0.0;
+  OptionAngle     fov       = 20.;
   struct
   {
     bool on = true;
@@ -1728,11 +1760,10 @@ public:
   } zoom;
   struct
   {
-    float dlon = 10.0f;
-    float dlat =  5.0f;
-    float xmin = 0.0f, xmax = 1.0f, ymin = 0.0f, ymax = 1.0f;
-    bool on = true;
-  } clip;
+    bool on = false;
+    std::vector<float> matrix;
+  } trans;
+  OptionsClip clip;
 };
 
 

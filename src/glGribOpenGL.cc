@@ -283,7 +283,7 @@ void APIENTRY debugCallback
           debugSeverity (severity), debugType (type), id, message);
 }
 
-void setupDebug (const OptionsRender & opts)
+void glSetupDebug (const OptionsRender & opts)
 {
   if (opts.debug.on || opts.info.on)
    {   
@@ -327,8 +327,8 @@ void glStart (const OptionsRender & opts)
 #else
   egl = new eglDisplay (opts.egl.device);
 #endif
+  glSetupDebug (opts);
 #endif
-  setupDebug (opts);
 }
 
 void glStop ()

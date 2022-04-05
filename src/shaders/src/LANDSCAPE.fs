@@ -10,7 +10,7 @@ const int LONLAT = 0;
 const int WEBMERCATOR = 1;
 
 uniform int texproj = 0;
-uniform sampler2D texture;
+uniform sampler2D tex;
 uniform vec3 lightDir = vec3 (0., 1., 0.);
 uniform vec3 lightCol = vec3 (1., 1., 1.);
 uniform bool light = false;
@@ -66,7 +66,7 @@ vec4 getColorLATLON (vec3 fragmentPos)
   if ((t < 0.0) || (1.0 < t))
     discard;
   
-  return texture2D (texture, vec2 (s, t));
+  return texture (tex, vec2 (s, t));
 }
 
 vec4 getColorMERCATOR (vec3 fragmentPos)
@@ -106,7 +106,7 @@ vec4 getColorMERCATOR (vec3 fragmentPos)
   if (! inl)
     discard;
   
-  return texture2D (texture, vec2 (X, Y));
+  return texture (tex, vec2 (X, Y));
 }
 
 void main ()

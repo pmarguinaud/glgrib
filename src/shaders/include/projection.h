@@ -5,6 +5,9 @@ uniform bool isflat = true;
 uniform float lon0 = 180.0; // Longitude of right handside
 const float pi = 3.1415926;
 
+uniform bool apply_coordm = false;
+uniform mat3 COORDM;
+
 vec3 posFromLonLat (vec2 vertexLonLat)
 {
   float lon = vertexLonLat.x, lat = vertexLonLat.y;
@@ -37,17 +40,24 @@ vec3 compProjedPos (vec3 vertexPos, vec3 normedPos)
           pos = applySchmidt (vertexPos);
         break;
       case POLAR_NORTH:
-        pos =  vec3 (0., normedPos.x / (+normedPos.z + 1.0),
-                     normedPos.y / (+normedPos.z + 1.0));
+        {
+          vec3 p = apply_coordm ? COORDM * normedPos : normedPos;
+          pos =  vec3 (0., p.x / (+p.z + 1.0),
+                       p.y / (+p.z + 1.0));
+        }
         break;
       case POLAR_SOUTH:
-        pos =  vec3 (0., normedPos.x / (-normedPos.z + 1.0),
-                     normedPos.y / (-normedPos.z + 1.0));
+        {
+          vec3 p = apply_coordm ? COORDM * normedPos : normedPos;
+          pos =  vec3 (0., p.x / (-p.z + 1.0),
+                       p.y / (-p.z + 1.0));
+        }
         break;
       case MERCATOR:
         {
-          float lat = asin (normedPos.z);
-          float lon = mod (atan (normedPos.y, normedPos.x), 2 * pi);
+          vec3 p = apply_coordm ? COORDM * normedPos : normedPos;
+          float lat = asin (p.z);
+          float lon = mod (atan (p.y, p.x), 2 * pi);
           float X = (mod (lon - lon0 * pi / 180.0, 2 * pi) - pi) / pi;
           float Y = log (tan (pi / 4. + lat / 2.)) / pi;
           pos = vec3 (0., X, Y);
@@ -55,8 +65,9 @@ vec3 compProjedPos (vec3 vertexPos, vec3 normedPos)
         break;
       case LATLON:
         {
-          float lat = asin (normedPos.z);
-          float lon = mod (atan (normedPos.y, normedPos.x), 2 * pi);
+          vec3 p = apply_coordm ? COORDM * normedPos : normedPos;
+          float lat = asin (p.z);
+          float lon = mod (atan (p.y, p.x), 2 * pi);
           float X = (mod (lon - lon0 * pi / 180.0, 2 * pi) - pi) / pi;
           float Y = lat / pi;
           pos = vec3 (0., X, Y);

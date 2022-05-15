@@ -1,9 +1,9 @@
 #include "glGribGeometryGaussian.h"
 #include "glGribTrigonometry.h"
 #include "glGribFitPolynomial.h"
+#include "glGribMD5.h"
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <openssl/md5.h>
 
 #include <cmath>
 #include <iostream>
@@ -1387,18 +1387,15 @@ void GeometryGaussian::index2latlon (int jglo, float * lat, float * lon) const
 
 const std::string GeometryGaussian::md5 () const
 {
-  unsigned char out[MD5_DIGEST_LENGTH];
-  MD5_CTX c;
-  MD5_Init (&c);
-  
-  MD5_Update (&c, &grid_gaussian.Nj, sizeof (grid_gaussian.Nj));
-  MD5_Update (&c, grid_gaussian.pl.data (), grid_gaussian.Nj * sizeof (grid_gaussian.pl[0]));
-  MD5_Update (&c, &misc_gaussian.stretchingFactor, sizeof (misc_gaussian.stretchingFactor));
-  MD5_Update (&c, &misc_gaussian.latitudeOfStretchingPoleInDegrees, sizeof (misc_gaussian.latitudeOfStretchingPoleInDegrees));
-  MD5_Update (&c, &misc_gaussian.longitudeOfStretchingPoleInDegrees, sizeof (misc_gaussian.longitudeOfStretchingPoleInDegrees));
-  MD5_Final (out, &c);
+  glGrib::MD5 ctx;
 
-  return md5string (out);
+  ctx.update (&grid_gaussian.Nj, sizeof (grid_gaussian.Nj));
+  ctx.update (grid_gaussian.pl.data (), grid_gaussian.Nj * sizeof (grid_gaussian.pl[0]));
+  ctx.update (&misc_gaussian.stretchingFactor, sizeof (misc_gaussian.stretchingFactor));
+  ctx.update (&misc_gaussian.latitudeOfStretchingPoleInDegrees, sizeof (misc_gaussian.latitudeOfStretchingPoleInDegrees));
+  ctx.update (&misc_gaussian.longitudeOfStretchingPoleInDegrees, sizeof (misc_gaussian.longitudeOfStretchingPoleInDegrees));
+
+  return ctx.asString ();
 }
 
 

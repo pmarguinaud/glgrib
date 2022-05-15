@@ -62,6 +62,7 @@ set (SRC
    glGribGeoPoints.cc
    glGribBatch.cc
    glGribRender.cc
+   glGribMD5.h
 )
 
 

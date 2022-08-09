@@ -1,12 +1,11 @@
 
-SUFFIX=
 PREFIX=$(HOME)/3d/glgrib
 
 LDFLAGS_GLFW=-lGLEW -lGL -lglfw
 LDFLAGS_EGL=-lEGL -lGL -lgbm
 
 LDFLAGS=-fopenmp -lglGrib$(SUFFIX) -L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib \
-        -lLFI$(SUFFIX) -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto -lpthread \
+        -lLFI -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto -lpthread \
         -lsqlite3 -lcurl -lshp -leccodes -lnetcdf_c++4 -lnetcdf
 
 CXXFLAGS_BASE=-fPIC -fopenmp -std=c++11 -Wall 

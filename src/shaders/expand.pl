@@ -44,7 +44,7 @@ sub expand
 
 my $TOP = shift (@ARGV) || '.';
 
-mkdir ("$TOP/share/shaders");
+mkdir ("$TOP/share/glgrib/shaders");
 
 for my $f (<shaders/src/*.vs>, <shaders/src/*.fs>, <shaders/src/*.gs>)
   {
@@ -57,5 +57,5 @@ for my $f (<shaders/src/*.vs>, <shaders/src/*.fs>, <shaders/src/*.gs>)
         @text = @code;
       }
     $f = &basename ($f);
-    'FileHandle'->new (">$TOP/share/shaders/$f")->print (join ('', @code));
+    'FileHandle'->new (">$TOP/share/glgrib/shaders/$f")->print (join ('', @code));
   }

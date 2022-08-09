@@ -37,14 +37,14 @@ std::string Resolve (const std::string & file)
   if (GLGRIB_PREFIX != nullptr)
     {
       const std::string prefix (GLGRIB_PREFIX);
-      path = prefix + "/share/" + file;
+      path = prefix + "/share/glgrib/" + file;
       if (stat (path.c_str (), &st) == 0)
         return path;
     }
 
   if (glGribPrefix != "")
     {
-      path = glGribPrefix + "/share/" + file;
+      path = glGribPrefix + "/share/glgrib/" + file;
       if (stat (path.c_str (), &st) == 0)
         return path;
     }
@@ -62,7 +62,7 @@ std::string Resolve (const std::string & file)
       if (p != std::string::npos)
         {
           std::string dir = PROG.substr (0, p + 1);
-	  path = dir + "/../share/" + file;
+	  path = dir + "/../share/glgrib/" + file;
 	  if (stat (path.c_str (), &st) == 0)
 	    return path;
 	}

@@ -4,7 +4,7 @@ SUFFIX=
 endif
 
 ifeq ($(BUILD), batch)
-SUFFIX=_batch
+SUFFIX=-batch
 endif
 
 PREFIX=$(HOME)/3d/glgrib

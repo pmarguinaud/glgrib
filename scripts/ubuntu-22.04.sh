@@ -14,12 +14,20 @@ function ss ()
   cp -alf $src/* $dir/$dst
 }
 
-rm lib/libLFI.a
-chrpath -d bin/*
+for BUILD in "" BATCH
+do
+  make BUILD=$BUILD
 
-ss bin usr/bin
-ss lib lib/x86_64-linux-gnu
-ss share/glgrib usr/share/glgrib
+  rm lib/libLFI.a
+  chrpath -d bin/*
+
+  ss bin usr/bin
+  ss lib lib/x86_64-linux-gnu
+  ss share/glgrib usr/share/glgrib
+
+  make clean
+done
+
 
 export DEBEMAIL="pmarguinaud@hotmail.com"
 export DEBFULLNAME="Philippe Marguinaud"
@@ -48,4 +56,13 @@ mv debian DEBIAN
 
 cd ..
 
+exit
 dpkg-deb --build --root-owner-group glgrib_1.0-1_amd64 
+
+
+
+# dpkg -i ./glgrib_1.0-1_amd64.deb
+# apt-get -f install
+
+# apt-get remove glgrib
+# apt-get autoremove

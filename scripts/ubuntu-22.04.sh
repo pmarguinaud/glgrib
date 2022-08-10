@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -x
+set -e
 
 dir=glgrib_1.0-1_amd64
 mkdir -p $dir
@@ -14,7 +15,7 @@ function ss ()
   cp -alf $src/* $dir/$dst
 }
 
-for BUILD in "" BATCH
+for BUILD in "" batch
 do
   make BUILD=$BUILD
 
@@ -25,7 +26,7 @@ do
   ss lib lib/x86_64-linux-gnu
   ss share/glgrib usr/share/glgrib
 
-  make clean
+  make BUILD=$BUILD clean
 done
 
 
@@ -41,13 +42,13 @@ Package: glgrib
 Version: 1.0
 Architecture: amd64
 Maintainer: $DEBFULLNAME <$DEBEMAIL>
-Provides: glgrib
+Provides: glgrib glgrib-batch
 Source: glgrib
 Description: Display GRIB data with OpenGL.
  More info at https://github.com/pmarguinaud/glgrib.
 EOF
 
-dpkg-shlibdeps -O usr/bin/glgrib_batch  | perl -pe 's/shlibs:Depends=/Depends: /o;'  > depends.txt
+dpkg-shlibdeps -O usr/bin/*  | perl -pe 's/shlibs:Depends=/Depends: /o;'  > depends.txt
 
 cat depends.txt >> debian/control
 \rm depends.txt

@@ -41,8 +41,8 @@ EOC
 chmod 600 $HOME/.ssh/authorized_keys
 chown $USER:users $HOME/.ssh/authorized_keys
 
-apt -y install \$dir/glgrib_1.0-1_amd64.deb
-apt -y install \$dir/glgrib-data_1.0-1_amd64.deb
+apt-get -y install \$dir/glgrib_1.0-1_amd64.deb
+apt-get -y install \$dir/glgrib-data_1.0-1_amd64.deb
 
 ldd /usr/bin/glgrib
 

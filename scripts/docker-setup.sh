@@ -50,9 +50,9 @@ EOF
 chmod +x glgrib.sh
 
 sudo docker run -t -d --name ubuntu \
-  --mount type=bind,src=$PWD/glgrib.sh,dst=/root/glgrib.sh \
-  --mount type=bind,src=$PWD/glgrib_1.0-1_amd64.deb,dst=/root/glgrib_1.0-1_amd64.deb \
-  --mount type=bind,src=$PWD/glgrib-data_1.0-1_amd64.deb,dst=/root/glgrib-data_1.0-1_amd64.deb \
+  --mount type=bind,src=$PWD/glgrib.sh,dst=/root/glgrib.sh,readonly=true \
+  --mount type=bind,src=$PWD/glgrib_1.0-1_amd64.deb,dst=/root/glgrib_1.0-1_amd64.deb,readonly=true \
+  --mount type=bind,src=$PWD/glgrib-data_1.0-1_amd64.deb,dst=/root/glgrib-data_1.0-1_amd64.deb,readonly=true \
   ubuntu:latest
 
 \rm glgrib.sh

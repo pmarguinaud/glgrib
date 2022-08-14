@@ -7,7 +7,6 @@ set -e
 if [ 1 -eq 1 ]
 then
 sudo docker pull ubuntu:latest
-sudo docker run -t -d --name ubuntu ubuntu:latest
 
 SSHKEY=$(cat $HOME/.ssh/id_rsa.pub)
 
@@ -50,10 +49,11 @@ EOF
 
 chmod +x glgrib.sh
 
-for f in glgrib.sh glgrib_1.0-1_amd64.deb glgrib-data_1.0-1_amd64.deb
-do 
-  sudo docker cp $f ubuntu:/root/$f
-done
+sudo docker run -t -d --name ubuntu \
+  --mount type=bind,src=$PWD/glgrib.sh,dst=/root/glgrib.sh \
+  --mount type=bind,src=$PWD/glgrib_1.0-1_amd64.deb,dst=/root/glgrib_1.0-1_amd64.deb \
+  --mount type=bind,src=$PWD/glgrib-data_1.0-1_amd64.deb,dst=/root/glgrib-data_1.0-1_amd64.deb \
+  ubuntu:latest
 
 \rm glgrib.sh
 
@@ -62,7 +62,7 @@ sudo docker exec ubuntu /root/glgrib.sh
 IP=$(sudo docker inspect -f "{{ .NetworkSettings.IPAddress }}" ubuntu)
 ssh-keygen -f "$HOME/.ssh/known_hosts" -R $IP
 
-sudo docker commit ubuntu ubuntu:glgrib
+#sudo docker commit ubuntu ubuntu:glgrib
 
 ssh -o StrictHostKeyChecking=no -X 172.17.0.2 /usr/bin/glgrib --landscape.on
 

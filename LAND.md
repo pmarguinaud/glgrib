@@ -1,11 +1,11 @@
 ## Display land surface -- land
-![](tree/master/share/glgrib/test/land/TEST_0000.png)
+![](raw/master/share/glgrib/test/land/TEST_0000.png)
 
 ```
     --land.on 
 ```
 ## Display land surface (high resolution) -- land_high
-![](tree/master/share/glgrib/test/land_high/TEST_0000.png)
+![](raw/master/share/glgrib/test/land_high/TEST_0000.png)
 
 ```
     --land.on --land.layers[0].path 
@@ -16,7 +16,7 @@
     --view.fov 2 
 ```
 ## Coastlines -- coastlines
-![](tree/master/share/glgrib/test/coastlines/TEST_0000.png)
+![](raw/master/share/glgrib/test/coastlines/TEST_0000.png)
 
 ```
     --landscape.on --landscape.scale 0.999 --land.on --landscape.color 

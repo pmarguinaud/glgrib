@@ -1,5 +1,5 @@
 ## Wind Australia -- windaustralia3
-![](raw/master/share/glgrib/test/windaustralia3/TEST_0000.png)
+![](blob/master/share/glgrib/test/windaustralia3/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/uv200.grib%paramId=131 
@@ -18,7 +18,7 @@
     --colorbar.on --field[0].vector.density 20 --field[0].vector.scale 2 
 ```
 ## Wind on small AROME domain (raster & vector) -- small_aro
-![](raw/master/share/glgrib/test/small_aro/TEST_0000.png)
+![](blob/master/share/glgrib/test/small_aro/TEST_0000.png?raw=true)
 
 ```
     --field[0].type VECTOR --field[0].path 
@@ -27,7 +27,7 @@
     --view.lon 26.64 --view.lat 67.36 --view.fov 0.5 --coast.on --grid.on 
 ```
 ## Display vector norm & arrow, Lambert geometry -- vector
-![](raw/master/share/glgrib/test/vector/TEST_0000.png)
+![](blob/master/share/glgrib/test/vector/TEST_0000.png?raw=true)
 
 ```
     --field[0].type VECTOR --field[0].path 
@@ -37,7 +37,7 @@
     --view.fov 5 --coast.on --grid.on 
 ```
 ## Display vector norm, global lat/lon geometry -- vector_glob25
-![](raw/master/share/glgrib/test/vector_glob25/TEST_0000.png)
+![](blob/master/share/glgrib/test/vector_glob25/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path 
@@ -48,7 +48,7 @@
     --coast.on --grid.on 
 ```
 ## Vector arrow, stretched/rotated gaussian geometry -- vector_t1798
-![](raw/master/share/glgrib/test/vector_t1798/TEST_0000.png)
+![](blob/master/share/glgrib/test/vector_t1798/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path 
@@ -58,7 +58,7 @@
     --coast.on --grid.on 
 ```
 ## Display wind on stretched/rotated gaussian geometry -- wind_arp
-![](raw/master/share/glgrib/test/wind_arp/TEST_0000.png)
+![](blob/master/share/glgrib/test/wind_arp/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t31c2.4/Z.grb 
@@ -68,7 +68,7 @@
     --coast.on --grid.on 
 ```
 ## Wind on global lat/lon geometry -- wind_glob25
-![](raw/master/share/glgrib/test/wind_glob25/TEST_0000.png)
+![](blob/master/share/glgrib/test/wind_glob25/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path 
@@ -79,7 +79,7 @@
     --field[0].scale 1.01 --coast.on --grid.on 
 ```
 ## Wind on stretched/rotated gaussian geometry -- wind_t1798
-![](raw/master/share/glgrib/test/wind_t1798/TEST_0000.png)
+![](blob/master/share/glgrib/test/wind_t1798/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path 
@@ -90,7 +90,7 @@
     1.01 --coast.on --grid.on 
 ```
 ## Wind & vorticity -- wind4
-![](raw/master/share/glgrib/test/wind4/TEST_0000.png)
+![](blob/master/share/glgrib/test/wind4/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/wind4/vorticity.grib 
@@ -113,7 +113,7 @@
     --render.width 1500 --grid.resolution 18 
 ```
 ## Wind on global lat/lon grid -- windlatlon
-![](raw/master/share/glgrib/test/windlatlon/TEST_0000.png)
+![](blob/master/share/glgrib/test/windlatlon/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/data_uv.grib%shortName="u" 
@@ -127,7 +127,7 @@
     --view.projection LATLON --render.width 1650 --render.height 750 
 ```
 ## Wind Australia -- windaustralia
-![](raw/master/share/glgrib/test/windaustralia/TEST_0000.png)
+![](blob/master/share/glgrib/test/windaustralia/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/uv200.grib%paramId=131 
@@ -141,7 +141,7 @@
     --render.width 1200 --field[0].scale 1.001 
 ```
 ## Wind Australia -- windaustralia2
-![](raw/master/share/glgrib/test/windaustralia2/TEST_0000.png)
+![](blob/master/share/glgrib/test/windaustralia2/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/uv200.grib%paramId=131 
@@ -155,7 +155,7 @@
     --view.projection LATLON --field[0].vector.density 10 
 ```
 ## Wind Australia -- windaustralia4
-![](raw/master/share/glgrib/test/windaustralia4/TEST_0000.png)
+![](blob/master/share/glgrib/test/windaustralia4/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/uv200.grib%paramId=131 
@@ -170,7 +170,7 @@
     --field[0].vector.barb.circle.level 15 
 ```
 ## Wind + geopotential -- windgeop
-![](raw/master/share/glgrib/test/windgeop/TEST_0000.png)
+![](blob/master/share/glgrib/test/windgeop/TEST_0000.png?raw=true)
 
 ```
     --field[0].palette.colors black --field[0].contour.widths 1 2 1 1 2 1 

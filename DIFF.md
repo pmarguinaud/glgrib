@@ -1,5 +1,5 @@
 ## Contour in diff mode, global lat/lon geometry -- contour_diff
-![](raw/master/share/glgrib/test/contour_diff/TEST_0000.png)
+![](blob/master/share/glgrib/test/contour_diff/TEST_0000.png?raw=true)
 
 ```
     --field[0].diff.on --field[0].type CONTOUR --field[0].path 
@@ -9,7 +9,7 @@
     --field[0].user_pref.off 
 ```
 ## Display field difference -- scalar_diff
-![](raw/master/share/glgrib/test/scalar_diff/TEST_0000.png)
+![](blob/master/share/glgrib/test/scalar_diff/TEST_0000.png?raw=true)
 
 ```
     --field[0].diff.on --field[0].path share/glgrib/data/interp/01.grb 

@@ -38,7 +38,8 @@ sub readme
   my @t = @test;
   my ($fh, %fh) = ('FileHandle'->new (">README.md"));
 
-  my $share = 'raw/master/share/glgrib';
+  my $share = 'blob/master/share/glgrib';
+  my $ext = '?raw=true';
 
   $fh->print ("
 Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, gaussian grid.
@@ -54,8 +55,8 @@ Tested on :
 * 3D controller: NVIDIA Corporation GV100GL [Tesla V100S PCIe 32GB] (rev a1) 
 
 
-![]($share/perltk/tk1.png)
-![]($share/perltk/tk2.png)
+![]($share/perltk/tk1.png$ext)
+![]($share/perltk/tk2.png$ext)
 
   ");
 
@@ -71,13 +72,13 @@ Tested on :
 
       $text .= "## $desc -- $name\n";
 
-      if (-f "$share/test/$name/TEST.gif")
+      if (-f "$share/test/$name/TEST.gif$ext")
         {
-          $text .= "![]($share/test/$name/TEST.gif)\n";
+          $text .= "![]($share/test/$name/TEST.gif$ext)\n";
         }
       else
         {
-          $text .= "![]($share/test/$name/TEST_0000.png)\n";
+          $text .= "![]($share/test/$name/TEST_0000.png$ext)\n";
         }
 
       $text .= "\n";

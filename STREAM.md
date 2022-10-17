@@ -1,5 +1,5 @@
 ## Streamlines on t1198c2.2 (surface) -- stream_t1198c22
-![](raw/master/share/glgrib/test/stream_t1198c22/TEST_0000.png)
+![](blob/master/share/glgrib/test/stream_t1198c22/TEST_0000.png?raw=true)
 
 ```
     --field[0].scale 1.01 --field[0].path 
@@ -17,7 +17,7 @@
     landscape/white.png 
 ```
 ## Streamlines on GLOB025 (high level) -- stream_glob025
-![](raw/master/share/glgrib/test/stream_glob025/TEST_0000.png)
+![](blob/master/share/glgrib/test/stream_glob025/TEST_0000.png?raw=true)
 
 ```
     --field[0].path 
@@ -34,7 +34,7 @@
     --coast.lines.color pink 
 ```
 ## Streamlines on EURAT01 (surface) -- stream_eurat01
-![](raw/master/share/glgrib/test/stream_eurat01/TEST_0000.png)
+![](blob/master/share/glgrib/test/stream_eurat01/TEST_0000.png?raw=true)
 
 ```
     --field[0].path 
@@ -51,7 +51,7 @@
     --coast.lines.color pink --view.lat 45 --view.lon 5 --view.fov 10 
 ```
 ## Streamlines on AROME 2.5km (surface) -- stream_lambert
-![](raw/master/share/glgrib/test/stream_lambert/TEST_0000.png)
+![](blob/master/share/glgrib/test/stream_lambert/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/aro2.5/S090WIND.U.PHYS.grb 
@@ -67,7 +67,7 @@
     --coast.lines.color pink --view.lon 2 --view.lat 46.7 --view.fov 4 
 ```
 ## Lat/lon streamlines -- latlonstream
-![](raw/master/share/glgrib/test/latlonstream/TEST_0000.png)
+![](blob/master/share/glgrib/test/latlonstream/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/advection_850.grib%shortName="u" 
@@ -83,7 +83,7 @@
     --view.projection LATLON --render.width 1200 
 ```
 ## Stream motion -- streammotion
-![](raw/master/share/glgrib/test/streammotion/TEST_0000.png)
+![](blob/master/share/glgrib/test/streammotion/TEST_0000.png?raw=true)
 
 ```
     --field[0].stream.motion.on --field[0].path 

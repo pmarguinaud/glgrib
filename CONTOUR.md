@@ -1,5 +1,5 @@
 ## Medium-res contour and raster, global geometry -- contour_latlon4
-![](raw/master/share/glgrib/test/contour_latlon4/TEST_0000.png)
+![](blob/master/share/glgrib/test/contour_latlon4/TEST_0000.png?raw=true)
 
 ```
     --render.width 1024 --render.height 1024 --field[0].path 
@@ -9,7 +9,7 @@
     --field[1].scale 1.001 
 ```
 ## Low-res contour -- contour1
-![](raw/master/share/glgrib/test/contour1/TEST_0000.png)
+![](blob/master/share/glgrib/test/contour1/TEST_0000.png?raw=true)
 
 ```
     --render.width 1024 --render.height 1024 --landscape.on 
@@ -18,7 +18,7 @@
     --field[0].type CONTOUR 
 ```
 ## Medium-res contour -- contour2
-![](raw/master/share/glgrib/test/contour2/TEST_0000.png)
+![](blob/master/share/glgrib/test/contour2/TEST_0000.png?raw=true)
 
 ```
     --render.width 1024 --render.height 1024 --landscape.on 
@@ -27,7 +27,7 @@
     --field[0].type CONTOUR 
 ```
 ## High-res contour -- contour3
-![](raw/master/share/glgrib/test/contour3/TEST_0000.png)
+![](blob/master/share/glgrib/test/contour3/TEST_0000.png?raw=true)
 
 ```
     --render.width 1024 --render.height 1024 --landscape.on 
@@ -36,7 +36,7 @@
     --field[0].type CONTOUR 
 ```
 ## Contour & raster, Lambert geometry -- contour_aro1
-![](raw/master/share/glgrib/test/contour_aro1/TEST_0000.png)
+![](blob/master/share/glgrib/test/contour_aro1/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/aro_small/S041WIND.U.PHYS.grb 
@@ -46,7 +46,7 @@
     0.5 --coast.on --grid.on 
 ```
 ## Contour & raster, Lambert geometry -- contour_aro2
-![](raw/master/share/glgrib/test/contour_aro2/TEST_0000.png)
+![](blob/master/share/glgrib/test/contour_aro2/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/aro2.5/S090WIND.U.PHYS.grb 
@@ -56,7 +56,7 @@
     --coast.on --grid.on 
 ```
 ## Low-res simple contour, limited area lat/lon geometry -- contour_latlon1
-![](raw/master/share/glgrib/test/contour_latlon1/TEST_0000.png)
+![](blob/master/share/glgrib/test/contour_latlon1/TEST_0000.png?raw=true)
 
 ```
     --render.width 1024 --render.height 1024 --landscape.on 
@@ -65,7 +65,7 @@
     --field[0].type CONTOUR 
 ```
 ## Low-res simple contour, limited area lat/lon geometry -- contour_latlon2
-![](raw/master/share/glgrib/test/contour_latlon2/TEST_0000.png)
+![](blob/master/share/glgrib/test/contour_latlon2/TEST_0000.png?raw=true)
 
 ```
     --render.width 1024 --render.height 1024 --landscape.on 
@@ -74,7 +74,7 @@
     --field[0].type CONTOUR 
 ```
 ## Medium-res contour, limited area lat/lon geometry -- contour_latlon3
-![](raw/master/share/glgrib/test/contour_latlon3/TEST_0000.png)
+![](blob/master/share/glgrib/test/contour_latlon3/TEST_0000.png?raw=true)
 
 ```
     --render.width 1024 --render.height 1024 --landscape.on 
@@ -83,7 +83,7 @@
     1.03 --field[0].type CONTOUR 
 ```
 ## Contour on stretched/rotated gaussian geometry -- contour_stretched
-![](raw/master/share/glgrib/test/contour_stretched/TEST_0000.png)
+![](blob/master/share/glgrib/test/contour_stretched/TEST_0000.png?raw=true)
 
 ```
     --render.width 1024 --render.height 1024 --field[0].path 
@@ -91,7 +91,7 @@
     --field[0].type CONTOUR 
 ```
 ## Contour with dashed lines, gaussian geometry -- dashed1
-![](raw/master/share/glgrib/test/dashed1/TEST_0000.png)
+![](blob/master/share/glgrib/test/dashed1/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.wireframe.on --landscape.grid.path 
@@ -102,7 +102,7 @@
     --field[0].contour.patterns X- --view.fov 5 
 ```
 ## Contour with dashed thick lines, gaussian geometry -- dashed2
-![](raw/master/share/glgrib/test/dashed2/TEST_0000.png)
+![](blob/master/share/glgrib/test/dashed2/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.wireframe.on --landscape.grid.path 
@@ -114,7 +114,7 @@
     --field[0].contour.widths 5 
 ```
 ## Contour with dashed thick colored lines, gaussian geometry -- dashed3
-![](raw/master/share/glgrib/test/dashed3/TEST_0000.png)
+![](blob/master/share/glgrib/test/dashed3/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.wireframe.on --landscape.grid.path 
@@ -126,7 +126,7 @@
     --field[0].contour.widths 5 --field[0].palette.colors red green blue 
 ```
 ## Contour shading -- contour5
-![](raw/master/share/glgrib/test/contour5/TEST_0000.png)
+![](blob/master/share/glgrib/test/contour5/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/t850.grb --field[0].palette-{ 
@@ -143,7 +143,7 @@
     --field[0].palette.linear.on 
 ```
 ## 2m temperature -- contour9
-![](raw/master/share/glgrib/test/contour9/TEST_0000.png)
+![](blob/master/share/glgrib/test/contour9/TEST_0000.png?raw=true)
 
 ```
     --field[0]-{ --path share/glgrib/data/2m_temperature.grib 
@@ -162,7 +162,7 @@
     --view.lon 10 --view.lat 52 --view.fov 3 --view.clip.xmin 0.15 
 ```
 ## Z500, T850 -- z500t850
-![](raw/master/share/glgrib/test/z500t850/TEST_0000.png)
+![](blob/master/share/glgrib/test/z500t850/TEST_0000.png?raw=true)
 
 ```
     --coast.lines.color black --coast.on --colorbar.font.color.foreground 
@@ -186,7 +186,7 @@
     --view.projection POLAR_NORTH --render.width 1200 
 ```
 ## Joachim storm -- joachim
-![](raw/master/share/glgrib/test/joachim/TEST_0000.png)
+![](blob/master/share/glgrib/test/joachim/TEST_0000.png?raw=true)
 
 ```
     --field[0].scale 1.0005 --field[0].path 
@@ -222,7 +222,7 @@
     --view.lon 4 --view.lat 51 --view.fov 3 
 ```
 ## Precipitations Europe -- precipeurope
-![](raw/master/share/glgrib/test/precipeurope/TEST_0000.png)
+![](blob/master/share/glgrib/test/precipeurope/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/total_precipitation.grib --coast.on 
@@ -244,7 +244,7 @@
     --view.clip.xmin 0.15 
 ```
 ## Precipitations Europe (precise, with fixed palette) -- precipfixed
-![](raw/master/share/glgrib/test/precipfixed/TEST_0000.png)
+![](blob/master/share/glgrib/test/precipfixed/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/total_precipitation.grib 
@@ -268,7 +268,7 @@
     black 
 ```
 ## Z500 -- z500europe
-![](raw/master/share/glgrib/test/z500europe/TEST_0000.png)
+![](blob/master/share/glgrib/test/z500europe/TEST_0000.png?raw=true)
 
 ```
     --field[0]-{ --contour.labels.format %5.0f --contour.widths 1 2 1 1 2 
@@ -283,7 +283,7 @@
     --view.projection POLAR_NORTH 
 ```
 ## Temperature, contour, colors -- tempcontour
-![](raw/master/share/glgrib/test/tempcontour/TEST_0000.png)
+![](blob/master/share/glgrib/test/tempcontour/TEST_0000.png?raw=true)
 
 ```
     --field[0].scale 1.001 --field[0].path share/glgrib/data/t850.grib 

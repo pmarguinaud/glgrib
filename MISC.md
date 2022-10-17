@@ -1,5 +1,5 @@
 ## Cities -- cities
-![](blob/master/share/glgrib/test/cities/TEST_0000.png?raw=true)
+![](share/glgrib/test/cities/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --cities.on --cities.points.scale 1.01 
@@ -9,7 +9,7 @@
     --cities.labels.font.bitmap.scale 0.04 
 ```
 ## Enable debug mode -- debug
-![](blob/master/share/glgrib/test/debug/TEST_0000.png?raw=true)
+![](share/glgrib/test/debug/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -17,7 +17,7 @@
     1.03 --render.debug.on 
 ```
 ## Colorbar -- colorbar
-![](blob/master/share/glgrib/test/colorbar/TEST_0000.png?raw=true)
+![](share/glgrib/test/colorbar/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -26,7 +26,7 @@
     --render.width 1000 
 ```
 ## Display French departements -- departements
-![](blob/master/share/glgrib/test/departements/TEST_0000.png?raw=true)
+![](share/glgrib/test/departements/TEST_0000.png?raw=true)
 
 ```
     --departements.on --departements.lines.color blue 
@@ -35,14 +35,14 @@
     --view.lat 46.7 --view.fov 5 --coast.on 
 ```
 ## Test FA format, display sea fraction -- fa
-![](blob/master/share/glgrib/test/fa/TEST_0000.png?raw=true)
+![](share/glgrib/test/fa/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/fa/PGD.t479.fa%SFX.FRAC_SEA 
     --field[0].scale 1.03 
 ```
 ## Image on top of cloud fields -- image
-![](blob/master/share/glgrib/test/image/TEST_0000.png?raw=true)
+![](share/glgrib/test/image/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -52,7 +52,7 @@
     --scene.image.y1 0.1 
 ```
 ## Interpolate field over time -- interpolation
-![](blob/master/share/glgrib/test/interpolation/TEST_0000.png?raw=true)
+![](share/glgrib/test/interpolation/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/interp/01.grb 
@@ -65,20 +65,20 @@
     --render.offscreen.frames 72 
 ```
 ## Display mapscale -- mapscale
-![](blob/master/share/glgrib/test/mapscale/TEST_0000.png?raw=true)
+![](share/glgrib/test/mapscale/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --mapscale.on 
 ```
 ## Display field with missing values -- missingvalue
-![](blob/master/share/glgrib/test/missingvalue/TEST_0000.png?raw=true)
+![](share/glgrib/test/missingvalue/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/t49/SFX.CLAY.grb --coast.on 
     --grid.on --field[0].user_pref.off 
 ```
 ## Display field with keeping field values in RAM -- novalue
-![](blob/master/share/glgrib/test/novalue/TEST_0000.png?raw=true)
+![](share/glgrib/test/novalue/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1798/Z.grb 
@@ -87,7 +87,7 @@
     --field[0].no_value_pointer.on 
 ```
 ## Display field in offscreen mode -- offscreen
-![](blob/master/share/glgrib/test/offscreen/TEST_0000.png?raw=true)
+![](share/glgrib/test/offscreen/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -100,13 +100,13 @@
     --scene.light.rotate.rate 10 
 ```
 ## Display field with options in file -- optionsfile
-![](blob/master/share/glgrib/test/optionsfile/TEST_0000.png?raw=true)
+![](share/glgrib/test/optionsfile/TEST_0000.png?raw=true)
 
 ```
     --{share/glgrib/data/options.list} 
 ```
 ## Select field from GRIB file -- select_grib
-![](blob/master/share/glgrib/test/select_grib/TEST_0000.png?raw=true)
+![](share/glgrib/test/select_grib/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -115,7 +115,7 @@
     --field[0].scale 1.03 
 ```
 ## Low-res ARPEGE resolution -- small
-![](blob/master/share/glgrib/test/small/TEST_0000.png?raw=true)
+![](share/glgrib/test/small/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t49/Z.grb 
@@ -124,7 +124,7 @@
     --field[0].user_pref.off 
 ```
 ## Test travelling option -- travelling
-![](blob/master/share/glgrib/test/travelling/TEST_0000.png?raw=true)
+![](share/glgrib/test/travelling/TEST_0000.png?raw=true)
 
 ```
     --scene.travelling.on --scene.travelling.pos1.lon 0 
@@ -136,7 +136,7 @@
     --render.offscreen.on --render.offscreen.frames 72 
 ```
 ## Zoom with Schmidt transform -- zoomschmidt1
-![](blob/master/share/glgrib/test/zoomschmidt1/TEST_0000.png?raw=true)
+![](share/glgrib/test/zoomschmidt1/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/wind+temp/t1798/S105TEMPERATURE.grb 

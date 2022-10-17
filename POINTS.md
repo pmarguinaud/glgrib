@@ -1,5 +1,5 @@
 ## Gaussian grid wireframe -- gauss_wireframe
-![](blob/master/share/glgrib/test/gauss_wireframe/TEST_0000.png?raw=true)
+![](share/glgrib/test/gauss_wireframe/TEST_0000.png?raw=true)
 
 ```
     --field[0]-{ --path 
@@ -8,7 +8,7 @@
     --view.fov 5 
 ```
 ## Scalar field displayed using points -- points_scalar
-![](blob/master/share/glgrib/test/points_scalar/TEST_0000.png?raw=true)
+![](share/glgrib/test/points_scalar/TEST_0000.png?raw=true)
 
 ```
     --field[0]-{ --path 
@@ -17,7 +17,7 @@
     --size.factor.off }- }- --coast.on --coast.lines.color green 
 ```
 ## Scalar field with points (stretched/rotated grid) -- points_scalar_rot
-![](blob/master/share/glgrib/test/points_scalar_rot/TEST_0000.png?raw=true)
+![](share/glgrib/test/points_scalar_rot/TEST_0000.png?raw=true)
 
 ```
     --field[0]-{ --scale 1.01 --path 
@@ -27,7 +27,7 @@
     --landscape.on 
 ```
 ## Polynesie -- polynesie
-![](blob/master/share/glgrib/test/polynesie/TEST_0000.png?raw=true)
+![](share/glgrib/test/polynesie/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/polynesie/SURFTEMPERATURE.grb 

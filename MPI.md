@@ -1,5 +1,5 @@
 ## Display sphere partitionning (t1198) -- myproc
-![](blob/master/share/glgrib/test/myproc/TEST_0000.png?raw=true)
+![](share/glgrib/test/myproc/TEST_0000.png?raw=true)
 
 ```
     --field[0].scalar.discrete.on --field[0].path 
@@ -11,7 +11,7 @@
     }- --view.lat 36 --view.lon -15 
 ```
 ## Display sphere partitionning (t1192c2.2) -- myproc22
-![](blob/master/share/glgrib/test/myproc22/TEST_0000.png?raw=true)
+![](share/glgrib/test/myproc22/TEST_0000.png?raw=true)
 
 ```
     --field[0].scalar.discrete.on --field[0].path 
@@ -24,7 +24,7 @@
     }- 
 ```
 ## MPI view -- mpiview
-![](blob/master/share/glgrib/test/mpiview/TEST_0000.png?raw=true)
+![](share/glgrib/test/mpiview/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/discrete/SURFTEMPERATURE.grb 
@@ -33,11 +33,11 @@
     --view.lon 31 --view.lat 41 
 ```
 ## MPI halo -- mpihalo
-![](blob/master/share/glgrib/test/mpihalo/TEST_0000.png?raw=true)
+![](share/glgrib/test/mpihalo/TEST_0000.png?raw=true)
 
 ```
-    --field[0].scalar.widen.on --field[0].scalar.widen.values 71.0 8.0 
-    28.0 24.0 2.0 30.0 19.0 47.0 --field[0].scalar.widen.radius 20 
+    --field[0].scalar.widen.on --field[0].scalar.widen.values 75.0 26.0 
+    35.0 18.0 4.0 15.0 54.0 76.0 --field[0].scalar.widen.radius 20 
     --field[0].scalar.discrete.on --field[0].path 
     share/glgrib/data/discrete/MYPROC.grb --field[0].palette.colors green 
     --field[0].scalar.discrete.missing_color black 
@@ -47,7 +47,7 @@
     }- --view.lat 36 --view.lon -15 
 ```
 ## MPI transpositions -- mpitrans
-![](blob/master/share/glgrib/test/mpitrans/TEST_0000.png?raw=true)
+![](share/glgrib/test/mpitrans/TEST_0000.png?raw=true)
 
 ```
     --field[0].scalar.discrete.on --field[0].path 
@@ -59,7 +59,7 @@
     }- --view.lat 36 --view.lon -15 
 ```
 ## MPI halo -- mpihalo1
-![](blob/master/share/glgrib/test/mpihalo1/TEST_0000.png?raw=true)
+![](share/glgrib/test/mpihalo1/TEST_0000.png?raw=true)
 
 ```
     --field[0].scalar.discrete.on --field[0].path 
@@ -77,7 +77,7 @@
     cold_hot_temp }- --view.lat 36 --view.lon -15 
 ```
 ## MPI halo -- mpihalo2
-![](blob/master/share/glgrib/test/mpihalo2/TEST_0000.png?raw=true)
+![](share/glgrib/test/mpihalo2/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/discrete/SURFTEMPERATURE.grb 
@@ -95,7 +95,7 @@
     36 --view.lon -15 
 ```
 ## MPI halo -- mpihalo3
-![](blob/master/share/glgrib/test/mpihalo3/TEST_0000.png?raw=true)
+![](share/glgrib/test/mpihalo3/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/t1798c2.2/SFX.HU2M.grb 

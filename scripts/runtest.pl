@@ -38,7 +38,7 @@ sub readme
   my @t = @test;
   my ($fh, %fh) = ('FileHandle'->new (">README.md"));
 
-  my $share = 'blob/master/share/glgrib';
+  my $share = 'share/glgrib';
   my $ext = '?raw=true';
 
   $fh->print ("

@@ -1,5 +1,5 @@
 ## Display field with palette gradient color -- palette_values_grad
-![](blob/master/share/glgrib/test/palette_values_grad/TEST_0000.png?raw=true)
+![](share/glgrib/test/palette_values_grad/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -10,7 +10,7 @@
     --colorbar.on --render.width 1200 
 ```
 ## Select palette automatically -- bw
-![](blob/master/share/glgrib/test/bw/TEST_0000.png?raw=true)
+![](share/glgrib/test/bw/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -18,7 +18,7 @@
     1.03 
 ```
 ## Display field with discrete palette -- palette_values
-![](blob/master/share/glgrib/test/palette_values/TEST_0000.png?raw=true)
+![](share/glgrib/test/palette_values/TEST_0000.png?raw=true)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 

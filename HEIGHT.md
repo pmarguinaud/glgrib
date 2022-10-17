@@ -1,5 +1,5 @@
 ## Orography (raster & contour) with height -- contour_height
-![](blob/master/share/glgrib/test/contour_height/TEST_0000.png?raw=true)
+![](share/glgrib/test/contour_height/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/t479/Z.grb --field[0].scale 1.005 
@@ -9,7 +9,7 @@
     -16 --view.lon 134 
 ```
 ## Orography with height -- orography_height
-![](blob/master/share/glgrib/test/orography_height/TEST_0000.png?raw=true)
+![](share/glgrib/test/orography_height/TEST_0000.png?raw=true)
 
 ```
     --field[0].path ./share/glgrib/data/t1798/Z.grb 
@@ -17,7 +17,7 @@
     --field[0].geometry.height.on 
 ```
 ## Height = vector norm value -- height_vector
-![](blob/master/share/glgrib/test/height_vector/TEST_0000.png?raw=true)
+![](share/glgrib/test/height_vector/TEST_0000.png?raw=true)
 
 ```
     --field[0].type VECTOR --field[0].path 
@@ -27,7 +27,7 @@
     --field[0].vector.arrow.color red --field[0].palette.name summer 
 ```
 ## Height = scalar norm value -- height_scalar
-![](blob/master/share/glgrib/test/height_scalar/TEST_0000.png?raw=true)
+![](share/glgrib/test/height_scalar/TEST_0000.png?raw=true)
 
 ```
     --field[0].path share/glgrib/data/wind+temp/t0224/S105TEMPERATURE.grb 

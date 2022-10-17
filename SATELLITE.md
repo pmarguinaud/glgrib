@@ -1,5 +1,5 @@
 ## SSMI satellite data -- ssmigeopoints
-![](blob/master/share/glgrib/test/ssmigeopoints/TEST_0000.png?raw=true)
+![](share/glgrib/test/ssmigeopoints/TEST_0000.png?raw=true)
 
 ```
     --geopoints.path share/glgrib/data/geopoints/ssmis_light.nc 
@@ -12,7 +12,7 @@
     --render.width 1200 --view.lat -32.736 --view.lon 41.909 
 ```
 ## SSMI satellite data (polar projection) -- ssmigeopointspolar
-![](blob/master/share/glgrib/test/ssmigeopointspolar/TEST_0000.png?raw=true)
+![](share/glgrib/test/ssmigeopointspolar/TEST_0000.png?raw=true)
 
 ```
     --geopoints.path share/glgrib/data/geopoints/ssmis_light.nc 
@@ -25,7 +25,7 @@
     --view.projection POLAR_NORTH 
 ```
 ## SSMI satellite data (lat/lon) -- ssmigeopointlatlon
-![](blob/master/share/glgrib/test/ssmigeopointlatlon/TEST_0000.png?raw=true)
+![](share/glgrib/test/ssmigeopointlatlon/TEST_0000.png?raw=true)
 
 ```
     --geopoints.path share/glgrib/data/geopoints/ssmis_light.nc 

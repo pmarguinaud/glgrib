@@ -38,8 +38,9 @@ sub readme
   my @t = @test;
   my ($fh, %fh) = ('FileHandle'->new (">README.md"));
 
-  my $share = 'share/glgrib';
-  my $ext = '?raw=true';
+  my $share = './share/glgrib';
+# my $ext = '?raw=true';
+  my $ext = '';
 
   $fh->print ("
 Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, gaussian grid.

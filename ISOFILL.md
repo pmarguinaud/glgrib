@@ -1,5 +1,5 @@
 ## Isofill test -- isofill
-![](share/glgrib/test/isofill/TEST_0000.png?raw=true)
+![](./share/glgrib/test/isofill/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/wind+temp/t1798/S105TEMPERATURE.grb 
@@ -9,7 +9,7 @@
     --render.width 1200 
 ```
 ## Isofill test wireframe -- isofillwire
-![](share/glgrib/test/isofillwire/TEST_0000.png?raw=true)
+![](./share/glgrib/test/isofillwire/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/wind+temp/t1798/S105TEMPERATURE.grb 
@@ -19,7 +19,7 @@
     --view.lon 14.12 --view.fov 0.5 --render.width 1200 
 ```
 ## Isofill temperature -- isofilltemp
-![](share/glgrib/test/isofilltemp/TEST_0000.png?raw=true)
+![](./share/glgrib/test/isofilltemp/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/wind+temp/t1798/S105TEMPERATURE.grb 
@@ -27,7 +27,7 @@
     --colorbar.on --render.width 1200 --coast.on --coast.lines.color black 
 ```
 ## Isofill Lambert -- isofilllambert
-![](share/glgrib/test/isofilllambert/TEST_0000.png?raw=true)
+![](./share/glgrib/test/isofilllambert/TEST_0000.png)
 
 ```
     --landscape.on --field[0].type ISOFILL --field[0].user_pref.off 
@@ -37,7 +37,7 @@
     --render.width 1200 --coast.lines.scale 1.02 --coast.lines.color black 
 ```
 ## Isofill latlon -- isofilllatlon
-![](share/glgrib/test/isofilllatlon/TEST_0000.png?raw=true)
+![](./share/glgrib/test/isofilllatlon/TEST_0000.png)
 
 ```
     --landscape.on --field[0].type ISOFILL --field[0].path 

@@ -1,5 +1,5 @@
 ## Surface temperature, global lat/lon field -- glob01
-![](share/glgrib/test/glob01/TEST_0000.png?raw=true)
+![](./share/glgrib/test/glob01/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/glob01/lfpw_0_0_0_sfc_0_t.grib2 
@@ -7,7 +7,7 @@
     --grid.on 
 ```
 ## Lambert geometry, French Guyana -- guyane
-![](share/glgrib/test/guyane/TEST_0000.png?raw=true)
+![](./share/glgrib/test/guyane/TEST_0000.png)
 
 ```
     --landscape.on --field[0].user_pref.off --field[0].path 
@@ -16,7 +16,7 @@
     5 --view.lon -51 --view.fov 3 --coast.on --grid.on 
 ```
 ## Scalar field on octahedral grid -- gauss_octahedral
-![](share/glgrib/test/gauss_octahedral/TEST_0000.png?raw=true)
+![](./share/glgrib/test/gauss_octahedral/TEST_0000.png)
 
 ```
     --field[0].path ./share/glgrib/data/ecmwf/ecmf_0_1_0_ml_137_q.grib2 
@@ -24,7 +24,7 @@
     0.005 0.03 --colorbar.on --render.width 1200 
 ```
 ## SST on lat/lon grid -- sst
-![](share/glgrib/test/sst/TEST_0000.png?raw=true)
+![](./share/glgrib/test/sst/TEST_0000.png)
 
 ```
     --field[0].scale 1.001 --field[0].path share/glgrib/data/sst.grib 
@@ -39,14 +39,14 @@
     --view.fov 13 --grid.color gray 
 ```
 ## Old ARPEGE -- oldarpege
-![](share/glgrib/test/oldarpege/TEST_0000.png?raw=true)
+![](./share/glgrib/test/oldarpege/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/arpege.123.fa%SURFTEMPERATURE 
     --scene.date.on --scene.date.font.bitmap.scale 0.03 
 ```
 ## Simple shading -- shading
-![](share/glgrib/test/shading/TEST_0000.png?raw=true)
+![](./share/glgrib/test/shading/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/t850.grb --field[0].palette.values 
@@ -61,7 +61,7 @@
     --view.lon 20 
 ```
 ## Rain, southern America -- southamerica
-![](share/glgrib/test/southamerica/TEST_0000.png?raw=true)
+![](./share/glgrib/test/southamerica/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/total_precipitation.grib 
@@ -74,7 +74,7 @@
     --view.lon -60.4499 --grid.on --grid.color black 
 ```
 ## Temperature with fixed palette -- fixedpaltemp
-![](share/glgrib/test/fixedpaltemp/TEST_0000.png?raw=true)
+![](./share/glgrib/test/fixedpaltemp/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/wind+temp/t0224/S105TEMPERATURE.grb 
@@ -85,7 +85,7 @@
     --coast.lines.color black 
 ```
 ## Temperature with fixed palette (smooth) -- fixedpalscalsmooth
-![](share/glgrib/test/fixedpalscalsmooth/TEST_0000.png?raw=true)
+![](./share/glgrib/test/fixedpalscalsmooth/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/wind+temp/t0224/S105TEMPERATURE.grb 
@@ -95,7 +95,7 @@
     --coast.lines.color black --field[0].scalar.smooth.on 
 ```
 ## Temperature with fixed palette (rough) -- fixedpalscalrough
-![](share/glgrib/test/fixedpalscalrough/TEST_0000.png?raw=true)
+![](./share/glgrib/test/fixedpalscalrough/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/wind+temp/t0224/S105TEMPERATURE.grb 
@@ -105,7 +105,7 @@
     --coast.lines.color black 
 ```
 ## Display field in offscreen mode city lights -- citylight
-![](share/glgrib/test/citylight/TEST_0000.png?raw=true)
+![](./share/glgrib/test/citylight/TEST.gif)
 
 ```
     --landscape.on --render.offscreen.on --render.offscreen.frames 36 

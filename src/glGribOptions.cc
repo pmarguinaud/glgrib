@@ -867,6 +867,7 @@ OptionsParser::filterOptions
         if ((! show_hidden) && (opt0->hidden))
           continue;
 
+
         if (p1 != nullptr)
           {
             auto it1 = p1->name2option.find (it0->first);

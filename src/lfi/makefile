@@ -1,5 +1,7 @@
 TOP=../..
 
+include $(TOP)/makefile.inc
+
 CFLAGS=-fPIC -O2 
 
 all: $(TOP)/lib/libLFI.so $(TOP)/lib/libLFI.a

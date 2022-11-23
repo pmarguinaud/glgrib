@@ -3,15 +3,10 @@ use ExtUtils::MakeMaker;
 
 my $prefix = "$ENV{HOME}/3d/glgrib";
 
-my $NETCDF_PREFIX  = "/home/marguina/install/netcdf-c-4.7.4";
-my $ECCODES_PREFIX = "/home/marguina/install/eccodes-2.14.0";
-
 my $USE_EGL = 0;
 
 my @lib = $USE_EGL ? qw (-lEGL -lgbm) : qw (-lGLEW -lglfw);
 my @def = $USE_EGL ? '-DUSE_EGL' : '-DUSE_GLFW';
-
-my @L = ("$prefix/lib", "$NETCDF_PREFIX/lib", "$ECCODES_PREFIX/lib");
 
 &WriteMakefile
 (
@@ -25,8 +20,8 @@ my @L = ("$prefix/lib", "$NETCDF_PREFIX/lib", "$ECCODES_PREFIX/lib");
   DEFINE            => "-DGLGRIB_PREFIX='\"$prefix\"' @def", 
   INC               => '-I. -I..', 
   OBJECT            => 'glGrib.o',
-  LIBS              => join (' ', map { "-L$_ -Wl,-rpath,$_" } @L) .
-                       ' -lglGrib -lLFI -lGL ' . join (' ', @lib) . ' -lpng -lreadline -lncurses ' .
+  LIBS              => "-L$prefix/lib -Wl,-rpath,$prefix/lib " .
+                       '-lglGrib -lLFI -lGL ' . join (' ', @lib) . ' -lpng -lreadline -lncurses ' .
                        '-ltinfo -lssl -lcrypto -lpthread -lsqlite3 -lcurl ' .
                        '-lshp -leccodes -lnetcdf_c++4',
 );

@@ -109,7 +109,7 @@ void ShellRegular::process_window (const std::vector<std::string> & args, Render
   if (getList ().size () > 0)
     {
       std::cout << "Window list:" << std::endl;
-      for (const auto id : getList ())
+      for (const auto & id : getList ())
         std::cout << (std::to_string (getWindowId ()) == id ? " > " : "   ") << id << std::endl;
     }
 }

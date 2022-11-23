@@ -4,5 +4,6 @@ Makefile.PL
 MANIFEST
 ppport.h
 README
-t/glGrib.t
 lib/glGrib.pm
+t/offline.t
+t/window.t

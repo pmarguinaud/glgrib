@@ -1,8 +1,7 @@
 #include "glGribGeometryLambert.h"
+#include "glGribMD5.h"
 
 #include <cmath>
-
-#include <openssl/md5.h>
 
 #include <iostream>
 #include <stdexcept>
@@ -238,22 +237,19 @@ void GeometryLambert::index2latlon (int jglo, float * lat, float * lon) const
 
 const std::string GeometryLambert::md5 () const
 {
-  unsigned char out[MD5_DIGEST_LENGTH];
-  MD5_CTX c;
-  MD5_Init (&c);
+  glGrib::MD5 ctx;
 
-  MD5_Update (&c, &grid_lambert.Nx, sizeof (grid_lambert.Nx));
-  MD5_Update (&c, &grid_lambert.Ny, sizeof (grid_lambert.Ny));
-  MD5_Update (&c, &misc_lambert.Nux, sizeof (misc_lambert.Nux));
-  MD5_Update (&c, &misc_lambert.Nuy, sizeof (misc_lambert.Nuy));
-  MD5_Update (&c, &misc_lambert.projectionCentreFlag, sizeof (misc_lambert.projectionCentreFlag));
-  MD5_Update (&c, &misc_lambert.LaDInDegrees, sizeof (misc_lambert.LaDInDegrees));
-  MD5_Update (&c, &misc_lambert.LoVInDegrees, sizeof (misc_lambert.LoVInDegrees));
-  MD5_Update (&c, &misc_lambert.DxInMetres, sizeof (misc_lambert.DxInMetres));
-  MD5_Update (&c, &misc_lambert.DyInMetres, sizeof (misc_lambert.DyInMetres));
-  MD5_Final (out, &c);
+  ctx.update (&grid_lambert.Nx, sizeof (grid_lambert.Nx));
+  ctx.update (&grid_lambert.Ny, sizeof (grid_lambert.Ny));
+  ctx.update (&misc_lambert.Nux, sizeof (misc_lambert.Nux));
+  ctx.update (&misc_lambert.Nuy, sizeof (misc_lambert.Nuy));
+  ctx.update (&misc_lambert.projectionCentreFlag, sizeof (misc_lambert.projectionCentreFlag));
+  ctx.update (&misc_lambert.LaDInDegrees, sizeof (misc_lambert.LaDInDegrees));
+  ctx.update (&misc_lambert.LoVInDegrees, sizeof (misc_lambert.LoVInDegrees));
+  ctx.update (&misc_lambert.DxInMetres, sizeof (misc_lambert.DxInMetres));
+  ctx.update (&misc_lambert.DyInMetres, sizeof (misc_lambert.DyInMetres));
 
-  return md5string (out);
+  return ctx.asString ();
 }
 
 bool GeometryLambert::isEqual (const Geometry & geom) const

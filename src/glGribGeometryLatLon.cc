@@ -1,9 +1,8 @@
 #include "glGribGeometryLatLon.h"
 #include "glGribTrigonometry.h"
+#include "glGribMD5.h"
 
 #include <cmath>
-
-#include <openssl/md5.h>
 
 #include <iostream>
 #include <stdexcept>
@@ -261,24 +260,20 @@ void GeometryLatLon::index2latlon (int jglo, float * lat, float * lon) const
 
 const std::string GeometryLatLon::md5 () const
 {
-  unsigned char out[MD5_DIGEST_LENGTH];
-  MD5_CTX c;
-  MD5_Init (&c);
+  glGrib::MD5 ctx;
 
-  MD5_Update (&c, &grid_latlon.Ni, sizeof (grid_latlon.Ni));
-  MD5_Update (&c, &grid_latlon.Nj, sizeof (grid_latlon.Nj));
-  MD5_Update (&c, &misc_latlon.latitudeOfFirstGridPointInDegrees  , 
+  ctx.update (&grid_latlon.Ni, sizeof (grid_latlon.Ni));
+  ctx.update (&grid_latlon.Nj, sizeof (grid_latlon.Nj));
+  ctx.update (&misc_latlon.latitudeOfFirstGridPointInDegrees  , 
               sizeof (misc_latlon.latitudeOfFirstGridPointInDegrees ));
-  MD5_Update (&c, &misc_latlon.longitudeOfFirstGridPointInDegrees , 
+  ctx.update (&misc_latlon.longitudeOfFirstGridPointInDegrees , 
               sizeof (misc_latlon.longitudeOfFirstGridPointInDegrees));
-  MD5_Update (&c, &misc_latlon.latitudeOfLastGridPointInDegrees   , 
+  ctx.update (&misc_latlon.latitudeOfLastGridPointInDegrees   , 
               sizeof (misc_latlon.latitudeOfLastGridPointInDegrees  ));
-  MD5_Update (&c, &misc_latlon.longitudeOfLastGridPointInDegrees  , 
+  ctx.update (&misc_latlon.longitudeOfLastGridPointInDegrees  , 
               sizeof (misc_latlon.longitudeOfLastGridPointInDegrees ));
-  MD5_Final (out, &c);
 
-
-  return md5string (out);
+  return ctx.asString ();
 }
 
 bool GeometryLatLon::isEqual (const Geometry & geom) const

@@ -21,6 +21,7 @@ use Tk::glGribDATE;
 use Tk::glGribFIELDREF;
 use Tk::glGribFIELDTYPE;
 use Tk::glGribFLOAT;
+use Tk::glGribANGLE;
 use Tk::glGribINTEGER;
 use Tk::glGribLATITUDE;
 use Tk::glGribLIST;

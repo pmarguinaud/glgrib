@@ -360,7 +360,7 @@ void Shell::do_json (const std::vector<std::string> & args, Render * gwindow)
       OptionsParser * pB, 
       const std::string a)
   {
-    listStr.push_back (pA->getJSON (a, true, true, pB));
+    listStr.push_back (pA->getJSON (a, true, false, pB));
   });
 }
 
@@ -372,7 +372,7 @@ void Shell::do_get (const std::vector<std::string> & args, Render * gwindow)
       OptionsParser * pB, 
       const std::string a)
   {
-    pA->getValue (&listStr, a, true, true, pB);
+    pA->getValue (&listStr, a, true, false, pB);
   });
 }
 

@@ -13,6 +13,7 @@ sub populate
   $self->{glGrib} = delete $args->{glGrib};
   
   my $opts = $self->{glGrib}{opts};
+
   $self->saveOpts ();
 
   my $frame = $self->Scrolled ('Frame', -width => 400, -height => 400, -scrollbars => 'e', -sticky => 'nswe')->pack (-expand => 1, -fill => 'both');

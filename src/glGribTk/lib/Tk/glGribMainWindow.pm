@@ -113,7 +113,7 @@ sub createPanel
         {
           $opts =
           &Tk::glGrib::json2tree 
-            (&JSON::decode_json ('glGrib'->json ("--$name")));
+            (&JSON::decode_json ('glGrib'->json ("--$name.")));
           $opts = $opts->[1];
 	  $self->{glGrib}{base}[$i+1] = $opts;
           last;

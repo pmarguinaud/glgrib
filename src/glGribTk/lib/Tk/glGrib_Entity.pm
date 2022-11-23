@@ -8,7 +8,7 @@ sub getOptions
 {
   my $self = shift;
   &Tk::glGrib::json2tree 
-    (&JSON::decode_json ('glGrib'->json (@_, "--$self->{glGrib}{name}")));
+    (&JSON::decode_json ('glGrib'->json (@_, "--$self->{glGrib}{name}.")));
 }
 
 sub Apply
@@ -16,6 +16,7 @@ sub Apply
   my $self = shift; 
 
   my $opts = $self->getOptions ();
+
   my @diff = &Tk::glGrib::diffOptions 
                ($opts, $self->{glGrib}{opts});
   'glGrib'->set (@diff);

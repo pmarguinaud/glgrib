@@ -248,7 +248,6 @@ sub create
 {
   my ($win, $name, $opts, $default, @args) = @_;
 
-
   my $class = 'glGrib' . ucfirst ($name);
   $class =~ s/[^a-z]+$//io;
   $class =~ s{_(\w)}{uc ($1)}egoms;

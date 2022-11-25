@@ -276,7 +276,7 @@ void glGrib::Container::remove (glGrib::Container * cont)
 
 glGrib::Container * glGrib::Container::create (const std::string & file, bool keep)
 {
-  glGrib::Container * cont = contCache.get (file);
+  glGrib::Container * cont = keep ? contCache.get (file) : nullptr;
 
   if (cont == nullptr)
     {

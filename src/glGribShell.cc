@@ -322,6 +322,10 @@ void getopts
 {
   Options opts0 = gwindow->getScene ().getOptions ();
   OptionsParser p0;
+
+  // Get rendering options from current window
+
+  opts0.render = gwindow->getOptions ();
   opts0.traverse ("", &p0);
 
   if ((args.size () > 1) && (args[1] == "+diff"))

@@ -3,12 +3,16 @@
 set -x
 set -e
 
+UBUNTU=22.04
+
 export DEBEMAIL="pmarguinaud@hotmail.com"
 export DEBFULLNAME="Philippe Marguinaud"
 
+pwd=$PWD
 
-dir=glgrib_1.0-1_amd64
-dird=glgrib-data_1.0-1_amd64
+
+dir=$UBUNTU/glgrib_1.0-1_amd64
+dird=$UBUNTU/glgrib-data_1.0-1_amd64
 
 mkdir -p $dir $dird
 
@@ -77,7 +81,7 @@ cat depends.txt >> debian/control
 
 mv debian DEBIAN
 
-cd ..
+cd $pwd
 
 fi
 
@@ -96,10 +100,12 @@ Description: Display GRIB data with OpenGL.
  More info at https://github.com/pmarguinaud/glgrib.
 EOF
 
-cd ..
+cd $pwd
 
 if [ 1 -eq 1 ]
 then
+
+cd $UBUNTU
 
 dpkg-deb --build --root-owner-group glgrib_1.0-1_amd64 
 dpkg-deb --build --root-owner-group glgrib-data_1.0-1_amd64 

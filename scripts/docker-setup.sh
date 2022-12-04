@@ -4,9 +4,12 @@
 set -x
 set -e
 
+UBUNTU=20.04
+VERSION=1.0-1
+
 if [ 1 -eq 1 ]
 then
-sudo docker pull ubuntu:latest
+sudo docker pull ubuntu:$UBUNTU
 
 SSHKEY=$(cat $HOME/.ssh/id_rsa.pub)
 
@@ -40,8 +43,8 @@ EOC
 chmod 600 $HOME/.ssh/authorized_keys
 chown $USER:users $HOME/.ssh/authorized_keys
 
-apt-get -y install ./glgrib_1.0-1_amd64.deb
-apt-get -y install ./glgrib-data_1.0-1_amd64.deb
+apt-get -y install ./$UBUNTU/glgrib_${VERSION}_amd64.deb
+apt-get -y install ./$UBUNTU/glgrib-data_${VERSION}_amd64.deb
 
 ldd /usr/bin/glgrib
 
@@ -51,7 +54,7 @@ chmod +x glgrib.sh
 
 sudo docker run -t -d --name ubuntu_glgrib \
   --mount type=bind,src=$PWD/,dst=/root/glgrib,readonly=true \
-  ubuntu:latest
+  ubuntu:$UBUNTU
 
 sudo docker exec ubuntu_glgrib /root/glgrib/glgrib.sh
 

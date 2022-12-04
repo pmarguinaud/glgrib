@@ -29,7 +29,7 @@ do
   make BUILD=$BUILD
 
   rm lib/libLFI.a
-  chrpath -d bin/*
+  patchelf --remove-rpath bin/*
 
   ss bin $dir/usr/bin
   ss lib $dir/lib/x86_64-linux-gnu

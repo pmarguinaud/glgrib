@@ -21,7 +21,7 @@ function ss ()
   cp -alf $src/* $dst
 }
 
-if [ 0 -eq 1 ]
+if [ 1 -eq 1 ]
 then
 
 for BUILD in "" batch
@@ -52,7 +52,7 @@ fi
 
 ss share/glgrib/data $dird/share/glgrib/data
 
-if [ 0 -eq 1 ]
+if [ 1 -eq 1 ]
 then
 
 cd $dir
@@ -98,7 +98,7 @@ EOF
 
 cd ..
 
-if [ 0 -eq 1 ]
+if [ 1 -eq 1 ]
 then
 
 dpkg-deb --build --root-owner-group glgrib_1.0-1_amd64 

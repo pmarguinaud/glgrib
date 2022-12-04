@@ -1,35 +1,31 @@
+ifeq ($(BUILD), )
+SUFFIX=
+endif
+
+ifeq ($(BUILD), batch)
+SUFFIX=-batch
+endif
 
 PREFIX=$(HOME)/3d/glgrib
 
-LDFLAGS_GLFW=-lGLEW -lGL -lglfw
-LDFLAGS_EGL=-lEGL -lGL -lgbm
 
-NETCDF_PREFIX=/home/marguina/install/netcdf-c-4.7.4
-ECCODES_PREFIX=/home/marguina/install/eccodes-2.14.0
-SQLITE3_PREFIX=/home/marguina/install/sqlite-3.34.0
-USR_PREFIX=/home/marguina/3d/usr
-
-# -L$(NETCDF_PREFIX)/lib -Wl,-rpath,$(NETCDF_PREFIX)/lib -lnetcdf_c++4 -lnetcdf \
-# -L$(ECCODES_PREFIX)/lib -Wl,-rpath,$(ECCODES_PREFIX)/lib -leccodes \
-
-LDFLAGS=-fopenmp -lglGrib -L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib \
+LDFLAGS=-fopenmp -lglGrib$(SUFFIX) -L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib \
         -lLFI -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto -lpthread \
-        -L$(SQLITE3_PREFIX)/lib -Wl,-rpath,$(SQLITE3_PREFIX)/lib -lsqlite3 -lcurl -lshp \
-        -lnetcdf_c++4 -lnetcdf \
-        -leccodes \
-	-L$(USR_PREFIX)/lib64
+        -lsqlite3 -lcurl -lshp -leccodes -lnetcdf_c++4 -lnetcdf
 
-# -I$(NETCDF_PREFIX)/include 
-# -I$(ECCODES_PREFIX)/include 
-
-CXXFLAGS_BASE=-fPIC -fopenmp -std=c++11 -Wall -I$(SQLITE3_PREFIX)/include -I$(USR_PREFIX)/include
+CXXFLAGS_BASE=-fPIC -fopenmp -std=c++11 -Wall 
 
 CXXFLAGS=$(CXXFLAGS_BASE) -O0 -g -DGLGRIB_CHECK_BOUNDS
 CXXFLAGS=$(CXXFLAGS_BASE) -O2 
 
-#CXXFLAGS+=-DGLGRIB_USE_EGL -DGLGRIB_USE_GBM
-#LDFLAGS+=$(LDFLAGS_EGL)
+ifeq ($(BUILD), )
+LDFLAGS_GLFW=-lGLEW -lGL -lglfw
 CXXFLAGS+=-DGLGRIB_USE_GLFW
 LDFLAGS+=$(LDFLAGS_GLFW)
+endif
 
-
+ifeq ($(BUILD), batch)
+LDFLAGS_EGL=-lEGL -lGL -lgbm
+CXXFLAGS+=-DGLGRIB_USE_EGL
+LDFLAGS+=$(LDFLAGS_EGL)
+endif

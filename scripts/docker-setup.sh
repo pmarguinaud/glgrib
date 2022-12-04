@@ -57,7 +57,6 @@ sudo docker exec ubuntu_glgrib /root/glgrib/glgrib.sh
 
 IP=$(sudo docker inspect -f "{{ .NetworkSettings.IPAddress }}" ubuntu_glgrib)
 ssh-keygen -f "$HOME/.ssh/known_hosts" -R $IP
-
-ssh -o StrictHostKeyChecking=no -X 172.17.0.2 /usr/bin/glgrib --landscape.on
+ssh -o StrictHostKeyChecking=no -X $IP /usr/bin/glgrib --landscape.on
 
 fi

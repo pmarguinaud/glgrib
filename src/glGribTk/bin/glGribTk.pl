@@ -1,14 +1,12 @@
+#!/usr/bin/perl -w
 
 use strict;
 use warnings;
 
-
-use FindBin qw ($Bin);
-
 use Tk;
 use Tk::glGribMainWindow;
 
-$ENV{GLGRIB_PREFIX} = "$Bin/../..";
+$ENV{GLGRIB_PREFIX} ||= "/usr";
 
 my $main = 'Tk::glGribMainWindow'->new (-opts => \@ARGV);
 

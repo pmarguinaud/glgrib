@@ -91,7 +91,10 @@ sub populate
   $ftop->bind ('<MouseWheel>', [sub { $_[0]->yview('scroll',-($_[1]/120)*3,'units') }, &Tk::Ev ("D")]);
 
   $get->execute ();
-  $get->bind_columns (\my ($name, $hexa));
+
+  my ($name, $hexa);
+
+  $get->bind_columns (\($name, $hexa));
 
   my ($col, $row) = (0, 0);
 
@@ -99,7 +102,7 @@ sub populate
 
 
   $get->execute ();
-  $get->bind_columns (\my ($name, $hexa));
+  $get->bind_columns (\($name, $hexa));
   
   
   while ($get->fetch ())

@@ -12,6 +12,7 @@ use Tk::Pane;
 
 use Tk::glGrib_Frame;
 use Tk::glGrib_Entry;
+use Tk::glGrib_Popup;
 
 use Tk::glGribField;
 

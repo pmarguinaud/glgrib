@@ -4,8 +4,8 @@ use tkbase qw (Tk::Frame);
 use tkbaselist (width => 4);
 use strict;
 
-use Tk::ColorPicker;
-use Tk::ColorPickerDB;
+use Tk::glGribColorPicker;
+use Tk::glGribColorPickerDB;
 
 sub eq
 {
@@ -62,8 +62,8 @@ sub getRGB
 {
   my ($self, $db) = @_;
   my $picker = $db
-             ? 'Tk::ColorPickerDB'->new (-db => 'glGrib'->resolve ('glGrib.db'))
-             : 'Tk::ColorPicker'->new (-color => ${ $self->{variable} });
+             ? 'Tk::glGribColorPickerDB'->new (-db => 'glGrib'->resolve ('glGrib.db'))
+             : 'Tk::glGribColorPicker'->new (-color => ${ $self->{variable} });
   my $color = $picker->Show ();
 
   $picker->destroy ();

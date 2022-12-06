@@ -43,7 +43,7 @@ sub setImage
 {
   my $self = shift;
 
-  my $image20 = &Tk::PalettePickerDB::getPaletteGif ($self, ${$self->{variable}});
+  my $image20 = &Tk::glGribPalettePickerDB::getPaletteGif ($self, ${$self->{variable}});
 
   if ($image20)
     {
@@ -58,12 +58,12 @@ sub setImage
 sub choosePalette
 {
   my $self = shift;
-  use Tk::PalettePickerDB;
+  use Tk::glGribPalettePickerDB;
 
   my $db = 'glGrib'->resolve ('glGrib.db');
 
   my $pick = 
-    'Tk::PalettePickerDB'->new (-db => $db, 
+    'Tk::glGribPalettePickerDB'->new (-db => $db, 
      -palette => ${$self->{variable}}, -title => 'Palette');
 
   ${$self->{variable}} = $pick->Show ();

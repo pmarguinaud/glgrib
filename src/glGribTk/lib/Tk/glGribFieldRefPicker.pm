@@ -1,4 +1,4 @@
-package Tk::FieldRefPicker;
+package Tk::glGribFieldRefPicker;
 
 use strict;
 

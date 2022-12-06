@@ -1,4 +1,4 @@
-package Tk::gGribTextOptions;
+package Tk::glGribTextOptions;
 
 use strict;
 

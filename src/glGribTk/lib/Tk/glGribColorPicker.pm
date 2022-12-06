@@ -91,7 +91,7 @@ sub populate
     ->pack (-side => 'top', -expand => 1, -fill => 'x');
 
 
-  @{$self}{qw (r g b)} = map { hex ($_) } (($color || '#000000') 
+  @{$self}{qw (r g b)} = map { hex ($_) } (($color || '#00000000') 
                          =~ m/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?$/goms);
 
   for (qw (r g b))

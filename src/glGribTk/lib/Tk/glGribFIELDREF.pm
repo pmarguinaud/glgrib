@@ -80,9 +80,9 @@ sub selectField
     }
   else
     {
-      use Tk::FieldRefPicker;
+      use Tk::glGribFieldRefPicker;
 
-      my $select = $self->FieldRefPicker (-refs => \@r);
+      my $select = $self->glGribFieldRefPicker (-refs => \@r);
 
       my $ref = $select->Show ();
       

@@ -3,4 +3,4 @@
 
 export GLGRIB_PREFIX=../..
 
-perl -Mblib=../perl -Mblib bin/glGribTk.pl $*
+perl -Mblib=../perl -Mblib bin/glgribtk $*

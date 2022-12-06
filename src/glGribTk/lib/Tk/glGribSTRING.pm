@@ -1,7 +1,7 @@
 package Tk::glGribSTRING;
 
-use tkbase qw (Tk::glGrib_Entry);
-use tkbaselist;
+use Tk::glGribBase qw (Tk::glGrib_Entry);
+use Tk::glGribBaselist;
 
 sub eq
 {

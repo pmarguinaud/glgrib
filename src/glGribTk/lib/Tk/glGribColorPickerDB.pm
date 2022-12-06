@@ -1,6 +1,6 @@
 package Tk::glGribColorPickerDB;
 
-use tkbase qw (Tk::Toplevel);
+use Tk::glGribBase qw (Tk::Toplevel);
 
 use DBI;
 use Tk;

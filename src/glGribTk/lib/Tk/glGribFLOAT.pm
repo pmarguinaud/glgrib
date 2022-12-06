@@ -1,7 +1,7 @@
 package Tk::glGribFLOAT;
 
-use tkbase qw (Tk::glGrib_Entry);
-use tkbaselist (width => 4);
+use Tk::glGribBase qw (Tk::glGrib_Entry);
+use Tk::glGribBaselist (width => 4);
 
 sub eq
 {

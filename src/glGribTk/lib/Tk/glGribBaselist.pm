@@ -1,4 +1,4 @@
-package tkbaselist;
+package Tk::glGribBaselist;
 
 use strict;
 use Tk::glGribLIST;
@@ -16,7 +16,7 @@ sub import
   my $code = << "EOF";
 package ${class}LIST;
 
-use tkbase qw (Tk::glGribLIST);
+use Tk::glGribBase qw (Tk::glGribLIST);
 
 sub class
 {

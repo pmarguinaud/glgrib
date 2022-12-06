@@ -1,7 +1,7 @@
 package Tk::glGribCOLOR;
 
-use tkbase qw (Tk::Frame);
-use tkbaselist (width => 4);
+use Tk::glGribBase qw (Tk::Frame);
+use Tk::glGribBaselist (width => 4);
 use strict;
 
 use Tk::glGribColorPicker;

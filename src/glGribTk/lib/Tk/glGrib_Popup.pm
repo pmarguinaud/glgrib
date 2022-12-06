@@ -2,7 +2,7 @@ package Tk::glGrib_Popup;
 
 use Tk;
 
-use tkbase qw (Tk::Frame);
+use Tk::glGribBase qw (Tk::Frame);
 use strict;
 
 sub list

@@ -2,7 +2,7 @@ package Tk::glGrib_Panel;
 
 use Tk;
 
-use tkbase qw (Tk::Toplevel);
+use Tk::glGribBase qw (Tk::Toplevel);
 use base qw (Tk::glGrib_Entity);
 use strict;
 

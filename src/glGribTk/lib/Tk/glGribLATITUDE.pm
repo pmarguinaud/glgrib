@@ -1,5 +1,5 @@
 package Tk::glGribLATITUDE;
 
-use tkbase qw (glGribANGLE);
+use Tk::glGribBase qw (glGribANGLE);
 
 1;

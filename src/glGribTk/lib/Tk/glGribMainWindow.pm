@@ -1,7 +1,7 @@
 package Tk::glGribMainWindow;
 
 use Tk;
-use tkbase qw (Tk::MainWindow);
+use Tk::glGribBase qw (Tk::MainWindow);
 use strict;
 
 use glGrib;

@@ -3,7 +3,7 @@ package Tk::glGrib_Frame;
 use Tk;
 use Tk::Font;
 
-use tkbase qw (Tk::Frame);
+use Tk::glGribBase qw (Tk::Frame);
 use strict;
 
 sub populate 

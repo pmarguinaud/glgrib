@@ -2,7 +2,7 @@ package Tk::glGribTextOptions;
 
 use strict;
 
-use tkbase qw (Tk::Toplevel);
+use Tk::glGribBase qw (Tk::Toplevel);
 
 sub escape
 {

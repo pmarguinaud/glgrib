@@ -31,5 +31,5 @@ lib/Tk/glGribSTRING.pm
 bin/glgribtk
 Changes
 Makefile.PL
-lib/tkbaselist.pm
-lib/tkbase.pm
+lib/Tk/glGribBaselist.pm
+lib/Tk/glGribBase.pm

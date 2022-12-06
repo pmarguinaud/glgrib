@@ -1,4 +1,4 @@
-package tkbase;
+package Tk::glGribBase;
 
 use strict;
 

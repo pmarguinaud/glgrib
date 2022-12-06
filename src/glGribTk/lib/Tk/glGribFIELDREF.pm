@@ -3,8 +3,8 @@ package Tk::glGribFIELDREF;
 use Tk;
 use Tk::FileSelect;
 
-use tkbase qw (Tk::Frame);
-use tkbaselist;
+use Tk::glGribBase qw (Tk::Frame);
+use Tk::glGribBaselist;
 use strict;
 
 sub eq

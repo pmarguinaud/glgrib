@@ -4,7 +4,7 @@ package Tk::glGribFIELDTYPE;
 use Tk;
 
 use strict;
-use tkbase qw (Tk::Frame);
+use Tk::glGribBase qw (Tk::Frame);
 
 sub eq
 {

@@ -4,7 +4,7 @@ use strict;
 
 use POSIX qw (fmod);
 
-use tkbase qw (Tk::Toplevel);
+use Tk::glGribBase qw (Tk::Toplevel);
 
 sub min { return $_[0] < $_[1] ? $_[0] : $_[1]; }
 sub max { return $_[0] > $_[1] ? $_[0] : $_[1]; }

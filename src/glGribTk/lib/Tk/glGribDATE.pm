@@ -1,6 +1,6 @@
 package Tk::glGribDATE;
 
-use tkbase qw (Tk::glGrib_Entry);
+use Tk::glGribBase qw (Tk::glGrib_Entry);
 
 sub eq
 {

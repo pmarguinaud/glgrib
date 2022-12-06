@@ -1,7 +1,8 @@
-use 5.024000;
+use 5.016000;
 use ExtUtils::MakeMaker;
 
-my $prefix = "$ENV{HOME}/3d/glgrib";
+my $prefix = $ENV{GLGRIB_PREFIX} || "$ENV{HOME}/3d/glgrib";
+my $libdir = $ENV{GLGRIB_LIBDIR} || "$ENV{HOME}/3d/glgrib";
 
 my $USE_EGL = 0;
 
@@ -20,7 +21,7 @@ my @def = $USE_EGL ? '-DUSE_EGL' : '-DUSE_GLFW';
   DEFINE            => "-DGLGRIB_PREFIX='\"$prefix\"' @def", 
   INC               => '-I. -I..', 
   OBJECT            => 'glGrib.o',
-  LIBS              => "-L$prefix/lib -Wl,-rpath,$prefix/lib " .
+  LIBS              => "-L$libdir/lib -Wl,-rpath,$libdir/lib " .
                        '-lglGrib -lLFI -lGL ' . join (' ', @lib) . ' -lpng -lreadline -lncurses ' .
                        '-ltinfo -lssl -lcrypto -lpthread -lsqlite3 -lcurl ' .
                        '-lshp -leccodes -lnetcdf_c++4',

@@ -4,7 +4,7 @@
 set -x
 set -e
 
-UBUNTU=20.04
+UBUNTU=22.04
 VERSION=1.0-1
 
 if [ 1 -eq 1 ]
@@ -45,6 +45,7 @@ chown $USER:users $HOME/.ssh/authorized_keys
 
 apt-get -y install ./$UBUNTU/glgrib_${VERSION}_amd64.deb
 apt-get -y install ./$UBUNTU/glgrib-data_${VERSION}_amd64.deb
+apt-get -y install ./$UBUNTU/glgrib-perl_${VERSION}_amd64.deb
 
 ldd /usr/bin/glgrib
 

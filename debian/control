@@ -2,7 +2,7 @@ Source: glgrib
 Maintainer: Philippe Marguinaud <pmarguinaud@hotmail.com>
 Section: misc
 Priority: optional
-Standards-Version: 3.9.2
+Standards-Version: 4.5.1
 Build-Depends: g++ (>= 4:10.2.1), libcurl4-openssl-dev (>= 7.74.0), libeccodes-dev (>= 2.20.0), libegl-dev (>= 1.3.2), libglew-dev (>= 2.1.0), libglfw3-dev (>= 3.3.2), libglm-dev (>= 0.9.9.8+ds), libnetcdf-c++4-dev (>= 4.3.1), libpng-dev (>= 1.6.37), libreadline-dev (>= 8.1), libshp-dev (>= 1.5.0), libsqlite3-dev (>= 3.34.1), libssl-dev (>= 1.1.1n), make (>= 4.3), debhelper (>= 13)
 
 Package: glgrib

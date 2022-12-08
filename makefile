@@ -5,6 +5,11 @@ all:
 
 clean:
 	\rm -rf share/glgrib/shaders/
+	\rm -rf debian/.debhelper/
+	\rm -rf debian/debhelper-build-stamp
+	\rm -rf debian/files
+	\rm -rf debian/glgrib.substvars
+	\rm -rf debian/glgrib/
 	cd src && make clean
 	cd src/lfi && make clean 
 

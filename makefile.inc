@@ -6,14 +6,11 @@ ifeq ($(BUILD), batch)
 SUFFIX=-batch
 endif
 
-PREFIX=$(HOME)/3d/glgrib
-
-
-LDFLAGS=-fopenmp -lglGrib$(SUFFIX) -L$(PREFIX)/lib -Wl,-rpath,$(PREFIX)/lib \
+LDFLAGS=-fopenmp -lglGrib$(SUFFIX) -L$(TOP)/lib -Wl,-rpath,$(TOP)/lib \
         -lLFI -lpng -lreadline -lncurses -ltinfo -lssl -lcrypto -lpthread \
         -lsqlite3 -lcurl -lshp -leccodes -lnetcdf_c++4 -lnetcdf
 
-CXXFLAGS_BASE=-fPIC -fopenmp -std=c++11 -Wall -I$(PREFIX)/../usr/include
+CXXFLAGS_BASE=-fPIC -fopenmp -std=c++11 -Wall 
 
 CXXFLAGS=$(CXXFLAGS_BASE) -O0 -g -DGLGRIB_CHECK_BOUND
 CXXFLAGS=$(CXXFLAGS_BASE) -O2 

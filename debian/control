@@ -3,7 +3,7 @@ Maintainer: Philippe Marguinaud <pmarguinaud@hotmail.com>
 Section: misc
 Priority: optional
 Standards-Version: 1.0
-Build-Depends: g++, git, make, libcurl4-openssl-dev, libeccodes-dev, libegl-dev, libglew-dev, libglfw3-dev, libnetcdf-c++4-dev, libpng-dev, libreadline-dev, libshp-dev, libsqlite3-dev, libssl-dev, libglm-dev
+Build-Depends: g++ (>= 4:10.2.1-1), libcurl4-openssl-dev (>= 7.74.0-1.3+deb11u3), libeccodes-dev (>= 2.20.0-1), libegl-dev (>= 1.3.2-1), libglew-dev (>= 2.1.0-4+b1), libglfw3-dev (>= 3.3.2-1), libglm-dev (>= 0.9.9.8+ds-1), libnetcdf-c++4-dev (>= 4.3.1-3), libpng-dev (>= 1.6.37-3), libreadline-dev (>= 8.1-1), libshp-dev (>= 1.5.0-2), libsqlite3-dev (>= 3.34.1-3), libssl-dev (>= 1.1.1n-0+deb11u3), make (>= 4.3-4.1)
 
 Package: glgrib
 Architecture: any 

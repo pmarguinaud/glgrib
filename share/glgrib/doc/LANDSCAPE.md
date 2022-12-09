@@ -1,5 +1,5 @@
 ## Landscape over Europe only -- landscape_eurat01
-![](./share/glgrib/test/landscape_eurat01/TEST_0000.png)
+![](../test/landscape_eurat01/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path 
@@ -7,7 +7,7 @@
     --grid.on 
 ```
 ## Display landscape in WebMercator projection -- webmercator
-![](./share/glgrib/test/webmercator/TEST_0000.png)
+![](../test/webmercator/TEST_0000.png)
 
 ```
     --landscape-{ --on --path 
@@ -15,7 +15,7 @@
     --projection WEBMERCATOR }- --grid.on 
 ```
 ## Landscape with orography (T479) -- land_orography
-![](./share/glgrib/test/land_orography/TEST_0000.png)
+![](../test/land_orography/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path ./share/glgrib/data/t479/Z.grb 

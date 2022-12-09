@@ -1,5 +1,5 @@
 ## Display sphere partitionning (t1198) -- myproc
-![](./share/glgrib/test/myproc/TEST_0000.png)
+![](../test/myproc/TEST_0000.png)
 
 ```
     --field[0].scalar.discrete.on --field[0].path 
@@ -11,7 +11,7 @@
     }- --view.lat 36 --view.lon -15 
 ```
 ## Display sphere partitionning (t1192c2.2) -- myproc22
-![](./share/glgrib/test/myproc22/TEST_0000.png)
+![](../test/myproc22/TEST_0000.png)
 
 ```
     --field[0].scalar.discrete.on --field[0].path 
@@ -24,7 +24,7 @@
     }- 
 ```
 ## MPI view -- mpiview
-![](./share/glgrib/test/mpiview/TEST_0000.png)
+![](../test/mpiview/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/discrete/SURFTEMPERATURE.grb 
@@ -33,11 +33,11 @@
     --view.lon 31 --view.lat 41 
 ```
 ## MPI halo -- mpihalo
-![](./share/glgrib/test/mpihalo/TEST.gif)
+![](../test/mpihalo/TEST.gif)
 
 ```
-    --field[0].scalar.widen.on --field[0].scalar.widen.values 15.0 10.0 
-    12.0 79.0 59.0 17.0 48.0 75.0 --field[0].scalar.widen.radius 20 
+    --field[0].scalar.widen.on --field[0].scalar.widen.values 77.0 25.0 
+    17.0 80.0 46.0 10.0 53.0 56.0 --field[0].scalar.widen.radius 20 
     --field[0].scalar.discrete.on --field[0].path 
     share/glgrib/data/discrete/MYPROC.grb --field[0].palette.colors green 
     --field[0].scalar.discrete.missing_color black 
@@ -47,7 +47,7 @@
     }- --view.lat 36 --view.lon -15 
 ```
 ## MPI transpositions -- mpitrans
-![](./share/glgrib/test/mpitrans/TEST.gif)
+![](../test/mpitrans/TEST.gif)
 
 ```
     --field[0].scalar.discrete.on --field[0].path 
@@ -59,7 +59,7 @@
     }- --view.lat 36 --view.lon -15 
 ```
 ## MPI halo -- mpihalo1
-![](./share/glgrib/test/mpihalo1/TEST_0000.png)
+![](../test/mpihalo1/TEST_0000.png)
 
 ```
     --field[0].scalar.discrete.on --field[0].path 
@@ -77,7 +77,7 @@
     cold_hot_temp }- --view.lat 36 --view.lon -15 
 ```
 ## MPI halo -- mpihalo2
-![](./share/glgrib/test/mpihalo2/TEST_0000.png)
+![](../test/mpihalo2/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/discrete/SURFTEMPERATURE.grb 
@@ -95,7 +95,7 @@
     36 --view.lon -15 
 ```
 ## MPI halo -- mpihalo3
-![](./share/glgrib/test/mpihalo3/TEST_0000.png)
+![](../test/mpihalo3/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/t1798c2.2/SFX.HU2M.grb 

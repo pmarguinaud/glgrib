@@ -15,7 +15,7 @@ Tested on :
 ![](./share/glgrib/perltk/tk1.png)
 ![](./share/glgrib/perltk/tk2.png)
 
-  # [Cloud ...](CLOUD.md)
+  # [Cloud ...](share/glgrib/doc/CLOUD.md)
 ## Clouds, 3 layers, t1198c2.2 -- t1198_3l
 ![](./share/glgrib/test/t1198_3l/TEST_0000.png)
 
@@ -28,7 +28,7 @@ Tested on :
     --field[0].palette.name cloud --field[1].palette.name cloud 
     --field[2].palette.name cloud 
 ```
-# [Lambert ...](LAMBERT.md)
+# [Lambert ...](share/glgrib/doc/LAMBERT.md)
 ## AROME 1.3km -- arome13
 ![](./share/glgrib/test/arome13/TEST_0000.png)
 
@@ -39,7 +39,7 @@ Tested on :
     green --field[0].palette.values 0. 20. --field[0].vector.arrow.color 
     red --coast.lines.color cyan --coast.on 
 ```
-# [String ...](STRING.md)
+# [String ...](share/glgrib/doc/STRING.md)
 ## Contour with labels -- contourlabels2
 ![](./share/glgrib/test/contourlabels2/TEST_0000.png)
 
@@ -54,7 +54,7 @@ Tested on :
     --font.bitmap.scale 0.04 --format %.0f }- --coast.on 
     --coast.lines.color pink 
 ```
-# [Misc ...](MISC.md)
+# [Misc ...](share/glgrib/doc/MISC.md)
 ## Cities -- cities
 ![](./share/glgrib/test/cities/TEST_0000.png)
 
@@ -65,7 +65,7 @@ Tested on :
     --cities.labels.on --cities.labels.font.color.foreground red 
     --cities.labels.font.bitmap.scale 0.04 
 ```
-# [Palette ...](PALETTE.md)
+# [Palette ...](share/glgrib/doc/PALETTE.md)
 ## Display field with palette gradient color -- palette_values_grad
 ![](./share/glgrib/test/palette_values_grad/TEST_0000.png)
 
@@ -77,7 +77,7 @@ Tested on :
     --values 0 2 6 10 14 18 22 26 30 34 38 42 --min 0 --max 46 }- 
     --colorbar.on --render.width 1200 
 ```
-# [Contour ...](CONTOUR.md)
+# [Contour ...](share/glgrib/doc/CONTOUR.md)
 ## Medium-res contour and raster, global geometry -- contour_latlon4
 ![](./share/glgrib/test/contour_latlon4/TEST_0000.png)
 
@@ -88,7 +88,7 @@ Tested on :
     --field[1].palette.colors black --field[1].type CONTOUR 
     --field[1].scale 1.001 
 ```
-# [Diff ...](DIFF.md)
+# [Diff ...](share/glgrib/doc/DIFF.md)
 ## Contour in diff mode, global lat/lon geometry -- contour_diff
 ![](./share/glgrib/test/contour_diff/TEST_0000.png)
 
@@ -99,7 +99,7 @@ Tested on :
     --field[0].scale 1.01 --landscape.on --landscape.color white 
     --field[0].user_pref.off 
 ```
-# [Scalar ...](SCALAR.md)
+# [Scalar ...](share/glgrib/doc/SCALAR.md)
 ## Surface temperature, global lat/lon field -- glob01
 ![](./share/glgrib/test/glob01/TEST_0000.png)
 
@@ -108,7 +108,7 @@ Tested on :
     --field[0].scale 1.00 --field[0].palette.name cold_hot_temp --coast.on 
     --grid.on 
 ```
-# [Landscape ...](LANDSCAPE.md)
+# [Landscape ...](share/glgrib/doc/LANDSCAPE.md)
 ## Landscape over Europe only -- landscape_eurat01
 ![](./share/glgrib/test/landscape_eurat01/TEST_0000.png)
 
@@ -117,7 +117,7 @@ Tested on :
     share/glgrib/data/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --coast.on 
     --grid.on 
 ```
-# [Projection ...](PROJECTION.md)
+# [Projection ...](share/glgrib/doc/PROJECTION.md)
 ## Display contour field using Mercator projection -- mercator
 ![](./share/glgrib/test/mercator/TEST_0000.png)
 
@@ -128,7 +128,7 @@ Tested on :
     share/glgrib/data/glob01/lfpw_0_3_1_sfc_0_prmsl+0102.grib2 
     --field[0].scale 1.01 --view.projection MERCATOR --landscape.on 
 ```
-# [Shell ...](SHELL.md)
+# [Shell ...](share/glgrib/doc/SHELL.md)
 ## Test interactive shell -- shell
 ![](./share/glgrib/test/shell/TEST_0000.png)
 
@@ -137,7 +137,7 @@ Tested on :
     --field[0].path share/glgrib/data/t1198c2.2/N.grb --field[0].scale 
     1.03 --shell.on 
 ```
-# [Vector ...](VECTOR.md)
+# [Vector ...](share/glgrib/doc/VECTOR.md)
 ## Wind Australia -- windaustralia3
 ![](./share/glgrib/test/windaustralia3/TEST_0000.png)
 
@@ -157,7 +157,7 @@ Tested on :
     --land.layers[0].color black --coast.on --coast.lines.color #555555 
     --colorbar.on --field[0].vector.density 20 --field[0].vector.scale 2 
 ```
-# [Stream ...](STREAM.md)
+# [Stream ...](share/glgrib/doc/STREAM.md)
 ## Streamlines on t1198c2.2 (surface) -- stream_t1198c22
 ![](./share/glgrib/test/stream_t1198c22/TEST_0000.png)
 
@@ -176,7 +176,7 @@ Tested on :
     --coast.lines.color red --landscape.on --landscape.path 
     landscape/white.png 
 ```
-# [Points ...](POINTS.md)
+# [Points ...](share/glgrib/doc/POINTS.md)
 ## Gaussian grid wireframe -- gauss_wireframe
 ![](./share/glgrib/test/gauss_wireframe/TEST_0000.png)
 
@@ -186,7 +186,7 @@ Tested on :
     --scalar.wireframe.on }- --coast.on --view.lon 2 --view.lat 46.7 
     --view.fov 5 
 ```
-# [Spectral ...](SPECTRAL.md)
+# [Spectral ...](share/glgrib/doc/SPECTRAL.md)
 ## Spherical harmonic (T1198) -- harmonic
 ![](./share/glgrib/test/harmonic/TEST_0000.png)
 
@@ -196,7 +196,7 @@ Tested on :
     --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 
     --view.fov 25 --view.lon 20 --scene.light.on 
 ```
-# [Height ...](HEIGHT.md)
+# [Height ...](share/glgrib/doc/HEIGHT.md)
 ## Orography (raster & contour) with height -- contour_height
 ![](./share/glgrib/test/contour_height/TEST_0000.png)
 
@@ -207,14 +207,14 @@ Tested on :
     share/glgrib/data/t479/Z.grb --field[0].geometry.height.on --view.lat 
     -16 --view.lon 134 
 ```
-# [Grid ...](GRID.md)
+# [Grid ...](share/glgrib/doc/GRID.md)
 ## Grid labels -- grid_labels
 ![](./share/glgrib/test/grid_labels/TEST_0000.png)
 
 ```
     --grid.on --grid.labels.on --landscape.on 
 ```
-# [Mpi ...](MPI.md)
+# [Mpi ...](share/glgrib/doc/MPI.md)
 ## Display sphere partitionning (t1198) -- myproc
 ![](./share/glgrib/test/myproc/TEST_0000.png)
 
@@ -227,14 +227,14 @@ Tested on :
     --palette.max 313.15 --palette.min 253.15 --palette.name cold_hot_temp 
     }- --view.lat 36 --view.lon -15 
 ```
-# [Land ...](LAND.md)
+# [Land ...](share/glgrib/doc/LAND.md)
 ## Display land surface -- land
 ![](./share/glgrib/test/land/TEST_0000.png)
 
 ```
     --land.on 
 ```
-# [Isofill ...](ISOFILL.md)
+# [Isofill ...](share/glgrib/doc/ISOFILL.md)
 ## Isofill test -- isofill
 ![](./share/glgrib/test/isofill/TEST_0000.png)
 
@@ -245,7 +245,7 @@ Tested on :
     cold_hot_temp }- --view.lat 2.32 --view.lon 14.12 --view.fov 0.5 
     --render.width 1200 
 ```
-# [Satellite ...](SATELLITE.md)
+# [Satellite ...](share/glgrib/doc/SATELLITE.md)
 ## SSMI satellite data -- ssmigeopoints
 ![](./share/glgrib/test/ssmigeopoints/TEST_0000.png)
 

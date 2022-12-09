@@ -1,5 +1,5 @@
 ## Clouds, 3 layers, t1198c2.2 -- t1198_3l
-![](./share/glgrib/test/t1198_3l/TEST_0000.png)
+![](../test/t1198_3l/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -11,7 +11,7 @@
     --field[2].palette.name cloud 
 ```
 ## Clouds, 3 layers, t1798c2.2 -- t1798_3l
-![](./share/glgrib/test/t1798_3l/TEST_0000.png)
+![](../test/t1798_3l/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1798/Z.grb 
@@ -23,7 +23,7 @@
     --field[2].palette.name cloud 
 ```
 ## Temperature field on Europe, over global cloud fields -- eurat01
-![](./share/glgrib/test/eurat01/TEST_0000.png)
+![](../test/eurat01/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 

@@ -69,20 +69,22 @@ Tested on :
 
       next unless ($opts =~ m/^--/o);
 
-      my $text = '';
-
-      $text .= "## $desc -- $name\n";
+      my $title = "## $desc -- $name\n";
+ 
+      my ($link1, $link2);
 
       if (-f "$share/test/$name/TEST.gif$ext")
         {
-          $text .= "![]($share/test/$name/TEST.gif$ext)\n";
+          $link1 = "![]($share/test/$name/TEST.gif$ext)\n";
+          $link2 = "![](../test/$name/TEST.gif$ext)\n";
         }
       else
         {
-          $text .= "![]($share/test/$name/TEST_0000.png$ext)\n";
+          $link1 .= "![]($share/test/$name/TEST_0000.png$ext)\n";
+          $link2 .= "![](../test/$name/TEST_0000.png$ext)\n";
         }
 
-      $text .= "\n";
+      my $opts = "\n";
 
       my @o = @{ $test{$name}[1][0] };
 
@@ -93,22 +95,25 @@ Tested on :
           $l[-1] .= "$o ";
         }
 
-      $text .= "```\n";
+      $opts .= "```\n";
       for (@l)
         {
-          $text .= "    $_\n";
+          $opts .= "    $_\n";
         }
-      $text .= "```\n";
+      $opts .= "```\n";
+
+      my $text1 = "$title$link1$opts";
+      my $text2 = "$title$link2$opts";
 
       unless ($fh{$kind})
         {
           my $Kind = ucfirst (lc ($kind));
-          $fh{$kind} = 'FileHandle'->new (">$kind.md");
-          $fh->print ("# [$Kind ...]($kind.md)\n");
-          $fh->print ($text);
+          $fh{$kind} = 'FileHandle'->new (">share/glgrib/doc/$kind.md");
+          $fh->print ("# [$Kind ...](share/glgrib/doc/$kind.md)\n");
+          $fh->print ($text1);
         }
 
-      $fh{$kind}->print ($text);
+      $fh{$kind}->print ($text2);
 
     }
   die ("\n");

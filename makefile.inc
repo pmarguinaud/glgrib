@@ -6,10 +6,11 @@ ifeq ($(BUILD), batch)
 SUFFIX=-batch
 endif
 
-LIBS=-lpng -lreadline -lncurses -ltinfo -lssl -lcrypto -lpthread \
+LIBS_GLGRIB=-lpng -lreadline -lncurses -ltinfo -lssl -lcrypto -lpthread \
     -lsqlite3 -lcurl -lshp -leccodes -lnetcdf_c++4 -lnetcdf
+LIBS_LFI=-lsqlite3 -lcurl
 
-LDFLAGS=-fopenmp -lglGrib$(SUFFIX) -L$(TOP)/lib -Wl,-rpath,$(TOP)/lib -lLFI $(LIBS)
+LDFLAGS=-fopenmp -lglGrib$(SUFFIX) -L$(TOP)/lib -Wl,-rpath,$(ROOT)/lib -lLFI $(LIBS)
 
 CXXFLAGS_BASE=-fPIC -fopenmp -std=c++11 -Wall 
 

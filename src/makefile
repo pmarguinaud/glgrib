@@ -22,5 +22,5 @@ $(TOP)/bin/glGribDBase2SQLite$(SUFFIX).x: glGribDBase2SQLite.cc $(TOP)/lib/libgl
 	g++ $(CXXFLAGS) -o $@ -c $< -I$(TOP)/src/lfi
 
 clean: 
-	\rm -f *.o *.x *.so $(TOP)/lib/libglGrib$(SUFFIX).so $(TOP)/bin/glgrib$(SUFFIX) $(TOP)/bin/glGribDBase2SQLite$(SUFFIX).x
+	\rm -f *.o *.x *.so $(TOP)/lib/libglGrib$(SUFFIX).so* $(TOP)/bin/glgrib$(SUFFIX) $(TOP)/bin/glGribDBase2SQLite$(SUFFIX).x
 

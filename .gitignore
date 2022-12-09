@@ -16,6 +16,7 @@ big
 share/shaders
 attic
 bin/*
+lib/*
 share/glgrib/shaders/*
 debian/.debhelper/
 debian/debhelper-build-stamp

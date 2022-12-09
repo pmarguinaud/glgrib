@@ -22,12 +22,12 @@ sub install
       $_ = 'File::Spec'->rel2abs ($_);
     }
 
-  my @install = ('install', $src, $dst);
+  my @command = ('install', $src, $dst);
 
   &mkpath (&dirname ($dst));
 
-  print "@install\n";
-  system (@install) && die ("Command `@command' failed : $!\n");
+  print "@command\n";
+  system (@command) && die ("Command `@command' failed : $!\n");
   
 }
 

@@ -8,13 +8,18 @@ Build-Depends: make (>= 4.3), debhelper (>= 13)
 Package: glgrib-data
 Architecture: any 
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Display geophysical fields encoded in GRIB edition 2 using OpenGL rendering.
-  Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, gaussian grid. GLFW backend for interactive display, EGL backend for batch processing without X11 display.
-  Perl/Tk interface.
-  Tested on :
-  - VGA compatible controller: Intel Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller (rev 06)
-  - VGA compatible controller: Intel Corporation HD Graphics 530 (rev 06)
-  - VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev c8)
-  - 3D controller: NVIDIA Corporation GV100GL [Tesla V100S PCIe 32GB] (rev a1)
+Description: Display geophysical fields encoded in GRIB edition 2 using OpenGL 
+ rendering.
+ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, 
+ coastlines, borders. Lat/lon, lambert, gaussian grid. GLFW backend for 
+ interactive display, EGL backend for batch processing without X11 display.
+ Perl/Tk interface.
+ Tested on :
+ - VGA compatible controller: Intel Corporation Xeon E3-1200 v3/4th Gen Core 
+ Processor Integrated Graphics Controller (rev 06)
+ - VGA compatible controller: Intel Corporation HD Graphics 530 (rev 06)
+ - VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Wani 
+ [Radeon R5/R6/R7 Graphics] (rev c8)
+ - 3D controller: NVIDIA Corporation GV100GL [Tesla V100S PCIe 32GB] (rev a1)
 
 

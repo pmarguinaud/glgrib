@@ -157,6 +157,16 @@ sub installPackage
   (my $arch = $opts->{arch})
     or die ("Missing --arch option");
 
+  for my $bin (<bin/*>)
+    {
+      &runCommand (qw (patchelf --remove-rpath), $bin);
+    }
+
+  for my $lib (grep { -l } <lib/*>)
+    {
+      unlink ($lib);
+    }
+
   my %map = 
   (
     bin => 'bin',

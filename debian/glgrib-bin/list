@@ -6,3 +6,4 @@ bin
 LICENSE.txt
 share/glgrib/doc
 share/glgrib/glGrib.db
+scripts/debian.pl

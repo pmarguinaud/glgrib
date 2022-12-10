@@ -1,3 +1,4 @@
 share/glgrib/coastlines
 share/glgrib/fonts
 share/glgrib/landscape
+scripts/debian.pl

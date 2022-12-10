@@ -1,11 +1,6 @@
 
 export ROOT=$(shell pwd)
 
-ifneq ($(DEST), )
-install: all
-	./scripts/install.pl
-endif
-
 all:
 	@mkdir -p bin lib
 	cd src/lfi && make -j4 

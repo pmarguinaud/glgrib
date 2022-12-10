@@ -1,2 +1,3 @@
 share/glgrib/data
 share/glgrib/test
+scripts/debian.pl

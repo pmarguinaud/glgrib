@@ -3,5 +3,5 @@
 	dh $@
 
 override_dh_auto_install:
-	$(MAKE) DEST=$$(pwd)/debian/glgrib/usr
+	./scripts/debian.pl --install
 

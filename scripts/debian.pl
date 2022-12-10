@@ -25,8 +25,18 @@ local $SIG{__DIE__} = sub
 sub runCommand
 {
   my @cmd = @_;
+  print "@cmd\n";
   system (@cmd)
     and die ("Command `@cmd' failed");
+}
+
+sub copyLink
+{
+  my ($src, $dir) = @_;
+  my $dst = "$dir/$src";
+  &mkpath (&dirname ($dst));
+  symlink (readlink ($src), $dst)
+    or die ("Creating symbolic link $dst failed");
 }
 
 sub copyFile
@@ -63,6 +73,24 @@ sub getPackageFromChangeLog
   return $package;
 }
 
+sub copyNode
+{
+  my ($f, $dir) = @_;
+
+  if (-l $f)
+    {
+      &copyLink ($f, $dir);
+    }
+  elsif (-f $f)
+    {
+      &copyFile ($f, $dir);
+    }
+  elsif (-d $f)
+    {
+      &copyDirectory ($f, $dir);
+    }
+}
+
 sub createPackage
 {
   my ($opts, $pack, $top) = @_;
@@ -83,14 +111,7 @@ sub createPackage
      
       for my $f (@list)
         {
-          if (-f $f)
-            {
-              &copyFile ($f, $dir);
-            }
-          elsif (-d $f)
-            {
-              &copyDirectory ($f, $dir);
-            }
+          &copyNode ($f, $dir);
         }
      
       &runCommand ('cp', '-alf', "debian/$pack", "$dir/debian");
@@ -106,7 +127,7 @@ sub createPackage
   if ($opts->{'compile'})
     {
       chdir ($dir);
-      &runCommand (qw (debuild -us -uc), "-e=PACK=$pack"  );
+      &runCommand (qw (debuild -us -uc));
       chdir ($pwd);
     }
 
@@ -120,22 +141,37 @@ sub installFile
   
   my $dst = 'File::Spec'->catfile ($dest, $src);
 
-  for ($src, $dst)
-    {
-      $_ = 'File::Spec'->rel2abs ($_);
-    }
+  $dst = 'File::Spec'->rel2abs ($dst);
 
   &mkpath (&dirname ($dst));
-
-  &runCommand ('install', $src, $dst);
+  &copyNode ($src, &dirname ($dst));
 }
 
 sub installPackage
 {
   my $opts = shift;
   my $pack = &getPackageFromChangeLog ('debian/changelog');
-  my $dest = "debian/$pack/usr";
-  &find ({wanted => sub { &installFile ($dest, @_) }, no_chdir => 1}, qw (lib bin share));
+
+  my $pwd = &cwd ();
+
+  (my $arch = $opts->{arch})
+    or die ("Missing --arch option");
+
+  my %map = 
+  (
+    bin => 'bin',
+    share => 'share',
+    lib => "lib/$arch",
+  );
+
+  for my $dir (sort keys (%map))
+    {
+      next unless (-d $dir);
+      my $dest = "$pwd/debian/$pack/usr/$map{$dir}";
+      chdir ($dir);
+      &find ({wanted => sub { &installFile ($dest, @_) }, no_chdir => 1}, '.');
+      chdir ('..');
+    }
 }
 
 my $pwd = &cwd ();
@@ -143,10 +179,12 @@ my $top = "$pwd/..";
 
 my %opts;
 my @opts_f = qw (create-archive create-directory install compile help);
+my @opts_s = qw (arch);
 
 &GetOptions
 (
   map ({ ($_, \$opts{$_}) } @opts_f),
+  map ({ ("$_=s", \$opts{$_}) } @opts_s),
 );
 
 if ($opts{help})

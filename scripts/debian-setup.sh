@@ -124,7 +124,10 @@ EOC
 set -x
 set -e
 
-sudo apt-get remove -y glgrib-bin 
+for pack in bin data doc test
+do
+  sudo apt-get remove -y glgrib-\\$pack
+done
 sudo apt-get autoremove -y 
 
 EOC

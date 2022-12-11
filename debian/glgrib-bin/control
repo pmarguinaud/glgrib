@@ -7,7 +7,7 @@ Build-Depends: g++ (>= 4:10.2.1), libcurl4-openssl-dev (>= 7.74.0), libeccodes-d
 
 Package: glgrib-bin
 Architecture: any 
-Depends: ${shlibs:Depends}, ${misc:Depends}, glgrib-data (>= 1.0)
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Display geophysical fields encoded in GRIB edition 2 using OpenGL 
  rendering.
  Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale,

@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_install:
+	./scripts/debian.pl --install --arch $(DEB_BUILD_MULTIARCH)
+
+

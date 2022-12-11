@@ -1,14 +1,14 @@
-Source: glgrib-test
+Source: glgrib-doc
 Maintainer: Philippe Marguinaud <pmarguinaud@hotmail.com>
 Section: misc
 Priority: optional
 Standards-Version: 4.5.1
 Build-Depends: make (>= 4.3), debhelper (>= 13)
 
-Package: glgrib-test
+Package: glgrib-doc
 Architecture: any 
 Depends: ${misc:Depends}
-Description: Test data for glgrib.
- Files for running glgrib tests.
+Description: Documentation for glgrib.
+ Markdown documention and results files of glgrib tests.
 
 

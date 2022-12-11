@@ -113,7 +113,7 @@ set -e
 
 for pack in data bin doc test
 do
-  sudo apt-get install -y  ./glgrib-\$pack.0-1_amd64.deb  
+  sudo apt-get install -y  ./glgrib-\\\$pack.0-1_amd64.deb  
 done
 
 EOC

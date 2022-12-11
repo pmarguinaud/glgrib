@@ -135,16 +135,8 @@ sub createPackage
 
 sub installFile
 {
-  my $dest = shift;
-
-  return unless (-f (my $src = $File::Find::name));
-  
-  my $dst = 'File::Spec'->catfile ($dest, $src);
-
-  $dst = 'File::Spec'->rel2abs ($dst);
-
-  &mkpath (&dirname ($dst));
-  &copyNode ($src, &dirname ($dst));
+  my ($src, $dir) = @_;
+  &copyNode ($src, $dir);
 }
 
 sub installPackage
@@ -179,7 +171,8 @@ sub installPackage
       next unless (-d $dir);
       my $dest = "$pwd/debian/$pack/usr/$map{$dir}";
       chdir ($dir);
-      &find ({wanted => sub { &installFile ($dest, @_) }, no_chdir => 1}, '.');
+      &find ({wanted => sub { my $f = $File::Find::name; &installFile ($f, $dest, @_) if (-f $f) }, 
+             no_chdir => 1}, '.');
       chdir ('..');
     }
 }

@@ -8,8 +8,7 @@ Build-Depends: make (>= 4.3), debhelper (>= 13)
 Package: glgrib-test
 Architecture: any 
 Depends: ${shlibs:Depends}, ${misc:Depends}, glgrib (>= 1.0)
-Description: Display geophysical fields encoded in GRIB edition 2 using OpenGL 
- rendering.
+Description: Display geophysical fields encoded in GRIB edition 2 using OpenGL.
  Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, 
  coastlines, borders. Lat/lon, lambert, gaussian grid. GLFW backend for 
  interactive display, EGL backend for batch processing without X11 display.

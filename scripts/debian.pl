@@ -102,7 +102,6 @@ sub createPackage
 
   if ($opts->{'create-directory'})
     {
-     
       &rmtree ($dir) if (-d $dir);
       &mkpath ($dir) or die ("Cannot create path $dir");
      
@@ -115,6 +114,19 @@ sub createPackage
         }
      
       &runCommand ('cp', '-alf', "debian/$pack", "$dir/debian");
+
+
+      unless (-f "$dir/makefile")
+        {
+          'FileHandle'->new (">$dir/makefile")->print (<< 'EOF');
+
+all:
+
+clean:
+
+EOF
+
+        }
     }
 
   if ($opts->{'create-archive'})
@@ -182,7 +194,7 @@ my $top = "$pwd/..";
 
 my %opts;
 my @opts_f = qw (create-archive create-directory install compile help);
-my @opts_s = qw (arch);
+my @opts_s = qw (arch only skip);
 
 &GetOptions
 (
@@ -197,6 +209,15 @@ if ($opts{help})
       {
         print "  --$opt\n";
       }
+    for my $opt (@opts_s)
+      {
+        print "  --$opt=...\n";
+      }
+  }
+
+for (qw (only skip))
+  {
+    $opts{$_} = {map { ($_, 1) } split (m/,/o, $opts{$_} || '')};
   }
 
 if ($opts{install})
@@ -207,8 +228,12 @@ else
   {
     for my $pack (map { &basename ($_) } <debian/*>)
       {
+        next if ($opts{skip}{$pack});
+        if (%{ $opts{only} })
+          {
+            next unless ($opts{only}{$pack});
+          }
         &createPackage (\%opts, $pack, $top);
-        last;
       }
   }
 

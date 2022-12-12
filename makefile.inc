@@ -12,7 +12,7 @@ LIBS_LFI=-lsqlite3 -lcurl
 
 LDFLAGS=-fopenmp -lglGrib$(SUFFIX) -L$(TOP)/lib -Wl,-rpath,$(ROOT)/lib -lLFI 
 
-CXXFLAGS_BASE=-fPIC -fopenmp -std=c++11 -Wall 
+CXXFLAGS_BASE=-fPIC -fopenmp -std=c++11 -Wall $(CXXFLAGS_USER)
 
 CXXFLAGS=$(CXXFLAGS_BASE) -O0 -g -DGLGRIB_CHECK_BOUND
 CXXFLAGS=$(CXXFLAGS_BASE) -O2 

@@ -12,8 +12,6 @@ unset LANGUAGE
 EMAIL=pmarguinaud@hotmail.com
 NAME="Philippe Marguinaud"
 DEBIAN=latest
-VERSION=1.0
-PACKVER=1
 
 sudo docker pull debian:$DEBIAN
 
@@ -71,7 +69,7 @@ set -e
 for pack in data doc test bin
 do
   set +e
-  sudo dpkg -i ./glgrib-\${pack}_${VERSION}-${PACKVER}_amd64.deb  
+  sudo dpkg -i ./glgrib-\${pack}_*_amd64.deb  
   set -e
 done
 
@@ -139,6 +137,22 @@ cat >> /etc/sudoers << EOC
 
 $USER ALL=(root) NOPASSWD: /usr/bin/dpkg, NOPASSWD: /usr/bin/apt, NOPASSWD: /usr/bin/apt-get, NOPASSWD: /usr/bin/dpkg
 EOC
+
+EOF
+
+cat > $SHARED/glgrib-clean.sh << EOF
+#!/bin/bash
+
+set -e
+set -x
+
+for f in *
+do
+  if [ -d "$f" ]
+  then
+    \rm -rf "$f"
+  fi
+done
 
 EOF
 

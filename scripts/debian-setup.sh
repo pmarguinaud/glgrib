@@ -54,7 +54,7 @@ git config --global user.name "$NAME"
 git config --global credential.helper cache
 git config --global credential.helper 'cache --timeout=3600'
 
-git clone -b debian https://github.com/pmarguinaud/glgrib.git
+git clone https://github.com/pmarguinaud/glgrib.git
 cd glgrib
 ./scripts/debian.pl --create-archive --create-directory 
 ./scripts/debian.pl --compile

@@ -4,6 +4,11 @@
 set -x
 set -e
 
+
+unset LANG
+unset LC_ALL
+unset LANGUAGE
+
 EMAIL=pmarguinaud@hotmail.com
 NAME="Philippe Marguinaud"
 DEBIAN=latest
@@ -56,6 +61,8 @@ EOC
 
 chmod 600 /home/$USER/.ssh/authorized_keys
 
+sudo -u $USER ssh-keygen -t rsa -q -f "/home/$USER/.ssh/id_rsa" -N ""
+
 cat -> /home/$USER/.bash_profile << EOC
 
 export EMAIL=$EMAIL
@@ -74,7 +81,7 @@ chown $USER:users /home/$USER/.ssh/authorized_keys /home/$USER/.bash_profile /ho
 
 cat >> /etc/sudoers << EOC
 
-$USER ALL=(root) NOPASSWD: /usr/bin/dpkg, NOPASSWD: /usr/bin/apt, NOPASSWD: /usr/bin/apt-get
+$USER ALL=(root) NOPASSWD: /usr/bin/dpkg, NOPASSWD: /usr/bin/apt, NOPASSWD: /usr/bin/apt-get, NOPASSWD: /usr/bin/dpkg
 EOC
 
 if [ "x\$kind" = "xbuild" ]
@@ -111,10 +118,14 @@ then
 set -x
 set -e
 
-for pack in data bin doc test
+for pack in data doc test bin
 do
-  sudo apt-get install -y  ./glgrib-\\\$pack.0-1_amd64.deb  
+  set +e
+  sudo dpkg -i ./glgrib-\\\${pack}_${VERSION}-${PACKVER}_amd64.deb  
+  set -e
 done
+
+sudo apt-get install -f
 
 EOC
 
@@ -153,9 +164,15 @@ chmod +x boot.sh
 
 declare -A IP
 
+mkdir -p debian
+
 for kind in build install
 do
-  sudo docker run -h debian_glgrib_$kind -t -d --name debian_glgrib_$kind debian:$DEBIAN
+  sudo docker \
+    run -h debian_glgrib_$kind -t -d \
+    --name debian_glgrib_$kind \
+    --mount type=bind,src=$PWD/debian/,dst=/home/$USER/debian \
+    debian:$DEBIAN
   
   sudo docker cp boot.sh debian_glgrib_$kind:/root/boot.sh
   
@@ -169,15 +186,16 @@ done
 
 fi
 
+SSH="ssh -o StrictHostKeyChecking=no -X"
+SCP="scp -o StrictHostKeyChecking=no"
+
+
 declare -A IP
 
 for kind in build install
 do
   IP[$kind]=$(sudo docker inspect -f "{{ .NetworkSettings.IPAddress }}" debian_glgrib_$kind)
 done
-
-SSH="ssh -o StrictHostKeyChecking=no -X"
-SCP="scp -o StrictHostKeyChecking=no"
 
 
 if [ 1 -eq 1 ]
@@ -194,8 +212,8 @@ fi
 for pack in bin doc data test
 do
   $SCP \
-    ${IP[build]}:glgrib-${pack}_1.0-1_amd64.deb \
-    ${IP[install]}:glgrib-${pack}_1.0-1_amd64.deb
+    ${IP[build]}:glgrib-${pack}_${VERSION}-${PACKVER}_amd64.deb \
+    ${IP[install]}:glgrib-${pack}_${VERSION}-${PACKVER}_amd64.deb
 done
 
 $SSH ${IP[install]} ./glgrib-install.sh

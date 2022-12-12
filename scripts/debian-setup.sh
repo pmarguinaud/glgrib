@@ -164,14 +164,14 @@ chmod +x boot.sh
 
 declare -A IP
 
-mkdir -p debian
+mkdir -p debuild
 
 for kind in build install
 do
   sudo docker \
     run -h debian_glgrib_$kind -t -d \
     --name debian_glgrib_$kind \
-    --mount type=bind,src=$PWD/debian/,dst=/home/$USER/debian \
+    --mount type=bind,src=$PWD/debuild/,dst=/home/$USER/debuild \
     debian:$DEBIAN
   
   sudo docker cp boot.sh debian_glgrib_$kind:/root/boot.sh

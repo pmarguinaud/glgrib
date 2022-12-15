@@ -1,5 +1,5 @@
 ## Cities -- cities
-![](../test/cities/TEST_0000.png)
+![](samples/cities/TEST_0000.png)
 
 ```
     --landscape.on --cities.on --cities.points.scale 1.01 
@@ -9,7 +9,7 @@
     --cities.labels.font.bitmap.scale 0.04 
 ```
 ## Enable debug mode -- debug
-![](../test/debug/TEST_0000.png)
+![](samples/debug/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -17,7 +17,7 @@
     1.03 --render.debug.on 
 ```
 ## Colorbar -- colorbar
-![](../test/colorbar/TEST_0000.png)
+![](samples/colorbar/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -26,7 +26,7 @@
     --render.width 1000 
 ```
 ## Display French departements -- departements
-![](../test/departements/TEST_0000.png)
+![](samples/departements/TEST_0000.png)
 
 ```
     --departements.on --departements.lines.color blue 
@@ -35,14 +35,14 @@
     --view.lat 46.7 --view.fov 5 --coast.on 
 ```
 ## Test FA format, display sea fraction -- fa
-![](../test/fa/TEST_0000.png)
+![](samples/fa/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/fa/PGD.t479.fa%SFX.FRAC_SEA 
     --field[0].scale 1.03 
 ```
 ## Image on top of cloud fields -- image
-![](../test/image/TEST_0000.png)
+![](samples/image/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -52,7 +52,7 @@
     --scene.image.y1 0.1 
 ```
 ## Interpolate field over time -- interpolation
-![](../test/interpolation/TEST.gif)
+![](samples/interpolation/TEST.gif)
 
 ```
     --field[0].path share/glgrib/data/interp/01.grb 
@@ -65,20 +65,20 @@
     --render.offscreen.frames 72 
 ```
 ## Display mapscale -- mapscale
-![](../test/mapscale/TEST_0000.png)
+![](samples/mapscale/TEST_0000.png)
 
 ```
     --landscape.on --mapscale.on 
 ```
 ## Display field with missing values -- missingvalue
-![](../test/missingvalue/TEST_0000.png)
+![](samples/missingvalue/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/t49/SFX.CLAY.grb --coast.on 
     --grid.on --field[0].user_pref.off 
 ```
 ## Display field with keeping field values in RAM -- novalue
-![](../test/novalue/TEST_0000.png)
+![](samples/novalue/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1798/Z.grb 
@@ -87,7 +87,7 @@
     --field[0].no_value_pointer.on 
 ```
 ## Display field in offscreen mode -- offscreen
-![](../test/offscreen/TEST.gif)
+![](samples/offscreen/TEST.gif)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -100,13 +100,13 @@
     --scene.light.rotate.rate 10 
 ```
 ## Display field with options in file -- optionsfile
-![](../test/optionsfile/TEST_0000.png)
+![](samples/optionsfile/TEST_0000.png)
 
 ```
     --{share/glgrib/data/options.list} 
 ```
 ## Select field from GRIB file -- select_grib
-![](../test/select_grib/TEST_0000.png)
+![](samples/select_grib/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -115,7 +115,7 @@
     --field[0].scale 1.03 
 ```
 ## Low-res ARPEGE resolution -- small
-![](../test/small/TEST_0000.png)
+![](samples/small/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t49/Z.grb 
@@ -124,7 +124,7 @@
     --field[0].user_pref.off 
 ```
 ## Test travelling option -- travelling
-![](../test/travelling/TEST.gif)
+![](samples/travelling/TEST.gif)
 
 ```
     --scene.travelling.on --scene.travelling.pos1.lon 0 
@@ -136,7 +136,7 @@
     --render.offscreen.on --render.offscreen.frames 72 
 ```
 ## Zoom with Schmidt transform -- zoomschmidt1
-![](../test/zoomschmidt1/TEST_0000.png)
+![](samples/zoomschmidt1/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/wind+temp/t1798/S105TEMPERATURE.grb 

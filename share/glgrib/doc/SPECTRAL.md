@@ -1,5 +1,5 @@
 ## Spherical harmonic (T1198) -- harmonic
-![](../test/harmonic/TEST_0000.png)
+![](samples/harmonic/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/harmonics/SPEC.+0008.+0004.grb 
@@ -8,7 +8,7 @@
     --view.fov 25 --view.lon 20 --scene.light.on 
 ```
 ## Spherical harmonic (T1198C2.2) -- harmonic_stretch
-![](../test/harmonic_stretch/TEST_0000.png)
+![](samples/harmonic_stretch/TEST_0000.png)
 
 ```
     --field[0].path 
@@ -18,7 +18,7 @@
     --view.fov 25 --view.lon 20 --scene.light.on 
 ```
 ## Spherical harmonic (T1198) -- tharmonic1
-![](../test/tharmonic1/TEST_0000.png)
+![](samples/tharmonic1/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/wind+temp/t1198/S105TEMPERATURE.grb 
@@ -28,7 +28,7 @@
     --scene.light.on --grid.on 
 ```
 ## Spherical harmonic (T1198) -- tharmonic2
-![](../test/tharmonic2/TEST_0000.png)
+![](samples/tharmonic2/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/wind+temp/t1198/S105TEMPERATURE.grb 
@@ -38,7 +38,7 @@
     --scene.light.on --grid.on --view.lon -25 --view.lat 25 
 ```
 ## Spherical harmonic (T1198) -- tharmonic3
-![](../test/tharmonic3/TEST_0000.png)
+![](samples/tharmonic3/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/wind+temp/t1198/S105TEMPERATURE.grb 
@@ -48,7 +48,7 @@
     25 --scene.light.on --grid.on 
 ```
 ## Spherical harmonic (T1198) -- tharmonic4
-![](../test/tharmonic4/TEST.gif)
+![](samples/tharmonic4/TEST.gif)
 
 ```
     --field[0].path share/glgrib/data/wind+temp/t1198/S105TEMPERATURE.grb 

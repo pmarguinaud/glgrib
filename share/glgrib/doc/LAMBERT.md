@@ -1,5 +1,5 @@
 ## AROME 1.3km -- arome13
-![](../test/arome13/TEST_0000.png)
+![](samples/arome13/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/aro1.3/CLSVENT.ZONAL.grb 
@@ -9,7 +9,7 @@
     red --coast.lines.color cyan --coast.on 
 ```
 ## AROME, Lambert geometry -- aro
-![](../test/aro/TEST_0000.png)
+![](samples/aro/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/aro2.5/SURFIND.TERREMER.grb 
@@ -17,7 +17,7 @@
     --view.lon 2.0 --view.fov 5 --coast.on --grid.on 
 ```
 ## AROME, Lambert geometry, polar stereo -- aro_polar
-![](../test/aro_polar/TEST_0000.png)
+![](samples/aro_polar/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/data/aro2.5/SURFIND.TERREMER.grb 

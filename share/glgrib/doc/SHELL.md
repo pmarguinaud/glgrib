@@ -1,5 +1,5 @@
 ## Test interactive shell -- shell
-![](../test/shell/TEST_0000.png)
+![](samples/shell/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 

@@ -1,5 +1,5 @@
 ## Contour with labels -- contourlabels2
-![](../test/contourlabels2/TEST_0000.png)
+![](samples/contourlabels2/TEST_0000.png)
 
 ```
     --landscape.on --field[0].path share/glgrib/data/z500.grb 
@@ -13,7 +13,7 @@
     --coast.lines.color pink 
 ```
 ## Font background color -- background
-![](../test/background/TEST_0000.png)
+![](samples/background/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -23,7 +23,7 @@
     --scene.date.font.color.background white 
 ```
 ## Display text -- text
-![](../test/text/TEST_0000.png)
+![](samples/text/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -34,7 +34,7 @@
     --scene.text.font.color.background white 
 ```
 ## Display title (field name) -- title
-![](../test/title/TEST_0000.png)
+![](samples/title/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
@@ -42,7 +42,7 @@
     1.03 --scene.title.on 
 ```
 ## Contour with labels (dummy field) -- contourlabels
-![](../test/contourlabels/TEST_0000.png)
+![](samples/contourlabels/TEST_0000.png)
 
 ```
     --landscape.on --field[0].path 

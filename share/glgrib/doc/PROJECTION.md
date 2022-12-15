@@ -1,5 +1,5 @@
 ## Display contour field using Mercator projection -- mercator
-![](../test/mercator/TEST_0000.png)
+![](samples/mercator/TEST_0000.png)
 
 ```
     --field[0].diff.on --field[0].user_pref.off --field[0].type CONTOUR 
@@ -9,7 +9,7 @@
     --field[0].scale 1.01 --view.projection MERCATOR --landscape.on 
 ```
 ## Display contour field using different origin -- mercator_origin
-![](../test/mercator_origin/TEST_0000.png)
+![](samples/mercator_origin/TEST_0000.png)
 
 ```
     --field[0].path 
@@ -26,7 +26,7 @@
     0.707106781186548 
 ```
 ## Display contour field using different origin -- polar_origin
-![](../test/polar_origin/TEST_0000.png)
+![](samples/polar_origin/TEST_0000.png)
 
 ```
     --field[0].path 

@@ -73,15 +73,15 @@ Tested on :
  
       my ($link1, $link2);
 
-      if (-f "$share/test/$name/TEST.gif$ext")
+      if (-f "$share/doc/samples/$name/TEST.gif$ext")
         {
-          $link1 = "![]($share/test/$name/TEST.gif$ext)\n";
-          $link2 = "![](../test/$name/TEST.gif$ext)\n";
+          $link1 = "![]($share/doc/samples/$name/TEST.gif$ext)\n";
+          $link2 = "![](samples/$name/TEST.gif$ext)\n";
         }
       else
         {
-          $link1 .= "![]($share/test/$name/TEST_0000.png$ext)\n";
-          $link2 .= "![](../test/$name/TEST_0000.png$ext)\n";
+          $link1 .= "![]($share/doc/samples/$name/TEST_0000.png$ext)\n";
+          $link2 .= "![](samples/$name/TEST_0000.png$ext)\n";
         }
 
       my $opts = "\n";
@@ -402,7 +402,7 @@ for my $name (@name)
             my $thumb = "test.run/$name/thumb_$png";
             rename ($png, $new);
 #           system ('convert', -geometry => 300, $new, $thumb);
-            my $ref = "share/glgrib/test/$name/$png";
+            my $ref = "share/glgrib/doc/samples/$name/$png";
             my $dif = "test.run/$name/diff_$png";
             if ((-f $ref) && ($comp))
               {

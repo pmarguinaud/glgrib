@@ -1334,7 +1334,7 @@ public:
     bool on = true;
   } visible;
   std::string projection = "LONLAT";
-  std::string path  = "landscape/Whole_world_-_land_and_oceans_08000.bmp";
+  std::string path  = "landscape/Whole_world_-_land_and_oceans_08000.png";
   float  orography  = 0.05;
   struct
   {

@@ -11,7 +11,7 @@
 
 ```
     --landscape-{ --on --path 
-    ./share/glgrib/landscape/WebMercator_00006_00021_00028_00037_00035.ORTHOIMAGERY.ORTHOPHOTOS.bmp 
+    ./share/glgrib/landscape/WebMercator_00006_00021_00028_00037_00035.ORTHOIMAGERY.ORTHOPHOTOS.png 
     --projection WEBMERCATOR }- --grid.on 
 ```
 ## Landscape with orography (T479) -- land_orography

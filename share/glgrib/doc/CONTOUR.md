@@ -3,8 +3,9 @@
 
 ```
     --render.width 1024 --render.height 1024 --field[0].path 
-    share/glgrib/data/glob025/lfpw_0_0_0_pl_1000_t.grib2 --field[1].path 
-    share/glgrib/data/glob025/lfpw_0_0_0_pl_1000_t.grib2 
+    share/glgrib/testdata/glob025/lfpw_0_0_0_pl_1000_t.grib2 
+    --field[1].path 
+    share/glgrib/testdata/glob025/lfpw_0_0_0_pl_1000_t.grib2 
     --field[1].palette.colors black --field[1].type CONTOUR 
     --field[1].scale 1.001 
 ```
@@ -14,7 +15,7 @@
 ```
     --render.width 1024 --render.height 1024 --landscape.on 
     --landscape.path landscape/black.bmp --field[0].path 
-    share/glgrib/data/contour/t0049.grb --field[0].scale 1.03 
+    share/glgrib/testdata/contour/t0049.grb --field[0].scale 1.03 
     --field[0].type CONTOUR 
 ```
 ## Medium-res contour -- contour2
@@ -23,7 +24,7 @@
 ```
     --render.width 1024 --render.height 1024 --landscape.on 
     --landscape.path landscape/black.bmp --field[0].path 
-    share/glgrib/data/contour/t0479.grb --field[0].scale 1.03 
+    share/glgrib/testdata/contour/t0479.grb --field[0].scale 1.03 
     --field[0].type CONTOUR 
 ```
 ## High-res contour -- contour3
@@ -32,26 +33,26 @@
 ```
     --render.width 1024 --render.height 1024 --landscape.on 
     --landscape.path landscape/black.bmp --field[0].path 
-    share/glgrib/data/contour/t1798.grb --field[0].scale 1.03 
+    share/glgrib/testdata/contour/t1798.grb --field[0].scale 1.03 
     --field[0].type CONTOUR 
 ```
 ## Contour & raster, Lambert geometry -- contour_aro1
 ![](samples/contour_aro1/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/aro_small/S041WIND.U.PHYS.grb 
+    --field[0].path share/glgrib/testdata/aro_small/S041WIND.U.PHYS.grb 
     --field[0].scale 1.00 --field[0].palette.name cold_hot --field[1].path 
-    share/glgrib/data/aro_small/S041WIND.U.PHYS.grb --field[1].scale 1.03 
-    --field[1].type CONTOUR --view.lon 26.64 --view.lat 67.36 --view.fov 
-    0.5 --coast.on --grid.on 
+    share/glgrib/testdata/aro_small/S041WIND.U.PHYS.grb --field[1].scale 
+    1.03 --field[1].type CONTOUR --view.lon 26.64 --view.lat 67.36 
+    --view.fov 0.5 --coast.on --grid.on 
 ```
 ## Contour & raster, Lambert geometry -- contour_aro2
 ![](samples/contour_aro2/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/aro2.5/S090WIND.U.PHYS.grb 
+    --field[0].path share/glgrib/testdata/aro2.5/S090WIND.U.PHYS.grb 
     --field[0].scale 1.00 --field[0].palette.name cold_hot --field[1].path 
-    share/glgrib/data/aro2.5/S090WIND.U.PHYS.grb --field[1].scale 1.03 
+    share/glgrib/testdata/aro2.5/S090WIND.U.PHYS.grb --field[1].scale 1.03 
     --field[1].type CONTOUR --view.lat 46.2 --view.lon 2.0 --view.fov 5 
     --coast.on --grid.on 
 ```
@@ -61,7 +62,7 @@
 ```
     --render.width 1024 --render.height 1024 --landscape.on 
     --landscape.path landscape/black.bmp --field[0].path 
-    share/glgrib/data/contour/latlon9x6.grb --field[0].scale 1.03 
+    share/glgrib/testdata/contour/latlon9x6.grb --field[0].scale 1.03 
     --field[0].type CONTOUR 
 ```
 ## Low-res simple contour, limited area lat/lon geometry -- contour_latlon2
@@ -70,7 +71,7 @@
 ```
     --render.width 1024 --render.height 1024 --landscape.on 
     --landscape.path landscape/black.bmp --field[0].path 
-    share/glgrib/data/contour/latlon18x13.grb --field[0].scale 1.03 
+    share/glgrib/testdata/contour/latlon18x13.grb --field[0].scale 1.03 
     --field[0].type CONTOUR 
 ```
 ## Medium-res contour, limited area lat/lon geometry -- contour_latlon3
@@ -79,15 +80,15 @@
 ```
     --render.width 1024 --render.height 1024 --landscape.on 
     --landscape.path landscape/black.bmp --field[0].path 
-    share/glgrib/data/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --field[0].scale 
-    1.03 --field[0].type CONTOUR 
+    share/glgrib/testdata/eurat01/lfpw_0_0_0_pl_1000_t.grib2 
+    --field[0].scale 1.03 --field[0].type CONTOUR 
 ```
 ## Contour on stretched/rotated gaussian geometry -- contour_stretched
 ![](samples/contour_stretched/TEST_0000.png)
 
 ```
     --render.width 1024 --render.height 1024 --field[0].path 
-    share/glgrib/data/t1198c2.2/Z.grb --field[0].scale 1.03 
+    share/glgrib/testdata/t1198c2.2/Z.grb --field[0].scale 1.03 
     --field[0].type CONTOUR 
 ```
 ## Contour with dashed lines, gaussian geometry -- dashed1
@@ -95,9 +96,9 @@
 
 ```
     --landscape.on --landscape.wireframe.on --landscape.grid.path 
-    share/glgrib/data/contour/t0479.grb --render.width 1024 
+    share/glgrib/testdata/contour/t0479.grb --render.width 1024 
     --render.height 1024 --field[0].palette.colors white --field[0].path 
-    share/glgrib/data/contour/t0479.grb --field[0].scale 1.00 
+    share/glgrib/testdata/contour/t0479.grb --field[0].scale 1.00 
     --field[0].type CONTOUR --field[0].contour.lengths 100 
     --field[0].contour.patterns X- --view.fov 5 
 ```
@@ -106,9 +107,9 @@
 
 ```
     --landscape.on --landscape.wireframe.on --landscape.grid.path 
-    share/glgrib/data/contour/t0479.grb --render.width 1024 
+    share/glgrib/testdata/contour/t0479.grb --render.width 1024 
     --render.height 1024 --field[0].palette.colors white --field[0].path 
-    share/glgrib/data/contour/t0479.grb --field[0].scale 1.01 
+    share/glgrib/testdata/contour/t0479.grb --field[0].scale 1.01 
     --field[0].type CONTOUR --field[0].contour.lengths 100 
     --field[0].contour.patterns XXXXXXXXX-X- --view.fov 5 
     --field[0].contour.widths 5 
@@ -118,9 +119,9 @@
 
 ```
     --landscape.on --landscape.wireframe.on --landscape.grid.path 
-    share/glgrib/data/contour/t0479.grb --render.width 1024 
+    share/glgrib/testdata/contour/t0479.grb --render.width 1024 
     --render.height 1024 --field[0].path 
-    share/glgrib/data/contour/t0479.grb --field[0].scale 1.01 
+    share/glgrib/testdata/contour/t0479.grb --field[0].scale 1.01 
     --field[0].type CONTOUR --field[0].contour.lengths 100 
     --field[0].contour.patterns XXXXXXXXX-X- --view.fov 5 
     --field[0].contour.widths 5 --field[0].palette.colors red green blue 
@@ -129,13 +130,13 @@
 ![](samples/contour5/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/t850.grb --field[0].palette-{ 
+    --field[0].path share/glgrib/testdata/t850.grb --field[0].palette-{ 
     --colors #0000ff #0055ff #00aaff #00ffff #00ffaa #00ff55 #00ff55 
     #55ff00 #aaff00 #ffff00 #ffaa00 #ff5500 #ff0000 #dd0000 --values 
     253.15 263.15 268.15 270.65 272.15 272.65 273.15 273.65 274.15 275.65 
     278.15 283.15 293.15 303.15 350 }- --coast.on --coast.lines.color 
     black --view.projection LATLON --view.lat 46.7 --view.lon 15 
-    --view.fov 4 --field[1].path share/glgrib/data/t850.grb 
+    --view.fov 4 --field[1].path share/glgrib/testdata/t850.grb 
     --field[1].type contour --field[1].palette.colors #95a3c0 
     --colorbar.on --colorbar.font.color.foreground black 
     --field[1].contour.levels 253.15 263.15 268.15 270.65 272.15 272.65 
@@ -146,7 +147,7 @@
 ![](samples/contour9/TEST_0000.png)
 
 ```
-    --field[0]-{ --path share/glgrib/data/2m_temperature.grib 
+    --field[0]-{ --path share/glgrib/testdata/2m_temperature.grib 
     --palette.values 241.15 243.15 245.15 247.15 249.15 251.15 253.15 
     255.15 257.15 259.15 261.15 263.15 265.15 267.15 269.15 271.15 273.15 
     275.15 277.15 279.15 281.15 283.15 285.15 287.15 289.15 291.15 293.15 
@@ -171,15 +172,15 @@
     #ff7100ff #ff0000ff #ffffffff --field[0].palette.offset -273.15 
     --field[0].palette.values 262.15 263.15 265.15 267.15 269.15 271.15 
     273.15 275.15 277.15 279.15 281.15 283.15 284.15 --field[0].path 
-    share/glgrib/data/t850.grb --field[1].contour.levels 47000 47500 48000 
-    48500 49000 49500 50000 50500 51000 51500 52000 52500 53000 53500 
-    54000 54500 55000 55500 56000 56500 57000 57500 
+    share/glgrib/testdata/t850.grb --field[1].contour.levels 47000 47500 
+    48000 48500 49000 49500 50000 50500 51000 51500 52000 52500 53000 
+    53500 54000 54500 55000 55500 56000 56500 57000 57500 
     --field[1].contour.widths 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 1 0 0 0 0 0 
     0 --field[1].hilo.font.color.foreground black 
     --field[1].hilo.font.bitmap.scale 0.02 --field[1].hilo.on 
     --field[1].palette.colors black --field[1].path 
-    share/glgrib/data/z500.grb --field[1].type CONTOUR --grid.color black 
-    --grid.labels.font.color.background white 
+    share/glgrib/testdata/z500.grb --field[1].type CONTOUR --grid.color 
+    black --grid.labels.font.color.background white 
     --grid.labels.font.color.foreground black 
     --grid.labels.font.bitmap.scale 0.02 --grid.labels.on --grid.on 
     --grid.resolution 18 --view.fov 5 --view.lat 49 --view.lon 2 
@@ -190,19 +191,19 @@
 
 ```
     --field[0].scale 1.0005 --field[0].path 
-    share/glgrib/data/joachim_surf.grib%stepRange="18-24",shortName="10fg6" 
+    share/glgrib/testdata/joachim_surf.grib%stepRange="18-24",shortName="10fg6" 
     --field[0].palette.values 0 20 20.6 21.2 21.8 22.4 23 23.6 24.2 24.8 
     25.4 26 27.5 29 30.5 32 33.5 35 36.5 38 --field[0].palette.colors 
     #00000000 #88a8d6ff #819cd2ff #7a8fceff #7382caff #6c74c6ff #6666c2ff 
     #6760bdff #6959b8ff #6b53b4ff #6e4fadff #9045b8ff #bf3bc2ff #cc319dff 
     #d62869ff #e11e28ff #eb4e14ff #f5960aff #ffea01ff 
     --field[0].palette.linear.on --colorbar.on --field[1].path 
-    share/glgrib/data/joachim_surf.grib%stepRange=24,shortName="10u" 
-    share/glgrib/data/joachim_surf.grib%stepRange=24,shortName="10v" 
+    share/glgrib/testdata/joachim_surf.grib%stepRange=24,shortName="10u" 
+    share/glgrib/testdata/joachim_surf.grib%stepRange=24,shortName="10v" 
     --field[1].scale 1.001 --field[1].type vector 
     --field[1].vector.norm.off --field[1].vector.arrow.color black 
     --field[1].vector.density 20 --field[2].path 
-    share/glgrib/data/joachim_surf.grib%stepRange=24,shortName="msl" 
+    share/glgrib/testdata/joachim_surf.grib%stepRange=24,shortName="msl" 
     --field[2].scale 1.001 --field[2].type contour 
     --field[2].palette.colors black --field[2].contour.levels 97000 97500 
     98000 98500 99000 99500 100000 100500 101000 101500 102000 
@@ -225,15 +226,15 @@
 ![](samples/precipeurope/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/total_precipitation.grib --coast.on 
-    --coast.lines.color black --landscape.color white --landscape.scale 
-    0.999 --landscape.on --field[0].palette.colors #00000000 #00ffff 
-    #0080ff #0000ff #da00ff #ff00ff #ff8000 #ff0000 
+    --field[0].path share/glgrib/testdata/total_precipitation.grib 
+    --coast.on --coast.lines.color black --landscape.color white 
+    --landscape.scale 0.999 --landscape.on --field[0].palette.colors 
+    #00000000 #00ffff #0080ff #0000ff #da00ff #ff00ff #ff8000 #ff0000 
     --field[0].palette.values 0. 0.0005 0.002 0.004 0.010 0.025 0.050 
     0.100 0.250 --colorbar.on --field[0].palette.linear.on --field[0].type 
     ISOFILL --render.width 1200 --field[0].isofill.levels 0. 0.0005 0.002 
     0.004 0.010 0.025 0.050 0.100 0.250 --field[1].type CONTOUR 
-    --field[1].path share/glgrib/data/total_precipitation.grib 
+    --field[1].path share/glgrib/testdata/total_precipitation.grib 
     --field[1].scale 1.001 --field[1].contour.levels 0. 0.0005 0.002 0.004 
     0.010 0.025 0.050 0.100 0.250 --field[1].palette.colors black 
     --colorbar.font.color.foreground white --view.lon 2 --view.lat 46.2 
@@ -247,7 +248,7 @@
 ![](samples/precipfixed/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/total_precipitation.grib 
+    --field[0].path share/glgrib/testdata/total_precipitation.grib 
     --field[0].palette.colors #00000000 #bbffff #00ffff #0080ff #0000ff 
     #da00ff #ff00ff #ff8000 #ff0000 --field[0].palette.values 0. 0.0001 
     0.0005 0.002 0.004 0.010 0.025 0.050 0.100 0.250 
@@ -262,7 +263,7 @@
     5 --view.projection POLAR_NORTH --grid.on --grid.color black 
     --colorbar.on --colorbar.font.color.background black --view.clip.xmin 
     0.15 --colorbar.font.color.foreground white --field[1].type CONTOUR 
-    --field[1].path share/glgrib/data/total_precipitation.grib 
+    --field[1].path share/glgrib/testdata/total_precipitation.grib 
     --field[1].scale 1.001 --field[1].contour.levels 0. 0.0001 0.0005 
     0.002 0.004 0.010 0.025 0.050 0.100 0.250 --field[1].palette.colors 
     black 
@@ -272,7 +273,7 @@
 
 ```
     --field[0]-{ --contour.labels.format %5.0f --contour.widths 1 2 1 1 2 
-    1 1 2 1 1 2 --path share/glgrib/data/z500.grb --type CONTOUR 
+    1 1 2 1 1 2 --path share/glgrib/testdata/z500.grb --type CONTOUR 
     --palette.colors black --contour.labels.on 
     --contour.labels.font.color.foreground black 
     --contour.labels.font.color.background white --contour.levels 51000 
@@ -286,7 +287,7 @@
 ![](samples/tempcontour/TEST_0000.png)
 
 ```
-    --field[0].scale 1.001 --field[0].path share/glgrib/data/t850.grib 
+    --field[0].scale 1.001 --field[0].path share/glgrib/testdata/t850.grib 
     --field[0].palette.colors #0000ff #003cff #0078ff #00b4ff #00f0ff 
     #00ffd2 #00ff96 #00ff5a #00ff1e #1eff00 #5aff00 #96ff00 #d2ff00 
     #fff000 #ffb400 #ff7800 #ff3c00 #ff0000 --field[0].palette.values 

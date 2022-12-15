@@ -2,7 +2,7 @@
 ![](samples/ssmigeopoints/TEST_0000.png)
 
 ```
-    --geopoints.path share/glgrib/data/geopoints/ssmis_light.nc 
+    --geopoints.path share/glgrib/testdata/geopoints/ssmis_light.nc 
     --geopoints.on --geopoints.points.scale 1.005 
     --geopoints.points.palette.name cold_hot --landscape.on 
     --geopoints.points.size.value 0.5 --grid.on --grid.color black 
@@ -15,7 +15,7 @@
 ![](samples/ssmigeopointspolar/TEST_0000.png)
 
 ```
-    --geopoints.path share/glgrib/data/geopoints/ssmis_light.nc 
+    --geopoints.path share/glgrib/testdata/geopoints/ssmis_light.nc 
     --geopoints.on --geopoints.points.palette.name cold_hot --landscape.on 
     --geopoints.points.size.value 0.5 --grid.on --grid.color black 
     --coast.on --coast.lines.color black --colorbar.on 
@@ -28,7 +28,7 @@
 ![](samples/ssmigeopointlatlon/TEST_0000.png)
 
 ```
-    --geopoints.path share/glgrib/data/geopoints/ssmis_light.nc 
+    --geopoints.path share/glgrib/testdata/geopoints/ssmis_light.nc 
     --geopoints.on --geopoints.points.palette.name cold_hot --landscape.on 
     --geopoints.points.size.value 0.5 --grid.on --grid.color black 
     --coast.on --coast.lines.color black --colorbar.on 

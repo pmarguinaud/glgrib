@@ -8,7 +8,8 @@
 ![](samples/hilo/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/wind+temp/t0224/S105TEMPERATURE.grb 
+    --field[0].path 
+    share/glgrib/testdata/wind+temp/t0224/S105TEMPERATURE.grb 
     --field[0].hilo.on --field[0].hilo.font.color.foreground green 
 ```
 ## Grid ticks & labels -- tickslabels

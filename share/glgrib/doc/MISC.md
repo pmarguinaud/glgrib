@@ -12,18 +12,20 @@
 ![](samples/debug/TEST_0000.png)
 
 ```
-    --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
-    --field[0].path share/glgrib/data/t1198c2.2/N.grb --field[0].scale 
-    1.03 --render.debug.on 
+    --landscape.on --landscape.grid.path 
+    share/glgrib/testdata/t1198c2.2/Z.grb --field[0].path 
+    share/glgrib/testdata/t1198c2.2/N.grb --field[0].scale 1.03 
+    --render.debug.on 
 ```
 ## Colorbar -- colorbar
 ![](samples/colorbar/TEST_0000.png)
 
 ```
-    --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
-    --field[0].path share/glgrib/data/t1198c2.2/N.grb --field[0].scale 
-    1.03 --colorbar.on --colorbar.font.color.foreground green 
-    --render.width 1000 
+    --landscape.on --landscape.grid.path 
+    share/glgrib/testdata/t1198c2.2/Z.grb --field[0].path 
+    share/glgrib/testdata/t1198c2.2/N.grb --field[0].scale 1.03 
+    --colorbar.on --colorbar.font.color.foreground green --render.width 
+    1000 
 ```
 ## Display French departements -- departements
 ![](samples/departements/TEST_0000.png)
@@ -38,16 +40,17 @@
 ![](samples/fa/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/fa/PGD.t479.fa%SFX.FRAC_SEA 
+    --field[0].path share/glgrib/testdata/fa/PGD.t479.fa%SFX.FRAC_SEA 
     --field[0].scale 1.03 
 ```
 ## Image on top of cloud fields -- image
 ![](samples/image/TEST_0000.png)
 
 ```
-    --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
-    --field[0].path share/glgrib/data/t1198c2.2/N.grb --field[0].scale 
-    1.03 --scene.image.on --scene.image.path share/glgrib/data/image/B.bmp 
+    --landscape.on --landscape.grid.path 
+    share/glgrib/testdata/t1198c2.2/Z.grb --field[0].path 
+    share/glgrib/testdata/t1198c2.2/N.grb --field[0].scale 1.03 
+    --scene.image.on --scene.image.path share/glgrib/testdata/image/B.bmp 
     --scene.image.x0 0. --scene.image.y0 0. --scene.image.x1 0.1 
     --scene.image.y1 0.1 
 ```
@@ -55,8 +58,8 @@
 ![](samples/interpolation/TEST.gif)
 
 ```
-    --field[0].path share/glgrib/data/interp/01.grb 
-    share/glgrib/data/interp/36.grb --field[0].scale 1.03 
+    --field[0].path share/glgrib/testdata/interp/01.grb 
+    share/glgrib/testdata/interp/36.grb --field[0].scale 1.03 
     --field[0].palette.name cold_hot_temp --view.lon 2 --view.lat 46.7 
     --view.fov 5 --scene.interpolation.on --scene.interpolation.frames 200 
     --render.width 1000 --render.height 1000 
@@ -74,15 +77,15 @@
 ![](samples/missingvalue/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/t49/SFX.CLAY.grb --coast.on 
+    --field[0].path share/glgrib/testdata/t49/SFX.CLAY.grb --coast.on 
     --grid.on --field[0].user_pref.off 
 ```
 ## Display field with keeping field values in RAM -- novalue
 ![](samples/novalue/TEST_0000.png)
 
 ```
-    --landscape.on --landscape.grid.path share/glgrib/data/t1798/Z.grb 
-    --field[0].path share/glgrib/data/t1798/SURFNEBUL.BASSE.grb 
+    --landscape.on --landscape.grid.path share/glgrib/testdata/t1798/Z.grb 
+    --field[0].path share/glgrib/testdata/t1798/SURFNEBUL.BASSE.grb 
     --field[0].scale 1.03 --field[0].palette.name cloud_auto 
     --field[0].no_value_pointer.on 
 ```
@@ -90,37 +93,37 @@
 ![](samples/offscreen/TEST.gif)
 
 ```
-    --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
-    --render.offscreen.on --render.offscreen.frames 36 
-    --scene.light.rotate.on --scene.light.on --field[0].path 
-    share/glgrib/data/t1198c2.2/SURFNEBUL.BASSE.grb 
-    share/glgrib/data/t1198c2.2/SURFNEBUL.MOYENN.grb 
-    share/glgrib/data/t1198c2.2/SURFNEBUL.HAUTE.grb --field[0].scale 1.03 
-    1.03 1.03 --field[0].palette.name cloud_auto cloud_auto cloud_auto 
-    --scene.light.rotate.rate 10 
+    --landscape.on --landscape.grid.path 
+    share/glgrib/testdata/t1198c2.2/Z.grb --render.offscreen.on 
+    --render.offscreen.frames 36 --scene.light.rotate.on --scene.light.on 
+    --field[0].path share/glgrib/testdata/t1198c2.2/SURFNEBUL.BASSE.grb 
+    share/glgrib/testdata/t1198c2.2/SURFNEBUL.MOYENN.grb 
+    share/glgrib/testdata/t1198c2.2/SURFNEBUL.HAUTE.grb --field[0].scale 
+    1.03 1.03 1.03 --field[0].palette.name cloud_auto cloud_auto 
+    cloud_auto --scene.light.rotate.rate 10 
 ```
 ## Display field with options in file -- optionsfile
 ![](samples/optionsfile/TEST_0000.png)
 
 ```
-    --{share/glgrib/data/options.list} 
+    --{share/glgrib/testdata/options.list} 
 ```
 ## Select field from GRIB file -- select_grib
 ![](samples/select_grib/TEST_0000.png)
 
 ```
-    --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
-    --field[0].path 
-    share/glgrib/data/t1198c2.2/N.grb%parameterCategory=6,year=2019 
+    --landscape.on --landscape.grid.path 
+    share/glgrib/testdata/t1198c2.2/Z.grb --field[0].path 
+    share/glgrib/testdata/t1198c2.2/N.grb%parameterCategory=6,year=2019 
     --field[0].scale 1.03 
 ```
 ## Low-res ARPEGE resolution -- small
 ![](samples/small/TEST_0000.png)
 
 ```
-    --landscape.on --landscape.grid.path share/glgrib/data/t49/Z.grb 
+    --landscape.on --landscape.grid.path share/glgrib/testdata/t49/Z.grb 
     --field[0].scale 1.01 --field[0].path 
-    share/glgrib/data/t49/SFX.CLAY.grb --coast.on --grid.on 
+    share/glgrib/testdata/t49/SFX.CLAY.grb --coast.on --grid.on 
     --field[0].user_pref.off 
 ```
 ## Test travelling option -- travelling
@@ -131,15 +134,16 @@
     --scene.travelling.pos1.lat 0 --scene.travelling.pos1.fov 30 
     --scene.travelling.pos2.lon 90 --scene.travelling.pos2.lat 45 
     --scene.travelling.pos2.fov 10 --landscape.on --landscape.grid.path 
-    share/glgrib/data/t1198c2.2/Z.grb --field[0].path 
-    share/glgrib/data/t1198c2.2/N.grb --field[0].scale 1.03 
+    share/glgrib/testdata/t1198c2.2/Z.grb --field[0].path 
+    share/glgrib/testdata/t1198c2.2/N.grb --field[0].scale 1.03 
     --render.offscreen.on --render.offscreen.frames 72 
 ```
 ## Zoom with Schmidt transform -- zoomschmidt1
 ![](samples/zoomschmidt1/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/wind+temp/t1798/S105TEMPERATURE.grb 
+    --field[0].path 
+    share/glgrib/testdata/wind+temp/t1798/S105TEMPERATURE.grb 
     --view.zoom.on --coast.on --coast.lines.color black --view.lon 2 
     --view.lat 46.7 --view.zoom.stretch 0.2 --grid.off 
 ```

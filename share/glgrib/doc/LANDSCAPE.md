@@ -3,7 +3,7 @@
 
 ```
     --landscape.on --landscape.grid.path 
-    share/glgrib/data/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --coast.on 
+    share/glgrib/testdata/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --coast.on 
     --grid.on 
 ```
 ## Display landscape in WebMercator projection -- webmercator
@@ -18,8 +18,8 @@
 ![](samples/land_orography/TEST_0000.png)
 
 ```
-    --landscape.on --landscape.grid.path ./share/glgrib/data/t479/Z.grb 
-    --landscape.geometry.height.on --landscape.geometry.height.scale 0.2 
-    --landscape.geometry.height.path ./share/glgrib/data/t479/Z.grb 
-    --landscape.flat.off 
+    --landscape.on --landscape.grid.path 
+    ./share/glgrib/testdata/t479/Z.grb --landscape.geometry.height.on 
+    --landscape.geometry.height.scale 0.2 --landscape.geometry.height.path 
+    ./share/glgrib/testdata/t479/Z.grb --landscape.flat.off 
 ```

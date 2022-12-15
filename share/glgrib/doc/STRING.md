@@ -2,7 +2,7 @@
 ![](samples/contourlabels2/TEST_0000.png)
 
 ```
-    --landscape.on --field[0].path share/glgrib/data/z500.grb 
+    --landscape.on --field[0].path share/glgrib/testdata/z500.grb 
     --field[0].scale 1.01 --field[0].type CONTOUR --view.lat 56 --view.lon 
     20 --field[0].contour.labels.on --grid.on --grid.color black 
     --field[0].palette.colors red --field[0].contour.levels 48000 48500 
@@ -16,9 +16,10 @@
 ![](samples/background/TEST_0000.png)
 
 ```
-    --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
-    --field[0].path share/glgrib/data/t1198c2.2/N.grb --field[0].scale 
-    1.03 --scene.date.on --scene.date.font.bitmap.scale 0.03 
+    --landscape.on --landscape.grid.path 
+    share/glgrib/testdata/t1198c2.2/Z.grb --field[0].path 
+    share/glgrib/testdata/t1198c2.2/N.grb --field[0].scale 1.03 
+    --scene.date.on --scene.date.font.bitmap.scale 0.03 
     --scene.date.font.color.foreground red 
     --scene.date.font.color.background white 
 ```
@@ -26,9 +27,10 @@
 ![](samples/text/TEST_0000.png)
 
 ```
-    --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
-    --field[0].path share/glgrib/data/t1198c2.2/N.grb --field[0].scale 
-    1.03 --scene.text.on --scene.text.s coucou --scene.text.x 0.0 
+    --landscape.on --landscape.grid.path 
+    share/glgrib/testdata/t1198c2.2/Z.grb --field[0].path 
+    share/glgrib/testdata/t1198c2.2/N.grb --field[0].scale 1.03 
+    --scene.text.on --scene.text.s coucou --scene.text.x 0.0 
     --scene.text.y 1.0 --scene.text.a NW --scene.text.font.bitmap.scale 
     0.03 --scene.text.font.color.foreground black 
     --scene.text.font.color.background white 
@@ -37,16 +39,17 @@
 ![](samples/title/TEST_0000.png)
 
 ```
-    --landscape.on --landscape.grid.path share/glgrib/data/t1198c2.2/Z.grb 
-    --field[0].path share/glgrib/data/t1198c2.2/N.grb --field[0].scale 
-    1.03 --scene.title.on 
+    --landscape.on --landscape.grid.path 
+    share/glgrib/testdata/t1198c2.2/Z.grb --field[0].path 
+    share/glgrib/testdata/t1198c2.2/N.grb --field[0].scale 1.03 
+    --scene.title.on 
 ```
 ## Contour with labels (dummy field) -- contourlabels
 ![](samples/contourlabels/TEST_0000.png)
 
 ```
     --landscape.on --field[0].path 
-    share/glgrib/data/contour/latlon18x13.grb --field[0].scale 1.03 
+    share/glgrib/testdata/contour/latlon18x13.grb --field[0].scale 1.03 
     --field[0].type CONTOUR --view.lat 45.65 --view.lon 6.39 
     --field[0].contour.labels.on --grid.on --view.fov 10 --grid.color 
     white --field[0].palette.colors red --field[0].contour.labels-{ 

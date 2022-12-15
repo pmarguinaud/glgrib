@@ -3,13 +3,13 @@
 
 ```
     --field[0].scale 1.01 --field[0].path 
-    share/glgrib/data/wind+temp/t1198c2.2/S105WIND.U.PHYS.grb 
-    share/glgrib/data/wind+temp/t1198c2.2/S105WIND.V.PHYS.grb 
+    share/glgrib/testdata/wind+temp/t1198c2.2/S105WIND.U.PHYS.grb 
+    share/glgrib/testdata/wind+temp/t1198c2.2/S105WIND.V.PHYS.grb 
     --field[0].type STREAM --field[0].palette-{ --colors grey green --min 
     0. --max 40. --values 0. 40. }- --field[0].stream.width 1.0 
     --field[0].stream.density 1.0 --field[1].scale 1.01 --field[1].path 
-    share/glgrib/data/wind+temp/t1198c2.2/S105WIND.U.PHYS.grb 
-    share/glgrib/data/wind+temp/t1198c2.2/S105WIND.V.PHYS.grb 
+    share/glgrib/testdata/wind+temp/t1198c2.2/S105WIND.U.PHYS.grb 
+    share/glgrib/testdata/wind+temp/t1198c2.2/S105WIND.V.PHYS.grb 
     --field[1].type VECTOR --field[1].vector.norm.off 
     --field[1].vector.arrow.color red --grid.on --grid.color red 
     --grid.scale 1.02 --coast.lines.scale 1.02 --coast.on 
@@ -21,13 +21,13 @@
 
 ```
     --field[0].path 
-    share/glgrib/data/wind+temp/glob025/P020WIND.U.PHYS.grb 
-    share/glgrib/data/wind+temp/glob025/P020WIND.V.PHYS.grb 
+    share/glgrib/testdata/wind+temp/glob025/P020WIND.U.PHYS.grb 
+    share/glgrib/testdata/wind+temp/glob025/P020WIND.V.PHYS.grb 
     --field[0].type STREAM --field[0].palette-{ --colors grey green --min 
     0. --max 40. --values 0. 40. }- --field[0].stream.width 1.0 
     --field[1].type VECTOR --field[1].path 
-    share/glgrib/data/wind+temp/glob025/P020WIND.U.PHYS.grb 
-    share/glgrib/data/wind+temp/glob025/P020WIND.V.PHYS.grb 
+    share/glgrib/testdata/wind+temp/glob025/P020WIND.U.PHYS.grb 
+    share/glgrib/testdata/wind+temp/glob025/P020WIND.V.PHYS.grb 
     --field[1].vector.arrow.color red --field[1].vector.scale 5 
     --field[1].scale 1.01 --grid.on --landscape.on --landscape.path 
     landscape/white.bmp --field[0].scale 1.01 --grid.color pink --coast.on 
@@ -38,13 +38,13 @@
 
 ```
     --field[0].path 
-    share/glgrib/data/wind+temp/eurat01/H020WIND.U.PHYS.grb 
-    share/glgrib/data/wind+temp/eurat01/H020WIND.V.PHYS.grb 
+    share/glgrib/testdata/wind+temp/eurat01/H020WIND.U.PHYS.grb 
+    share/glgrib/testdata/wind+temp/eurat01/H020WIND.V.PHYS.grb 
     --field[0].type STREAM --field[0].palette-{ --colors grey green --min 
     0. --max 40. --values 0. 40. }- --field[0].stream.width 1.0 
     --field[1].type VECTOR --field[1].path 
-    share/glgrib/data/wind+temp/eurat01/H020WIND.U.PHYS.grb 
-    share/glgrib/data/wind+temp/eurat01/H020WIND.V.PHYS.grb 
+    share/glgrib/testdata/wind+temp/eurat01/H020WIND.U.PHYS.grb 
+    share/glgrib/testdata/wind+temp/eurat01/H020WIND.V.PHYS.grb 
     --field[1].vector.arrow.color red --field[1].vector.scale 5 
     --field[1].scale 1.01 --grid.on --landscape.on --landscape.path 
     landscape/white.bmp --field[0].scale 1.01 --grid.color pink --coast.on 
@@ -54,13 +54,14 @@
 ![](samples/stream_lambert/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/aro2.5/S090WIND.U.PHYS.grb 
-    share/glgrib/data/aro2.5/S090WIND.V.PHYS.grb --field[0].type STREAM 
-    --field[0].palette-{ --colors grey green --min 0. --max 40. --values 
-    0. 40. }- --field[0].stream.width 0.0 --field[0].stream.density 0.5 
-    --field[0].stream.width 0.5 --field[1].type VECTOR --field[1].path 
-    share/glgrib/data/aro2.5/S090WIND.U.PHYS.grb 
-    share/glgrib/data/aro2.5/S090WIND.V.PHYS.grb 
+    --field[0].path share/glgrib/testdata/aro2.5/S090WIND.U.PHYS.grb 
+    share/glgrib/testdata/aro2.5/S090WIND.V.PHYS.grb --field[0].type 
+    STREAM --field[0].palette-{ --colors grey green --min 0. --max 40. 
+    --values 0. 40. }- --field[0].stream.width 0.0 
+    --field[0].stream.density 0.5 --field[0].stream.width 0.5 
+    --field[1].type VECTOR --field[1].path 
+    share/glgrib/testdata/aro2.5/S090WIND.U.PHYS.grb 
+    share/glgrib/testdata/aro2.5/S090WIND.V.PHYS.grb 
     --field[1].vector.arrow.color red --field[1].vector.scale 1 
     --field[1].scale 1.01 --grid.on --landscape.on --landscape.path 
     landscape/white.bmp --field[0].scale 1.01 --grid.color pink --coast.on 
@@ -70,8 +71,8 @@
 ![](samples/latlonstream/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/advection_850.grib%shortName="u" 
-    share/glgrib/data/advection_850.grib%shortName="v" --field[0].type 
+    --field[0].path share/glgrib/testdata/advection_850.grib%shortName="u" 
+    share/glgrib/testdata/advection_850.grib%shortName="v" --field[0].type 
     STREAM --field[0].palette.colors darkblue --land.on 
     --land.layers[0].path share/glgrib/coastlines/shp/GSHHS_i_L1.shp 
     --land.layers[1].path share/glgrib/coastlines/shp/GSHHS_i_L2.shp 
@@ -87,8 +88,8 @@
 
 ```
     --field[0].stream.motion.on --field[0].path 
-    share/glgrib/data/advection_850.grib%shortName="u" 
-    share/glgrib/data/advection_850.grib%shortName="v" --field[0].type 
+    share/glgrib/testdata/advection_850.grib%shortName="u" 
+    share/glgrib/testdata/advection_850.grib%shortName="v" --field[0].type 
     STREAM --field[0].palette.name cold_hot --land.on --grid.on 
     --grid.resolution 18 --grid.color black --landscape.on 
     --landscape.path landscape/white.bmp --landscape.scale 0.99 --view.lon 

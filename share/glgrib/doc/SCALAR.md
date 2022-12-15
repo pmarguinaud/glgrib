@@ -2,7 +2,7 @@
 ![](samples/glob01/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/glob01/lfpw_0_0_0_sfc_0_t.grib2 
+    --field[0].path share/glgrib/testdata/glob01/lfpw_0_0_0_sfc_0_t.grib2 
     --field[0].scale 1.00 --field[0].palette.name cold_hot_temp --coast.on 
     --grid.on 
 ```
@@ -11,7 +11,7 @@
 
 ```
     --landscape.on --field[0].user_pref.off --field[0].path 
-    share/glgrib/data/aro_guyane/SURFTEMPERATURE.grb 
+    share/glgrib/testdata/aro_guyane/SURFTEMPERATURE.grb 
     --field[0].palette.name cold_hot_temp --field[0].scale 1.01 --view.lat 
     5 --view.lon -51 --view.fov 3 --coast.on --grid.on 
 ```
@@ -19,7 +19,8 @@
 ![](samples/gauss_octahedral/TEST_0000.png)
 
 ```
-    --field[0].path ./share/glgrib/data/ecmwf/ecmf_0_1_0_ml_137_q.grib2 
+    --field[0].path 
+    ./share/glgrib/testdata/ecmwf/ecmf_0_1_0_ml_137_q.grib2 
     --field[0].palette.colors gray cyan blue --field[0].palette.values 0 
     0.005 0.03 --colorbar.on --render.width 1200 
 ```
@@ -27,7 +28,7 @@
 ![](samples/sst/TEST_0000.png)
 
 ```
-    --field[0].scale 1.001 --field[0].path share/glgrib/data/sst.grib 
+    --field[0].scale 1.001 --field[0].path share/glgrib/testdata/sst.grib 
     --field[0].palette-{ --values 271.15 273.15 275.15 277.15 279.15 
     281.15 283.15 285.15 287.15 289.15 291.15 293.15 295.15 297.15 299.15 
     301.15 303.15 305.15 307.15 309.15 --colors #4a007aff #9c00ffff 
@@ -42,15 +43,15 @@
 ![](samples/oldarpege/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/arpege.123.fa%SURFTEMPERATURE 
+    --field[0].path share/glgrib/testdata/arpege.123.fa%SURFTEMPERATURE 
     --scene.date.on --scene.date.font.bitmap.scale 0.03 
 ```
 ## Simple shading -- shading
 ![](samples/shading/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/t850.grb --field[0].palette.values 
-    245.15 297.15 --field[0].palette.generate.on 
+    --field[0].path share/glgrib/testdata/t850.grb 
+    --field[0].palette.values 245.15 297.15 --field[0].palette.generate.on 
     --field[0].palette.generate.levels 53 --field[0].palette.colors blue 
     red --colorbar.on --render.width 1200 --field[0].palette.rainbow.on 
     --field[0].palette.rainbow.direct.off --field[0].palette.offset 
@@ -64,7 +65,7 @@
 ![](samples/southamerica/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/total_precipitation.grib 
+    --field[0].path share/glgrib/testdata/total_precipitation.grib 
     --field[0].palette-{ --values 0. 0.0005 0.001 0.002 0.005 0.010 0.020 
     0.050 0.100 0.200 0.250 --colors white #ffffd9 #edf8b1 #c7e9b4 #7fcdbb 
     #41b6c4 #1d91c0 #225ea8 #253494 #081d58 }- --coast.on 
@@ -77,7 +78,8 @@
 ![](samples/fixedpaltemp/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/wind+temp/t0224/S105TEMPERATURE.grb 
+    --field[0].path 
+    share/glgrib/testdata/wind+temp/t0224/S105TEMPERATURE.grb 
     --field[0].user_pref.off --field[0].palette-{ --colors blue pink 
     orange yellow cyan --values 260 270 280 290 300 320 --fixed.on 
     --linear.on }- --field[0].type ISOFILL --field[0].isofill.levels 260 
@@ -88,7 +90,8 @@
 ![](samples/fixedpalscalsmooth/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/wind+temp/t0224/S105TEMPERATURE.grb 
+    --field[0].path 
+    share/glgrib/testdata/wind+temp/t0224/S105TEMPERATURE.grb 
     --field[0].user_pref.off --field[0].palette-{ --colors blue pink 
     orange yellow cyan --values 260 270 280 290 300 320 --fixed.on 
     --linear.on }- --colorbar.on --render.width 1200 --coast.on 
@@ -98,7 +101,8 @@
 ![](samples/fixedpalscalrough/TEST_0000.png)
 
 ```
-    --field[0].path share/glgrib/data/wind+temp/t0224/S105TEMPERATURE.grb 
+    --field[0].path 
+    share/glgrib/testdata/wind+temp/t0224/S105TEMPERATURE.grb 
     --field[0].user_pref.off --field[0].palette-{ --colors blue pink 
     orange yellow cyan --values 260 270 280 290 300 320 --fixed.on 
     --linear.on }- --colorbar.on --render.width 1200 --coast.on 
@@ -110,9 +114,9 @@
 ```
     --landscape.on --render.offscreen.on --render.offscreen.frames 36 
     --scene.light.rotate.on --scene.light.on --field[0].path 
-    ./share/glgrib/data/town/town1800.grb --field[0].palette-{ --colors 
-    #bbbb0000 #bbbb00ff #bbbb00ff --values 0. 0.1 1.0 }- 
+    ./share/glgrib/testdata/town/town1800.grb --field[0].palette-{ 
+    --colors #bbbb0000 #bbbb00ff #bbbb00ff --values 0. 0.1 1.0 }- 
     --field[0].scalar.light.reverse.on --field[1].path 
-    share/glgrib/data/t1198c2.2/SURFNEBUL.BASSE.grb --field[1].scale 1.03 
-    --field[1].palette.name cloud_auto --scene.light.rotate.rate 10 
+    share/glgrib/testdata/t1198c2.2/SURFNEBUL.BASSE.grb --field[1].scale 
+    1.03 --field[1].palette.name cloud_auto --scene.light.rotate.rate 10 
 ```

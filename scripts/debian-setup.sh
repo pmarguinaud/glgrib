@@ -67,14 +67,16 @@ cat > $SHARED/glgrib-install.sh << EOF
 set -x
 set -e
 
-for pack in data doc test bin
+dpkg-scanpackages -m . > Packages
+
+sudo apt-get update
+
+for pack in bin data doc test
 do
   set +e
-  sudo dpkg -i ./glgrib-\${pack}_*_amd64.deb  
+  sudo apt-get -y install glgrib-\${pack}
   set -e
 done
-
-sudo apt-get install -y -f
 
 EOF
 
@@ -128,6 +130,15 @@ then
     libglfw3-dev libnetcdf-c++4-dev libpng-dev libreadline-dev libshp-dev \
     libsqlite3-dev libssl-dev libglm-dev build-essential devscripts debhelper \
     patchelf
+fi
+
+if [ "x\$kind" = "xinstall" ]
+then
+  apt-get -y install dpkg-dev
+  cat > /etc/apt/sources.list.d/glgrib.list << EOC
+deb [trusted=yes] file:/home/$USER /
+EOC
+
 fi
 
 echo 'X11UseLocalhost no' >> /etc/ssh/sshd_config

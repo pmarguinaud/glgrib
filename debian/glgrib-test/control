@@ -3,7 +3,7 @@ Maintainer: Philippe Marguinaud <pmarguinaud@hotmail.com>
 Section: misc
 Priority: optional
 Standards-Version: 4.5.1
-Build-Depends: make (>= 4.3), debhelper (>= 13)
+Build-Depends: make (>= 4.2.1), debhelper (>= 12.10)
 
 Package: glgrib-test
 Architecture: any 

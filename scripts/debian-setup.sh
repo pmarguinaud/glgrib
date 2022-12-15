@@ -11,13 +11,14 @@ unset LANGUAGE
 
 EMAIL=pmarguinaud@hotmail.com
 NAME="Philippe Marguinaud"
-DEBIAN=latest
+#DEBIAN=debian:latest
+DEBIAN=ubuntu:20.04
 
-sudo docker pull debian:$DEBIAN
+sudo docker pull $DEBIAN
 
 SSHKEY=$(cat $HOME/.ssh/id_rsa.pub)
-
-SHARED=$PWD/debuild
+SHARED=$PWD/$DEBIAN
+TIMEZONE=$(cat /etc/timezone)
 
 \rm -rf $SHARED
 mkdir -p $SHARED
@@ -113,6 +114,9 @@ dir=\$(dirname \$0)
 
 cd \$dir
 
+ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime 
+echo $TIMEZONE > /etc/timezone
+
 apt-get -y update 
 apt-get -y dist-upgrade
 apt-get -y install git vim ssh screen sudo
@@ -163,17 +167,17 @@ declare -A IP
 for kind in build install
 do
   sudo docker \
-    run -h debian_glgrib_$kind -t -d \
-    --name debian_glgrib_$kind \
+    run -h glgrib_$kind -t -d \
+    --name glgrib_$kind \
     --mount type=bind,src=$SHARED/,dst=/home/$USER \
-    debian:$DEBIAN
+    $DEBIAN
   
-  sudo docker exec debian_glgrib_$kind /home/$USER/glgrib-boot.sh $kind
+  sudo docker exec glgrib_$kind /home/$USER/glgrib-boot.sh $kind
   
-  IP[$kind]=$(sudo docker inspect -f "{{ .NetworkSettings.IPAddress }}" debian_glgrib_$kind)
+  IP[$kind]=$(sudo docker inspect -f "{{ .NetworkSettings.IPAddress }}" glgrib_$kind)
   ssh-keygen -f "$HOME/.ssh/known_hosts" -R ${IP[$kind]}
 
-  echo "${IP[$kind]}" > debian_glgrib_$kind.txt
+  echo "${IP[$kind]}" > glgrib_$kind.txt
 done
 
 

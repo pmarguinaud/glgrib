@@ -71,7 +71,7 @@ dpkg-scanpackages -m . > Packages
 
 sudo apt-get update
 
-for pack in bin data doc test
+for pack in bin data doc testdata
 do
   set +e
   sudo apt-get -y install glgrib-\${pack}
@@ -86,7 +86,7 @@ cat > $SHARED/glgrib-uninstall.sh << EOF
 set -x
 set -e
 
-for pack in bin data doc test
+for pack in bin data doc testdata
 do
   sudo apt-get remove -y glgrib-\$pack
 done

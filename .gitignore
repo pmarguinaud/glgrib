@@ -23,3 +23,12 @@ debian/debhelper-build-stamp
 debian/files
 debian/glgrib.substvars
 debian/glgrib/
+debian/glgrib-data.substvars
+debian/glgrib-data/
+debian/glgrib-doc.substvars
+debian/glgrib-doc/
+debian/glgrib-testdata.substvars
+debian/glgrib-testdata/
+debian/libglgrib.substvars
+debian/libglgrib/
+

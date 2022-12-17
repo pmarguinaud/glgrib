@@ -1,0 +1,59 @@
+Source: glgrib
+Section: science
+Priority: optional
+Maintainer: Debian Science Maintainers <debian-science-maintainers@lists.alioth.debian.org>
+Uploaders: Pierre Gruet <pgt@debian.org>
+Build-Depends: debhelper-compat (= 13),
+               libcurl4-openssl-dev,
+               libeccodes-dev,
+               libglew-dev,
+               libglfw3-dev,
+               libglm-dev,
+               libnetcdf-c++4-dev,
+               libreadline-dev,
+               libshp-dev,
+               libsqlite3-dev,
+               libssl-dev,
+               libxrandr-dev
+Standards-Version: 4.6.1
+Vcs-Browser: https://salsa.debian.org/science-team/glgrib
+Vcs-Git: https://salsa.debian.org/science-team/glgrib.git
+Homepage: https://github.com/pmarguinaud/glgrib
+Rules-Requires-Root: no
+
+Package: glgrib
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
+Description: GRIB2 fields displayer using OpenGL
+ <long_description>
+
+Package: libglgrib
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
+Description: GRIB2 fields displayer using OpenGL (shared library)
+ <long_description>
+
+Package: glgrib-data
+Architecture: all
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
+Description: GRIB2 fields displayer using OpenGL (runtime data)
+ <long_description>
+
+Package: glgrib-doc
+Section: doc
+Architecture: all
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
+Description: GRIB2 fields displayer using OpenGL (documentation)
+ <long_description>
+
+Package: glgrib-testdata
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
+Description: GRIB2 fields displayer using OpenGL (test files)
+ <long_description>

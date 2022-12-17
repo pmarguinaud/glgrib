@@ -14,7 +14,8 @@ Build-Depends: debhelper-compat (= 13),
                libshp-dev,
                libsqlite3-dev,
                libssl-dev,
-               libxrandr-dev
+               libxrandr-dev,
+               libgbm-dev
 Standards-Version: 4.6.1
 Vcs-Browser: https://salsa.debian.org/science-team/glgrib
 Vcs-Git: https://salsa.debian.org/science-team/glgrib.git
@@ -28,7 +29,15 @@ Depends: ${shlibs:Depends},
 Description: GRIB2 fields displayer using OpenGL
  <long_description>
 
-Package: libglgrib
+Package: libglgrib0
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
+Description: GRIB2 fields displayer using OpenGL (shared library)
+ <long_description>
+
+Package: liblfi0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},

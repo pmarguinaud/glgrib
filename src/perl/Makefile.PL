@@ -1,13 +1,20 @@
 use 5.016000;
 use ExtUtils::MakeMaker;
+use Cwd;
 
-my $prefix = $ENV{GLGRIB_PREFIX} || "$ENV{HOME}/3d/glgrib";
-my $libdir = $ENV{GLGRIB_LIBDIR} || "$ENV{HOME}/3d/glgrib";
+
+my $cwd = &cwd ();
+my $TOP = "$cwd/../..";
+
+
+my $prefix = $ENV{GLGRIB_PREFIX} || $TOP;
+my $libdir = $ENV{GLGRIB_LIBDIR} || $TOP;
 
 my $USE_EGL = 0;
 
 my @lib = $USE_EGL ? qw (-lEGL -lgbm) : qw (-lGLEW -lglfw);
 my @def = $USE_EGL ? '-DUSE_EGL' : '-DUSE_GLFW';
+my $suf = $USE_EGL ? "-egl" : "-glfw";
 
 &WriteMakefile
 (
@@ -19,10 +26,10 @@ my @def = $USE_EGL ? '-DUSE_EGL' : '-DUSE_GLFW';
   ABSTRACT_FROM     => 'lib/glGrib.pm', 
   AUTHOR            => 'Philippe Marguinaud <pmarguinaud@hotmail.com>',
   DEFINE            => "-DGLGRIB_PREFIX='\"$prefix\"' @def", 
-  INC               => '-I. -I..', 
+  INC               => "-I. -I$TOP/include", 
   OBJECT            => 'glGrib.o',
   LIBS              => "-L$libdir/lib -Wl,-rpath,$libdir/lib " .
-                       '-lglGrib -lLFI -lGL ' . join (' ', @lib) . ' -lpng -lreadline -lncurses ' .
+                       "-lglGrib$suf -lLFI -lGL " . join (' ', @lib) . ' -lpng -lreadline -lncurses ' .
                        '-ltinfo -lssl -lcrypto -lpthread -lsqlite3 -lcurl ' .
                        '-lshp -leccodes -lnetcdf_c++4',
 );

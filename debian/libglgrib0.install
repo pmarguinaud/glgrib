@@ -1,2 +1,0 @@
-#!/usr/bin/dh-exec
-usr/lib/libglGrib.so.* usr/lib/${DEB_HOST_MULTIARCH}/

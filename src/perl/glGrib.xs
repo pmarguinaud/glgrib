@@ -1,5 +1,5 @@
-#include "glGribShellInterpreter.h"
-#include "glGribResolve.h"
+#include "glGrib/ShellInterpreter.h"
+#include "glGrib/Resolve.h"
 #define PERL_NO_GET_CONTEXT
 
 #include "EXTERN.h"

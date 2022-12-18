@@ -21,14 +21,15 @@ share/glgrib/shaders/*
 debian/.debhelper/
 debian/debhelper-build-stamp
 debian/files
-debian/glgrib.substvars
+debian/*.substvars
 debian/glgrib/
-debian/glgrib-data.substvars
 debian/glgrib-data/
-debian/glgrib-doc.substvars
 debian/glgrib-doc/
-debian/glgrib-testdata.substvars
 debian/glgrib-testdata/
-debian/libglgrib.substvars
-debian/libglgrib/
+debian/glgrib-egl/
+debian/glgrib-glfw/
+debian/glgrib-shaders/
+debian/libglgrib0-egl/
+debian/libglgrib0-glfw/
+debian/liblfi0/
 

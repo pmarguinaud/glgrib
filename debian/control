@@ -42,7 +42,7 @@ Depends: ${shlibs:Depends},
 Description: GRIB2 fields displayer using OpenGL
  <long_description>
 
-Package: libglgrib0-gflw
+Package: libglgrib0-glfw
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},

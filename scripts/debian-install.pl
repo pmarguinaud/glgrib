@@ -83,7 +83,7 @@ my @node;
 
 for my $pack (@pack)
   {
-    push @node, do { my $fh = 'FileHandle'->new ("<debian/$pack.install"); <$fh> };
+    push @node, grep { !/^#/o } do { my $fh = 'FileHandle'->new ("<debian/$pack.install"); <$fh> };
   }
 
 for (@node)

@@ -1,9 +1,0 @@
-Changes
-glGrib.xs
-Makefile.PL
-MANIFEST
-ppport.h
-README
-lib/glGrib.pm
-t/offline.t
-t/window.t

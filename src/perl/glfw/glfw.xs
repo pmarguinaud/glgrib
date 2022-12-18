@@ -12,7 +12,7 @@
 
 
 
-MODULE = glGrib		PACKAGE = glGrib		
+MODULE = glGrib::glfw		PACKAGE = glGrib::glfw
 
 
 BOOT:

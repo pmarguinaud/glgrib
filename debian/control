@@ -128,3 +128,16 @@ Depends: ${shlibs:Depends},
          ${misc:Depends}
 Description: GRIB2 fields displayer using OpenGL (test files)
  <long_description>
+
+Package: libglgrib-glfw-perl
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         perl,
+         libglgrib0-glfw,
+         glgrib-shaders,
+         glgrib-data
+Description: GRIB2 fields displayer using OpenGL (shared library)
+ <long_description>
+

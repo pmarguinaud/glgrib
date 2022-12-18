@@ -1,7 +1,7 @@
 
-all: blib/arch/auto/glGrib/glGrib.so
+all: blib/arch/auto/glGrib/glGrib/glfw.so
 
-blib/arch/auto/glGrib/glGrib.so: glGrib.xs
+blib/arch/auto/glGrib/glGrib/glfw.so: glfw.xs
 	perl Makefile.PL && make -f Makefile
 
 clean:

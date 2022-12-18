@@ -1,4 +1,4 @@
-package glGrib::base;
+package glGrib::glfw;
 
 use 5.016000;
 use strict;
@@ -8,7 +8,9 @@ our $VERSION = '0.01';
 
 use XSLoader;
 
-&XSLoader::load ('glGrib', $VERSION);
+&XSLoader::load ('glGrib::glfw', $VERSION);
+
+our $DONE;
 
 sub import
 {
@@ -24,7 +26,7 @@ sub import
   while (my ($method, $return) = each (%method))
     {
       no strict 'refs';
-      *{"$class\::$method"} = sub { use strict; shift; &{"$class\::_method_"} ($return, $method, @_); };
+      *{"$class\::$method"} = sub { shift; &{"$class\::_method_"} ($return, $method, @_); };
     }
 
 }
@@ -37,24 +39,24 @@ __END__
 
 =head1 NAME
 
-glGrib - Perl extension for glGrib visualization
+glGrib::glfw - Perl extension for glGrib visualization
 
 =head1 SYNOPSIS
 
-  use glGrib;
-  'glGrib'->start ('--grid.on', '--landscape.on');
+  use glGrib::glfw;
+  'glGrib::glfw'->start ('--grid.on', '--landscape.on');
   
   sleep (2);
   
-  'glGrib'->set ('--grid.off');
+  'glGrib::glfw'->set ('--grid.off');
   
   sleep (2);
   
   use Data::Dumper;
   
-  print STDERR &Dumper (['glGrib'->get ('--view')]);
+  print STDERR &Dumper (['glGrib::glfw'->get ('--view')]);
   
-  'glGrib'->stop ();
+  'glGrib::glfw'->stop ();
 
 =head1 DESCRIPTION
 

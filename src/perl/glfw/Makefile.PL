@@ -4,7 +4,7 @@ use Cwd;
 
 
 my $cwd = &cwd ();
-my $TOP = "$cwd/../..";
+my $TOP = "$cwd/../../..";
 
 
 my $prefix = $ENV{GLGRIB_PREFIX} || $TOP;
@@ -20,14 +20,14 @@ my $suf = $USE_EGL ? "-egl" : "-glfw";
 (
   LD                => 'g++ -std=c++11 -fopenmp',
   CC                => 'g++ -std=c++11 -fopenmp',
-  NAME              => 'glGrib',
-  VERSION_FROM      => 'lib/glGrib.pm', 
+  NAME              => 'glGrib::glfw',
+  VERSION_FROM      => 'lib/glGrib/glfw.pm', 
   PREREQ_PM         => {}, 
-  ABSTRACT_FROM     => 'lib/glGrib.pm', 
+  ABSTRACT_FROM     => 'lib/glGrib/glfw.pm', 
   AUTHOR            => 'Philippe Marguinaud <pmarguinaud@hotmail.com>',
   DEFINE            => "-DGLGRIB_PREFIX='\"$prefix\"' @def", 
   INC               => "-I. -I$TOP/include", 
-  OBJECT            => 'glGrib.o',
+  OBJECT            => 'glfw.o',
   LIBS              => "-L$libdir/lib -Wl,-rpath,$libdir/lib " .
                        "-lglGrib$suf -lLFI -lGL " . join (' ', @lib) . ' -lpng -lreadline -lncurses ' .
                        '-ltinfo -lssl -lcrypto -lpthread -lsqlite3 -lcurl ' .

@@ -8,7 +8,7 @@ BEGIN { use_ok('glGrib::glfw') };
 
 unlink ($_) for (<snapshot*.png>);
 
-'glGrib::glfw'->start ('--grid.on', '--landscape.on', '--window.offscreen.on');
+'glGrib::glfw'->start ('--grid.on', '--landscape.on', '--render.offscreen.on');
 'glGrib::glfw'->snapshot ();
 'glGrib::glfw'->set ('--grid.off');
 'glGrib::glfw'->snapshot ();

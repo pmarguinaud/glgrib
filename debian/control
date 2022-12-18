@@ -42,11 +42,28 @@ Depends: ${shlibs:Depends},
 Description: GRIB2 fields displayer using OpenGL
  <long_description>
 
+Package: libglgrib-headers
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
+Description: GRIB2 fields displayer using OpenGL (shared library)
+ <long_description>
+
 Package: libglgrib0-glfw
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends}
+Description: GRIB2 fields displayer using OpenGL (shared library)
+ <long_description>
+
+Package: libglgrib-glfw-dev
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libglgrib-headers
 Description: GRIB2 fields displayer using OpenGL (shared library)
  <long_description>
 
@@ -58,7 +75,24 @@ Depends: ${shlibs:Depends},
 Description: GRIB2 fields displayer using OpenGL (shared library)
  <long_description>
 
+Package: libglgrib-egl-dev
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libglgrib-headers
+Description: GRIB2 fields displayer using OpenGL (shared library)
+ <long_description>
+
 Package: liblfi0
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends}
+Description: GRIB2 fields displayer using OpenGL (shared library)
+ <long_description>
+
+Package: liblfi-dev
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},

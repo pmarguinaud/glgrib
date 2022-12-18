@@ -6,8 +6,6 @@ include /usr/share/dpkg/architecture.mk
 	dh $@ 
 
 override_dh_auto_install:
-	echo "DEB_HOST_MULTIARCH"
-	echo $(DEB_HOST_MULTIARCH)
-	./scripts/install.pl 
+	./scripts/debian-install.pl 
 
 

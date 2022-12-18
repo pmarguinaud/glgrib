@@ -8,7 +8,7 @@ sub getOptions
 {
   my $self = shift;
   &Tk::glGrib::json2tree 
-    (&JSON::decode_json ('glGrib'->json (@_, "--$self->{glGrib}{name}.")));
+    (&JSON::decode_json ('glGrib::glfw'->json (@_, "--$self->{glGrib}{name}.")));
 }
 
 sub Apply
@@ -19,7 +19,7 @@ sub Apply
 
   my @diff = &Tk::glGrib::diffOptions 
                ($opts, $self->{glGrib}{opts});
-  'glGrib'->set (@diff);
+  'glGrib::glfw'->set (@diff);
   $self->Reload ();
   $self->saveOpts ();
 }
@@ -94,7 +94,7 @@ sub Text_
 
   use Tk::glGribTextOptions;
   'Tk::glGribTextOptions'->new (-opts => \@diff, -command => sub
-     { 'glGrib'->set (@_); $self->Reload () if (&Exists ($self)); },
+     { 'glGrib::glfw'->set (@_); $self->Reload () if (&Exists ($self)); },
      -title => "$self->{glGrib}{name} options");
 }
 

@@ -4,7 +4,7 @@ use Tk;
 use Tk::glGribBase qw (Tk::MainWindow);
 use strict;
 
-use glGrib;
+use glGrib::glfw;
 use Tk::glGrib;
 use Tk::glGrib_Panel;
 
@@ -14,7 +14,7 @@ sub populate
 
   my $opts = delete $args->{'-opts'};
 
-  'glGrib'->start (@$opts);
+  'glGrib::glfw'->start (@$opts);
 
   $self->{glGrib}{base} = my $base = &Tk::glGrib::base ('--');
 
@@ -58,7 +58,7 @@ sub select : method
 
   my $button = $self->{glGrib}{select};
 
-  my @w = 'glGrib'->window ();
+  my @w = 'glGrib::glfw'->window ();
 
   my ($x, $y) = $button->pointerxy (); 
   my $menu = $button->Menu
@@ -81,7 +81,7 @@ sub selectPost
 {
   my ($self, $rank) = @_;
 
-  'glGrib'->window ($rank);
+  'glGrib::glfw'->window ($rank);
 
   for my $name (keys (%{ $self->{glGrib}{panels} }))
     {
@@ -113,7 +113,7 @@ sub createPanel
         {
           $opts =
           &Tk::glGrib::json2tree 
-            (&JSON::decode_json ('glGrib'->json ("--$name.")));
+            (&JSON::decode_json ('glGrib::glfw'->json ("--$name.")));
           $opts = $opts->[1];
 	  $self->{glGrib}{base}[$i+1] = $opts;
           last;
@@ -132,7 +132,7 @@ sub quit
 
   $self->destroy ();
 
-  'glGrib'->stop ();
+  'glGrib::glfw'->stop ();
 
   exit (0);
 }

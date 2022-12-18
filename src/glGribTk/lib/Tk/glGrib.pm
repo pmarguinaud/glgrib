@@ -191,7 +191,7 @@ sub json2tree
 
 sub base
 {
-  my $tree = &json2tree (&decode_json ('glGrib'->json ('+base', $_[0])));
+  my $tree = &json2tree (&decode_json ('glGrib::glfw'->json ('+base', $_[0])));
 # 'FileHandle'->new ('>glgrib.pl')->print (&Data::Dumper::Dumper ($tree));
   return $tree;
 }
@@ -249,7 +249,7 @@ sub create
 {
   my ($win, $name, $opts, $default, @args) = @_;
 
-  my $class = 'glGrib' . ucfirst ($name);
+  my $class = 'glGrib::glfw' . ucfirst ($name);
   $class =~ s/[^a-z]+$//io;
   $class =~ s{_(\w)}{uc ($1)}egoms;
 

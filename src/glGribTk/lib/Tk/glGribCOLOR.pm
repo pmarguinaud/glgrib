@@ -62,7 +62,7 @@ sub getRGB
 {
   my ($self, $db) = @_;
   my $picker = $db
-             ? 'Tk::glGribColorPickerDB'->new (-db => 'glGrib'->resolve ('glGrib.db'))
+             ? 'Tk::glGribColorPickerDB'->new (-db => 'glGrib::glfw'->resolve ('glGrib.db'))
              : 'Tk::glGribColorPicker'->new (-color => ${ $self->{variable} });
   my $color = $picker->Show ();
 

@@ -57,7 +57,7 @@ sub selectField
       return;
     }
 
-  my @r = 'glGrib'->list ($file);
+  my @r = 'glGrib::glfw'->list ($file);
 
   if (@r < 20)
     {

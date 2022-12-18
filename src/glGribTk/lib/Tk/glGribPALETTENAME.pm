@@ -60,7 +60,7 @@ sub choosePalette
   my $self = shift;
   use Tk::glGribPalettePickerDB;
 
-  my $db = 'glGrib'->resolve ('glGrib.db');
+  my $db = 'glGrib::glfw'->resolve ('glGrib.db');
 
   my $pick = 
     'Tk::glGribPalettePickerDB'->new (-db => $db, 

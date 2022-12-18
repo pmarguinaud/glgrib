@@ -141,3 +141,12 @@ Depends: ${shlibs:Depends},
 Description: GRIB2 fields displayer using OpenGL (shared library)
  <long_description>
 
+Package: glgrib-tk
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libglgrib-glfw-perl,
+         perl-tk
+Description: GRIB2 fields displayer using OpenGL (shared library)
+ <long_description>
+

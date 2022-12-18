@@ -1,11 +1,20 @@
 use 5.016000;
 use ExtUtils::MakeMaker;
-# See lib/ExtUtils/MakeMaker.pm for details of how to influence
-# the contents of the Makefile that is written.
-WriteMakefile(
-    NAME              => 'glGribTk',
-    VERSION_FROM      => 'lib/Tk/glGrib.pm', 
-    PREREQ_PM         => {}, 
-    ABSTRACT_FROM     => 'lib/Tk/glGrib.pm', 
-    AUTHOR            => 'Philippe MARGUINAUD <pmarguinaud@hotmail.com>',
+use Cwd;
+
+my $cwd = &cwd ();
+my $TOP = "$cwd/../../..";
+
+my $debian = $ENV{DEB_BUILD_ARCH};
+
+&WriteMakefile
+(
+  NAME              => 'glGribTk',
+  VERSION_FROM      => 'lib/Tk/glGrib.pm', 
+  PREREQ_PM         => {'glGrib::gflw' => '0.01', 'Tk' => '804.035'}, 
+  ABSTRACT_FROM     => 'lib/Tk/glGrib.pm', 
+  AUTHOR            => 'Philippe MARGUINAUD <pmarguinaud@hotmail.com>',
+  $debian 
+?(PREFIX            => "$TOP/debian/tmp/usr") 
+:()
 );

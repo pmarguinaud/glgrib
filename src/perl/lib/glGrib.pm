@@ -1,4 +1,4 @@
-package glGrib;
+package glGrib::base;
 
 use 5.016000;
 use strict;
@@ -10,21 +10,23 @@ use XSLoader;
 
 &XSLoader::load ('glGrib', $VERSION);
 
-my $done = 0;
-
 sub import
 {
-  return if ($done);
+  my $class = shift;
+
+  {
+    no strict 'refs';
+    return if (${"$class\::DONE"}++);
+  }
 
   my %method = qw (start 0 snapshot 0 get 1 set 0 stop 0 json 1 window 1 list 1 resolve 1 clone 0);
 
   while (my ($method, $return) = each (%method))
     {
       no strict 'refs';
-      *{$method} = sub { use strict; shift; &glGrib::_method_ ($return, $method, @_); };
+      *{"$class\::$method"} = sub { use strict; shift; &{"$class\::_method_"} ($return, $method, @_); };
     }
 
-  $done = 1;
 }
 
 1;

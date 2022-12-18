@@ -7,5 +7,6 @@ include /usr/share/dpkg/architecture.mk
 
 override_dh_auto_install:
 	./scripts/debian-install.pl 
+	cd src/perl/glfw && make install 
 
 

@@ -1,5 +1,5 @@
 
-all: blib/arch/auto/glGrib/glGrib/glfw.so
+all: blib/lib/Tk/glGrib.pm
 
 install: Makefile
 	make install -f Makefile
@@ -7,7 +7,7 @@ install: Makefile
 Makefile:
 	perl Makefile.PL
 
-blib/arch/auto/glGrib/glGrib/glfw.so: glfw.xs
+blib/lib/Tk/glGrib.pm: lib/Tk/glGrib.pm Makefile
 	make -f Makefile
 
 clean: Makefile

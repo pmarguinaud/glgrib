@@ -1,4 +1,4 @@
 #!/usr/bin/dh-exec
-usr/lib/${DEB_HOST_MULTIARCH}/perl/Tk/*.pm
+usr/share/perl/*/Tk/*.pm
 usr/bin/glgribtk
-usr/man3/Tk::glGrib.3pm
+usr/man/man3/Tk::glGrib.3pm

@@ -1,6 +1,4 @@
 #!/usr/bin/dh-exec
 usr/lib/${DEB_HOST_MULTIARCH}/perl/*/glGrib/glfw.pm
-usr/lib/${DEB_HOST_MULTIARCH}/perl/*/perllocal.pod
 usr/lib/${DEB_HOST_MULTIARCH}/perl/*/auto/glGrib/glfw/glfw.so
-usr/lib/${DEB_HOST_MULTIARCH}/perl/*/auto/glGrib/glfw/.packlist
 usr/man/man3/glGrib::glfw.3pm

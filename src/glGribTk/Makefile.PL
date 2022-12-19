@@ -3,7 +3,7 @@ use ExtUtils::MakeMaker;
 use Cwd;
 
 my $cwd = &cwd ();
-my $TOP = "$cwd/../../..";
+my $TOP = "$cwd/../..";
 
 my $debian = $ENV{DEB_BUILD_ARCH};
 
@@ -14,7 +14,9 @@ my $debian = $ENV{DEB_BUILD_ARCH};
   PREREQ_PM         => {'glGrib::gflw' => '0.01', 'Tk' => '804.035'}, 
   ABSTRACT_FROM     => 'lib/Tk/glGrib.pm', 
   AUTHOR            => 'Philippe MARGUINAUD <pmarguinaud@hotmail.com>',
+  EXE_FILES         => [ <bin/*> ],
   $debian 
-?(PREFIX            => "$TOP/debian/tmp/usr") 
+?(PREFIX            => "$TOP/debian/tmp/usr",
+  INSTALLSCRIPT     => "$TOP/debian/tmp/usr/bin") 
 :()
 );

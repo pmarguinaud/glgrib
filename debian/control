@@ -29,8 +29,19 @@ Depends: ${shlibs:Depends},
          libglgrib0-glfw,
          glgrib-shaders,
          liblfi0
-Description: GRIB2 fields displayer using OpenGL
- <long_description>
+Description: Display geophysical fields encoded in GRIB edition 2 using OpenGL.
+ This is the interactive executable, based on GLFW.
+ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale,
+ coastlines, borders. Lat/lon, lambert, gaussian grid. GLFW backend for 
+ interactive display, EGL backend for batch processing without X11 display.
+ Perl/Tk interface.
+ Tested on :
+  - VGA compatible controller: Intel Corporation Xeon E3-1200 v3/4th Gen Core 
+ Processor Integrated Graphics Controller (rev 06)
+  - VGA compatible controller: Intel Corporation HD Graphics 530 (rev 06)
+  - VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Wani 
+ [Radeon R5/R6/R7 Graphics] (rev c8)
+  - 3D controller: NVIDIA Corporation GV100GL [Tesla V100S PCIe 32GB] (rev a1)
 
 Package: glgrib-egl
 Architecture: any
@@ -39,24 +50,35 @@ Depends: ${shlibs:Depends},
          libglgrib0-egl,
          glgrib-shaders,
          liblfi0
-Description: GRIB2 fields displayer using OpenGL
- <long_description>
+Description: Display geophysical fields encoded in GRIB edition 2 using OpenGL.
+ This is the headless executable, based on EGL.
+ Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale,
+ coastlines, borders. Lat/lon, lambert, gaussian grid. GLFW backend for 
+ interactive display, EGL backend for batch processing without X11 display.
+ Perl/Tk interface.
+ Tested on :
+  - VGA compatible controller: Intel Corporation Xeon E3-1200 v3/4th Gen Core 
+ Processor Integrated Graphics Controller (rev 06)
+  - VGA compatible controller: Intel Corporation HD Graphics 530 (rev 06)
+  - VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Wani 
+ [Radeon R5/R6/R7 Graphics] (rev c8)
+  - 3D controller: NVIDIA Corporation GV100GL [Tesla V100S PCIe 32GB] (rev a1)
 
 Package: libglgrib-headers
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends}
-Description: GRIB2 fields displayer using OpenGL (shared library)
- <long_description>
+Description: Display GRIB2 fields using OpenGL (headers for glgrib).
+ Headers for building applications based on the glgrib libraries.
 
 Package: libglgrib0-glfw
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends}
-Description: GRIB2 fields displayer using OpenGL (shared library)
- <long_description>
+Description: Display GRIB2 fields using OpenGL (GLFW based shared library).
+ Shared library for the interactive glgrib (based on GLFW).
 
 Package: libglgrib-glfw-dev
 Section: libs
@@ -64,16 +86,16 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          libglgrib-headers
-Description: GRIB2 fields displayer using OpenGL (shared library)
- <long_description>
+Description: Display GRIB2 fields using OpenGL (GLFW based shared library).
+ Shared library for the interactive glgrib (based on GLFW).
 
 Package: libglgrib0-egl
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends}
-Description: GRIB2 fields displayer using OpenGL (shared library)
- <long_description>
+Description: Display GRIB2 fields using OpenGL (EGL based shared library).
+ Shared library for the headless glgrib (based on EGL).
 
 Package: libglgrib-egl-dev
 Section: libs
@@ -81,53 +103,53 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          libglgrib-headers
-Description: GRIB2 fields displayer using OpenGL (shared library)
- <long_description>
+Description: Display GRIB2 fields using OpenGL (EGL based shared library).
+ Shared library for the headless glgrib (based on EGL).
 
 Package: liblfi0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends}
-Description: GRIB2 fields displayer using OpenGL (shared library)
- <long_description>
+Description: Display GRIB2 fields using OpenGL (ancillary shared library).
+ Small ancillary library used by glgrib (GLFW & EGL).
 
 Package: liblfi-dev
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends}
-Description: GRIB2 fields displayer using OpenGL (shared library)
- <long_description>
+Description: Display GRIB2 fields using OpenGL (ancillary shared library).
+ Small ancillary library used by glgrib (GLFW & EGL).
 
 Package: glgrib-shaders
 Architecture: all
 Depends: ${shlibs:Depends},
          ${misc:Depends}
-Description: GRIB2 fields displayer using OpenGL (runtime data)
- <long_description>
+Description: Display GRIB2 fields using OpenGL (shaders for glgrib).
+ OpenGL shaders used by glgrib (GLFW & EGL).
 
 Package: glgrib-data
 Architecture: all
 Depends: ${shlibs:Depends},
          ${misc:Depends}
-Description: GRIB2 fields displayer using OpenGL (runtime data)
- <long_description>
+Description: Display GRIB2 fields using OpenGL (data for glgrib).
+ Runtime data for glgrib (coastlines & landscapes).
 
 Package: glgrib-doc
 Section: doc
 Architecture: all
 Depends: ${shlibs:Depends},
          ${misc:Depends}
-Description: GRIB2 fields displayer using OpenGL (documentation)
- <long_description>
+Description: Display GRIB2 fields using OpenGL (glgrib documentation).
+ Documentation (in markdown format) for glgrib: pictures & examples.
 
 Package: glgrib-testdata
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends}
-Description: GRIB2 fields displayer using OpenGL (test files)
- <long_description>
+Description: Display GRIB2 fields using OpenGL (test data for glgrib).
+ Mostly GRIB2 files used to create glgrib examples.
 
 Package: libglgrib-glfw-perl
 Section: libs
@@ -138,8 +160,9 @@ Depends: ${shlibs:Depends},
          libglgrib0-glfw,
          glgrib-shaders,
          glgrib-data
-Description: GRIB2 fields displayer using OpenGL (shared library)
- <long_description>
+Description: Display GRIB2 fields using OpenGL (glgrib Perl bindings).
+ glGrib::glfw is a module providing full access to glgrib capabilities
+ to the Perl interpreter).
 
 Package: glgrib-tk
 Architecture: any
@@ -147,6 +170,6 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
          libglgrib-glfw-perl,
          perl-tk
-Description: GRIB2 fields displayer using OpenGL (shared library)
- <long_description>
+Description: Display GRIB2 fields using OpenGL (Perl/Tk interface for glgrib).
+ Full access to glgrib capabilities through a Perl/Tk interface.
 

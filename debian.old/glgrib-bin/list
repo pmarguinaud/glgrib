@@ -1,8 +1,0 @@
-src
-makefile
-makefile.inc
-lib
-bin
-LICENSE.txt
-share/glgrib/glGrib.db
-scripts/debian.pl

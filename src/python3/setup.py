@@ -1,28 +1,23 @@
 from setuptools import setup, Extension
-import unittest
 import os
-
-def my_test_suite ():
-    test_loader = unittest.TestLoader ()
-    test_suite = test_loader.discover ('tests', pattern='*.py')
-    return test_suite
-
+import sys
 
 TOP = "../.."
 prefix = TOP
 
+debian = os.getenv ('DEB_BUILD_ARCH')
+
+if (sys.argv[1] == 'install') and (debian is not None):
+  sys.argv.append ('--prefix=' + prefix + "/debian/tmp/usr")
+
 setup (
     name = "glGrib",
     version = "0.1",
-    test_suite="setup.my_test_suite",
-
     ext_modules = [Extension ("glGrib", ["glGrib.cc"], 
     include_dirs=[TOP + '/include'], 
-    define_macros=[('GLGRIB_PREFIX', '"' + prefix + '"')],
+    define_macros=[('GLGRIB_PREFIX', '"' + prefix + '"'),('USE_GLFW','1')],
     libraries=['glGrib', 'LFI', 'GLEW', 'GL', 'glfw', 'png', 'readline', 'ncurses',
                'tinfo', 'ssl', 'crypto', 'pthread', 'sqlite3', 'curl', 'shp', 'eccodes'],
-    runtime_library_dirs=[prefix + "/lib", "../lib"],
     library_dirs=[prefix + "/lib", "../lib"])],
-
   );
 

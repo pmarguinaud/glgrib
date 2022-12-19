@@ -1,14 +1,11 @@
 
-TOP=../..
+all: build
 
-include $(TOP)/makefile.inc
+install:
+	python2 setup.py install 
 
-glGrib.so: glGrib.cc
-	g++ -DGLGRIB_PREFIX=\"`pwd`/$(TOP)\" $(CXXFLAGS) -I$(TOP)/include -DUSE_GLFW  --shared `python2-config --includes` -O2 glGrib.cc -o glGrib.so $(LDFLAGS) -Wl,-rpath,$(TOP)/lib
+build:
+	python2 setup.py build
 
 clean:
-	\rm -f glGrib.so
-
-test:
-	./glGribWindow.py
-	./glGribOffline.py
+	\rm -rf build dist glGrib.egg-info/

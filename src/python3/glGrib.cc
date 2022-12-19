@@ -1,5 +1,5 @@
-#include "glGribShellInterpreter.h"
-#include "glGribResolve.h"
+#include "glGrib/ShellInterpreter.h"
+#include "glGrib/Resolve.h"
 #include <Python.h>
 
 namespace 
@@ -29,7 +29,7 @@ int buildArgList (std::vector<std::string> * argslist, PyObject * args)
 
       PyObject * str = PyObject_Str (arg);
 
-      argslist->push_back (std::string (PyString_AsString (str)));
+      argslist->push_back (std::string ((char*)PyUnicode_AsUTF8 (str)));
 
       Py_DECREF (str);
     }
@@ -108,11 +108,24 @@ createCommand (json, SCAL);
 
 }
 
+static struct PyModuleDef glGribModule = 
+{
+  PyModuleDef_HEAD_INIT,
+  "glGrib",
+  "",
+  -1,
+  nullptr
+};
 
 PyMODINIT_FUNC
-initglGrib ()
+PyInit_glGrib ()
 {
   glGrib::glGribPrefix = GLGRIB_PREFIX;
   glGribMethods.push_back ({NULL, NULL, 0, NULL});
-  Py_InitModule ("glGrib", &glGribMethods[0]);
+  glGribModule.m_methods = &glGribMethods[0];
+  PyObject * m = PyModule_Create (&glGribModule);
+  return m;
 }
+
+
+

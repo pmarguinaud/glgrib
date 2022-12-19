@@ -8,7 +8,8 @@ def my_test_suite ():
     return test_suite
 
 
-prefix = "@CMAKE_INSTALL_PREFIX@";
+TOP = "../.."
+prefix = TOP
 
 setup (
     name = "glGrib",
@@ -16,11 +17,10 @@ setup (
     test_suite="setup.my_test_suite",
 
     ext_modules = [Extension ("glGrib", ["glGrib.cc"], 
-    include_dirs=['@CMAKE_SOURCE_DIR@/src'], 
+    include_dirs=[TOP + '/include'], 
     define_macros=[('GLGRIB_PREFIX', '"' + prefix + '"')],
     libraries=['glGrib', 'LFI', 'GLEW', 'GL', 'glfw', 'png', 'readline', 'ncurses',
-               'tinfo', 'ssl', 'crypto', 'pthread', 'sqlite3', 'curl',
-               'shp', 'eccodes'],
+               'tinfo', 'ssl', 'crypto', 'pthread', 'sqlite3', 'curl', 'shp', 'eccodes'],
     runtime_library_dirs=[prefix + "/lib", "../lib"],
     library_dirs=[prefix + "/lib", "../lib"])],
 

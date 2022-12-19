@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 
 import glGrib
 import time
@@ -8,7 +8,7 @@ import glob
 def main():
   for f in glob.glob ("snapshot*.png"):
      os.remove (f)
-  glGrib.start ('--grid.on', '--landscape.on', '--window.offscreen.on');
+  glGrib.start ('--grid.on', '--landscape.on', '--render.offscreen.on');
   glGrib.snapshot ();
   glGrib.set ('--grid.off')
   glGrib.snapshot ();

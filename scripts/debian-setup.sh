@@ -11,13 +11,13 @@ unset LANGUAGE
 
 EMAIL=pmarguinaud@hotmail.com
 NAME="Philippe Marguinaud"
-#DEBIAN=debian:latest
-DEBIAN=ubuntu:20.04
+DEBIAN=debian:latest
+#DEBIAN=ubuntu:20.04
 
 sudo docker pull $DEBIAN
 
 SSHKEY=$(cat $HOME/.ssh/id_rsa.pub)
-SHARED=$PWD/$DEBIAN
+SHARED=$PWD/../$DEBIAN
 TIMEZONE=$(cat /etc/timezone)
 
 \rm -rf $SHARED
@@ -129,7 +129,7 @@ then
     g++ make libcurl4-openssl-dev libeccodes-dev libegl-dev libglew-dev \
     libglfw3-dev libnetcdf-c++4-dev libpng-dev libreadline-dev libshp-dev \
     libsqlite3-dev libssl-dev libglm-dev build-essential devscripts debhelper \
-    patchelf
+    patchelf python2-dev python3-dev
 fi
 
 if [ "x\$kind" = "xinstall" ]
@@ -181,6 +181,7 @@ do
     run -h glgrib_$kind -t -d \
     --name glgrib_$kind \
     --mount type=bind,src=$SHARED/,dst=/home/$USER \
+    --mount type=bind,src=$PWD/,dst=/home/$USER/glgrib \
     $DEBIAN
   
   sudo docker exec glgrib_$kind /home/$USER/glgrib-boot.sh $kind
@@ -191,6 +192,7 @@ do
   echo "${IP[$kind]}" > glgrib_$kind.txt
 done
 
+exit
 
 SSH="ssh -o StrictHostKeyChecking=no -X"
 

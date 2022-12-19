@@ -28,6 +28,7 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
          libglgrib0-glfw,
          glgrib-shaders,
+         glgrib-data,
          liblfi0
 Description: Display geophysical fields encoded in GRIB edition 2 using OpenGL.
  This is the interactive executable, based on GLFW.
@@ -49,6 +50,7 @@ Depends: ${shlibs:Depends},
          ${misc:Depends}
          libglgrib0-egl,
          glgrib-shaders,
+         glgrib-data,
          liblfi0
 Description: Display geophysical fields encoded in GRIB edition 2 using OpenGL.
  This is the headless executable, based on EGL.
@@ -76,7 +78,8 @@ Package: libglgrib0-glfw
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
-         ${misc:Depends}
+         ${misc:Depends},
+         liblfi0
 Description: Display GRIB2 fields using OpenGL (GLFW based shared library).
  Shared library for the interactive glgrib (based on GLFW).
 
@@ -85,7 +88,9 @@ Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         libglgrib-headers
+         libglgrib0-glfw,
+         libglgrib-headers,
+         liblfi0
 Description: Display GRIB2 fields using OpenGL (GLFW based shared library).
  Shared library for the interactive glgrib (based on GLFW).
 
@@ -102,6 +107,7 @@ Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         libglgrib0-egl,
          libglgrib-headers
 Description: Display GRIB2 fields using OpenGL (EGL based shared library).
  Shared library for the headless glgrib (based on EGL).
@@ -118,7 +124,8 @@ Package: liblfi-dev
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
-         ${misc:Depends}
+         ${misc:Depends},
+         liblfi0
 Description: Display GRIB2 fields using OpenGL (ancillary shared library).
  Small ancillary library used by glgrib (GLFW & EGL).
 

@@ -12,7 +12,10 @@ debian = os.getenv ('DEB_BUILD_ARCH')
 
 if (sys.argv[1] == 'install') and (debian is not None):
   version = re.sub ("\.\d+$", "", platform.python_version ())
-  os.environ['PYTHONPATH'] = TOP + '/debian/tmp/usr/lib/python' + version + '/site-packages/'
+  dir = TOP + '/debian/tmp/usr/lib/python' + version + '/site-packages/'
+  os.environ['PYTHONPATH'] = dir
+  if not  os.path.exists (dir):
+    os.makedirs (dir)
   sys.argv.append ('--prefix=' + prefix + "/debian/tmp/usr")
 
 setup (

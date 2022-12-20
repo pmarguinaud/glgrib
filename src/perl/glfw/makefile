@@ -12,6 +12,7 @@ blib/arch/auto/glGrib/glGrib/glfw.so: glfw.xs Makefile
 
 clean: Makefile
 	make clean -f Makefile
+	\rm -f Makefile.old
 
 test: Makefile
 	make test -f Makefile

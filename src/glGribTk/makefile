@@ -12,6 +12,7 @@ blib/lib/Tk/glGrib.pm: lib/Tk/glGrib.pm Makefile
 
 clean: Makefile
 	make clean -f Makefile
+	\rm -f Makefile.old
 
 test: Makefile
 	make test -f Makefile

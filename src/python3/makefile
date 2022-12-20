@@ -8,4 +8,4 @@ build:
 	python3 setup.py build
 
 clean:
-	\rm -rf build dist glGrib.egg-info
+	\rm -rf build dist *.egg-info

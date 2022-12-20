@@ -111,14 +111,14 @@ createCommand (json, SCAL);
 static struct PyModuleDef glGribModule = 
 {
   PyModuleDef_HEAD_INIT,
-  "glGrib",
+  "glGrib.glfw",
   "",
   -1,
   nullptr
 };
 
 PyMODINIT_FUNC
-PyInit_glGrib ()
+PyInit_glfw ()
 {
   glGrib::glGribPrefix = GLGRIB_PREFIX;
   glGribMethods.push_back ({NULL, NULL, 0, NULL});

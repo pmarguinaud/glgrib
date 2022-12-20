@@ -11,9 +11,9 @@ if (sys.argv[1] == 'install') and (debian is not None):
   sys.argv.append ('--prefix=' + prefix + "/debian/tmp/usr")
 
 setup (
-    name = "glGrib",
+    name = "glGrib.glfw",
     version = "0.1",
-    ext_modules = [Extension ("glGrib", ["glGrib.cc"], 
+    ext_modules = [Extension ("glGrib.glfw", ["glfw.cc"], 
     include_dirs=[TOP + '/include'], 
     define_macros=[('GLGRIB_PREFIX', '"' + prefix + '"'),('USE_GLFW','1')],
     libraries=['glGrib', 'LFI', 'GLEW', 'GL', 'glfw', 'png', 'readline', 'ncurses',

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import glGrib
+import glGrib.glfw
 import time
 import os
 import glob
@@ -8,11 +8,11 @@ import glob
 def main():
   for f in glob.glob ("snapshot*.png"):
      os.remove (f)
-  glGrib.start ('--grid.on', '--landscape.on', '--render.offscreen.on');
-  glGrib.snapshot ();
-  glGrib.set ('--grid.off')
-  glGrib.snapshot ();
-  glGrib.stop ();
+  glGrib.glfw.start ('--grid.on', '--landscape.on', '--render.offscreen.on');
+  glGrib.glfw.snapshot ();
+  glGrib.glfw.set ('--grid.off')
+  glGrib.glfw.snapshot ();
+  glGrib.glfw.stop ();
   
 
 if __name__ == "__main__":

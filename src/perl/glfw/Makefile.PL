@@ -1,6 +1,30 @@
+package MY;
+
+use strict;
+
+sub const_loadlibs
+{
+  my $self = shift;
+
+  my $c = $self->SUPER::const_loadlibs (@_);
+
+  my $debian = $ENV{DEB_BUILD_ARCH};
+
+  if ($debian)
+    {
+      $self->{LD_RUN_PATH} = "";
+    }
+
+  return $c;
+}
+
+package main;
+
 use 5.016000;
 use ExtUtils::MakeMaker;
 use Cwd;
+
+
 
 my $cwd = &cwd ();
 my $TOP = "$cwd/../../..";

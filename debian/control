@@ -49,7 +49,7 @@ Description: Display geophysical fields encoded in GRIB edition 2 using OpenGL.
 Package: glgrib-egl
 Architecture: any
 Depends: ${shlibs:Depends},
-         ${misc:Depends}
+         ${misc:Depends},
          libglgrib0-egl,
          glgrib-shaders,
          glgrib-data,

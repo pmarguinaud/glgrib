@@ -62,7 +62,7 @@ chdir ('..');
 
 'FileHandle'->new (">$dir.list")->print (join ("\n", @f, ""));
 
-my @cmd = ('tar', '--verbatim-files-from', "--files-from=$dir.list", -zcvf => "$dir-$version.orig.tar.gz");
+my @cmd = ('tar', '--verbatim-files-from', "--files-from=$dir.list", -zcvf => "${dir}_$version.orig.tar.gz");
 
 system (@cmd)
   and die ("Command `@cmd' failed\n");

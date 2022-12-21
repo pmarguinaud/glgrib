@@ -21,8 +21,6 @@ sub slurp
 
 my ($changelog) = &slurp ("debian/changelog");
 
-# glgrib (1.0-1)
-
 my ($version) = ($changelog =~ m/glgrib\s+\((\S+)-\d+\)/goms);
 
 my ($options) = &slurp ("debian/source/options");
@@ -33,9 +31,19 @@ $diff_ignore = qr/$diff_ignore/o;
 
 my @f;
 
-&find ({wanted => sub { my $f = $File::Find::name; push @f, $f unless ($f =~ $diff_ignore); }, no_chdir => 1}, '.');
+&find ({wanted => sub 
+{ 
+  my $f = $File::Find::name; 
+  return if ($f =~ $diff_ignore); 
+  return if ($f =~ m/\.(?:o|so|so\.\d+)$/o);
+  return if ($f =~ m,bin/glgrib-(?:glfw|egl),o);
+  return if ($f =~ m,blib,o);
+  push @f, $f; 
+}, no_chdir => 1}, '.');
 
 my %f = map { ($_, 1) } @f;
+
+# Remove intermediate directories
 
 for my $f (@f)
   {

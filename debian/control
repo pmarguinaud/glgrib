@@ -90,9 +90,9 @@ Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         libglgrib0-glfw,
+         libglgrib0-glfw (= ${binary:Version}),
          libglgrib-headers,
-         liblfi0
+         liblfi0 (= ${binary:Version}) 
 Description: Display GRIB2 fields using OpenGL (GLFW based shared library).
  Shared library for the interactive glgrib (based on GLFW).
 
@@ -109,8 +109,9 @@ Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         libglgrib0-egl,
-         libglgrib-headers
+         libglgrib0-egl (= ${binary:Version}),
+         libglgrib-headers,
+         liblfi0 (= ${binary:Version}) 
 Description: Display GRIB2 fields using OpenGL (EGL based shared library).
  Shared library for the headless glgrib (based on EGL).
 
@@ -127,7 +128,7 @@ Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         liblfi0
+         liblfi0 (= ${binary:Version})
 Description: Display GRIB2 fields using OpenGL (ancillary shared library).
  Small ancillary library used by glgrib (GLFW & EGL).
 
@@ -165,6 +166,7 @@ Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
+         ${perl:Depends},
          perl,
          libglgrib0-glfw,
          glgrib-shaders,

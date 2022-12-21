@@ -65,6 +65,7 @@ my $suf = $USE_EGL ? "-egl" : "-glfw";
                        '-ltinfo -lssl -lcrypto -lpthread -lsqlite3 -lcurl ' .
                        '-lshp -leccodes -lnetcdf_c++4',
   $debian 
-?(PREFIX            => "$TOP/debian/tmp/usr") 
+?(PREFIX            => "$TOP/debian/tmp/usr",
+  INSTALLDIRS       => 'vendor',) 
 :()
 );

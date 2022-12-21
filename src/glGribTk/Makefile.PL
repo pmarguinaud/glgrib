@@ -17,6 +17,7 @@ my $debian = $ENV{DEB_BUILD_ARCH};
   EXE_FILES         => [ <bin/*> ],
   $debian 
 ?(PREFIX            => "$TOP/debian/tmp/usr",
+  INSTALLDIRS       => 'vendor',
   INSTALLSCRIPT     => "$TOP/debian/tmp/usr/bin") 
 :()
 );

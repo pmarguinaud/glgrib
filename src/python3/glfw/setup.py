@@ -2,7 +2,7 @@ from setuptools import setup, Extension
 import os
 import sys
 
-TOP = "../.."
+TOP = "../../.."
 prefix = TOP
 
 debian = os.getenv ('DEB_BUILD_ARCH')

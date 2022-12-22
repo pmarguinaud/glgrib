@@ -184,3 +184,14 @@ Depends: ${shlibs:Depends},
 Description: Display GRIB2 fields using OpenGL (Perl/Tk interface for glgrib).
  Full access to glgrib capabilities through a Perl/Tk interface.
 
+Package: python3-glgrib-glfw
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         python3,
+         libglgrib0-glfw,
+         glgrib-shaders,
+         glgrib-data
+Description: Display GRIB2 fields using OpenGL (glgrib Python3 bindings).
+ glGrib.glfw is a module providing full access to glgrib capabilities
+ to the Python interpreter.

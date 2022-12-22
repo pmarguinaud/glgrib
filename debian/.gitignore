@@ -2,7 +2,6 @@
 debhelper-build-stamp
 files
 *.substvars
-glgrib/
 glgrib-data/
 glgrib-doc/
 glgrib-testdata/
@@ -18,3 +17,4 @@ libglgrib-headers/
 liblfi-dev/
 libglgrib-glfw-perl/
 glgrib-tk/
+python3-glgrib-glfw/

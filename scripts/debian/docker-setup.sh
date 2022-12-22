@@ -57,6 +57,7 @@ git config --global credential.helper 'cache --timeout=3600'
 
 cd glgrib
 
+./scripts/debian/tar.pl
 debuild -us -uc
 
 EOF

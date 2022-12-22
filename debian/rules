@@ -6,10 +6,10 @@ include /usr/share/dpkg/architecture.mk
 	dh $@ 
 
 override_dh_auto_install:
-	./scripts/debian-install.pl 
+	./scripts/debian/install.pl 
 	cd src/perl/glfw && make install 
 	cd src/glGribTk && make install
 	cd src/python3/glfw && make install
-	./scripts/cleanPerlInstall.pl
+	./scripts/debian/cleanInstall.pl
 
 

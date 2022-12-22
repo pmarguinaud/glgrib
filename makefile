@@ -7,5 +7,5 @@ all:
 
 clean:
 	cd src && make clean
-	cd debian && make clean
+	./scripts/debian/clean.sh
 

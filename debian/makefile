@@ -1,3 +1,0 @@
-
-clean:
-	./clean.sh

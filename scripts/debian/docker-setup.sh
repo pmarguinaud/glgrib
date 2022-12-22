@@ -55,10 +55,10 @@ git config --global user.name "$NAME"
 git config --global credential.helper cache
 git config --global credential.helper 'cache --timeout=3600'
 
-git clone https://github.com/pmarguinaud/glgrib.git
 cd glgrib
-./scripts/debian.pl --create-archive --create-directory 
-./scripts/debian.pl --compile
+
+debuild -us -uc
+
 EOF
  
 cat > $SHARED/glgrib-install.sh << EOF
@@ -71,10 +71,11 @@ dpkg-scanpackages -m . > Packages
 
 sudo apt-get update
 
-for pack in bin data doc testdata
+for pp in glgrib/debian/*.install
 do
+  pack=\$(basename \$pp .install)
   set +e
-  sudo apt-get -y install glgrib-\${pack}
+  sudo apt-get -y install \$pack
   set -e
 done
 
@@ -86,10 +87,14 @@ cat > $SHARED/glgrib-uninstall.sh << EOF
 set -x
 set -e
 
-for pack in bin data doc testdata
+for pp in glgrib/debian/*.install
 do
-  sudo apt-get remove -y glgrib-\$pack
+  pack=\$(basename \$pp .install)
+  set +e
+  sudo apt-get -y remove \$pack
+  set -e
 done
+
 sudo apt-get autoremove -y 
 
 EOF
@@ -163,9 +168,9 @@ set -x
 
 for f in *
 do
-  if [ -d "$f" ]
+  if [ -d "\$f" ]
   then
-    \rm -rf "$f"
+    \rm -rf "\$f"
   fi
 done
 

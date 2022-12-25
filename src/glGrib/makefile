@@ -6,8 +6,8 @@ include $(TOP)/makefile.inc
 ifeq ($(BUILD), )
 
 all:
-	make BUILD=glfw
-	make BUILD=egl
+	+make BUILD=glfw
+	+make BUILD=egl
 clean:
 	make BUILD=glfw clean
 	make BUILD=egl clean

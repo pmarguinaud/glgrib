@@ -821,6 +821,23 @@ const std::string OptionsParser::getHelpShort () const
 {
   std::string help = R"HELP(
 
+glgrib is an application to display fields encoded in GRIB edition 2 using OpenGL.
+
+Features : raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, 
+gaussian grid. GLFW backend for interactive display, EGL backend for batch processing without 
+X11 display.
+
+Tested on :
+
+VGA compatible controller: Intel Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller (rev 06) 
+
+VGA compatible controller: Intel Corporation HD Graphics 530 (rev 06) 
+
+VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev c8) 
+
+3D controller: NVIDIA Corporation GV100GL [Tesla V100S PCIe 32GB] (rev a1) 
+
+
 Simple interface:
   
 Review (use PageUp/PageDown) : 

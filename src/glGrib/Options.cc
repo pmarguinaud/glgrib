@@ -21,6 +21,7 @@ template <> const std::string optionTmpl    <float>                ::type () { r
 template <> const std::string optionTmplList<int>                  ::type () { return std::string ("INTEGER-LIST"); }
 template <> const std::string optionTmplList<float>                ::type () { return std::string ("FLOAT-LIST"); }
 template <> const std::string optionTmpl     <OptionBlock>         ::type () { return std::string ("BLOCK"); }
+template <> const bool        optionTmpl     <OptionBlock>         ::hasHelp () { return false; }
 template <> const std::string optionTmpl     <OptionDate>          ::type () { return std::string ("DATE"); }
 template <> const std::string optionTmpl     <OptionColor>         ::type () { return std::string ("COLOR"); }
 template <> const std::string optionTmpl     <OptionScale>         ::type () { return std::string ("SCALE"); }
@@ -500,6 +501,12 @@ bool OptionsParser::parse (int _argc, const char * _argv[],
                       arg = "--" + arg + "." + a;
                     }
 
+                  if (arg == "--pod")
+                    {
+                      showPOD ();
+                      return false;
+                    }
+
                   if (arg == "--json")
                     {
                       showJSON ();
@@ -700,6 +707,106 @@ bool OptionsParser::seenOption (const std::string & name) const
   return false;
 }
 
+const std::string OptionsParser::getPOD
+  (const std::string & prefix, bool show_hidden, bool sort)
+{
+  std::string pod;
+
+  pod = R"POD(
+=head1 NAME
+
+glgrib
+
+=head1 SYNOPSIS
+
+)POD";
+
+pod += getHelpShort ();
+
+  pod += R"POD(
+
+=head1 OPTIONS
+
+=over 4
+
+
+)POD";
+
+  int len = prefix.size ();
+
+  const char * format = R"FORMAT(
+=item C<%s>
+
+Type : C<%s>
+
+Default : C<%s>
+
+Description : %s
+
+)FORMAT";
+
+  std::vector<std::string> list;
+
+  if (sort)
+    {
+      for (name2option_t::iterator it = name2option.begin (); 
+           it != name2option.end (); ++it)
+        list.push_back (it->first);
+    }
+  else
+    {
+      list = listoptions;
+    }
+
+  for (const auto & opt_name : list)
+    if (opt_name.substr (0, len) == prefix)
+      {   
+        auto it = name2option.find (opt_name);
+	OptionsParserDetail::optionBase * opt = it->second;
+        if (! opt->hasHelp ())
+          continue;
+        if ((! show_hidden) && (opt->hidden))
+          continue;
+	char str[256];
+        sprintf (&str[0], format, it->first.c_str (), opt->type ().c_str (), 
+                 opt->asString ().c_str (), opt->desc.c_str ());
+	pod += std::string (str);
+      }   
+
+  pod += R"POD(
+
+=back
+
+=head1 AUTHORS
+
+Philippe Marguinaud (pmarguinaud@hotmail.com)
+
+=head1 SEE ALSO
+
+glgrib page on github.com :
+
+https://github.com/pmarguinaud/glgrib
+
+OpenGL :
+
+  https://www.opengl.org/
+
+GRIB edition 2 :
+
+  https://community.wmo.int/activity-areas/wis/latest-version
+
+=cut
+
+)POD";
+
+  return pod;
+}
+
+void OptionsParser::showPOD ()
+{
+  std::cout << getPOD ("--", true);
+}
+
 void OptionsParser::showJSON ()
 {
   std::cout << getJSON ("--", true);
@@ -707,26 +814,34 @@ void OptionsParser::showJSON ()
 
 void OptionsParser::showHelpShort ()
 {
-  std::cout << R"HELP(
+  std::cout << getHelpShort ();
+}
+
+const std::string OptionsParser::getHelpShort () const
+{
+  std::string help = R"HELP(
+
 Simple interface:
   
-  Review (use PageUp/PageDown) : 
+Review (use PageUp/PageDown) : 
 
   $ glgrib share/data/diff/ICMSHFCST+0001
 
-  Single field :
+Single field :
 
   $ glgrib share/data/diff/ICMSHFCST+0001%PROFTEMPERATURE
   $ glgrib share/data/ecmwf/ecmf_0_1_0_ml_137_q.grib2
 
-  Diff :
+Diff :
 
   $ glgrib --diff  share/data/diff/ICMSHFCST+0001 share/data/diff/ICMSHFCST+0002
 
   
-Use option --help-long to see the full interface with all options.
+Use option --help-long to get full help.
 
 )HELP";
+
+  return help;
 }
   
 void OptionsParser::showHelpLong ()
@@ -818,7 +933,7 @@ const std::string OptionsParser::getHelp
       {   
         auto it = name2option.find (opt_name);
 	OptionsParserDetail::optionBase * opt = it->second;
-        if (dynamic_cast<OptionsParserDetail::optionTmpl<OptionBlock>*>(opt))
+        if (! opt->hasHelp ())
           continue;
         if ((! show_hidden) && (opt->hidden))
           continue;

@@ -256,6 +256,7 @@ namespace OptionsParserDetail
     { throw std::runtime_error (std::string ("Set method is not defined")); }
     std::string name;
     std::string desc;
+    virtual const bool hasHelp () = 0;
     virtual const std::string type ()  = 0;
     virtual const std::string asString () const = 0;
     virtual const std::string asJSON   () const = 0;
@@ -290,6 +291,7 @@ namespace OptionsParserDetail
                 + std::string (" failed"));
         }
     }   
+    const bool hasHelp () { return true; }
     const std::string type () { return std::string ("UNKNOWN"); }
     void clear () {}
     int hasArg () const { return 1; }
@@ -361,6 +363,7 @@ namespace OptionsParserDetail
         }
     }   
     void clear () { if (value) value->clear (); }
+    const bool hasHelp () { return true; }
     const std::string type () { return std::string ("UNKNOWN"); }
     bool isEqual (const optionBase * _o) const 
     {
@@ -383,6 +386,7 @@ namespace OptionsParserDetail
   template <> const std::string optionTmplList<float>                 ::type ();
   template <> const std::string optionTmpl    <OptionDate>            ::type ();
   template <> const std::string optionTmpl    <OptionBlock>           ::type ();
+  template <> const bool        optionTmpl    <OptionBlock>           ::hasHelp ();
   template <> const std::string optionTmpl    <OptionColor>           ::type ();
   template <> const std::string optionTmpl    <OptionScale>           ::type ();
   template <> const std::string optionTmpl    <OptionProjection>      ::type ();
@@ -472,6 +476,9 @@ public:
   void showHelpShort ();
   void showHelpLong ();
   void showJSON ();
+  void showPOD ();
+  const std::string getHelpShort () const;
+  const std::string getPOD  (const std::string &, bool = false, bool = false);
   const std::string getHelp (const std::string &, bool = false, bool = false);
   const std::string getJSON (const std::string &, bool = false, bool = false,
                              glGrib::OptionsParser * = nullptr);
@@ -512,6 +519,8 @@ public:
   };
 
 private:
+
+  const std::string getonsDoc (const std::string &, bool = false, bool = false);
 
   std::vector<std::string> ctx;
   std::set<std::string> seen;

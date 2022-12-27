@@ -2,7 +2,6 @@ TOP=../..
 
 include $(TOP)/makefile.inc
 
-CFLAGS=-fPIC -O2 -I$(TOP)/include
 
 all: $(TOP)/lib/libLFI.so.0 
 

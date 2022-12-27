@@ -7,7 +7,19 @@ LIBS_GLGRIB=-lpng -lreadline -lncurses -ltinfo -lssl -lcrypto -lpthread \
     -lsqlite3 -lcurl -lshp -leccodes -lnetcdf_c++4 -lnetcdf
 LIBS_LFI=-lsqlite3 -lcurl
 
-LDFLAGS=-fopenmp -lglGrib$(SUFFIX) -L$(TOP)/lib $(RPATH) -lLFI 
+ifneq ($(DEB_CFLAGS), )
+CFLAGS_USER=$(DEB_CFLAGS)
+endif
+
+ifneq ($(DEB_CXXFLAGS), )
+CXXFLAGS_USER=$(DEB_CXXFLAGS)
+endif
+
+ifneq ($(DEB_LDFLAGS), )
+LDFLAGS_USER=$(DEB_LDFLAGS)
+endif
+
+CFLAGS=-fPIC -O2 -I$(TOP)/include $(CFLAGS_USER)
 
 CXXFLAGS_BASE=-fPIC -fopenmp -std=c++11 -Wall $(CXXFLAGS_USER)
 
@@ -23,3 +35,6 @@ ifeq ($(BUILD), egl)
 LIBS_GLGRIB+=-lEGL -lGL -lgbm
 CXXFLAGS+=-DGLGRIB_USE_EGL
 endif
+
+LDFLAGS=-fopenmp -lglGrib$(SUFFIX) -L$(TOP)/lib $(RPATH) -lLFI $(LDFLAGS_USER)
+

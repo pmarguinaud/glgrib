@@ -1,4 +1,3 @@
-#!/usr/bin/dh-exec
 usr/share/perl5/Tk/glGrib*.pm
 usr/bin/glgribtk
 usr/share/man/man3/Tk::glGrib*.3pm

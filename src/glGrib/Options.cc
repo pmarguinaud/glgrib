@@ -725,6 +725,25 @@ pod += getHelpShort ();
 
   pod += R"POD(
 
+=head1 DESCRIPTION
+
+glgrib is an application to display fields encoded in GRIB edition 2 using OpenGL.
+
+Features : raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, 
+gaussian grid. GLFW backend for interactive display (glgrib-glfw), EGL backend (glgrib-egl) for batch processing without 
+X11 display.
+
+Tested on :
+
+VGA compatible controller: Intel Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller (rev 06) 
+
+VGA compatible controller: Intel Corporation HD Graphics 530 (rev 06) 
+
+VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev c8) 
+
+3D controller: NVIDIA Corporation GV100GL [Tesla V100S PCIe 32GB] (rev a1) 
+
+
 =head1 OPTIONS
 
 =over 4
@@ -777,10 +796,6 @@ Description : %s
 
 =back
 
-=head1 AUTHORS
-
-Philippe Marguinaud (pmarguinaud@hotmail.com)
-
 =head1 SEE ALSO
 
 glgrib page on github.com :
@@ -795,6 +810,10 @@ GRIB edition 2 :
 
   https://community.wmo.int/activity-areas/wis/latest-version
 
+=head1 AUTHORS
+
+Philippe Marguinaud (pmarguinaud@hotmail.com)
+
 =cut
 
 )POD";
@@ -804,7 +823,7 @@ GRIB edition 2 :
 
 void OptionsParser::showPOD ()
 {
-  std::cout << getPOD ("--", true);
+  std::cout << getPOD ("--", false, true);
 }
 
 void OptionsParser::showJSON ()
@@ -821,25 +840,6 @@ const std::string OptionsParser::getHelpShort () const
 {
   std::string help = R"HELP(
 
-glgrib is an application to display fields encoded in GRIB edition 2 using OpenGL.
-
-Features : raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, 
-gaussian grid. GLFW backend for interactive display, EGL backend for batch processing without 
-X11 display.
-
-Tested on :
-
-VGA compatible controller: Intel Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller (rev 06) 
-
-VGA compatible controller: Intel Corporation HD Graphics 530 (rev 06) 
-
-VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev c8) 
-
-3D controller: NVIDIA Corporation GV100GL [Tesla V100S PCIe 32GB] (rev a1) 
-
-
-Simple interface:
-  
 Review (use PageUp/PageDown) : 
 
   $ glgrib share/data/diff/ICMSHFCST+0001
@@ -853,7 +853,10 @@ Diff :
 
   $ glgrib --diff  share/data/diff/ICMSHFCST+0001 share/data/diff/ICMSHFCST+0002
 
+With full options :
   
+  $ glgrib --field[0].path share/data/ecmwf/ecmf_0_1_0_ml_137_q.grib2 --coast.on
+
 Use option --help-long to get full help.
 
 )HELP";

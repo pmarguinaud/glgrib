@@ -17,7 +17,8 @@ Build-Depends: debhelper-compat (= 13),
                libxrandr-dev,
                libgbm-dev,
                python3-dev,
-               python3-setuptools
+               python3-setuptools,
+               dh-exec
 Standards-Version: 4.6.1
 Vcs-Browser: https://salsa.debian.org/science-team/glgrib
 Vcs-Git: https://salsa.debian.org/science-team/glgrib.git
@@ -173,7 +174,7 @@ Depends: ${shlibs:Depends},
          glgrib-data
 Description: Display GRIB2 fields using OpenGL (glgrib Perl bindings).
  glGrib::glfw is a module providing full access to glgrib capabilities
- to the Perl interpreter).
+ to the Perl interpreter.
 
 Package: glgrib-tk
 Architecture: any

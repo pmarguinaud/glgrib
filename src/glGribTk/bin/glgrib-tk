@@ -1,0 +1,43 @@
+#!/usr/bin/perl -w
+
+use strict;
+use warnings;
+
+use Tk;
+use Tk::glGribMainWindow;
+
+$ENV{GLGRIB_PREFIX} ||= "/usr";
+
+my $main = 'Tk::glGribMainWindow'->new (-opts => \@ARGV);
+
+$main->geometry ('+0+0');
+
+&MainLoop ();
+
+=head1 NAME
+
+glgrib-tk - Perl/Tk interface to glGrib
+
+=head1 SYNOPSIS
+
+Start the interface :
+
+  $ glgrib-tk
+
+=head1 DESCRIPTION
+
+glgrib-tk provides a full Perl/Tk interface to the GLFW based glgrib library.
+
+=head1 SEE ALSO
+
+glgrib
+
+=head1 AUTHOR
+
+Philippe Marguinaud, pmarguinaud@hotmail.com
+
+=cut
+
+
+
+

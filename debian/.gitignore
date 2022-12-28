@@ -8,8 +8,8 @@ glgrib-testdata/
 glgrib-egl/
 glgrib-glfw/
 glgrib-shaders/
-libglgrib0-egl/
-libglgrib0-glfw/
+libglgrib-egl0/
+libglgrib-glfw0/
 liblfi0/
 libglgrib-egl-dev/
 libglgrib-glfw-dev/

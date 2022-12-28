@@ -28,7 +28,7 @@ lib/Tk/glGribMainWindow.pm
 lib/Tk/glGribPROJECTION.pm
 lib/Tk/glGribLATITUDE.pm
 lib/Tk/glGribSTRING.pm
-bin/glgribtk
+bin/glgrib-tk
 Changes
 Makefile.PL
 lib/Tk/glGribBaselist.pm

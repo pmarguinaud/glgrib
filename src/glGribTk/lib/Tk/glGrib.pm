@@ -297,25 +297,3 @@ sub Tk::Separator
 1;
 
 
-__END__
-
-# Below is stub documentation for your module. You'd better edit it!
-
-=head1 NAME
-
-Tk::glGrib - Perl/Tk interface to glGrib
-
-=head1 SYNOPSIS
-
-=head1 DESCRIPTION
-
-=head1 SEE ALSO
-
-=head1 AUTHOR
-
-Philippe Marguinaud, pmarguinaud@hotmail.com
-
-=cut
-
-
-

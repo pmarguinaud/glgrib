@@ -36,10 +36,15 @@ my $rpath = "-Wl,-rpath,$libdir/lib";
 
 my $debian = $ENV{DEB_BUILD_ARCH};
 
+
+my ($CXXFLAGS, $LDFLAGS) = ('', '');
+
 if ($debian)
   {
     $rpath = '';
     $prefix = '/usr';
+    $CXXFLAGS = $ENV{DEB_CXXFLAGS};
+    $LDFLAGS = $ENV{DEB_LDFLAGS};
   }
 
 my $USE_EGL = 'glfw' eq 'egl';
@@ -50,8 +55,8 @@ my $suf = $USE_EGL ? "-egl" : "-glfw";
 
 &WriteMakefile
 (
-  LD                => 'g++ -std=c++11 -fopenmp',
-  CC                => 'g++ -std=c++11 -fopenmp',
+  LD                => "g++ -std=c++11 -fopenmp $LDFLAGS",
+  CC                => "g++ -std=c++11 -fopenmp $CXXFLAGS",
   NAME              => 'glGrib::glfw',
   VERSION_FROM      => 'lib/glGrib/glfw.pm', 
   PREREQ_PM         => {}, 

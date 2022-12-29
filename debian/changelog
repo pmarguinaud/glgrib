@@ -1,5 +1,5 @@
 glgrib (1.0-1) UNRELEASED; urgency=medium
 
-  * Initial release (Closes: #<bug>)
+  * Initial release (Closes: #1027277)
 
  -- Pierre Gruet <pgt@debian.org>  Mon, 12 Dec 2022 22:10:07 +0100

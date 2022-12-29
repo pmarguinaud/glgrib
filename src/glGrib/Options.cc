@@ -715,7 +715,7 @@ const std::string OptionsParser::getPOD
   pod = R"POD(
 =head1 NAME
 
-glgrib
+glgrib - Display GRIB edition fields using OpenGL
 
 =head1 SYNOPSIS
 

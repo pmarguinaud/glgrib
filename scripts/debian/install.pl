@@ -33,6 +33,7 @@ sub copyLink
   my ($src, $dir) = @_;
   my $dst = "$dir/$src";
   &mkpath (&dirname ($dst));
+  unlink ($dst);
   symlink (readlink ($src), $dst)
     or die ("Creating symbolic link $dst failed");
 }
@@ -42,6 +43,7 @@ sub copyFile
   my ($src, $dir) = @_;
   my $dst = "$dir/$src";
   &mkpath (&dirname ($dst));
+  unlink ($dst);
   link ($src, $dst)
     or die ("Copy $src, $dst failed");
 }

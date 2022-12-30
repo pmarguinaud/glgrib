@@ -35,14 +35,17 @@ sub help
 
 sub readme
 {
+  my $doc = './share/doc/glgrib';
   my @t = @test;
-  my ($fh, %fh) = ('FileHandle'->new (">README.md"));
 
-  my $share = './share/glgrib';
+  my ($fh, $fg, %fh) = ('FileHandle'->new (">README.md"), 'FileHandle'->new (">$doc/GLGRIB.md"));
+
 # my $ext = '?raw=true';
   my $ext = '';
 
-  $fh->print ("
+  for ($fh, $fg)
+    {
+      $_->print ("
 Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale, coastlines, borders. Lat/lon, lambert, gaussian grid.
 GLFW backend for interactive display, EGL backend for batch processing without X11 display.
 
@@ -55,9 +58,19 @@ Tested on :
 * VGA compatible controller: Advanced Micro Devices, Inc. [AMD/ATI] Wani [Radeon R5/R6/R7 Graphics] (rev c8) 
 * 3D controller: NVIDIA Corporation GV100GL [Tesla V100S PCIe 32GB] (rev a1) 
 
+  ");
 
-![]($share/perltk/tk1.png$ext)
-![]($share/perltk/tk2.png$ext)
+  $fh->print ("
+
+![]($doc/perltk/tk1.png$ext)
+![]($doc/perltk/tk2.png$ext)
+
+  ");
+
+  $fg->print ("
+
+![](./perltk/tk1.png$ext)
+![](./perltk/tk2.png$ext)
 
   ");
 
@@ -73,14 +86,14 @@ Tested on :
  
       my ($link1, $link2);
 
-      if (-f "$share/doc/samples/$name/TEST.gif$ext")
+      if (-f "$doc/samples/$name/TEST.gif$ext")
         {
-          $link1 = "![]($share/doc/samples/$name/TEST.gif$ext)\n";
+          $link1 = "![]($doc/samples/$name/TEST.gif$ext)\n";
           $link2 = "![](samples/$name/TEST.gif$ext)\n";
         }
       else
         {
-          $link1 .= "![]($share/doc/samples/$name/TEST_0000.png$ext)\n";
+          $link1 .= "![]($doc/samples/$name/TEST_0000.png$ext)\n";
           $link2 .= "![](samples/$name/TEST_0000.png$ext)\n";
         }
 
@@ -108,9 +121,14 @@ Tested on :
       unless ($fh{$kind})
         {
           my $Kind = ucfirst (lc ($kind));
-          $fh{$kind} = 'FileHandle'->new (">share/glgrib/doc/$kind.md");
-          $fh->print ("# [$Kind ...](share/glgrib/doc/$kind.md)\n");
+          $fh{$kind} = 'FileHandle'->new (">$doc/$kind.md");
+
+          $fh->print ("# [$Kind ...]($doc/$kind.md)\n");
           $fh->print ($text1);
+
+          $fg->print ("# [$Kind ...]($kind.md)\n");
+          $fg->print ($text2);
+
         }
 
       $fh{$kind}->print ($text2);

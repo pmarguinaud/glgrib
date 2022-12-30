@@ -72,8 +72,7 @@ Description: Display geophysical fields encoded in GRIB edition 2 using OpenGL
 Package: libglgrib-headers
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends}
+Depends: ${misc:Depends}
 Description: Display GRIB2 fields using OpenGL (headers for glgrib)
  Headers for building applications based on the glgrib libraries.
 
@@ -82,18 +81,16 @@ Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         liblfi0
+         liblfi0 (= ${binary:Version})
 Description: Display GRIB2 fields using OpenGL (GLFW based shared library)
  Shared library for the interactive glgrib (based on GLFW).
 
 Package: libglgrib-glfw-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
+Depends: ${misc:Depends},
          libglgrib-glfw0 (= ${binary:Version}),
-         libglgrib-headers,
-         liblfi0 (= ${binary:Version}) 
+         libglgrib-headers
 Description: Display GRIB2 fields using OpenGL (GLFW based shared library)
  Shared library for the interactive glgrib (based on GLFW).
 
@@ -101,18 +98,17 @@ Package: libglgrib-egl0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends},
-         ${misc:Depends}
+         ${misc:Depends},
+         liblfi0 (= ${binary:Version})
 Description: Display GRIB2 fields using OpenGL (EGL based shared library)
  Shared library for the headless glgrib (based on EGL).
 
 Package: libglgrib-egl-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
+Depends: ${misc:Depends},
          libglgrib-egl0 (= ${binary:Version}),
-         libglgrib-headers,
-         liblfi0 (= ${binary:Version}) 
+         libglgrib-headers
 Description: Display GRIB2 fields using OpenGL (EGL based shared library)
  Shared library for the headless glgrib (based on EGL).
 
@@ -127,38 +123,33 @@ Description: Display GRIB2 fields using OpenGL (ancillary shared library)
 Package: liblfi-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
+Depends: ${misc:Depends},
          liblfi0 (= ${binary:Version})
 Description: Display GRIB2 fields using OpenGL (ancillary shared library)
  Small ancillary library used by glgrib (GLFW & EGL).
 
 Package: glgrib-shaders
 Architecture: all
-Depends: ${shlibs:Depends},
-         ${misc:Depends}
+Depends: ${misc:Depends}
 Description: Display GRIB2 fields using OpenGL (shaders for glgrib)
  OpenGL shaders used by glgrib (GLFW & EGL).
 
 Package: glgrib-data
 Architecture: all
-Depends: ${shlibs:Depends},
-         ${misc:Depends}
+Depends: ${misc:Depends}
 Description: Display GRIB2 fields using OpenGL (data for glgrib)
  Runtime data for glgrib (coastlines & landscapes).
 
 Package: glgrib-doc
 Section: doc
 Architecture: all
-Depends: ${shlibs:Depends},
-         ${misc:Depends}
+Depends: ${misc:Depends}
 Description: Display GRIB2 fields using OpenGL (glgrib documentation)
  Documentation (in markdown format) for glgrib: pictures & examples.
 
 Package: glgrib-testdata
 Architecture: all
-Depends: ${shlibs:Depends},
-         ${misc:Depends}
+Depends: ${misc:Depends}
 Description: Display GRIB2 fields using OpenGL (test data for glgrib)
  Mostly GRIB2 files used to create glgrib examples.
 
@@ -178,8 +169,7 @@ Description: Display GRIB2 fields using OpenGL (glgrib Perl bindings)
 
 Package: glgrib-tk
 Architecture: any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
+Depends: ${misc:Depends},
          ${perl:Depends},
          libglgrib-glfw-perl,
          perl-tk

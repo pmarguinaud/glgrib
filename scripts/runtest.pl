@@ -59,6 +59,7 @@ Tested on :
 * 3D controller: NVIDIA Corporation GV100GL [Tesla V100S PCIe 32GB] (rev a1) 
 
   ");
+     }
 
   $fh->print ("
 

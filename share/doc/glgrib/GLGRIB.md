@@ -13,12 +13,12 @@ Tested on :
 
   
 
-![](./share/doc/glgrib/perltk/tk1.png)
-![](./share/doc/glgrib/perltk/tk2.png)
+![](./perltk/tk1.png)
+![](./perltk/tk2.png)
 
-  # [Cloud ...](./share/doc/glgrib/CLOUD.md)
+  # [Cloud ...](CLOUD.md)
 ## Clouds, 3 layers, t1198c2.2 -- t1198_3l
-![](./share/doc/glgrib/samples/t1198_3l/TEST_0000.png)
+![](samples/t1198_3l/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path 
@@ -30,9 +30,9 @@ Tested on :
     --field[0].palette.name cloud --field[1].palette.name cloud 
     --field[2].palette.name cloud 
 ```
-# [Lambert ...](./share/doc/glgrib/LAMBERT.md)
+# [Lambert ...](LAMBERT.md)
 ## AROME 1.3km -- arome13
-![](./share/doc/glgrib/samples/arome13/TEST_0000.png)
+![](samples/arome13/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/testdata/aro1.3/CLSVENT.ZONAL.grb 
@@ -41,9 +41,9 @@ Tested on :
     --field[0].palette.colors black green --field[0].palette.values 0. 20. 
     --field[0].vector.arrow.color red --coast.lines.color cyan --coast.on 
 ```
-# [String ...](./share/doc/glgrib/STRING.md)
+# [String ...](STRING.md)
 ## Contour with labels -- contourlabels2
-![](./share/doc/glgrib/samples/contourlabels2/TEST_0000.png)
+![](samples/contourlabels2/TEST_0000.png)
 
 ```
     --landscape.on --field[0].path share/glgrib/testdata/z500.grb 
@@ -56,9 +56,9 @@ Tested on :
     --font.bitmap.scale 0.04 --format %.0f }- --coast.on 
     --coast.lines.color pink 
 ```
-# [Misc ...](./share/doc/glgrib/MISC.md)
+# [Misc ...](MISC.md)
 ## Cities -- cities
-![](./share/doc/glgrib/samples/cities/TEST_0000.png)
+![](samples/cities/TEST_0000.png)
 
 ```
     --landscape.on --cities.on --cities.points.scale 1.01 
@@ -67,9 +67,9 @@ Tested on :
     --cities.labels.on --cities.labels.font.color.foreground red 
     --cities.labels.font.bitmap.scale 0.04 
 ```
-# [Palette ...](./share/doc/glgrib/PALETTE.md)
+# [Palette ...](PALETTE.md)
 ## Display field with palette gradient color -- palette_values_grad
-![](./share/doc/glgrib/samples/palette_values_grad/TEST_0000.png)
+![](samples/palette_values_grad/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path 
@@ -80,9 +80,9 @@ Tested on :
     --values 0 2 6 10 14 18 22 26 30 34 38 42 --min 0 --max 46 }- 
     --colorbar.on --render.width 1200 
 ```
-# [Contour ...](./share/doc/glgrib/CONTOUR.md)
+# [Contour ...](CONTOUR.md)
 ## Medium-res contour and raster, global geometry -- contour_latlon4
-![](./share/doc/glgrib/samples/contour_latlon4/TEST_0000.png)
+![](samples/contour_latlon4/TEST_0000.png)
 
 ```
     --render.width 1024 --render.height 1024 --field[0].path 
@@ -92,9 +92,9 @@ Tested on :
     --field[1].palette.colors black --field[1].type CONTOUR 
     --field[1].scale 1.001 
 ```
-# [Diff ...](./share/doc/glgrib/DIFF.md)
+# [Diff ...](DIFF.md)
 ## Contour in diff mode, global lat/lon geometry -- contour_diff
-![](./share/doc/glgrib/samples/contour_diff/TEST_0000.png)
+![](samples/contour_diff/TEST_0000.png)
 
 ```
     --field[0].diff.on --field[0].type CONTOUR --field[0].path 
@@ -103,27 +103,27 @@ Tested on :
     --field[0].scale 1.01 --landscape.on --landscape.color white 
     --field[0].user_pref.off 
 ```
-# [Scalar ...](./share/doc/glgrib/SCALAR.md)
+# [Scalar ...](SCALAR.md)
 ## Surface temperature, global lat/lon field -- glob01
-![](./share/doc/glgrib/samples/glob01/TEST_0000.png)
+![](samples/glob01/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/testdata/glob01/lfpw_0_0_0_sfc_0_t.grib2 
     --field[0].scale 1.00 --field[0].palette.name cold_hot_temp --coast.on 
     --grid.on 
 ```
-# [Landscape ...](./share/doc/glgrib/LANDSCAPE.md)
+# [Landscape ...](LANDSCAPE.md)
 ## Landscape over Europe only -- landscape_eurat01
-![](./share/doc/glgrib/samples/landscape_eurat01/TEST_0000.png)
+![](samples/landscape_eurat01/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path 
     share/glgrib/testdata/eurat01/lfpw_0_0_0_pl_1000_t.grib2 --coast.on 
     --grid.on 
 ```
-# [Projection ...](./share/doc/glgrib/PROJECTION.md)
+# [Projection ...](PROJECTION.md)
 ## Display contour field using Mercator projection -- mercator
-![](./share/doc/glgrib/samples/mercator/TEST_0000.png)
+![](samples/mercator/TEST_0000.png)
 
 ```
     --field[0].diff.on --field[0].user_pref.off --field[0].type CONTOUR 
@@ -132,18 +132,18 @@ Tested on :
     share/glgrib/testdata/glob01/lfpw_0_3_1_sfc_0_prmsl+0102.grib2 
     --field[0].scale 1.01 --view.projection MERCATOR --landscape.on 
 ```
-# [Shell ...](./share/doc/glgrib/SHELL.md)
+# [Shell ...](SHELL.md)
 ## Test interactive shell -- shell
-![](./share/doc/glgrib/samples/shell/TEST_0000.png)
+![](samples/shell/TEST_0000.png)
 
 ```
     --landscape.on --landscape.grid.path 
     share/glgrib/testdata/t1198c2.2/Z.grb --field[0].path 
     share/glgrib/testdata/t1198c2.2/N.grb --field[0].scale 1.03 --shell.on 
 ```
-# [Vector ...](./share/doc/glgrib/VECTOR.md)
+# [Vector ...](VECTOR.md)
 ## Wind Australia -- windaustralia3
-![](./share/doc/glgrib/samples/windaustralia3/TEST_0000.png)
+![](samples/windaustralia3/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/testdata/uv200.grib%paramId=131 
@@ -161,9 +161,9 @@ Tested on :
     --land.layers[0].color black --coast.on --coast.lines.color #555555 
     --colorbar.on --field[0].vector.density 20 --field[0].vector.scale 2 
 ```
-# [Stream ...](./share/doc/glgrib/STREAM.md)
+# [Stream ...](STREAM.md)
 ## Streamlines on t1198c2.2 (surface) -- stream_t1198c22
-![](./share/doc/glgrib/samples/stream_t1198c22/TEST_0000.png)
+![](samples/stream_t1198c22/TEST_0000.png)
 
 ```
     --field[0].scale 1.01 --field[0].path 
@@ -180,9 +180,9 @@ Tested on :
     --coast.lines.color red --landscape.on --landscape.path 
     landscape/white.png 
 ```
-# [Points ...](./share/doc/glgrib/POINTS.md)
+# [Points ...](POINTS.md)
 ## Gaussian grid wireframe -- gauss_wireframe
-![](./share/doc/glgrib/samples/gauss_wireframe/TEST_0000.png)
+![](samples/gauss_wireframe/TEST_0000.png)
 
 ```
     --field[0]-{ --path 
@@ -190,9 +190,9 @@ Tested on :
     --scalar.wireframe.on }- --coast.on --view.lon 2 --view.lat 46.7 
     --view.fov 5 
 ```
-# [Spectral ...](./share/doc/glgrib/SPECTRAL.md)
+# [Spectral ...](SPECTRAL.md)
 ## Spherical harmonic (T1198) -- harmonic
-![](./share/doc/glgrib/samples/harmonic/TEST_0000.png)
+![](samples/harmonic/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/testdata/harmonics/SPEC.+0008.+0004.grb 
@@ -200,9 +200,9 @@ Tested on :
     --field[0].geometry.height.on --field[0].geometry.height.scale 0.2 
     --view.fov 25 --view.lon 20 --scene.light.on 
 ```
-# [Height ...](./share/doc/glgrib/HEIGHT.md)
+# [Height ...](HEIGHT.md)
 ## Orography (raster & contour) with height -- contour_height
-![](./share/doc/glgrib/samples/contour_height/TEST_0000.png)
+![](samples/contour_height/TEST_0000.png)
 
 ```
     --field[0].path share/glgrib/testdata/t479/Z.grb --field[0].scale 
@@ -211,16 +211,16 @@ Tested on :
     share/glgrib/testdata/t479/Z.grb --field[0].geometry.height.on 
     --view.lat -16 --view.lon 134 
 ```
-# [Grid ...](./share/doc/glgrib/GRID.md)
+# [Grid ...](GRID.md)
 ## Grid labels -- grid_labels
-![](./share/doc/glgrib/samples/grid_labels/TEST_0000.png)
+![](samples/grid_labels/TEST_0000.png)
 
 ```
     --grid.on --grid.labels.on --landscape.on 
 ```
-# [Mpi ...](./share/doc/glgrib/MPI.md)
+# [Mpi ...](MPI.md)
 ## Display sphere partitionning (t1198) -- myproc
-![](./share/doc/glgrib/samples/myproc/TEST_0000.png)
+![](samples/myproc/TEST_0000.png)
 
 ```
     --field[0].scalar.discrete.on --field[0].path 
@@ -231,16 +231,16 @@ Tested on :
     --palette.max 313.15 --palette.min 253.15 --palette.name cold_hot_temp 
     }- --view.lat 36 --view.lon -15 
 ```
-# [Land ...](./share/doc/glgrib/LAND.md)
+# [Land ...](LAND.md)
 ## Display land surface -- land
-![](./share/doc/glgrib/samples/land/TEST_0000.png)
+![](samples/land/TEST_0000.png)
 
 ```
     --land.on 
 ```
-# [Isofill ...](./share/doc/glgrib/ISOFILL.md)
+# [Isofill ...](ISOFILL.md)
 ## Isofill test -- isofill
-![](./share/doc/glgrib/samples/isofill/TEST_0000.png)
+![](samples/isofill/TEST_0000.png)
 
 ```
     --field[0].path 
@@ -250,9 +250,9 @@ Tested on :
     cold_hot_temp }- --view.lat 2.32 --view.lon 14.12 --view.fov 0.5 
     --render.width 1200 
 ```
-# [Satellite ...](./share/doc/glgrib/SATELLITE.md)
+# [Satellite ...](SATELLITE.md)
 ## SSMI satellite data -- ssmigeopoints
-![](./share/doc/glgrib/samples/ssmigeopoints/TEST_0000.png)
+![](samples/ssmigeopoints/TEST_0000.png)
 
 ```
     --geopoints.path share/glgrib/testdata/geopoints/ssmis_light.nc 

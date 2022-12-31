@@ -65,10 +65,7 @@ my $suf = $USE_EGL ? "-egl" : "-glfw";
   DEFINE            => "-DGLGRIB_PREFIX='\"$prefix\"' @def", 
   INC               => "-I. -I$TOP/include", 
   OBJECT            => 'glfw.o',
-  LIBS              => "-L$libdir/lib $rpath " .
-                       "-lglGrib$suf -lLFI -lGL " . join (' ', @lib) . ' -lpng -lreadline -lncurses ' .
-                       '-ltinfo -lssl -lcrypto -lpthread -lsqlite3 -lcurl ' .
-                       '-lshp -leccodes -lnetcdf_c++4',
+  LIBS              => "-L$libdir/lib $rpath -lglGrib$suf",
   $debian 
 ?(PREFIX            => "$TOP/debian/tmp/usr",
   INSTALLDIRS       => 'vendor',) 

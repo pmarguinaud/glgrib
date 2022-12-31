@@ -20,8 +20,7 @@ setup (
     ext_modules = [Extension ("glGrib.glfw", ["glfw.cc"], 
     include_dirs=[TOP + '/include'], 
     define_macros=[('GLGRIB_PREFIX', '"' + prefix + '"'),('USE_GLFW','1')],
-    libraries=['glGrib-glfw', 'LFI', 'GLEW', 'GL', 'glfw', 'png', 'readline', 'ncurses',
-               'tinfo', 'ssl', 'crypto', 'pthread', 'sqlite3', 'curl', 'shp', 'eccodes'],
+    libraries=['glGrib-glfw'],
     library_dirs=[prefix + "/lib", TOP + "/lib"])],
   );
 

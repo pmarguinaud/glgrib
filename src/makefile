@@ -1,13 +1,13 @@
 all: 
-	cd LFI && make all -j4
-	cd glGrib && make all -j4
-	cd perl/glfw && make
-	cd glGribTk && make
-	cd python3/glfw && make
+	cd LFI && $(MAKE) all 
+	cd glGrib && $(MAKE) all 
+	cd perl/glfw && $(MAKE)
+	cd glGribTk && $(MAKE)
+	cd python3/glfw && $(MAKE)
 
 clean:
-	cd LFI && make clean
-	cd glGrib && make clean
-	cd perl/glfw && make clean
-	cd glGribTk && make clean
-	cd python3/glfw && make clean
+	cd LFI && $(MAKE) clean
+	cd glGrib && $(MAKE) clean
+	cd perl/glfw && $(MAKE) clean
+	cd glGribTk && $(MAKE) clean
+	cd python3/glfw && $(MAKE) clean

@@ -19,4 +19,7 @@ bin/*
 lib/*
 share/glgrib/shaders/*
 share/man/man1
-./debian
+debian/
+glgrib_build.txt
+glgrib_install.txt
+

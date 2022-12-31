@@ -55,8 +55,8 @@ my $suf = $USE_EGL ? "-egl" : "-glfw";
 
 &WriteMakefile
 (
-  LD                => "g++ -std=c++11 -fopenmp $LDFLAGS",
-  CC                => "g++ -std=c++11 -fopenmp $CXXFLAGS",
+  LD                => "g++ -std=c++11 $LDFLAGS",
+  CC                => "g++ -std=c++11 $CXXFLAGS",
   NAME              => 'glGrib::glfw',
   VERSION_FROM      => 'lib/glGrib/glfw.pm', 
   PREREQ_PM         => {}, 

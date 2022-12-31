@@ -28,7 +28,7 @@ endif
 OBJECTS=$(BUILD)/Grok.o $(BUILD)/DBase.o $(BUILD)/ShellInterpreter.o $(BUILD)/ShellRegular.o $(BUILD)/Container.o $(BUILD)/WindowDiffSet.o $(BUILD)/WindowSet.o $(BUILD)/Ticks.o $(BUILD)/FitPolynomial.o $(BUILD)/FieldIsoFill.o $(BUILD)/Subdivide.o $(BUILD)/EarCut.o $(BUILD)/Land.o $(BUILD)/SQLite.o $(BUILD)/Test.o $(BUILD)/Cities.o $(BUILD)/Points.o $(BUILD)/ShapeLib.o $(BUILD)/Departements.o $(BUILD)/Mapscale.o $(BUILD)/Rivers.o $(BUILD)/Border.o $(BUILD)/Lines.o $(BUILD)/GSHHG.o $(BUILD)/Image.o $(BUILD)/Resolve.o $(BUILD)/FieldContour.o $(BUILD)/FieldVector.o $(BUILD)/FieldScalar.o $(BUILD)/GeometryLambert.o $(BUILD)/Projection.o $(BUILD)/Colorbar.o $(BUILD)/Font.o $(BUILD)/String.o $(BUILD)/GeometryLatLon.o $(BUILD)/WindowOffscreen.o $(BUILD)/Geometry.o $(BUILD)/GeometryGaussian.o $(BUILD)/Window.o $(BUILD)/Options.o $(BUILD)/Shell.o $(BUILD)/Bitmap.o $(BUILD)/LandScape.o $(BUILD)/Palette.o $(BUILD)/Field.o $(BUILD)/Loader.o $(BUILD)/Polygon.o $(BUILD)/Program.o $(BUILD)/View.o $(BUILD)/OpenGL.o $(BUILD)/Png.o $(BUILD)/Scene.o $(BUILD)/Coast.o $(BUILD)/Grid.o $(BUILD)/Shader.o $(BUILD)/FieldStream.o $(BUILD)/WindowReviewSet.o $(BUILD)/GeoPoints.o $(BUILD)/Batch.o $(BUILD)/Render.o $(BUILD)/MD5.o
 
 $(TOP)/lib/libglGrib$(SUFFIX).so.0: $(OBJECTS)
-	g++ -shared  -Wl,-soname,libglGrib$(SUFFIX).so.0 -o $(TOP)/lib/libglGrib$(SUFFIX).so.0 $(OBJECTS) $(LIBS_GLGRIB) $(LDFLAGS_USER)
+	g++ -shared  $(RPATH) -Wl,-soname,libglGrib$(SUFFIX).so.0 -o $(TOP)/lib/libglGrib$(SUFFIX).so.0 $(OBJECTS) -L$(TOP)/lib -lLFI $(LIBS_GLGRIB) $(LDFLAGS_USER)
 	@\ln -sf libglGrib$(SUFFIX).so.0 $(TOP)/lib/libglGrib$(SUFFIX).so
 
 $(TOP)/bin/glgrib$(SUFFIX): glGrib.cc $(TOP)/lib/libglGrib$(SUFFIX).so.0

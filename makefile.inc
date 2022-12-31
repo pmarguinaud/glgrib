@@ -4,7 +4,7 @@ RPATH=-Wl,-rpath,$(ROOT)/lib
 endif
 
 LIBS_GLGRIB=-lpng -lreadline -lncurses -ltinfo -lssl -lcrypto -lpthread \
-    -lsqlite3 -lcurl -lshp -leccodes -lnetcdf_c++4 -lnetcdf
+    -lsqlite3 -lcurl -lshp -leccodes -lnetcdf_c++4 -lnetcdf -lLFI
 LIBS_LFI=-lsqlite3 -lcurl
 
 ifneq ($(DEB_CFLAGS), )

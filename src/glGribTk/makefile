@@ -2,17 +2,17 @@
 all: blib/lib/Tk/glGrib.pm
 
 install: Makefile
-	make install -f Makefile
+	$(MAKE) install -f Makefile
 
 Makefile:
 	perl Makefile.PL
 
 blib/lib/Tk/glGrib.pm: lib/Tk/glGrib.pm Makefile
-	make -f Makefile
+	$(MAKE) -f Makefile
 
 clean: Makefile
-	make clean -f Makefile
+	$(MAKE) clean -f Makefile
 	\rm -f Makefile.old
 
 test: Makefile
-	make test -f Makefile
+	$(MAKE) test -f Makefile

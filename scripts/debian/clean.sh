@@ -2,6 +2,11 @@
 
 set -e
 
+if [ ! -d debian ]
+then
+  exit
+fi
+
 cd debian
 
 set -x
@@ -15,3 +20,4 @@ do
   \rm -rf $b $b.substvars
   set +x
 done
+

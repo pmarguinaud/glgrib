@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w
 
+use warnings FATAL => 'all';
 use strict;
 use FileHandle;
 use File::Find;
@@ -19,11 +20,11 @@ sub slurp
   return $data;
 }
 
-my ($changelog) = &slurp ("debian/changelog");
+my ($changelog) = &slurp ("packaging/debian/changelog");
 
 my ($version) = ($changelog =~ m/glgrib\s+\((\S+)-\d+\)/goms);
 
-my ($options) = &slurp ("debian/source/options");
+my ($options) = &slurp ("packaging/debian/source/options");
 
 my ($diff_ignore) = ($options =~ m/diff-ignore\s*=\s*"(\S+)"/goms);
 

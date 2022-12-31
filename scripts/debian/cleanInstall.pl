@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w
 
+use warnings FATAL => 'all';
 use strict;
 use File::Find;
 use File::Path;

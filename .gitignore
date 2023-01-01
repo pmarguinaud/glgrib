@@ -22,4 +22,4 @@ share/man/man1
 debian/
 glgrib_build.txt
 glgrib_install.txt
-
+test.run/

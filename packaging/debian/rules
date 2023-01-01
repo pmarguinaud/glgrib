@@ -16,7 +16,7 @@ export DEB_LDFLAGS=$(LDFLAGS)
 
 override_dh_auto_install:
 	./scripts/debian/install.pl 
-	cd src/perl/glfw && make install 
+	cd src/perl5/glfw && make install 
 	cd src/glGribTk && make install
 	cd src/python3/glfw && make install
 	./scripts/debian/cleanInstall.pl

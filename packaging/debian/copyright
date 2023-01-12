@@ -18,7 +18,7 @@ Comment: This copyright information was taken from the gmt-gshhb Debian
  different.
 
 Files: src/glGribTk/*
-       src/perl/*
+       src/perl5/*
 Copyright: 2020 MARGUINAUD Philippe
 License: GPL-1+ or Artistic
 Comment: The following text lies in src/glGribTk/README and src/perl/README:
@@ -30,7 +30,7 @@ Files: src/python3/*
 Copyright: 2020 MARGUINAUD Philippe
 License: GPL-1+ or Artistic
 
-Files: src/perl/*/pppport.h
+Files: src/perl5/glfw/ppport.h
 Copyright: 2004-2013 Marcus Holland-Moritz.
            2001 Paul Marquess.
            1999 Kenneth Albanowski.

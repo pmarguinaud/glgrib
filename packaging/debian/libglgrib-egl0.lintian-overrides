@@ -1,0 +1,2 @@
+# We won't issue symbols files for this C++ library.
+no-symbols-control-file usr/lib/x86_64-linux-gnu/libglGrib-egl.so.0

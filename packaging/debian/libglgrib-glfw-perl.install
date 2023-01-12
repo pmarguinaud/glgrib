@@ -1,4 +1,3 @@
-#!/usr/bin/dh-exec
-usr/lib/${DEB_HOST_MULTIARCH}/perl5/*/glGrib/glfw.pm
-usr/lib/${DEB_HOST_MULTIARCH}/perl5/*/auto/glGrib/glfw/glfw.so
+usr/lib/*/perl5/*/glGrib/glfw.pm
+usr/lib/*/perl5/*/auto/glGrib/glfw/glfw.so
 usr/share/man/man3/glGrib::glfw.3pm

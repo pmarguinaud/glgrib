@@ -18,7 +18,11 @@ Build-Depends: debhelper-compat (= 13),
                libxrandr-dev,
                libgbm-dev,
                python3-dev,
-               python3-setuptools
+               python3-setuptools,
+               libimage-magick-perl,
+               libdbi-perl,
+               libjson-perl,
+               libdbd-sqlite3-perl
 Standards-Version: 4.6.1
 Vcs-Browser: https://salsa.debian.org/science-team/glgrib
 Vcs-Git: https://salsa.debian.org/science-team/glgrib.git
@@ -33,7 +37,7 @@ Depends: ${shlibs:Depends},
          glgrib-shaders,
          glgrib-data,
          liblfi0
-Description: Display geophysical fields encoded in GRIB edition 2 using OpenGL
+Description: Interactive display for geophysical fields encoded in GRIB2
  This is the interactive executable, based on GLFW.
  Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale,
  coastlines, borders. Lat/lon, lambert, gaussian grid. GLFW backend for 
@@ -55,7 +59,7 @@ Depends: ${shlibs:Depends},
          glgrib-shaders,
          glgrib-data,
          liblfi0
-Description: Display geophysical fields encoded in GRIB edition 2 using OpenGL
+Description: Render geophysical fields encoded in GRIB edition 2 using OpenGL
  This is the headless executable, based on EGL.
  Display GRIB2 fields with OpenGL. Raster, contour, vector, colorbar, mapscale,
  coastlines, borders. Lat/lon, lambert, gaussian grid. GLFW backend for 
@@ -74,7 +78,8 @@ Section: libdevel
 Architecture: any
 Depends: ${misc:Depends}
 Description: Display GRIB2 fields using OpenGL (headers for glgrib)
- Headers for building applications based on the glgrib libraries.
+ This package contains the headers for building applications based on the
+ glgrib libraries.
 
 Package: libglgrib-glfw0
 Section: libs
@@ -83,7 +88,8 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
          liblfi0 (= ${binary:Version})
 Description: Display GRIB2 fields using OpenGL (GLFW based shared library)
- Shared library for the interactive glgrib (based on GLFW).
+ This package contains the shared library for the interactive glgrib (based
+ on GLFW).
 
 Package: libglgrib-glfw-dev
 Section: libdevel
@@ -91,8 +97,9 @@ Architecture: any
 Depends: ${misc:Depends},
          libglgrib-glfw0 (= ${binary:Version}),
          libglgrib-headers
-Description: Display GRIB2 fields using OpenGL (GLFW based shared library)
- Shared library for the interactive glgrib (based on GLFW).
+Description: Display GRIB2 fields using OpenGL (GLFW based dev package)
+ This package contains the unversioned shared library symlink for development
+ purposes, concerning the interactive glgrib (based on GLFW).
 
 Package: libglgrib-egl0
 Section: libs
@@ -101,7 +108,8 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
          liblfi0 (= ${binary:Version})
 Description: Display GRIB2 fields using OpenGL (EGL based shared library)
- Shared library for the headless glgrib (based on EGL).
+ This package contains the shared library for the headless glgrib (based
+ on EGL).
 
 Package: libglgrib-egl-dev
 Section: libdevel
@@ -109,8 +117,9 @@ Architecture: any
 Depends: ${misc:Depends},
          libglgrib-egl0 (= ${binary:Version}),
          libglgrib-headers
-Description: Display GRIB2 fields using OpenGL (EGL based shared library)
- Shared library for the headless glgrib (based on EGL).
+Description: Display GRIB2 fields using OpenGL (EGL based dev package)
+ This package contains the unversioned shared library symlink for development
+ purposes, concerning the headless glgrib (based on EGL).
 
 Package: liblfi0
 Section: libs
@@ -118,40 +127,46 @@ Architecture: any
 Depends: ${shlibs:Depends},
          ${misc:Depends}
 Description: Display GRIB2 fields using OpenGL (ancillary shared library)
- Small ancillary library used by glgrib (GLFW & EGL).
+ This package contains a small ancillary shared library used by glgrib
+ (GLFW & EGL).
 
 Package: liblfi-dev
 Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},
          liblfi0 (= ${binary:Version})
-Description: Display GRIB2 fields using OpenGL (ancillary shared library)
- Small ancillary library used by glgrib (GLFW & EGL).
+Description: Display GRIB2 fields using OpenGL (ancillary dev package)
+ Small ancillary library used by glgrib (GLFW & EGL): this package contains the
+ headers and the development files.
 
 Package: glgrib-shaders
 Architecture: all
 Depends: ${misc:Depends}
 Description: Display GRIB2 fields using OpenGL (shaders for glgrib)
- OpenGL shaders used by glgrib (GLFW & EGL).
+ This package contains the OpenGL shaders used by glgrib, in its GLFW & EGL
+ flavours.
 
 Package: glgrib-data
 Architecture: all
 Depends: ${misc:Depends}
 Description: Display GRIB2 fields using OpenGL (data for glgrib)
- Runtime data for glgrib (coastlines & landscapes).
+ This package contains the runtime data for glgrib, which are coastlines and
+ landscapes.
 
 Package: glgrib-doc
 Section: doc
 Architecture: all
 Depends: ${misc:Depends}
 Description: Display GRIB2 fields using OpenGL (glgrib documentation)
- Documentation (in markdown format) for glgrib: pictures & examples.
+ This is the documentation (in markdown format) for glgrib: pictures and
+ examples.
 
 Package: glgrib-testdata
 Architecture: all
 Depends: ${misc:Depends}
 Description: Display GRIB2 fields using OpenGL (test data for glgrib)
- Mostly GRIB2 files used to create glgrib examples.
+ This package contains mostly GRIB2 files used to create glgrib examples and
+ tests.
 
 Package: libglgrib-glfw-perl
 Section: perl
@@ -172,9 +187,14 @@ Architecture: any
 Depends: ${misc:Depends},
          ${perl:Depends},
          libglgrib-glfw-perl,
-         perl-tk
-Description: Display GRIB2 fields using OpenGL (Perl/Tk interface for glgrib)
- Full access to glgrib capabilities through a Perl/Tk interface.
+         perl-tk,
+         libimage-magick-perl,
+         libdbi-perl,
+         libjson-perl,
+         libdbd-sqlite3-perl 
+Description: Display GRIB2 fields using OpenGL (Perl/Tk interface)
+ This package offers full access to glgrib capabilities through a Perl/Tk
+ interface.
 
 Package: python3-glgrib-glfw
 Section: python

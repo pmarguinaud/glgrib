@@ -16,6 +16,17 @@ DEBIAN=debian:latest
 
 sudo docker pull $DEBIAN
 
+if [ ! -f "$HOME/.ssh/known_hosts" ]
+then
+  touch "$HOME/.ssh/known_hosts" 
+fi
+
+if [ ! -f "$HOME/.ssh/id_rsa" ]
+then
+  ssh-keygen -b 2048 -t rsa -f "$HOME/.ssh/id_rsa" -q -N ""
+fi
+
+
 SSHKEY=$(cat $HOME/.ssh/id_rsa.pub)
 SHARED=$PWD/../$DEBIAN
 TIMEZONE=$(cat /etc/timezone)
@@ -137,7 +148,8 @@ then
     g++ make libcurl4-openssl-dev libeccodes-dev libegl-dev libglew-dev \
     libglfw3-dev libnetcdf-c++4-dev libpng-dev libreadline-dev libshp-dev \
     libsqlite3-dev libssl-dev libglm-dev build-essential devscripts debhelper \
-    patchelf python3-dev libgbm-dev python3-setuptools dh-exec
+    patchelf python3-dev libgbm-dev python3-setuptools dh-exec libimage-magick-perl \
+    libdbi-perl libjson-perl libdbd-sqlite3-perl 
 fi
 
 if [ "x\$kind" = "xinstall" ]

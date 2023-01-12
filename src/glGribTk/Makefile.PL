@@ -37,7 +37,7 @@ my $debian = $ENV{DEB_BUILD_ARCH};
 (
   NAME              => 'glGribTk',
   VERSION_FROM      => 'lib/Tk/glGrib.pm', 
-  PREREQ_PM         => {'glGrib::gflw' => '0.01', 'Tk' => '804.035'}, 
+  PREREQ_PM         => {'glGrib::gflw' => '0.01', 'Tk' => '804.035', 'Image::Magick' => '6.9.11', 'DBI.pm' => '1.643', 'JSON' => '4.03', 'DBD::SQLite' => 1.66}, 
   ABSTRACT_FROM     => 'bin/glgrib-tk', 
   AUTHOR            => 'Philippe MARGUINAUD <pmarguinaud@hotmail.com>',
   EXE_FILES         => [ <bin/*> ],

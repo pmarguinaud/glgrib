@@ -11,7 +11,8 @@ unset LANGUAGE
 
 EMAIL=pmarguinaud@hotmail.com
 NAME="Philippe Marguinaud"
-DEBIAN=debian:latest
+DEBIAN=debian:unstable
+#DEBIAN=debian:latest
 #DEBIAN=ubuntu:20.04
 
 sudo docker pull $DEBIAN

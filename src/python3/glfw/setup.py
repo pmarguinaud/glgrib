@@ -7,10 +7,6 @@ prefix = TOP
 
 debian = os.getenv ('DEB_BUILD_ARCH')
 
-if (sys.argv[1] == 'install') and (debian is not None):
-  sys.argv.append ('--prefix=' + prefix + "/debian/tmp/usr")
-  sys.argv.append ('--old-and-unmanageable')
-
 if (debian is not None):
   prefix = '/usr'
 

@@ -1,5 +1,7 @@
 #include <png.h>
-
+#include <pwd.h>
+#include <unistd.h>
+#include <time.h>
 
 #include <iostream>
 #include <exception>
@@ -8,6 +10,48 @@
 
 namespace glGrib
 {
+
+namespace
+{
+
+const std::string getUserName ()
+{
+  std::string User = "unknown";
+  uid_t uid = geteuid ();
+  struct passwd * pw = getpwuid (uid);
+
+  if (pw)
+    User = pw->pw_name;
+
+  return User;
+}
+
+const std::string getHostName ()
+{
+  std::string Host = "unknown";
+  const size_t len = 256;
+  char host_[len+1];
+
+  if (gethostname (host_, len) == 0)
+    Host = host_;
+
+  return Host;
+}
+
+const std::string getTime ()
+{
+  std::string Time = "unknown";
+  const size_t len = 256;
+  char time_[len+1];
+  time_t t = time (nullptr);
+
+  if (strftime (time_, len, "%H:%M:%S %d/%m/%Y", localtime (&t)) > 0)
+    Time = time_;
+
+  return Time;
+}
+
+}
 
 void ReadPng (const std::string & filename, int * pwidth, int * pheight, 
               BufferPtr<unsigned char> & pixels)
@@ -148,7 +192,28 @@ void WritePng (const std::string & filename, int width, int height,
   std::string mess;
   png_structp png = nullptr;
   png_infop info = nullptr;
+  const int NTEXT = 4, NUSER = 0, NCREATOR = 1, NOPTIONS = 2, NTIME = 3;
+  png_text text[NTEXT];
   FILE * fp = nullptr;
+  const std::string user = getUserName () + std::string ("@") + getHostName (),
+	            time = getTime ();
+
+  text[NUSER].key = (png_charp)"Author";
+  text[NUSER].text = (png_charp)user.c_str ();
+  text[NUSER].compression = PNG_TEXT_COMPRESSION_NONE;
+
+  text[NCREATOR].key = (png_charp)"Creator";
+  text[NCREATOR].text = (png_charp)"glgrib";
+  text[NCREATOR].compression = PNG_TEXT_COMPRESSION_NONE;
+
+  text[NOPTIONS].key = (png_charp)"Options";
+  text[NOPTIONS].text = (png_charp)options.c_str ();
+  text[NOPTIONS].compression = PNG_TEXT_COMPRESSION_NONE;
+
+  text[NTIME].key = (png_charp)"Time";
+  text[NTIME].text = (png_charp)time.c_str ();
+  text[NTIME].compression = PNG_TEXT_COMPRESSION_NONE;
+
 
   Buffer<png_byte> png_bytes (nvals);
   Buffer<png_bytep> png_rows (height);
@@ -193,6 +258,8 @@ void WritePng (const std::string & filename, int width, int height,
     }
 
   png_init_io (png, fp);
+
+  png_set_text (png, info, text, NTEXT);
 
   png_set_IHDR (png, info, width, height, 8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
                 PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);

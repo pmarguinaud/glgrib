@@ -32,6 +32,29 @@ void cleanup (std::string & str, char r)
       str[i] = r;
 }
 
+const std::string getOptionsString (Options opts0)
+{
+  std::vector<std::string> listStr;
+  Options opts1;
+  OptionsParser p1, p0;
+
+  opts0.traverse ("", &p0);
+  opts1.traverse ("", &p1);
+
+  p0.getValue (&listStr, "--", true, false, &p1);
+
+  std::string options;
+
+  for (const auto & str : listStr)
+    {
+      if (options.size () > 0)
+        options += std::string (" ");
+      options += str;
+    }
+
+  return options;
+}
+
 }
 
 Render::Render (const Options & opts)
@@ -125,7 +148,9 @@ void Render::snapshot (const std::string & format)
       filename = fmt;
     }
 
-  WritePng (filename, opts.width, opts.height, rgb);
+  const std::string options = getOptionsString (getScene ().getOptions ());
+  
+  WritePng (filename, opts.width, opts.height, rgb, options);
 }
 
 void Render::framebuffer (const std::string & format)

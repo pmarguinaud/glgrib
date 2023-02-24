@@ -67,14 +67,7 @@ HandlePtr Loader::handleFromFile (const std::string & f)
 }
 
 void Loader::load (BufferPtr<float> * ptr, const std::vector<OptionFieldRef> & file, const OptionsGeometry & opts_geom, 
-		   float fslot, FieldMetadata * meta, int mult, int base, bool diff)
-{
-  const OptionsMissing opts_missing;
-  load (ptr, file, opts_geom, opts_missing, fslot, meta, mult, base, diff);
-}
-
-void Loader::load (BufferPtr<float> * ptr, const std::vector<OptionFieldRef> & file, const OptionsGeometry & opts_geom, 
-		   const OptionsMissing & opts_missing, float fslot, FieldMetadata * meta, int mult, int base, bool diff)
+		   float fslot, FieldMetadata * meta, int mult, int base, bool diff, const OptionsMissing & opts_missing)
 {
   int islot = static_cast<int> (fslot);
   float a, b;
@@ -89,7 +82,7 @@ void Loader::load (BufferPtr<float> * ptr, const std::vector<OptionFieldRef> & f
       b = fslot - static_cast<float> (islot);
       a = 1.0f  - b;
       if (fslot == static_cast<float> (islot))
-        return load (ptr, file[mult*islot+base], opts_geom, meta);
+        return load (ptr, file[mult*islot+base], opts_geom, meta, opts_missing);
     }
 
 
@@ -109,15 +102,15 @@ void Loader::load (BufferPtr<float> * ptr, const std::vector<OptionFieldRef> & f
 
   if (ptr == nullptr)
     {
-      load (nullptr, file1, opts_geom, &meta1);
+      load (nullptr, file1, opts_geom, &meta1, opts_missing);
       *meta = meta1;
     }
   else
     {
       BufferPtr<float> val1, val2;
 
-      load (&val1, file1, opts_geom, &meta1);
-      load (&val2, file2, opts_geom, &meta2);
+      load (&val1, file1, opts_geom, &meta1, opts_missing);
+      load (&val2, file2, opts_geom, &meta2, opts_missing);
     
       int size = geom1->size ();
       BufferPtr<float> val = BufferPtr<float> (size);
@@ -176,16 +169,8 @@ void Loader::load (BufferPtr<float> * ptr, const std::vector<OptionFieldRef> & f
 }
 
 void Loader::load (BufferPtr<float> * ptr, const OptionFieldRef & file, 
-		   const OptionsGeometry & opts_geom,  const OptionsMissing & opts_missing,
-                   FieldMetadata * meta)
-{
-  abort ();
-  load (ptr, file, opts_geom, meta);
-}
-
-void Loader::load (BufferPtr<float> * ptr, const OptionFieldRef & file, 
 		   const OptionsGeometry & opts_geom,  
-                   FieldMetadata * meta)
+                   FieldMetadata * meta, const OptionsMissing & opts_missing)
 {
   HandlePtr ghp = handleFromFile (file);
   codes_handle * h = ghp == nullptr ? nullptr : ghp->getCodesHandle ();
@@ -206,11 +191,37 @@ void Loader::load (BufferPtr<float> * ptr, const OptionFieldRef & file,
 
       BufferPtr<float> val = BufferPtr<float> (v_len);
 
-      for (size_t i = 0; i < v_len; i++)
-        val[i] = v[i];
+      float valmin = +std::numeric_limits<float>::max (), 
+            valmax = -std::numeric_limits<float>::max ();
 
+      for (size_t i = 0; i < v_len; i++)
+        {
+          val[i] = v[i];
+	  if (opts_missing.on)
+            {
+              if (v[i] == vmis)
+                val[i] = opts_missing.value;
+	      else if (std::abs (val[i] - opts_missing.value) <= opts_missing.epsilon)
+                val[i] = opts_missing.value;
+	      else
+                {
+                  valmax = std::max (valmax, val[i]);
+                  valmin = std::min (valmin, val[i]);
+		}
+	    }
+	}
+ 
       *ptr = val;
+
+      if (opts_missing.on)
+        {
+          vmax = valmax;
+	  vmin = valmin;
+	}
     }
+
+  if (opts_missing.on)
+    vmis = opts_missing.value;
 
   meta->valmis = vmis;
   meta->valmin = vmin;

@@ -29,11 +29,8 @@ public:
 
   HandlePtr handleFromFile (const std::string &);
   void load (BufferPtr<float> *, const std::vector<OptionFieldRef> &, const OptionsGeometry &, 
-             const OptionsMissing &, float, FieldMetadata *, int = 1, int = 0, bool diff = false);
-  void load (BufferPtr<float> *, const std::vector<OptionFieldRef> &, const OptionsGeometry &, 
-             float, FieldMetadata *, int = 1, int = 0, bool diff = false);
-  void load (BufferPtr<float> *, const OptionFieldRef &, const OptionsGeometry &, FieldMetadata *);
-  void load (BufferPtr<float> *, const OptionFieldRef &, const OptionsGeometry &, const OptionsMissing &, FieldMetadata *);
+             float, FieldMetadata *, int = 1, int = 0, bool diff = false, const OptionsMissing & = OptionsMissing ());
+  void load (BufferPtr<float> *, const OptionFieldRef &, const OptionsGeometry &, FieldMetadata *, const OptionsMissing & = OptionsMissing ());
   void setSize (size_t _size) { size = _size; }
 private:
   size_t size = 0;

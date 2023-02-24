@@ -187,7 +187,7 @@ void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsF
   FieldMetadata meta1;
 
   BufferPtr<float> data;
-  ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
+  ld->load (&data, opts.path, opts.geometry, opts.missing, slot, &meta1, 1, 0, opts.diff.on);
   this->meta.push_back (meta1);
 
   palette = Palette (opts.palette, this->getNormedMinValue (), this->getNormedMaxValue ());

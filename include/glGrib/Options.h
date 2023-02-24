@@ -1047,6 +1047,21 @@ public:
   float scale = 0.1f;
 };
 
+class OptionsMissing : public OptionsBase
+{
+public:
+  DEFINE
+  {
+    DESC (on,      Enable);
+    DESC (value,   Value to be considered as missing);
+    DESC (epsilon, Tolerance for missing values);
+  }
+
+  bool on = false;
+  float value = 0;
+  float epsilon = 0;
+};
+
 class OptionsField : public OptionsBase
 {
 public:
@@ -1076,6 +1091,8 @@ public:
     INCLUDE_N (geometry,   Geometry options);
     INCLUDE_N (mpiview,    MPI distribution parameters);
     DESC (fatal.on,        Fatal error if field fails to be created);
+
+    INCLUDE_N (missing,    Handle some values as missing);
   }
   std::set<std::string> seen;
 
@@ -1115,6 +1132,7 @@ public:
   bool parseUnseen (const char *);
   OptionsGeometry geometry;
   OptionsMpiview mpiview;
+  OptionsMissing missing;
 
   struct
   {

@@ -13,7 +13,7 @@ EMAIL=pmarguinaud@hotmail.com
 NAME="Philippe Marguinaud"
 #DEBIAN=debian:unstable
 #DEBIAN=debian:latest
-DEBIAN=ubuntu:22.04
+DEBIAN=ubuntu:20.04
 
 sudo docker pull $DEBIAN
 
@@ -147,6 +147,7 @@ apt-get -y install git vim ssh screen sudo
 
 if [ "x\$kind" = "xbuild" ]
 then
+  apt-get -y install debhelper-compat
   apt-get -y install \
     g++ make libcurl4-openssl-dev libeccodes-dev libegl-dev libglew-dev \
     libglfw3-dev libnetcdf-c++4-dev libpng-dev libreadline-dev libshp-dev \

@@ -1,3 +1,3 @@
 #!/usr/bin/dh-exec
-usr/lib/libLFI.so usr/lib/${DEB_HOST_MULTIARCH}/
+usr/lib/libLFI.so usr/lib/x86_64-linux-gnu/
 usr/include/LFI

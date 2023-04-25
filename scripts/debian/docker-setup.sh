@@ -11,9 +11,9 @@ unset LANGUAGE
 
 EMAIL=pmarguinaud@hotmail.com
 NAME="Philippe Marguinaud"
-DEBIAN=debian:unstable
+#DEBIAN=debian:unstable
 #DEBIAN=debian:latest
-#DEBIAN=ubuntu:20.04
+DEBIAN=ubuntu:20.04
 
 sudo docker pull $DEBIAN
 
@@ -130,6 +130,8 @@ cat > $SHARED/glgrib-boot.sh << EOF
 set -x
 set -e
 
+export DEBIAN_FRONTEND=noninteractive
+
 kind=\$1
 
 dir=\$(dirname \$0)
@@ -145,12 +147,13 @@ apt-get -y install git vim ssh screen sudo
 
 if [ "x\$kind" = "xbuild" ]
 then
+  apt-get -y install debhelper-compat
   apt-get -y install \
     g++ make libcurl4-openssl-dev libeccodes-dev libegl-dev libglew-dev \
     libglfw3-dev libnetcdf-c++4-dev libpng-dev libreadline-dev libshp-dev \
     libsqlite3-dev libssl-dev libglm-dev build-essential devscripts debhelper \
     patchelf python3-dev libgbm-dev python3-setuptools dh-exec libimage-magick-perl \
-    libdbi-perl libjson-perl libdbd-sqlite3-perl 
+    libdbi-perl libjson-perl libdbd-sqlite3-perl python3-pip
 fi
 
 if [ "x\$kind" = "xinstall" ]
@@ -171,7 +174,7 @@ chsh -s /bin/bash $USER
 
 cat >> /etc/sudoers << EOC
 
-$USER ALL=(root) NOPASSWD: /usr/bin/dpkg, NOPASSWD: /usr/bin/apt, NOPASSWD: /usr/bin/apt-get, NOPASSWD: /usr/bin/dpkg
+$USER ALL=(root) NOPASSWD: /usr/bin/dpkg, NOPASSWD: /usr/bin/apt, NOPASSWD: /usr/bin/apt-get, NOPASSWD: /usr/bin/dpkg, NOPASSWD: /bin/su
 EOC
 
 EOF

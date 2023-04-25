@@ -83,6 +83,7 @@ public:
   void updateDate ();
   void updateTitle ();
   void updateGeoPoints ();
+  void updateFields ();
 
   void setCurrentFieldRank (int r) { d.currentFieldRank = r; }
 

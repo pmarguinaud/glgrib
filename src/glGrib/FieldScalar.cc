@@ -53,6 +53,9 @@ void FieldScalar<N>::scalar_t::setupVertexAttributes () const
       glVertexAttrib3f (mattr, 0.0f, 0.0f, 0.0f);
     }
 
+  // Mask
+  field->bindMask (program->getAttributeLocation ("vertexMask"));
+
   // Triangles
   geometry->bindTriangles (field->opts.geometry.subgrid.on ? 1 : 0);
 }
@@ -80,7 +83,6 @@ void FieldScalar<N>::points_t::setupVertexAttributes () const
   auto hattr = program->getAttributeLocation ("vertexHeight");
   field->bindHeight (hattr);
   glVertexAttribDivisor (hattr, 1);
-  
 }
 
 static void mergeRegion (const std::vector<float> & values, const_GeometryPtr geometry, 
@@ -230,6 +232,8 @@ void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsF
 
   this->loadHeight (colorbuffer, ld);
 
+  this->createMask (ld);
+
   if (opts.mpiview.on)
     setupMpiView (ld, o, slot);
 
@@ -375,6 +379,8 @@ void FieldScalar<N>::render (const View & view, const OptionsLight & light) cons
   program->set ("discrete", opts.scalar.discrete.on);
   program->set ("dinteger", opts.scalar.discrete.integer.on);
   program->set ("mpiview_scale", opts.mpiview.on ? opts.mpiview.scale : 0.0f);
+
+  program->set ("frame", this->frameNumber);
 
   program->set ("RGBAM", opts.scalar.discrete.missing_color);
  

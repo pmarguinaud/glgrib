@@ -336,6 +336,13 @@ void Scene::updateGeoPoints ()
   d.geopoints.update ();
 }
 
+void Scene::updateFields ()
+{
+  for (auto fld : fieldlist)
+    if (fld != nullptr)
+      fld->update ();
+}
+
 void Scene::update ()
 {
   updateColorbar ();
@@ -345,6 +352,7 @@ void Scene::update ()
   updateDate ();
   updateTitle ();
   updateGeoPoints ();
+  updateFields ();
 
   d.nupdate++;
 

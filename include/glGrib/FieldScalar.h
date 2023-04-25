@@ -78,6 +78,8 @@ private:
   scalar_t scalar;
   points_t points;
 
+  int nframes = 0;
+
   OpenGLBufferPtr<float> mpivbuffer;
   OpenGLBufferPtr<T> colorbuffer;
 };

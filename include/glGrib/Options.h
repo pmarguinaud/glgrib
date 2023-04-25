@@ -967,6 +967,13 @@ public:
     DESC (widen.radius, Radius for regions);
     DESC (widen.merge.on, Merge other regions);
     DESC (widen.merge.value, Merge value);
+
+    DESC (mask.on, Enable mask);
+    DESC (mask.rand.on, Random mask);
+    DESC (mask.frames, Apply mask on this number of frames);
+    DESC (mask.x, Mask distribution);
+    DESC (mask.y, Mask distribution);
+    DESC (mask.path, Path);
   }
 
   struct 
@@ -1030,6 +1037,19 @@ public:
     } merge;
   } widen;
 
+
+  struct
+  {
+    bool on = false;
+    struct
+    {
+      bool on = false;
+    } rand;
+    int frames = 100;
+    std::vector<float> x = {0.0f, 1.0f};
+    std::vector<float> y = {0.0f, 1.0f};
+    std::string path;
+  } mask;
 };
 
 class OptionsMpiview : public OptionsBase

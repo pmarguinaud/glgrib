@@ -6,7 +6,7 @@ include $(TOP)/makefile.inc
 ifeq ($(BUILD), )
 
 all:
-	$(MAKE) BUILD=glfw
+	$(MAKE) BUILD=glfw all
 	$(MAKE) BUILD=egl
 clean:
 	$(MAKE) BUILD=glfw clean
@@ -15,12 +15,13 @@ clean:
 else
 
 SUFFIX=-$(BUILD)
-all: $(TOP)/bin/glgrib$(SUFFIX) $(TOP)/lib/libglGrib$(SUFFIX).so.0
+make_binaries: $(TOP)/bin/glgrib$(SUFFIX) $(TOP)/lib/libglGrib$(SUFFIX).so.0
+make_shaders: 
 	@./shaders/expand.pl $(TOP)
 
 ifeq ($(BUILD), glfw)
 
-all:
+all: make_binaries make_shaders
 	@\ln -sf glgrib$(SUFFIX) $(TOP)/bin/glgrib
 
 endif

@@ -162,6 +162,8 @@ public:
 
   void saveOptions () const;
 
+  virtual void update ();
+
 private:
 
   class Privatizer
@@ -212,6 +214,7 @@ private:
   frame_t frame;
 
 private:
+  int frameNumber = 0;
   float slot = 0.0f;
   Palette palette;
   mutable OptionsField opts;
@@ -246,8 +249,11 @@ private:
   void packUnpack (const BufferPtr<float> &, BufferPtr<float> &, const int, 
 		   const float, const float, const float);
   void loadHeight (OpenGLBufferPtr<T>, Loader *);
+  void createMask (glGrib::Loader *);
   void bindHeight (int) const;
+  void bindMask (int) const;
   OpenGLBufferPtr<T> heightbuffer;
+  OpenGLBufferPtr<float> maskbuffer;
   friend class FieldVector;
   friend class FieldScalar< 8>;
   friend class FieldScalar<16>;

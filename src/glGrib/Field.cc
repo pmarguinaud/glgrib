@@ -263,36 +263,128 @@ void glGrib::Field::saveOptions () const
 template <int N>
 void glGrib::FieldPacked<N>::loadHeight (glGrib::OpenGLBufferPtr<T> buf, glGrib::Loader * ld)
 {
-  if (opts.geometry.height.on)
+  if (! opts.geometry.height.on)
+    return;
+  
+  if (opts.geometry.height.path == "")
     {
-      if (opts.geometry.height.path == "")
+      heightbuffer = buf;
+    }
+  else
+    {
+      const auto & geometry = getGeometry ();
+ 
+      glGrib::GeometryPtr geometry_height = glGrib::Geometry::load (ld, opts.geometry.height.path, opts.geometry);
+
+      if (! geometry_height->isEqual (*geometry))
+        throw std::runtime_error (std::string ("Field and height have different geometries"));
+
+      const int size = geometry->getNumberOfPoints ();
+
+      glGrib::BufferPtr<float> data;
+      glGrib::FieldMetadata meta;
+
+      ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
+
+      heightbuffer = glGrib::OpenGLBufferPtr<T> (size);
+
+      pack (data, size, meta.valmin, meta.valmax, 
+            meta.valmis, heightbuffer);
+
+    }
+
+}
+
+template <int N>
+void glGrib::FieldPacked<N>::createMask (glGrib::Loader * ld)
+{
+  if (! opts.scalar.mask.on)
+    return;
+
+  if (opts.scalar.mask.path != "")
+    {
+      const auto & geometry = getGeometry ();
+
+      glGrib::GeometryPtr geometry_height = glGrib::Geometry::load (ld, opts.scalar.mask.path, opts.geometry);
+      if (! geometry_height->isEqual (*geometry))
+        throw std::runtime_error (std::string ("Field and mask have different geometries"));
+
+      const int size = geometry->getNumberOfPoints ();
+      glGrib::FieldMetadata meta;
+      BufferPtr<float> data;
+
+      ld->load (&data, opts.scalar.mask.path, opts.geometry, &meta);
+      maskbuffer = glGrib::OpenGLBufferPtr<float> (size);
+
+      auto maskbuffer_ = maskbuffer->map ();
+     
+      for (int i = 0; i < size; i++)
+        maskbuffer_[i] = data[i];
+    }
+  else
+    {
+      const auto & geometry = getGeometry ();
+      const int size = geometry->getNumberOfPoints ();
+     
+      std::vector<float> mask (size);
+     
+      const std::vector<float> & X = opts.scalar.mask.x;
+      const std::vector<float> & Y = opts.scalar.mask.y;
+     
+      size_t j = 0;
+      for (int i = 0; i < size; i++)
         {
-          heightbuffer = buf;
+          float x = ((float)i)/((float)size);
+          while (1)
+            {
+              if (X[j] <= x)
+                break;
+              j++;
+              if (j > X.size ())
+                throw std::runtime_error ("Out of bounds interpolation");
+            }
+          mask[i] = Y[j] + (x - X[j]) * (Y[j+1] - Y[j]) / (X[j+1] - X[j]);
+        }
+     
+      for (int i = 0; i < size; i++)
+        mask[i] = ((float)opts.scalar.mask.frames) * mask[i];
+     
+      maskbuffer = glGrib::OpenGLBufferPtr<float> (size);
+      auto maskbuffer_ = maskbuffer->map ();
+     
+      if (opts.scalar.mask.rand.on)
+        {
+          for (int i = 0; i < size; i++)
+            {
+              int s = size - i;
+              int j = rand () % s;
+              int k = s - 1;
+              maskbuffer_[i] = mask[j];
+              mask[j] = mask[k];
+            }
         }
       else
         {
-          const auto & geometry = getGeometry ();
- 
-          glGrib::GeometryPtr geometry_height = glGrib::Geometry::load (ld, opts.geometry.height.path, opts.geometry);
-
-          if (! geometry_height->isEqual (*geometry))
-            throw std::runtime_error (std::string ("Field and height have different geometries"));
-
-          const int size = geometry->getNumberOfPoints ();
-
-          glGrib::BufferPtr<float> data;
-          glGrib::FieldMetadata meta;
-
-          ld->load (&data, opts.geometry.height.path, opts.geometry, &meta);
-
-          heightbuffer = glGrib::OpenGLBufferPtr<T> (size);
-
-	  pack (data, size, meta.valmin, meta.valmax, 
-                meta.valmis, heightbuffer);
-
+          for (int i = 0; i < size; i++)
+            maskbuffer_[i] = mask[i];
         }
     }
+}
 
+template <int N>
+void glGrib::FieldPacked<N>::bindMask (int attr) const
+{
+  if (maskbuffer)
+    {
+      maskbuffer->bind (GL_ARRAY_BUFFER);
+      glEnableVertexAttribArray (attr);
+      glVertexAttribPointer (attr, 1, GL_FLOAT, GL_FALSE, 0, nullptr);
+    }
+  else
+    {
+      glDisableVertexAttribArray (attr);
+      glVertexAttrib1f (attr, -1.0f);
+    }
 }
 
 template <int N>
@@ -395,6 +487,11 @@ void glGrib::Field::frame_t::render (const glGrib::View & view) const
       glDrawArraysInstanced (GL_LINE_STRIP, 0, 2, geom->getFrameNumberOfPoints ());
     }
 
+}
+
+void glGrib::Field::update ()
+{
+  frameNumber++;
 }
 
 

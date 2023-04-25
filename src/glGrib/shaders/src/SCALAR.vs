@@ -5,6 +5,7 @@ layout(location = 0) in vec2  vertexLonLat;
 layout(location = 1) in float vertexVal;
 layout(location = 2) in float vertexHeight;
 layout(location = 3) in vec3  vertexMPIView;
+layout(location = 4) in float vertexMask;
 
 
 out 
@@ -13,6 +14,7 @@ out
 uniform mat4 MVP;
 uniform float height_scale = 0.05;
 uniform float mpiview_scale = 0.0f;
+uniform int frame = 0;
 
 #include "schmidt.h"
 #include "projection.h"
@@ -56,5 +58,8 @@ void main ()
   scalar_vs.fragmentMPI = vertexMPIView.x;
   scalar_vs.fragmentPos = normedPos;
   scalar_vs.missingFlag = vertexVal == 0 ? 1. : 0.;
+
+  if ((vertexMask < frame) && (vertexMask >= 0))
+    scalar_vs.missingFlag = 1.;
 
 }

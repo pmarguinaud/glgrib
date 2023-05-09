@@ -7,6 +7,8 @@
 #include "glGrib/View.h"
 #include "glGrib/Object.h"
 #include "glGrib/Palette.h"
+#include "glGrib/KdTree.h"
+
 #include <string>
 #include <vector>
 
@@ -46,6 +48,9 @@ private:
     glGrib::Palette p;
   } d;
   OpenGLVertexArray<Points> VAID;
+
+  std::vector<KdTree<3>::Point> points;
+  KdTree<3> tree;
 };
 
 

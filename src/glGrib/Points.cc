@@ -45,6 +45,21 @@ void Points::setup
 
   d.p = Palette (d.opts.palette, d.min, d.max);
 
+  const int n = lon.size ();
+  points.resize (n);
+
+#pragma omp parallel for
+  for (int i = 0; i < n; i++)
+    {
+      float xyz[3];
+      lonlat2xyz (deg2rad * lon[i], deg2rad * lat[i], &xyz[0], &xyz[1], &xyz[2]);
+      points[i] = glGrib::KdTree<3>::Point (xyz);
+    }
+
+  tree.setPoints (&points);
+  tree.build ();
+
+
   setReady ();
 }
 

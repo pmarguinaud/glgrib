@@ -432,6 +432,9 @@ void Window::toggleLight ()
 void Window::selectField (int ifield)
 {
   scene.setCurrentFieldRank (ifield);
+  Field * field = scene.getCurrentField ();
+  if (field)
+    field->clearSelected ();
 }
 
 void Window::scaleFieldDown ()
@@ -491,7 +494,7 @@ void Window::displayCursorPosition (double xpos, double ypos)
   if (getLatLonFromCursor (&lat, &lon))
     {
       std::string title_;
-      const Field * field = scene.getCurrentField ();
+      Field * field = scene.getCurrentField ();
       if (field)
         {
           int jglo = field->getGeometry ()->latlon2index (lat, lon);
@@ -506,6 +509,7 @@ void Window::displayCursorPosition (double xpos, double ypos)
                   sprintf (tmp, " %8.3g", v);
                   title_ = title_ + std::string (tmp);
                 }
+	      field->selectPoint (jglo);
 	    }
         }
       if (title_ == "")
@@ -530,6 +534,9 @@ void Window::toggleCursorposDisplay ()
   cursorpos = ! cursorpos;
   scene.setMessage (std::string (""));
   glfwSetWindowTitle (window, title.c_str ());
+  Field * field = scene.getCurrentField ();
+  if (field)
+    field->clearSelected ();
 }
 
 void Window::onclick (int button, int action, int mods)

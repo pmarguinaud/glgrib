@@ -974,6 +974,9 @@ public:
     DESC (mask.x, Mask distribution);
     DESC (mask.y, Mask distribution);
     DESC (mask.path, Path);
+
+    DESC (selector.on, Highlight selected point);
+    DESC (selector.color, Color for highlighting);
   }
 
   struct 
@@ -1050,6 +1053,12 @@ public:
     std::vector<float> y = {0.0f, 1.0f};
     std::string path;
   } mask;
+
+  struct
+  {
+    bool on = false;
+    OptionColor color = OptionColor (255, 255, 255);
+  } selector;
 };
 
 class OptionsMpiview : public OptionsBase

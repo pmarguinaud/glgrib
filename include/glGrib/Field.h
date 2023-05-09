@@ -164,6 +164,16 @@ public:
 
   virtual void update ();
 
+  void selectPoint (int _selected) 
+  {
+    selected = _selected;
+  }
+
+  void clearSelected ()
+  {
+    selected = -1;
+  }
+
 private:
 
   class Privatizer
@@ -212,6 +222,7 @@ private:
 
   String3D<0,1> hilo;
   frame_t frame;
+  int selected = -1;
 
 private:
   int frameNumber = 0;

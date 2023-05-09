@@ -15,6 +15,7 @@ uniform mat4 MVP;
 uniform float height_scale = 0.05;
 uniform float mpiview_scale = 0.0f;
 uniform int frame = 0;
+uniform int selected = -1;
 
 #include "schmidt.h"
 #include "projection.h"
@@ -62,4 +63,9 @@ void main ()
   if ((vertexMask < frame) && (vertexMask >= 0))
     scalar_vs.missingFlag = 1.;
 
+  scalar_vs.selected = 0;
+  if (selected == gl_VertexID)
+    {
+      scalar_vs.selected = 1;
+    }
 }

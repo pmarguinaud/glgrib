@@ -317,6 +317,16 @@ void FieldScalar<N>::scalar_t::render (const View & view) const
   const auto & geometry = field->getGeometry ();
 
   program->set ("smoothed", field->opts.scalar.smooth.on);
+
+  if (field->opts.scalar.selector.on)
+    {
+      program->set ("selected", field->selected);
+      program->set ("selector_color", field->opts.scalar.selector.color);
+    }
+  else
+    {
+      program->set ("selected", -1);
+    }
   
   if (field->opts.scalar.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);

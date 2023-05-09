@@ -6,4 +6,5 @@ SCALAR_VS
   float missingFlag;
   flat float fragmentValFlat;
   flat float fragmentMPIFlat;
+  float selected;
 } scalar_vs;

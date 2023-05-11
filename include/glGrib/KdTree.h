@@ -12,32 +12,19 @@ class KdTree
 {
 public:
 
+
   class Point
   {
   public:
     Point () { for (int i = 0; i < N; i++) { x[i] = 0.; } }
     Point (const float _x[]) { for (int i = 0; i < N; i++) { x[i] = _x[i]; } }
     Point (const std::vector<float> & _x) { for (int i = 0; i < N; i++) { x[i] = _x[i]; } }
+    Point (const float _x) { for (int i = 0; i < N; i++) { x[i] = _x; } }
     float x[N];
   };
 
-  KdTree ()
+  KdTree (const std::vector<Point> * _points) : points (_points)
   {
-  }
-
-  KdTree (const std::vector<Point> * _points) 
-  {
-    setPoints (_points);
-  }
-
-  void setPoints (const std::vector<Point> * _points)
-  {
-    points = _points;
-    for (int i = 0; i < N; i++)
-      {
-        min.x[i] = +std::numeric_limits<float>::max ();
-        max.x[i] = -std::numeric_limits<float>::max ();
-      }
   }
 
   ~KdTree ()
@@ -74,8 +61,8 @@ private:
 
   std::vector<int> list;
 
-  Point min;
-  Point max;
+  Point min = Point (+std::numeric_limits<float>::max ());
+  Point max = Point (-std::numeric_limits<float>::max ());
 
 };
 

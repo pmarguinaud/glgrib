@@ -20,7 +20,7 @@ class Points : public Object3D
 {
 public:
 
-  Points () : VAID (this) { }
+  Points () : VAID (this), tree (&points) { }
   void setupVertexAttributes () const;
 
   void setup (const OptionsPoints &, const std::vector<float> &, const std::vector<float> &, const std::vector<float> &);

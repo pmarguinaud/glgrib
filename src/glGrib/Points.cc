@@ -56,9 +56,7 @@ void Points::setup
       points[i] = glGrib::KdTree<3>::Point (xyz);
     }
 
-  tree.setPoints (&points);
   tree.build ();
-
 
   setReady ();
 }

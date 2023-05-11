@@ -33,6 +33,21 @@ Scene & Scene::operator= (const Scene & other)
           fieldlist.push_back (nullptr);
         else
           fieldlist.push_back (f->clone ());
+
+
+      for (auto f : geopointslist)
+        if (f != nullptr)
+          delete f;
+     
+      geopointslist.clear ();
+     
+      for (auto f : other.geopointslist)
+        if (f == nullptr)
+          geopointslist.push_back (nullptr);
+        else
+          geopointslist.push_back (f->clone ());
+
+
    }
   return *this;
 }
@@ -40,6 +55,9 @@ Scene & Scene::operator= (const Scene & other)
 Scene::~Scene () 
 {
   for (auto f : fieldlist)
+    if (f != nullptr)
+      delete f;
+  for (auto f : geopointslist)
     if (f != nullptr)
       delete f;
 }
@@ -79,13 +97,16 @@ void Scene::render () const
     if (f != nullptr)
       obj_list.push_back (f);
 
+  for (auto f : geopointslist)
+    if (f != nullptr)
+      obj_list.push_back (f);
+
   obj_list.push_back (&d.coast);
   obj_list.push_back (&d.border);
   obj_list.push_back (&d.rivers);
   obj_list.push_back (&d.departements);
   obj_list.push_back (&d.grid);
   obj_list.push_back (&d.cities);
-  obj_list.push_back (&d.geopoints);
   obj_list.push_back (&d.land);
 
 
@@ -103,7 +124,7 @@ void Scene::render () const
 
   if (getFieldColorbar ())
     render (&d.colorbar);
-  else if (d.geopoints.isReady ())
+  else if (getGeoPointsColorbar ()) 
     render (&d.colorbar);
 
   render (&d.mapscale);
@@ -325,15 +346,18 @@ void Scene::updateTitle ()
 void Scene::updateColorbar ()
 {
   const Field * fld = getFieldColorbar ();
+  const GeoPoints * points = getGeoPointsColorbar ();
   if (fld)
     d.colorbar.update (fld->getPalette ());
-  else if (d.geopoints.isReady ())
-    d.colorbar.update (d.geopoints.getPalette ());
+  else if (points)
+    d.colorbar.update (points->getPalette ());
 }
 
 void Scene::updateGeoPoints ()
 {
-  d.geopoints.update ();
+  for (auto points : geopointslist)
+    if (points != nullptr)
+      points->update ();
 }
 
 void Scene::updateFields ()
@@ -410,7 +434,13 @@ void Scene::setup (const Options & o)
   setTitleOptions (d.opts.scene.title);
   setTextOptions (d.opts.scene.text);
   setCitiesOptions (d.opts.cities);
-  setGeoPointsOptions (d.opts.geopoints);
+
+  for (auto p : d.opts.geopoints)
+    geopointslist.push_back ((GeoPoints *)nullptr);
+
+  for (size_t i = 0; i < d.opts.geopoints.size (); i++)
+    setGeoPointsOptions (i, d.opts.geopoints[i]);
+
   setMapScaleOptions (d.opts.mapscale);
   setColorBarOptions (d.opts.colorbar);
 
@@ -486,13 +516,16 @@ const Options Scene::getOptions () const
   o.rivers         = d.rivers.getOptions ();
   o.departements   = d.departements.getOptions ();
   o.cities         = d.cities.getOptions ();
-  o.geopoints      = d.geopoints.getOptions ();
   o.mapscale       = d.mapscale.getOptions ();
   o.land           = d.land.getOptions ();
 
   for (size_t i = 0; i < fieldlist.size (); i++)
     if (fieldlist[i] != nullptr)
       o.field[i] = fieldlist[i]->getOptions ();
+
+  for (size_t i = 0; i < geopointslist.size (); i++)
+    if (geopointslist[i] != nullptr)
+      o.geopoints[i] = geopointslist[i]->getOptions ();
 
   return o;
 }
@@ -507,6 +540,15 @@ void Scene::setLandscapeOptions (const OptionsLandscape & o)
 {
   glGrib::clear (d.landscape);
   d.landscape.setup (&ld, o);
+}
+
+void Scene::setGeoPointsOptions (int j, const OptionsGeoPoints & o)
+{
+  if (geopointslist[j] != nullptr)
+    delete geopointslist[j];
+
+  geopointslist[j] = new GeoPoints ();
+  geopointslist[j]->setup (o);
 }
 
 void Scene::setFieldOptions (int j, const OptionsField & o, float slot)

@@ -45,6 +45,9 @@ void Points::setup
 
   d.p = Palette (d.opts.palette, d.min, d.max);
 
+  tree = std::shared_ptr<KdTree<3>> (new KdTree<3> ());
+  auto & points = tree->getPoints ();
+
   const int n = lon.size ();
   points.resize (n);
 
@@ -56,7 +59,7 @@ void Points::setup
       points[i] = glGrib::KdTree<3>::Point (xyz);
     }
 
-  tree.build ();
+  tree->build ();
 
   setReady ();
 }

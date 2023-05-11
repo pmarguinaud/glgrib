@@ -51,9 +51,21 @@ public:
     return d.currentFieldRank;
   }
 
+  int getCurrentGeoPointsRank () const
+  {
+    return d.currentGeoPointsRank;
+  }
+
   Field * getCurrentField () const
   { 
-    return static_cast<size_t> (d.currentFieldRank) < fieldlist.size () ? fieldlist[d.currentFieldRank] : nullptr; 
+    size_t k = static_cast<size_t> (d.currentFieldRank);
+    return (0 <= k) && (k < fieldlist.size ()) ? fieldlist[d.currentFieldRank] : nullptr; 
+  }
+
+  GeoPoints * getCurrentGeoPoints () const
+  {
+    size_t k = static_cast<size_t> (d.currentGeoPointsRank);
+    return (0 <= k) && (k < geopointslist.size ()) ? geopointslist[d.currentGeoPointsRank] : nullptr; 
   }
 
   void getLightPos (float * lon, float * lat) const
@@ -85,7 +97,16 @@ public:
   void updateGeoPoints ();
   void updateFields ();
 
-  void setCurrentFieldRank (int r) { d.currentFieldRank = r; }
+  void setCurrentFieldRank (int r) 
+  { 
+    d.currentFieldRank = r; 
+    d.currentGeoPointsRank = -1;
+  }
+  void setCurrentGeoPointsRank (int r) 
+  { 
+    d.currentGeoPointsRank = r; 
+    d.currentFieldRank = -1;
+  }
 
   const glGrib::Field * getFieldColorbar () const
   {
@@ -93,6 +114,15 @@ public:
     if ((fld != nullptr) && (d.colorbar.isReady ()))
       if (fld->useColorBar ())
         return fld;
+    return nullptr;
+  }
+
+  const glGrib::GeoPoints * getGeoPointsColorbar () const
+  {
+    const glGrib::GeoPoints * points = getCurrentGeoPoints ();
+    if ((points != nullptr) && (d.colorbar.isReady ()))
+      if (points->useColorBar ())
+        return points;
     return nullptr;
   }
 
@@ -188,10 +218,7 @@ public:
   {
     setObjectOptions (d.cities, o);
   }
-  void setGeoPointsOptions (const OptionsGeoPoints & o)
-  {
-    setObjectOptions (d.geopoints, o);
-  }
+  void setGeoPointsOptions (int, const OptionsGeoPoints &);
 
   void setFieldOptions (int, const OptionsField &, float = 0);
   void setFieldPaletteOptions (int, const OptionsPalette &);
@@ -258,10 +285,6 @@ public:
   {
     return d.cities.getOptions ();
   }
-  const OptionsGeoPoints & getGeoPointsOptions () const
-  {
-    return d.geopoints.getOptions ();
-  }
 
   const OptionColor & getGridColorOptions () const;
   const OptionsColorbar & getColorBarOptions () const;
@@ -276,6 +299,7 @@ public:
 
 private:
   std::vector<Field*> fieldlist;
+  std::vector<GeoPoints*> geopointslist;
 
   class _data
   {
@@ -290,7 +314,6 @@ private:
       Ticks ticks;
       Departements departements;
       Cities cities;
-      GeoPoints geopoints;
       Test test;
       Land land;
     private:
@@ -303,6 +326,7 @@ private:
       std::vector<String2D<0,1>> str;
       int nupdate = 0;
       int currentFieldRank = 0;
+      int currentGeoPointsRank = 0;
       glm::mat4 MVP_R, MVP_L;
       friend class Scene;
   };

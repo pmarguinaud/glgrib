@@ -190,31 +190,40 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
       glGribWindowIfKey (NONE,    LEFT  ,  Move westward                                        , rotateWest              ());
       glGribWindowIfKey (NONE,    RIGHT ,  Move eastward                                        , rotateEast              ());
 
-      glGribWindowIfKey (NONE,    F1    ,  Select field #1                                      , selectField           ( 0));
-      glGribWindowIfKey (NONE,    F2    ,  Select field #2                                      , selectField           ( 1));
-      glGribWindowIfKey (NONE,    F3    ,  Select field #3                                      , selectField           ( 2));
-      glGribWindowIfKey (NONE,    F4    ,  Select field #4                                      , selectField           ( 3));
-      glGribWindowIfKey (NONE,    F5    ,  Select field #5                                      , selectField           ( 4));
-      glGribWindowIfKey (NONE,    F6    ,  Select field #6                                      , selectField           ( 5));
-      glGribWindowIfKey (NONE,    F7    ,  Select field #7                                      , selectField           ( 6));
-      glGribWindowIfKey (NONE,    F8    ,  Select field #8                                      , selectField           ( 7));
-      glGribWindowIfKey (NONE,    F9    ,  Select field #9                                      , selectField           ( 8));
-      glGribWindowIfKey (NONE,    F10   ,  Select field #10                                     , selectField           ( 9));
-      glGribWindowIfKey (NONE,    F11   ,  Select field #11                                     , selectField           (10));
-      glGribWindowIfKey (NONE,    F12   ,  Select field #12                                     , selectField           (11));
+      glGribWindowIfKey (NONE,    F1    ,  Select field #1                                      , selectField            (0));
+      glGribWindowIfKey (NONE,    F2    ,  Select field #2                                      , selectField            (1));
+      glGribWindowIfKey (NONE,    F3    ,  Select field #3                                      , selectField            (2));
+      glGribWindowIfKey (NONE,    F4    ,  Select field #4                                      , selectField            (3));
+      glGribWindowIfKey (NONE,    F5    ,  Select field #5                                      , selectField            (4));
+      glGribWindowIfKey (NONE,    F6    ,  Select field #6                                      , selectField            (5));
+      glGribWindowIfKey (NONE,    F7    ,  Select field #7                                      , selectField            (6));
+      glGribWindowIfKey (NONE,    F8    ,  Select field #8                                      , selectField            (7));
+      glGribWindowIfKey (NONE,    F9    ,  Select field #9                                      , selectField            (8));
+      glGribWindowIfKey (NONE,    F10   ,  Select field #10                                     , selectField            (9));
 
-      glGribWindowIfKey (CONTROL, F1    ,  Show only field #1                                   , { hideAllFields (); selectField ( 0); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F2    ,  Show only field #2                                   , { hideAllFields (); selectField ( 1); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F3    ,  Show only field #3                                   , { hideAllFields (); selectField ( 2); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F4    ,  Show only field #4                                   , { hideAllFields (); selectField ( 3); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F5    ,  Show only field #5                                   , { hideAllFields (); selectField ( 4); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F6    ,  Show only field #6                                   , { hideAllFields (); selectField ( 5); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F7    ,  Show only field #7                                   , { hideAllFields (); selectField ( 6); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F8    ,  Show only field #8                                   , { hideAllFields (); selectField ( 7); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F9    ,  Show only field #9                                   , { hideAllFields (); selectField ( 8); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F10   ,  Show only field #10                                  , { hideAllFields (); selectField ( 9); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F11   ,  Show only field #11                                  , { hideAllFields (); selectField (10); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F12   ,  Show only field #12                                  , { hideAllFields (); selectField (11); toggleHideField (); });
+      glGribWindowIfKey (CONTROL, F1    ,  Show only field #1                                   , { hideAllFields (); selectField (0); toggleHideField (); });
+      glGribWindowIfKey (CONTROL, F2    ,  Show only field #2                                   , { hideAllFields (); selectField (1); toggleHideField (); });
+      glGribWindowIfKey (CONTROL, F3    ,  Show only field #3                                   , { hideAllFields (); selectField (2); toggleHideField (); });
+      glGribWindowIfKey (CONTROL, F4    ,  Show only field #4                                   , { hideAllFields (); selectField (3); toggleHideField (); });
+      glGribWindowIfKey (CONTROL, F5    ,  Show only field #5                                   , { hideAllFields (); selectField (4); toggleHideField (); });
+      glGribWindowIfKey (CONTROL, F6    ,  Show only field #6                                   , { hideAllFields (); selectField (5); toggleHideField (); });
+      glGribWindowIfKey (CONTROL, F7    ,  Show only field #7                                   , { hideAllFields (); selectField (6); toggleHideField (); });
+      glGribWindowIfKey (CONTROL, F8    ,  Show only field #8                                   , { hideAllFields (); selectField (7); toggleHideField (); });
+      glGribWindowIfKey (CONTROL, F9    ,  Show only field #9                                   , { hideAllFields (); selectField (8); toggleHideField (); });
+      glGribWindowIfKey (CONTROL, F10   ,  Show only field #10                                  , { hideAllFields (); selectField (9); toggleHideField (); });
+
+      glGribWindowIfKey (SHIFT,   F1    ,  Select geopoints #1                                  , selectGeoPoints       (0));
+      glGribWindowIfKey (SHIFT,   F2    ,  Select geopoints #2                                  , selectGeoPoints       (1));
+      glGribWindowIfKey (SHIFT,   F3    ,  Select geopoints #3                                  , selectGeoPoints       (2));
+      glGribWindowIfKey (SHIFT,   F4    ,  Select geopoints #4                                  , selectGeoPoints       (3));
+      glGribWindowIfKey (SHIFT,   F5    ,  Select geopoints #5                                  , selectGeoPoints       (4));
+      glGribWindowIfKey (SHIFT,   F6    ,  Select geopoints #6                                  , selectGeoPoints       (5));
+      glGribWindowIfKey (SHIFT,   F7    ,  Select geopoints #7                                  , selectGeoPoints       (6));
+      glGribWindowIfKey (SHIFT,   F8    ,  Select geopoints #8                                  , selectGeoPoints       (7));
+      glGribWindowIfKey (SHIFT,   F9    ,  Select geopoints #9                                  , selectGeoPoints       (8));
+      glGribWindowIfKey (SHIFT,   F10   ,  Select geopoints #10                                 , selectGeoPoints       (9));
+
+
       glGribWindowIfKey (CONTROL, H     ,  Show all fields                                      , showAllFields          ());
       glGribWindowIfKey (ALT,     H     ,  Show help                                            , showHelp               ());
 
@@ -432,6 +441,11 @@ void Window::toggleLight ()
 void Window::selectField (int ifield)
 {
   scene.setCurrentFieldRank (ifield);
+}
+
+void Window::selectGeoPoints (int igeopoints)
+{
+  scene.setCurrentGeoPointsRank (igeopoints);
 }
 
 void Window::scaleFieldDown ()

@@ -155,6 +155,7 @@ public:
   void debugTriangleNumber ();
 
   void selectField (int);
+  void selectGeoPoints (int);
   void scaleFieldUp ();
   void scaleFieldDown ();
   void toggleHideField ();

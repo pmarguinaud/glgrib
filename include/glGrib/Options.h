@@ -2054,9 +2054,15 @@ public:
     INCLUDE_H (field[4]); INCLUDE_H (field[5]); 
     INCLUDE_H (field[6]); INCLUDE_H (field[7]); 
     INCLUDE_H (field[8]); INCLUDE_H (field[9]); 
+
+    INCLUDE   (geopoints[0]); INCLUDE_H (geopoints[1]); 
+    INCLUDE   (geopoints[2]); INCLUDE_H (geopoints[3]); 
+    INCLUDE   (geopoints[4]); INCLUDE_H (geopoints[5]); 
+    INCLUDE   (geopoints[6]); INCLUDE_H (geopoints[7]); 
+    INCLUDE   (geopoints[8]); INCLUDE_H (geopoints[9]); 
+
     INCLUDE (coast);
     INCLUDE (cities);
-    INCLUDE (geopoints);
     INCLUDE (border);
     INCLUDE (rivers);
     INCLUDE (render);
@@ -2085,15 +2091,13 @@ public:
     std::vector<std::string> path;
     bool on = false;
   } diff;
-  std::vector<OptionsField> field =
-    {OptionsField (), OptionsField (), 
-     OptionsField (), OptionsField (), 
-     OptionsField (), OptionsField (), 
-     OptionsField (), OptionsField (), 
-     OptionsField (), OptionsField ()};
+  std::vector<OptionsField> field = {OptionsField (), OptionsField (), OptionsField (), OptionsField (), OptionsField (),
+                                     OptionsField (), OptionsField (), OptionsField (), OptionsField (), OptionsField ()};
   OptionsCoast coast;
   OptionsCities cities;
-  OptionsGeoPoints geopoints;
+  std::vector<OptionsGeoPoints> geopoints = 
+    {OptionsGeoPoints (), OptionsGeoPoints (), OptionsGeoPoints (), OptionsGeoPoints (), OptionsGeoPoints (),
+     OptionsGeoPoints (), OptionsGeoPoints (), OptionsGeoPoints (), OptionsGeoPoints (), OptionsGeoPoints ()};
   OptionsBorder border;
   OptionsRivers rivers;
   OptionsColorbar colorbar;

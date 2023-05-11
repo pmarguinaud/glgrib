@@ -23,7 +23,7 @@ public:
     float x[N];
   };
 
-  KdTree (const std::vector<Point> * _points) : points (_points)
+  KdTree () : points (&pointslist)
   {
   }
 
@@ -51,13 +51,22 @@ public:
 
   void build ();
 
+  std::vector<Point> & getPoints ()
+  {
+    return pointslist;
+  }
+
 private:
+  KdTree (const std::vector<Point> * _points) : points (_points)
+  {
+  }
 
   void _build (int);
 
   KdTree<N> * prev = nullptr, * next = nullptr;
 
   const std::vector<Point> * points = nullptr;
+  std::vector<Point> pointslist;
 
   std::vector<int> list;
 
@@ -65,5 +74,6 @@ private:
   Point max = Point (-std::numeric_limits<float>::max ());
 
 };
+
 
 }

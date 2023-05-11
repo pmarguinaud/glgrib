@@ -11,6 +11,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 
 namespace glGrib
@@ -20,7 +21,7 @@ class Points : public Object3D
 {
 public:
 
-  Points () : VAID (this), tree (&points) { }
+  Points () : VAID (this) { }
   void setupVertexAttributes () const;
 
   void setup (const OptionsPoints &, const std::vector<float> &, const std::vector<float> &, const std::vector<float> &);
@@ -49,8 +50,7 @@ private:
   } d;
   OpenGLVertexArray<Points> VAID;
 
-  std::vector<KdTree<3>::Point> points;
-  KdTree<3> tree;
+  std::shared_ptr<KdTree<3>> tree;
 };
 
 

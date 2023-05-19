@@ -2,49 +2,50 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <execution>
 #include <limits>
 #include <cmath>
+#include <omp.h>
 
 #include "glGrib/KdTree.h"
 
 template <int N>
-void glGrib::KdTree<N>::display (bool all, const int depth) const
+void glGrib::KdTree<N>::KdNode::display (bool all, const int depth) const
 {
-  const KdTree<N> * tree = this;
+  const KdNode * node = this;
+  const auto & points = *(node->points);
 
   auto spc = [](int i) { while (i > 0) { printf (" "); i--; } };
 
   for (int i = 0; i < N; i++)
     {
       spc (depth*2); 
-      printf (" x[%d] = %12.4e .. %12.4e | %12.4e\n", 
-               i, tree->min.x[i], tree->max.x[i], tree->max.x[i]-tree->min.x[i]);
+      printf (" x[%d] = %12.4e %d\n", i, points[node->mid].x[i], node->dir);
     }
 
-  if (tree->prev)
+  if (node->prev)
     {
       spc (depth*2); printf ("-PREV\n");
-      tree->prev->display (all, depth+1);
+      node->prev->display (all, depth+1);
     }
-  if (tree->next)
+  if (node->next)
     {
       spc (depth*2); printf ("-NEXT\n");
-      tree->next->display (all, depth+1);
+      node->next->display (all, depth+1);
     }
 
 
-  if (tree->list.size ())
+  if (node->list.size ())
     {
-      spc (depth*2); printf (" COUNT = %ld\n", tree->list.size ());
+      spc (depth*2); printf (" COUNT = %ld\n", node->list.size ());
     }
 
-  const std::vector<Point> & points = *(tree->points);
 
-  if (all && tree->list.size ())
+  if (all && node->list.size ())
     {
       spc (depth*2); printf (" LIST\n");
       
-      for (const auto & p : tree->list)
+      for (const auto & p : node->list)
         {
           spc (depth*2); 
 	  printf ("(");
@@ -61,24 +62,11 @@ void glGrib::KdTree<N>::display (bool all, const int depth) const
 }
 
 template <int N>
-void glGrib::KdTree<N>::_build (int depth)
+void glGrib::KdTree<N>::KdNode::build (int depth, int nPoint)
 {
-  KdTree<N> * tree = this;
-  const int n = tree->list.size ();
-  const std::vector<Point> & points = *(tree->points);
-
-  for (int i = 0; i < n; i++)
-  for (int j = 0; j < N; j++)
-    {
-      tree->min.x[j] = std::min (tree->min.x[j], points[tree->list[i]].x[j]); 
-      tree->max.x[j] = std::max (tree->max.x[j], points[tree->list[i]].x[j]);
-    }
-
-  if (n < 10)
-    return;
-
-  if (depth > 20)
-    return;
+  KdNode * node = this;
+  const int n = node->list.size ();
+  const auto & points = *(node->points);
 
   int rank[n];
   for (int i = 0; i < n; i++)
@@ -86,68 +74,76 @@ void glGrib::KdTree<N>::_build (int depth)
 
   float dx[N];
 
+  Point min;
+  Point max;
+
   for (int j = 0; j < N; j++)
-    dx[j] = tree->max.x[j] - tree->min.x[j];
-
-  float * max = std::max_element (&dx[0], &dx[0] + N);
-  int jmax = max - &dx[0];
-
-  if (*max > 0.)
     {
-      std::sort (&rank[0], &rank[0]+n, [tree,jmax,&points](int i, int j) 
-        { return points[tree->list[i]].x[jmax] < points[tree->list[j]].x[jmax]; });
-
-      int i;
-     
-      i = n/2;
-
-      while (i > 0)
+      float xmin = +std::numeric_limits<float>::max ();
+      float xmax = -std::numeric_limits<float>::max ();
+#pragma omp parallel for reduction (min: xmin) reduction(max: xmax) if (n > 128)
+      for (int i = 0; i < n; i++)
         {
-          if (points[tree->list[rank[i-1]]].x[jmax] < points[tree->list[rank[i]]].x[jmax])
-            break;
-	  i--;
-	}
-
-      if (i == 0)
-        {
-          i = n/2+1;
-          while (i < n-1)
-            {
-              if (points[tree->list[rank[i-1]]].x[jmax] < points[tree->list[rank[i]]].x[jmax])
-                break;
-              i++;
-            }
+          xmin = std::min (xmin, points[node->list[i]].x[j]);
+          xmax = std::max (xmax, points[node->list[i]].x[j]);
         }
+      min.x[j] = xmin;
+      max.x[j] = xmax;
+    }
 
-      float xa = points[tree->list[rank[i-1]]].x[jmax],
-            xb = points[tree->list[rank[i+0]]].x[jmax];
+  for (int j = 0; j < N; j++)
+    dx[j] = max.x[j] - min.x[j];
 
-      tree->prev = new KdTree<N> (&points); 
-      tree->prev->min = tree->min;
-      tree->prev->max = tree->max;
-      tree->prev->max.x[jmax] = xa;
-      tree->prev->list.reserve (i);
+  float * dmax = std::max_element (&dx[0], &dx[0] + N);
+  int jmax = dmax - &dx[0];
 
+  auto cmp = [node,jmax,&points](int i, int j) 
+    { return points[node->list[i]].x[jmax] < points[node->list[j]].x[jmax]; };
+
+#if __cplusplus >= 201703L
+  if (n > 128)
+    std::sort (std::execution::par, &rank[0], &rank[0]+n, cmp);
+  else
+#endif
+    std::sort (&rank[0], &rank[0]+n, cmp);
+
+  int i = n/2;
+
+  node->mid = node->list[rank[i]]; 
+
+  if (n < nPoint)
+    return;
+
+  if (*dmax > 0.)
+    {
+      node->dir = jmax;
+
+      KdNode * prev = new KdNode (&points); prev->up = node;
+      KdNode * next = new KdNode (&points); next->up = node;
+
+      node->prev = prev;
+      node->next = next;
+
+      prev->list.resize (i);
+
+#pragma omp parallel for
       for (int j = 0; j < i; j++)
-        tree->prev->list.push_back (tree->list[rank[j]]);
+        prev->list[j] = node->list[rank[j]];
 
-      tree->next = new KdTree<N> (&points); 
-      tree->next->min = tree->min;
-      tree->next->max = tree->max;
-      tree->next->min.x[jmax] = xb;
-      tree->next->list.reserve (tree->list.size () - i + 1);
+      next->list.resize (n - i);
 
+#pragma omp parallel for
       for (int j = i; j < n; j++)
-        tree->next->list.push_back (tree->list[rank[j]]);
+        next->list[j-i] = node->list[rank[j]];
 
-      tree->list.resize (0);
+      node->list.resize (0);
 #pragma omp task 
       {
-        tree->prev->_build (depth+1);
+        prev->build (depth+1, nPoint);
       }
 #pragma omp task 
       {
-        tree->next->_build (depth+1);
+        next->build (depth+1, nPoint);
       }
 
     }
@@ -158,56 +154,206 @@ void glGrib::KdTree<N>::_build (int depth)
 }
 
 template <int N>
-int glGrib::KdTree<N>::search (const Point & p) const
+typename glGrib::KdTree<N>::Result glGrib::KdTree<N>::KdNode::searchDumb (const Point & p) const
 {
-  const KdTree<N> * tree = this;
-  const KdTree<N> * next = tree->next;
-  const KdTree<N> * prev = tree->prev;
+  Result r;
+  const auto & points = *(this->points);
+  const int n = points.size ();
 
-  if (! tree->contains (p))
-    return -1;
+  for (int i = 0; i < n; i++)
+    {
+      float dd = p.distance (points[i]);
+      if (dd < r.dist)
+        {
+          r.rank = i;
+	  r.dist = dd;
+	  r.count++;
+	}
+    }
+
+  return r;
+}
+
+template <int N>
+void glGrib::KdTree<N>::KdNode::displayPath (const Point & p, const Point & q, FILE * fp) const
+{
+  const auto & points = *(this->points);
+  Result r;
+
+  searchDown (p, &r);
+
+  const KdNode * node = r.node;
+
+  fprintf (fp, "(");
+  for (int i = 0; i < N; i++)
+    fprintf (fp, "%12.4e%s", p.x[i], i < N ? ", " : ")");
+  fprintf (fp, " %6d [%6d] %6d %f\n", 
+           node->prev ? node->prev->id : -1, node->id, node->next ? node->next->id : -1,
+	   p.distance (q));
+  fprintf (fp, "\n");
+
+  for (node = node->up; node; node = node->up)
+    {
+      const Point p = points[node->mid];
+      fprintf (fp, "(");
+      for (int i = 0; i < N; i++)
+        fprintf (fp, "%12.4e%s", p.x[i], i < N ? ", " : ")");
+      fprintf (fp, " %6d [%6d] %6d %f\n", 
+               node->prev ? node->prev->id : -1, node->id, node->next ? node->next->id : -1,
+	       p.distance (q));
+      fprintf (fp, " ");
+      for (int i = 0; i < N; i++)
+        fprintf (fp, "%12s%s", node->dir == i ? "------------" : "", i < N ? "  " : " \n");
+    }
+}
+
+template <int N>
+float glGrib::KdTree<N>::KdNode::mindist (const Point & p) const
+{
+  const auto * node = this;
+  const auto & points = node->getPoints ();
+  float dist = p.distance (points[node->mid]);
+
+  if (node->prev)
+    dist = std::min (dist, node->prev->mindist (p));
+
+  if (node->next)
+    dist = std::min (dist, node->next->mindist (p));
+
+  const int n = node->list.size ();
+  for (int i = 0; i < n; i++)
+    dist = std::min (dist, p.distance (points[node->list[i]]));
+
+  return dist;
+}
+
+template <int N>
+typename glGrib::KdTree<N>::Result glGrib::KdTree<N>::KdNode::search (const Point & p, int maxCount) const
+{
+  Result r;
+  searchFull (p, &r, maxCount, nullptr);
+  return r;
+}
+
+template <int N>
+void glGrib::KdTree<N>::KdNode::searchFull 
+(const Point & p, Result * r, int maxCount, const KdNode * stop, int depth) const
+{
+  const std::string indent (depth * 2, ' ');
+
+  const auto & points = *(this->points);
+
+  searchDown (p, r);
+
+  for (const KdNode * node = r->node; node != stop; )
+    {
+      const KdNode * down = node;     // current node is down
+      node = node->up;                // node above current node
+
+      if (node == stop)
+        break;
+
+      // Distance to plan spanned by node above
+      const int dir = node->dir, mid = node->mid;
+      float dplan = std::abs (points[mid].x[dir] - p.x[dir]);
+      float dnode = p.distance (points[node->mid]);  // distance to node above
+
+      if (dnode < r->dist)
+        {
+          r->node = node; // node above is better, it is now the best node
+	  r->rank = node->mid;
+	  r->dist = dnode;
+        }
+      
+      if ((dplan < r->dist) && (r->count < maxCount))
+        {
+	  Result r1;
+
+          if ((down == node->prev) && node->next)
+            {
+              node->next->searchFull (p, &r1, maxCount, node, depth+1);
+            }
+          else 
+          if ((down == node->next) && node->prev)
+            {
+              node->prev->searchFull (p, &r1, maxCount, node, depth+1); 
+            }
+      
+          if (r1.dist < r->dist)
+            {
+	      r1.count += r->count;
+	      *r = r1;
+            }
+        }
+
+    }
+
+}
+
+template <int N>
+void glGrib::KdTree<N>::KdNode::searchDown 
+(const Point & p, Result * r) const
+{
+  const KdNode * node = this;
+  const KdNode * next = node->next;
+  const KdNode * prev = node->prev;
+  const auto & points = *(node->points);
+  const Point & m = points[node->mid];
+
+  r->count++;
+
+  if (points[node->mid] == p)
+    {
+      r->rank = node->mid;
+      r->node = this;
+      r->dist = 0.;
+      return;
+    }
 
   if (next || prev)
     {
-      if (next && prev)
+      if (next && (p.x[node->dir] >= points[node->mid].x[node->dir]))
         {
-          if (next->contains (p) && prev->contains (p))
-            abort ();
+          next->searchDown (p, r);
 	}
-      if (next && next->contains (p))
-        return next->search (p);
-      if (prev && prev->contains (p))
-        return prev->search (p);
-      return -1;
+      else 
+      if (prev && (p.x[node->dir] <= points[node->mid].x[node->dir]))
+        {
+          prev->searchDown (p, r);
+	}
     }
-  
-  const std::vector<Point> & points = *(tree->points);
-  const int n = tree->list.size ();
-  for (int i = 0; i < n; i++)
+  else
     {
-      const Point & q = points[tree->list[i]];
-      float d = 0.;
-      for (int j = 0; j < N; j++)
-        d += (p.x[j] - q.x[j]) * (p.x[j] - q.x[j]);
-      d = sqrt (d);
-      if (d == 0.)
-        return tree->list[i];
-    }
+      const int n = node->list.size ();
+      r->node = node;
 
-  return -1;
+      for (int i = 0; i < n; i++)
+        {
+          const Point & q = points[node->list[i]];
+          float dpq = p.distance (q);
+	  if (dpq <= r->dist)
+            {
+              r->dist = dpq;
+	      r->rank = node->list[i];
+              r->count++;
+	    }
+        }
+    }
 }
 
 template <int N>
 void glGrib::KdTree<N>::build ()
 {
-  const int n = points->size ();
-  list.resize (n);
+  const int n = root.points->size ();
+  root.list.resize (n);
+#pragma omp parallel for
   for (int i = 0; i < n; i++)
-    list[i] = i;
-  _build (0);
+    root.list[i] = i;
+  root.build (0);
 }
 
 template class glGrib::KdTree<3>;
+template<> int glGrib::KdTree<3>::Id = 0;
 
 
 

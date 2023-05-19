@@ -42,11 +42,12 @@ void Points::setup
     }
 
   d.llsbuffer = OpenGLBufferPtr<float> (lls);
+  d.values = BufferPtr<float> (d.len);
 
   d.p = Palette (d.opts.palette, d.min, d.max);
 
-  tree = std::shared_ptr<KdTree<3>> (new KdTree<3> ());
-  auto & points = tree->getPoints ();
+  d.tree = std::shared_ptr<KdTree<3>> (new KdTree<3> ());
+  auto & points = d.tree->getPoints ();
 
   const int n = lon.size ();
   points.resize (n);
@@ -57,9 +58,10 @@ void Points::setup
       float xyz[3];
       lonlat2xyz (deg2rad * lon[i], deg2rad * lat[i], &xyz[0], &xyz[1], &xyz[2]);
       points[i] = glGrib::KdTree<3>::Point (xyz);
+      d.values[i] = val[i];
     }
 
-  tree->build ();
+  d.tree->build ();
 
   setReady ();
 }
@@ -112,6 +114,21 @@ void Points::render (const View & view, const OptionsLight &, const int offset, 
 
   view.delMVP (program);
 
+}
+
+int Points::getNearestPoint (float lat, float lon) const
+{
+  KdTree<3>::Point p;
+  lonlat2xyz (deg2rad * lon, deg2rad * lat, &p.x[0], &p.x[1], &p.x[2]);
+  const auto res = d.tree->search (p, 100);
+  return res.rank;
+}
+
+const std::vector<float> Points::getValue (int jrank) const
+{
+  std::vector<float> v;
+  v.push_back (d.values[jrank]);
+  return v;
 }
 
 }

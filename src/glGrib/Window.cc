@@ -505,15 +505,30 @@ void Window::displayCursorPosition (double xpos, double ypos)
   if (getLatLonFromCursor (&lat, &lon))
     {
       std::string title_;
-      const Field * field = scene.getCurrentField ();
-      if (field)
+      if (const auto * field = scene.getCurrentField ())
         {
-          int jglo = field->getGeometry ()->latlon2index (lat, lon);
+	  int jglo = field->getGeometry ()->latlon2index (lat, lon);
 	  if (jglo >= 0)
             {
               char tmp[128];
-              std::vector<float> value = field->getValue (jglo);
+              auto value = field->getValue (jglo);
               sprintf (tmp, "%6.2f %6.2f %8d", lat, lon, jglo);
+              title_ = std::string (tmp);
+	      for (auto v : value)
+                {
+                  sprintf (tmp, " %8.3g", v);
+                  title_ = title_ + std::string (tmp);
+                }
+	    }
+        }
+      else if (const auto * geopoints = scene.getCurrentGeoPoints ())
+        {
+          int jrank = geopoints->getNearestPoint (lat, lon);
+          if (jrank >= 0)
+            {
+              char tmp[128];
+	      auto value = geopoints->getValue (jrank);
+              sprintf (tmp, "%6.2f %6.2f %8d", lat, lon, jrank);
               title_ = std::string (tmp);
 	      for (auto v : value)
                 {

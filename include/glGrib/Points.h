@@ -8,6 +8,7 @@
 #include "glGrib/Object.h"
 #include "glGrib/Palette.h"
 #include "glGrib/KdTree.h"
+#include "glGrib/Buffer.h"
 
 #include <string>
 #include <vector>
@@ -35,6 +36,9 @@ public:
     return d.p;
   }
 
+  int getNearestPoint (float, float) const;
+  virtual const std::vector<float> getValue (int) const;
+
 private:
   const bool & getVisibleRef () const override
   {
@@ -47,10 +51,11 @@ private:
     int len;
     OpenGLBufferPtr<float> llsbuffer;
     glGrib::Palette p;
+    std::shared_ptr<KdTree<3>> tree;
+    BufferPtr<float> values;
   } d;
   OpenGLVertexArray<Points> VAID;
 
-  std::shared_ptr<KdTree<3>> tree;
 };
 
 

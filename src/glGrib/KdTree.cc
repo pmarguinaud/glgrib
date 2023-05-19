@@ -298,7 +298,6 @@ void glGrib::KdTree<N>::KdNode::searchDown
   const KdNode * next = node->next;
   const KdNode * prev = node->prev;
   const auto & points = *(node->points);
-  const Point & m = points[node->mid];
 
   r->count++;
 

@@ -164,6 +164,11 @@ public:
 
   virtual void update ();
 
+  virtual int getNearestPoint (float lat, float lon) const
+  {
+    return getGeometry ()->latlon2index (lat, lon);
+  }
+
 private:
 
   class Privatizer

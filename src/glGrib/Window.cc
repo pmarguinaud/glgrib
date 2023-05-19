@@ -499,6 +499,32 @@ int Window::getLatLonFromCursor (float * lat, float * lon)
   return scene.getView ().getLatLonFromScreenCoords (xpos, ypos, lat, lon);
 }
 
+namespace
+{
+
+template <typename T>
+const std::string getPointerString (const T * x, float * plat, float * plon)
+{
+  std::string title_;
+  float & lat = *plat, & lon = *plon;
+  int jglo = x->getNearestPoint (lat, lon);
+  if (jglo >= 0)
+    {
+      char tmp[128];
+      auto value = x->getValue (jglo);
+      sprintf (tmp, "%6.2f %6.2f %8d", lat, lon, jglo);
+      title_ = std::string (tmp);
+      for (auto v : value)
+        {
+          sprintf (tmp, " %8.3g", v);
+          title_ = title_ + std::string (tmp);
+        }
+    }
+  return title_;
+}
+
+}
+
 void Window::displayCursorPosition (double xpos, double ypos)
 {
   float lat, lon;
@@ -507,35 +533,11 @@ void Window::displayCursorPosition (double xpos, double ypos)
       std::string title_;
       if (const auto * field = scene.getCurrentField ())
         {
-	  int jglo = field->getGeometry ()->latlon2index (lat, lon);
-	  if (jglo >= 0)
-            {
-              char tmp[128];
-              auto value = field->getValue (jglo);
-              sprintf (tmp, "%6.2f %6.2f %8d", lat, lon, jglo);
-              title_ = std::string (tmp);
-	      for (auto v : value)
-                {
-                  sprintf (tmp, " %8.3g", v);
-                  title_ = title_ + std::string (tmp);
-                }
-	    }
+          title_ = getPointerString (field, &lat, &lon);
         }
       else if (const auto * geopoints = scene.getCurrentGeoPoints ())
         {
-          int jrank = geopoints->getNearestPoint (lat, lon);
-          if (jrank >= 0)
-            {
-              char tmp[128];
-	      auto value = geopoints->getValue (jrank);
-              sprintf (tmp, "%6.2f %6.2f %8d", lat, lon, jrank);
-              title_ = std::string (tmp);
-	      for (auto v : value)
-                {
-                  sprintf (tmp, " %8.3g", v);
-                  title_ = title_ + std::string (tmp);
-                }
-	    }
+          title_ = getPointerString (geopoints, &lat, &lon);
         }
       if (title_ == "")
         {

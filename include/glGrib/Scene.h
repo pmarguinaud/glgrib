@@ -21,6 +21,7 @@
 #include "glGrib/Mapscale.h"
 #include "glGrib/Cities.h"
 #include "glGrib/GeoPoints.h"
+#include "glGrib/VCut.h"
 #include "glGrib/Test.h"
 #include "glGrib/Land.h"
 #include "glGrib/Loader.h"
@@ -315,6 +316,7 @@ private:
       Departements departements;
       Cities cities;
       Test test;
+      VCut vcut;
       Land land;
     private:
       Image image;

@@ -16,7 +16,8 @@ void VCut::render (const View & view, const OptionsLight & light) const
   glDisable (GL_CULL_FACE);
 
   VAID.bind ();
-  glDrawElements (GL_TRIANGLES, 3 * numberOfTriangles, GL_UNSIGNED_INT, nullptr);
+  unsigned int ind[6] = {0, 1, 2, 1, 2, 3};
+  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, 10);
   VAID.unbind ();
 
   glEnable (GL_CULL_FACE);
@@ -28,18 +29,16 @@ void VCut::render (const View & view, const OptionsLight & light) const
 void VCut::setupVertexAttributes () const
 {
   vertexbuffer->bind (GL_SHADER_STORAGE_BUFFER, 1);
-  elementbuffer->bind (GL_ELEMENT_ARRAY_BUFFER);
 }
 
 void VCut::setup ()
 {
   std::vector<unsigned int> ind {0, 1, 2};
-  std::vector<float> lonlat {0.0f, 0.0f, halfpi, 0.0f, 0.0f, halfpi};
-
-  numberOfTriangles = ind.size () / 3;
+  std::vector<float> lonlat {0.0f,  +halfpi, 
+	                     0.0f,     0.0f, 
+			     0.0f,  -halfpi};
 
   vertexbuffer = OpenGLBufferPtr<float> (lonlat);
-  elementbuffer = OpenGLBufferPtr<unsigned int> (ind);
 
   setReady ();
 }

@@ -17,7 +17,7 @@ void VCut::render (const View & view, const OptionsLight & light) const
 
   VAID.bind ();
   unsigned int ind[6] = {0, 1, 2, 1, 2, 3};
-  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, 10);
+  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, vertexbuffer->size () / 2 - 1);
   VAID.unbind ();
 
   glEnable (GL_CULL_FACE);
@@ -33,10 +33,18 @@ void VCut::setupVertexAttributes () const
 
 void VCut::setup ()
 {
-  std::vector<unsigned int> ind {0, 1, 2};
   std::vector<float> lonlat {0.0f,  +halfpi, 
 	                     0.0f,     0.0f, 
 			     0.0f,  -halfpi};
+
+  const int n = 30;
+  lonlat.resize (2 * n);
+
+  for (int i = 0; i < n; i++)
+    {
+      lonlat[2*i+0] = 0.0f;
+      lonlat[2*i+1] = -halfpi + pi * static_cast<float> (i) / static_cast<float> (n-1);
+    }
 
   vertexbuffer = OpenGLBufferPtr<float> (lonlat);
 

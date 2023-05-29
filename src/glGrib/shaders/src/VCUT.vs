@@ -7,35 +7,41 @@ layout (std430, binding=1) buffer vcutLonLat
 };
 
 uniform mat4 MVP;
+uniform int Nx, Nz;
+
+out float val;
 
 void main()
 {
-  int i = gl_InstanceID;
+  int i = gl_InstanceID % (Nx - 1);
   int j = gl_VertexID;
+  int k = gl_InstanceID / (Nx - 1);
 
-  int di = 0, dj = 0;
+  int di = 0, dk = 0;
 
   if (j == 0)
     {
       di = 0;
-      dj = 0;
+      dk = 0;
     }
   else if (j == 1)
     {
       di = 1;
-      dj = 0;
+      dk = 0;
     }
   else if (j == 2)
     {
       di = 0;
-      dj = 1;
+      dk = 1;
     }
   else if (j == 3)
     {
       di = 1;
-      dj = 1;
+      dk = 1;
     }
 
+  float z = float (k + dk) / float (Nz - 1);
+  val = z;
 
   float lon = lonlat[2*(i+di)+0];
   float lat = lonlat[2*(i+di)+1];
@@ -45,10 +51,7 @@ void main()
 
   vec3 vertexPos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
 
-  if (dj == 1)
-    {
-      vertexPos = 2 * vertexPos;
-    }
+  vertexPos = (1 + z) * vertexPos;
 
   gl_Position = MVP * vec4 (vertexPos, 1);
 }

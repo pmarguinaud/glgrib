@@ -8,18 +8,24 @@ namespace glGrib
 
 void VCut::render (const View & view, const OptionsLight & light) const
 {
+  const int Nx = vertexbuffer->size () / 2;
+  const int Nz = 3;
   Program * program = Program::load ("VCUT");
   program->use (); 
 
   view.setMVP (program);
+  program->set ("Nx", Nx);
+  program->set ("Nz", Nz);
 
   glDisable (GL_CULL_FACE);
+  glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 
   VAID.bind ();
   unsigned int ind[6] = {0, 1, 2, 1, 2, 3};
-  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, vertexbuffer->size () / 2 - 1);
+  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, (Nz - 1) * (Nx - 1));
   VAID.unbind ();
 
+  glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
   glEnable (GL_CULL_FACE);
 
   view.delMVP (program);

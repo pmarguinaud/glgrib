@@ -22,11 +22,12 @@ private:
   {
     return _visible;
   }
-  OpenGLBufferPtr<float> vertexbuffer;
-  OpenGLBufferPtr<unsigned int> elementbuffer;
+  OpenGLBufferPtr<float> lonlatbuffer;
+  OpenGLBufferPtr<float> valuesbuffer;
   int numberOfPoints;
   unsigned int numberOfTriangles;
   OpenGLVertexArray<VCut> VAID;
+  int Nx = -1, Nz = -1;
 };
 
 

@@ -8,8 +8,6 @@ namespace glGrib
 
 void VCut::render (const View & view, const OptionsLight & light) const
 {
-  const int Nx = vertexbuffer->size () / 2;
-  const int Nz = 3;
   Program * program = Program::load ("VCUT");
   program->use (); 
 
@@ -34,25 +32,41 @@ void VCut::render (const View & view, const OptionsLight & light) const
 
 void VCut::setupVertexAttributes () const
 {
-  vertexbuffer->bind (GL_SHADER_STORAGE_BUFFER, 1);
+  lonlatbuffer->bind (GL_SHADER_STORAGE_BUFFER, 1);
+  valuesbuffer->bind (GL_SHADER_STORAGE_BUFFER, 2);
 }
 
 void VCut::setup ()
 {
-  std::vector<float> lonlat {0.0f,  +halfpi, 
-	                     0.0f,     0.0f, 
-			     0.0f,  -halfpi};
+  Nx = 31;
+  Nz = 3;
 
-  const int n = 30;
-  lonlat.resize (2 * n);
+  std::vector<float> lonlat (2 * Nx);
 
-  for (int i = 0; i < n; i++)
+  for (int i = 0; i < Nx / 2; i++)
     {
       lonlat[2*i+0] = 0.0f;
-      lonlat[2*i+1] = -halfpi + pi * static_cast<float> (i) / static_cast<float> (n-1);
+      lonlat[2*i+1] = -halfpi + pi * static_cast<float> (i) / static_cast<float> (Nx-1);
     }
 
-  vertexbuffer = OpenGLBufferPtr<float> (lonlat);
+  for (int i = Nx / 2; i < Nx; i++)
+    {
+      lonlat[2*i+0] = -halfpi + pi * static_cast<float> (i) / static_cast<float> (Nx-1);
+      lonlat[2*i+1] = 0.0f;
+    }
+
+  lonlatbuffer = OpenGLBufferPtr<float> (lonlat);
+  valuesbuffer = OpenGLBufferPtr<float> (Nx * Nz);
+
+  auto values = valuesbuffer->map ();
+
+  for (int iz = 0; iz < Nz; iz++)
+    for (int ix = 0; ix < Nx; ix++)
+      {
+        float x = static_cast<float> (ix) / static_cast<float> (Nx - 1);
+        float z = static_cast<float> (iz) / static_cast<float> (Nz - 1);
+        values[Nx*iz+ix] = x * z;
+      }
 
   setReady ();
 }

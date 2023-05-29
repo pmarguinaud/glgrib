@@ -24,6 +24,7 @@ private:
   }
   OpenGLBufferPtr<float> lonlatbuffer;
   OpenGLBufferPtr<float> valuesbuffer;
+  OpenGLBufferPtr<float> heightbuffer;
   int numberOfPoints;
   unsigned int numberOfTriangles;
   OpenGLVertexArray<VCut> VAID;

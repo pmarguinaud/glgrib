@@ -11,6 +11,11 @@ layout (std430, binding=2) buffer vcutValue
   float values[];
 };
 
+layout (std430, binding=3) buffer vcutHeight
+{
+  float height[];
+};
+
 uniform mat4 MVP;
 uniform int Nx, Nz;
 
@@ -41,9 +46,11 @@ void main()
       di = 1; dk = 1;
     }
 
-  float z = float (k + dk) / float (Nz - 1);
-//val = z;
-  val = values[Nx*(k + dk)+(i + di)];
+  int ixz = Nx*(k + dk)+(i + di);
+
+  float z = height[ixz];
+
+  val = values[ixz];
 
   float lon = lonlat[2*(i+di)+0];
   float lat = lonlat[2*(i+di)+1];

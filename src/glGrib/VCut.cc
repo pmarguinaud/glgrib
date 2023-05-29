@@ -34,6 +34,7 @@ void VCut::setupVertexAttributes () const
 {
   lonlatbuffer->bind (GL_SHADER_STORAGE_BUFFER, 1);
   valuesbuffer->bind (GL_SHADER_STORAGE_BUFFER, 2);
+  heightbuffer->bind (GL_SHADER_STORAGE_BUFFER, 3);
 }
 
 void VCut::setup ()
@@ -57,8 +58,10 @@ void VCut::setup ()
 
   lonlatbuffer = OpenGLBufferPtr<float> (lonlat);
   valuesbuffer = OpenGLBufferPtr<float> (Nx * Nz);
+  heightbuffer = OpenGLBufferPtr<float> (Nx * Nz);
 
   auto values = valuesbuffer->map ();
+  auto height = heightbuffer->map ();
 
   for (int iz = 0; iz < Nz; iz++)
     for (int ix = 0; ix < Nx; ix++)
@@ -66,6 +69,7 @@ void VCut::setup ()
         float x = static_cast<float> (ix) / static_cast<float> (Nx - 1);
         float z = static_cast<float> (iz) / static_cast<float> (Nz - 1);
         values[Nx*iz+ix] = x * z;
+        height[Nx*iz+ix] = z * (0.1f + (1.0f - x) * x);
       }
 
   setReady ();

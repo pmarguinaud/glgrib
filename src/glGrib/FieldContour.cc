@@ -229,8 +229,11 @@ FieldContour * FieldContour::clone () const
   return fld;
 }
 
+namespace 
+{
+
 template <typename ISO>
-void FieldContour::processTriangle
+void processTriangle
   (int it0, const BufferPtr<float> & r, float r0, 
    bool * seen, ISO * iso, 
    const const_GeometryPtr & geometry)
@@ -325,6 +328,8 @@ void FieldContour::processTriangle
     iso->close (edge);
 
   return;
+}
+
 }
 
 void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsField & o, float slot)

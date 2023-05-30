@@ -234,7 +234,7 @@ namespace
 
 template <typename ISO, typename VAL>
 void processTriangle
-  (int it0, VAL & val, float val0, bool * seen, ISO * iso, const const_GeometryPtr & geometry)
+  (int it0, const VAL & val, float val0, bool * seen, ISO * iso, const const_GeometryPtr & geometry)
 {
   int count = 0;
   bool cont = true;
@@ -257,8 +257,9 @@ void processTriangle
 
       geometry->getTriangleNeighbours (it, jglo, itri, xyz);
 
+      // Get values for current triangle
       for (int i = 0; i < 3; i++)
-        vv[i] = val[jglo[i]];
+        vv[i] = val(jglo[i]);
 
       int n = 0;
       for (int i = 0; i < 3; i++)
@@ -465,10 +466,10 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
       // First visit edge triangles
       for (int it = 0; it < nt; it++)
         if (geometry->triangleIsEdge (it))
-          processTriangle (it, data, levels[i], &seen[1], &isoh, geometry);
+          processTriangle (it, val, levels[i], &seen[1], &isoh, geometry);
   
       for (int it = 0; it < nt; it++)
-        processTriangle (it, data, levels[i], &seen[1], &isoh, geometry);
+        processTriangle (it, val, levels[i], &seen[1], &isoh, geometry);
 
     }
 

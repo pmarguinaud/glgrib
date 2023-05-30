@@ -232,7 +232,6 @@ FieldContour * FieldContour::clone () const
 template <typename ISO>
 void FieldContour::processTriangle
   (int it0, const BufferPtr<float> & r, float r0, 
-   const BufferPtr<float> & h, float hmin, float hmax, float hmis, 
    bool * seen, ISO * iso, 
    const const_GeometryPtr & geometry)
 {
@@ -241,8 +240,6 @@ void FieldContour::processTriangle
   bool edge = false;
   int it = it0;
   int its[2];
-  bool first = true;
-  float xyzv_first[4];
 
   while (cont)
     {
@@ -304,29 +301,8 @@ void FieldContour::processTriangle
                   std::swap (iA, iB);
                 }
               float a = (r0 - r[jgloA]) / (r[jgloB] - r[jgloA]);
-              // Coordinates of point
-              float X = (1 - a) * xyz[iA].x + a * xyz[iB].x;
-              float Y = (1 - a) * xyz[iA].y + a * xyz[iB].y;
-              float Z = (1 - a) * xyz[iA].z + a * xyz[iB].z;
-              // Normalize
-              float R = std::sqrt (X * X + Y * Y + Z * Z);
-              X /= R; Y /= R; Z /= R;
 
-	      float V = 0.0f;
-
-	      if (opts.geometry.height.on)
-	        V = (h[jgloA] == hmis) || (h[jgloB] == hmis) ? 0.0f : ((1 - a) * h[jgloA] + a * h[jgloB] - hmin) / (hmax - hmin);
-
-              iso->push (X, Y, Z, V);
-
-	      if (first)
-                {
-                  first = false;
-		  xyzv_first[0] = X;
-		  xyzv_first[1] = Y;
-		  xyzv_first[2] = Z;
-		  xyzv_first[3] = V;
-		}
+	      iso->push (xyz[iA], xyz[iB], jgloA, jgloB, a);
 
               if (count < 2)
                 its[count] = it;
@@ -346,11 +322,7 @@ void FieldContour::processTriangle
     }
 
   if (count > 0)
-    {
-      if (! edge)
-        iso->push (xyzv_first[0], xyzv_first[1], xyzv_first[2], xyzv_first[3]);
-      iso->push (0., 0., 0., 0.);
-    }
+    iso->close (edge);
 
   return;
 }
@@ -399,10 +371,69 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
 
   const int nt = geometry->getNumberOfTriangles ();
 
+  class iso_helper
+  {
+  public:
+    iso_helper (isoline_data_t * _iso, bool _height = false, const BufferPtr<float> * _H = nullptr,
+                float _hmin = +1.0f, float _hmax = -1.0f, float _hmis = 0.0f) 
+     : iso (_iso), height (_height), H (_H), hmin (_hmin), hmax (_hmax), hmis (_hmis)
+    {
+    }
+    void push (const glm::vec3 & xyzA, const glm::vec3 & xyzB, 
+               const int jgloA, const int jgloB, const float a)
+    {
+      float X = (1 - a) * xyzA.x + a * xyzB.x;
+      float Y = (1 - a) * xyzA.y + a * xyzB.y;
+      float Z = (1 - a) * xyzA.z + a * xyzB.z;
+      // Normalize
+      float R = std::sqrt (X * X + Y * Y + Z * Z);
+      X /= R; Y /= R; Z /= R;
+      
+      float V = 0.0f;
+      
+      if (height)
+        {
+          const BufferPtr<float> & h = *H;
+          V = (h[jgloA] == hmis) || (h[jgloB] == hmis) 
+            ? 0.0f 
+	    : ((1 - a) * h[jgloA] + a * h[jgloB] - hmin) / (hmax - hmin);
+	}
+      
+      iso->push (X, Y, Z, V);
+      
+      if (first)
+        {
+          first = false;
+	  xyzv_first[0] = X;
+	  xyzv_first[1] = Y;
+	  xyzv_first[2] = Z;
+	  xyzv_first[3] = V;
+	}
+
+      iso->push (X, Y, Z, V);
+    }
+    void close (bool edge)
+    {
+      if (! edge)
+        iso->push (xyzv_first[0], xyzv_first[1], xyzv_first[2], xyzv_first[3]);
+      iso->push (0., 0., 0., 0.);
+    }
+  private:
+    isoline_data_t * iso;
+    bool height;
+    const BufferPtr<float> * H;
+    float hmin, hmax, hmis;
+    bool first = true;
+    float xyzv_first[4];
+  };
+
 #pragma omp parallel for
   for (size_t i = 0; i < levels.size (); i++)
     {
       Buffer<bool> seen (nt + 1);
+      iso_helper isoh (&iso_data[i], opts.geometry.height.on, &height, 
+		       meta_height.valmin, meta_height.valmax, meta_height.valmis);
+		       
 
       for (int i = 0; i < nt + 1; i++)
         seen[i] = false;
@@ -411,14 +442,10 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
       // First visit edge triangles
       for (int it = 0; it < nt; it++)
         if (geometry->triangleIsEdge (it))
-          processTriangle (it, data, levels[i], height, meta_height.valmin, 
-          		   meta_height.valmax, meta_height.valmis, 
-                           &seen[1], &iso_data[i], geometry);
+          processTriangle (it, data, levels[i], &seen[1], &isoh, geometry);
   
       for (int it = 0; it < nt; it++)
-        processTriangle (it, data, levels[i], height, meta_height.valmin, 
-                         meta_height.valmax, meta_height.valmis, 
-                         &seen[1], &iso_data[i], geometry);
+        processTriangle (it, data, levels[i], &seen[1], &isoh, geometry);
 
     }
 

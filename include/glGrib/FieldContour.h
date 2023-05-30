@@ -116,7 +116,6 @@ private:
 
   template <typename ISO>
   void processTriangle (int, const BufferPtr<float> &, float, 
-                        const BufferPtr<float> &, float, float, float, 
                         bool *, ISO *, const const_GeometryPtr &);
 };
 

@@ -232,17 +232,16 @@ FieldContour * FieldContour::clone () const
 namespace 
 {
 
-template <typename ISO>
+template <typename ISO, typename VAL>
 void processTriangle
-  (int it0, const BufferPtr<float> & r, float r0, 
-   bool * seen, ISO * iso, 
-   const const_GeometryPtr & geometry)
+  (int it0, VAL & val, float val0, bool * seen, ISO * iso, const const_GeometryPtr & geometry)
 {
   int count = 0;
   bool cont = true;
   bool edge = false;
   int it = it0;
   int its[2];
+  float vv[3];
 
   while (cont)
     {
@@ -256,17 +255,18 @@ void processTriangle
       int jglo[3], itri[3];
       glm::vec3 xyz[3];
 
-      geometry->getTriangleVertices (it, jglo);
+      geometry->getTriangleNeighbours (it, jglo, itri, xyz);
+
+      for (int i = 0; i < 3; i++)
+        vv[i] = val[jglo[i]];
 
       int n = 0;
       for (int i = 0; i < 3; i++)
-        if (r[jglo[i]] < r0)
+        if (vv[i] < val0)
           n++;
 
       if ((n == 0) || (n == 3)) // 3 vertices have the same color
         break;
-
-      geometry->getTriangleNeighbours (it, jglo, itri, xyz);
 
       if (count == 0) // First triangle; see if it is at the edge of the domain
         {
@@ -274,8 +274,7 @@ void processTriangle
           for (int i = 0; i < 3; i++)
             {
               int iA = i, iB = (i + 1) % 3;
-              int jgloA = jglo[iA], jgloB = jglo[iB];
-              bool bA = r[jgloA] < r0, bB = r[jgloB] < r0;
+              bool bA = vv[iA] < val0, bB = vv[iB] < val0;
               int itAB = itri[iA];
               if ((bA != bB) && (! seen[itAB]))
                 c++;
@@ -286,6 +285,7 @@ void processTriangle
               seen[it] = false;
               return;
             }
+
         }
 
       // Find a way out of current triangle
@@ -293,7 +293,8 @@ void processTriangle
         {
           int iA = i, iB = (i + 1) % 3;
           int jgloA = jglo[iA], jgloB = jglo[iB];
-          bool bA = r[jgloA] < r0, bB = r[jgloB] < r0;
+	  float valA = vv[iA], valB = vv[iB];
+          bool bA = valA < val0, bB = valB < val0;
           int itAB = itri[iA];
           if ((bA != bB) && (! seen[itAB]))
             {
@@ -301,9 +302,10 @@ void processTriangle
               if (lswap)
                 {
                   std::swap (jgloA, jgloB);
+		  std::swap (valA, valB);
                   std::swap (iA, iB);
                 }
-              float a = (r0 - r[jgloA]) / (r[jgloB] - r[jgloA]);
+              float a = (val0 - valA) / (valB - valA);
 
 	      iso->push (xyz[iA], xyz[iB], jgloA, jgloB, a);
 
@@ -430,6 +432,16 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
     float hmin, hmax, hmis;
     bool first = true;
     float xyzv_first[4];
+  };
+
+  class val_helper
+  {
+  public:
+    val_helper (BufferPtr<float> & _data) : data (_data)
+    {
+    }
+  private:
+    BufferPtr<float> & data;
   };
 
 #pragma omp parallel for

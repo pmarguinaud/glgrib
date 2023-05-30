@@ -440,9 +440,15 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
     val_helper (BufferPtr<float> & _data) : data (_data)
     {
     }
+    float operator () (int jglo) const
+    {
+      return data[jglo];
+    }
   private:
     BufferPtr<float> & data;
   };
+
+  val_helper val (data);
 
 #pragma omp parallel for
   for (size_t i = 0; i < levels.size (); i++)

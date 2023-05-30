@@ -229,90 +229,11 @@ FieldContour * FieldContour::clone () const
   return fld;
 }
 
-void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsField & o, float slot)
-{
-  opts = o;
-
-  FieldMetadata meta1;
-  BufferPtr<float> data;
-  ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
-  meta.push_back (meta1);
-
-  palette = Palette (opts.palette, getNormedMinValue (), getNormedMaxValue ());
-
-  setGeometry (Geometry::load (ld, opts.path[0], opts.geometry));
-
-  const auto & geometry = getGeometry ();
-
-  if (opts.hilo.on)
-    setupHilo (data);
-
-  BufferPtr<float> height = data;
-  FieldMetadata meta_height = meta1;
-  if ((opts.geometry.height.on) && (opts.geometry.height.path != ""))
-    {
-      GeometryPtr geometry_height = Geometry::load (ld, opts.geometry.height.path, opts.geometry);
-
-      if (! geometry_height->isEqual (*geometry))
-        throw std::runtime_error (std::string ("Field and height have different geometries"));
-
-      ld->load (&height, opts.geometry.height.path, opts.geometry, &meta_height);
-    }
-
-  std::vector<float> levels = opts.contour.levels;
-
-  if (levels.size () == 0)
-    {
-      float min = glGrib::Palette::isDefaultMin (opts.contour.min) ? meta1.valmin : opts.contour.min;
-      float max = glGrib::Palette::isDefaultMax (opts.contour.max) ? meta1.valmax : opts.contour.max;
-      for (int i = 0; i < opts.contour.number; i++)
-        levels.push_back (min + (i + 1) * (max - min) / (opts.contour.number + 1));
-    }
-
-  isoline_data_t iso_data[levels.size ()];
-
-  const int nt = geometry->getNumberOfTriangles ();
-
-#pragma omp parallel for
-  for (size_t i = 0; i < levels.size (); i++)
-    {
-      Buffer<bool> seen (nt + 1);
-
-      for (int i = 0; i < nt + 1; i++)
-        seen[i] = false;
-      seen[0] = true;
-
-      // First visit edge triangles
-      for (int it = 0; it < nt; it++)
-        if (geometry->triangleIsEdge (it))
-          processTriangle (it, data, levels[i], height, meta_height.valmin, 
-          		   meta_height.valmax, meta_height.valmis, 
-                           &seen[1], &iso_data[i], geometry);
-  
-      for (int it = 0; it < nt; it++)
-        processTriangle (it, data, levels[i], height, meta_height.valmin, 
-                         meta_height.valmax, meta_height.valmis, 
-                         &seen[1], &iso_data[i], geometry);
-
-    }
-
-  iso.resize (levels.size ());
-
-  for (size_t i = 0; i < levels.size (); i++)
-    iso[i].setup (opts, levels[i], i, palette, iso_data[i]);
-
-  if (opts.no_value_pointer.on)
-    clear (data);
-  values.push_back (data);
-
-  setReady ();
-
-}
-
-void FieldContour::processTriangle 
+template <typename ISO>
+void FieldContour::processTriangle
   (int it0, const BufferPtr<float> & r, float r0, 
-   const BufferPtr<float> & h, float hmin, float hmax, 
-   float hmis, bool * seen, isoline_data_t * iso, 
+   const BufferPtr<float> & h, float hmin, float hmax, float hmis, 
+   bool * seen, ISO * iso, 
    const const_GeometryPtr & geometry)
 {
   int count = 0;
@@ -432,6 +353,86 @@ void FieldContour::processTriangle
     }
 
   return;
+}
+
+void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsField & o, float slot)
+{
+  opts = o;
+
+  FieldMetadata meta1;
+  BufferPtr<float> data;
+  ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
+  meta.push_back (meta1);
+
+  palette = Palette (opts.palette, getNormedMinValue (), getNormedMaxValue ());
+
+  setGeometry (Geometry::load (ld, opts.path[0], opts.geometry));
+
+  const auto & geometry = getGeometry ();
+
+  if (opts.hilo.on)
+    setupHilo (data);
+
+  BufferPtr<float> height = data;
+  FieldMetadata meta_height = meta1;
+  if ((opts.geometry.height.on) && (opts.geometry.height.path != ""))
+    {
+      GeometryPtr geometry_height = Geometry::load (ld, opts.geometry.height.path, opts.geometry);
+
+      if (! geometry_height->isEqual (*geometry))
+        throw std::runtime_error (std::string ("Field and height have different geometries"));
+
+      ld->load (&height, opts.geometry.height.path, opts.geometry, &meta_height);
+    }
+
+  std::vector<float> levels = opts.contour.levels;
+
+  if (levels.size () == 0)
+    {
+      float min = glGrib::Palette::isDefaultMin (opts.contour.min) ? meta1.valmin : opts.contour.min;
+      float max = glGrib::Palette::isDefaultMax (opts.contour.max) ? meta1.valmax : opts.contour.max;
+      for (int i = 0; i < opts.contour.number; i++)
+        levels.push_back (min + (i + 1) * (max - min) / (opts.contour.number + 1));
+    }
+
+  isoline_data_t iso_data[levels.size ()];
+
+  const int nt = geometry->getNumberOfTriangles ();
+
+#pragma omp parallel for
+  for (size_t i = 0; i < levels.size (); i++)
+    {
+      Buffer<bool> seen (nt + 1);
+
+      for (int i = 0; i < nt + 1; i++)
+        seen[i] = false;
+      seen[0] = true;
+
+      // First visit edge triangles
+      for (int it = 0; it < nt; it++)
+        if (geometry->triangleIsEdge (it))
+          processTriangle (it, data, levels[i], height, meta_height.valmin, 
+          		   meta_height.valmax, meta_height.valmis, 
+                           &seen[1], &iso_data[i], geometry);
+  
+      for (int it = 0; it < nt; it++)
+        processTriangle (it, data, levels[i], height, meta_height.valmin, 
+                         meta_height.valmax, meta_height.valmis, 
+                         &seen[1], &iso_data[i], geometry);
+
+    }
+
+  iso.resize (levels.size ());
+
+  for (size_t i = 0; i < levels.size (); i++)
+    iso[i].setup (opts, levels[i], i, palette, iso_data[i]);
+
+  if (opts.no_value_pointer.on)
+    clear (data);
+  values.push_back (data);
+
+  setReady ();
+
 }
 
 void FieldContour::render (const View & view, const OptionsLight & light) const

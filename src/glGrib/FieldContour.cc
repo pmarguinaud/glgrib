@@ -262,7 +262,7 @@ void processTriangle
 
       int n = 0;
       for (int i = 0; i < 3; i++)
-        if (val[jglo[i]] < val0)
+        if (val(jglo[i]) < val0)
           n++;
 
       if ((n == 0) || (n == 3)) // 3 vertices have the same color
@@ -277,7 +277,7 @@ void processTriangle
             {
               int iA = i, iB = (i + 1) % 3;
               int jgloA = jglo[iA], jgloB = jglo[iB];
-              bool bA = val[jgloA] < val0, bB = val[jgloB] < val0;
+              bool bA = val(jgloA) < val0, bB = val(jgloB) < val0;
               int itAB = itri[iA];
               if ((bA != bB) && (! seen[itAB]))
                 c++;
@@ -295,7 +295,7 @@ void processTriangle
         {
           int iA = i, iB = (i + 1) % 3;
           int jgloA = jglo[iA], jgloB = jglo[iB];
-          bool bA = val[jgloA] < val0, bB = val[jgloB] < val0;
+          bool bA = val(jgloA) < val0, bB = val(jgloB) < val0;
           int itAB = itri[iA];
           if ((bA != bB) && (! seen[itAB]))
             {
@@ -305,7 +305,7 @@ void processTriangle
                   std::swap (jgloA, jgloB);
                   std::swap (iA, iB);
                 }
-              float a = (val0 - val[jgloA]) / (val[jgloB] - val[jgloA]);
+              float a = (val0 - val(jgloA)) / (val(jgloB) - val(jgloA));
 
               iso->push (xyz[iA], xyz[iB], jgloA, jgloB, a);
 
@@ -437,7 +437,21 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
     float xyzv_first[4];
   };
 
+  class val_helper
+  {
+  public:
+    val_helper (BufferPtr<float> & _data) : data (_data)
+    {
+    }
+    float operator () (int jglo) const
+    {
+      return data[jglo];
+    }
+  private:
+    BufferPtr<float> & data;
+  };
 
+  val_helper val (data);
 
 #pragma omp parallel for
   for (size_t i = 0; i < levels.size (); i++)
@@ -454,10 +468,10 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
       // First visit edge triangles
       for (int it = 0; it < nt; it++)
         if (geometry->triangleIsEdge (it))
-          processTriangle (it, data, levels[i], &seen[1], &isoh, geometry);
+          processTriangle (it, val, levels[i], &seen[1], &isoh, geometry);
   
       for (int it = 0; it < nt; it++)
-        processTriangle (it, data, levels[i], &seen[1], &isoh, geometry);
+        processTriangle (it, val, levels[i], &seen[1], &isoh, geometry);
 
     }
 

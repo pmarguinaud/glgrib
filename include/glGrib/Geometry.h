@@ -132,7 +132,7 @@ private:
     unsigned int numberOfTriangles = 0;
     int numberOfPoints = 0;
     OpenGLBufferPtr<unsigned int> elementbuffer;
-    unsigned int ind_strip_size;
+    unsigned int ind_strip_size = 0;
   } grid;
 
   // Coordinates

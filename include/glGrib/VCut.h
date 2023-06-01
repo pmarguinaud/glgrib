@@ -3,6 +3,9 @@
 #include "glGrib/Object.h"
 #include "glGrib/OpenGL.h"
 #include "glGrib/View.h"
+#include "glGrib/Options.h"
+#include "glGrib/Loader.h"
+#include "glGrib/Geometry.h"
 
 namespace glGrib
 {

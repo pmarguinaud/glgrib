@@ -1342,6 +1342,23 @@ public:
 
 };
 
+class OptionsVCut : public OptionsBase
+{
+public:
+  DEFINE
+  {
+    DESC (on, Enable vertical cut);
+    DESC (lat, List of latitudes);
+    DESC (lon, List of longitudes);
+    DESC (path, List of GRIB files);
+  }
+
+  bool on = false;
+  std::vector<float> lat;
+  std::vector<float> lon;
+  std::vector<OptionFieldRef> path;
+};
+
 class OptionsLandscapePosition : public OptionsBase
 {
 public:
@@ -2076,6 +2093,7 @@ public:
     INCLUDE (departements);
     INCLUDE (shell);
     INCLUDE (land);
+    INCLUDE (vcut);
     DESC (review.on, Enable review mode);
     DESC (review.path, File to review);
     DESC (diff.on, Enable difference mode);
@@ -2112,9 +2130,9 @@ public:
   OptionsFont font;
   OptionsShell shell;
   OptionsLand land;
+  OptionsVCut vcut;
   virtual bool parse (int, const char * [], const std::set<std::string> * = nullptr);
 };
-
 
 #undef DESC
 #undef INCLUDE

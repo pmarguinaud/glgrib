@@ -232,9 +232,9 @@ FieldContour * FieldContour::clone () const
 namespace
 {
 
-template <typename ISO>
+template <typename ISO, typename VAL>
 void processTriangle
-  (int it0, const BufferPtr<float> & r, float r0, 
+  (int it0, const VAL & val, float val0, 
    bool * seen, ISO * iso, 
    const const_GeometryPtr & geometry)
 {
@@ -262,7 +262,7 @@ void processTriangle
 
       int n = 0;
       for (int i = 0; i < 3; i++)
-        if (r[jglo[i]] < r0)
+        if (val[jglo[i]] < val0)
           n++;
 
       if ((n == 0) || (n == 3)) // 3 vertices have the same color
@@ -277,7 +277,7 @@ void processTriangle
             {
               int iA = i, iB = (i + 1) % 3;
               int jgloA = jglo[iA], jgloB = jglo[iB];
-              bool bA = r[jgloA] < r0, bB = r[jgloB] < r0;
+              bool bA = val[jgloA] < val0, bB = val[jgloB] < val0;
               int itAB = itri[iA];
               if ((bA != bB) && (! seen[itAB]))
                 c++;
@@ -295,7 +295,7 @@ void processTriangle
         {
           int iA = i, iB = (i + 1) % 3;
           int jgloA = jglo[iA], jgloB = jglo[iB];
-          bool bA = r[jgloA] < r0, bB = r[jgloB] < r0;
+          bool bA = val[jgloA] < val0, bB = val[jgloB] < val0;
           int itAB = itri[iA];
           if ((bA != bB) && (! seen[itAB]))
             {
@@ -305,7 +305,7 @@ void processTriangle
                   std::swap (jgloA, jgloB);
                   std::swap (iA, iB);
                 }
-              float a = (r0 - r[jgloA]) / (r[jgloB] - r[jgloA]);
+              float a = (val0 - val[jgloA]) / (val[jgloB] - val[jgloA]);
 
               iso->push (xyz[iA], xyz[iB], jgloA, jgloB, a);
 

@@ -232,7 +232,6 @@ FieldContour * FieldContour::clone () const
 template <typename ISO>
 void FieldContour::processTriangle
   (int it0, const BufferPtr<float> & r, float r0, 
-   const BufferPtr<float> & h, float hmin, float hmax, float hmis, 
    bool * seen, ISO * iso, 
    const const_GeometryPtr & geometry)
 {
@@ -478,14 +477,10 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
       // First visit edge triangles
       for (int it = 0; it < nt; it++)
         if (geometry->triangleIsEdge (it))
-          processTriangle (it, data, levels[i], height, meta_height.valmin, 
-          		   meta_height.valmax, meta_height.valmis, 
-                           &seen[1], &isoh, geometry);
+          processTriangle (it, data, levels[i], &seen[1], &isoh, geometry);
   
       for (int it = 0; it < nt; it++)
-        processTriangle (it, data, levels[i], height, meta_height.valmin, 
-                         meta_height.valmax, meta_height.valmis, 
-                         &seen[1], &isoh, geometry);
+        processTriangle (it, data, levels[i], &seen[1], &isoh, geometry);
 
     }
 

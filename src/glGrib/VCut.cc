@@ -1,13 +1,18 @@
 #include "glGrib/VCut.h"
 #include "glGrib/Trigonometry.h"
 #include "glGrib/OpenGL.h"
+#include "glGrib/Contour.h"
 
+#include <stdio.h>
 
 namespace glGrib
 {
 
 void VCut::render (const View & view, const OptionsLight & light) const
 {
+  if (! opts.on)
+    return;
+
   Program * program = Program::load ("VCUT");
   program->use (); 
 
@@ -39,6 +44,10 @@ void VCut::setupVertexAttributes () const
 
 void VCut::setup (Loader * ld, const OptionsVCut & o)
 {
+  opts = o;
+  if (! opts.on)
+    return;
+
   Nx = 31;
   Nz = 3;
 

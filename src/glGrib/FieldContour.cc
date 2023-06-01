@@ -428,7 +428,7 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
         iso->push (xyzv_first[0], xyzv_first[1], xyzv_first[2], xyzv_first[3]);
       iso->push (0., 0., 0., 0.);
     }
-//private:
+  private:
     isoline_data_t * iso;
     bool height;
     const BufferPtr<float> * H;

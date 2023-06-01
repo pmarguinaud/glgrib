@@ -113,10 +113,6 @@ private:
   };
 
   std::vector<isoline_t> iso;
-
-  template <typename ISO>
-  void processTriangle (int, const BufferPtr<float> &, float, 
-                        bool *, ISO *, const const_GeometryPtr &);
 };
 
 

@@ -10,9 +10,8 @@ namespace Contour
 
 template <typename ISO, typename VAL>
 void processTriangle
-  (int it0, const VAL & val, float val0, 
-   bool * seen, ISO * iso, 
-   const const_GeometryPtr & geometry)
+  (int it0, const VAL & val, float val0, bool * seen, 
+   ISO * iso, const const_GeometryPtr & geometry)
 {
   int count = 0;
   bool cont = true;

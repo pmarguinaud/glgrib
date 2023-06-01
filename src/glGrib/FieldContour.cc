@@ -313,8 +313,11 @@ void FieldContour::processTriangle
 
 	      float V = 0.0f;
 
-	      if (opts.geometry.height.on)
-	        V = (h[jgloA] == hmis) || (h[jgloB] == hmis) ? 0.0f : ((1 - a) * h[jgloA] + a * h[jgloB] - hmin) / (hmax - hmin);
+	      if (iso->height)
+                {
+                  const auto & h = *(iso->H);
+	          V = (h[jgloA] == iso->hmis) || (h[jgloB] == iso->hmis) ? 0.0f : ((1 - a) * h[jgloA] + a * h[jgloB] - iso->hmin) / (iso->hmax - iso->hmin);
+		}
 
               iso->iso->push (X, Y, Z, V);
 

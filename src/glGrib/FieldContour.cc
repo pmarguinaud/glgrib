@@ -303,32 +303,8 @@ void FieldContour::processTriangle
                   std::swap (iA, iB);
                 }
               float a = (r0 - r[jgloA]) / (r[jgloB] - r[jgloA]);
-              // Coordinates of point
-              float X = (1 - a) * xyz[iA].x + a * xyz[iB].x;
-              float Y = (1 - a) * xyz[iA].y + a * xyz[iB].y;
-              float Z = (1 - a) * xyz[iA].z + a * xyz[iB].z;
-              // Normalize
-              float R = std::sqrt (X * X + Y * Y + Z * Z);
-              X /= R; Y /= R; Z /= R;
 
-	      float V = 0.0f;
-
-	      if (iso->height)
-                {
-                  const auto & h = *(iso->H);
-	          V = (h[jgloA] == iso->hmis) || (h[jgloB] == iso->hmis) ? 0.0f : ((1 - a) * h[jgloA] + a * h[jgloB] - iso->hmin) / (iso->hmax - iso->hmin);
-		}
-
-              iso->iso->push (X, Y, Z, V);
-
-	      if (iso->first)
-                {
-                  iso->first = false;
-		  iso->xyzv_first[0] = X;
-		  iso->xyzv_first[1] = Y;
-		  iso->xyzv_first[2] = Z;
-		  iso->xyzv_first[3] = V;
-		}
+              iso->push (xyz[iA], xyz[iB], jgloA, jgloB, a);
 
               if (count < 2)
                 its[count] = it;
@@ -427,18 +403,18 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
           V = (h[jgloA] == hmis) || (h[jgloB] == hmis) 
             ? 0.0f 
            : ((1 - a) * h[jgloA] + a * h[jgloB] - hmin) / (hmax - hmin);
-       }
+        }
       
       iso->push (X, Y, Z, V);
       
       if (first)
         {
           first = false;
-         xyzv_first[0] = X;
-         xyzv_first[1] = Y;
-         xyzv_first[2] = Z;
-         xyzv_first[3] = V;
-       }
+          xyzv_first[0] = X;
+          xyzv_first[1] = Y;
+          xyzv_first[2] = Z;
+          xyzv_first[3] = V;
+        }
 
     }
     void close (bool edge)

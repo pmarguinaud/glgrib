@@ -388,7 +388,6 @@ void Scene::setup (const Options & o)
   d.opts = o;
 
   d.test.setup ();
-  d.vcut.setup ();
 
   setViewport (d.opts.render.width, d.opts.render.height);
   setViewOptions (d.opts.view);
@@ -451,6 +450,8 @@ void Scene::setup (const Options & o)
 
   if (d.opts.scene.center.on)
     centerOnCurrentField ();
+
+  d.vcut.setup (&ld, d.opts.vcut);
 
   reSize ();
 }

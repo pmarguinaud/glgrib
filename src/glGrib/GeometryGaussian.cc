@@ -662,9 +662,9 @@ void GeometryGaussian::computeTriangleVertices (int itri, int jglo[3]) const
 
   if ((jlon1n == 1) && (jlon2 == 1))
     {
-      jglo[0] = grid_gaussian.jglooff[jlat1-1]+jlon1n-1; 
-      jglo[1] = grid_gaussian.jglooff[jlat1-1]+jlon1 -1;
-      jglo[2] = grid_gaussian.jglooff[jlat2-1]+jlon2 -1; 
+      jglo[0] = grid_gaussian.jglooff[jlat1-1]+jlon1 -1;
+      jglo[1] = grid_gaussian.jglooff[jlat2-1]+jlon2 -1; 
+      jglo[2] = grid_gaussian.jglooff[jlat1-1]+jlon1n-1; 
       return;
     }
   else if ((jlon1 == 1) && (jlon2n == 1))

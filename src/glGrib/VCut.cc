@@ -37,7 +37,7 @@ void VCut::setupVertexAttributes () const
   heightbuffer->bind (GL_SHADER_STORAGE_BUFFER, 3);
 }
 
-void VCut::setup ()
+void VCut::setup (Loader * ld, const OptionsVCut & o)
 {
   Nx = 31;
   Nz = 3;

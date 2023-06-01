@@ -16,10 +16,11 @@ public:
   VCut () : VAID (this) {}
   void render (const View &, const OptionsLight &) const override;
   void setupVertexAttributes () const;
-  virtual void setup ();
+  virtual void setup (Loader *, const OptionsVCut &);
   void reSize (const View &) override {}
   float getScale () const override { return 1; }
 private:
+  OptionsVCut opts;
   bool _visible = true;
   const bool & getVisibleRef () const override
   {
@@ -32,6 +33,7 @@ private:
   unsigned int numberOfTriangles;
   OpenGLVertexArray<VCut> VAID;
   int Nx = -1, Nz = -1;
+  const_GeometryPtr geometry;
 };
 
 

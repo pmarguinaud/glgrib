@@ -276,8 +276,8 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
   {
   public:
     iso_helper (isoline_data_t * _iso, bool _height = false, const BufferPtr<float> * _H = nullptr,
-                float _hmin = +1.0f, float _hmax = -1.0f, float _hmis = 0.0f) 
-     : iso (_iso), height (_height), H (_H), hmin (_hmin), hmax (_hmax), hmis (_hmis)
+                const FieldMetadata & _meta_height = FieldMetadata ())
+     : iso (_iso), height (_height), H (_H), meta_height (_meta_height)
     {
     }
     void start ()
@@ -299,9 +299,9 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
       if (height)
         {
           const BufferPtr<float> & h = *H;
-          V = (h[jgloA] == hmis) || (h[jgloB] == hmis) 
+          V = (h[jgloA] == meta_height.valmis) || (h[jgloB] == meta_height.valmis) 
             ? 0.0f 
-           : ((1 - a) * h[jgloA] + a * h[jgloB] - hmin) / (hmax - hmin);
+           : ((1 - a) * h[jgloA] + a * h[jgloB] - meta_height.valmin) / (meta_height.valmax - meta_height.valmin);
         }
       
       iso->push (X, Y, Z, V);
@@ -326,7 +326,7 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
     isoline_data_t * iso;
     bool height;
     const BufferPtr<float> * H;
-    float hmin, hmax, hmis;
+    FieldMetadata meta_height;
     bool first = true;
     float xyzv_first[4];
   };
@@ -350,8 +350,7 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
 #pragma omp parallel for
   for (size_t i = 0; i < levels.size (); i++)
     {
-      iso_helper isoh (&iso_data[i], opts.geometry.height.on, &height, 
-                       meta_height.valmin, meta_height.valmax, meta_height.valmis);
+      iso_helper isoh (&iso_data[i], opts.geometry.height.on, &height, meta_height);
       Contour::processTriangles (geometry, levels[i], &isoh, val);
     }
 

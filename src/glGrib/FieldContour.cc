@@ -240,7 +240,8 @@ void FieldContour::processTriangle
   bool edge = false;
   int it = it0;
   int its[2];
-  iso->first = true;
+
+  iso->start ();
 
   while (cont)
     {
@@ -347,11 +348,7 @@ void FieldContour::processTriangle
     }
 
   if (count > 0)
-    {
-      if (! edge)
-        iso->iso->push (iso->xyzv_first[0], iso->xyzv_first[1], iso->xyzv_first[2], iso->xyzv_first[3]);
-      iso->iso->push (0., 0., 0., 0.);
-    }
+    iso->close (edge);
 
   return;
 }

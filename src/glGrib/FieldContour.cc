@@ -440,7 +440,6 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
          xyzv_first[3] = V;
        }
 
-      iso->push (X, Y, Z, V);
     }
     void close (bool edge)
     {

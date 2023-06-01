@@ -89,9 +89,6 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     {
       glm::vec3 xyz = (1.0f - a) * xyzA + a * xyzB;
 
-//    printf (" xyzA = %12.4f, %12.4f, %12.4f xyzB = %12.4f, %12.4f, %12.4f |", xyzA.x, xyzA.y, xyzA.z, xyzB.x, xyzB.y, xyzB.z);
-
-
       xyz = xyz / glm::length (xyz);
 
       // check vector is between xyz1 & xyz2
@@ -99,14 +96,12 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
       float lon, lat;
       xyz2lonlat (xyz, &lon, &lat);
-//    printf (" c12n = %12.4f, %12.4f, %12.4f | %12.4f, %12.4f\n", c12n.x, c12n.y, c12n.z, lon * rad2deg, lat * rad2deg);
 
       if ((c12n.x >= 0) && (c12n.y >= 0))
         coords.push_back (vcut_coords (jgloA, jgloB, a, xyz));
     }
     void close (bool)
     {
-//    printf (" close \n");
       size_t n = coords.size ();
       if ((n > 0) && (coords[n-1].jgloA < 0))
         return;
@@ -141,25 +136,12 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
   std::vector<float> lonlat (2 * Nx);
 
-//for (int i = 0; i < Nx / 2; i++)
-//  {
-//    lonlat[2*i+0] = 0.0f;
-//    lonlat[2*i+1] = -halfpi + pi * static_cast<float> (i) / static_cast<float> (Nx-1);
-//  }
-
-//for (int i = Nx / 2; i < Nx; i++)
-//  {
-//    lonlat[2*i+0] = -halfpi + pi * static_cast<float> (i) / static_cast<float> (Nx-1);
-//    lonlat[2*i+1] = 0.0f;
-//  }
-
   for (int i = 0; i < Nx; i++)
     {
       float lon, lat;
       xyz2lonlat (coords[i].xyz, &lon, &lat);
       lonlat[2*i+0] = lon;
       lonlat[2*i+1] = lat;
-//    printf (" %12.4f %12.4f\n", rad2deg * lon, rad2deg * lat);
     }    
 
 
@@ -178,11 +160,8 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
           float x = static_cast<float> (ix) / static_cast<float> (Nx - 1);
           values[Nx*iz+ix] = x * z;
           height[Nx*iz+ix] = z * (0.1f + (1.0f - x) * x);
-//  if (iz == Nz-1)
-//  std::cout << height[Nx*iz+ix] << std::endl;
         }
     }
-  
 
   setReady ();
 }

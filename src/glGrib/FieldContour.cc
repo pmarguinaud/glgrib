@@ -241,8 +241,7 @@ void FieldContour::processTriangle
   bool edge = false;
   int it = it0;
   int its[2];
-  bool first = true;
-  float xyzv_first[4];
+  iso->first = true;
 
   while (cont)
     {
@@ -319,13 +318,13 @@ void FieldContour::processTriangle
 
               iso->iso->push (X, Y, Z, V);
 
-	      if (first)
+	      if (iso->first)
                 {
-                  first = false;
-		  xyzv_first[0] = X;
-		  xyzv_first[1] = Y;
-		  xyzv_first[2] = Z;
-		  xyzv_first[3] = V;
+                  iso->first = false;
+		  iso->xyzv_first[0] = X;
+		  iso->xyzv_first[1] = Y;
+		  iso->xyzv_first[2] = Z;
+		  iso->xyzv_first[3] = V;
 		}
 
               if (count < 2)
@@ -348,7 +347,7 @@ void FieldContour::processTriangle
   if (count > 0)
     {
       if (! edge)
-        iso->iso->push (xyzv_first[0], xyzv_first[1], xyzv_first[2], xyzv_first[3]);
+        iso->iso->push (iso->xyzv_first[0], iso->xyzv_first[1], iso->xyzv_first[2], iso->xyzv_first[3]);
       iso->iso->push (0., 0., 0., 0.);
     }
 

@@ -332,6 +332,27 @@ void processTriangle
   return;
 }
 
+template <typename ISO, typename VAL>
+void processTriangles (const const_GeometryPtr & geometry, const float level,
+                      ISO * iso, const VAL & val)
+{
+  const int nt = geometry->getNumberOfTriangles ();
+  Buffer<bool> seen (nt + 1);
+
+  for (int i = 0; i < nt + 1; i++)
+    seen[i] = false;
+  seen[0] = true;
+  
+  // First visit edge triangles
+  for (int it = 0; it < nt; it++)
+    if (geometry->triangleIsEdge (it))
+      processTriangle (it, val, level, &seen[1], iso, geometry);
+  
+  for (int it = 0; it < nt; it++)
+    processTriangle (it, val, level, &seen[1], iso, geometry);
+}
+
+
 }
 
 void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsField & o, float slot)
@@ -456,23 +477,9 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
 #pragma omp parallel for
   for (size_t i = 0; i < levels.size (); i++)
     {
-      Buffer<bool> seen (nt + 1);
       iso_helper isoh (&iso_data[i], opts.geometry.height.on, &height, 
-                      meta_height.valmin, meta_height.valmax, meta_height.valmis);
-
-
-      for (int i = 0; i < nt + 1; i++)
-        seen[i] = false;
-      seen[0] = true;
-
-      // First visit edge triangles
-      for (int it = 0; it < nt; it++)
-        if (geometry->triangleIsEdge (it))
-          processTriangle (it, val, levels[i], &seen[1], &isoh, geometry);
-  
-      for (int it = 0; it < nt; it++)
-        processTriangle (it, val, levels[i], &seen[1], &isoh, geometry);
-
+                       meta_height.valmin, meta_height.valmax, meta_height.valmis);
+      processTriangles (geometry, levels[i], &isoh, val);
     }
 
   iso.resize (levels.size ());

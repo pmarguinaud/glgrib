@@ -50,14 +50,14 @@ void processTriangle
         break;
 
 
+
       if (count == 0) // First triangle; see if it is at the edge of the domain
         {
           int c = 0;
           for (int i = 0; i < 3; i++)
             {
               int iA = i, iB = (i + 1) % 3;
-              int jgloA = jglo[iA], jgloB = jglo[iB];
-              bool bA = val(jgloA) < val0, bB = val(jgloB) < val0;
+              bool bA = vv[iA] < val0, bB = vv[iB] < val0;
               int itAB = itri[iA];
               if ((bA != bB) && (! seen[itAB]))
                 c++;

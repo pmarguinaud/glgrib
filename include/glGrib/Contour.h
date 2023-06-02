@@ -35,19 +35,23 @@ void processTriangle
       int jglo[3], itri[3];
       glm::vec3 xyz[3];
 
+      // FAST
+      geometry->getTriangleVertices (it, jglo);
+
+      int n = 0;
+      for (int i = 0; i < 3; i++)
+        if (val(jglo[i]) < val0)
+          n++;
+
+      if ((n == 0) || (n == 3)) // 3 vertices have the same color
+        break;
+
+      // SLOW
       geometry->getTriangleNeighbours (it, jglo, itri, xyz);
 
       // Get values for current triangle
       for (int i = 0; i < 3; i++)
         vv[i] = val(jglo[i]);
-
-      int n = 0;
-      for (int i = 0; i < 3; i++)
-        if (vv[i] < val0)
-          n++;
-
-      if ((n == 0) || (n == 3)) // 3 vertices have the same color
-        break;
 
       if (count == 0) // First triangle; see if it is at the edge of the domain
         {

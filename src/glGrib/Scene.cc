@@ -87,7 +87,7 @@ void Scene::render () const
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   d.test.render (d.view, d.opts.scene.light);
-  d.vcut.render (d.view, d.opts.scene.light);
+//d.vcut.render (d.view, d.opts.scene.light);
   
 
   std::vector<const Object3D*> obj_list;
@@ -388,7 +388,7 @@ void Scene::setup (const Options & o)
   d.opts = o;
 
   d.test.setup ();
-  d.vcut.setup ();
+//d.vcut.setup ();
 
   setViewport (d.opts.render.width, d.opts.render.height);
   setViewOptions (d.opts.view);

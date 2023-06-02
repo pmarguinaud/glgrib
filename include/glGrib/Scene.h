@@ -301,6 +301,7 @@ public:
 private:
   std::vector<Field*> fieldlist;
   std::vector<GeoPoints*> geopointslist;
+  VCut * vcut = nullptr;
 
   class _data
   {
@@ -316,7 +317,6 @@ private:
       Departements departements;
       Cities cities;
       Test test;
-      VCut vcut;
       Land land;
     private:
       Image image;

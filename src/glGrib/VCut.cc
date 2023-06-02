@@ -8,6 +8,7 @@ namespace glGrib
 
 void VCut::render (const View & view, const OptionsLight & light) const
 {
+#ifdef UNDEF
   Program * program = Program::load ("VCUT");
   program->use (); 
 
@@ -27,7 +28,7 @@ void VCut::render (const View & view, const OptionsLight & light) const
   glEnable (GL_CULL_FACE);
 
   view.delMVP (program);
-
+#endif
 }
 
 void VCut::setupVertexAttributes () const

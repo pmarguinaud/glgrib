@@ -66,6 +66,7 @@ void processTriangle
               seen[it] = false;
               return;
             }
+
         }
 
       // Find a way out of current triangle
@@ -73,7 +74,9 @@ void processTriangle
         {
           int iA = i, iB = (i + 1) % 3;
           int jgloA = jglo[iA], jgloB = jglo[iB];
-          bool bA = val(jgloA) < val0, bB = val(jgloB) < val0;
+//        bool bA = val(jgloA) < val0, bB = val(jgloB) < val0;
+	  float valA = vv[iA], valB = vv[iB];
+	  bool bA = valA < val0, bB = valB < val0;
           int itAB = itri[iA];
           if ((bA != bB) && (! seen[itAB]))
             {
@@ -81,6 +84,7 @@ void processTriangle
               if (lswap)
                 {
                   std::swap (jgloA, jgloB);
+                  std::swap (valA, valB);
                   std::swap (iA, iB);
                 }
               float a = (val0 - val(jgloA)) / (val(jgloB) - val(jgloA));

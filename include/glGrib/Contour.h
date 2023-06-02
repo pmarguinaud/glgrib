@@ -86,7 +86,7 @@ void processTriangle
                   std::swap (valA, valB);
                   std::swap (iA, iB);
                 }
-              float a = (val0 - val(jgloA)) / (val(jgloB) - val(jgloA));
+              float a = (val0 - valA) / (valB - valA);
 
               iso->push (xyz[iA], xyz[iB], jgloA, jgloB, a);
 
@@ -94,6 +94,7 @@ void processTriangle
                 its[count] = it;
 
               it = itAB;
+
               count++;
               cont = true;
               break;

@@ -18,6 +18,7 @@ void processTriangle
   bool edge = false;
   int it = it0;
   int its[2];
+
   float vv[3];
 
   iso->start ();
@@ -35,6 +36,10 @@ void processTriangle
       glm::vec3 xyz[3];
 
       geometry->getTriangleNeighbours (it, jglo, itri, xyz);
+
+      // Get values for current triangle
+      for (int i = 0; i < 3; i++)
+        vv[i] = val(jglo[i]);
 
       int n = 0;
       for (int i = 0; i < 3; i++)

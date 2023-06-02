@@ -214,13 +214,12 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
   auto lonlat = lonlatbuffer->map ();
 
   if (dbg) printf (" (%12s,%12s)\n", "lon", "lat");
+
+#pragma omp parallel for if (! dbg)
   for (int n = 0; n < N; n++)
     {
       const auto & coords = isoh[n].getCoords ();
-      const auto & xyz1 = isoh[n].getXYZ1 ();
-      const auto & xyz2 = isoh[n].getXYZ2 ();
       const int nx = coords.size ();
-
       for (int i = 0; i < nx; i++)
         {
           int j = 2*(Nx_offset[n]+i);
@@ -238,11 +237,20 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
               if (dbg) printf (" (%12.4f,%12.4f)\n", lon * rad2deg, lat * rad2deg);
             }    
 	}
+     }
 
-      float angle0 = std::acos (glm::dot (xyz1, xyz2));
-      for (int k = 0; k < Nz; k++)
+  for (int k = 0; k < Nz; k++)
+    {
+      float z = static_cast<float> (k) / static_cast<float> (Nz - 1);
+#pragma omp parallel for if (! dbg)
+      for (int n = 0; n < N; n++)
         {
-          float z = static_cast<float> (k) / static_cast<float> (Nz - 1);
+          const auto & coords = isoh[n].getCoords ();
+          const auto & xyz1 = isoh[n].getXYZ1 ();
+          const auto & xyz2 = isoh[n].getXYZ2 ();
+          const int nx = coords.size ();
+     
+          float angle0 = std::acos (glm::dot (xyz1, xyz2));
           int j = Nx*k+Nx_offset[n];
           for (int i = 0; i < nx; i++)
             {

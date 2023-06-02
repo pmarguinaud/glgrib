@@ -43,7 +43,7 @@ void processTriangle
 
       int n = 0;
       for (int i = 0; i < 3; i++)
-        if (val(jglo[i]) < val0)
+        if (vv[i] < val0)
           n++;
 
       if ((n == 0) || (n == 3)) // 3 vertices have the same color

@@ -74,7 +74,6 @@ void processTriangle
         {
           int iA = i, iB = (i + 1) % 3;
           int jgloA = jglo[iA], jgloB = jglo[iB];
-//        bool bA = val(jgloA) < val0, bB = val(jgloB) < val0;
 	  float valA = vv[iA], valB = vv[iB];
 	  bool bA = valA < val0, bB = valB < val0;
           int itAB = itri[iA];

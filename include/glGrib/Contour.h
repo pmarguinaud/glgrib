@@ -18,6 +18,7 @@ void processTriangle
   bool edge = false;
   int it = it0;
   int its[2];
+  float vv[3];
 
   iso->start ();
 
@@ -33,7 +34,7 @@ void processTriangle
       int jglo[3], itri[3];
       glm::vec3 xyz[3];
 
-      geometry->getTriangleVertices (it, jglo);
+      geometry->getTriangleNeighbours (it, jglo, itri, xyz);
 
       int n = 0;
       for (int i = 0; i < 3; i++)
@@ -43,7 +44,6 @@ void processTriangle
       if ((n == 0) || (n == 3)) // 3 vertices have the same color
         break;
 
-      geometry->getTriangleNeighbours (it, jglo, itri, xyz);
 
       if (count == 0) // First triangle; see if it is at the edge of the domain
         {

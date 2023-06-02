@@ -49,7 +49,6 @@ void processTriangle
       if ((n == 0) || (n == 3)) // 3 vertices have the same color
         break;
 
-
       if (count == 0) // First triangle; see if it is at the edge of the domain
         {
           int c = 0;

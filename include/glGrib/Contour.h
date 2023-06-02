@@ -76,8 +76,8 @@ void processTriangle
       // Find a way out of current triangle
       for (int i = 0; i < 3; i++)
         {
-          int iA = i, iB = (i + 1) % 3;
-          int jgloA = jglo[iA], jgloB = jglo[iB];
+          int iA = i, iB = (i + 1) % 3, iC = (i + 2) % 3;
+          int jgloA = jglo[iA], jgloB = jglo[iB], jgloC = jglo[iC];
 	  float valA = vv[iA], valB = vv[iB];
 	  bool bA = valA < val0, bB = valB < val0;
           int itAB = itri[iA];
@@ -92,7 +92,7 @@ void processTriangle
                 }
               float a = (val0 - valA) / (valB - valA);
 
-              iso->push (xyz[iA], xyz[iB], jgloA, jgloB, a);
+              iso->push (xyz[iA], xyz[iB], xyz[iC], jgloA, jgloB, jgloC, a);
 
               if (count < 2)
                 its[count] = it;

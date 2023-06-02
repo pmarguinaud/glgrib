@@ -284,8 +284,8 @@ void FieldContour::setup (const Field::Privatizer, Loader * ld, const OptionsFie
     {
       first = true;
     }
-    void push (const glm::vec3 & xyzA, const glm::vec3 & xyzB, 
-               const int jgloA, const int jgloB, const float a)
+    void push (const glm::vec3 & xyzA, const glm::vec3 & xyzB, const glm::vec3 & xyzC,
+               const int jgloA, const int jgloB, const int jgloC, const float a)
     {
       float X = (1 - a) * xyzA.x + a * xyzB.x;
       float Y = (1 - a) * xyzA.y + a * xyzB.y;

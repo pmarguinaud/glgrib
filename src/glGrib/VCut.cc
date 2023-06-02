@@ -52,8 +52,8 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
   class vcut_coords
   {
   public:
-    vcut_coords (int _jgloA, int _jgloB, float _a, const glm::vec3 & _xyz) 
-      : jgloA (_jgloA), jgloB (_jgloB), a (_a), xyz (_xyz)
+    vcut_coords (int _jgloA, int _jgloB, int _jgloC, float _a, const glm::vec3 & _xyz) 
+      : jgloA (_jgloA), jgloB (_jgloB), jgloC (_jgloC), a (_a), xyz (_xyz)
     {
     }
     vcut_coords () 
@@ -63,7 +63,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     {
       return (jgloA < 0) && (jgloB < 0);
     }
-    int jgloA = -1, jgloB = -1;
+    int jgloA = -1, jgloB = -1, jgloC = -1;
     float a;
     glm::vec3 xyz;
   };
@@ -86,8 +86,8 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     {
       first = true;
     }
-    void push (const glm::vec3 & xyzA, const glm::vec3 & xyzB, 
-               const int jgloA, const int jgloB, const float a)
+    void push (const glm::vec3 & xyzA, const glm::vec3 & xyzB, const glm::vec3 & xyzC, 
+               const int jgloA, const int jgloB, const int jgloC, const float a)
     {
       if (first && (coords.size () > 0) && (! coords.back ().isNull ()))
         {
@@ -102,19 +102,36 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       // check vector is between xyz1 & xyz2
       glm::vec3 c12n = A * xyz;
 
-      float lon, lat;
-      xyz2lonlat (xyz, &lon, &lat);
-
       if ((c12n.x >= 0) && (c12n.y >= 0))
         {
+          if (first)
+            {
+              glm::mat3 B = glm::inverse (glm::mat3 (xyzA, xyzB, xyzC));
+	      auto c1ABC = B * xyz1;
+	      auto c2ABC = B * xyz2;
+	      if ((c1ABC.x >= 0.0f) && (c1ABC.y >= 0.0f) && (c1ABC.z > 0.0f))
+                printf ("  Found #1 !\n");
+	      if ((c2ABC.x >= 0.0f) && (c2ABC.y >= 0.0f) && (c2ABC.z > 0.0f))
+                printf ("  Found #2 !\n");
+	    }
           if (dbg)
           printf (" %5d | %5d %5d | %12.4f | (%12.4f,%12.4f,%12.4f) - (%12.4f,%12.4f,%12.4f)\n",
                   static_cast<int>(coords.size ()), jgloA, jgloB, a, xyzA.x, xyzA.y, xyzA.z, xyzB.x, xyzB.y, xyzB.z);
-          coords.push_back (vcut_coords (jgloA, jgloB, a, xyz));
+          coords.push_back (vcut_coords (jgloA, jgloB, jgloC, a, xyz));
           first = false;
 	}
       else
         {
+          if (! first)
+            {
+              glm::mat3 B = glm::inverse (glm::mat3 (xyzA, xyzB, xyzC));
+	      auto c1ABC = B * xyz1;
+	      auto c2ABC = B * xyz2;
+	      if ((c1ABC.x >= 0.0f) && (c1ABC.y >= 0.0f) && (c1ABC.z > 0.0f))
+                printf ("  Found #1 !\n");
+	      if ((c2ABC.x >= 0.0f) && (c2ABC.y >= 0.0f) && (c2ABC.z > 0.0f))
+                printf ("  Found #2 !\n");
+	    }
           first = true;
 	}
 
@@ -157,7 +174,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
   std::vector<vcut_helper> isoh (N);
 
-  bool dbg = false;
+  bool dbg = true;
 
   if (dbg)
   printf (" %5s | %5s %5s | %12s | (%12s,%12s,%12s) - (%12s,%12s,%12s)\n",
@@ -181,7 +198,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       glm::vec3 xyz2 = lonlat2xyz (lon2, lat2);
       glm::vec3 normal = glm::cross (xyz1, xyz2);
      
-      isoh[n].init (xyz1, xyz2);
+      isoh[n].init (xyz1, xyz2, dbg);
       
       // Scalar product with normal vector : subdivide the sphere in two parts
       auto val = [&normal,this] (int jglo)

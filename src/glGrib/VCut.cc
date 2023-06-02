@@ -163,7 +163,14 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
   printf (" %5s | %5s %5s | %12s | (%12s,%12s,%12s) - (%12s,%12s,%12s)\n",
           "rank", "jgloA", "jgloB", "a", "xyzA.x", "xyzA.y", "xyzA.z", "xyzB.x", "xyzB.y", "xyzB.z");
 
+  const OptionsGeometry opts_geom;
+  geometry = Geometry::load (ld, opts.path[0], opts_geom);
+  
+  BufferPtr<float> data;
+  ld->load (&data, opts.path, opts_geom, 0, &meta);
+     
   // Contouring on all sections
+#pragma omp parallel for if (! dbg)
   for (int n = 0; n < N; n++)
     {
       if (dbg) printf (" n = %d\n", n);
@@ -173,12 +180,6 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       glm::vec3 xyz1 = lonlat2xyz (lon1, lat1);
       glm::vec3 xyz2 = lonlat2xyz (lon2, lat2);
       glm::vec3 normal = glm::cross (xyz1, xyz2);
-     
-      const OptionsGeometry opts_geom;
-      geometry = Geometry::load (ld, opts.path[0], opts_geom);
-     
-      BufferPtr<float> data;
-      ld->load (&data, opts.path, opts_geom, 0, &meta);
      
       isoh[n].init (xyz1, xyz2);
       

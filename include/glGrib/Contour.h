@@ -125,11 +125,12 @@ void processTriangles (const const_GeometryPtr & geometry, const float level,
     seen[i] = false;
   seen[0] = true;
   
-  // First visit edge triangles
+  // First visit edge triangles (open contours)
   for (int it = 0; it < nt; it++)
     if (geometry->triangleIsEdge (it))
       processTriangle (it, val, level, &seen[1], iso, geometry);
   
+  // Second : visit inner triangles (closed contours)
   for (int it = 0; it < nt; it++)
     processTriangle (it, val, level, &seen[1], iso, geometry);
 }

@@ -4,8 +4,9 @@
 in float val;
 out vec4 color;
 
+uniform vec4 colormax, colormin;
+
 void main()
 {
-  color.rgb = vec3 (1.0f - val, 0.0f, val);
-  color.a   = 1.0f;
+  color = colormax * val + (1.0f - val) * colormin;
 }

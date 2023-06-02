@@ -34,6 +34,7 @@ private:
   OpenGLVertexArray<VCut> VAID;
   int Nx = -1, Nz = -1;
   const_GeometryPtr geometry;
+  FieldMetadata meta;
 };
 
 

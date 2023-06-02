@@ -18,6 +18,7 @@ layout (std430, binding=3) buffer vcutHeight
 
 uniform mat4 MVP;
 uniform int Nx, Nz;
+uniform float valmin, valmax;
 
 out float val;
 
@@ -50,7 +51,7 @@ void main()
 
   float z = height[ixz];
 
-  val = values[ixz];
+  val = (values[ixz] - valmin) / (valmax - valmin);
 
   float lon = lonlat[2*(i+di)+0];
   float lat = lonlat[2*(i+di)+1];

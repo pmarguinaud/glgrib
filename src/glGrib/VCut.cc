@@ -48,24 +48,7 @@ void VCut::setupVertexAttributes () const
 
 void VCut::setup (Loader * ld, const OptionsVCut & o)
 {
-  opts = o;
-  if (! opts.on)
-    return;
-
-  float lon1 = deg2rad * opts.lon[0], lon2 = deg2rad * opts.lon[1];
-  float lat1 = deg2rad * opts.lat[0], lat2 = deg2rad * opts.lat[1];
-
-  glm::vec3 xyz1 = lonlat2xyz (lon1, lat1);
-  glm::vec3 xyz2 = lonlat2xyz (lon2, lat2);
-
-  glm::vec3 normal = glm::cross (xyz1, xyz2);
-
-  const OptionsGeometry opts_geom;
-  geometry = Geometry::load (ld, opts.path[0], opts_geom);
-
-  BufferPtr<float> data;
-  ld->load (&data, opts.path, opts_geom, 0, &meta);
-
+  // Helper class for contouring
   class vcut_coords
   {
   public:
@@ -88,9 +71,16 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
   class vcut_helper
   {
   public:
-    vcut_helper (const glm::vec3 & xyz1, const glm::vec3 & xyz2, const glm::vec3 & normal) 
-      : A (glm::inverse (glm::mat3 (xyz1, xyz2, normal)))
+    vcut_helper () 
     {
+    }
+    void init (const glm::vec3 & _xyz1, const glm::vec3 & _xyz2, bool _dbg = false)
+    {
+      xyz1 = _xyz1;
+      xyz2 = _xyz2;
+      glm::vec3 normal = glm::cross (xyz1, xyz2);
+      A = glm::inverse (glm::mat3 (xyz1, xyz2, normal));
+      dbg = _dbg;
     }
     void start ()
     {
@@ -101,7 +91,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     {
       if (first && (coords.size () > 0) && (! coords.back ().isNull ()))
         {
-          printf (" first \n");
+          if (dbg) printf (" first \n");
           coords.push_back (vcut_coords ());
 	}
 
@@ -117,6 +107,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
       if ((c12n.x >= 0) && (c12n.y >= 0))
         {
+          if (dbg)
           printf (" %5d | %5d %5d | %12.4f | (%12.4f,%12.4f,%12.4f) - (%12.4f,%12.4f,%12.4f)\n",
                   static_cast<int>(coords.size ()), jgloA, jgloB, a, xyzA.x, xyzA.y, xyzA.z, xyzB.x, xyzB.y, xyzB.z);
           coords.push_back (vcut_coords (jgloA, jgloB, a, xyz));
@@ -133,84 +124,142 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       size_t n = coords.size ();
       if ((n > 0) && (coords[n-1].jgloA < 0))
         return;
-
-//    const auto & c0 = coords[0], & c1 = coords[n-1];
-//    if ((c0.jgloA == c1.jgloA) && (c0.jgloB == c1.jgloB))
-//      {
-//        std::vector<vcut_coords> tmp = coords;
-//      }
-
       coords.push_back (vcut_coords ());
-      printf ("----------------------------------------------------------------------------------\n");
+      if (dbg) printf ("----------------------------------------------------------------------------------\n");
 
     }
     const std::vector<vcut_coords> & getCoords () const
     {
       return coords;
     }
+    const glm::vec3 & getXYZ1 () const
+    {
+      return xyz1;
+    }
+    const glm::vec3 & getXYZ2 () const
+    {
+      return xyz2;
+    }
   private:
     glm::mat3 A;
+    glm::vec3 xyz1, xyz2;
     std::vector<vcut_coords> coords;
     bool first;
+    bool dbg = false;
   };
 
-  vcut_helper isoh (xyz1, xyz2, normal);
-  
-  auto val = [&normal,this] (int jglo)
-  {
-    float lon, lat;
-    this->geometry->index2latlon (jglo, &lat, &lon);
-    glm::vec3 xyz = lonlat2xyz (lon, lat);
-    return glm::dot (normal, xyz);
-  };
+  // Start here
+  opts = o;
+  if (! opts.on)
+    return;
 
+  const int N = std::min (opts.lon.size (), opts.lat.size ()) - 1;
+
+  std::vector<vcut_helper> isoh (N);
+
+  bool dbg = false;
+
+  if (dbg)
   printf (" %5s | %5s %5s | %12s | (%12s,%12s,%12s) - (%12s,%12s,%12s)\n",
           "rank", "jgloA", "jgloB", "a", "xyzA.x", "xyzA.y", "xyzA.z", "xyzB.x", "xyzB.y", "xyzB.z");
-  Contour::processTriangles (geometry, 0.0f, &isoh, val);
 
-  const auto & coords = isoh.getCoords ();
+  // Contouring on all sections
+  for (int n = 0; n < N; n++)
+    {
+      if (dbg) printf (" n = %d\n", n);
+      float lon1 = deg2rad * opts.lon[n], lon2 = deg2rad * opts.lon[n+1];
+      float lat1 = deg2rad * opts.lat[n], lat2 = deg2rad * opts.lat[n+1];
+     
+      glm::vec3 xyz1 = lonlat2xyz (lon1, lat1);
+      glm::vec3 xyz2 = lonlat2xyz (lon2, lat2);
+      glm::vec3 normal = glm::cross (xyz1, xyz2);
+     
+      const OptionsGeometry opts_geom;
+      geometry = Geometry::load (ld, opts.path[0], opts_geom);
+     
+      BufferPtr<float> data;
+      ld->load (&data, opts.path, opts_geom, 0, &meta);
+     
+      isoh[n].init (xyz1, xyz2);
+      
+      // Scalar product with normal vector : subdivide the sphere in two parts
+      auto val = [&normal,this] (int jglo)
+      {
+        float lon, lat;
+        this->geometry->index2latlon (jglo, &lat, &lon);
+        glm::vec3 xyz = lonlat2xyz (lon, lat);
+        return glm::dot (normal, xyz);
+      };
 
-  for (Nx = 0; Nx < static_cast<int>(coords.size ()); Nx++)
-    if (coords[Nx].isNull ())
-      break;
+      Contour::processTriangles (geometry, 0.0f, &isoh[n], val);
+    }
 
-//Nx = 20;
-  std::cout << " Nx = " << Nx << std::endl;
+  int Nx_offset[N];
+  Nx = 0;
+  for (int n = 0; n < N; n++)
+    {
+      Nx_offset[n] = Nx;
+      Nx += isoh[n].getCoords ().size ();
+    }
 
   Nz = 3;
 
-  std::vector<float> lonlat (2 * Nx);
-
-  printf (" (%12s,%12s)\n", "lon", "lat");
-  for (int i = 0; i < Nx; i++)
-    {
-      float lon, lat;
-      xyz2lonlat (coords[i].xyz, &lon, &lat);
-      lonlat[2*i+0] = lon;
-      lonlat[2*i+1] = lat;
-      printf (" (%12.4f,%12.4f)\n", lon * rad2deg, lat * rad2deg);
-    }    
-
-
-  lonlatbuffer = OpenGLBufferPtr<float> (lonlat);
+  lonlatbuffer = OpenGLBufferPtr<float> (2 * Nx);
   valuesbuffer = OpenGLBufferPtr<float> (Nx * Nz);
   heightbuffer = OpenGLBufferPtr<float> (Nx * Nz);
 
   auto values = valuesbuffer->map ();
   auto height = heightbuffer->map ();
+  auto lonlat = lonlatbuffer->map ();
 
-  float angle0 = std::acos (glm::dot (xyz1, xyz2));
-  for (int iz = 0; iz < Nz; iz++)
+  if (dbg) printf (" (%12s,%12s)\n", "lon", "lat");
+  for (int n = 0; n < N; n++)
     {
-      float z = static_cast<float> (iz) / static_cast<float> (Nz - 1);
-      for (int ix = 0; ix < Nx; ix++)
+      const auto & coords = isoh[n].getCoords ();
+      const auto & xyz1 = isoh[n].getXYZ1 ();
+      const auto & xyz2 = isoh[n].getXYZ2 ();
+      const int nx = coords.size ();
+
+      for (int i = 0; i < nx; i++)
         {
-//        float x = static_cast<float> (ix) / static_cast<float> (Nx - 1);
-          float angle = std::acos (glm::dot (xyz1, coords[ix].xyz));
-	  float x = angle / angle0;
-          values[Nx*iz+ix] = x * z;
-          height[Nx*iz+ix] = z * (0.1f + (1.0f - x) * x);
+          int j = 2*(Nx_offset[n]+i);
+          if (coords[i].isNull ())
+            {
+              lonlat[j+0] = 0.0f;
+              lonlat[j+1] = 2.0f * pi;
+            }
+          else
+            {
+              float lon, lat;
+              xyz2lonlat (coords[i].xyz, &lon, &lat);
+              lonlat[j+0] = lon;
+              lonlat[j+1] = lat;
+              if (dbg) printf (" (%12.4f,%12.4f)\n", lon * rad2deg, lat * rad2deg);
+            }    
+	}
+
+      float angle0 = std::acos (glm::dot (xyz1, xyz2));
+      for (int k = 0; k < Nz; k++)
+        {
+          float z = static_cast<float> (k) / static_cast<float> (Nz - 1);
+          int j = Nx*k+Nx_offset[n];
+          for (int i = 0; i < nx; i++)
+            {
+              if (coords[i].isNull ())
+                {
+                  values[j+i] = 0.0f;
+                  height[j+i] = 0.0f;
+                }
+              else
+                {
+                  float angle = std::acos (glm::dot (xyz1, coords[i].xyz));
+                  float x = angle / angle0;
+                  values[j+i] = x * z;
+                  height[j+i] = z * (0.1f + (1.0f - x) * x);
+                }
+	    }
         }
+
     }
 
   setReady ();

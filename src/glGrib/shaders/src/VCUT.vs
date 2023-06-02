@@ -1,6 +1,9 @@
 
 #include "version.h"
 
+
+const float pi = 3.1415927;
+
 layout (std430, binding=1) buffer vcutLonLat
 {
   float lonlat[];
@@ -21,12 +24,16 @@ uniform int Nx, Nz;
 uniform float valmin, valmax;
 
 out float val;
+out float skip;
 
 void main()
 {
   int i = gl_InstanceID % (Nx - 1);
   int j = gl_VertexID;
   int k = gl_InstanceID / (Nx - 1);
+
+  skip = 0.0f;
+  val = 0.0f;
 
   int di = 0, dk = 0;
 
@@ -56,6 +63,12 @@ void main()
   float lon = lonlat[2*(i+di)+0];
   float lat = lonlat[2*(i+di)+1];
 
+  if (lat > pi)
+    {
+      skip = 1.0f;
+      return;
+    }
+
   float coslon = cos (lon), sinlon = sin (lon);
   float coslat = cos (lat), sinlat = sin (lat);
 
@@ -64,4 +77,5 @@ void main()
   vertexPos = (1 + z) * vertexPos;
 
   gl_Position = MVP * vec4 (vertexPos, 1);
+
 }

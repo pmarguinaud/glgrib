@@ -50,7 +50,6 @@ void processTriangle
         break;
 
 
-
       if (count == 0) // First triangle; see if it is at the edge of the domain
         {
           int c = 0;

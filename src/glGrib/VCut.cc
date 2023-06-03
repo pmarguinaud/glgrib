@@ -82,6 +82,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       xyz1 = _xyz1;
       xyz2 = _xyz2;
       glm::vec3 normal = glm::cross (xyz1, xyz2);
+      normal = glm::normalize (normal);
       A = glm::inverse (glm::mat3 (xyz1, xyz2, normal));
       dbg = _dbg;
     }
@@ -230,6 +231,12 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       glm::vec3 xyz1 = lonlat2xyz (lon1, lat1);
       glm::vec3 xyz2 = lonlat2xyz (lon2, lat2);
       glm::vec3 normal = glm::cross (xyz1, xyz2);
+
+      float length = glm::length (normal);
+      if (length < std::sin (deg2rad * 1.0f)) // 1 degree
+        continue;
+
+      normal = normal / length;
      
       isoh[n].init (xyz1, xyz2, dbg);
       

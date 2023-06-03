@@ -28,14 +28,18 @@ void VCut::render (const View & view, const OptionsLight & light) const
   program->set ("valmax", meta.valmax);
 
   glDisable (GL_CULL_FACE);
-  glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
+
+  if (opts.wireframe.on)
+    glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 
   VAID.bind ();
   unsigned int ind[6] = {0, 1, 2, 1, 2, 3};
   glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, (Nz - 1) * (Nx - 1));
   VAID.unbind ();
 
-  glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+  if (opts.wireframe.on)
+    glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+
   glEnable (GL_CULL_FACE);
 
   view.delMVP (program);
@@ -77,13 +81,15 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     vcut_helper () 
     {
     }
-    void init (const glm::vec3 & _xyz1, const glm::vec3 & _xyz2, bool _dbg = false)
+    void init (const glm::vec3 & _xyz1, const glm::vec3 & _xyz2, float _fracDx, int _skipMax, bool _dbg = false)
     {
       xyz1 = _xyz1;
       xyz2 = _xyz2;
       glm::vec3 normal = glm::cross (xyz1, xyz2);
       normal = glm::normalize (normal);
       A = glm::inverse (glm::mat3 (xyz1, xyz2, normal));
+      fracDx = _fracDx;
+      skipMax = _skipMax;
       dbg = _dbg;
     }
     void start ()
@@ -95,12 +101,14 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     void push (const glm::vec3 & xyzA, const glm::vec3 & xyzB, const glm::vec3 & xyzC, 
                const int jgloA, const int jgloB, const int jgloC, const float a)
     {
+      // Insert discontinuity marker
       if (first && (coords.size () > 0) && (! coords.back ().isNull ()))
         {
           if (dbg) printf (" first \n");
           coords.push_back (vcut_coords ());
 	}
 
+      // Interpolate point; use a linear approximation (easier & cheaper than real calculation)
       glm::vec3 xyz = (1.0f - a) * xyzA + a * xyzB;
 
       xyz = xyz / glm::length (xyz);
@@ -110,12 +118,14 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
       if ((c12n.x >= 0) && (c12n.y >= 0))
         {
+          // First point : see whether starting/ending point of arc belong to this triangle
           if (first)
             look4end (xyzA, xyzB, xyzC, jgloA, jgloB, jgloC);
           if (dbg)
           printf (" %5d | %5d %5d | %12.4f | (%12.4f,%12.4f,%12.4f) - (%12.4f,%12.4f,%12.4f)\n",
                   static_cast<int>(coords.size ()), jgloA, jgloB, a, xyzA.x, xyzA.y, xyzA.z, xyzB.x, xyzB.y, xyzB.z);
 
+	  // Distance to previous point
 	  const float dx = [this,&xyz] ()
 	  {
             if (coords.size () > 0)
@@ -126,6 +136,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 	    return 0.0f;
 	  }();
 
+	  // Current space is enough OR we already have skipped too many points
 	  if ((dx >= lastDx * fracDx) || (skip > skipMax))
             {
               coords.push_back (vcut_coords (jgloA, jgloB, jgloC, a, xyz));
@@ -141,6 +152,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 	}
       else
         {
+          // Close section, reset
           if (! first)
             look4end (xyzA, xyzB, xyzC, jgloA, jgloB, jgloC);
           start ();
@@ -169,7 +181,10 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       return xyz2;
     }
   private:
-    void look4end (const glm::vec3 & xyzA, const glm::vec3 & xyzB, const glm::vec3 & xyzC, int jgloA, int jgloB, int jgloC) 
+    // See whether the points starting/closing the arc belongs to the triangle
+    // if so, add them to the list of points
+    void look4end (const glm::vec3 & xyzA, const glm::vec3 & xyzB, const glm::vec3 & xyzC, 
+		   const int jgloA, const int jgloB, const int jgloC) 
     {
       const glm::mat3 B = glm::inverse (glm::mat3 (xyzA, xyzB, xyzC));
       const auto c1ABC = B * xyz1;
@@ -238,7 +253,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
       normal = normal / length;
      
-      isoh[n].init (xyz1, xyz2, dbg);
+      isoh[n].init (xyz1, xyz2, opts.contour.fracdx, opts.contour.skipmax, dbg);
       
       // Scalar product with normal vector : subdivide the sphere in two parts
       auto val = [&normal,this] (int jglo)
@@ -282,6 +297,8 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       for (int i = 0; i < nx; i++)
         {
           int j = 2*(Nx_offset[n]+i);
+
+	  // Discontinuity : skip point
           if (coords[i].isNull ())
             {
               lonlat[j+0] = 0.0f;
@@ -318,6 +335,8 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
           for (int i = 0; i < nx; i++)
             {
               const auto & c = coords[i];
+
+	      // Discontinuity
               if (c.isNull ())
                 {
                   values[j+i] = 0.0f;
@@ -327,6 +346,8 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
                 {
                   float angle = std::acos (glm::dot (xyz1, c.xyz));
                   float x = angle / angle0;
+
+		  // End point (begin or end arc)
                   if (c.a < 0.0f)
                     {
                       auto jglo2xyz = [this] (const int jglo)
@@ -343,6 +364,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 		      cABC = cABC / (cABC.x + cABC.y + cABC.z);
                       values[j+i] = cABC.x * data[c.jgloA] + cABC.y * data[c.jgloB] + cABC.z * data[c.jgloC];
 		    }
+		  // Regular point
 		  else
 		    {
                       values[j+i] = (1.0f - c.a) * data[c.jgloA] + c.a * data[c.jgloB];

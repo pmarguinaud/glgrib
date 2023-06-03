@@ -1351,12 +1351,24 @@ public:
     DESC (lat, List of latitudes);
     DESC (lon, List of longitudes);
     DESC (path, List of GRIB files);
+    DESC (contour.fracdx, Fraction of dx required to keep points);
+    DESC (contour.skipmax, Max number of points to skip);
+    DESC (wireframe.on, Enable wireframe mode);
   }
 
   bool on = false;
   std::vector<float> lat;
   std::vector<float> lon;
   std::vector<OptionFieldRef> path;
+  struct
+  {
+    float fracdx = 0.4f;
+    int skipmax = 3;
+  } contour;
+  struct
+  {
+    bool on = false;
+  } wireframe;
 };
 
 class OptionsLandscapePosition : public OptionsBase

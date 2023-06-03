@@ -85,6 +85,8 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     void start ()
     {
       first = true;
+      lastDx = 0.0f;
+      skip = 0;
     }
     void push (const glm::vec3 & xyzA, const glm::vec3 & xyzB, const glm::vec3 & xyzC, 
                const int jgloA, const int jgloB, const int jgloC, const float a)
@@ -105,34 +107,39 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       if ((c12n.x >= 0) && (c12n.y >= 0))
         {
           if (first)
-            {
-              glm::mat3 B = glm::inverse (glm::mat3 (xyzA, xyzB, xyzC));
-	      auto c1ABC = B * xyz1;
-	      auto c2ABC = B * xyz2;
-	      if ((c1ABC.x >= 0.0f) && (c1ABC.y >= 0.0f) && (c1ABC.z > 0.0f))
-                printf ("  Found #1 !\n");
-	      if ((c2ABC.x >= 0.0f) && (c2ABC.y >= 0.0f) && (c2ABC.z > 0.0f))
-                printf ("  Found #2 !\n");
-	    }
+            look4end (xyzA, xyzB, xyzC, jgloA, jgloB, jgloC);
           if (dbg)
           printf (" %5d | %5d %5d | %12.4f | (%12.4f,%12.4f,%12.4f) - (%12.4f,%12.4f,%12.4f)\n",
                   static_cast<int>(coords.size ()), jgloA, jgloB, a, xyzA.x, xyzA.y, xyzA.z, xyzB.x, xyzB.y, xyzB.z);
-          coords.push_back (vcut_coords (jgloA, jgloB, jgloC, a, xyz));
+
+	  const float dx = [this,&xyz] ()
+	  {
+            if (coords.size () > 0)
+              {
+                const auto & XYZ = this->coords.back ().xyz;
+	        return glm::distance (xyz, XYZ);
+	      }
+	    return 0.0f;
+	  }();
+
+	  if ((dx >= lastDx * fracDx) || (skip > skipMax))
+            {
+              coords.push_back (vcut_coords (jgloA, jgloB, jgloC, a, xyz));
+              lastDx = dx;
+	      skip = 0;
+	    }
+	  else
+            {
+              skip++;
+	    }
+
           first = false;
 	}
       else
         {
           if (! first)
-            {
-              glm::mat3 B = glm::inverse (glm::mat3 (xyzA, xyzB, xyzC));
-	      auto c1ABC = B * xyz1;
-	      auto c2ABC = B * xyz2;
-	      if ((c1ABC.x >= 0.0f) && (c1ABC.y >= 0.0f) && (c1ABC.z > 0.0f))
-                printf ("  Found #1 !\n");
-	      if ((c2ABC.x >= 0.0f) && (c2ABC.y >= 0.0f) && (c2ABC.z > 0.0f))
-                printf ("  Found #2 !\n");
-	    }
-          first = true;
+            look4end (xyzA, xyzB, xyzC, jgloA, jgloB, jgloC);
+          start ();
 	}
 
     }
@@ -158,11 +165,31 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       return xyz2;
     }
   private:
+    void look4end (const glm::vec3 & xyzA, const glm::vec3 & xyzB, const glm::vec3 & xyzC, int jgloA, int jgloB, int jgloC) 
+    {
+      glm::mat3 B = glm::inverse (glm::mat3 (xyzA, xyzB, xyzC));
+      auto c1ABC = B * xyz1;
+      auto c2ABC = B * xyz2;
+      if ((c1ABC.x >= 0.0f) && (c1ABC.y >= 0.0f) && (c1ABC.z > 0.0f))
+        {
+          coords.push_back (vcut_coords (jgloA, jgloB, jgloC, -1.0f, xyz1));
+          if (dbg) printf ("  Found #1 !\n");
+	}
+      if ((c2ABC.x >= 0.0f) && (c2ABC.y >= 0.0f) && (c2ABC.z > 0.0f))
+        {
+          coords.push_back (vcut_coords (jgloA, jgloB, jgloC, -1.0f, xyz2));
+          if (dbg) printf ("  Found #2 !\n");
+	}
+    }
     glm::mat3 A;
     glm::vec3 xyz1, xyz2;
     std::vector<vcut_coords> coords;
     bool first;
     bool dbg = false;
+    float fracDx = 0.5f;
+    float lastDx = 0.0f;
+    int skip = 0;
+    int skipMax = 3;
   };
 
   // Start here
@@ -218,6 +245,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     {
       Nx_offset[n] = Nx;
       Nx += isoh[n].getCoords ().size ();
+      printf (" Nx = %d\n", Nx);
     }
 
   Nz = 3;

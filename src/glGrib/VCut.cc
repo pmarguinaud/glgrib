@@ -13,6 +13,9 @@ void VCut::render (const View & view, const OptionsLight & light) const
   if (! opts.on)
     return;
 
+  if ((Nx < 0) || (Nz < 0))
+    return;
+
   Program * program = Program::load ("VCUT");
   program->use (); 
 
@@ -21,8 +24,8 @@ void VCut::render (const View & view, const OptionsLight & light) const
   program->set ("Nz", Nz);
   program->set ("colormax", glm::vec4 (1.0f, 0.0f, 0.0f, 1.0f));
   program->set ("colormin", glm::vec4 (0.0f, 0.0f, 1.0f, 1.0f));
-  program->set ("valmin", 0.0f);
-  program->set ("valmax", 1.0f);
+  program->set ("valmin", meta.valmin);
+  program->set ("valmax", meta.valmax);
 
   glDisable (GL_CULL_FACE);
   glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
@@ -167,9 +170,9 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
   private:
     void look4end (const glm::vec3 & xyzA, const glm::vec3 & xyzB, const glm::vec3 & xyzC, int jgloA, int jgloB, int jgloC) 
     {
-      glm::mat3 B = glm::inverse (glm::mat3 (xyzA, xyzB, xyzC));
-      auto c1ABC = B * xyz1;
-      auto c2ABC = B * xyz2;
+      const glm::mat3 B = glm::inverse (glm::mat3 (xyzA, xyzB, xyzC));
+      const auto c1ABC = B * xyz1;
+      const auto c2ABC = B * xyz2;
       if ((c1ABC.x >= 0.0f) && (c1ABC.y >= 0.0f) && (c1ABC.z > 0.0f))
         {
           coords.push_back (vcut_coords (jgloA, jgloB, jgloC, -1.0f, xyz1));
@@ -186,7 +189,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     std::vector<vcut_coords> coords;
     bool first;
     bool dbg = false;
-    float fracDx = 0.5f;
+    float fracDx = 0.4f;
     float lastDx = 0.0f;
     int skip = 0;
     int skipMax = 3;
@@ -199,6 +202,12 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
   const int N = std::min (opts.lon.size (), opts.lat.size ()) - 1;
 
+  if (N < 2)
+    {
+      opts.on = false;
+      return;
+    }
+
   std::vector<vcut_helper> isoh (N);
 
   bool dbg = true;
@@ -210,9 +219,6 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
   const OptionsGeometry opts_geom;
   geometry = Geometry::load (ld, opts.path[0], opts_geom);
   
-  BufferPtr<float> data;
-  ld->load (&data, opts.path, opts_geom, 0, &meta);
-     
   // Contouring on all sections
 #pragma omp parallel for if (! dbg)
   for (int n = 0; n < N; n++)
@@ -260,6 +266,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
   if (dbg) printf (" (%12s,%12s)\n", "lon", "lat");
 
+  // Setup coordinates
 #pragma omp parallel for if (! dbg)
   for (int n = 0; n < N; n++)
     {
@@ -284,6 +291,10 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 	}
      }
 
+  BufferPtr<float> data;
+  ld->load (&data, opts.path, opts_geom, 0, &meta);
+     
+  // Setup values & height
   for (int k = 0; k < Nz; k++)
     {
       float z = static_cast<float> (k) / static_cast<float> (Nz - 1);
@@ -299,16 +310,36 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
           int j = Nx*k+Nx_offset[n];
           for (int i = 0; i < nx; i++)
             {
-              if (coords[i].isNull ())
+              const auto & c = coords[i];
+              if (c.isNull ())
                 {
                   values[j+i] = 0.0f;
                   height[j+i] = 0.0f;
                 }
               else
                 {
-                  float angle = std::acos (glm::dot (xyz1, coords[i].xyz));
+                  float angle = std::acos (glm::dot (xyz1, c.xyz));
                   float x = angle / angle0;
-                  values[j+i] = x * z;
+                  if (c.a < 0.0f)
+                    {
+                      auto jglo2xyz = [this] (const int jglo)
+		      {
+                        float lat, lon;
+                        this->geometry->index2latlon (jglo, &lat, &lon);
+                        return lonlat2xyz (lon, lat);
+		      };
+		      const auto xyzA = jglo2xyz (c.jgloA);
+		      const auto xyzB = jglo2xyz (c.jgloB);
+		      const auto xyzC = jglo2xyz (c.jgloC);
+                      const auto B = glm::inverse (glm::mat3 (xyzA, xyzB, xyzC));
+                      auto cABC = B * c.xyz;
+		      cABC = cABC / (cABC.x + cABC.y + cABC.z);
+                      values[j+i] = cABC.x * data[c.jgloA] + cABC.y * data[c.jgloB] + cABC.z * data[c.jgloC];
+		    }
+		  else
+		    {
+                      values[j+i] = (1.0f - c.a) * data[c.jgloA] + c.a * data[c.jgloB];
+		    }
                   height[j+i] = z * (0.1f + (1.0f - x) * x);
                 }
 	    }

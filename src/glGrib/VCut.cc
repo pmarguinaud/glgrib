@@ -218,7 +218,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
   const int N = std::min (opts.lon.size (), opts.lat.size ()) - 1;
 
-  if (N < 2)
+  if (N < 1)
     {
       opts.on = false;
       return;

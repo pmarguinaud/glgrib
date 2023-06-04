@@ -1354,6 +1354,7 @@ public:
     DESC (contour.fracdx, Fraction of dx required to keep points);
     DESC (contour.skipmax, Max number of points to skip);
     DESC (wireframe.on, Enable wireframe mode);
+    DESC_H (debug.on, Debug);
   }
 
   bool on = false;
@@ -1369,6 +1370,10 @@ public:
   {
     bool on = false;
   } wireframe;
+  struct 
+  {
+    bool on = false;
+  } debug;
 };
 
 class OptionsLandscapePosition : public OptionsBase

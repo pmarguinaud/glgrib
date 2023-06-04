@@ -226,7 +226,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
   std::vector<vcut_helper> isoh (N);
 
-  bool dbg = true;
+  bool dbg = opts.debug.on;
 
   if (dbg)
   printf (" %5s | %5s %5s | %12s | (%12s,%12s,%12s) - (%12s,%12s,%12s)\n",
@@ -273,17 +273,11 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     {
       Nx_offset[n] = Nx;
       Nx += isoh[n].getCoords ().size ();
-      printf (" Nx = %d\n", Nx);
+      if (dbg) printf (" Nx = %d\n", Nx);
     }
 
-  Nz = 3;
 
   lonlatbuffer = OpenGLBufferPtr<float> (2 * Nx);
-  valuesbuffer = OpenGLBufferPtr<float> (Nx * Nz);
-  heightbuffer = OpenGLBufferPtr<float> (Nx * Nz);
-
-  auto values = valuesbuffer->map ();
-  auto height = heightbuffer->map ();
   auto lonlat = lonlatbuffer->map ();
 
   if (dbg) printf (" (%12s,%12s)\n", "lon", "lat");
@@ -315,12 +309,34 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 	}
      }
 
-  BufferPtr<float> data;
-  ld->load (&data, opts.path, opts_geom, 0, &meta);
-     
+  Nz = opts.path.size ();
+  valuesbuffer = OpenGLBufferPtr<float> (Nx * Nz);
+  heightbuffer = OpenGLBufferPtr<float> (Nx * Nz);
+  auto values = valuesbuffer->map ();
+  auto height = heightbuffer->map ();
+
   // Setup values & height
   for (int k = 0; k < Nz; k++)
     {
+      FieldMetadata meta_k;
+
+      BufferPtr<float> data_k;
+      ld->load (&data_k, opts.path, opts_geom, k, &meta_k);
+      const auto geometry_k = Geometry::load (ld, opts.path[k], opts_geom);
+
+      if (k == 0)
+        {
+          meta = meta_k;
+	}
+      else
+        {
+          meta.valmin = std::min (meta_k.valmin, meta.valmin);
+          meta.valmax = std::max (meta_k.valmax, meta.valmax);
+        }
+
+      if (! geometry->isEqual (*geometry_k))
+        throw std::runtime_error (std::string ("Geometry mismatch"));
+
       float z = static_cast<float> (k) / static_cast<float> (Nz - 1);
 #pragma omp parallel for if (! dbg)
       for (int n = 0; n < N; n++)
@@ -362,12 +378,12 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
                       const auto B = glm::inverse (glm::mat3 (xyzA, xyzB, xyzC));
                       auto cABC = B * c.xyz;
 		      cABC = cABC / (cABC.x + cABC.y + cABC.z);
-                      values[j+i] = cABC.x * data[c.jgloA] + cABC.y * data[c.jgloB] + cABC.z * data[c.jgloC];
+                      values[j+i] = cABC.x * data_k[c.jgloA] + cABC.y * data_k[c.jgloB] + cABC.z * data_k[c.jgloC];
 		    }
 		  // Regular point
 		  else
 		    {
-                      values[j+i] = (1.0f - c.a) * data[c.jgloA] + c.a * data[c.jgloB];
+                      values[j+i] = (1.0f - c.a) * data_k[c.jgloA] + c.a * data_k[c.jgloB];
 		    }
                   height[j+i] = z * (0.1f + (1.0f - x) * x);
                 }

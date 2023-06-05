@@ -23,6 +23,9 @@ layout (std430, binding=vcutHeight_idx) buffer vcutHeight
 uniform mat4 MVP;
 uniform int Nx, Nz;
 uniform float valmin, valmax;
+uniform float dz = 0.05f;
+uniform bool luniformz = true;
+uniform bool lconstantz = false;
 
 out float val;
 out float skip;
@@ -57,7 +60,15 @@ void main()
 
   int ixz = Nx*(k + dk)+(i + di);
 
-  float z = height[ixz];
+  float z;
+ 
+  if (luniformz)
+    z = (k + dk) * dz;
+  else if (lconstantz)
+    z = height[k+dk];
+  else
+    z = height[ixz];
+
 
   val = (values[ixz] - valmin) / (valmax - valmin);
 

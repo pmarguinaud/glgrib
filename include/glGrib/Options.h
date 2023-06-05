@@ -1355,6 +1355,10 @@ public:
     DESC (contour.skipmax, Max number of points to skip);
     DESC (wireframe.on, Enable wireframe mode);
     DESC_H (debug.on, Debug);
+    DESC (height.constant.on, Enable constant height);
+    DESC (height.constant.levels, Levels for constant height);
+    DESC (height.uniform.on, Enable uniform height);
+    DESC (height.uniform.dz, Uniform height increment);
   }
 
   bool on = false;
@@ -1374,6 +1378,19 @@ public:
   {
     bool on = false;
   } debug;
+  struct
+  {
+    struct
+    {
+      std::vector<float> levels;
+      bool on = false;
+    } constant;
+    struct
+    {
+      float dz = 0.05f;
+      bool on = false;
+    } uniform;
+  } height;
 };
 
 class OptionsLandscapePosition : public OptionsBase

@@ -29,6 +29,10 @@ void VCut::render (const View & view, const OptionsLight & light) const
   program->set ("valmin", meta.valmin);
   program->set ("valmax", meta.valmax);
 
+  program->set ("dz", opts.height.uniform.dz);
+  program->set ("luniformz", opts.height.uniform.on);
+  program->set ("lconstantz", opts.height.constant.on);
+
   glDisable (GL_CULL_FACE);
 
   if (opts.wireframe.on)
@@ -52,7 +56,8 @@ void VCut::setupVertexAttributes () const
 {
   lonlatbuffer->bind (GL_SHADER_STORAGE_BUFFER, vcutLonLat_idx);
   valuesbuffer->bind (GL_SHADER_STORAGE_BUFFER, vcutValues_idx);
-  heightbuffer->bind (GL_SHADER_STORAGE_BUFFER, vcutHeight_idx);
+  if (! opts.height.uniform.on)
+    heightbuffer->bind (GL_SHADER_STORAGE_BUFFER, vcutHeight_idx);
 }
 
 void VCut::setup (Loader * ld, const OptionsVCut & o)
@@ -313,9 +318,18 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
   Nz = opts.path.size ();
   valuesbuffer = OpenGLBufferPtr<float> (Nx * Nz);
-  heightbuffer = OpenGLBufferPtr<float> (Nx * Nz);
+
+  if (opts.height.constant.on)
+    heightbuffer = OpenGLBufferPtr<float> (Nz);
+  else if (! opts.height.uniform.on)
+    heightbuffer = OpenGLBufferPtr<float> (Nx * Nz);
+  else
+    heightbuffer = OpenGLBufferPtr<float> (0);
+
   auto values = valuesbuffer->map ();
   auto height = heightbuffer->map ();
+
+  bool heightgrid = (! opts.height.uniform.on) && (! opts.height.constant.on);
 
   // Setup values & height
   for (int k = 0; k < Nz; k++)
@@ -339,6 +353,23 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       if (! geometry->isEqual (*geometry_k))
         throw std::runtime_error (std::string ("Geometry mismatch"));
 
+      if (opts.height.constant.on)
+        {
+          const int l = opts.height.constant.levels.size ();
+	  if (k < l)
+            {
+              height[k] = opts.height.constant.levels[k];
+	    }
+	  else if (l >= 2)
+            {
+              height[k] = 2 * opts.height.constant.levels[l-1] - opts.height.constant.levels[l-2];
+	    }
+	  else
+            {
+              height[k] = k * 0.05f;
+            }
+	} 
+
       float z = static_cast<float> (k) / static_cast<float> (Nz - 1);
 #pragma omp parallel for if (! dbg)
       for (int n = 0; n < N; n++)
@@ -358,7 +389,8 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
               if (c.isNull ())
                 {
                   values[j+i] = 0.0f;
-                  height[j+i] = 0.0f;
+                  if (heightgrid)
+                    height[j+i] = 0.0f;
                 }
               else
                 {
@@ -387,7 +419,8 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 		    {
                       values[j+i] = (1.0f - c.a) * data_k[c.jgloA] + c.a * data_k[c.jgloB];
 		    }
-                  height[j+i] = z * (0.1f + (1.0f - x) * x);
+                  if (heightgrid)
+                    height[j+i] = z * (0.1f + (1.0f - x) * x);
                 }
 	    }
         }

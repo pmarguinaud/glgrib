@@ -1,20 +1,21 @@
 
 #include "version.h"
+#include "vcut.h"
 
 
 const float pi = 3.1415927;
 
-layout (std430, binding=1) buffer vcutLonLat
+layout (std430, binding=vcutLonLat_idx) buffer vcutLonLat
 {
   float lonlat[];
 };
 
-layout (std430, binding=2) buffer vcutValue
+layout (std430, binding=vcutValues_idx) buffer vcutValues
 {
   float values[];
 };
 
-layout (std430, binding=3) buffer vcutHeight
+layout (std430, binding=vcutHeight_idx) buffer vcutHeight
 {
   float height[];
 };

@@ -3,6 +3,8 @@
 #include "glGrib/OpenGL.h"
 #include "glGrib/Contour.h"
 
+#include "shaders/include/vcut.h"
+
 #include <stdio.h>
 
 namespace glGrib
@@ -48,9 +50,9 @@ void VCut::render (const View & view, const OptionsLight & light) const
 
 void VCut::setupVertexAttributes () const
 {
-  lonlatbuffer->bind (GL_SHADER_STORAGE_BUFFER, 1);
-  valuesbuffer->bind (GL_SHADER_STORAGE_BUFFER, 2);
-  heightbuffer->bind (GL_SHADER_STORAGE_BUFFER, 3);
+  lonlatbuffer->bind (GL_SHADER_STORAGE_BUFFER, vcutLonLat_idx);
+  valuesbuffer->bind (GL_SHADER_STORAGE_BUFFER, vcutValues_idx);
+  heightbuffer->bind (GL_SHADER_STORAGE_BUFFER, vcutHeight_idx);
 }
 
 void VCut::setup (Loader * ld, const OptionsVCut & o)

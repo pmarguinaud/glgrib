@@ -89,7 +89,7 @@ const OptionColor hsva2rgba (const hsva_t & hsva)
 }
 
 Palette::Palette (const OptionsPalette & o,  
-                          float min, float max)
+                  float min, float max)
 {
   createByOpts (o, min, max);
   computergba_255 ();

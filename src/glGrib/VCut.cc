@@ -223,13 +223,40 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
   if (! opts.on)
     return;
 
-  const int N = std::min (opts.lon.size (), opts.lat.size ()) - 1;
+
+  const float skip = 4 * 360.f;
+
+  int n = std::min (opts.lon.size (), opts.lat.size ()), m = n;
+
+  for (int i = 0; i < m; i++)
+    if (opts.lat[i] > skip)
+      n--;
+
+  const int N = n-1;
 
   if (N < 1)
     {
       opts.on = false;
       return;
     }
+
+  std::vector<float> lat1, lat2, lon1, lon2;
+
+  lat1.reserve (N); lat2.reserve (N); lon1.reserve (N); lon2.reserve (N);
+
+  for (int i = 0; i < m-1; i++)
+    {
+      const int i1 = i+0;
+      const int i2 = i+1;
+      const bool ok1 = opts.lat[i1] < skip;
+      const bool ok2 = opts.lat[i2] < skip;
+      if (ok1 && ok2)
+        {
+          lat1.push_back (opts.lat[i1] * deg2rad); lon1.push_back (opts.lon[i1] * deg2rad);
+          lat2.push_back (opts.lat[i2] * deg2rad); lon2.push_back (opts.lon[i2] * deg2rad);
+	}
+    }
+
 
   std::vector<vcut_helper> isoh (N);
 
@@ -247,11 +274,12 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
   for (int n = 0; n < N; n++)
     {
       if (dbg) printf (" n = %d\n", n);
-      float lon1 = deg2rad * opts.lon[n], lon2 = deg2rad * opts.lon[n+1];
-      float lat1 = deg2rad * opts.lat[n], lat2 = deg2rad * opts.lat[n+1];
+
+//    float lon1 = deg2rad * opts.lon[n], lon2 = deg2rad * opts.lon[n+1];
+//    float lat1 = deg2rad * opts.lat[n], lat2 = deg2rad * opts.lat[n+1];
      
-      glm::vec3 xyz1 = lonlat2xyz (lon1, lat1);
-      glm::vec3 xyz2 = lonlat2xyz (lon2, lat2);
+      glm::vec3 xyz1 = lonlat2xyz (lon1[n], lat1[n]);
+      glm::vec3 xyz2 = lonlat2xyz (lon2[n], lat2[n]);
       glm::vec3 normal = glm::cross (xyz1, xyz2);
 
       float length = glm::length (normal);

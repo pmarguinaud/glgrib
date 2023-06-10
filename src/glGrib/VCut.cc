@@ -32,6 +32,7 @@ void VCut::render (const View & view, const OptionsLight & light) const
   program->set ("dz", opts.height.uniform.dz);
   program->set ("luniformz", opts.height.uniform.on);
   program->set ("lconstantz", opts.height.constant.on);
+  program->set ("scale", opts.scale);
 
   glDisable (GL_CULL_FACE);
 

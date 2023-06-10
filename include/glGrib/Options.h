@@ -1351,6 +1351,7 @@ public:
     DESC (lat, List of latitudes);
     DESC (lon, List of longitudes);
     DESC (path, List of GRIB files);
+    DESC (scale, Scale);
     DESC (contour.fracdx, Fraction of dx required to keep points);
     DESC (contour.skipmax, Max number of points to skip);
     DESC (wireframe.on, Enable wireframe mode);
@@ -1366,6 +1367,7 @@ public:
   std::vector<float> lat;
   std::vector<float> lon;
   std::vector<OptionFieldRef> path;
+  float scale = 1.0f;
   struct
   {
     float fracdx = 0.4f;

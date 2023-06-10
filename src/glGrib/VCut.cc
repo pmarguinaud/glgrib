@@ -88,7 +88,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     vcut_helper () 
     {
     }
-    void init (const glm::vec3 & _xyz1, const glm::vec3 & _xyz2, float _fracDx, int _skipMax, bool _dbg = false)
+    void init (const glm::vec3 & _xyz1, const glm::vec3 & _xyz2, float _fracDx, int _skipMax, bool _rough, bool _dbg = false)
     {
       xyz1 = _xyz1;
       xyz2 = _xyz2;
@@ -97,6 +97,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       A = glm::inverse (glm::mat3 (xyz1, xyz2, normal));
       fracDx = _fracDx;
       skipMax = _skipMax;
+      rough = _rough;
       dbg = _dbg;
     }
     void start ()
@@ -116,9 +117,17 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 	}
 
       // Interpolate point; use a linear approximation (easier & cheaper than real calculation)
-      glm::vec3 xyz = (1.0f - a) * xyzA + a * xyzB;
-
-      xyz = xyz / glm::length (xyz);
+      glm::vec3 xyz;
+     
+      if (rough)
+        {
+          xyz = a > 0.5f ? xyzB : xyzA;
+	}
+      else
+        {
+          xyz = (1.0f - a) * xyzA + a * xyzB;
+          xyz = xyz / glm::length (xyz);
+        }
 
       // check vector is between xyz1 & xyz2
       glm::vec3 c12n = A * xyz;
@@ -216,6 +225,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     float lastDx = 0.0f;
     int skip = 0;
     int skipMax = 3;
+    bool rough = false;
   };
 
   // Start here
@@ -275,9 +285,6 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     {
       if (dbg) printf (" n = %d\n", n);
 
-//    float lon1 = deg2rad * opts.lon[n], lon2 = deg2rad * opts.lon[n+1];
-//    float lat1 = deg2rad * opts.lat[n], lat2 = deg2rad * opts.lat[n+1];
-     
       glm::vec3 xyz1 = lonlat2xyz (lon1[n], lat1[n]);
       glm::vec3 xyz2 = lonlat2xyz (lon2[n], lat2[n]);
       glm::vec3 normal = glm::cross (xyz1, xyz2);
@@ -288,7 +295,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
       normal = normal / length;
      
-      isoh[n].init (xyz1, xyz2, opts.contour.fracdx, opts.contour.skipmax, dbg);
+      isoh[n].init (xyz1, xyz2, opts.contour.fracdx, opts.contour.skipmax, opts.rough.on, dbg);
       
       // Scalar product with normal vector : subdivide the sphere in two parts
       auto val = [&normal,this] (int jglo)
@@ -445,7 +452,18 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 		  // Regular point
 		  else
 		    {
-                      values[j+i] = (1.0f - c.a) * data_k[c.jgloA] + c.a * data_k[c.jgloB];
+                      float aA, aB;
+                      if (opts.rough.on)
+                        {
+                          aA = c.a > 0.5f ? 0.f : 1.f;
+		          aB = c.a > 0.5f ? 1.f : 0.f;
+			}
+		      else
+                        {
+                          aA = 1.0f - c.a;
+			  aB = c.a;
+			}
+                      values[j+i] = aA * data_k[c.jgloA] + aB * data_k[c.jgloB];
 		    }
                   if (heightgrid)
                     height[j+i] = z * (0.1f + (1.0f - x) * x);

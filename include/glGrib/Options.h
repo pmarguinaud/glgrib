@@ -1359,6 +1359,7 @@ public:
     DESC (height.constant.levels, Levels for constant height);
     DESC (height.uniform.on, Enable uniform height);
     DESC (height.uniform.dz, Uniform height increment);
+    DESC (rough.on, Follow grid);
   }
 
   bool on = false;
@@ -1391,6 +1392,10 @@ public:
       bool on = false;
     } uniform;
   } height;
+  struct
+  {
+    bool on = false;
+  } rough;
 };
 
 class OptionsLandscapePosition : public OptionsBase

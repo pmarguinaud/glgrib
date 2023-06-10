@@ -88,17 +88,14 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     vcut_helper () 
     {
     }
-    void init (const glm::vec3 & _xyz1, const glm::vec3 & _xyz2, float _fracDx, int _skipMax, bool _rough, bool _dbg = false)
+    void init (const glm::vec3 & _xyz1, const glm::vec3 & _xyz2, const OptionsVCut & _opts)
     {
       xyz1 = _xyz1;
       xyz2 = _xyz2;
       glm::vec3 normal = glm::cross (xyz1, xyz2);
       normal = glm::normalize (normal);
       A = glm::inverse (glm::mat3 (xyz1, xyz2, normal));
-      fracDx = _fracDx;
-      skipMax = _skipMax;
-      rough = _rough;
-      dbg = _dbg;
+      opts = &_opts;
     }
     void start ()
     {
@@ -112,14 +109,14 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       // Insert discontinuity marker
       if (first && (coords.size () > 0) && (! coords.back ().isNull ()))
         {
-          if (dbg) printf (" first \n");
+          if (opts->debug.on) printf (" first \n");
           coords.push_back (vcut_coords ());
 	}
 
       // Interpolate point; use a linear approximation (easier & cheaper than real calculation)
       glm::vec3 xyz;
      
-      if (rough)
+      if (opts->rough.on)
         {
           xyz = a > 0.5f ? xyzB : xyzA;
 	}
@@ -137,7 +134,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
           // First point : see whether starting/ending point of arc belong to this triangle
           if (first)
             look4end (xyzA, xyzB, xyzC, jgloA, jgloB, jgloC);
-          if (dbg)
+          if (opts->debug.on)
           printf (" %5d | %5d %5d | %12.4f | (%12.4f,%12.4f,%12.4f) - (%12.4f,%12.4f,%12.4f)\n",
                   static_cast<int>(coords.size ()), jgloA, jgloB, a, xyzA.x, xyzA.y, xyzA.z, xyzB.x, xyzB.y, xyzB.z);
 
@@ -153,7 +150,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 	  }();
 
 	  // Current space is enough OR we already have skipped too many points
-	  if ((dx >= lastDx * fracDx) || (skip > skipMax))
+	  if ((dx >= lastDx * opts->contour.fracdx) || (skip > opts->contour.skipmax))
             {
               coords.push_back (vcut_coords (jgloA, jgloB, jgloC, a, xyz));
               lastDx = dx;
@@ -181,7 +178,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       if ((n > 0) && (coords[n-1].jgloA < 0))
         return;
       coords.push_back (vcut_coords ());
-      if (dbg) printf ("----------------------------------------------------------------------------------\n");
+      if (opts->debug.on) printf ("----------------------------------------------------------------------------------\n");
 
     }
     const std::vector<vcut_coords> & getCoords () const
@@ -208,24 +205,21 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       if ((c1ABC.x >= 0.0f) && (c1ABC.y >= 0.0f) && (c1ABC.z > 0.0f))
         {
           coords.push_back (vcut_coords (jgloA, jgloB, jgloC, -1.0f, xyz1));
-          if (dbg) printf ("  Found #1 !\n");
+          if (opts->debug.on) printf ("  Found #1 !\n");
 	}
       if ((c2ABC.x >= 0.0f) && (c2ABC.y >= 0.0f) && (c2ABC.z > 0.0f))
         {
           coords.push_back (vcut_coords (jgloA, jgloB, jgloC, -1.0f, xyz2));
-          if (dbg) printf ("  Found #2 !\n");
+          if (opts->debug.on) printf ("  Found #2 !\n");
 	}
     }
     glm::mat3 A;
     glm::vec3 xyz1, xyz2;
     std::vector<vcut_coords> coords;
     bool first;
-    bool dbg = false;
-    float fracDx = 0.4f;
     float lastDx = 0.0f;
     int skip = 0;
-    int skipMax = 3;
-    bool rough = false;
+    const OptionsVCut * opts = nullptr;
   };
 
   // Start here
@@ -295,7 +289,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
       normal = normal / length;
      
-      isoh[n].init (xyz1, xyz2, opts.contour.fracdx, opts.contour.skipmax, opts.rough.on, dbg);
+      isoh[n].init (xyz1, xyz2, opts);
       
       // Scalar product with normal vector : subdivide the sphere in two parts
       auto val = [&normal,this] (int jglo)

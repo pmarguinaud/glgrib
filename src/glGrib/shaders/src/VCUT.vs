@@ -72,7 +72,7 @@ void main()
     z = height[ixz];
 
 
-  val = (values[ixz] - valmin) / (valmax - valmin);
+  val = values[ixz];
 
   float lon = lonlat[2*(i+di)+0];
   float lat = lonlat[2*(i+di)+1];

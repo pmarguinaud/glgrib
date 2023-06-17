@@ -468,6 +468,12 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
     }
 
+#pragma omp parallel for 
+  for (int i = 0; i < Nx * Nz; i++)
+    {
+      values[i] = (values[i] - meta.valmin) / (meta.valmax - meta.valmin);
+    }
+
   setReady ();
 }
 

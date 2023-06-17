@@ -28,7 +28,6 @@ uniform float valmin, valmax;
 uniform float dz = 0.05f;
 uniform bool luniformz = true;
 uniform bool lconstantz = false;
-uniform float scale = 1.0f;
 
 out float val;
 out float skip;
@@ -87,7 +86,7 @@ void main()
   vec3 vertexPos = posFromLonLat (vec2 (lon, lat));
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);
-  pos = scalePosition (pos, normedPos, scale * (1 + z));
+  pos = scalePosition (pos, normedPos, scale0 * (1 + z));
 
   gl_Position = MVP * vec4 (pos, 1);
 

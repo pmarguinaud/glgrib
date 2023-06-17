@@ -3,8 +3,6 @@
 #include "vcut.h"
 
 
-const float pi = 3.1415927;
-
 layout (std430, binding=vcutLonLat_idx) buffer vcutLonLat
 {
   float lonlat[];
@@ -19,6 +17,10 @@ layout (std430, binding=vcutHeight_idx) buffer vcutHeight
 {
   float height[];
 };
+
+#include "schmidt.h"
+#include "projection.h"
+#include "scale.h"
 
 uniform mat4 MVP;
 uniform int Nx, Nz;
@@ -82,15 +84,11 @@ void main()
       return;
     }
 
-  float coslon = cos (lon), sinlon = sin (lon);
-  float coslat = cos (lat), sinlat = sin (lat);
+  vec3 vertexPos = posFromLonLat (vec2 (lon, lat));
+  vec3 normedPos = compNormedPos (vertexPos);
+  vec3 pos = compProjedPos (vertexPos, normedPos);
+  pos = scalePosition (pos, normedPos, scale * (1 + z));
 
-  vec3 vertexPos = vec3 (coslon * coslat, sinlon * coslat, sinlat);
-
-  vertexPos = (1 + z) * vertexPos;
-
-  vertexPos = vertexPos * scale;
-
-  gl_Position = MVP * vec4 (vertexPos, 1);
+  gl_Position = MVP * vec4 (pos, 1);
 
 }

@@ -1352,6 +1352,7 @@ public:
   DEFINE
   {
     DESC (on, Enable vertical cut);
+    INCLUDE_N (palette, Points palette);
     DESC (lat, List of latitudes);
     DESC (lon, List of longitudes);
     DESC (path, List of GRIB files);
@@ -1368,6 +1369,7 @@ public:
   }
 
   bool on = false;
+  OptionsPalette palette = OptionsPalette ("none");
   std::vector<float> lat;
   std::vector<float> lon;
   std::vector<OptionFieldRef> path;

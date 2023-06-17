@@ -1113,6 +1113,8 @@ public:
     DESC (fatal.on,        Fatal error if field fails to be created);
 
     INCLUDE_N (missing,    Handle some values as missing);
+
+    DESC (slot,            Field slot);
   }
   std::set<std::string> seen;
 
@@ -1158,6 +1160,8 @@ public:
   {
     bool on = false;
   } fatal;
+
+  float slot = 0.0f;
 };
 
 

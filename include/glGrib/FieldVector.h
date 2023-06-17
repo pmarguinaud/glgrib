@@ -10,7 +10,7 @@ class FieldVector : public FieldPacked<8>
 {
 public:
   explicit FieldVector (const Field::Privatizer) : scalar (this), vector (this) { }
-  void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
+  void setup (const Field::Privatizer, Loader *, const OptionsField &) override;
   FieldVector (const FieldVector &) = delete;
 
   using T = typename FieldPackingType<8>::type;

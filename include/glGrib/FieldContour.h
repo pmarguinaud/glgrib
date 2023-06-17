@@ -10,7 +10,7 @@ class FieldContour : public Field
 {
 public:
   explicit FieldContour (const Field::Privatizer) { }
-  void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
+  void setup (const Field::Privatizer, Loader *, const OptionsField &) override;
   Field::kind getKind () const 
   {
     return Field::CONTOUR;

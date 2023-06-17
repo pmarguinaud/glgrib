@@ -49,7 +49,7 @@ class Field : public World
 {
 public:
 
-  static Field * create (const OptionsField &, float, Loader *);
+  static Field * create (const OptionsField &, Loader *);
   Field (const Field &) = delete;
 
   typedef enum
@@ -157,7 +157,7 @@ public:
  
   float getSlot () const
   {
-    return slot;
+    return opts.slot;
   }
 
   void saveOptions () const;
@@ -177,7 +177,7 @@ private:
 
   static void getUserPref (OptionsField *, Loader *, int);
 
-  virtual void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) = 0;
+  virtual void setup (const Field::Privatizer, Loader *, const OptionsField &) = 0;
   void setupHilo (BufferPtr<float>);
   void renderHilo (const View &) const;
   void renderFrame (const View & view) const 
@@ -220,7 +220,6 @@ private:
 
 private:
   int frameNumber = 0;
-  float slot = 0.0f;
   Palette palette;
   mutable OptionsField opts;
   std::vector<FieldMetadata> meta;

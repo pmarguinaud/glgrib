@@ -276,7 +276,10 @@ void Scene::updateInterpolation ()
         slot = slotmax;
 
       for (size_t j = 0; j < fieldlist.size (); j++)
-        setFieldOptions (j, d.opts.field[j], slot);
+        {
+          d.opts.field[j].slot = slot;
+          setFieldOptions (j, d.opts.field[j]);
+	}
     }
 }
 
@@ -554,12 +557,12 @@ void Scene::setGeoPointsOptions (int j, const OptionsGeoPoints & o)
   geopointslist[j]->setup (o);
 }
 
-void Scene::setFieldOptions (int j, const OptionsField & o, float slot)
+void Scene::setFieldOptions (int j, const OptionsField & o)
 {
   if (fieldlist[j] != nullptr)
     delete fieldlist[j];
 
-  fieldlist[j] = Field::create (o, slot, &ld);
+  fieldlist[j] = Field::create (o, &ld);
 
   if (d.opts.scene.center.on)
     centerOnCurrentField ();

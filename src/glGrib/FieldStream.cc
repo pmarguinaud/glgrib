@@ -86,7 +86,7 @@ void FieldStream::streamline_t::setup
   d.size = stream_data.size () - 1;
 }
 
-void FieldStream::setup (const Field::Privatizer, Loader * ld, const OptionsField & o, float slot)
+void FieldStream::setup (const Field::Privatizer, Loader * ld, const OptionsField & o)
 {
   opts = o;
 
@@ -96,10 +96,10 @@ void FieldStream::setup (const Field::Privatizer, Loader * ld, const OptionsFiel
   FieldMetadata meta_n, meta_d;
 
   BufferPtr<float> data_u, data_v;
-  ld->load (&data_u, opts.path, opts.geometry, slot, &meta_u, 2, 0);
-  ld->load (&data_v, opts.path, opts.geometry, slot, &meta_v, 2, 1);
+  ld->load (&data_u, opts.path, opts.geometry, opts.slot, &meta_u, 2, 0);
+  ld->load (&data_v, opts.path, opts.geometry, opts.slot, &meta_v, 2, 1);
 
-  setGeometry (Geometry::load (ld, opts.path[int (2 * slot)], opts.geometry));
+  setGeometry (Geometry::load (ld, opts.path[int (2 * opts.slot)], opts.geometry));
 
   BufferPtr<float> data_n, data_d;
 

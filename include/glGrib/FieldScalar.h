@@ -10,7 +10,7 @@ class FieldScalar : public FieldPacked<N>
 {
 public:
   explicit FieldScalar (const Field::Privatizer) : scalar (this), points (this) { }
-  void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
+  void setup (const Field::Privatizer, Loader *, const OptionsField &) override;
   FieldScalar (const FieldScalar &) = delete;
 
   using T = typename FieldPackingType<N>::type;

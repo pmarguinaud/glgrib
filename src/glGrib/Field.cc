@@ -168,7 +168,7 @@ found:
   *opts = opts_sql;
 }
 
-glGrib::Field * glGrib::Field::create (const glGrib::OptionsField & opts, float slot, glGrib::Loader * ld)
+glGrib::Field * glGrib::Field::create (const glGrib::OptionsField & opts, glGrib::Loader * ld)
 {
   glGrib::Field * fld = nullptr;
 
@@ -181,7 +181,7 @@ glGrib::Field * glGrib::Field::create (const glGrib::OptionsField & opts, float 
       glGrib::OptionsField opts1 = opts;
      
       if (opts.user_pref.on)
-        getUserPref (&opts1, ld, slot);
+        getUserPref (&opts1, ld, opts.slot);
      
      
       std::string type = opts1.type;
@@ -213,8 +213,7 @@ glGrib::Field * glGrib::Field::create (const glGrib::OptionsField & opts, float 
       else
         throw std::runtime_error (std::string ("Unknown field type : ") + type);
      
-      fld->setup (priv, ld, opts1, slot);
-      fld->slot = slot;
+      fld->setup (priv, ld, opts1);
     }
   catch (const std::runtime_error & e)
     {

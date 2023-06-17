@@ -9,7 +9,7 @@ class FieldIsoFill : public FieldPacked<8>
 {
 public:
   explicit FieldIsoFill (const Field::Privatizer) : d (this) { }
-  void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
+  void setup (const Field::Privatizer, Loader *, const OptionsField &) override;
   Field::kind getKind () const 
   {
     return Field::ISOFILL;

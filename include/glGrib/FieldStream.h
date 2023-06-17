@@ -10,7 +10,7 @@ class FieldStream : public Field
 {
 public:
   explicit FieldStream (const Field::Privatizer) { }
-  void setup (const Field::Privatizer, Loader *, const OptionsField &, float = 0) override;
+  void setup (const Field::Privatizer, Loader *, const OptionsField &) override;
   FieldStream (const FieldStream &) = delete;
   Field::kind getKind () const 
   {

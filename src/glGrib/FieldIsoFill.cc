@@ -289,19 +289,19 @@ void processTriangle1 (std::vector<isoband_maker_t> * isomake,
 
 }
 
-void FieldIsoFill::setup (const Field::Privatizer, Loader * ld, const OptionsField & o, float slot)
+void FieldIsoFill::setup (const Field::Privatizer, Loader * ld, const OptionsField & o)
 {
 
   opts = o;
 
   FieldMetadata meta1;
   BufferPtr<float> data;
-  ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on);
+  ld->load (&data, opts.path, opts.geometry, opts.slot, &meta1, 1, 0, opts.diff.on);
   meta.push_back (meta1);
 
   palette = Palette (opts.palette, getNormedMinValue (), getNormedMaxValue ());
 
-  setGeometry (Geometry::load (ld, opts.path[int (slot)], opts.geometry));
+  setGeometry (Geometry::load (ld, opts.path[int (opts.slot)], opts.geometry));
 
   const auto & geometry = getGeometry ();
   int size = geometry->size ();

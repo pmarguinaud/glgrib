@@ -221,7 +221,7 @@ public:
   }
   void setGeoPointsOptions (int, const OptionsGeoPoints &);
 
-  void setFieldOptions (int, const OptionsField &, float = 0);
+  void setFieldOptions (int, const OptionsField &);
   void setFieldPaletteOptions (int, const OptionsPalette &);
   void setGridColorOptions (const OptionColor &);
   void setGridScaleOptions (float);

@@ -90,8 +90,9 @@ void WindowSet::updateWindows ()
       auto fopts = opts.field[rank];
 
       float slot = std::max (0.0f, std::min (float (f->getSlotMax ()-1), f->getSlot ()+d));
+      fopts.slot = slot;
 
-      w->getScene ().setFieldOptions (rank, fopts, slot);
+      w->getScene ().setFieldOptions (rank, fopts);
 
     }
 }

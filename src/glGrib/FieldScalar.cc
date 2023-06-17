@@ -179,7 +179,7 @@ static void widenRegion (const std::vector<float> & values, const std::vector<in
 }
 
 template <int N>
-void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsField & o, float slot)
+void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsField & o)
 {
   auto & opts = this->opts;
   auto & palette = this->palette;
@@ -189,12 +189,12 @@ void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsF
   FieldMetadata meta1;
 
   BufferPtr<float> data;
-  ld->load (&data, opts.path, opts.geometry, slot, &meta1, 1, 0, opts.diff.on, opts.missing);
+  ld->load (&data, opts.path, opts.geometry, opts.slot, &meta1, 1, 0, opts.diff.on, opts.missing);
   this->meta.push_back (meta1);
 
   palette = Palette (opts.palette, this->getNormedMinValue (), this->getNormedMaxValue ());
 
-  this->setGeometry (Geometry::load (ld, opts.path[int (slot)], opts.geometry));
+  this->setGeometry (Geometry::load (ld, opts.path[int (opts.slot)], opts.geometry));
 
   if (opts.hilo.on)
     this->setupHilo (data);
@@ -235,7 +235,7 @@ void FieldScalar<N>::setup (const Field::Privatizer, Loader * ld, const OptionsF
   this->createMask (ld);
 
   if (opts.mpiview.on)
-    setupMpiView (ld, o, slot);
+    setupMpiView (ld, o, opts.slot);
 
   if (opts.no_value_pointer.on)
     clear (data);

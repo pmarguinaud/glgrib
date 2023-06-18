@@ -2,7 +2,6 @@
 #include "version.h"
 
 in float val;
-in float skip;
 out vec4 color;
 
 in
@@ -16,7 +15,7 @@ uniform vec4 colormax, colormin;
 
 void main()
 {
-  if (skip > 0.0f)
+  if (scalar_vs.missingFlag > 0.0f)
     {
       discard;
     }

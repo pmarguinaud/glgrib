@@ -32,7 +32,6 @@ uniform bool luniformz = true;
 uniform bool lconstantz = false;
 
 out float val;
-out float skip;
 
 void main()
 {
@@ -40,7 +39,6 @@ void main()
   int j = gl_VertexID;
   int k = gl_InstanceID / (Nx - 1);
 
-  skip = 0.0f;
   val = 0.0f;
 
   int di = 0, dk = 0;
@@ -82,20 +80,20 @@ void main()
   float lon = lonlat[2*(i+di)+0];
   float lat = lonlat[2*(i+di)+1];
 
+
   if (lat > pi)
     {
-      skip = 1.0f;
-      return;
+      scalar_vs.missingFlag = 1.0f;
     }
-
-  vec3 vertexPos = posFromLonLat (vec2 (lon, lat));
-  vec3 normedPos = compNormedPos (vertexPos);
-  vec3 pos = compProjedPos (vertexPos, normedPos);
-  pos = scalePosition (pos, normedPos, scale0 * (1 + z));
-
-  scalar_vs.fragmentPos = normedPos;
-  scalar_vs.missingFlag = skip > 0.0f ? 1. : 0.;
-
-  gl_Position = MVP * vec4 (pos, 1);
+  else
+    {
+      vec3 vertexPos = posFromLonLat (vec2 (lon, lat));
+      vec3 normedPos = compNormedPos (vertexPos);
+      vec3 pos = compProjedPos (vertexPos, normedPos);
+      pos = scalePosition (pos, normedPos, scale0 * (1 + z));
+      scalar_vs.missingFlag = 0.0f;
+      scalar_vs.fragmentPos = normedPos;
+      gl_Position = MVP * vec4 (pos, 1);
+    }
 
 }

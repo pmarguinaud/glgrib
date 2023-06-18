@@ -1,4 +1,3 @@
-
 #include "version.h"
 #include "vcut.h"
 
@@ -31,15 +30,13 @@ uniform float dz = 0.05f;
 uniform bool luniformz = true;
 uniform bool lconstantz = false;
 
-out float val;
-
 void main()
 {
   int i = gl_InstanceID % (Nx - 1);
   int j = gl_VertexID;
   int k = gl_InstanceID / (Nx - 1);
 
-  val = 0.0f;
+  float val = 0.0f;
 
   int di = 0, dk = 0;
 
@@ -93,6 +90,8 @@ void main()
       pos = scalePosition (pos, normedPos, scale0 * (1 + z));
       scalar_vs.missingFlag = 0.0f;
       scalar_vs.fragmentPos = normedPos;
+      scalar_vs.fragmentVal = val;
+      scalar_vs.fragmentMPI = 0.0f;
       gl_Position = MVP * vec4 (pos, 1);
     }
 

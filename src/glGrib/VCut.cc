@@ -29,9 +29,6 @@ void VCut::render (const View & view, const OptionsLight & light) const
   program->set ("Nx", Nx);
   program->set ("Nz", Nz);
 
-  program->set ("colormax", glm::vec4 (1.0f, 0.0f, 0.0f, 1.0f));
-  program->set ("colormin", glm::vec4 (0.0f, 0.0f, 1.0f, 1.0f));
-
   program->set ("valmin", meta.valmin);
   program->set ("valmax", meta.valmax);
   program->set ("palmin", palette.getMin ());

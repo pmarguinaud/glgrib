@@ -1,5 +1,5 @@
 
-#version 440 core
+#include "version.h"
 
 layout(location = 0) in vec2  vertexLonLat;
 layout(location = 1) in float vertexVal;

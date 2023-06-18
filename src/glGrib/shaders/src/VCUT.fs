@@ -1,13 +1,9 @@
-
 #include "version.h"
 
-in float val;
 out vec4 color;
 
 in
 #include "SCALAR_VS.h"
-
-uniform vec4 colormax, colormin;
 
 #include "unpack.h"
 #include "enlight.h"
@@ -21,6 +17,7 @@ void main()
     }
   else
     {
-      color = colormax * val + (1.0f - val) * colormin;
+      color = enlightFragment (scalar_vs.fragmentPos, scalar_vs.fragmentVal, 
+                               scalar_vs.missingFlag, scalar_vs.fragmentValFlat);
     }
 }

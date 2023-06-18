@@ -22,9 +22,11 @@ layout (std430, binding=vcutHeight_idx) buffer vcutHeight
 #include "projection.h"
 #include "scale.h"
 
+out 
+#include "SCALAR_VS.h"
+
 uniform mat4 MVP;
 uniform int Nx, Nz;
-uniform float valmin, valmax;
 uniform float dz = 0.05f;
 uniform bool luniformz = true;
 uniform bool lconstantz = false;
@@ -74,6 +76,9 @@ void main()
 
   val = values[ixz];
 
+  scalar_vs.fragmentValFlat = val;
+  scalar_vs.fragmentMPIFlat = 0.0f;
+
   float lon = lonlat[2*(i+di)+0];
   float lat = lonlat[2*(i+di)+1];
 
@@ -87,6 +92,9 @@ void main()
   vec3 normedPos = compNormedPos (vertexPos);
   vec3 pos = compProjedPos (vertexPos, normedPos);
   pos = scalePosition (pos, normedPos, scale0 * (1 + z));
+
+  scalar_vs.fragmentPos = normedPos;
+  scalar_vs.missingFlag = skip > 0.0f ? 1. : 0.;
 
   gl_Position = MVP * vec4 (pos, 1);
 

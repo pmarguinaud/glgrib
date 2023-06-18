@@ -6,6 +6,7 @@
 #include "glGrib/Options.h"
 #include "glGrib/Loader.h"
 #include "glGrib/Geometry.h"
+#include "glGrib/Palette.h"
 
 namespace glGrib
 {
@@ -35,6 +36,7 @@ private:
   int Nx = -1, Nz = -1;
   const_GeometryPtr geometry;
   FieldMetadata meta;
+  Palette palette;
 };
 
 

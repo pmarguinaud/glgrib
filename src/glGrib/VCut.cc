@@ -2,6 +2,7 @@
 #include "glGrib/Trigonometry.h"
 #include "glGrib/OpenGL.h"
 #include "glGrib/Contour.h"
+#include "glGrib/Palette.h"
 
 #include "shaders/include/vcut.h"
 
@@ -18,16 +19,23 @@ void VCut::render (const View & view, const OptionsLight & light) const
   if ((Nx < 0) || (Nz < 0))
     return;
 
+  const auto & palette = this->palette;
+
   Program * program = Program::load ("VCUT");
   program->use (); 
 
   view.setMVP (program);
+  palette.set (program);
   program->set ("Nx", Nx);
   program->set ("Nz", Nz);
+
   program->set ("colormax", glm::vec4 (1.0f, 0.0f, 0.0f, 1.0f));
   program->set ("colormin", glm::vec4 (0.0f, 0.0f, 1.0f, 1.0f));
+
   program->set ("valmin", meta.valmin);
   program->set ("valmax", meta.valmax);
+  program->set ("palmin", palette.getMin ());
+  program->set ("palmax", palette.getMax ());
 
   program->set ("dz", opts.height.uniform.dz);
   program->set ("luniformz", opts.height.uniform.on);
@@ -468,12 +476,15 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
     }
 
+  palette = Palette (opts.palette, meta.valmin, meta.valmax);
+
 #pragma omp parallel for 
   for (int i = 0; i < Nx * Nz; i++)
     {
       float val = (values[i] - meta.valmin) / (meta.valmax - meta.valmin);
       values[i] = (1.0f + val * 255.0f) / 256.0f;
     }
+
 
   setReady ();
 }

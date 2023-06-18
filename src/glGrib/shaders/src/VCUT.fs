@@ -5,8 +5,14 @@ in float val;
 in float skip;
 out vec4 color;
 
+in
+#include "SCALAR_VS.h"
 
 uniform vec4 colormax, colormin;
+
+#include "unpack.h"
+#include "enlight.h"
+
 
 void main()
 {

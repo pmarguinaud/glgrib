@@ -11,6 +11,26 @@
 namespace glGrib
 {
 
+namespace
+{
+
+template <int N>
+int intPow (int x)
+{
+  return x * intPow<N-1> (x);
+}
+
+template <>
+int intPow<0> (int x)
+{
+  return 1;
+}
+
+const int bits = 16;
+const int Nmax = intPow<bits> (2);
+
+}
+
 void VCut::render (const View & view, const OptionsLight & light) const
 {
   if (! opts.on)
@@ -38,6 +58,7 @@ void VCut::render (const View & view, const OptionsLight & light) const
   program->set ("luniformz", opts.height.uniform.on);
   program->set ("lconstantz", opts.height.constant.on);
   program->set ("scale0", opts.scale);
+  program->set ("Nmax", Nmax-1);
 
   glDisable (GL_CULL_FACE);
 
@@ -479,7 +500,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
   for (int i = 0; i < Nx * Nz; i++)
     {
       float val = (values[i] - meta.valmin) / (meta.valmax - meta.valmin);
-      values[i] = (1.0f + val * 255.0f) / 256.0f;
+      values[i] = (1.0f + val * static_cast<float>(Nmax-1)) / static_cast<float>(Nmax);
     }
 
 

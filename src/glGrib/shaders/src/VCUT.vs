@@ -88,7 +88,7 @@ void main()
       vec3 normedPos = compNormedPos (vertexPos);
       vec3 pos = compProjedPos (vertexPos, normedPos);
       pos = scalePosition (pos, normedPos, scale0 * (1 + z));
-      scalar_vs.missingFlag = 0.0f;
+      scalar_vs.missingFlag = val == 0. ? 1. : 0.;
       scalar_vs.fragmentPos = normedPos;
       scalar_vs.fragmentVal = val;
       scalar_vs.fragmentMPI = 0.0f;

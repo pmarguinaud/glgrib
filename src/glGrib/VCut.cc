@@ -59,7 +59,7 @@ void VCut::render (const View & view, const OptionsLight & light) const
   program->set ("lconstantz", opts.height.constant.on);
   program->set ("scale0", opts.scale);
   program->set ("Nmax", Nmax-1);
-
+    
   glDisable (GL_CULL_FACE);
 
   if (opts.wireframe.on)
@@ -387,13 +387,17 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 
   bool heightgrid = (! opts.height.uniform.on) && (! opts.height.constant.on);
 
+  OptionsMissing opts_missing;
+  opts_missing.on = true;
+  opts_missing.value = +std::numeric_limits<float>::max ();
+
   // Setup values & height
   for (int k = 0; k < Nz; k++)
     {
       FieldMetadata meta_k;
 
       BufferPtr<float> data_k;
-      ld->load (&data_k, opts.path, opts_geom, k, &meta_k);
+      ld->load (&data_k, opts.path, opts_geom, k, &meta_k, 1, 0, false, opts_missing);
       const auto geometry_k = Geometry::load (ld, opts.path[k], opts_geom);
 
       if (k == 0)
@@ -468,7 +472,12 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
                       const auto B = glm::inverse (glm::mat3 (xyzA, xyzB, xyzC));
                       auto cABC = B * c.xyz;
 		      cABC = cABC / (cABC.x + cABC.y + cABC.z);
-                      values[j+i] = cABC.x * data_k[c.jgloA] + cABC.y * data_k[c.jgloB] + cABC.z * data_k[c.jgloC];
+
+		      if ((data_k[c.jgloA] == meta_k.valmis) || (data_k[c.jgloB] == meta_k.valmis) || (data_k[c.jgloC] == meta_k.valmis))
+                        values[j+i] = meta_k.valmis;
+		      else
+                        values[j+i] = cABC.x * data_k[c.jgloA] + cABC.y * data_k[c.jgloB] + cABC.z * data_k[c.jgloC];
+
 		    }
 		  // Regular point
 		  else
@@ -484,7 +493,10 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
                           aA = 1.0f - c.a;
 			  aB = c.a;
 			}
-                      values[j+i] = aA * data_k[c.jgloA] + aB * data_k[c.jgloB];
+		      if ((data_k[c.jgloA] == meta_k.valmis) || (data_k[c.jgloB] == meta_k.valmis))
+                        values[j+i] = meta_k.valmis;
+		      else
+                        values[j+i] = aA * data_k[c.jgloA] + aB * data_k[c.jgloB];
 		    }
                   if (heightgrid)
                     height[j+i] = z * (0.1f + (1.0f - x) * x);
@@ -499,8 +511,15 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 #pragma omp parallel for 
   for (int i = 0; i < Nx * Nz; i++)
     {
-      float val = (values[i] - meta.valmin) / (meta.valmax - meta.valmin);
-      values[i] = (1.0f + val * static_cast<float>(Nmax-1)) / static_cast<float>(Nmax);
+      if (values[i] == meta.valmis)
+        {
+          values[i] = 0.0f;
+	}
+      else
+        {
+          float val = (values[i] - meta.valmin) / (meta.valmax - meta.valmin);
+          values[i] = (1.0f + val * static_cast<float>(Nmax - 1)) / static_cast<float> (Nmax);
+	}
     }
 
 

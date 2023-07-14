@@ -1374,6 +1374,7 @@ public:
     DESC (color,               Color);
     INCLUDE (lonlat.position);
     INCLUDE (geometry);
+    DESC (format,              Format = RGB/RGBA);
   }
 
   struct
@@ -1404,6 +1405,7 @@ public:
   OptionsGeometry geometry;
   OptionScale scale = 1.0f;
   OptionColor color = OptionColor ("#00000000");
+  std::string format = "RGB";
 };
 
 class OptionsLines : public OptionsBase

@@ -226,15 +226,23 @@ class OpenGLTexture
 {
 public:
   explicit OpenGLTexture (int width, int height, const BufferPtr<unsigned char> & data, 
-                          GLint internalformat = GL_RGB)
+                          GLint internalformat = GL_RGB, GLint format = GL_RGB)
   {
-    assert ((width * height * 3) == static_cast<int> (data->size ()));
-    init (width, height, &data[0], internalformat);
+    int t = 0;
+
+    if (format == GL_RGB)
+      t = 3;
+    else if (format == GL_RGBA)
+      t = 4;
+
+    assert ((width * height * t) == static_cast<int> (data->size ()));
+
+    init (width, height, &data[0], internalformat, format);
   }
   explicit OpenGLTexture (int width, int height, const void * data, 
-                          GLint internalformat = GL_RGB)
+                          GLint internalformat = GL_RGB, GLint format = GL_RGB)
   {
-    init (width, height, data, internalformat);
+    init (width, height, data, internalformat, format);
   }
   ~OpenGLTexture ();
   GLuint id () { return id_; }
@@ -247,7 +255,7 @@ public:
     glBindTexture (GL_TEXTURE_2D, id_);
   }
 private:
-  void init (int, int, const void *, GLint);
+  void init (int, int, const void *, GLint, GLint);
   bool allocated_ = false;
   GLuint id_;
 };
@@ -257,13 +265,13 @@ class OpenGLTexturePtr : public std::shared_ptr<OpenGLTexture>
 public:
   OpenGLTexturePtr () = default;
   explicit OpenGLTexturePtr (int width, int height, const BufferPtr<unsigned char> & data,
-                             GLint internalformat = GL_RGB)
+                             GLint internalformat = GL_RGB, GLint format = GL_RGB)
     : std::shared_ptr<OpenGLTexture> (new OpenGLTexture (width, height, 
-                                      data, internalformat)) { }
+                                      data, internalformat, format)) { }
   explicit OpenGLTexturePtr (int width, int height, const void * data, 
-                             GLint internalformat = GL_RGB)
+                             GLint internalformat = GL_RGB, GLint format = GL_RGB)
     : std::shared_ptr<OpenGLTexture> (new OpenGLTexture (width, height, 
-                                      data, internalformat)) { }
+                                      data, internalformat, format)) { }
 };
 
 template <typename T>

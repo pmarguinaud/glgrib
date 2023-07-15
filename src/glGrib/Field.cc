@@ -382,7 +382,7 @@ void glGrib::FieldPacked<N>::bindMask (int attr) const
   else
     {
       glDisableVertexAttribArray (attr);
-      glVertexAttrib1f (attr, -1.0f);
+      glVertexAttrib1f (attr, 0.0f);
     }
 }
 

@@ -15,6 +15,7 @@ uniform mat4 MVP;
 uniform float height_scale = 0.05;
 uniform float mpiview_scale = 0.0f;
 uniform int frame = 0;
+uniform bool useVertexMask = false;
 
 #include "schmidt.h"
 #include "projection.h"
@@ -59,7 +60,7 @@ void main ()
   scalar_vs.fragmentPos = normedPos;
   scalar_vs.missingFlag = vertexVal == 0 ? 1. : 0.;
 
-  if ((vertexMask < frame) && (vertexMask >= 0))
+  if ((vertexMask < frame) && useVertexMask)
     scalar_vs.missingFlag = 1.;
 
 }

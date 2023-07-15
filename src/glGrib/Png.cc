@@ -54,7 +54,7 @@ const std::string getTime ()
 }
 
 void ReadPng (const std::string & filename, int * pwidth, int * pheight, 
-              BufferPtr<unsigned char> & pixels)
+              BufferPtr<unsigned char> & pixels, GLint format)
 {
   int width, height;
   png_byte color_type;
@@ -148,15 +148,35 @@ void ReadPng (const std::string & filename, int * pwidth, int * pheight,
         goto fail;
       }
    
-    pixels = BufferPtr<unsigned char>(width * height * 3);
-   
-    for (int j = 0; j < height; j++)
-      for (int i = 0; i < width; i++)
-        {
-          pixels[3*(width*j+i)+0] = png_rows[height-j-1][4*i+0];
-          pixels[3*(width*j+i)+1] = png_rows[height-j-1][4*i+1];
-          pixels[3*(width*j+i)+2] = png_rows[height-j-1][4*i+2];
-        }
+    if (format == GL_RGB)
+      {
+        pixels = BufferPtr<unsigned char>(width * height * 3);
+       
+        for (int j = 0; j < height; j++)
+          for (int i = 0; i < width; i++)
+            {
+              pixels[3*(width*j+i)+0] = png_rows[height-j-1][4*i+0];
+              pixels[3*(width*j+i)+1] = png_rows[height-j-1][4*i+1];
+              pixels[3*(width*j+i)+2] = png_rows[height-j-1][4*i+2];
+            }
+      }
+    else if (format == GL_RGBA)
+      {
+        pixels = BufferPtr<unsigned char>(width * height * 4);
+       
+        for (int j = 0; j < height; j++)
+          for (int i = 0; i < width; i++)
+            {
+              pixels[4*(width*j+i)+0] = png_rows[height-j-1][4*i+0];
+              pixels[4*(width*j+i)+1] = png_rows[height-j-1][4*i+1];
+              pixels[4*(width*j+i)+2] = png_rows[height-j-1][4*i+2];
+              pixels[4*(width*j+i)+3] = png_rows[height-j-1][4*i+3];
+            }
+      }
+    else
+      {
+        throw std::runtime_error ("Unexpected format");
+      }
    
     png_destroy_read_struct (&png, &info, nullptr);
    

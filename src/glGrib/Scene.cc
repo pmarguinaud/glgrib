@@ -373,6 +373,7 @@ void Scene::updateFields ()
 
 void Scene::update ()
 {
+
   updateColorbar ();
   updateView ();
   updateLight ();

@@ -25,7 +25,7 @@ void glInit ()
 }
   
 void OpenGLTexture::init
-    (int width, int height, const void * data, GLint internalformat)
+    (int width, int height, const void * data, GLint internalformat, GLint format)
 {
   glGenTextures (1, &id_);
   glBindTexture (GL_TEXTURE_2D, id_);
@@ -37,7 +37,7 @@ void OpenGLTexture::init
   glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
   glTexImage2D (GL_TEXTURE_2D, 0, internalformat, width, height, 
-                0, GL_RGB, GL_UNSIGNED_BYTE, data); 
+                0, format, GL_UNSIGNED_BYTE, data); 
   glBindTexture (GL_TEXTURE_2D, 0); 
   allocated_ = true;
 }

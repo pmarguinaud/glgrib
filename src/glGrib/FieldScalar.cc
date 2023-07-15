@@ -380,6 +380,7 @@ void FieldScalar<N>::render (const View & view, const OptionsLight & light) cons
   program->set ("dinteger", opts.scalar.discrete.integer.on);
   program->set ("mpiview_scale", opts.mpiview.on ? opts.mpiview.scale : 0.0f);
 
+  program->set ("useVertexMask", this->maskbuffer ? true : false);
   program->set ("frame", this->frameNumber);
 
   program->set ("RGBAM", opts.scalar.discrete.missing_color);

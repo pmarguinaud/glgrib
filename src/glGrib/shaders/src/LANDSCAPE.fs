@@ -139,5 +139,5 @@ void main ()
   color.r = total * col.r;
   color.g = total * col.g;
   color.b = total * col.b;
-  color.a = 1.;
+  color.a =         col.a;
 }

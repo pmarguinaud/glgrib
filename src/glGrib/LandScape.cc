@@ -62,13 +62,20 @@ void Landscape::setup (Loader * ld, const OptionsLandscape & o)
 
   if (d.opts.color == OptionColor ("#00000000"))
     {
-      BufferPtr<unsigned char> rgb;
+      GLint format = GL_RGB;
+      BufferPtr<unsigned char> data;
       int w, h;
      
       if (endsWith (d.opts.path, ".png"))
-        ReadPng (Resolve (d.opts.path), &w, &h, rgb);
+        {
+          if (d.opts.format == "RGBA")
+            format = GL_RGBA;
+          ReadPng (Resolve (d.opts.path), &w, &h, data, format);
+	}
       else if (endsWith (d.opts.path, ".bmp"))
-        Bitmap (Resolve (d.opts.path), rgb, &w, &h);
+        {
+          Bitmap (Resolve (d.opts.path), data, &w, &h);
+	}
       else
         throw std::runtime_error (std::string ("Unknown image format :") + d.opts.path);
      
@@ -77,7 +84,7 @@ void Landscape::setup (Loader * ld, const OptionsLandscape & o)
       if ((sizemax < w) || (sizemax < h))
         throw std::runtime_error (std::string ("Image is too large to be used as a texture :") + d.opts.path);
      
-      d.texture = OpenGLTexturePtr (w, h, rgb);
+      d.texture = OpenGLTexturePtr (w, h, data, format, format);
     }
 
   if (d.opts.geometry.height.on)

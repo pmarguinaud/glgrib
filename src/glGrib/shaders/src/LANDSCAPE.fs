@@ -140,5 +140,4 @@ void main ()
   color.g = total * col.g;
   color.b = total * col.b;
   color.a =         col.a;
-//color.a = 1.;
 }

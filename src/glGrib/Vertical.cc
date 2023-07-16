@@ -1,10 +1,10 @@
-#include "glGrib/VCut.h"
+#include "glGrib/Vertical.h"
 #include "glGrib/Trigonometry.h"
 #include "glGrib/OpenGL.h"
 #include "glGrib/Contour.h"
 #include "glGrib/Palette.h"
 
-#include "shaders/include/vcut.h"
+#include "shaders/include/vertical.h"
 
 #include <stdio.h>
 
@@ -31,7 +31,7 @@ const int Nmax = intPow<bits> (2);
 
 }
 
-void VCut::render (const View & view, const OptionsLight & light) const
+void Vertical::render (const View & view, const OptionsLight & light) const
 {
   if (! opts.on)
     return;
@@ -41,7 +41,7 @@ void VCut::render (const View & view, const OptionsLight & light) const
 
   const auto & palette = this->palette;
 
-  Program * program = Program::load ("VCUT");
+  Program * program = Program::load ("VERTICAL");
   program->use (); 
 
   view.setMVP (program);
@@ -79,25 +79,25 @@ void VCut::render (const View & view, const OptionsLight & light) const
 
 }
 
-void VCut::setupVertexAttributes () const
+void Vertical::setupVertexAttributes () const
 {
-  lonlatbuffer->bind (GL_SHADER_STORAGE_BUFFER, vcutLonLat_idx);
-  valuesbuffer->bind (GL_SHADER_STORAGE_BUFFER, vcutValues_idx);
+  lonlatbuffer->bind (GL_SHADER_STORAGE_BUFFER, verticalLonLat_idx);
+  valuesbuffer->bind (GL_SHADER_STORAGE_BUFFER, verticalValues_idx);
   if (! opts.height.uniform.on)
-    heightbuffer->bind (GL_SHADER_STORAGE_BUFFER, vcutHeight_idx);
+    heightbuffer->bind (GL_SHADER_STORAGE_BUFFER, verticalHeight_idx);
 }
 
-void VCut::setup (Loader * ld, const OptionsVCut & o)
+void Vertical::setup (Loader * ld, const OptionsVertical & o)
 {
   // Helper class for contouring
-  class vcut_coords
+  class vertical_coords
   {
   public:
-    vcut_coords (int _jgloA, int _jgloB, int _jgloC, float _a, const glm::vec3 & _xyz) 
+    vertical_coords (int _jgloA, int _jgloB, int _jgloC, float _a, const glm::vec3 & _xyz) 
       : jgloA (_jgloA), jgloB (_jgloB), jgloC (_jgloC), a (_a), xyz (_xyz)
     {
     }
-    vcut_coords () 
+    vertical_coords () 
     {
     }
     bool isNull () const
@@ -109,13 +109,13 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     glm::vec3 xyz;
   };
 
-  class vcut_helper
+  class vertical_helper
   {
   public:
-    vcut_helper () 
+    vertical_helper () 
     {
     }
-    void init (const glm::vec3 & _xyz1, const glm::vec3 & _xyz2, const OptionsVCut & _opts)
+    void init (const glm::vec3 & _xyz1, const glm::vec3 & _xyz2, const OptionsVertical & _opts)
     {
       xyz1 = _xyz1;
       xyz2 = _xyz2;
@@ -137,7 +137,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       if (first && (coords.size () > 0) && (! coords.back ().isNull ()))
         {
           if (opts->debug.on) printf (" first \n");
-          coords.push_back (vcut_coords ());
+          coords.push_back (vertical_coords ());
 	}
 
       // Interpolate point; use a linear approximation (easier & cheaper than real calculation)
@@ -179,7 +179,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
 	  // Current space is enough OR we already have skipped too many points
 	  if ((dx >= lastDx * opts->contour.fracdx) || (skip > opts->contour.skipmax))
             {
-              coords.push_back (vcut_coords (jgloA, jgloB, jgloC, a, xyz));
+              coords.push_back (vertical_coords (jgloA, jgloB, jgloC, a, xyz));
               lastDx = dx;
 	      skip = 0;
 	    }
@@ -204,11 +204,11 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       size_t n = coords.size ();
       if ((n > 0) && (coords[n-1].jgloA < 0))
         return;
-      coords.push_back (vcut_coords ());
+      coords.push_back (vertical_coords ());
       if (opts->debug.on) printf ("----------------------------------------------------------------------------------\n");
 
     }
-    const std::vector<vcut_coords> & getCoords () const
+    const std::vector<vertical_coords> & getCoords () const
     {
       return coords;
     }
@@ -231,22 +231,22 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
       const auto c2ABC = B * xyz2;
       if ((c1ABC.x >= 0.0f) && (c1ABC.y >= 0.0f) && (c1ABC.z > 0.0f))
         {
-          coords.push_back (vcut_coords (jgloA, jgloB, jgloC, -1.0f, xyz1));
+          coords.push_back (vertical_coords (jgloA, jgloB, jgloC, -1.0f, xyz1));
           if (opts->debug.on) printf ("  Found #1 !\n");
 	}
       if ((c2ABC.x >= 0.0f) && (c2ABC.y >= 0.0f) && (c2ABC.z > 0.0f))
         {
-          coords.push_back (vcut_coords (jgloA, jgloB, jgloC, -1.0f, xyz2));
+          coords.push_back (vertical_coords (jgloA, jgloB, jgloC, -1.0f, xyz2));
           if (opts->debug.on) printf ("  Found #2 !\n");
 	}
     }
     glm::mat3 A;
     glm::vec3 xyz1, xyz2;
-    std::vector<vcut_coords> coords;
+    std::vector<vertical_coords> coords;
     bool first;
     float lastDx = 0.0f;
     int skip = 0;
-    const OptionsVCut * opts = nullptr;
+    const OptionsVertical * opts = nullptr;
   };
 
   // Start here
@@ -289,7 +289,7 @@ void VCut::setup (Loader * ld, const OptionsVCut & o)
     }
 
 
-  std::vector<vcut_helper> isoh (N);
+  std::vector<vertical_helper> isoh (N);
 
   bool dbg = opts.debug.on;
 

@@ -11,17 +11,17 @@
 namespace glGrib
 {
 
-class VCut : public Object3D
+class Vertical : public Object3D
 {
 public:
-  VCut () : VAID (this) {}
+  Vertical () : VAID (this) {}
   void render (const View &, const OptionsLight &) const override;
   void setupVertexAttributes () const;
-  virtual void setup (Loader *, const OptionsVCut &);
+  virtual void setup (Loader *, const OptionsVertical &);
   void reSize (const View &) override {}
   float getScale () const override { return 1; }
 private:
-  OptionsVCut opts;
+  OptionsVertical opts;
   bool _visible = true;
   const bool & getVisibleRef () const override
   {
@@ -32,7 +32,7 @@ private:
   OpenGLBufferPtr<float> heightbuffer;
   int numberOfPoints;
   unsigned int numberOfTriangles;
-  OpenGLVertexArray<VCut> VAID;
+  OpenGLVertexArray<Vertical> VAID;
   int Nx = -1, Nz = -1;
   const_GeometryPtr geometry;
   FieldMetadata meta;

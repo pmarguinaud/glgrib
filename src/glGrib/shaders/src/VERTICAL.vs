@@ -1,18 +1,18 @@
 #include "version.h"
-#include "vcut.h"
+#include "vertical.h"
 
 
-layout (std430, binding=vcutLonLat_idx) buffer vcutLonLat
+layout (std430, binding=verticalLonLat_idx) buffer verticalLonLat
 {
   float lonlat[];
 };
 
-layout (std430, binding=vcutValues_idx) buffer vcutValues
+layout (std430, binding=verticalValues_idx) buffer verticalValues
 {
   float values[];
 };
 
-layout (std430, binding=vcutHeight_idx) buffer vcutHeight
+layout (std430, binding=verticalHeight_idx) buffer verticalHeight
 {
   float height[];
 };

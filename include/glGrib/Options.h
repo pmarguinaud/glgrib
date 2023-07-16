@@ -1346,7 +1346,7 @@ public:
 
 };
 
-class OptionsVCut : public OptionsBase
+class OptionsVertical : public OptionsBase
 {
 public:
   DEFINE
@@ -2142,7 +2142,7 @@ public:
     INCLUDE (departements);
     INCLUDE (shell);
     INCLUDE (land);
-    INCLUDE (vcut);
+    INCLUDE (vertical);
     DESC (review.on, Enable review mode);
     DESC (review.path, File to review);
     DESC (diff.on, Enable difference mode);
@@ -2179,7 +2179,7 @@ public:
   OptionsFont font;
   OptionsShell shell;
   OptionsLand land;
-  OptionsVCut vcut;
+  OptionsVertical vertical;
   virtual bool parse (int, const char * [], const std::set<std::string> * = nullptr);
 };
 

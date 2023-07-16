@@ -1082,12 +1082,70 @@ public:
   float epsilon = 0;
 };
 
+class OptionsVertical : public OptionsBase
+{
+public:
+  DEFINE
+  {
+    INCLUDE_N (palette, Points palette);
+    DESC (lat, List of latitudes);
+    DESC (lon, List of longitudes);
+    DESC (path, List of GRIB files);
+    DESC (scale, Scale);
+    DESC (contour.fracdx, Fraction of dx required to keep points);
+    DESC (contour.skipmax, Max number of points to skip);
+    DESC (wireframe.on, Enable wireframe mode);
+    DESC_H (debug.on, Debug);
+    DESC (height.constant.on, Enable constant height);
+    DESC (height.constant.levels, Levels for constant height);
+    DESC (height.uniform.on, Enable uniform height);
+    DESC (height.uniform.dz, Uniform height increment);
+    DESC (rough.on, Follow grid);
+  }
+
+  OptionsPalette palette = OptionsPalette ("none");
+  std::vector<float> lat;
+  std::vector<float> lon;
+  std::vector<OptionFieldRef> path;
+  float scale = 1.0f;
+  struct
+  {
+    float fracdx = 0.4f;
+    int skipmax = 3;
+  } contour;
+  struct
+  {
+    bool on = false;
+  } wireframe;
+  struct 
+  {
+    bool on = false;
+  } debug;
+  struct
+  {
+    struct
+    {
+      std::vector<float> levels;
+      bool on = false;
+    } constant;
+    struct
+    {
+      float dz = 0.05f;
+      bool on = false;
+    } uniform;
+  } height;
+  struct
+  {
+    bool on = false;
+  } rough;
+};
+
 class OptionsField : public OptionsBase
 {
 public:
   DEFINE
   {
-    DESC (type,                Field type : SCALAR VECTOR STREAM CONTOUR);
+    DESC (type,                Field type : SCALAR VECTOR STREAM CONTOUR VERTICAL);
     DESC (visible.on,          Field is visible);
     DESC (user_pref.on,        Lookup field settings in database);
     DESC (path,                List of GRIB files);                    
@@ -1107,6 +1165,7 @@ public:
     INCLUDE (contour);
     INCLUDE (isofill);
     INCLUDE (stream);
+    INCLUDE (vertical);
 
     INCLUDE_N (geometry,   Geometry options);
     INCLUDE_N (mpiview,    MPI distribution parameters);
@@ -1151,6 +1210,7 @@ public:
   OptionsContour contour;
   OptionsIsofill isofill;
   OptionsStream stream;
+  OptionsVertical vertical;
   bool parseUnseen (const char *);
   OptionsGeometry geometry;
   OptionsMpiview mpiview;
@@ -1344,66 +1404,6 @@ public:
     OptionsLandLayer ("coastlines/shp/GSHHS_c_L5.shp", 1.000f, OptionColor ("#ffe2ab")) 
   };
 
-};
-
-class OptionsVertical : public OptionsBase
-{
-public:
-  DEFINE
-  {
-    DESC (on, Enable vertical cut);
-    INCLUDE_N (palette, Points palette);
-    DESC (lat, List of latitudes);
-    DESC (lon, List of longitudes);
-    DESC (path, List of GRIB files);
-    DESC (scale, Scale);
-    DESC (contour.fracdx, Fraction of dx required to keep points);
-    DESC (contour.skipmax, Max number of points to skip);
-    DESC (wireframe.on, Enable wireframe mode);
-    DESC_H (debug.on, Debug);
-    DESC (height.constant.on, Enable constant height);
-    DESC (height.constant.levels, Levels for constant height);
-    DESC (height.uniform.on, Enable uniform height);
-    DESC (height.uniform.dz, Uniform height increment);
-    DESC (rough.on, Follow grid);
-  }
-
-  bool on = false;
-  OptionsPalette palette = OptionsPalette ("none");
-  std::vector<float> lat;
-  std::vector<float> lon;
-  std::vector<OptionFieldRef> path;
-  float scale = 1.0f;
-  struct
-  {
-    float fracdx = 0.4f;
-    int skipmax = 3;
-  } contour;
-  struct
-  {
-    bool on = false;
-  } wireframe;
-  struct 
-  {
-    bool on = false;
-  } debug;
-  struct
-  {
-    struct
-    {
-      std::vector<float> levels;
-      bool on = false;
-    } constant;
-    struct
-    {
-      float dz = 0.05f;
-      bool on = false;
-    } uniform;
-  } height;
-  struct
-  {
-    bool on = false;
-  } rough;
 };
 
 class OptionsLandscapePosition : public OptionsBase
@@ -2142,7 +2142,6 @@ public:
     INCLUDE (departements);
     INCLUDE (shell);
     INCLUDE (land);
-    INCLUDE (vertical);
     DESC (review.on, Enable review mode);
     DESC (review.path, File to review);
     DESC (diff.on, Enable difference mode);
@@ -2179,7 +2178,6 @@ public:
   OptionsFont font;
   OptionsShell shell;
   OptionsLand land;
-  OptionsVertical vertical;
   virtual bool parse (int, const char * [], const std::set<std::string> * = nullptr);
 };
 

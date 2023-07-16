@@ -59,6 +59,7 @@ public:
     VECTOR=2,
     STREAM=3,
     ISOFILL=4,
+    VERTICAL=5,
   } kind;
 
 
@@ -234,6 +235,7 @@ private:
   friend class FieldIsoFill;
   friend class FieldStream;
   friend class FieldContour;
+  friend class FieldVertical;
 };
 
 template <int N>
@@ -265,6 +267,7 @@ private:
   friend class FieldIsoFill;
   friend class FieldStream;
   friend class FieldContour;
+  friend class FieldVertical;
 };
 
 

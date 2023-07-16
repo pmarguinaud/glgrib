@@ -8,6 +8,7 @@
 #include "glGrib/FieldContour.h"
 #include "glGrib/FieldIsoFill.h"
 #include "glGrib/FieldStream.h"
+#include "glGrib/FieldVertical.h"
 
 #include "glGrib/Resolve.h"
 #include "glGrib/SQLite.h"
@@ -210,6 +211,8 @@ glGrib::Field * glGrib::Field::create (const glGrib::OptionsField & opts, glGrib
         }
       else if (type == "ISOFILL")
         fld = new glGrib::FieldIsoFill (priv);
+      else if (type == "VERTICAL")
+        fld = new glGrib::FieldVertical (priv);
       else
         throw std::runtime_error (std::string ("Unknown field type : ") + type);
      

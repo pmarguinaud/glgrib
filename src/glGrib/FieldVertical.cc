@@ -1,4 +1,4 @@
-#include "glGrib/Vertical.h"
+#include "glGrib/FieldVertical.h"
 #include "glGrib/Trigonometry.h"
 #include "glGrib/OpenGL.h"
 #include "glGrib/Contour.h"
@@ -31,11 +31,15 @@ const int Nmax = intPow<bits> (2);
 
 }
 
-void Vertical::render (const View & view, const OptionsLight & light) const
+FieldVertical * FieldVertical::clone () const
 {
-  if (! opts.on)
-    return;
+  FieldVertical * fld = new FieldVertical (Field::Privatizer ());
+  *fld = *this;
+  return fld;
+}
 
+void FieldVertical::render (const View & view, const OptionsLight & light) const
+{
   if ((Nx < 0) || (Nz < 0))
     return;
 
@@ -54,23 +58,26 @@ void Vertical::render (const View & view, const OptionsLight & light) const
   program->set ("palmin", palette.getMin ());
   program->set ("palmax", palette.getMax ());
 
-  program->set ("dz", opts.height.uniform.dz);
-  program->set ("luniformz", opts.height.uniform.on);
-  program->set ("lconstantz", opts.height.constant.on);
+  program->set ("dz", opts.vertical.height.uniform.dz);
+  program->set ("luniformz", opts.vertical.height.uniform.on);
+  program->set ("lconstantz", opts.vertical.height.constant.on);
   program->set ("scale0", opts.scale);
   program->set ("Nmax", Nmax-1);
     
   glDisable (GL_CULL_FACE);
 
-  if (opts.wireframe.on)
+  if (opts.vertical.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_LINE);
 
-  VAID.bind ();
   unsigned int ind[6] = {0, 1, 2, 1, 2, 3};
-  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, (Nz - 1) * (Nx - 1));
-  VAID.unbind ();
 
-  if (opts.wireframe.on)
+  d.VAID.bind ();
+
+  glDrawElementsInstanced (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind, (Nz - 1) * (Nx - 1));
+
+  d.VAID.unbind ();
+
+  if (opts.vertical.wireframe.on)
     glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 
   glEnable (GL_CULL_FACE);
@@ -79,16 +86,17 @@ void Vertical::render (const View & view, const OptionsLight & light) const
 
 }
 
-void Vertical::setupVertexAttributes () const
+void FieldVertical::vertical_vaid::setupVertexAttributes () const
 {
   lonlatbuffer->bind (GL_SHADER_STORAGE_BUFFER, verticalLonLat_idx);
   valuesbuffer->bind (GL_SHADER_STORAGE_BUFFER, verticalValues_idx);
-  if (! opts.height.uniform.on)
+  if (heightbuffer->size () > 0)
     heightbuffer->bind (GL_SHADER_STORAGE_BUFFER, verticalHeight_idx);
 }
 
-void Vertical::setup (Loader * ld, const OptionsVertical & o)
+void FieldVertical::setup (const Field::Privatizer, Loader * ld, const OptionsField & o)
 {
+
   // Helper class for contouring
   class vertical_coords
   {
@@ -251,25 +259,19 @@ void Vertical::setup (Loader * ld, const OptionsVertical & o)
 
   // Start here
   opts = o;
-  if (! opts.on)
-    return;
-
 
   const float skip = 4 * 360.f;
 
-  int n = std::min (opts.lon.size (), opts.lat.size ()), m = n;
+  int n = std::min (opts.vertical.lon.size (), opts.vertical.lat.size ()), m = n;
 
   for (int i = 0; i < m; i++)
-    if (opts.lat[i] > skip)
+    if (opts.vertical.lat[i] > skip)
       n--;
 
   const int N = n-1;
 
   if (N < 1)
-    {
-      opts.on = false;
-      return;
-    }
+    return;
 
   std::vector<float> lat1, lat2, lon1, lon2;
 
@@ -279,26 +281,27 @@ void Vertical::setup (Loader * ld, const OptionsVertical & o)
     {
       const int i1 = i+0;
       const int i2 = i+1;
-      const bool ok1 = opts.lat[i1] < skip;
-      const bool ok2 = opts.lat[i2] < skip;
+      const bool ok1 = opts.vertical.lat[i1] < skip;
+      const bool ok2 = opts.vertical.lat[i2] < skip;
       if (ok1 && ok2)
         {
-          lat1.push_back (opts.lat[i1] * deg2rad); lon1.push_back (opts.lon[i1] * deg2rad);
-          lat2.push_back (opts.lat[i2] * deg2rad); lon2.push_back (opts.lon[i2] * deg2rad);
+          lat1.push_back (opts.vertical.lat[i1] * deg2rad); lon1.push_back (opts.vertical.lon[i1] * deg2rad);
+          lat2.push_back (opts.vertical.lat[i2] * deg2rad); lon2.push_back (opts.vertical.lon[i2] * deg2rad);
 	}
     }
 
 
   std::vector<vertical_helper> isoh (N);
 
-  bool dbg = opts.debug.on;
+  bool dbg = opts.vertical.debug.on;
 
   if (dbg)
   printf (" %5s | %5s %5s | %12s | (%12s,%12s,%12s) - (%12s,%12s,%12s)\n",
           "rank", "jgloA", "jgloB", "a", "xyzA.x", "xyzA.y", "xyzA.z", "xyzB.x", "xyzB.y", "xyzB.z");
 
   const OptionsGeometry opts_geom;
-  geometry = Geometry::load (ld, opts.path[0], opts_geom);
+  auto geometry = Geometry::load (ld, opts.path[0], opts_geom);
+  setGeometry (geometry);
   
   // Contouring on all sections
 #pragma omp parallel for if (! dbg)
@@ -316,13 +319,13 @@ void Vertical::setup (Loader * ld, const OptionsVertical & o)
 
       normal = normal / length;
      
-      isoh[n].init (xyz1, xyz2, opts);
+      isoh[n].init (xyz1, xyz2, opts.vertical);
       
       // Scalar product with normal vector : subdivide the sphere in two parts
-      auto val = [&normal,this] (int jglo)
+      auto val = [&normal,&geometry,this] (int jglo)
       {
         float lon, lat;
-        this->geometry->index2latlon (jglo, &lat, &lon);
+        geometry->index2latlon (jglo, &lat, &lon);
         glm::vec3 xyz = lonlat2xyz (lon, lat);
         return glm::dot (normal, xyz);
       };
@@ -340,8 +343,8 @@ void Vertical::setup (Loader * ld, const OptionsVertical & o)
     }
 
 
-  lonlatbuffer = OpenGLBufferPtr<float> (2 * Nx);
-  auto lonlat = lonlatbuffer->map ();
+  d.lonlatbuffer = OpenGLBufferPtr<float> (2 * Nx);
+  auto lonlat = d.lonlatbuffer->map ();
 
   if (dbg) printf (" (%12s,%12s)\n", "lon", "lat");
 
@@ -373,19 +376,19 @@ void Vertical::setup (Loader * ld, const OptionsVertical & o)
      }
 
   Nz = opts.path.size ();
-  valuesbuffer = OpenGLBufferPtr<float> (Nx * Nz);
+  d.valuesbuffer = OpenGLBufferPtr<float> (Nx * Nz);
 
-  if (opts.height.constant.on)
-    heightbuffer = OpenGLBufferPtr<float> (Nz);
-  else if (! opts.height.uniform.on)
-    heightbuffer = OpenGLBufferPtr<float> (Nx * Nz);
+  if (opts.vertical.height.constant.on)
+    d.heightbuffer = OpenGLBufferPtr<float> (Nz);
+  else if (! opts.vertical.height.uniform.on)
+    d.heightbuffer = OpenGLBufferPtr<float> (Nx * Nz);
   else
-    heightbuffer = OpenGLBufferPtr<float> (0);
+    d.heightbuffer = OpenGLBufferPtr<float> (0);
 
-  auto values = valuesbuffer->map ();
-  auto height = heightbuffer->map ();
+  auto values = d.valuesbuffer->map ();
+  auto height = d.heightbuffer->map ();
 
-  bool heightgrid = (! opts.height.uniform.on) && (! opts.height.constant.on);
+  bool heightgrid = (! opts.vertical.height.uniform.on) && (! opts.vertical.height.constant.on);
 
   OptionsMissing opts_missing;
   opts_missing.on = true;
@@ -413,16 +416,16 @@ void Vertical::setup (Loader * ld, const OptionsVertical & o)
       if (! geometry->isEqual (*geometry_k))
         throw std::runtime_error (std::string ("Geometry mismatch"));
 
-      if (opts.height.constant.on)
+      if (opts.vertical.height.constant.on)
         {
-          const int l = opts.height.constant.levels.size ();
+          const int l = opts.vertical.height.constant.levels.size ();
 	  if (k < l)
             {
-              height[k] = opts.height.constant.levels[k];
+              height[k] = opts.vertical.height.constant.levels[k];
 	    }
 	  else if (l >= 2)
             {
-              height[k] = 2 * opts.height.constant.levels[l-1] - opts.height.constant.levels[l-2];
+              height[k] = 2 * opts.vertical.height.constant.levels[l-1] - opts.vertical.height.constant.levels[l-2];
 	    }
 	  else
             {
@@ -460,10 +463,10 @@ void Vertical::setup (Loader * ld, const OptionsVertical & o)
 		  // End point (begin or end arc)
                   if (c.a < 0.0f)
                     {
-                      auto jglo2xyz = [this] (const int jglo)
+                      auto jglo2xyz = [&geometry,this] (const int jglo)
 		      {
                         float lat, lon;
-                        this->geometry->index2latlon (jglo, &lat, &lon);
+                        geometry->index2latlon (jglo, &lat, &lon);
                         return lonlat2xyz (lon, lat);
 		      };
 		      const auto xyzA = jglo2xyz (c.jgloA);
@@ -483,7 +486,7 @@ void Vertical::setup (Loader * ld, const OptionsVertical & o)
 		  else
 		    {
                       float aA, aB;
-                      if (opts.rough.on)
+                      if (opts.vertical.rough.on)
                         {
                           aA = c.a > 0.5f ? 0.f : 1.f;
 		          aB = c.a > 0.5f ? 1.f : 0.f;

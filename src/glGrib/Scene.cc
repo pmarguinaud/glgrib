@@ -87,8 +87,6 @@ void Scene::render () const
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   d.test.render (d.view, d.opts.scene.light);
-  d.vertical.render (d.view, d.opts.scene.light);
-  
 
   std::vector<const Object3D*> obj_list;
 
@@ -454,8 +452,6 @@ void Scene::setup (const Options & o)
 
   if (d.opts.scene.center.on)
     centerOnCurrentField ();
-
-  d.vertical.setup (&ld, d.opts.vertical);
 
   reSize ();
 }

@@ -37,7 +37,7 @@ OBJECTS=$(BUILD)/Grok.o $(BUILD)/DBase.o $(BUILD)/ShellInterpreter.o $(BUILD)/Sh
 	$(BUILD)/Options.o $(BUILD)/Shell.o $(BUILD)/Bitmap.o $(BUILD)/LandScape.o $(BUILD)/Palette.o $(BUILD)/Field.o $(BUILD)/Loader.o \
 	$(BUILD)/Polygon.o $(BUILD)/Program.o $(BUILD)/View.o $(BUILD)/OpenGL.o $(BUILD)/Png.o $(BUILD)/Scene.o $(BUILD)/Coast.o $(BUILD)/Grid.o \
 	$(BUILD)/Shader.o $(BUILD)/FieldStream.o $(BUILD)/WindowReviewSet.o $(BUILD)/GeoPoints.o $(BUILD)/Batch.o $(BUILD)/Render.o $(BUILD)/MD5.o \
-	$(BUILD)/KdTree.o $(BUILD)/Vertical.o
+	$(BUILD)/KdTree.o $(BUILD)/FieldVertical.o
 
 $(TOP)/lib/libglGrib$(SUFFIX).so.0: $(OBJECTS)
 	g++ -shared  $(RPATH) -Wl,-soname,libglGrib$(SUFFIX).so.0 -o $(TOP)/lib/libglGrib$(SUFFIX).so.0 $(OBJECTS) -L$(TOP)/lib -lLFI $(LIBS_GLGRIB) $(LDFLAGS_USER)

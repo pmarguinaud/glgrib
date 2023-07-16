@@ -21,7 +21,6 @@
 #include "glGrib/Mapscale.h"
 #include "glGrib/Cities.h"
 #include "glGrib/GeoPoints.h"
-#include "glGrib/Vertical.h"
 #include "glGrib/Test.h"
 #include "glGrib/Land.h"
 #include "glGrib/Loader.h"
@@ -316,7 +315,6 @@ private:
       Departements departements;
       Cities cities;
       Test test;
-      Vertical vertical;
       Land land;
     private:
       Image image;

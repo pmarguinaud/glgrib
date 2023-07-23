@@ -41,7 +41,7 @@ void Image::render (const glm::mat4 & MVP) const
   VAID.bind ();
 
   texture->bind (0);
-  program->set ("texture", 0); 
+  program->set ("tex", 0); 
 
   unsigned int ind[6] = {0, 1, 2, 2, 3, 0};
   glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, ind);

@@ -50,7 +50,7 @@ void Font::select () const
   program->set ("ny", ny);
   program->set ("aspect", aspect);
   texture->bind (0);
-  program->set ("texture", 0);
+  program->set ("tex", 0);
 
 }
 

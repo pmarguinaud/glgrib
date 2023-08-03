@@ -266,7 +266,7 @@ Tested on :
     --view.lat -32.736 --view.lon 41.909 
 ```
 # [Vertical ...](./share/doc/glgrib/VERTICAL.md)
-## TKE vertical profiles -- glob025verticaltke
+## TKE vertical sections -- glob025verticaltke
 ![](./share/doc/glgrib/samples/glob025verticaltke/TEST_0000.png)
 
 ```

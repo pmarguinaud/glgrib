@@ -128,7 +128,7 @@ void Landscape::render (const View & view, const OptionsLight & light) const
     {
       // the texture selection process is a bit obscure
       d.texture->bind (0);
-      program->set ("texture", 0);
+      program->set ("tex", 0);
       program->set ("colored", 0);
     }
   else

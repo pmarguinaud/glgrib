@@ -262,24 +262,15 @@ void FieldVertical::setup (const Field::Privatizer, Loader * ld, const OptionsFi
 
   const float skip = 4 * 360.f;
 
-  int n = std::min (opts.vertical.lon.size (), opts.vertical.lat.size ()), m = n;
-
-  for (int i = 0; i < m; i++)
-    if (opts.vertical.lat[i] > skip)
-      n--;
-
-  const int N = n-1;
-
-  if (N < 1)
-    return;
+  const int n = std::min (opts.vertical.lon.size (), opts.vertical.lat.size ());
 
   meta.resize (1);
 
   std::vector<float> lat1, lat2, lon1, lon2;
 
-  lat1.reserve (N); lat2.reserve (N); lon1.reserve (N); lon2.reserve (N);
+  lat1.reserve (n); lat2.reserve (n); lon1.reserve (n); lon2.reserve (n);
 
-  for (int i = 0; i < m-1; i++)
+  for (int i = 0; i < n-1; i++)
     {
       const int i1 = i+0;
       const int i2 = i+1;
@@ -292,14 +283,21 @@ void FieldVertical::setup (const Field::Privatizer, Loader * ld, const OptionsFi
 	}
     }
 
+  const int N = lat1.size ();
+
+  if (N < 1)
+    return;
 
   std::vector<vertical_helper> isoh (N);
 
   bool dbg = opts.vertical.debug.on;
 
   if (dbg)
+  {
+  printf (" N = %d\n", N);
   printf (" %5s | %5s %5s | %12s | (%12s,%12s,%12s) - (%12s,%12s,%12s)\n",
           "rank", "jgloA", "jgloB", "a", "xyzA.x", "xyzA.y", "xyzA.z", "xyzB.x", "xyzB.y", "xyzB.z");
+  }
 
   const OptionsGeometry opts_geom;
   auto geometry = Geometry::load (ld, opts.path[0], opts_geom);

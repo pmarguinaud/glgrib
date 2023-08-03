@@ -35,7 +35,6 @@ private:
   int numberOfPoints;
   unsigned int numberOfTriangles;
   int Nx = -1, Nz = -1;
-  FieldMetadata meta;
 
   class vertical_vaid
   {

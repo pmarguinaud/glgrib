@@ -255,12 +255,34 @@ Tested on :
 ![](./share/doc/glgrib/samples/ssmigeopoints/TEST_0000.png)
 
 ```
-    --geopoints.path share/glgrib/testdata/geopoints/ssmis_light.nc 
-    --geopoints.on --geopoints.points.scale 1.005 
-    --geopoints.points.palette.name cold_hot --landscape.on 
-    --geopoints.points.size.value 0.5 --grid.on --grid.color black 
+    --geopoints[0].path share/glgrib/testdata/geopoints/ssmis_light.nc 
+    --geopoints[0].on --geopoints[0].points.scale 1.005 
+    --geopoints[0].points.palette.name cold_hot --landscape.on 
+    --geopoints[0].points.size.value 0.5 --grid.on --grid.color black 
     --coast.on --coast.lines.color black --colorbar.on 
-    --geopoints.points.palette.min 200 --geopoints.points.palette.max 240 
-    --geopoints.lon col_4 --geopoints.lat col_3 --geopoints.val col_5 
-    --render.width 1200 --view.lat -32.736 --view.lon 41.909 
+    --geopoints[0].points.palette.min 200 
+    --geopoints[0].points.palette.max 240 --geopoints[0].lon col_4 
+    --geopoints[0].lat col_3 --geopoints[0].val col_5 --render.width 1200 
+    --view.lat -32.736 --view.lon 41.909 
+```
+# [Vertical ...](./share/doc/glgrib/VERTICAL.md)
+## TKE vertical profiles -- glob025verticaltke
+![](./share/doc/glgrib/samples/glob025verticaltke/TEST_0000.png)
+
+```
+    --landscape.on --colorbar.on --render.width 1200 --grid.on --view.fov 
+    25 --field[0].type VERTICAL --field[0].vertical.lon 0. 30. 60. 90. 
+    120. 150. 180. 210. 240. 270. 300. 330. 0. --field[0].vertical.lat +60 
+    -60 +60 -60 +60 -60 +60 -60 +60 -60 +60 -60 +60 
+    --field[0].vertical.height.constant.on 
+    --field[0].vertical.height.constant.levels 0.002 0.05 0.1 0.15 0.20 
+    0.25 0.30 --field[0].palette.min 0 --field[0].palette.max 5 
+    --field[0].palette.colors #85c68855 #c1afcf #f2bc92 #fef896 #4777ae 
+    --field[0].path share/glgrib/testdata/glob025/sfc_20_tke.grib2 
+    share/glgrib/testdata/glob025/sfc_500_tke.grib2 
+    share/glgrib/testdata/glob025/sfc_1000_tke.grib2 
+    share/glgrib/testdata/glob025/sfc_1500_tke.grib2 
+    share/glgrib/testdata/glob025/sfc_2000_tke.grib2 
+    share/glgrib/testdata/glob025/sfc_2500_tke.grib2 
+    share/glgrib/testdata/glob025/sfc_3000_tke.grib2 
 ```

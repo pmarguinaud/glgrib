@@ -53,8 +53,8 @@ void FieldVertical::render (const View & view, const OptionsLight & light) const
   program->set ("Nx", Nx);
   program->set ("Nz", Nz);
 
-  program->set ("valmin", meta.valmin);
-  program->set ("valmax", meta.valmax);
+  program->set ("valmin", meta[0].valmin);
+  program->set ("valmax", meta[0].valmax);
   program->set ("palmin", palette.getMin ());
   program->set ("palmax", palette.getMax ());
 
@@ -273,6 +273,8 @@ void FieldVertical::setup (const Field::Privatizer, Loader * ld, const OptionsFi
   if (N < 1)
     return;
 
+  meta.resize (1);
+
   std::vector<float> lat1, lat2, lon1, lon2;
 
   lat1.reserve (N); lat2.reserve (N); lon1.reserve (N); lon2.reserve (N);
@@ -405,12 +407,12 @@ void FieldVertical::setup (const Field::Privatizer, Loader * ld, const OptionsFi
 
       if (k == 0)
         {
-          meta = meta_k;
+          meta[0] = meta_k;
 	}
       else
         {
-          meta.valmin = std::min (meta_k.valmin, meta.valmin);
-          meta.valmax = std::max (meta_k.valmax, meta.valmax);
+          meta[0].valmin = std::min (meta_k.valmin, meta[0].valmin);
+          meta[0].valmax = std::max (meta_k.valmax, meta[0].valmax);
         }
 
       if (! geometry->isEqual (*geometry_k))
@@ -509,18 +511,18 @@ void FieldVertical::setup (const Field::Privatizer, Loader * ld, const OptionsFi
 
     }
 
-  palette = Palette (opts.palette, meta.valmin, meta.valmax);
+  palette = Palette (opts.palette, meta[0].valmin, meta[0].valmax);
 
 #pragma omp parallel for 
   for (int i = 0; i < Nx * Nz; i++)
     {
-      if (values[i] == meta.valmis)
+      if (values[i] == meta[0].valmis)
         {
           values[i] = 0.0f;
 	}
       else
         {
-          float val = (values[i] - meta.valmin) / (meta.valmax - meta.valmin);
+          float val = (values[i] - meta[0].valmin) / (meta[0].valmax - meta[0].valmin);
           values[i] = (1.0f + val * static_cast<float>(Nmax - 1)) / static_cast<float> (Nmax);
 	}
     }

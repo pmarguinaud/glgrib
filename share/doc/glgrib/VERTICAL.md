@@ -62,6 +62,22 @@
     share/glgrib/testdata/atourx01miss/pl_500_t.grib2 
     share/glgrib/testdata/atourx01miss/pl_200_t.grib2 
 ```
+## Temperature vertical sections -- tempvertical4
+![](samples/tempvertical4/TEST_0000.png)
+
+```
+    --landscape.on --grid.on --view.fov 25 --view.lat 35 --field[0].type 
+    VERTICAL --field[0].vertical.lon 0. 90. 180. 270. 0. 
+    --field[0].vertical.lat 0. 0. 0. 0. 0. 
+    --field[0].vertical.height.constant.on 
+    --field[0].vertical.height.constant.levels 0 0.05 0.10 0.20 
+    --field[0].palette.name cold_hot --field[0].path 
+    share/glgrib/testdata/glob025/pl_1000_t.grib2 
+    share/glgrib/testdata/glob025/pl_850_t.grib2 
+    share/glgrib/testdata/glob025/pl_500_t.grib2 
+    share/glgrib/testdata/glob025/pl_200_t.grib2 --colorbar.on 
+    --render.width 1200 
+```
 ## Vertical sections (wireframe mode) -- wirevertical
 ![](samples/wirevertical/TEST_0000.png)
 
@@ -72,5 +88,17 @@
     --field[1].vertical.lon 87. 87. 30. --field[1].vertical.lat 0. 70. 70. 
     --field[1].vertical.wireframe.on --field[1].path 
     share/glgrib/testdata/t31c2.4/Z.grb 
+    share/glgrib/testdata/t31c2.4/Z.grb --field[1].palette.name topo 
+```
+## Vertical sections (rough mode) -- roughvertical
+![](samples/roughvertical/TEST_0000.png)
+
+```
+    --view.lon 25 --view.lat 5 --view.fov 25 --field[0].path 
+    share/glgrib/testdata/t31c2.4/Z.grb --field[0].scalar.wireframe.on 
+    --field[1].palette.name cold_hot --field[1].type VERTICAL 
+    --field[1].vertical.lon 87. 87. 30. --field[1].vertical.lat 0. 70. 70. 
+    --field[1].vertical.rough.on --field[1].path 
     share/glgrib/testdata/t31c2.4/Z.grb 
+    share/glgrib/testdata/t31c2.4/Z.grb --field[1].palette.name topo 
 ```

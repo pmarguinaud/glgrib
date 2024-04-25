@@ -19,6 +19,16 @@ ShellInterpreter::ShellInterpreter ()
 {
 }
 
+void ShellInterpreter::lock () 
+{ 
+  mutex.lock (); 
+}
+
+void ShellInterpreter::unlock () 
+{ 
+  mutex.unlock (); 
+}
+
 void ShellInterpreter::runWset ()
 {
   glStart (gopts.render);

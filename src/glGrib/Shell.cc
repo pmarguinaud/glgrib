@@ -434,6 +434,8 @@ void Shell::execute (const std::vector<std::string> & args)
   glGribShellIfCommand (goto);
 
 #undef glGribShellIfCommand
+
+  glClearContext ();
   
 }
 

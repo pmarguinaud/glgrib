@@ -11,6 +11,7 @@
 #include <thread>
 #include <mutex>
 
+
 namespace glGrib
 {
 
@@ -36,8 +37,8 @@ public:
   void start (const std::vector<std::string> &);
   void execute (const std::vector<std::string> &) override;
 
-  void lock () override { mutex.lock (); }
-  void unlock () override { mutex.unlock (); }
+  void lock () override;
+  void unlock () override;
   void wait () override { if (getWindowSet ()) thread.join (); }
 
 private:

@@ -23,6 +23,13 @@ void glInit ()
   glDepthFunc (GL_LESS); 
   glEnable (GL_MULTISAMPLE);
 }
+
+void glClearContext ()
+{
+#ifdef GLGRIB_USE_GLFW
+  glfwMakeContextCurrent (nullptr);
+#endif
+}
   
 void OpenGLTexture::init
     (int width, int height, const void * data, GLint internalformat, GLint format)

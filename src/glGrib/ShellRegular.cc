@@ -72,6 +72,16 @@ ShellRegular::ShellRegular ()
 #endif
 }
 
+void ShellRegular::lock () 
+{ 
+  mutex.lock (); 
+}
+
+void ShellRegular::unlock () 
+{ 
+  mutex.unlock (); 
+}
+
 void ShellRegular::process_help (const std::vector<std::string> & args, Render * gwindow) 
 {
   for (const auto & h : getList ())

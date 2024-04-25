@@ -373,6 +373,7 @@ private:
 };
 
 void glInit ();
+void glClearContext ();
 
 void glStart (const OptionsRender &);
 void glStop ();

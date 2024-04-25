@@ -26,9 +26,6 @@ void ShellInterpreter::lock ()
 
 void ShellInterpreter::unlock () 
 { 
-#ifdef GLGRIB_USE_GLFW
-  glfwMakeContextCurrent (nullptr);
-#endif
   mutex.unlock (); 
 }
 

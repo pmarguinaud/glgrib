@@ -727,6 +727,8 @@ void Window::renderFrame (Shell * shell)
 
   glfwSwapBuffers (window);
 
+  glClearContext ();
+
   if (shell && shell->started ())
     shell->unlock ();
 }

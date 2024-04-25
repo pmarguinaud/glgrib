@@ -79,9 +79,6 @@ void ShellRegular::lock ()
 
 void ShellRegular::unlock () 
 { 
-#ifdef GLGRIB_USE_GLFW
-  glfwMakeContextCurrent (nullptr);
-#endif
   mutex.unlock (); 
 }
 

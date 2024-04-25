@@ -28,10 +28,7 @@ public:
   virtual ~Window ();
   void renderFrame (glGrib::Shell *);
   void run (class Shell * = nullptr) override;
-  void makeCurrent () override
-  { 
-    glfwMakeContextCurrent (window); 
-  }
+  void makeCurrent () override;
 
   void toggleCursorposDisplay ();
   void toggleFlat ()

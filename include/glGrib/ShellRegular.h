@@ -29,8 +29,8 @@ public:
     return *shellregular;
   }
 
-  void lock () override { mutex.lock (); }
-  void unlock () override { mutex.unlock (); }
+  void lock () override;
+  void unlock () override;
   void wait () override 
   { 
     if (! thread.joinable ()) 

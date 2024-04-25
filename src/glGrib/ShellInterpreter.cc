@@ -19,6 +19,19 @@ ShellInterpreter::ShellInterpreter ()
 {
 }
 
+void ShellInterpreter::lock () 
+{ 
+  mutex.lock (); 
+}
+
+void ShellInterpreter::unlock () 
+{ 
+#ifdef GLGRIB_USE_GLFW
+  glfwMakeContextCurrent (nullptr);
+#endif
+  mutex.unlock (); 
+}
+
 void ShellInterpreter::runWset ()
 {
   glStart (gopts.render);

@@ -72,6 +72,19 @@ ShellRegular::ShellRegular ()
 #endif
 }
 
+void ShellRegular::lock () 
+{ 
+  mutex.lock (); 
+}
+
+void ShellRegular::unlock () 
+{ 
+#ifdef GLGRIB_USE_GLFW
+  glfwMakeContextCurrent (nullptr);
+#endif
+  mutex.unlock (); 
+}
+
 void ShellRegular::process_help (const std::vector<std::string> & args, Render * gwindow) 
 {
   for (const auto & h : getList ())

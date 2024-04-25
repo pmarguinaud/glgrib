@@ -69,6 +69,11 @@ void keyCallback (GLFWwindow * window, int key, int scancode, int action, int mo
 
 }
 
+void Window::makeCurrent () 
+{ 
+  glfwMakeContextCurrent (window); 
+}
+
 void Window::showHelpItem (const char * mm, const char * k, const char * desc, const char * action)
 {
   char line[strlen (desc) + strlen (action) + 64];
@@ -711,12 +716,12 @@ void Window::renderFrame (Shell * shell)
 {
   nframes++;
 
+  if (shell && shell->started ())
+    shell->lock ();
+
   makeCurrent ();
 
   scene.update ();
-
-  if (shell && shell->started ())
-    shell->lock ();
 
   scene.render (); 
 

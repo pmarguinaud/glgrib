@@ -30,7 +30,7 @@ public:
 
   void run (class Shell * = nullptr) override;
 
-  void makeCurrent () override;
+  ContextGuard makeCurrent () override;
 
   void setOptions (const OptionsRender &) override;
 

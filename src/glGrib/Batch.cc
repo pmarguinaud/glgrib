@@ -56,7 +56,7 @@ void Batch::setup (const Options & o, EGLContext c)
 
 }
 
-void Batch::makeCurrent () 
+Batch::ContextGuard Batch::makeCurrent () 
 {
   eglMakeCurrent (egl->display, nullptr, nullptr, context) || preEGLError ();
 }

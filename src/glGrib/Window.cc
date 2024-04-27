@@ -69,7 +69,7 @@ void keyCallback (GLFWwindow * window, int key, int scancode, int action, int mo
 
 }
 
-void Window::makeCurrent () 
+Window::ContextGuard Window::makeCurrent () 
 { 
   glfwMakeContextCurrent (window); 
 }

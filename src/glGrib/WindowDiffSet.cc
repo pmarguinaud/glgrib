@@ -78,7 +78,10 @@ WindowDiffSet::WindowDiffSet (const Options & o)
 
   gwindow2->setOptions (opts2.render);
 
-  gwindow2->setup (opts2);
+  {
+    auto cg = gwindow2->makeCurrent ();
+    gwindow2->setup (opts2);
+  }
 
   gwindow1->setMaster ();
 

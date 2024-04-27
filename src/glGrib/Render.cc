@@ -65,7 +65,7 @@ void Render::reSize (int w, int h)
 {
   opts.width = w;
   opts.height = h;
-  makeCurrent ();
+  auto cg = makeCurrent ();
   glViewport (0, 0, opts.width, opts.height);
   scene.setViewport (opts.width, opts.height);
 }

@@ -142,13 +142,17 @@ void WindowDiffSet::updateWindows ()
   
   setDiffOptions (fopts1, fopts2, cont1->getFile () + "%" + ext, cont2->getFile () + "%" + ext);
   
-  // First window
-  gwindow1->makeCurrent ();
-  gwindow1->getScene ().setFieldOptions (0, fopts1);
+  {
+    // First window
+    auto cg = gwindow1->makeCurrent ();
+    gwindow1->getScene ().setFieldOptions (0, fopts1);
+  }
   
-  // Second window
-  gwindow2->makeCurrent ();
-  gwindow2->getScene ().setFieldOptions (0, fopts2);
+  {
+    // Second window
+    auto cg = gwindow2->makeCurrent ();
+    gwindow2->getScene ().setFieldOptions (0, fopts2);
+  }
 }
 
 }

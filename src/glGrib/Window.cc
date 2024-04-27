@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <mutex>
 
 #define GLFW_EXPOSE_NATIVE_X11
 #include <GLFW/glfw3native.h>
@@ -67,11 +68,37 @@ void keyCallback (GLFWwindow * window, int key, int scancode, int action, int mo
   gwindow->onkey (key, scancode, action, mods);
 }
 
+class GLFWContext : public Window::Context
+{
+public:
+  virtual void lock ()  
+  {   
+    mutex.lock ();
+  }   
+  virtual void unlock ()  
+  {   
+    glfwMakeContextCurrent (nullptr); 
+    mutex.unlock ();
+  }   
+private:
+  std::recursive_mutex mutex;
+};
+
+GLFWContext glfwcontext;
+
+GLFWContext * getGFLWContext ()
+{
+  return &glfwcontext;
+}
+
 }
 
 Window::ContextGuard Window::makeCurrent () 
 { 
+  Window::Context * ctx = getGFLWContext ();
+  Window::ContextGuard cg (ctx);
   glfwMakeContextCurrent (window); 
+  return cg;
 }
 
 void Window::showHelpItem (const char * mm, const char * k, const char * desc, const char * action)
@@ -632,7 +659,7 @@ void Window::debugTriangleNumber ()
 
 void Window::zoom (double xoffset, double yoffset)
 {
-  makeCurrent ();
+  auto cg = makeCurrent ();
 
   OptionsView o = scene.getViewOptions ();
 
@@ -658,7 +685,7 @@ void Window::zoom (double xoffset, double yoffset)
 
 void Window::zoomSchmidt (double xoffset, double yoffset)
 {
-  makeCurrent ();
+  auto cg = makeCurrent ();
 
   OptionsView o = scene.getViewOptions ();
 
@@ -719,7 +746,7 @@ void Window::renderFrame (Shell * shell)
   if (shell && shell->started ())
     shell->lock ();
 
-  makeCurrent ();
+  auto cg = makeCurrent ();
 
   scene.update ();
 
@@ -773,6 +800,7 @@ Window::Window ()
 Window::Window (const Options & _opts) : Render::Render (_opts)
 {
   create (_opts);
+  auto cg = makeCurrent ();
   scene.setup (_opts);
   reSize (opts.width, opts.height);
 }
@@ -828,7 +856,7 @@ void Window::createGFLWwindow (GLFWwindow * context)
 
   glfwSetWindowUserPointer (window, this);
 
-  makeCurrent ();
+  auto cg = makeCurrent ();
   glInit ();
   
   glewExperimental = true; // Needed for core profile
@@ -876,6 +904,8 @@ Render * Window::clone (bool deep)
   w->title = w->title + " #" + std::to_string (w->id_);
 
   w->createGFLWwindow (window); // use already existing context
+
+  auto cg = w->makeCurrent ();
 
   if (deep)
     COPY (scene);                 // copy the scene; invoke operator=

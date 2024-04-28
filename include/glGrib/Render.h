@@ -22,12 +22,8 @@ public:
   class Context
   {
   public:
-    virtual void lock () 
-    {
-    }
-    virtual void unlock () 
-    {
-    }
+    virtual void lock () = 0;
+    virtual void unlock () = 0;
   };
 
   class ContextGuard  

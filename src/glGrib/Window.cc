@@ -746,15 +746,15 @@ void Window::renderFrame (Shell * shell)
   if (shell && shell->started ())
     shell->lock ();
 
-  auto cg = getContext ();
+  {
+    auto cg = getContext ();
 
-  scene.update ();
+    scene.update ();
 
-  scene.render (); 
+    scene.render (); 
 
-  glfwSwapBuffers (window);
-
-  glClearContext ();
+    glfwSwapBuffers (window);
+  }
 
   if (shell && shell->started ())
     shell->unlock ();

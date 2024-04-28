@@ -7,7 +7,7 @@ ifeq ($(BUILD), )
 
 all:
 	$(MAKE) BUILD=glfw all
-	$(MAKE) BUILD=egl
+#$(MAKE) BUILD=egl
 
 clean:
 	$(MAKE) BUILD=glfw clean

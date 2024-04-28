@@ -39,6 +39,14 @@ public:
       if (context != nullptr)
         context->unlock ();
     }
+    void clear ()
+    {
+      if (context != nullptr)
+        {
+          context->unlock ();
+          context = nullptr;
+        }
+    }
   private:
     Context * context;
   };

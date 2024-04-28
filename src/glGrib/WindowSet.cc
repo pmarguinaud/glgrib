@@ -74,7 +74,7 @@ void WindowSet::updateWindows ()
       if (f == nullptr)
         continue;
 
-      w->makeCurrent ();
+      auto cg = w->getContext ();
 
       int d = 0.0f;
 

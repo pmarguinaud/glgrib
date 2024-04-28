@@ -19,11 +19,43 @@ class Render
 {
 public:
 
+  class Context
+  {
+  public:
+    virtual void lock () = 0;
+    virtual void unlock () = 0;
+  };
+
+  class ContextGuard  
+  {
+  public:
+    ContextGuard (Context * ctx = nullptr) : context (ctx)
+    {
+      if (context != nullptr)
+        context->lock ();
+    }
+    ~ContextGuard ()
+    {
+      if (context != nullptr)
+        context->unlock ();
+    }
+    void clear ()
+    {
+      if (context != nullptr)
+        {
+          context->unlock ();
+          context = nullptr;
+        }
+    }
+  private:
+    Context * context;
+  };
+
   Render () {}
   explicit Render (const Options &);
   virtual ~Render () {}
   virtual void run (class Shell * = nullptr) = 0;
-  virtual void makeCurrent () = 0;
+  virtual ContextGuard getContext () = 0;
 
   Scene & getScene ()
   {

@@ -33,9 +33,7 @@ void Shell::do_snapshot (const std::vector<std::string> & args, Render * gwindow
 
 void Shell::do_sleep (const std::vector<std::string> & args, Render * gwindow)
 {
-  unlock ();
   sleep (std::stoi (args[1]));
-  lock ();
 }
 
 void Shell::do_clone (const std::vector<std::string> & args, Render * gwindow)
@@ -406,37 +404,41 @@ void Shell::execute (const std::vector<std::string> & args)
       windowid = gwindow->id ();
     }
 
-  gwindow->makeCurrent ();
+  auto cg = gwindow->getContext ();
 
-#define glGribShellIfCommand(command) \
+#define glGribShellIfCommand(wait, command) \
   do                                       \
   {                                        \
     if (#command == args[0])               \
       {                                    \
+        if (wait)                          \
+          {                                \
+            cg.clear ();                   \
+	    unlock ();                     \
+	  }                                \
         do_##command      (args, gwindow); \
         process_##command (args, gwindow); \
+        if (wait)                          \
+	  lock ();                         \
       }                                    \
   } while (0)
 
-
-  glGribShellIfCommand (close);
-  glGribShellIfCommand (snapshot);
-  glGribShellIfCommand (sleep);
-  glGribShellIfCommand (clone);
-  glGribShellIfCommand (clear);
-  glGribShellIfCommand (get);
-  glGribShellIfCommand (json);
-  glGribShellIfCommand (list);
-  glGribShellIfCommand (resolve);
-  glGribShellIfCommand (set);
-  glGribShellIfCommand (window);
-  glGribShellIfCommand (help);
-  glGribShellIfCommand (goto);
+  glGribShellIfCommand (0, close);
+  glGribShellIfCommand (0, snapshot);
+  glGribShellIfCommand (1, sleep);
+  glGribShellIfCommand (0, clone);
+  glGribShellIfCommand (0, clear);
+  glGribShellIfCommand (0, get);
+  glGribShellIfCommand (0, json);
+  glGribShellIfCommand (0, list);
+  glGribShellIfCommand (0, resolve);
+  glGribShellIfCommand (0, set);
+  glGribShellIfCommand (0, window);
+  glGribShellIfCommand (0, help);
+  glGribShellIfCommand (0, goto);
 
 #undef glGribShellIfCommand
 
-  glClearContext ();
-  
 }
 
 void Shell::setWindowSet (WindowSet * _wset)

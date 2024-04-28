@@ -44,7 +44,7 @@ void Batch::setup (const Options & o, EGLContext c)
   context = eglCreateContext (egl->display, egl->config, c, ctxAttr); 
   context || preEGLError ();
 
-  makeCurrent ();
+  auto cg = getContext ();
 
   scene.setup (o);
 
@@ -56,9 +56,11 @@ void Batch::setup (const Options & o, EGLContext c)
 
 }
 
-void Batch::makeCurrent () 
+Batch::ContextGuard Batch::getContext () 
 {
+  Batch::ContextGuard cg;
   eglMakeCurrent (egl->display, nullptr, nullptr, context) || preEGLError ();
+  return cg;
 }
 
 void Batch::run (Shell * shell)

@@ -9,6 +9,7 @@ namespace glGrib
 WindowOffscreen::WindowOffscreen (const Options & _opts) 
 {
   create (_opts);
+  auto cg = makeCurrent ();
   getScene ().setup (_opts);
   reSize (getOptions ().width, getOptions ().height);
   frames = _opts.render.offscreen.frames;
@@ -16,12 +17,14 @@ WindowOffscreen::WindowOffscreen (const Options & _opts)
 
 void WindowOffscreen::setHints ()
 {
+  auto cg = makeCurrent ();
   Window::setHints ();
   glfwWindowHint (GLFW_VISIBLE, GLFW_FALSE);
 }
 
 void WindowOffscreen::run (class Shell * shell)
 {
+  auto cg = makeCurrent ();
   const auto & opts = getOptions ();
   for (int i = 0; i < frames; i++)
     {

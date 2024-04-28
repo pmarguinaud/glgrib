@@ -71,11 +71,11 @@ void keyCallback (GLFWwindow * window, int key, int scancode, int action, int mo
 class GLFWContext : public Window::Context
 {
 public:
-  virtual void lock ()  
+  virtual void lock () override
   {   
     mutex.lock ();
   }   
-  virtual void unlock ()  
+  virtual void unlock () override
   {   
     glfwMakeContextCurrent (nullptr); 
     mutex.unlock ();
@@ -772,6 +772,8 @@ void Window::run (Shell * shell)
 
 void Window::setHints ()
 {
+  auto cg = makeCurrent ();
+  
   if (opts.antialiasing.on)
     glfwWindowHint (GLFW_SAMPLES, opts.antialiasing.samples);
 

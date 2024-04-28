@@ -51,7 +51,7 @@ public:
   explicit Render (const Options &);
   virtual ~Render () {}
   virtual void run (class Shell * = nullptr) = 0;
-  virtual ContextGuard makeCurrent () = 0;
+  virtual ContextGuard getContext () = 0;
 
   Scene & getScene ()
   {

@@ -61,7 +61,7 @@ void WindowReviewSet::updateWindows ()
   fopts.path.resize (1);
   fopts.path[0] = cont->getFile () + "%" + ext;
 
-  auto cg = gwindow->makeCurrent ();
+  auto cg = gwindow->getContext ();
   gwindow->getScene ().setFieldOptions (0, fopts);
   
 }

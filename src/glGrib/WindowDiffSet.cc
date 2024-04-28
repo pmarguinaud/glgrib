@@ -79,7 +79,7 @@ WindowDiffSet::WindowDiffSet (const Options & o)
   gwindow2->setOptions (opts2.render);
 
   {
-    auto cg = gwindow2->makeCurrent ();
+    auto cg = gwindow2->getContext ();
     gwindow2->setup (opts2);
   }
 
@@ -147,13 +147,13 @@ void WindowDiffSet::updateWindows ()
   
   {
     // First window
-    auto cg = gwindow1->makeCurrent ();
+    auto cg = gwindow1->getContext ();
     gwindow1->getScene ().setFieldOptions (0, fopts1);
   }
   
   {
     // Second window
-    auto cg = gwindow2->makeCurrent ();
+    auto cg = gwindow2->getContext ();
     gwindow2->getScene ().setFieldOptions (0, fopts2);
   }
 }

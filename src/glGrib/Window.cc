@@ -93,7 +93,7 @@ GLFWContext * getGFLWContext ()
 
 }
 
-Window::ContextGuard Window::makeCurrent () 
+Window::ContextGuard Window::getContext () 
 { 
   Window::Context * ctx = getGFLWContext ();
   Window::ContextGuard cg (ctx);
@@ -659,7 +659,7 @@ void Window::debugTriangleNumber ()
 
 void Window::zoom (double xoffset, double yoffset)
 {
-  auto cg = makeCurrent ();
+  auto cg = getContext ();
 
   OptionsView o = scene.getViewOptions ();
 
@@ -685,7 +685,7 @@ void Window::zoom (double xoffset, double yoffset)
 
 void Window::zoomSchmidt (double xoffset, double yoffset)
 {
-  auto cg = makeCurrent ();
+  auto cg = getContext ();
 
   OptionsView o = scene.getViewOptions ();
 
@@ -746,7 +746,7 @@ void Window::renderFrame (Shell * shell)
   if (shell && shell->started ())
     shell->lock ();
 
-  auto cg = makeCurrent ();
+  auto cg = getContext ();
 
   scene.update ();
 
@@ -772,7 +772,7 @@ void Window::run (Shell * shell)
 
 void Window::setHints ()
 {
-  auto cg = makeCurrent ();
+  auto cg = getContext ();
   
   if (opts.antialiasing.on)
     glfwWindowHint (GLFW_SAMPLES, opts.antialiasing.samples);
@@ -802,7 +802,7 @@ Window::Window ()
 Window::Window (const Options & _opts) : Render::Render (_opts)
 {
   create (_opts);
-  auto cg = makeCurrent ();
+  auto cg = getContext ();
   scene.setup (_opts);
   reSize (opts.width, opts.height);
 }
@@ -858,7 +858,7 @@ void Window::createGFLWwindow (GLFWwindow * context)
 
   glfwSetWindowUserPointer (window, this);
 
-  auto cg = makeCurrent ();
+  auto cg = getContext ();
   glInit ();
   
   glewExperimental = true; // Needed for core profile
@@ -907,7 +907,7 @@ Render * Window::clone (bool deep)
 
   w->createGFLWwindow (window); // use already existing context
 
-  auto cg = w->makeCurrent ();
+  auto cg = w->getContext ();
 
   if (deep)
     COPY (scene);                 // copy the scene; invoke operator=

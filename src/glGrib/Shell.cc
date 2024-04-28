@@ -406,7 +406,7 @@ void Shell::execute (const std::vector<std::string> & args)
       windowid = gwindow->id ();
     }
 
-  auto cg = gwindow->makeCurrent ();
+  auto cg = gwindow->getContext ();
 
 #define glGribShellIfCommand(command) \
   do                                       \

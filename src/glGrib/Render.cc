@@ -80,6 +80,8 @@ void Render::snapshot (const std::string & format)
 {
   const auto & opts = getOptions ();
 
+  auto cg = getContext ();
+
   BufferPtr<unsigned char> rgb (opts.width * opts.height * 4);
 
   // glReadPixels does not seem to work well with all combinations of width/height
@@ -156,6 +158,8 @@ void Render::snapshot (const std::string & format)
 void Render::framebuffer (const std::string & format)
 {
   const auto & opts = getOptions ();
+
+  auto cg = getContext ();
 
   if (opts.antialiasing.on)
     {

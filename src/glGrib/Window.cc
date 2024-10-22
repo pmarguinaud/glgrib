@@ -174,17 +174,25 @@ void Window::onkey (int key, int scancode, int action, int mods, bool help)
     ALT     = GLFW_MOD_ALT
   };
 
-#define glGribWindowIfKey(mm, k, desc, action) \
-do { \
-if (help)                                       \
-  {                                             \
-    showHelpItem (#mm, #k, #desc, #action);     \
-  }                                             \
-else if ((key == GLFW_KEY_##k) && (mm == mods)) \
-  {                                             \
-    action;                                     \
-    return;                                     \
-  }                                             \
+#define glGribWindowIfKey(mm, k, desc, action, ctx) \
+do {                                                \
+if (help)                                           \
+  {                                                 \
+    showHelpItem (#mm, #k, #desc, #action);         \
+  }                                                 \
+else if ((key == GLFW_KEY_##k) && (mm == mods))     \
+  {                                                 \
+    if (ctx)                                        \
+      {                                             \
+        auto cg = getContext ();                    \
+        action;                                     \
+      }                                             \
+    else                                            \
+      {                                             \
+        action;                                     \
+      }                                             \
+    return;                                         \
+  }                                                 \
 } while (0)
 
   if ((action == GLFW_PRESS || action == GLFW_REPEAT) || help)
@@ -193,105 +201,105 @@ else if ((key == GLFW_KEY_##k) && (mm == mods)) \
 //    std::cout << glfwGetKeyName (key, scancode) << std::endl;
 //    std::cout << glfwGetKeyName (key, glfwGetKeyScancode (key)) << std::endl;
 
-      glGribWindowIfKey (CONTROL, F           ,  Toggle full screen mode, toggleFullScreen ());
-      glGribWindowIfKey (NONE,    PAGE_UP     ,  One field forward,  next = true);
-      glGribWindowIfKey (NONE,    PAGE_DOWN   ,  One field backward, prev = true);
-      glGribWindowIfKey (NONE,    T     ,  Hide/show location & field value at cursor position  , toggleCursorposDisplay  ());
-      glGribWindowIfKey (NONE,    TAB   ,  Enable/disable earth rotation                        , toggleRotate            ());
-      glGribWindowIfKey (CONTROL, TAB   ,  Enable/disable light rotation                        , toggleRotateLight       ());
-      glGribWindowIfKey (NONE,    Y     ,  Display landscape or current field as wireframe      , toggleWireframe         ());
-      glGribWindowIfKey (NONE,    D     ,  Use a framebuffer and generate a snapshot            , framebuffer             ());
-      glGribWindowIfKey (NONE,    W     ,  Increase field of view                               , widenFov                ());
-      glGribWindowIfKey (NONE,    S     ,  Write a snapshot (PNG format)                        , snapshot                ()); 
-      glGribWindowIfKey (NONE,    Q     ,  Decrease field of view                               , shrinkFov               ());
-      glGribWindowIfKey (NONE,    P     ,  Make earth flat/show orography                       , toggleFlat              ());
-      glGribWindowIfKey (NONE,    6     ,  Increase size of current field                       , increaseRadius          ());
-      glGribWindowIfKey (NONE,    EQUAL ,  Decrease size of current field                       , decreaseRadius          ());
-      glGribWindowIfKey (NONE,    SPACE ,  Reset view                                           , resetView               ());
+      glGribWindowIfKey (CONTROL, F           ,  Toggle full screen mode, toggleFullScreen (),             0);
+      glGribWindowIfKey (NONE,    PAGE_UP     ,  One field forward,  next = true,                          0);
+      glGribWindowIfKey (NONE,    PAGE_DOWN   ,  One field backward, prev = true,                          0);
+      glGribWindowIfKey (NONE,    T     ,  Hide/show location & field value at cursor position  , toggleCursorposDisplay  (), 0);
+      glGribWindowIfKey (NONE,    TAB   ,  Enable/disable earth rotation                        , toggleRotate            (), 0);
+      glGribWindowIfKey (CONTROL, TAB   ,  Enable/disable light rotation                        , toggleRotateLight       (), 0);
+      glGribWindowIfKey (NONE,    Y     ,  Display landscape or current field as wireframe      , toggleWireframe         (), 0);
+      glGribWindowIfKey (NONE,    D     ,  Use a framebuffer and generate a snapshot            , framebuffer             (), 1);
+      glGribWindowIfKey (NONE,    W     ,  Increase field of view                               , widenFov                (), 1);
+      glGribWindowIfKey (NONE,    S     ,  Write a snapshot (PNG format)                        , snapshot                (), 1); 
+      glGribWindowIfKey (NONE,    Q     ,  Decrease field of view                               , shrinkFov               (), 1);
+      glGribWindowIfKey (NONE,    P     ,  Make earth flat/show orography                       , toggleFlat              (), 1);
+      glGribWindowIfKey (NONE,    6     ,  Increase size of current field                       , increaseRadius          (), 1);
+      glGribWindowIfKey (NONE,    EQUAL ,  Decrease size of current field                       , decreaseRadius          (), 1);
+      glGribWindowIfKey (NONE,    SPACE ,  Reset view                                           , resetView               (), 1);
 
-      glGribWindowIfKey (SHIFT,   LEFT  ,  Roll camera leftward                                 , rollLeft                ());
-      glGribWindowIfKey (SHIFT,   RIGHT ,  Roll camera rightward                                , rollRight               ());
+      glGribWindowIfKey (SHIFT,   LEFT  ,  Roll camera leftward                                 , rollLeft                (), 1);
+      glGribWindowIfKey (SHIFT,   RIGHT ,  Roll camera rightward                                , rollRight               (), 1);
 
-      glGribWindowIfKey (CONTROL, UP    ,  Rotate camera upward                                 , rotateUp                ());
-      glGribWindowIfKey (CONTROL, DOWN  ,  Rotate camera downward                               , rotateDown              ());
-      glGribWindowIfKey (CONTROL, LEFT  ,  Rotate camera leftward                               , rotateLeft              ());
-      glGribWindowIfKey (CONTROL, RIGHT ,  Rotate camera rightward                              , rotateRight             ());
+      glGribWindowIfKey (CONTROL, UP    ,  Rotate camera upward                                 , rotateUp                (), 1);
+      glGribWindowIfKey (CONTROL, DOWN  ,  Rotate camera downward                               , rotateDown              (), 1);
+      glGribWindowIfKey (CONTROL, LEFT  ,  Rotate camera leftward                               , rotateLeft              (), 1);
+      glGribWindowIfKey (CONTROL, RIGHT ,  Rotate camera rightward                              , rotateRight             (), 1);
 
-      glGribWindowIfKey (NONE,    UP    ,  Move northward                                       , rotateNorth             ());
-      glGribWindowIfKey (NONE,    DOWN  ,  Move southward                                       , rotateSouth             ());
-      glGribWindowIfKey (NONE,    LEFT  ,  Move westward                                        , rotateWest              ());
-      glGribWindowIfKey (NONE,    RIGHT ,  Move eastward                                        , rotateEast              ());
+      glGribWindowIfKey (NONE,    UP    ,  Move northward                                       , rotateNorth             (), 1);
+      glGribWindowIfKey (NONE,    DOWN  ,  Move southward                                       , rotateSouth             (), 1);
+      glGribWindowIfKey (NONE,    LEFT  ,  Move westward                                        , rotateWest              (), 1);
+      glGribWindowIfKey (NONE,    RIGHT ,  Move eastward                                        , rotateEast              (), 1);
 
-      glGribWindowIfKey (NONE,    F1    ,  Select field #1                                      , selectField            (0));
-      glGribWindowIfKey (NONE,    F2    ,  Select field #2                                      , selectField            (1));
-      glGribWindowIfKey (NONE,    F3    ,  Select field #3                                      , selectField            (2));
-      glGribWindowIfKey (NONE,    F4    ,  Select field #4                                      , selectField            (3));
-      glGribWindowIfKey (NONE,    F5    ,  Select field #5                                      , selectField            (4));
-      glGribWindowIfKey (NONE,    F6    ,  Select field #6                                      , selectField            (5));
-      glGribWindowIfKey (NONE,    F7    ,  Select field #7                                      , selectField            (6));
-      glGribWindowIfKey (NONE,    F8    ,  Select field #8                                      , selectField            (7));
-      glGribWindowIfKey (NONE,    F9    ,  Select field #9                                      , selectField            (8));
-      glGribWindowIfKey (NONE,    F10   ,  Select field #10                                     , selectField            (9));
+      glGribWindowIfKey (NONE,    F1    ,  Select field #1                                      , selectField            (0), 0);
+      glGribWindowIfKey (NONE,    F2    ,  Select field #2                                      , selectField            (1), 0);
+      glGribWindowIfKey (NONE,    F3    ,  Select field #3                                      , selectField            (2), 0);
+      glGribWindowIfKey (NONE,    F4    ,  Select field #4                                      , selectField            (3), 0);
+      glGribWindowIfKey (NONE,    F5    ,  Select field #5                                      , selectField            (4), 0);
+      glGribWindowIfKey (NONE,    F6    ,  Select field #6                                      , selectField            (5), 0);
+      glGribWindowIfKey (NONE,    F7    ,  Select field #7                                      , selectField            (6), 0);
+      glGribWindowIfKey (NONE,    F8    ,  Select field #8                                      , selectField            (7), 0);
+      glGribWindowIfKey (NONE,    F9    ,  Select field #9                                      , selectField            (8), 0);
+      glGribWindowIfKey (NONE,    F10   ,  Select field #10                                     , selectField            (9), 0);
 
-      glGribWindowIfKey (CONTROL, F1    ,  Show only field #1                                   , { hideAllFields (); selectField (0); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F2    ,  Show only field #2                                   , { hideAllFields (); selectField (1); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F3    ,  Show only field #3                                   , { hideAllFields (); selectField (2); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F4    ,  Show only field #4                                   , { hideAllFields (); selectField (3); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F5    ,  Show only field #5                                   , { hideAllFields (); selectField (4); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F6    ,  Show only field #6                                   , { hideAllFields (); selectField (5); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F7    ,  Show only field #7                                   , { hideAllFields (); selectField (6); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F8    ,  Show only field #8                                   , { hideAllFields (); selectField (7); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F9    ,  Show only field #9                                   , { hideAllFields (); selectField (8); toggleHideField (); });
-      glGribWindowIfKey (CONTROL, F10   ,  Show only field #10                                  , { hideAllFields (); selectField (9); toggleHideField (); });
+      glGribWindowIfKey (CONTROL, F1    ,  Show only field #1                                   , { hideAllFields (); selectField (0); toggleHideField (); }, 0);
+      glGribWindowIfKey (CONTROL, F2    ,  Show only field #2                                   , { hideAllFields (); selectField (1); toggleHideField (); }, 0);
+      glGribWindowIfKey (CONTROL, F3    ,  Show only field #3                                   , { hideAllFields (); selectField (2); toggleHideField (); }, 0);
+      glGribWindowIfKey (CONTROL, F4    ,  Show only field #4                                   , { hideAllFields (); selectField (3); toggleHideField (); }, 0);
+      glGribWindowIfKey (CONTROL, F5    ,  Show only field #5                                   , { hideAllFields (); selectField (4); toggleHideField (); }, 0);
+      glGribWindowIfKey (CONTROL, F6    ,  Show only field #6                                   , { hideAllFields (); selectField (5); toggleHideField (); }, 0);
+      glGribWindowIfKey (CONTROL, F7    ,  Show only field #7                                   , { hideAllFields (); selectField (6); toggleHideField (); }, 0);
+      glGribWindowIfKey (CONTROL, F8    ,  Show only field #8                                   , { hideAllFields (); selectField (7); toggleHideField (); }, 0);
+      glGribWindowIfKey (CONTROL, F9    ,  Show only field #9                                   , { hideAllFields (); selectField (8); toggleHideField (); }, 0);
+      glGribWindowIfKey (CONTROL, F10   ,  Show only field #10                                  , { hideAllFields (); selectField (9); toggleHideField (); }, 0);
 
-      glGribWindowIfKey (SHIFT,   F1    ,  Select geopoints #1                                  , selectGeoPoints       (0));
-      glGribWindowIfKey (SHIFT,   F2    ,  Select geopoints #2                                  , selectGeoPoints       (1));
-      glGribWindowIfKey (SHIFT,   F3    ,  Select geopoints #3                                  , selectGeoPoints       (2));
-      glGribWindowIfKey (SHIFT,   F4    ,  Select geopoints #4                                  , selectGeoPoints       (3));
-      glGribWindowIfKey (SHIFT,   F5    ,  Select geopoints #5                                  , selectGeoPoints       (4));
-      glGribWindowIfKey (SHIFT,   F6    ,  Select geopoints #6                                  , selectGeoPoints       (5));
-      glGribWindowIfKey (SHIFT,   F7    ,  Select geopoints #7                                  , selectGeoPoints       (6));
-      glGribWindowIfKey (SHIFT,   F8    ,  Select geopoints #8                                  , selectGeoPoints       (7));
-      glGribWindowIfKey (SHIFT,   F9    ,  Select geopoints #9                                  , selectGeoPoints       (8));
-      glGribWindowIfKey (SHIFT,   F10   ,  Select geopoints #10                                 , selectGeoPoints       (9));
+      glGribWindowIfKey (SHIFT,   F1    ,  Select geopoints #1                                  , selectGeoPoints       (0), 0);
+      glGribWindowIfKey (SHIFT,   F2    ,  Select geopoints #2                                  , selectGeoPoints       (1), 0);
+      glGribWindowIfKey (SHIFT,   F3    ,  Select geopoints #3                                  , selectGeoPoints       (2), 0);
+      glGribWindowIfKey (SHIFT,   F4    ,  Select geopoints #4                                  , selectGeoPoints       (3), 0);
+      glGribWindowIfKey (SHIFT,   F5    ,  Select geopoints #5                                  , selectGeoPoints       (4), 0);
+      glGribWindowIfKey (SHIFT,   F6    ,  Select geopoints #6                                  , selectGeoPoints       (5), 0);
+      glGribWindowIfKey (SHIFT,   F7    ,  Select geopoints #7                                  , selectGeoPoints       (6), 0);
+      glGribWindowIfKey (SHIFT,   F8    ,  Select geopoints #8                                  , selectGeoPoints       (7), 0);
+      glGribWindowIfKey (SHIFT,   F9    ,  Select geopoints #9                                  , selectGeoPoints       (8), 0);
+      glGribWindowIfKey (SHIFT,   F10   ,  Select geopoints #10                                 , selectGeoPoints       (9), 0);
 
 
-      glGribWindowIfKey (CONTROL, H     ,  Show all fields                                      , showAllFields          ());
-      glGribWindowIfKey (ALT,     H     ,  Show help                                            , showHelp               ());
+      glGribWindowIfKey (CONTROL, H     ,  Show all fields                                      , showAllFields          (), 0);
+      glGribWindowIfKey (ALT,     H     ,  Show help                                            , showHelp               (), 0);
 
-      glGribWindowIfKey (NONE,    H     ,  Show/hide selected field                             , toggleHideField        ());
-      glGribWindowIfKey (NONE,    G     ,  Increase size of current field                       , scaleFieldUp           ());
-      glGribWindowIfKey (CONTROL, G     ,  Decrease size of current field                       , scaleFieldDown         ());
-      glGribWindowIfKey (NONE,    L     ,  Turn on/off the light                                , toggleLight            ());
-      glGribWindowIfKey (CONTROL, L     ,  Make current window master window                    , toggleMaster           ());
+      glGribWindowIfKey (NONE,    H     ,  Show/hide selected field                             , toggleHideField        (), 0);
+      glGribWindowIfKey (NONE,    G     ,  Increase size of current field                       , scaleFieldUp           (), 0);
+      glGribWindowIfKey (CONTROL, G     ,  Decrease size of current field                       , scaleFieldDown         (), 0);
+      glGribWindowIfKey (NONE,    L     ,  Turn on/off the light                                , toggleLight            (), 0);
+      glGribWindowIfKey (CONTROL, L     ,  Make current window master window                    , toggleMaster           (), 0);
 
       if (opts.fixlandscape.on)
       {
-      glGribWindowIfKey (CONTROL, UP    ,                                                       , fixLandscape (+1,  0,  0,  0));
-      glGribWindowIfKey (CONTROL, DOWN  ,                                                       , fixLandscape (-1,  0,  0,  0));
-      glGribWindowIfKey (CONTROL, LEFT  ,                                                       , fixLandscape ( 0, -1,  0,  0));
-      glGribWindowIfKey (CONTROL, RIGHT ,                                                       , fixLandscape ( 0, +1,  0,  0));
-      glGribWindowIfKey (ALT,     UP    ,                                                       , fixLandscape ( 0,  0, +1,  0));
-      glGribWindowIfKey (ALT,     DOWN  ,                                                       , fixLandscape ( 0,  0, -1,  0));
-      glGribWindowIfKey (ALT,     LEFT  ,                                                       , fixLandscape ( 0,  0,  0, -1));
-      glGribWindowIfKey (ALT,     RIGHT ,                                                       , fixLandscape ( 0,  0,  0, +1));
+      glGribWindowIfKey (CONTROL, UP    ,                                                       , fixLandscape (+1,  0,  0,  0), 0);
+      glGribWindowIfKey (CONTROL, DOWN  ,                                                       , fixLandscape (-1,  0,  0,  0), 0);
+      glGribWindowIfKey (CONTROL, LEFT  ,                                                       , fixLandscape ( 0, -1,  0,  0), 0);
+      glGribWindowIfKey (CONTROL, RIGHT ,                                                       , fixLandscape ( 0, +1,  0,  0), 0);
+      glGribWindowIfKey (ALT,     UP    ,                                                       , fixLandscape ( 0,  0, +1,  0), 0);
+      glGribWindowIfKey (ALT,     DOWN  ,                                                       , fixLandscape ( 0,  0, -1,  0), 0);
+      glGribWindowIfKey (ALT,     LEFT  ,                                                       , fixLandscape ( 0,  0,  0, -1), 0);
+      glGribWindowIfKey (ALT,     RIGHT ,                                                       , fixLandscape ( 0,  0,  0, +1), 0);
       }
       else
       {
-      glGribWindowIfKey (CONTROL, UP    ,  Move light northwards                                , rotateLightNorth       ());
-      glGribWindowIfKey (CONTROL, DOWN  ,  Move light southwards                                , rotateLightSouth       ());
-      glGribWindowIfKey (CONTROL, LEFT  ,  Move light westwards                                 , rotateLightWest        ());
-      glGribWindowIfKey (CONTROL, RIGHT ,  Move light eastwards                                 , rotateLightEast        ());
+      glGribWindowIfKey (CONTROL, UP    ,  Move light northwards                                , rotateLightNorth       (), 0);
+      glGribWindowIfKey (CONTROL, DOWN  ,  Move light southwards                                , rotateLightSouth       (), 0);
+      glGribWindowIfKey (CONTROL, LEFT  ,  Move light westwards                                 , rotateLightWest        (), 0);
+      glGribWindowIfKey (CONTROL, RIGHT ,  Move light eastwards                                 , rotateLightEast        (), 0);
       }
 
-      glGribWindowIfKey (CONTROL, C     ,  Clone current window                                 , duplicate              ());
-      glGribWindowIfKey (CONTROL, P     ,  Try next projection                                  , nextProjection         ());
-      glGribWindowIfKey (SHIFT,   P     ,  Try next transformation                              , toggleTransformType    ());
-      glGribWindowIfKey (CONTROL, S     ,  Save current palette                                 , saveCurrentPalette     ());
-      glGribWindowIfKey (ALT,     S     ,  Resample current field                               , resampleCurrentField   ());
-      glGribWindowIfKey (NONE,    V     ,  Hide/show vector arrows                              , toggleShowVector       ());
-      glGribWindowIfKey (CONTROL, V     ,  Hide/show vector norm                                , toggleShowNorm         ());
-      glGribWindowIfKey (NONE,    U     ,  Start shell                                          , startShell             ());
+      glGribWindowIfKey (CONTROL, C     ,  Clone current window                                 , duplicate              (), 0);
+      glGribWindowIfKey (CONTROL, P     ,  Try next projection                                  , nextProjection         (), 0);
+      glGribWindowIfKey (SHIFT,   P     ,  Try next transformation                              , toggleTransformType    (), 0);
+      glGribWindowIfKey (CONTROL, S     ,  Save current palette                                 , saveCurrentPalette     (), 0);
+      glGribWindowIfKey (ALT,     S     ,  Resample current field                               , resampleCurrentField   (), 0);
+      glGribWindowIfKey (NONE,    V     ,  Hide/show vector arrows                              , toggleShowVector       (), 0);
+      glGribWindowIfKey (CONTROL, V     ,  Hide/show vector norm                                , toggleShowNorm         (), 0);
+      glGribWindowIfKey (NONE,    U     ,  Start shell                                          , startShell             (), 0);
 
 
     }
@@ -637,6 +645,7 @@ void Window::centerViewAtCursorPos ()
   float lon, lat;
   if (getLatLonFromCursor (&lat, &lon))
     {
+      auto cg = getContext ();
       o.lon = lon;
       o.lat = lat;
       scene.setViewOptions (o);

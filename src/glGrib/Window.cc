@@ -613,20 +613,28 @@ void Window::onclick (int button, int action, int mods)
     ALT     = GLFW_MOD_ALT
   };
 
-#define ifClick(mm, k, action) \
+#define ifClick(mm, k, action, ctx) \
 do { \
 if ((button == GLFW_MOUSE_BUTTON_##k) && (mm == mods)) \
   {                                                    \
-    action;                                            \
+    if (ctx)                                           \
+      {                                                \
+        auto cg = getContext ();                       \
+        action;                                        \
+      }                                                \
+    else                                               \
+      {                                                \
+         action;                                       \
+      }                                                \
     return;                                            \
   }                                                    \
 } while (0)
 
   if (action == GLFW_PRESS) 
     {
-      ifClick (NONE,    LEFT, centerViewAtCursorPos ());
-      ifClick (CONTROL, LEFT, centerLightAtCursorPos ());
-      ifClick (ALT,     LEFT, debugTriangleNumber ());
+      ifClick (NONE,    LEFT, centerViewAtCursorPos  (), 1);
+      ifClick (CONTROL, LEFT, centerLightAtCursorPos (), 1);
+      ifClick (ALT,     LEFT, debugTriangleNumber    (), 0);
     }
 
 #undef ifClick
@@ -645,7 +653,6 @@ void Window::centerViewAtCursorPos ()
   float lon, lat;
   if (getLatLonFromCursor (&lat, &lon))
     {
-      auto cg = getContext ();
       o.lon = lon;
       o.lat = lat;
       scene.setViewOptions (o);

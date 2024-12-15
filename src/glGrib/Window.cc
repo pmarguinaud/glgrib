@@ -599,8 +599,6 @@ void Window::toggleCursorposDisplay ()
   else
     glfwSetCursorPosCallback (window, cursorPositionCallback);
   cursorpos = ! cursorpos;
-  scene.setMessage (std::string (""));
-  glfwSetWindowTitle (window, title.c_str ());
 }
 
 void Window::onclick (int button, int action, int mods)

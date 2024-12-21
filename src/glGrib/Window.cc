@@ -204,7 +204,7 @@ else if ((key == GLFW_KEY_##k) && (mm == mods))     \
       glGribWindowIfKey (CONTROL, F           ,  Toggle full screen mode, toggleFullScreen (),             0);
       glGribWindowIfKey (NONE,    PAGE_UP     ,  One field forward,  next = true,                          0);
       glGribWindowIfKey (NONE,    PAGE_DOWN   ,  One field backward, prev = true,                          0);
-      glGribWindowIfKey (NONE,    T     ,  Hide/show location & field value at cursor position  , toggleCursorposDisplay  (), 0);
+      glGribWindowIfKey (NONE,    T     ,  Hide/show location & field value at cursor position  , toggleCursorposDisplay  (), 1);
       glGribWindowIfKey (NONE,    TAB   ,  Enable/disable earth rotation                        , toggleRotate            (), 0);
       glGribWindowIfKey (CONTROL, TAB   ,  Enable/disable light rotation                        , toggleRotateLight       (), 0);
       glGribWindowIfKey (NONE,    Y     ,  Display landscape or current field as wireframe      , toggleWireframe         (), 0);
@@ -594,11 +594,23 @@ void Window::displayCursorPosition (double xpos, double ypos)
 
 void Window::toggleCursorposDisplay ()
 {
-  if (cursorpos)
-    glfwSetCursorPosCallback (window, nullptr);
-  else
-    glfwSetCursorPosCallback (window, cursorPositionCallback);
   cursorpos = ! cursorpos;
+
+  scene.setMessage (std::string (""));
+  glfwSetWindowTitle (window, title.c_str ());
+
+  if (cursorpos)
+    {
+      double xpos = 0, ypos = 0;
+      glfwSetCursorPosCallback (window, cursorPositionCallback);
+      glfwGetCursorPos (window, &xpos, &ypos);
+      displayCursorPosition (xpos, ypos);
+    }
+  else
+    {
+      glfwSetCursorPosCallback (window, nullptr);
+    }
+
 }
 
 void Window::onclick (int button, int action, int mods)

@@ -103,8 +103,8 @@ Window::ContextGuard Window::getContext ()
 
 void Window::showHelpItem (const char * mm, const char * k, const char * desc, const char * action)
 {
-  char line[strlen (desc) + strlen (action) + 64];
   char key[32];
+
   key[0] = '\0';
   if (strcmp (mm, "NONE") != 0)
     {
@@ -113,13 +113,20 @@ void Window::showHelpItem (const char * mm, const char * k, const char * desc, c
     }
   strcat (key, k);
 
-  sprintf (line, "%-32s %64s\n", key, strlen (desc) ? desc : action);
+  int line_len = 32 + strlen (desc) + strlen (action) + 64;
+  char line[line_len+1];
 
-  int len = strlen (line);
-  for (int i = 0; i < len; i++)
-    if (line[i] == ' ')
-      line[i] = '.';
-  printf ("%s", line);
+  snprintf (line, line_len, "%-32s %64s", key, strlen (desc) ? desc : action);
+
+  for (int i = 0; i < line_len; i++)
+    {
+      if (line[i] == '\0')
+        break;
+      if (line[i] == ' ')
+        line[i] = '.';
+    }
+  printf ("%s\n", line);
+
 }
 
 void Window::getScreenSize (int * width, int * height)

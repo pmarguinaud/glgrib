@@ -1,0 +1,15 @@
+Create singularity images :
+- singularity-create-build.sh
+- singularity-create-install.sh
+
+Build :
+- singularity-build.sh (enter build container)
+- debian-build.sh (run from build container); build and create packages
+
+Install : 
+- singularity-install.sh (enter install/test container)
+- debian-install.sh (run from install/test container); install glgrib-glfw
+
+Test : 
+- singularity-test.sh (enter test container)
+- debian-test.sh (run from test container); start glgrib-glfw

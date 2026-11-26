@@ -1,0 +1,52 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 760 480' width='760' height='480' font-family='Helvetica, Arial, sans-serif' role='img' aria-label='Every input becomes an option change applied to the Scene'>
+<rect width='760' height='480' fill='white'/>
+<defs><marker id='a' viewBox='0 0 10 10' refX='9' refY='5' markerWidth='6' markerHeight='6' orient='auto-start-reverse'><path d='M0 0L10 5L0 10z' fill='#6b7280'/></marker></defs>
+<text x='24' y='30' text-anchor='start' font-size='15' font-weight="600" fill='#111827'>Every input becomes an option change applied to the Scene</text>
+<g fill='none' stroke='#6b7280' stroke-width='1.25'><path d='M124 104V126H230V148' marker-end='url(#a)'/><path d='M380 104V148' marker-end='url(#a)'/><path d='M636 104V126H530V148' marker-end='url(#a)'/><path d='M380 196V228' marker-end='url(#a)'/><path d='M94 276V300' marker-end='url(#a)'/><path d='M164 336H196' marker-end='url(#a)'/><path d='M402 324V360H306V380' marker-end='url(#a)'/><path d='M402 360H526V380' marker-end='url(#a)'/><path d='M686 340V380' marker-end='url(#a)'/></g>
+<rect x='24' y='56' width='200' height='48' rx='8' fill='white' stroke='#6b7280' stroke-width='1.25'/>
+<text x='124' y='76' text-anchor='middle' font-size='13' font-weight="600" fill='#111827'>Command line</text>
+<text x='124' y='94' text-anchor='middle' font-size='11.5' fill='#4b5563'>argv, option files</text>
+<rect x='280' y='56' width='200' height='48' rx='8' fill='white' stroke='#6b7280' stroke-width='1.25'/>
+<text x='380' y='76' text-anchor='middle' font-size='13' font-weight="600" fill='#111827'>Window events</text>
+<text x='380' y='94' text-anchor='middle' font-size='11.5' fill='#4b5563'>GLFW keys, mouse</text>
+<rect x='536' y='56' width='200' height='48' rx='8' fill='white' stroke='#6b7280' stroke-width='1.25'/>
+<text x='636' y='76' text-anchor='middle' font-size='13' font-weight="600" fill='#111827'>Shell commands</text>
+<text x='636' y='94' text-anchor='middle' font-size='11.5' fill='#4b5563'>readline, Perl, Python</text>
+<rect x='180' y='148' width='400' height='48' rx='8' fill='#2563eb' fill-opacity='0.12' stroke='#2563eb' stroke-width='2'/>
+<text x='380' y='168' text-anchor='middle' font-size='13' font-weight="600" fill='#111827'>Options tree (Options.h)</text>
+<text x='380' y='186' text-anchor='middle' font-size='11.5' fill='#4b5563'>one traverse () feeds parser, help, JSON, set/get</text>
+<text x='390' y='217' text-anchor='start' font-size='11.5' fill='#4b5563'>Scene::set*Options</text>
+<rect x='24' y='228' width='140' height='48' rx='8' fill='white' stroke='#6b7280' stroke-width='1.25'/>
+<text x='94' y='256' text-anchor='middle' font-size='13' font-weight="600" fill='#111827'>WindowSet</text>
+<rect x='24' y='300' width='140' height='72' rx='8' fill='white' stroke='#6b7280' stroke-width='1.25'/>
+<text x='94' y='322' text-anchor='middle' font-size='13' font-weight="600" fill='#111827'>Render</text>
+<text x='94' y='342' text-anchor='middle' font-size='11.5' fill='#4b5563'>Window, Offscreen</text>
+<text x='94' y='358' text-anchor='middle' font-size='11.5' fill='#4b5563'>Batch (EGL)</text>
+<rect x='196' y='228' width='540' height='112' rx='8' fill='#eef2f7' stroke='#6b7280' stroke-width='1.25'/>
+<text x='212' y='252' text-anchor='start' font-size='13' font-weight="600" fill='#111827'>Scene</text>
+<text x='262' y='252' text-anchor='start' font-size='11.5' fill='#4b5563'>update () then render () every frame</text>
+<rect x='212' y='268' width='115' height='56' rx='8' fill='white' stroke='#6b7280' stroke-width='1.25'/>
+<text x='269.5' y='290' text-anchor='middle' font-size='13' font-weight="600" fill='#111827'>View</text>
+<text x='269.5' y='308' text-anchor='middle' font-size='11.5' fill='#4b5563'>MVP matrix</text>
+<rect x='343' y='268' width='115' height='56' rx='8' fill='white' stroke='#6b7280' stroke-width='1.25'/>
+<text x='400.5' y='290' text-anchor='middle' font-size='13' font-weight="600" fill='#111827'>Fields</text>
+<text x='400.5' y='308' text-anchor='middle' font-size='11.5' fill='#4b5563'>6 field types</text>
+<rect x='474' y='268' width='115' height='56' rx='8' fill='white' stroke='#6b7280' stroke-width='1.25'/>
+<text x='531.5' y='290' text-anchor='middle' font-size='13' font-weight="600" fill='#111827'>Decorations</text>
+<text x='531.5' y='308' text-anchor='middle' font-size='11.5' fill='#4b5563'>map layers</text>
+<rect x='605' y='268' width='115' height='56' rx='8' fill='white' stroke='#6b7280' stroke-width='1.25'/>
+<text x='662.5' y='290' text-anchor='middle' font-size='13' font-weight="600" fill='#111827'>2D overlays</text>
+<text x='662.5' y='308' text-anchor='middle' font-size='11.5' fill='#4b5563'>legends, text</text>
+<rect x='196' y='380' width='220' height='72' rx='8' fill='white' stroke='#6b7280' stroke-width='1.25'/>
+<text x='306.0' y='402' text-anchor='middle' font-size='13' font-weight="600" fill='#111827'>Loader, Container</text>
+<text x='306.0' y='422' text-anchor='middle' font-size='11.5' fill='#4b5563'>GRIB via ecCodes,</text>
+<text x='306.0' y='438' text-anchor='middle' font-size='11.5' fill='#4b5563'>FA via LFI, LRU cache</text>
+<rect x='432' y='380' width='188' height='72' rx='8' fill='white' stroke='#6b7280' stroke-width='1.25'/>
+<text x='526.0' y='402' text-anchor='middle' font-size='13' font-weight="600" fill='#111827'>Geometry</text>
+<text x='526.0' y='422' text-anchor='middle' font-size='11.5' fill='#4b5563'>lat/lon, Lambert,</text>
+<text x='526.0' y='438' text-anchor='middle' font-size='11.5' fill='#4b5563'>reduced Gaussian</text>
+<rect x='636' y='380' width='100' height='72' rx='8' fill='white' stroke='#6b7280' stroke-width='1.25'/>
+<text x='686.0' y='402' text-anchor='middle' font-size='13' font-weight="600" fill='#111827'>GPU</text>
+<text x='686.0' y='422' text-anchor='middle' font-size='11.5' fill='#4b5563'>Program,</text>
+<text x='686.0' y='438' text-anchor='middle' font-size='11.5' fill='#4b5563'>GLSL shaders</text>
+</svg>

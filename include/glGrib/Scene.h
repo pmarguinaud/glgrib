@@ -58,14 +58,14 @@ public:
 
   Field * getCurrentField () const
   { 
-    size_t k = static_cast<size_t> (d.currentFieldRank);
-    return (0 <= k) && (k < fieldlist.size ()) ? fieldlist[d.currentFieldRank] : nullptr; 
+    const int k = d.currentFieldRank;
+    return (0 <= k) && (k < static_cast<int> (fieldlist.size ())) ? fieldlist[k] : nullptr;
   }
 
   GeoPoints * getCurrentGeoPoints () const
   {
-    size_t k = static_cast<size_t> (d.currentGeoPointsRank);
-    return (0 <= k) && (k < geopointslist.size ()) ? geopointslist[d.currentGeoPointsRank] : nullptr; 
+    const int k = d.currentGeoPointsRank;
+    return (0 <= k) && (k < static_cast<int> (geopointslist.size ())) ? geopointslist[k] : nullptr;
   }
 
   void getLightPos (float * lon, float * lat) const

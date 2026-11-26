@@ -316,8 +316,8 @@ void Palette::computergba_255 ()
   rgba_.resize (opts.ncolors);
   int n = rgba.size ();
 
-  rgba_[0][0] = rgba_mis.r / 255.0; rgba_[0][1] = rgba_mis.b / 255.0;
-  rgba_[0][2] = rgba_mis.g / 255.0; rgba_[0][3] = rgba_mis.a / 255.0;
+  rgba_[0] = glm::vec4 (rgba_mis.r / 255.0f, rgba_mis.g / 255.0f,
+                        rgba_mis.b / 255.0f, rgba_mis.a / 255.0f);
 
 
 

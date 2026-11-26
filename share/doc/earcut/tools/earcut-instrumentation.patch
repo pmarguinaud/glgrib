@@ -1,0 +1,187 @@
+diff --git a/src/glGrib/EarCut.cc b/src/glGrib/EarCut.cc
+index 6f8c87bb..fc2a440c 100644
+--- a/src/glGrib/EarCut.cc
++++ b/src/glGrib/EarCut.cc
+@@ -2,6 +2,8 @@
+ #include "glGrib/Trigonometry.h"
+ 
+ #include <iostream>
++#include <cstdio>
++#include <cstdlib> // EARCUT_DUMP
+ #include <omp.h>
+ 
+ #include <glm/glm.hpp>
+@@ -545,6 +547,7 @@ public:
+     iterator (float _ymin, float _ymax, float _xmin, float _xmax, const xy2node_t * _ll2n) 
+     : ymin (_ymin), ymax (_ymax), xmin (_xmin), xmax (_xmax), ll2n (_ll2n)
+     {
++      xmin0 = _xmin; xmax0 = _xmax; // EARCUT_DUMP
+ 
+       while (xmin < ll2n->xmin) xmin += glGrib::twopi;
+       while (xmin > ll2n->xmax) xmin -= glGrib::twopi;
+@@ -628,7 +631,8 @@ public:
+              (iy == rhs.iy) && (cur == rhs.cur);
+     }
+ 
+-  private:
++  public: // EARCUT_DUMP (was private)
++    float xmin0 = 0, xmax0 = 0; // EARCUT_DUMP
+     int ind; // Current index in ll2n
+     int cur; // Current index in nodes
+     int iy, ix;
+@@ -694,6 +698,27 @@ public:
+     return it;
+   }
+ 
++  // EARCUT_DUMP : begin (debug)
++  void debugNode (const node_t * n, const std::vector<float> & xy) const
++  {
++    int found = -1;
++    for (size_t i = 0; i < len.size (); i++)
++      for (int j = off[i]; j < off[i] + len[i]; j++)
++        if (nodes[j] == n)
++          found = i;
++    int ind = xy2ind (n->getX (xy), n->getY (xy));
++    fprintf (stderr, "  node %d (x=%f y=%f) : stored in cell %d (ix=%d iy=%d), xy2ind gives %d\n",
++             n->getIndex (), n->getX (xy), n->getY (xy), found, found % nx, found / nx, ind);
++    fprintf (stderr, "  grid nx=%d ny=%d x=[%f,%f] y=[%f,%f] dx=%f dy=%f\n", nx, ny, xmin, xmax, ymin, ymax, dx, dy);
++  }
++  void debugBox (const node_t & n, const std::vector<float> & xy) const
++  {
++    iterator it = begin (n, xy);
++    fprintf (stderr, "  search box : x=[%f,%f] y=[%f,%f] ix=[%d,%d] iy=[%d,%d]\n",
++             it.xmin0, it.xmax0, it.ymin, it.ymax, it.ixmin, it.ixmax, it.iymin, it.iymax);
++  }
++  // EARCUT_DUMP : end
++
+   int size () const 
+   {
+     int s = 0;
+@@ -770,6 +795,7 @@ void earCut (node_t ** nodelist,
+       for (node_t * n = b[c]; n != e[c]; n = n->getNext ())
+         {
+           float ang = n->getAngle (xyz);
++          if (std::getenv ("GLGRIB_EARCUT_DEBUG") && (n->getIndex () == std::atoi (std::getenv ("GLGRIB_EARCUT_DEBUG")))) fprintf (stderr, "visit %d pool %d ang %f prev %d next %d\n", n->getIndex (), c, ang, n->getPrev ()->getIndex (), n->getNext ()->getIndex ()); // EARCUT_DUMP
+   
+           // Node OK for removal
+ 
+@@ -782,6 +808,27 @@ void earCut (node_t ** nodelist,
+               xy2node_t::iterator it = ll2n.begin (*n, xy);
+               xy2node_t::iterator it1 = ll2n.end (*n, xy);
+ 
++              // EARCUT_DUMP : begin (debug one ear)
++              static const char * dbg = std::getenv ("GLGRIB_EARCUT_DEBUG");
++              bool dbg_on = dbg && (n->getIndex () == std::atoi (dbg));
++              if (dbg_on)
++                {
++                  fprintf (stderr, "ear apex=%d prev=%d next=%d ang=%f\n", n->getIndex (),
++                           n->getPrev ()->getIndex (), n->getNext ()->getIndex (), ang);
++                  for (const node_t * q = n->getNext (); q != n; q = q->getNext ())
++                    if (q->getAngle (xyz) < 0.0f && n->inTriangle (q->getXYZ (xyz), xyz)
++                        && q != n->getPrev () && q != n->getNext ())
++                      fprintf (stderr, "  node %d (angle %f) is inside the ear\n", q->getIndex (), q->getAngle (xyz));
++                  fprintf (stderr, "  index cells search returns :");
++                  for (xy2node_t::iterator jt = ll2n.begin (*n, xy); jt != it1; ++jt)
++                    fprintf (stderr, " %d", (*jt)->getIndex ());
++                  fprintf (stderr, "\n  apex lon/lat (rotated) %f %f\n", n->getX (xy), n->getY (xy));
++                  ll2n.debugBox (*n, xy);
++                  for (const node_t * q = n->getNext (); q != n; q = q->getNext ())
++                    if (q->getIndex () == 792) ll2n.debugNode (q, xy);
++                }
++              // EARCUT_DUMP : end
++
+               for ( ; it != it1; ++it)
+                 {
+                   const node_t * n1 = *it;
+@@ -931,6 +978,7 @@ void EarCut::processRing (const std::vector<float> & lonlat1,
+                           std::vector<unsigned int> * ind,
+ 		          bool openmp)
+ {
++  if (std::getenv ("GLGRIB_EARCUT_NOOMP")) openmp = false; // EARCUT_DUMP
+   int rank1 = rankb, rank2 = rankb + rankl;
+   int indr1 = indrb, indr2 = indrb + *indrl;
+ 
+@@ -962,7 +1010,7 @@ void EarCut::processRing (const std::vector<float> & lonlat1,
+ #pragma omp parallel for if (openmp)
+   for (size_t i = 0; i < xyz1.size (); i++)
+     {
+-      xyz2[i] = R * xyz1[i];
++      xyz2[i] = std::getenv ("GLGRIB_EARCUT_FIXROT") ? glm::transpose (R) * xyz1[i] : R * xyz1[i]; // EARCUT_DUMP
+       lonlat2[2*i+0] = atan2 (xyz2[i].y, xyz2[i].x); 
+       lonlat2[2*i+1] = std::asin (xyz2[i].z);
+     }
+@@ -992,19 +1040,74 @@ void EarCut::processRing (const std::vector<float> & lonlat1,
+ 
+   node_t * nodelist = &nodevec[0];
+ 
++  // EARCUT_DUMP (temporary instrumentation) : begin
++  const char * dump_dir = std::getenv ("GLGRIB_EARCUT_DUMP");
++  int dump_min = std::getenv ("GLGRIB_EARCUT_DUMP_MIN") ? std::atoi (std::getenv ("GLGRIB_EARCUT_DUMP_MIN")) : 1000000000;
++  FILE * dump_fp = nullptr;
++  std::vector<int> dump_count;
++  std::vector<int> dump_reflex;
++  if (dump_dir && (numberOfPoints1 >= dump_min))
++    {
++      char f[1024];
++      snprintf (f, sizeof (f), "%s/ring_%d.txt", dump_dir, rank1);
++      dump_fp = fopen (f, "w");
++      fprintf (dump_fp, "N %d %d\n", numberOfPoints1, openmp ? 1 : 0);
++      for (int j = 0; j < numberOfPoints1; j++)
++        fprintf (dump_fp, "P %d %.7f %.7f %.7f %.7f %.7f\n", j,
++                 lonlat1[2*(rank1+j)+0], lonlat1[2*(rank1+j)+1],
++                 lonlat[2*j+0], lonlat[2*j+1], nodevec[j].getAngle (xyz));
++    }
++  dump_reflex.push_back (ll2n.size ());
++  // EARCUT_DUMP : end
++
+   // Iterative ear cutting
+   int indr = indr1;
+   for (int i = 0, k = -1; ; i++)
+     {
++      int indr0 = indr; // EARCUT_DUMP
+       earCut (&nodelist, xyz, lonlat, ll2n, &indr, ind, indr2, openmp);
+       ll2n.update (xyz);
+ 
+       int count = nodelist->count ();
++
++      // EARCUT_DUMP : begin
++      dump_count.push_back (count);
++      dump_reflex.push_back (ll2n.size ());
++      if (dump_fp)
++        {
++          fprintf (dump_fp, "I %d %d %d\n", i, count, ll2n.size ());
++          for (int l = indr0; l < indr; l += 3)
++            fprintf (dump_fp, "T %d %d %d %d\n", i, (*ind)[l+0] - rank1,
++                     (*ind)[l+1] - rank1, (*ind)[l+2] - rank1);
++        }
++      // EARCUT_DUMP : end
++
+       if (count == k)
+         break;
+       k = count;
+     }
+ 
++  // EARCUT_DUMP : begin
++  if (dump_fp)
++    fclose (dump_fp);
++  if (dump_dir)
++#pragma omp critical (earcut_dump)
++    {
++      static FILE * fp = nullptr;
++      if (fp == nullptr)
++        {
++          char f[1024];
++          snprintf (f, sizeof (f), "%s/stats.txt", dump_dir);
++          fp = fopen (f, "a");
++        }
++      fprintf (fp, "%d %d %d %d", rank1, numberOfPoints1, openmp ? 1 : 0, (indr - indr1) / 3);
++      for (size_t l = 0; l < dump_count.size (); l++)
++        fprintf (fp, " %d:%d", dump_count[l], dump_reflex[l+1]);
++      fprintf (fp, "\n");
++      fflush (fp);
++    }
++  // EARCUT_DUMP : end
++
+ 
+   *indrl = indr - indr1;
+ }

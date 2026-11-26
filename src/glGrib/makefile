@@ -28,7 +28,7 @@ all: make_binaries make_shaders
 endif
 
 OBJECTS=$(BUILD)/Grok.o $(BUILD)/DBase.o $(BUILD)/ShellInterpreter.o $(BUILD)/ShellRegular.o $(BUILD)/Container.o $(BUILD)/WindowDiffSet.o \
-	$(BUILD)/WindowSet.o $(BUILD)/Ticks.o $(BUILD)/FitPolynomial.o $(BUILD)/FieldIsoFill.o $(BUILD)/Subdivide.o $(BUILD)/EarCut.o $(BUILD)/Land.o \
+	$(BUILD)/WindowSet.o $(BUILD)/Ticks.o $(BUILD)/FitPolynomial.o $(BUILD)/FieldIsoFill.o $(BUILD)/Subdivide.o $(BUILD)/EarCut.o $(BUILD)/ConstrainedDelaunay.o $(BUILD)/Land.o \
 	$(BUILD)/SQLite.o $(BUILD)/Test.o $(BUILD)/Cities.o $(BUILD)/Points.o $(BUILD)/ShapeLib.o $(BUILD)/Departements.o $(BUILD)/Mapscale.o \
 	$(BUILD)/Rivers.o $(BUILD)/Border.o $(BUILD)/Lines.o $(BUILD)/GSHHG.o $(BUILD)/Image.o $(BUILD)/Resolve.o $(BUILD)/FieldContour.o \
 	$(BUILD)/FieldVector.o $(BUILD)/FieldScalar.o $(BUILD)/GeometryLambert.o $(BUILD)/Projection.o $(BUILD)/Colorbar.o $(BUILD)/Font.o \

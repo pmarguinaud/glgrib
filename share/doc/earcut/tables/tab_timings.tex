@@ -1,0 +1,15 @@
+\begin{tabular}{lrrrrrrrr}
+\toprule
+ & \multicolumn{4}{c}{1 thread} & \multicolumn{4}{c}{parallel (14 threads)} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+file & EarCut & fixed & Triangle & CDT & EarCut & fixed & Triangle & CDT \\
+\midrule
+GSHHS c L1 & 0.011 & 0.008 & \textbf{0.006} & 0.009 & 0.008 & \textbf{0.005} & 0.005 & 0.006 \\
+GSHHS i L1 & 0.396 & 0.558 & \textbf{0.226} & 0.370 & 0.207 & 0.382 & \textbf{0.143} & 0.204 \\
+GSHHS h L1 & 2.728 & 5.734 & \textbf{1.112} & 1.837 & 1.116 & 4.858 & \textbf{0.715} & 1.019 \\
+GSHHS h L2 & 0.422 & 0.580 & \textbf{0.172} & 0.290 & 0.422 & 0.395 & \textbf{0.070} & 0.107 \\
+NE 110m land & 0.006 & 0.005 & \textbf{0.005} & 0.008 & 0.010 & \textbf{0.005} & 0.005 & 0.007 \\
+NE 50m land & 0.067 & 0.080 & \textbf{0.055} & 0.075 & 0.063 & 0.056 & \textbf{0.043} & 0.051 \\
+NE 10m land & crash & 1.623 & 0.620 & \textbf{0.581} & crash & 1.476 & 0.524 & \textbf{0.417} \\
+\bottomrule
+\end{tabular}

@@ -17,7 +17,8 @@ Only the Antarctica ring (record 0) changed:
     0.1 m2 once converted to single precision, as glgrib does: filled;
   - a fold of 3.4e4 m2 at the 180 degree cut (180W 84.4S): dropped.
 After cleaning, the file passes "gshhs_clean ne_10m_land.shp" (check only) with no
-crossing left. Without these repairs EarCut aborts on this file; CDT draws both versions.
+crossing left. Without these repairs EarCut, which glgrib used before 2026-11-26, aborts
+on this file; CDT draws both versions.
 
 ne_10m_land.db is the SQLite copy of the .dbf that glgrib makes on first use.
 

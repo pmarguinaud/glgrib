@@ -15,6 +15,26 @@
     share/glgrib/coastlines/shp/GSHHS_h_L5.shp --view.lon 7 --view.lat 60 
     --view.fov 2 
 ```
+## Display land surface, rivers (high resolution) -- land_rivers
+![](samples/land_rivers/TEST_0000.png)
+
+```
+    --land.on --land.layers[0].path 
+    share/glgrib/coastlines/shp/GSHHS_h_L1.shp --land.layers[1].path 
+    share/glgrib/coastlines/shp/GSHHS_h_L2.shp --land.layers[2].path 
+    share/glgrib/coastlines/shp/GSHHS_h_L3.shp --land.layers[3].path 
+    share/glgrib/coastlines/shp/GSHHS_h_L5.shp --view.lon 129.6 --view.lat 
+    62.7 --view.fov 1.2 
+```
+## Display land surface (Natural Earth 10m) -- land_naturalearth
+![](samples/land_naturalearth/TEST_0000.png)
+
+```
+    --land.on --land.layers[0].path 
+    share/glgrib/coastlines/naturalearth/ne_10m_land.shp 
+    --land.layers[1].off --land.layers[2].off --land.layers[3].off 
+    --view.lat -90 --view.fov 12 
+```
 ## Coastlines -- coastlines
 ![](samples/coastlines/TEST_0000.png)
 

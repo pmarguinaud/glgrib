@@ -1,6 +1,6 @@
-diff --git a/src/glGrib/EarCut.cc b/src/glGrib/EarCut.cc
+diff --git a/share/doc/earcut/tools/earcut/EarCut.cc b/share/doc/earcut/tools/earcut/EarCut.cc
 index 6f8c87bb..fc2a440c 100644
---- a/src/glGrib/EarCut.cc
+--- a/share/doc/earcut/tools/earcut/EarCut.cc
 +++ b/src/glGrib/EarCut.cc
 @@ -2,6 +2,8 @@
  #include "glGrib/Trigonometry.h"

@@ -13,7 +13,11 @@ set -e
 W=${1:-/tmp/tri}
 TOP=$(cd $(dirname $0)/../../../.. && pwd)
 TOOLS=$(cd $(dirname $0) && pwd)
-SHP=$TOP/share/glgrib/coastlines/shp
+# The reports were made with the GSHHS files as shipped before they were cleaned (commit 0dc6400a).
+# To reproduce them exactly, extract those files and set SHP :
+#   git archive 0dc6400a share/glgrib/coastlines/shp | tar -x -C DIR
+#   SHP=DIR/share/glgrib/coastlines/shp
+SHP=${SHP:-$TOP/share/glgrib/coastlines/shp}
 NE=$TOOLS/ext/naturalearth
 MAGICS_NE=${MAGICS_NE:-}
 

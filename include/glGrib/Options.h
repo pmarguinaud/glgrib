@@ -1358,7 +1358,6 @@ public:
     DESC (subdivision.on,     Enable subdivision);
     DESC (scale,              Scale);
     DESC (color,              Land color);
-    DESC (earcut.on,          Triangulate with EarCut instead of constrained Delaunay);
     DESC_H (debug.on,         Debug);
   }
   std::string selector = "";
@@ -1370,10 +1369,6 @@ public:
     bool on            = true;
   } subdivision;
   OptionColor color = OptionColor ("#ffe2ab");
-  struct
-  {
-    bool on            = false;
-  } earcut;
   struct
   {
     bool on            = false;

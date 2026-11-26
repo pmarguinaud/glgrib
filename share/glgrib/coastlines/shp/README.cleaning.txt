@@ -9,8 +9,8 @@ Why
 A few rings cross themselves. Some crossings are in the data. Others appear when the
 coordinates are converted to single precision, as glgrib does, which turns the points
 next to the South Pole into tiny loops. Such rings cannot be triangulated correctly:
-EarCut leaves holes or fails, and the constrained Delaunay triangulation (CDT) has to
-add points.
+EarCut (glgrib's triangulation before 2026-11-26) leaves holes or fails, and the
+constrained Delaunay triangulation (CDT) has to add points.
 
 How
 ---

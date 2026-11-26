@@ -2,12 +2,14 @@
 #
 # Reproduce the data and the figures of earcut.tex
 #
-# 1. apply the instrumentation patch to src/glGrib/EarCut.cc (from the top of the repository) :
+# EarCut is the copy in tools/earcut : glgrib no longer contains it (removed after CDT was adopted).
+#
+# 1. apply the instrumentation patch to tools/earcut/EarCut.cc (from the top of the repository) :
 #      git apply share/doc/earcut/tools/earcut-instrumentation.patch
 # 2. run this script from share/doc/earcut :
 #      ./tools/make-figures.sh /path/to/workdir
 # 3. restore EarCut.cc :
-#      git checkout src/glGrib/EarCut.cc
+#      git checkout share/doc/earcut/tools/earcut/EarCut.cc
 #
 # Environment variables read by the instrumented EarCut.cc :
 #   GLGRIB_EARCUT_DUMP=dir      write dir/stats.txt (one line per ring) and dir/ring_<rank>.txt
@@ -21,12 +23,16 @@ set -e
 W=${1:-/tmp/earcut}
 TOP=$(cd $(dirname $0)/../../../.. && pwd)
 DOC=$(cd $(dirname $0)/.. && pwd)
-SHP=$TOP/share/glgrib/coastlines/shp
+# The reports were made with the GSHHS files as shipped before they were cleaned (commit 0dc6400a).
+# To reproduce them exactly, extract those files and set SHP :
+#   git archive 0dc6400a share/glgrib/coastlines/shp | tar -x -C DIR
+#   SHP=DIR/share/glgrib/coastlines/shp
+SHP=${SHP:-$TOP/share/glgrib/coastlines/shp}
 
 mkdir -p $W/data
 cd $W
 
-g++ -O2 -fopenmp -std=c++11 -I$TOP/include $DOC/tools/earcut_driver.cc $TOP/src/glGrib/EarCut.cc -lshp -o earcut_driver
+g++ -O2 -fopenmp -std=c++11 -I$DOC/tools/earcut -I$TOP/include $DOC/tools/earcut_driver.cc $DOC/tools/earcut/EarCut.cc -lshp -o earcut_driver
 
 # Statistics over whole layers
 for fix in 0 1

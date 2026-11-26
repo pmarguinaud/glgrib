@@ -23,6 +23,15 @@ Comment: This copyright information was taken from the gmt-gshhb Debian
  package, which as a similar copyright structure although the contents are
  different.
 
+Files: share/glgrib/coastlines/shp/*
+Copyright: 2014 The GMT Team
+License: LGPL-3+
+Comment: Shapefiles of GSHHG 2.3.7 (Paul Wessel and Walter H. F. Smith,
+ https://www.soest.hawaii.edu/pwessel/gshhg/). Self-intersecting rings in
+ 11 of these files were repaired by src/gshhsClean/gshhs_clean; the changes
+ are listed in README.cleaning.txt in that directory. The .db files are
+ SQLite copies of the .dbf files, made by glgrib.
+
 Files: src/glGribTk/*
        src/perl5/*
 Copyright: 2020 MARGUINAUD Philippe

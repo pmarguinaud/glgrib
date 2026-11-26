@@ -48,6 +48,8 @@ public:
   virtual void getTriangleNeighbours (int, int [3], int [3], glm::vec2 [3]) const = 0;
   virtual bool triangleIsEdge (int) const = 0;
   virtual int getTriangle (float, float) const = 0;
+  // Walk from triangle it to the triangle containing the unit vector p; -1 if p is outside the grid
+  int locateTriangle (int it, const glm::vec3 & p) const;
   virtual const glm::vec2 xyz2conformal (const glm::vec3 &) const = 0;
   virtual const glm::vec3 conformal2xyz (const glm::vec2 &) const = 0;
   virtual const glm::vec2 conformal2latlon (const glm::vec2 &) const = 0;

@@ -1664,65 +1664,38 @@ void GeometryGaussian::sampleTriangle (BufferPtr<unsigned char> & s, const unsig
 
 int GeometryGaussian::getTriangle (float lon, float lat) const
 {
-  int jlat, jlon;
-
   float coordx, coordy;
 
-  latlon2coordxy (lat, lon, coordx, coordy);
+  latlon2coordxy (lat, lon, coordx, coordy);  // Computational (rotated, stretched) coordinates
 
-  if ((coordy > misc_gaussian.latgauss[0]) || (misc_gaussian.latgauss[grid_gaussian.Nj-1] > coordy))
+  const int Nj = grid_gaussian.Nj;
+
+  // Triangles cover the bands between the first and the last latitude rows
+  if ((coordy > misc_gaussian.latgauss[0]) || (misc_gaussian.latgauss[Nj-1] > coordy))
     return -1;
 
-  lat = lat * deg2rad;
-  lon = lon * deg2rad;
+  // jlat (from 1) : the row just north of the point
+  int jlat = round ((0.5 - coordy / pi) * (Nj + 1)); // First approximation
+  jlat = std::max (1, std::min (jlat, Nj));
 
-  jlat = round ((0.5 - coordy / pi) * (grid_gaussian.Nj + 1)); // First approximation
-  jlat = std::max (1, std::min (jlat, static_cast<int> (grid_gaussian.Nj)));
+  while ((jlat > 1) && (misc_gaussian.latgauss[jlat-1] < coordy))
+    jlat--;
+  while ((jlat < Nj) && (misc_gaussian.latgauss[jlat] >= coordy))
+    jlat++;
 
-  float dlat;
+  if (jlat >= Nj)
+    jlat = Nj - 1;
 
-  while ((dlat = coordy - misc_gaussian.latgauss[jlat-1]) > 0.0f)
-    {
-      jlat--;
-      if (jlat <= 0)
-        return -1;
-    }
-
-  while (1)
-    {
-      bool u = false;
-      auto lookat = [&u,&jlat,&dlat,coordy,this] (int jlat1)
-      {
-        float dlat1 = coordy - this->misc_gaussian.latgauss[jlat1-1];
-	if (std::abs (dlat1) < std::abs (dlat) && (dlat1 <= 0.0f))
-          {
-            dlat = dlat1; jlat = jlat1; u = true; 
-	  }
-	return;
-      };
-      if (1 < jlat)
-        lookat (jlat-1);
-      if (jlat < grid_gaussian.Nj)
-	lookat (jlat+1);
-      if (! u)
-        break;
-    }
-
-
-  jlat++;
-
+  // First guess : the triangle below the point of row jlat nearest to the west
   if (coordx < 0.0f)
     coordx += twopi;
-  jlon = static_cast<int> (grid_gaussian.pl[jlat-1] * (coordx / twopi));
+  int jlon = static_cast<int> (grid_gaussian.pl[jlat-1] * (coordx / twopi));
+  jlon = std::max (0, std::min (jlon, static_cast<int> (grid_gaussian.pl[jlat-1]) - 1));
 
-  jlat = jlat - 1; // Start at zero
+  const int jglo = grid_gaussian.jglooff[jlat-1] + jlon;
+  const int it = getLowerTriangle (jglo, jlonlat (jglo));
 
-  std::cout << " jlon, jlat = " << jlon << ", " << jlat << std::endl;
-
-  int jglo = grid_gaussian.jglooff[jlat] + jlon;
-  std::cout << " it = " << grid_gaussian.triu[jglo] << std::endl;
-
-  return 0;
+  return locateTriangle (it, lonlat2xyz (lon * deg2rad, lat * deg2rad));
 }
 
 const glm::vec2 GeometryGaussian::xyz2conformal (const glm::vec3 & xyz) const

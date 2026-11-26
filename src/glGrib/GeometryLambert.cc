@@ -1,5 +1,6 @@
 #include "glGrib/GeometryLambert.h"
 #include "glGrib/MD5.h"
+#include "glGrib/Trigonometry.h"
 
 #include <cmath>
 
@@ -524,27 +525,27 @@ int GeometryLambert::getTriangle (float lon, float lat) const
   xy_t xy = misc_lambert.p_pj.latlonToXy (latlon_t (lon * deg2rad, lat * deg2rad));
   xy = xy - misc_lambert.center_xy;
 
-  int i = xy.x / misc_lambert.DxInMetres + misc_lambert.Nux / 2;
-  int j = xy.y / misc_lambert.DyInMetres + misc_lambert.Nuy / 2;
-
-  int ntpr = 2 * (grid_lambert.Nx - 1);
-  int it = j * ntpr + i * 2;
-
-
+  // First guess : the first triangle of the cell containing the point; points on the border
+  // (within rounding) belong to the first or last cell
+  auto cell = [] (float x, int n)
   {
-    int jglo[3], itri[3]; glm::vec3 xyz[3];
-    getTriangleNeighbours (it, jglo, itri, xyz);
+    const float tol = 1e-3f;
+    if ((x < 0.0f) && (x > -tol))
+      x = 0.0f;
+    if ((x >= n) && (x < n + tol))
+      x = n - 0.5f;
+    return static_cast<int> (std::floor (x));
+  };
 
-    for (int i = 0; i < 3; i++)
-      printf (" %d %8d %8d\n", i, jglo[i], itri[i]);
+  const int i = cell (xy.x / misc_lambert.DxInMetres + misc_lambert.Nux / 2, grid_lambert.Nx - 1);
+  const int j = cell (xy.y / misc_lambert.DyInMetres + misc_lambert.Nuy / 2, grid_lambert.Ny - 1);
 
-    getTriangleNeighbours (it+1, jglo, itri, xyz);
+  if ((i < 0) || (i >= grid_lambert.Nx - 1) || (j < 0) || (j >= grid_lambert.Ny - 1))
+    return -1;
 
-    for (int i = 0; i < 3; i++)
-      printf (" %d %8d %8d\n", i, jglo[i], itri[i]);
-  }
+  const int ntpr = 2 * (grid_lambert.Nx - 1);          // Number of triangles in a row
 
-  return it;
+  return locateTriangle (j * ntpr + 2 * i, lonlat2xyz (lon * deg2rad, lat * deg2rad));
 }
 
 const glm::vec2 GeometryLambert::xyz2conformal (const glm::vec3 &) const

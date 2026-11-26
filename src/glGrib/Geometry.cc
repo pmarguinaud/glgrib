@@ -6,6 +6,7 @@
 #include "glGrib/Loader.h"
 
 #include <iostream>
+#include <cmath>
 #include <openssl/md5.h>
 
 #include <map>
@@ -120,6 +121,71 @@ const std::string Geometry::md5string (const unsigned char md5[]) const
     }
 
   return str;
+}
+
+int Geometry::locateTriangle (int it, const glm::vec3 & p) const
+{
+  // A triangle is left across edge (a, b) when p and the opposite vertex c lie on different
+  // sides of the plane through a, b and the centre of the Earth; the vertex order does not matter.
+  // getTriangleNeighbours gives in itri[k] the neighbour across edge (k, k+1), -1 at the domain edge.
+  // Computed in double precision; a point on an edge (within eps) belongs to the current triangle.
+  // A triangle with an edge shorter than epslen (about 6 m) has no area: this happens next to a
+  // pole, where a row of points collapses to one point, up to rounding.
+  const double eps = 1e-12, epslen = 1e-6;
+  const glm::dvec3 P (p);
+  const int maxsteps = getNumberOfTriangles () + 1;
+  int prev = -1;
+
+  for (int step = 0; (it >= 0) && (step < maxsteps); step++)
+    {
+      int jglo[3], itri[3];
+      glm::vec3 xyz[3];
+      getTriangleNeighbours (it, jglo, itri, xyz);
+
+      // A triangle with no area contains nothing : step to a neighbour
+      bool degenerate = false;
+      for (int k = 0; k < 3; k++)
+        if (glm::length (glm::cross (glm::dvec3 (xyz[k]), glm::dvec3 (xyz[(k+1)%3]))) < epslen)
+          degenerate = true;
+      if (degenerate)
+        {
+          int next = -1;
+          for (int k = 0; k < 3; k++)
+            if ((itri[k] >= 0) && (itri[k] != prev))
+              {
+                next = itri[k];
+                break;
+              }
+          prev = it;
+          it = next;
+          continue;
+        }
+
+      int next = it;
+      double worst = 0.0;
+      for (int k = 0; k < 3; k++)
+        {
+          const glm::dvec3 A (xyz[k]), B (xyz[(k+1)%3]), C (xyz[(k+2)%3]);
+          const glm::dvec3 N = glm::cross (A, B);
+          const double len = glm::length (N);
+          const double sp = glm::dot (N, P) / len, sc = glm::dot (N, C) / len;
+          // Signed distance of p to the plane of the edge, positive on the side of c
+          const double d = sc > 0.0 ? sp : -sp;
+          if ((d < -eps) && (d < worst))
+            {
+              worst = d;
+              next = itri[k];
+            }
+        }
+
+      if (next == it)
+        return it;
+
+      prev = it;
+      it = next;
+    }
+
+  return -1;
 }
 
 void Geometry::checkTriangles () const

@@ -522,8 +522,8 @@ const
 
 int GeometryLatLon::getTriangle (float lon, float lat) const
 {
-  auto Ni = grid_latlon.Ni;
-  auto Nj = grid_latlon.Nj;
+  const int Ni = grid_latlon.Ni;
+  const int Nj = grid_latlon.Nj;
 
   lat = lat * deg2rad;
   lon = lon * deg2rad;
@@ -534,49 +534,29 @@ int GeometryLatLon::getTriangle (float lon, float lat) const
   while (dl >= 2 * pi)
     dl -= 2 * pi;
 
-  int i = static_cast<int>(dl / misc_latlon.dlon);
-  int j = static_cast<int>((misc_latlon.lat0 - lat) / misc_latlon.dlat);
+  const int ni = misc_latlon.periodic ? Ni : Ni - 1;   // Number of cells in a row
 
-  std::cout << " Ni, Nj = " << Ni << ", " << Nj << std::endl;
-  std::cout << " i, j = " << i << ", " << j << std::endl;
+  // First guess : the first triangle of the cell containing the point; points on the border
+  // (within rounding, as at the poles) belong to the first or last cell
+  auto cell = [] (float x, int n)
+  {
+    const float tol = 1e-3f;
+    if ((x < 0.0f) && (x > -tol))
+      x = 0.0f;
+    if ((x >= n) && (x < n + tol))
+      x = n - 0.5f;
+    return static_cast<int> (std::floor (x));
+  };
 
-  if ((i < 0) || (i >= Ni))
+  const int i = cell (dl / misc_latlon.dlon, ni);
+  const int j = cell ((misc_latlon.lat0 - lat) / misc_latlon.dlat, Nj - 1);
+
+  if ((i < 0) || (i >= ni) || (j < 0) || (j >= Nj - 1))
     return -1;
-  if ((j < 0) || (j >= Nj))
-    return -1;
 
-  int ntpr = misc_latlon.periodic ? 2 * Ni : 2 * (Ni - 1);
+  const int ntpr = 2 * ni;                             // Number of triangles in a row
 
-
-  int it = j * ntpr + i * 2;
-  int it1 = it + 1;
-
-
-  printf (" it = %d\n", it);
-
-  int itri[3], jglo[3]; glm::vec3 xyz[3];
-  getTriangleNeighbours (it, jglo, itri, xyz);
-  
-  const float rad2deg = 180.0f / pi;
-  float xlon = rad2deg * atan2 (xyz[0].y, xyz[0].x);
-  float xlat = rad2deg * std::asin (xyz[0].z);
-
-  printf (" lat = %12.5f lon = %12.5f\n", xlat, xlon);
-
-  printf (" %s %8s %8s\n", "i", "jglo", "itri");
-  for (int i = 0; i < 3; i++)
-    printf (" %d %8d %8d\n", i, jglo[i], itri[i]);
-
-  printf (" it = %d\n", it1);
-
-  getTriangleNeighbours (it1, jglo, itri, xyz);
-  
-  printf (" %s %8s %8s\n", "i", "jglo", "itri");
-  for (int i = 0; i < 3; i++)
-    printf (" %d %8d %8d\n", i, jglo[i], itri[i]);
-
-
-  return it;
+  return locateTriangle (j * ntpr + 2 * i, lonlat2xyz (lon, lat));
 }
 
 const glm::vec2 GeometryLatLon::xyz2conformal (const glm::vec3 & xyz) const

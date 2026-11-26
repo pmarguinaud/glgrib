@@ -3,11 +3,12 @@
 #include "glGrib/OpenGL.h"
 #include "glGrib/ShapeLib.h"
 #include "glGrib/Options.h"
-#include "glGrib/EarCut.h"
+#include "glGrib/ConstrainedDelaunay.h"
 #include "glGrib/Subdivide.h"
 
 #include <iostream>
 #include <omp.h>
+#include <algorithm>
 
 namespace glGrib
 {
@@ -38,14 +39,13 @@ void Land::render (const View & view, const OptionsLight & light) const
 
 }
 
-void Land::layer_t::triangulate 
+void Land::layer_t::triangulate
     (int_v * _pos_offset, 
      int_v * _pos_length,
      int_v * _ind_offset,
      int_v * _ind_length,
      const std::vector<unsigned int> & indl,
      std::vector<float> * _lonlat,
-     int_v * _ord,
      std::vector<unsigned int> * _ind)
 {
   int_v   & pos_offset = *_pos_offset;
@@ -53,10 +53,9 @@ void Land::layer_t::triangulate
   int_v   & ind_offset = *_ind_offset;
   int_v   & ind_length = *_ind_length;
   std::vector<float> & lonlat     = *_lonlat    ;
-  int_v   & ord        = *_ord       ;
   std::vector<unsigned int> & ind = *_ind       ;
 
-  // Offset/length of each ring
+  // Offset/length of each ring (the closing point is not part of the ring)
   pos_offset.push_back (+0);
   pos_length.push_back (-1);
 
@@ -68,68 +67,89 @@ void Land::layer_t::triangulate
             {
               pos_offset.push_back (indl[i+1]);
               pos_length.push_back (-1);
-	    }
-	}
+            }
+        }
       else
         {
           pos_length.back ()++;
-	}
+        }
     }
 
-  // Sort rings (bigger first)
-  ord.resize (pos_length.size ());
+  const int nr = pos_offset.size ();
 
-  for (size_t i = 0; i < pos_length.size (); i++)
+  // Bigger rings first, for load balance
+  int_v ord (nr);
+  for (int i = 0; i < nr; i++)
     ord[i] = i;
-
   std::sort (ord.begin (), ord.end (), [&pos_length] (int i, int j) 
              { return pos_length[j] < pos_length[i]; });
 
+  // Triangulate each ring ; triangles use local indices, and points added by CDT
+  // (only when edges cross, i.e. invalid rings) are numbered after the ring vertices
+  std::vector<std::vector<unsigned int> > tri (nr);
+  std::vector<std::vector<float> > added (nr);
+  int nfail = 0;
 
-  // Offset/length for each indices block 
-  ind_offset.resize (ord.size ());
-  ind_length.resize (ord.size ());
+#pragma omp parallel for schedule (dynamic, 1) reduction (+:nfail)
+  for (int l = 0; l < nr; l++)
+    {
+      int j = ord[l], len = pos_length[j];
+      if (len < 3)
+        continue;
+      // A ring that cannot be triangulated is left empty
+      if (! ConstrainedDelaunay::processRing (lonlat, pos_offset[j], len, &tri[j], &added[j]))
+        nfail++;
+    }
+
+  if (nfail > 0)
+    std::cerr << "Land : constrained Delaunay triangulation failed for " << nfail 
+              << " ring(s) of " << nr << ", not filled" << std::endl;
+
+  // Added points are inserted right after the vertices of their ring, so that each
+  // ring keeps a contiguous range of points (this is required by Subdivide)
+  size_t nadd = 0;
+  for (int j = 0; j < nr; j++)
+    nadd += added[j].size () / 2;
+
+  if (nadd > 0)
+    {
+      std::vector<float> lonlat1;
+      lonlat1.reserve (lonlat.size () + 2 * nadd);
+      int_v pos_offset1 (nr);
+      for (int j = 0; j < nr; j++)
+        {
+          int b = pos_offset[j];
+          int e = j + 1 < nr ? pos_offset[j+1] : lonlat.size () / 2;
+          int len = std::max (pos_length[j], 0);
+          pos_offset1[j] = lonlat1.size () / 2;
+          lonlat1.insert (lonlat1.end (), lonlat.begin () + 2 * b, lonlat.begin () + 2 * (b + len));
+          lonlat1.insert (lonlat1.end (), added[j].begin (), added[j].end ());
+          lonlat1.insert (lonlat1.end (), lonlat.begin () + 2 * (b + len), lonlat.begin () + 2 * e);
+          pos_length[j] += added[j].size () / 2;
+        }
+      pos_offset.swap (pos_offset1);
+      lonlat.swap (lonlat1);
+    }
+
+  // Offset/length for each indices block, without gaps
+  ind_offset.resize (nr);
+  ind_length.resize (nr);
 
   int ind_size = 0;
-  for (size_t k = 0; k < ord.size (); k++)
+  for (int j = 0; j < nr; j++)
     {
-      if (pos_length[k] > 2)
-        {
-          ind_length[k] = 3 * (pos_length[k] - 2);
-          if (k > 0)
-            ind_offset[k] = ind_offset[k-1] + ind_length[k-1];
-	  else
-            ind_offset[0] = 0;
-          ind_size += ind_length[k];
-        }
+      ind_offset[j] = ind_size;
+      ind_length[j] = tri[j].size ();
+      ind_size += ind_length[j];
     }
 
   ind.resize (ind_size);
 
-  // Process big blocks serially, with OpenMP on inner loops
-  size_t k = 0;
-  for (k = 0; k < ord.size (); k++)
-    {
-      int j = ord[k];
-      if (pos_length[j] < 300)
-        break;
-      if (pos_length[j] > 2)
-        EarCut::processRing (lonlat, pos_offset[j], pos_length[j], 
-                             ind_offset[j], &ind_length[j],
-                             &ind, true);
-    }
-
-
-  // Process small blocks in parallel
 #pragma omp parallel for
-  for (size_t l = k; l < ord.size (); l++)
-    {
-      int j = ord[l];
-      if (pos_length[j] > 2)
-        EarCut::processRing (lonlat, pos_offset[j], pos_length[j], 
-                            ind_offset[j], &ind_length[j],
-                            &ind, false);
-    }
+  for (int j = 0; j < nr; j++)
+    for (int k = 0; k < ind_length[j]; k++)
+      ind[ind_offset[j]+k] = pos_offset[j] + tri[j][k];
+
 }
 
 void Land::layer_t::subdivide 
@@ -251,13 +271,12 @@ void Land::layer_t::setup (const OptionsLandLayer & opts)
   ShapeLib::read (lopts, &lonlat, &indl, lopts.selector);
   
   int_v pos_offset, pos_length;
-  int_v ord;
   int_v ind_offset;
   int_v ind_length;
   std::vector<unsigned int> ind;
   
   triangulate (&pos_offset, &pos_length, &ind_offset, &ind_length,
-               indl, &lonlat, &ord, &ind);
+               indl, &lonlat, &ind);
   
   
   if (opts.subdivision.on)

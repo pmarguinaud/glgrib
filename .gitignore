@@ -23,3 +23,6 @@ debian/
 glgrib_build.txt
 glgrib_install.txt
 test.run/
+src/gshhsClean/gshhs_clean
+share/doc/earcut/tools/ext/
+__pycache__/

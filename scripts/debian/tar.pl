@@ -30,34 +30,21 @@ my ($diff_ignore) = ($options =~ m/diff-ignore\s*=\s*"(\S+)"/goms);
 
 $diff_ignore = qr/$diff_ignore/o;
 
-my @f;
+# Files tracked by git only : untracked and ignored files (build products, downloads in
+# share/doc/earcut/tools/ext, test.run, local work files) must not go into the source package.
+# The contents are taken from the working tree, as before.
 
-&find ({wanted => sub 
-{ 
-  my $f = $File::Find::name; 
-  return if ($f =~ $diff_ignore); 
-  return if ($f =~ m/\.(?:o|so|so\.\d+)$/o);
-  return if ($f =~ m,bin/glgrib-(?:glfw|egl),o);
-  return if ($f =~ m,blib,o);
-  push @f, $f; 
-}, no_chdir => 1}, '.');
+my @f = do
+{
+  local $/ = "\0";
+  my $fh = 'FileHandle'->new ("git ls-files -z |") 
+    or die ("Cannot run git ls-files\n");
+  map { chomp; $_ } <$fh>;
+};
 
-my %f = map { ($_, 1) } @f;
-
-# Remove intermediate directories
-
-for my $f (@f)
-  {
-    my @d = split (m,/,o, $f);
-    pop (@d);
-    while (@d)
-      {
-        delete $f{join ('/', @d)};
-        pop (@d);
-      }
-  }
-
-@f = sort keys (%f);
+@f = grep { ! m/$diff_ignore/o } @f;
+@f = grep { (-f $_) || (-l $_) } @f;          # files deleted in the working tree
+@f = sort @f;
 
 my $dir = &basename (&cwd ());
 

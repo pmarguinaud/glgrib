@@ -1,0 +1,10 @@
+CDT : constrained Delaunay triangulation, header-only C++ library
+https://github.com/artem-ogre/CDT
+
+Version 2.1.0, commit d66c2024ea3d7f06dca22bcbea93a8d5211ef5fb
+Copied unchanged from CDT/include ; used by src/glGrib/ConstrainedDelaunay.cc only.
+
+Licences :
+  - all files except the two below : Mozilla Public License 2.0 (LICENSE)
+  - predicates.h : BSD 3-clause, Copyright (c) 2019 William C. Lenthe (in the file)
+  - portable_nth_element.hpp : Apache 2.0 with LLVM exception (LLVM Project, in the file)

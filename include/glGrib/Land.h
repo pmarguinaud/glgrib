@@ -39,7 +39,7 @@ private:
     void triangulate (int_v *, int_v *,
                       int_v *, int_v *,
                       const std::vector<unsigned int> &,
-                      std::vector<float> *, int_v *,
+                      std::vector<float> *,
                       std::vector<unsigned int> *);
     void subdivide (const int_v &, const int_v &,
                     const int_v &, const int_v &,

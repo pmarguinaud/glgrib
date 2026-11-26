@@ -2053,6 +2053,7 @@ public:
 
     BLOC (labels,    City labels);
     DESC (labels.on, Enable city names display);
+    DESC (labels.population_min, Minimum population of a city to display its name);
     INCLUDE (labels.font);
   }
   bool on = false;
@@ -2061,6 +2062,7 @@ public:
   {
     OptionsFont font;
     bool on = false;
+    int population_min = 1000000;
   } labels;
 };
 

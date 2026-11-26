@@ -41,7 +41,7 @@ void Cities::setup (const OptionsCities & o)
       lon.push_back (lon_);
       lat.push_back (lat_);
       siz.push_back (std::log (siz_) / std::log (10.0));
-      if ((siz_ > 1000000) && (opts.labels.on))
+      if ((siz_ > opts.labels.population_min) && (opts.labels.on))
         {
           Str.push_back (std::string (name));
 	  float x, y, z;

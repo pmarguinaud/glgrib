@@ -686,7 +686,15 @@ void Window::debugTriangleNumber ()
   if (getLatLonFromCursor (&lat, &lon) && (f != nullptr))
     {
       const_GeometryPtr geometry = f->getGeometry ();
-      std::cout << " getTriangle = " << geometry->getTriangle (lon, lat) << std::endl;
+      const int it = geometry->getTriangle (lon, lat);
+      std::cout << " lat = " << lat << " lon = " << lon << " triangle = " << it;
+      if (it >= 0)
+        {
+          int jglo[3];
+          geometry->getTriangleVertices (it, jglo);
+          std::cout << " vertices = " << jglo[0] << ", " << jglo[1] << ", " << jglo[2];
+        }
+      std::cout << std::endl;
     }
 }
 

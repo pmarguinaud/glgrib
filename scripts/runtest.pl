@@ -430,7 +430,7 @@ for my $name (@name)
             my $thumb = "test.run/$name/thumb_$png";
             rename ($png, $new);
 #           system ('convert', -geometry => 300, $new, $thumb);
-            my $ref = "share/glgrib/doc/samples/$name/$png";
+            my $ref = "share/doc/glgrib/samples/$name/$png";
             my $dif = "test.run/$name/diff_$png";
             if ((-f $ref) && ($comp))
               {

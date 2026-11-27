@@ -374,7 +374,7 @@ for my $name (@name)
     
     (my $test = $test{$name}) or die ("Unknown test `$name'\n");
     
-    my $exec = "$Bin/../bin/glgrib";
+    my $exec = $ENV{GLGRIB_BIN} || "$Bin/../bin/glgrib";
     
     my @argl = @{ $test->[1] };
 

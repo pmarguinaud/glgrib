@@ -1,3 +1,10 @@
+glgrib (1.0-8) UNRELEASED; urgency=medium
+
+  * Build with CMake (dh --buildsystem=cmake); dh-exec, install.pl and
+    cleanInstall.pl are no longer used.
+
+ -- Philippe Marguinaud <pmarguinaud@hotmail.com>  Fri, 27 Nov 2026 08:03:33 +0100
+
 glgrib (1.0-1) UNRELEASED; urgency=medium
 
   * Initial release (Closes: #1027277)

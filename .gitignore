@@ -26,3 +26,5 @@ test.run/
 src/gshhsClean/gshhs_clean
 share/doc/earcut/tools/ext/
 __pycache__/
+/build/
+obj-*/

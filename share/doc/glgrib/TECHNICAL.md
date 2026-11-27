@@ -1,33 +1,34 @@
 # glgrib — Technical Documentation
 
-Philippe Marguinaud · last updated 2026-11-26
+Philippe Marguinaud · last updated 2026-11-27
 
 ## 1. Overview
 
-glgrib is a C++11 / OpenGL 4.4 core-profile program (shaders are `#version 440 core`) that draws meteorological fields (GRIB2 via ecCodes, FA via the bundled LFI library) on a 3D globe or a flat projection. It is built twice from the same sources: once against GLFW for interactive windows, once against EGL + GBM for headless batch rendering without an X server.
+glgrib is a C++11 / OpenGL 4.4 core-profile program (shaders are `#version 440 core`) that draws meteorological fields (GRIB2 via ecCodes, FA via the bundled LFI library) on a 3D globe or a flat projection. It is built twice from the same sources: once against GLFW for interactive windows, once against EGL (optionally with GBM) for headless batch rendering without an X server.
 
 The code is organised as a shared library (`libglGrib-<backend>.so`) plus a very small `main` (`src/glGrib/glGrib.cc`, 40 lines). Everything else — scene graph, data loading, geometry, rendering, shell — lives in the library and is reused by the Perl, Python and Perl/Tk front-ends.
 
 ### Build variants
 
-`src/glGrib/makefile` runs itself twice with `BUILD=glfw` and `BUILD=egl`. Objects go to `src/glGrib/glfw/` and `src/glGrib/egl/`; the only compile-time difference is `-DGLGRIB_USE_GLFW` or `-DGLGRIB_USE_EGL`.
+glgrib is built with CMake (`CMakeLists.txt`, `cmake/GlgribHelpers.cmake`; build instructions and options in `BUILD.md`). The function `glgrib_add_backend` compiles the source list of `src/glGrib/CMakeLists.txt` twice, once per backend; the only compile-time difference is `-DGLGRIB_USE_GLFW` or `-DGLGRIB_USE_EGL`, a public definition of each library, so that programs and bindings see the same declarations. The build tree has the layout of an installation (`bin/`, `lib/`, `share/glgrib/` with the generated shaders and links to the data), so the programs run from it. The paths below are relative to the build tree. The former makefiles (`make` at the top, `BUILD=glfw` and `BUILD=egl` in `src/glGrib/makefile`) still produce the same files in the source tree, and will be removed.
 
 | Artefact | Built from | Links against | Purpose |
 | --- | --- | --- | --- |
 | `lib/libLFI.so.0` | `src/LFI/*.c` | sqlite3, curl | Reader for Météo-France FA/LFI files |
 | `lib/libglGrib-glfw.so.0` | `src/glGrib/*.cc` | GLEW, GL, glfw | Interactive library |
-| `lib/libglGrib-egl.so.0` | `src/glGrib/*.cc` | EGL, GL, gbm | Off-screen library |
+| `lib/libglGrib-egl.so.0` | `src/glGrib/*.cc` | EGL, GL (gbm with `GLGRIB_WITH_GBM`) | Off-screen library |
 | `bin/glgrib-glfw`, `bin/glgrib-egl` | `glGrib.cc` | the matching library | Executables; `bin/glgrib` links to the glfw one |
 | `share/glgrib/shaders/*` | `src/glGrib/shaders/src` | — | GLSL sources with `#include` expanded by `shaders/expand.pl` |
-| `share/man/man1/*.1.gz` | `glgrib --pod` | — | Man pages generated from the option tree |
-| `src/gshhsClean/gshhs_clean` | `gshhs_clean.cc` | shapelib | Offline coastline cleaning tool (section 8). Not part of the default build: run `make` in `src/gshhsClean` |
+| `share/man/man1/*.1` | `glgrib --pod` | — | Man pages generated from the option tree (`cmake/GlgribManPage.cmake`) |
+| `bin/gshhs_clean` | `src/gshhsClean/gshhs_clean.cc` | shapelib | Offline coastline cleaning tool (section 8). Built with `-DGLGRIB_WITH_TOOLS=ON`, not installed |
 
-Common dependencies (`makefile.inc`): libpng, readline, OpenSSL, sqlite3, curl, shapelib, ecCodes, netCDF-C++, OpenMP. The constrained Delaunay triangulation library [CDT](https://github.com/artem-ogre/CDT) 2.1.0 (MPL-2.0) is header-only and vendored in `include/CDT`, so it adds no build dependency. The default build is `-O2`; a commented debug line enables `-DGLGRIB_CHECK_BOUND`.
+Common dependencies: libpng, readline, OpenSSL, sqlite3, curl, shapelib, ecCodes, netCDF-C++, OpenMP; the Perl and Python modules also need the Perl and Python development files. The constrained Delaunay triangulation library [CDT](https://github.com/artem-ogre/CDT) 2.1.0 (MPL-2.0) is header-only and vendored in `include/CDT`, so it adds no build dependency. The default build type, `Release`, is `-O2` without `-DNDEBUG`, so assertions stay active; `-DGLGRIB_CHECK_BOUND=ON` enables bound checking.
 
 ### Source tree
 
 | Path | Content |
 | --- | --- |
+| `CMakeLists.txt`, `cmake/`, `*/CMakeLists.txt` | CMake build (`BUILD.md`) |
 | `src/glGrib/`, `include/glGrib/` | The library: about 18,000 lines of `.cc` in 65 classes, one `.cc`/`.h` pair each |
 | `include/CDT/` | CDT 2.1.0, unchanged, with its licence and `README.glgrib` (version, commit, licences) |
 | `src/gshhsClean/` | `gshhs_clean`, the offline tool that repairs self-crossing coastline rings, and `clean-gshhs.sh` |
@@ -134,7 +135,7 @@ The root `Options` holds 10 `OptionsField`, 10 `OptionsGeoPoints`, and one block
 | `--a.b.on` / `--a.b.off` | Booleans need no value. `.off` is resolved by looking up the matching `.on`. |
 | `--field[1]-{ --palette.name cloud --scale 1.04 }-` | Option group: the prefix inside `--…-{` is pushed on a stack and prepended to every option until `}-`. Groups nest. |
 | `--{file}` | Reads more options from a file, tokenised with shell-like quoting, and inserts them in place. |
-| `--help`, `--help-long`, `--json`, `--pod` | Print the option tree and exit. `make` builds the man pages from `--pod`. |
+| `--help`, `--help-long`, `--json`, `--pod` | Print the option tree and exit (`parse` returns false, so the program exits with status 1). The build makes the man pages from `--pod`. |
 
 `Options::parse` adds shortcuts. A single non-option argument is sniffed with `Grok`: a GRIB or FA field path opens it with colour bar, grid and coastlines; a whole FA file starts review mode; anything else is run as a shell script. `--diff f1 f2` starts diff mode. After parsing, the options seen under each `--field[i]` are stored in `field[i].seen`.
 
@@ -612,7 +613,7 @@ The PNG embeds the non-default options of the scene as a text chunk, so an image
 
 The test suite is a table of 137 named cases in `runtest.pl`. Each case has a category (`CLOUD`, `CONTOUR`, `LAMBERT`, `PROJECTION`, …), a description and a command line. The same table generates the documentation.
 
-- `scripts/runtest.pl name …` runs `bin/glgrib` with the case's options. Set `GDB=1` to run it under gdb.
+- `NAME=name scripts/runtest.pl` runs `bin/glgrib` of the source tree with the case's options; `GLGRIB_BIN` selects another program (for example `build/bin/glgrib-egl`). Set `GDB=1` to run it under gdb.
 - With `AUTO=1` the runner adds `--render.offscreen.on --render.offscreen.format TEST_%N.png`, removes `--shell.on`, and moves the images to `test.run/<name>/`. Several frames are also assembled into `TEST.gif` with ImageMagick unless `NOMOVIE=1`.
 - With `COMP=1` each image is compared with the reference by `compare -metric MAE`, and results are appended to `test.run/test.log`.
 - `README=1` (the `readme` sub) rewrites `README.md`, `share/doc/glgrib/GLGRIB.md` and one `<CATEGORY>.md` per category, with the reference image and the command line of each case.
@@ -623,7 +624,7 @@ Four cases cover land: `land` (default layers), `land_high` (h resolution over S
 
 ### Packaging
 
-`packaging/debian` describes about 20 binary packages, so a headless server can install only the EGL parts:
+`packaging/debian` describes 16 binary packages, so a headless server can install only the EGL parts:
 
 | Group | Packages |
 | --- | --- |
@@ -632,7 +633,7 @@ Four cases cover land: `land` (default layers), `land_high` (h resolution over S
 | Bindings | `libglgrib-glfw-perl`, `python3-glgrib-glfw` |
 | Data | `glgrib-shaders`, `glgrib-data`, `glgrib-testdata`, `glgrib-doc` |
 
-`scripts/debian/*.sh` build the packages. `scripts/debian/tar.pl` makes the upstream tarball (`../glgrib_<version>.orig.tar.gz`, version from `packaging/debian/changelog`) from the files tracked by git (`git ls-files`), minus the `diff-ignore` patterns of `packaging/debian/source/options`; untracked files, downloads and build products never enter the source package. `packaging/debian/copyright` lists the third-party parts: CDT (MPL-2.0, with two files under BSD-3 and Apache-2.0), GSHHG and the GSHHS shapefiles (LGPL-3+), Natural Earth (public domain), the départements (ODbL). `src/gshhsClean` and `share/doc/earcut` are not installed by any package. `scripts/singularity` creates a build container and an install/test container, then builds, installs and starts glgrib inside them. `scripts/ubuntu` does the same with Docker. In a Debian build, `makefile.inc` takes `DEB_CFLAGS`, `DEB_CXXFLAGS` and `DEB_LDFLAGS` and drops the rpath. At run time, `Resolve` looks for each data file (shaders, fonts, `glGrib.db`) in this order: the current directory, `~/.glGribrc/`, `$GLGRIB_PREFIX/share/glgrib/`, the prefix set by the Perl or Python module, and finally `<executable dir>/../share/glgrib/`. A user can therefore override any shader or palette database without reinstalling.
+The packages are built with `dh --buildsystem=cmake`: `dh_auto_configure` passes the prefix `/usr`, the multiarch library directory and the Debian build flags, and the `.install` files pick the files from the CMake installation. `scripts/debian/tar.pl` makes the upstream tarball (`../glgrib_<version>.orig.tar.gz`, version from `packaging/debian/changelog`) from the files tracked by git (`git ls-files`), minus the `diff-ignore` patterns of `packaging/debian/source/options`; untracked files, downloads and build products never enter the source package. `packaging/debian/copyright` lists the third-party parts: CDT (MPL-2.0, with two files under BSD-3 and Apache-2.0), GSHHG and the GSHHS shapefiles (LGPL-3+), Natural Earth (public domain), the départements (ODbL). `src/gshhsClean` and `share/doc/earcut` are not installed by any package. `scripts/singularity` creates a build container and an install/test container (Debian unstable), then builds, installs and starts glgrib inside them; `debian-build.sh` builds from the upstream tarball, not from the working tree. Debian unstable also ships glgrib, so the local version in `changelog` must be higher than the archive's. `scripts/ubuntu` does the same with Docker on Ubuntu 22.04 (CMake 3.22); it still uses the makefiles. Installed programs and libraries have no rpath when the prefix is `/usr`, and an rpath to `<prefix>/lib` otherwise. At run time, `Resolve` looks for each data file (shaders, fonts, `glGrib.db`) in this order: the current directory, `~/.glGribrc/`, `$GLGRIB_PREFIX/share/glgrib/`, the prefix set by the Perl or Python module, and finally `<executable dir>/../share/glgrib/`. A user can therefore override any shader or palette database without reinstalling.
 
 ### Adding an option
 
@@ -647,7 +648,7 @@ Four cases cover land: `land` (default layers), `land_high` (h resolution over S
 2. In `setup`: load values with `Loader::load` (this gives slots, diff mode and the cache for free), get the geometry with `Geometry::load`, build GPU buffers, and call `setReady ()`.
 3. Add the type name to `Field::create` and its options to `OptionsField`.
 4. Write `shaders/src/XXX.vs` and `.fs`, including `projection.h`, `scale.h` and `geometry.h` to inherit projections and GPU coordinates. Load them with `Program::load ("XXX")`.
-5. Add the object file to `OBJECTS` in `src/glGrib/makefile`, and a test case to `runtest.pl`.
+5. Add the source file to `GLGRIB_SOURCES` in `src/glGrib/CMakeLists.txt` (and to `OBJECTS` in `src/glGrib/makefile` while the makefiles remain), and a test case to `runtest.pl`.
 
 Use the `Geometry` interface only (triangles, neighbours, `index2latlon`, the conformal plane). The new type then works on lat/lon, Lambert and reduced Gaussian grids alike, as contours, stream lines and vertical sections do.
 

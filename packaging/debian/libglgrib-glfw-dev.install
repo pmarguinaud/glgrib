@@ -1,2 +1,1 @@
-#!/usr/bin/dh-exec
-usr/lib/libglGrib-glfw.so usr/lib/x86_64-linux-gnu/
+usr/lib/*/libglGrib-glfw.so

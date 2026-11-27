@@ -23,7 +23,7 @@ From: debian:unstable
   apt update && \
   apt full-upgrade -y && \
   apt install -y command-not-found debhelper-compat locales git vim ssh screen \
-    g++ make libcurl4-openssl-dev libeccodes-dev libegl-dev libglew-dev dpkg-dev \
+    g++ make cmake pkgconf libperl-dev libgl-dev libcurl4-openssl-dev libeccodes-dev libegl-dev libglew-dev dpkg-dev \
     libglfw3-dev libnetcdf-c++4-dev libpng-dev libreadline-dev libshp-dev \
     libsqlite3-dev libssl-dev libglm-dev build-essential devscripts debhelper \
     patchelf python3-dev libgbm-dev python3-setuptools dh-exec libimage-magick-perl \

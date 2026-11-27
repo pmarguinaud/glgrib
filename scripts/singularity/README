@@ -1,15 +1,27 @@
-Create singularity images :
-- singularity-create-build.sh
-- singularity-create-install.sh
+Run the scripts from the top of the source tree; the images are created in ..
+
+Create singularity images (once, or to update Debian unstable) :
+- singularity-create-build.sh : build image ../singularity.glgrib-build (compilers, CMake, debhelper,
+  build dependencies)
+- singularity-create-install.sh : install/test image ../singularity.glgrib-install
 
 Build :
 - singularity-build.sh (enter build container)
-- debian-build.sh (run from build container); build and create packages
+- debian-build.sh (run from build container); build the Debian packages with CMake
+  (dh --buildsystem=cmake) from the upstream tarball made by scripts/debian/tar.pl (files tracked by
+  git only), in ../debian-build; the packages are moved to ..
+  Without entering the container :
+    singularity exec --bind $HOME/tmp:/tmp ../singularity.glgrib-build ./scripts/singularity/debian-build.sh
 
-Install : 
+Install :
 - singularity-install.sh (enter install/test container)
-- debian-install.sh (run from install/test container); install glgrib-glfw
+- debian-install.sh (run from install/test container); install glgrib-glfw from the packages in ..
+  Debian unstable ships glgrib too: the version in packaging/debian/changelog must be higher than the
+  archive's, or apt installs the archive packages.
 
-Test : 
+Test :
 - singularity-test.sh (enter test container)
 - debian-test.sh (run from test container); start glgrib-glfw
+
+Developer build in the build container, without packaging :
+  singularity exec ../singularity.glgrib-build sh -c 'cmake -S . -B build/debian && cmake --build build/debian -j'
